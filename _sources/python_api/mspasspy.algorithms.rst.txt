@@ -1,6 +1,14 @@
 mspasspy.algorithms
 ===================
 
+MCXcorStacking
+---------------------
+
+.. automodule:: mspasspy.algorithms.MCXcorStacking
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 MTPowerSpectrumEngine
 ---------------------
 

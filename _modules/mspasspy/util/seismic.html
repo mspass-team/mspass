@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>mspasspy.util.seismic &mdash; MsPASS 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=f6245a2f"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
+        <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />  
+
+  <style>
+    .wy-nav-content { max-width: 1600px; }
+  </style>
+
+  
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            MsPASS
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/quick_start.html">Getting Started in a Nutshell</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/run_mspass_with_docker.html">Run MsPASS with Docker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_docker_compose.html">Deploy MsPASS with Docker Compose</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_conda.html">Deploy MsPASS with Conda</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_conda.html#advanced-setup-considerations">Advanced Setup Considerations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_on_HPC.html">Deploying MsPASS on an HPC cluster</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_conda_and_coiled.html">Deploy MsPASS with Conda and Coiled</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/introduction.html">Introduction</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Data Management</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/database_concepts.html">Database Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/normalization.html">Normalization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/importing_tabular_data.html">Importing Tabular Data</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Seismic Data Objects</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/data_object_design_concepts.html">Data Object Design Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/numpy_scipy_interface.html">Using numpy/scipy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/obspy_interface.html">Using ObsPy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/time_standard_constraints.html">Time Standard Constraints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/processing_history_concepts.html">Processing History Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/continuous_data.html">Continuous Data Handling with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/schema_choices.html">What database schema should I use?</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Data Processing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/algorithms.html">Algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/importing_data.html">Importing Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/handling_errors.html">Handling Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/data_editing.html">Data Editing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/header_math.html">Header (Metadata) Math</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/graphics.html">Graphics in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/signal_to_noise.html">Signal to Noise Ratio Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/parallel_processing.html">Parallel Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/memory_management.html">Memory Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/io.html">I/O in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/parallel_io.html">Parallel IO in MsPASS</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">FAQ</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/FAQ.html">Frequency Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/development_strategies.html">How do I develop a new workflow from scratch?</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../python_api/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../cxx_api/index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../mspass_schema/mspass_schema.html">MsPASS Schema</a></li>
+</ul>
+
+    <a href= "../../../genindex.html">Index</a>
+  
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">MsPASS</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">mspasspy.util.seismic</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for mspasspy.util.seismic</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">mspasspy.ccore.seismic</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">TimeSeries</span><span class="p">,</span>
+    <span class="n">Seismogram</span><span class="p">,</span>
+    <span class="n">TimeSeriesEnsemble</span><span class="p">,</span>
+    <span class="n">SeismogramEnsemble</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">mspasspy.ccore.utility</span> <span class="kn">import</span> <span class="n">Metadata</span><span class="p">,</span> <span class="n">ErrorSeverity</span>
+<span class="kn">from</span> <span class="nn">mspasspy.ccore.algorithms.basic</span> <span class="kn">import</span> <span class="n">TimeWindow</span>
+<span class="kn">from</span> <span class="nn">bson</span> <span class="kn">import</span> <span class="n">json_util</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+
+<div class="viewcode-block" id="print_metadata"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.seismic.print_metadata">[docs]</a><span class="k">def</span> <span class="nf">print_metadata</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Prints Metadata stored in the object passed as arg0 (d) as json</span>
+<span class="sd">    format output with indentation defined by the optional</span>
+<span class="sd">    indent argument.  Indent is always on and defaults to 2 characters.</span>
+<span class="sd">    The purpose of this function is to standardize printing</span>
+<span class="sd">    the Metadata contents of any MsPASS data object.   It has the</span>
+<span class="sd">    beneficial side effect of producing the same print for</span>
+<span class="sd">    documents (python dictionaries) retrieved directly from MongoDB.</span>
+
+<span class="sd">    It is important to realize that when applied to a</span>
+<span class="sd">    `TimeSeriesEnsemble` or `SeismogramEnsemble` only the ensemble</span>
+<span class="sd">    Metadata container will be printed.</span>
+
+<span class="sd">    :param d:  datum for which the Metadata is to be printed.</span>
+<span class="sd">    :type d:  any subclass of `mspasspy.ccore.Metadata` or a</span>
+<span class="sd">    python dictionary (the container used for documents returned</span>
+<span class="sd">    by pymongo).  If d is anything else a TypeError exception</span>
+<span class="sd">    will be thrown.</span>
+<span class="sd">    :param indent:   indentation argument for json printing</span>
+<span class="sd">    :type indent:  integer (default 2)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">Metadata</span><span class="p">):</span>
+        <span class="n">doc</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="n">doc</span> <span class="o">=</span> <span class="n">d</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;print_metadata:   arg0 must be a dictionary or a subclass of Metadata</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+        <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;type of arg0=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">d</span><span class="p">))</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">json_util</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="n">indent</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="number_live"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.seismic.number_live">[docs]</a><span class="k">def</span> <span class="nf">number_live</span><span class="p">(</span><span class="n">ensemble</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Scans an ensemble and returns the number of live members.  If the</span>
+<span class="sd">    ensemble is marked dead it immediately return 0.  Otherwise it loops</span>
+<span class="sd">    through the members countinng the number live.</span>
+<span class="sd">    :param ensemble:  ensemble to be scanned</span>
+<span class="sd">    :type ensemble:  Must be a `TimeSeriesEnsemble` or `SeismogramEnsemble` or</span>
+<span class="sd">    it will throw a TypeError exception.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ensemble</span><span class="p">,</span> <span class="p">(</span><span class="n">TimeSeriesEnsemble</span><span class="p">,</span> <span class="n">SeismogramEnsemble</span><span class="p">)):</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;number_live:   illegal type for arg0=</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">ensemble</span><span class="p">))</span>
+        <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Must be a TimeSeriesEnsemble or SeismogramEnsemble</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">ensemble</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
+        <span class="k">return</span> <span class="mi">0</span>
+    <span class="n">nlive</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">ensemble</span><span class="o">.</span><span class="n">member</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">live</span><span class="p">:</span>
+            <span class="n">nlive</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">nlive</span></div>
+
+
+<div class="viewcode-block" id="regularize_sampling"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.seismic.regularize_sampling">[docs]</a><span class="k">def</span> <span class="nf">regularize_sampling</span><span class="p">(</span><span class="n">ensemble</span><span class="p">,</span> <span class="n">dt_expected</span><span class="p">,</span> <span class="n">Nsamp</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span> <span class="n">abort_on_error</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This is a utility function that can be used to validate that all the members</span>
+<span class="sd">    of an ensemble have a sample interval that is indistinguishable from a specified</span>
+<span class="sd">    constant (dt_expected)   The test for constant is soft to allow handling</span>
+<span class="sd">    data created by some older digitizers that skewed the recorded sample interval to force</span>
+<span class="sd">    time computed from N*dt to match time stamps on successive data packets.</span>
+<span class="sd">    The formula used is the datum dt is declared constant if the difference from</span>
+<span class="sd">    the expected dt is less than or equal to dt_expected/2*(Nsamp-1).  That means</span>
+<span class="sd">    the computed endtime difference from that using dt_expected is less than</span>
+<span class="sd">    or equal to dt/2.</span>
+
+<span class="sd">    The function by default will kill members that have mismatched sample</span>
+<span class="sd">    intervals and log an informational message to the datum&#39;s elog container.</span>
+<span class="sd">    In this mode the entire ensemble can end up marked dead if all the members</span>
+<span class="sd">    are killed (That situation can easily happen if the entire data set has the wrong dt.);</span>
+<span class="sd">    If the argument `abort_on_errors` is set True a ValueError exception will be</span>
+<span class="sd">    thrown if ANY member of the input ensemble.</span>
+
+<span class="sd">    An important alternative to this function is to pass a data set</span>
+<span class="sd">    through the MsPASS `resample` function found in mspasspy.algorithms.resample.</span>
+<span class="sd">    That function will guarantee all live data have the same sample interval</span>
+<span class="sd">    and not kill them like this function will.   Use this function for</span>
+<span class="sd">    algorithms that can&#39;t be certain the input data will have been resampled</span>
+<span class="sd">    and need to be robust for what might otherwise be considered a user error.</span>
+
+<span class="sd">    :param ensemble:  ensemble container of data to be scanned for irregular</span>
+<span class="sd">    sampling.</span>
+<span class="sd">    :type ensemble:  `TimeSeriesEnsemble` or `SeismogramEnsemble`.   The</span>
+<span class="sd">    function does not test for type and will abort with an undefined method</span>
+<span class="sd">    error if sent anything else.</span>
+<span class="sd">    :param dt_expected:  constant data sample interval expected.</span>
+<span class="sd">    :type dt_expected:  float</span>
+<span class="sd">    :param Nsamp:   Nominal number of samples expected in the ensemble members.</span>
+<span class="sd">    This number is used to compute the soft test to allow for slippery clocks</span>
+<span class="sd">    discussed above.   (Default 10000) e = regularize_sampling(e,dt)</span>
+<span class="sd">    assert e.live</span>
+<span class="sd">    :type Nsamp:  integer</span>
+<span class="sd">    :param abort_on_error:  Controls what the function does if it</span>
+<span class="sd">    encountered a datum with a sample interval different that dt_expected.</span>
+<span class="sd">    When True the function aborts with a ValueError exception if ANY</span>
+<span class="sd">    ensemble member does not have a matching sample interval.  When</span>
+<span class="sd">    False (the default) the function uses the MsPASS error logging</span>
+<span class="sd">    to hold a message an kills any member datum with a problem.</span>
+<span class="sd">    :type abort_on_error:  boolean</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">alg</span> <span class="o">=</span> <span class="s2">&quot;regularize_sampling&quot;</span>
+    <span class="k">if</span> <span class="n">ensemble</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
+        <span class="k">return</span> <span class="n">ensemble</span>
+    <span class="c1"># this formula will flag any ensemble member for which the sample</span>
+    <span class="c1"># rate yields a computed end time that differs from the beam</span>
+    <span class="c1"># by more than one half sample</span>
+    <span class="n">delta_dt_cutoff</span> <span class="o">=</span> <span class="n">dt_expected</span> <span class="o">/</span> <span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="p">(</span><span class="n">Nsamp</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ensemble</span><span class="o">.</span><span class="n">member</span><span class="p">)):</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">ensemble</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">live</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">dt_expected</span><span class="p">,</span> <span class="n">d</span><span class="o">.</span><span class="n">dt</span><span class="p">):</span>
+                <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">dt_expected</span> <span class="o">-</span> <span class="n">d</span><span class="o">.</span><span class="n">dt</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">delta_dt_cutoff</span><span class="p">:</span>
+                    <span class="n">message</span> <span class="o">=</span> <span class="nb">str</span><span class="p">()</span>
+                    <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;Member </span><span class="si">{}</span><span class="s2"> of input ensemble has different sample rate=</span><span class="si">{}</span><span class="s2"> than expected dt=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">i</span><span class="p">,</span> <span class="n">d</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span> <span class="n">dt_expected</span>
+                    <span class="p">)</span>
+                    <span class="k">if</span> <span class="n">abort_on_error</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">ensemble</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
+                            <span class="n">alg</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span>
+                        <span class="p">)</span>
+                        <span class="n">ensemble</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">abort_on_error</span><span class="p">:</span>
+        <span class="n">nlive</span> <span class="o">=</span> <span class="n">number_live</span><span class="p">(</span><span class="n">ensemble</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">nlive</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;All members of this ensemble were killed.</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;expected dt may be wrong or you need to run the resample function on this data set&quot;</span>
+            <span class="n">ensemble</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+            <span class="n">ensemble</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">ensemble</span></div>
+
+
+<div class="viewcode-block" id="ensemble_time_range"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.seismic.ensemble_time_range">[docs]</a><span class="k">def</span> <span class="nf">ensemble_time_range</span><span class="p">(</span><span class="n">ensemble</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="s2">&quot;inner&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeWindow</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Scans a Seismic data ensemble returning a measure of the</span>
+<span class="sd">    time span of members.   The metric returned ban be either</span>
+<span class="sd">    smallest time range containing all the data, the range</span>
+<span class="sd">    defined by the minimum start time and maximum endtime,</span>
+<span class="sd">    or an average defined by either the median or the</span>
+<span class="sd">    arithmetic mean of the vector of startime and endtime</span>
+<span class="sd">    values.</span>
+
+<span class="sd">    :param ensemble:  ensemble container to be scanned for</span>
+<span class="sd">    time range.</span>
+<span class="sd">    :type ensemble:  `TimeSeriesEnsemble` or `SeismogramEnsemble`.</span>
+<span class="sd">    :param metric:   measure to use to define the time range.</span>
+<span class="sd">    Accepted values are:</span>
+<span class="sd">      &quot;inner&quot; - (default) return range defined by largest</span>
+<span class="sd">          start time to smallest end time.</span>
+<span class="sd">      &quot;outer&quot; - return range defined by minimum start time and</span>
+<span class="sd">          largest end time (maximum time span of data)</span>
+<span class="sd">      &quot;median&quot; - return range as the median of the extracted</span>
+<span class="sd">          vectors of start time and end time values.</span>
+<span class="sd">      &quot;mean&quot; - return range as arithmetic average of</span>
+<span class="sd">          start and end time vectors</span>
+<span class="sd">    :return:  `TimeWindow` object with start and end times.  If the</span>
+<span class="sd">    ensemble has all dead member the default constructed TimeWindow</span>
+<span class="sd">    object will be returned which has zero length.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ensemble</span><span class="p">,</span> <span class="p">(</span><span class="n">TimeSeriesEnsemble</span><span class="p">,</span> <span class="n">SeismogramEnsemble</span><span class="p">)):</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;ensemble_time_range:   illegal type for arg0=</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="nb">type</span><span class="p">(</span><span class="n">ensemble</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Must be a TimeSeriesEnsemble or SeismogramEnsemble</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">metric</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;inner&quot;</span><span class="p">,</span> <span class="s2">&quot;outer&quot;</span><span class="p">,</span> <span class="s2">&quot;median&quot;</span><span class="p">,</span> <span class="s2">&quot;mean&quot;</span><span class="p">]:</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;ensemble_time_range:  illegal value for metric=</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">metric</span><span class="p">)</span>
+        <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Must be one of:  inner, outer, median, or mean&quot;</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+    <span class="n">stvector</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">etvector</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">ensemble</span><span class="o">.</span><span class="n">member</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">live</span><span class="p">:</span>
+            <span class="n">stvector</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">t0</span><span class="p">)</span>
+            <span class="n">etvector</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">endtime</span><span class="p">())</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">stvector</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">TimeWindow</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">metric</span> <span class="o">==</span> <span class="s2">&quot;inner&quot;</span><span class="p">:</span>
+        <span class="n">stime</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">stvector</span><span class="p">)</span>
+        <span class="n">etime</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">etvector</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">metric</span> <span class="o">==</span> <span class="s2">&quot;outer&quot;</span><span class="p">:</span>
+        <span class="n">stime</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">stvector</span><span class="p">)</span>
+        <span class="n">etime</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">etvector</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">metric</span> <span class="o">==</span> <span class="s2">&quot;median&quot;</span><span class="p">:</span>
+        <span class="n">stime</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">stvector</span><span class="p">)</span>
+        <span class="n">etime</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">etvector</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">metric</span> <span class="o">==</span> <span class="s2">&quot;mean&quot;</span><span class="p">:</span>
+        <span class="c1"># note numpy&#39;s mean an average are different with average being</span>
+        <span class="c1"># more generic - intentionally use mean which is also consistent with</span>
+        <span class="c1"># the keyword used</span>
+        <span class="n">stime</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">stvector</span><span class="p">)</span>
+        <span class="n">etime</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">etvector</span><span class="p">)</span>
+    <span class="c1"># Intentionally not using else to allow an easier extension</span>
+    <span class="k">return</span> <span class="n">TimeWindow</span><span class="p">(</span><span class="n">stime</span><span class="p">,</span> <span class="n">etime</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020-2021, Ian Wang.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

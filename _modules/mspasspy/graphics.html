@@ -1054,7 +1054,7 @@
         <span class="n">maxdt</span> <span class="o">=</span> <span class="mf">0.0</span>
         <span class="c1"># this is no doubt a faster vector way to do this calculation, but</span>
         <span class="c1"># this loop is guaranteed by screen limits to never be huge</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ndata</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">t0</span><span class="p">)):</span>
             <span class="n">dt</span> <span class="o">=</span> <span class="n">endtimes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">t0</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
             <span class="n">maxdt</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">maxdt</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">maxdt</span> <span class="o">/</span> <span class="p">(</span><span class="n">tmax</span> <span class="o">-</span> <span class="n">tmin</span><span class="p">)</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_RANGE_RATIO_TEST</span><span class="p">:</span>

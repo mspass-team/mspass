@@ -635,7 +635,7 @@
                 <span class="n">d</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span><span class="p">)</span>
             <span class="n">twcut</span><span class="o">.</span><span class="n">start</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">t0</span>
             <span class="n">cut_on_left</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="k">elif</span> <span class="n">twcut</span><span class="o">.</span><span class="n">end</span> <span class="o">&gt;</span> <span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">endtime</span><span class="p">()</span> <span class="o">+</span> <span class="n">d</span><span class="o">.</span><span class="n">dt</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">twcut</span><span class="o">.</span><span class="n">end</span> <span class="o">&gt;</span> <span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">endtime</span><span class="p">()</span> <span class="o">+</span> <span class="n">d</span><span class="o">.</span><span class="n">dt</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">log_recoverable_errors</span><span class="p">:</span>
                 <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Window end time is after data end time</span><span class="se">\n</span><span class="s2">&quot;</span>
                 <span class="n">message</span> <span class="o">+=</span> <span class="n">window_message</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">twcut</span><span class="p">)</span>
@@ -704,6 +704,7 @@
     <span class="n">short_segment_handling</span><span class="o">=</span><span class="s2">&quot;kill&quot;</span><span class="p">,</span>
     <span class="n">log_recoverable_errors</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">overwrite_members</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">retain_dead_members</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">alg_name</span><span class="o">=</span><span class="s2">&quot;WindowData&quot;</span><span class="p">,</span>
     <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -783,6 +784,24 @@
 <span class="sd">    Note the description of subsample time handling in the</span>
 <span class="sd">    related docstring for `WindowDataAtomic`.   For ensembles</span>
 <span class="sd">    each member output preserves subsample timing.</span>
+<span class="sd">    </span>
+<span class="sd">    Finally, how the function handles data marked dead is \</span>
+<span class="sd">    important.  For atomic data the is no complexity.  </span>
+<span class="sd">    dead is dead and the function just immediately returns</span>
+<span class="sd">    a reference to the input.  For ensembles some members </span>
+<span class="sd">    can be dead or the entire ensemble can be marked dead. </span>
+<span class="sd">    If the ensemble is marked dead the function immediately</span>
+<span class="sd">    returns a reference to the input.  If any members are </span>
+<span class="sd">    dead the result will depend on the boolean argument </span>
+<span class="sd">    &quot;retain_data_members&quot;.  When True (the default) dead </span>
+<span class="sd">    members will be copied verbatim to the output.   </span>
+<span class="sd">    If False the dead members will be SILENTLY deleted.  </span>
+<span class="sd">    The False option is only recommended if the windowing is </span>
+<span class="sd">    internal to a function and the windowed output will be </span>
+<span class="sd">    discarded during processing.  Otherwise the error log of why </span>
+<span class="sd">    data were killed will be lost.   If you need to save </span>
+<span class="sd">    memory by clearing dead bodies use the `Undertaker` </span>
+<span class="sd">    class to bury the dead and retain the error log data.  </span>
 
 <span class="sd">    :param d: is the input data.  d must be either a</span>
 <span class="sd">      :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`</span>
@@ -834,6 +853,11 @@
 <span class="sd">    This argument will be silently ignored if the input is an atomic</span>
 <span class="sd">    MsPASS seismic object.</span>
 <span class="sd">    :type overwrite_members:  boolean</span>
+<span class="sd">    :param retain_dead_members:   Controls how dead data are handled with </span>
+<span class="sd">    ensembles.  When True (default) dead ensemble members are copied verbatim </span>
+<span class="sd">    to the output.  When False they are silently deleted. (see above for </span>
+<span class="sd">    a more complete description).  This argument is ignored for Atomic data.</span>
+<span class="sd">    :type retain_dead_members: boolean</span>
 <span class="sd">    :param object_history: boolean to enable or disable saving object</span>
 <span class="sd">      level history.  Default is False.  Note this functionality is</span>
 <span class="sd">      implemented via the mspass_func_wrapper decorator.</span>
@@ -888,6 +912,9 @@
                         <span class="p">)</span>
                         <span class="k">if</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">live</span><span class="p">:</span>
                             <span class="n">nlive</span> <span class="o">+=</span> <span class="mi">1</span>
+                        <span class="c1"># when returning the original reference the</span>
+                        <span class="c1"># retain_dead_members option  is always True</span>
+
                 <span class="c1"># In this case this just creates a duplicate reference</span>
                 <span class="n">ensout</span> <span class="o">=</span> <span class="n">mspass_object</span>
             <span class="k">else</span><span class="p">:</span>
@@ -913,6 +940,8 @@
                         <span class="n">ensout</span><span class="o">.</span><span class="n">member</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
                         <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">live</span><span class="p">:</span>
                             <span class="n">nlive</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="k">elif</span> <span class="n">retain_dead_members</span><span class="p">:</span>
+                        <span class="n">ensout</span><span class="o">.</span><span class="n">member</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mspass_object</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
                 <span class="c1"># always set live and let the next line kill it if nlive is 0</span>
                 <span class="n">ensout</span><span class="o">.</span><span class="n">live</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="k">if</span> <span class="n">nlive</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
@@ -929,7 +958,83 @@
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span></div>
 
 
-<span class="c1"># @mspass_func_wrapper</span>
+<div class="viewcode-block" id="WindowData_autopad"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.window.WindowData_autopad">[docs]</a><span class="nd">@mspass_func_wrapper</span>
+<span class="k">def</span> <span class="nf">WindowData_autopad</span><span class="p">(</span>
+    <span class="n">d</span><span class="p">,</span>
+    <span class="n">stime</span><span class="p">,</span>
+    <span class="n">etime</span><span class="p">,</span>
+    <span class="n">pad_fraction_cutoff</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span>
+    <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">alg_name</span><span class="o">=</span><span class="s2">&quot;WindowData_autopad&quot;</span><span class="p">,</span>
+    <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Windows an atomic data object with automatic padding if the</span>
+<span class="sd">    undefined section is not too large.</span>
+
+<span class="sd">    When using numpy or MsPASS data arrays the : notation can be used</span>
+<span class="sd">    to drastically speed performance over using a python loop.</span>
+<span class="sd">    This function is most useful for contexts where the size of the</span>
+<span class="sd">    output of a window must exactly match what is expected from</span>
+<span class="sd">    the time range.   A type example is a multichannel algorithm</span>
+<span class="sd">    where you need to use an API that loads a set of signals into</span>
+<span class="sd">    a matrix that is used as the workspace for processing.  That is</span>
+<span class="sd">    the univeral model, for example, in seismic reflection processing.</span>
+<span class="sd">    This algorithm will silently zero pad any undefined samples</span>
+<span class="sd">    at the end of the window IF the fraction of undefined data relative to</span>
+<span class="sd">    the number of samples expected from the time range defined by</span>
+<span class="sd">    etime-stime is less than the &quot;pad_fraction_cutoff&quot;.  If</span>
+<span class="sd">    the input time span shorter than the computed mismatch limit</span>
+<span class="sd">    the result will be returned marked dead with an elog entry</span>
+<span class="sd">    highlighting the problem.</span>
+
+<span class="sd">    :param d:  atomic MsPASS seismic data object to be windowed.</span>
+<span class="sd">    :type d:  works with either `TimeSeries` or `Seismogram`</span>
+<span class="sd">    objects.  Will raise a TypeError exception if d is not one of</span>
+<span class="sd">    the two atomic data types.</span>
+<span class="sd">    :param stime:  start time of window range</span>
+<span class="sd">    :type stime:  float</span>
+<span class="sd">    :param etime:  end time of window range</span>
+<span class="sd">    :type etime:  float</span>
+<span class="sd">    :param pad_fraction_cutoff:  limit for the</span>
+<span class="sd">    fraction of data with undefined values before the datum is</span>
+<span class="sd">    killed.   (see above)  If set to 0.0 this is an expensive way</span>
+<span class="sd">    to behave the same as WindowData</span>
+<span class="sd">    :return:  object of the same type as d.   Will be marked dead</span>
+<span class="sd">    if the fraction of undefined data exceeds pad_fraction_cutoff.</span>
+<span class="sd">    Otherwise will return a data vector of constant size that may</span>
+<span class="sd">    be padded.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="p">(</span><span class="n">TimeSeries</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">)):</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;WindowData_autopad:  arg0 must be either a TimeSeries or Seismogram object.  Actual type=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="nb">type</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+    <span class="n">N_expected</span> <span class="o">=</span> <span class="nb">round</span><span class="p">((</span><span class="n">etime</span> <span class="o">-</span> <span class="n">stime</span><span class="p">)</span> <span class="o">/</span> <span class="n">d</span><span class="o">.</span><span class="n">dt</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="n">dw</span> <span class="o">=</span> <span class="n">WindowData</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">stime</span><span class="p">,</span> <span class="n">etime</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">dw</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
+        <span class="c1"># assumes default kills if stime and etime are not within data bounds</span>
+        <span class="c1"># in that situation the first call to WindowData will kill and we don&#39;t get here</span>
+        <span class="n">dw</span> <span class="o">=</span> <span class="n">WindowData</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">stime</span><span class="p">,</span> <span class="n">etime</span><span class="p">,</span> <span class="n">short_segment_handling</span><span class="o">=</span><span class="s2">&quot;truncate&quot;</span><span class="p">)</span>
+        <span class="n">pad_fraction</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">N_expected</span> <span class="o">-</span> <span class="n">dw</span><span class="o">.</span><span class="n">npts</span><span class="p">)</span> <span class="o">/</span> <span class="n">N_expected</span>
+        <span class="k">if</span> <span class="n">pad_fraction</span> <span class="o">&lt;</span> <span class="n">pad_fraction_cutoff</span><span class="p">:</span>
+            <span class="n">dw</span> <span class="o">=</span> <span class="n">WindowData</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">stime</span><span class="p">,</span> <span class="n">etime</span><span class="p">,</span> <span class="n">short_segment_handling</span><span class="o">=</span><span class="s2">&quot;pad&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;time span of data is too short for cutoff fraction=</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">pad_fraction_cutoff</span>
+            <span class="p">)</span>
+            <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;padded_time_range/(etime-stime)=</span><span class="si">{}</span><span class="s2"> is below cutoff&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">pad_fraction</span>
+            <span class="p">)</span>
+            <span class="n">dw</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="s2">&quot;WindowData_autopad&quot;</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+            <span class="n">dw</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">dw</span></div>
+
+
+<span class="c1"># TODO:   this function does not support history mechanism because the </span>
+<span class="c1"># standard decorator is does not support a bound std::vector&lt;TimeSeries&gt; </span>
+<span class="c1"># container.  I requires one of the four MsPASS data objects.</span>
 <div class="viewcode-block" id="merge"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.window.merge">[docs]</a><span class="k">def</span> <span class="nf">merge</span><span class="p">(</span>
     <span class="n">tsvector</span><span class="p">,</span>
     <span class="n">starttime</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -937,9 +1042,6 @@
     <span class="n">fix_overlaps</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">zero_gaps</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-    <span class="n">alg_name</span><span class="o">=</span><span class="s2">&quot;merge&quot;</span><span class="p">,</span>
-    <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeSeries</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Splices a vector of TimeSeries objects together and optionally carves</span>
@@ -1081,21 +1183,12 @@
 <span class="sd">      dead.  When set True, gaps will be zeroed and with a record of</span>
 <span class="sd">      gap positions posted to the Metadata of the output.  See above</span>
 <span class="sd">      for details.</span>
-<span class="sd">    :param zero_gaps:  boolean</span>
+<span class="sd">    :param zero_gaps:  boolean controlling how gaps are to be handled. </span>
+<span class="sd">    See above for details of the algorithm.</span>
+<span class="sd">    :type zero_gaps:  boolean (default False)</span>
 <span class="sd">    :param object_history: boolean to enable or disable saving object</span>
 <span class="sd">      level history.  Default is False.  Note this functionality is</span>
 <span class="sd">      implemented via the mspass_func_wrapper decorator.</span>
-<span class="sd">    :param alg_name:   When history is enabled this is the algorithm name</span>
-<span class="sd">      assigned to the stamp for applying this algorithm.</span>
-<span class="sd">      Default (&quot;merge&quot;) should normally be just used.</span>
-<span class="sd">      Note this functionality is implemented via the mspass_func_wrapper decorator.</span>
-<span class="sd">    :param ald_id:  algorithm id to assign to history record (used only if</span>
-<span class="sd">      object_history is set True.)</span>
-<span class="sd">      Note this functionality is implemented via the mspass_func_wrapper decorator.</span>
-<span class="sd">    :param dryrun:</span>
-<span class="sd">      Note this functionality is implemented via the mspass_func_wrapper decorator.</span>
-<span class="sd">    :param dryrun:</span>
-<span class="sd">      Note this functionality is implemented via the mspass_func_wrapper decorator.</span>
 
 <span class="sd">    :return: TimeSeries in the range defined by the time span of the input</span>
 <span class="sd">      vector of segments or if starttime or endtime are specified a reduced</span>

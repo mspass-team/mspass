@@ -156,6 +156,13 @@
 <li class="toctree-l4"><a class="reference internal" href="#mspasspy.util.logging_helper.reduce"><code class="docutils literal notranslate"><span class="pre">reduce()</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="#seismic">seismic</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.util.seismic.ensemble_time_range"><code class="docutils literal notranslate"><span class="pre">ensemble_time_range()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.util.seismic.number_live"><code class="docutils literal notranslate"><span class="pre">number_live()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.util.seismic.print_metadata"><code class="docutils literal notranslate"><span class="pre">print_metadata()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.util.seismic.regularize_sampling"><code class="docutils literal notranslate"><span class="pre">regularize_sampling()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="#module-mspasspy.util.seispp">seispp</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#mspasspy.util.seispp.index_data"><code class="docutils literal notranslate"><span class="pre">index_data()</span></code></a></li>
 </ul>
@@ -748,6 +755,134 @@ the processing history will still be replicated.</p>
 <dd class="field-even"><p>None</p>
 </dd>
 </dl>
+</dd></dl>
+
+</section>
+<section id="seismic">
+<h2>seismic<a class="headerlink" href="#seismic" title="Permalink to this heading"></a></h2>
+<span class="target" id="module-mspasspy.util.seismic"></span><dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.util.seismic.ensemble_time_range">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.util.seismic.</span></span><span class="sig-name descname"><span class="pre">ensemble_time_range</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ensemble</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'inner'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.basic.TimeWindow" title="mspasspy.ccore.algorithms.basic.TimeWindow"><span class="pre">TimeWindow</span></a></span></span><a class="reference internal" href="../_modules/mspasspy/util/seismic.html#ensemble_time_range"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.seismic.ensemble_time_range" title="Permalink to this definition"></a></dt>
+<dd><p>Scans a Seismic data ensemble returning a measure of the
+time span of members.   The metric returned ban be either
+smallest time range containing all the data, the range
+defined by the minimum start time and maximum endtime,
+or an average defined by either the median or the
+arithmetic mean of the vector of startime and endtime
+values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ensemble</strong> – ensemble container to be scanned for</p>
+</dd>
+</dl>
+<p>time range.
+:type ensemble:  <cite>TimeSeriesEnsemble</cite> or <cite>SeismogramEnsemble</cite>.
+:param metric:   measure to use to define the time range.
+Accepted values are:</p>
+<blockquote>
+<div><dl class="simple">
+<dt>“inner” - (default) return range defined by largest</dt><dd><p>start time to smallest end time.</p>
+</dd>
+<dt>“outer” - return range defined by minimum start time and</dt><dd><p>largest end time (maximum time span of data)</p>
+</dd>
+<dt>“median” - return range as the median of the extracted</dt><dd><p>vectors of start time and end time values.</p>
+</dd>
+<dt>“mean” - return range as arithmetic average of</dt><dd><p>start and end time vectors</p>
+</dd>
+</dl>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>TimeWindow</cite> object with start and end times.  If the</p>
+</dd>
+</dl>
+<p>ensemble has all dead member the default constructed TimeWindow
+object will be returned which has zero length.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.util.seismic.number_live">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.util.seismic.</span></span><span class="sig-name descname"><span class="pre">number_live</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ensemble</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="../_modules/mspasspy/util/seismic.html#number_live"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.seismic.number_live" title="Permalink to this definition"></a></dt>
+<dd><p>Scans an ensemble and returns the number of live members.  If the
+ensemble is marked dead it immediately return 0.  Otherwise it loops
+through the members countinng the number live.
+:param ensemble:  ensemble to be scanned
+:type ensemble:  Must be a <cite>TimeSeriesEnsemble</cite> or <cite>SeismogramEnsemble</cite> or
+it will throw a TypeError exception.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.util.seismic.print_metadata">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.util.seismic.</span></span><span class="sig-name descname"><span class="pre">print_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/seismic.html#print_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.seismic.print_metadata" title="Permalink to this definition"></a></dt>
+<dd><p>Prints Metadata stored in the object passed as arg0 (d) as json
+format output with indentation defined by the optional
+indent argument.  Indent is always on and defaults to 2 characters.
+The purpose of this function is to standardize printing
+the Metadata contents of any MsPASS data object.   It has the
+beneficial side effect of producing the same print for
+documents (python dictionaries) retrieved directly from MongoDB.</p>
+<p>It is important to realize that when applied to a
+<cite>TimeSeriesEnsemble</cite> or <cite>SeismogramEnsemble</cite> only the ensemble
+Metadata container will be printed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>d</strong> (any subclass of <cite>mspasspy.ccore.Metadata</cite> or a) – datum for which the Metadata is to be printed.</p>
+</dd>
+</dl>
+<p>python dictionary (the container used for documents returned
+by pymongo).  If d is anything else a TypeError exception
+will be thrown.
+:param indent:   indentation argument for json printing
+:type indent:  integer (default 2)</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.util.seismic.regularize_sampling">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.util.seismic.</span></span><span class="sig-name descname"><span class="pre">regularize_sampling</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ensemble</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt_expected</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Nsamp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">abort_on_error</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/seismic.html#regularize_sampling"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.seismic.regularize_sampling" title="Permalink to this definition"></a></dt>
+<dd><p>This is a utility function that can be used to validate that all the members
+of an ensemble have a sample interval that is indistinguishable from a specified
+constant (dt_expected)   The test for constant is soft to allow handling
+data created by some older digitizers that skewed the recorded sample interval to force
+time computed from N*dt to match time stamps on successive data packets.
+The formula used is the datum dt is declared constant if the difference from
+the expected dt is less than or equal to dt_expected/2*(Nsamp-1).  That means
+the computed endtime difference from that using dt_expected is less than
+or equal to dt/2.</p>
+<p>The function by default will kill members that have mismatched sample
+intervals and log an informational message to the datum’s elog container.
+In this mode the entire ensemble can end up marked dead if all the members
+are killed (That situation can easily happen if the entire data set has the wrong dt.);
+If the argument <cite>abort_on_errors</cite> is set True a ValueError exception will be
+thrown if ANY member of the input ensemble.</p>
+<p>An important alternative to this function is to pass a data set
+through the MsPASS <cite>resample</cite> function found in mspasspy.algorithms.resample.
+That function will guarantee all live data have the same sample interval
+and not kill them like this function will.   Use this function for
+algorithms that can’t be certain the input data will have been resampled
+and need to be robust for what might otherwise be considered a user error.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ensemble</strong> – ensemble container of data to be scanned for irregular</p>
+</dd>
+</dl>
+<p>sampling.
+:type ensemble:  <cite>TimeSeriesEnsemble</cite> or <cite>SeismogramEnsemble</cite>.   The
+function does not test for type and will abort with an undefined method
+error if sent anything else.
+:param dt_expected:  constant data sample interval expected.
+:type dt_expected:  float
+:param Nsamp:   Nominal number of samples expected in the ensemble members.
+This number is used to compute the soft test to allow for slippery clocks
+discussed above.   (Default 10000) e = regularize_sampling(e,dt)
+assert e.live
+:type Nsamp:  integer
+:param abort_on_error:  Controls what the function does if it
+encountered a datum with a sample interval different that dt_expected.
+When True the function aborts with a ValueError exception if ANY
+ensemble member does not have a matching sample interval.  When
+False (the default) the function uses the MsPASS error logging
+to hold a message an kills any member datum with a problem.
+:type abort_on_error:  boolean</p>
 </dd></dl>
 
 </section>
