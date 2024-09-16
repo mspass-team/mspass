@@ -9,8 +9,9 @@
 #include <mspass/algorithms/deconvolution/LeastSquareDecon.h>
 #include <mspass/algorithms/deconvolution/MultiTaperXcorDecon.h>
 #include <mspass/algorithms/deconvolution/MultiTaperSpecDivDecon.h>
-#include <mspass/algorithms/deconvolution/GeneralIterDecon.h>
-#include <mspass/algorithms/deconvolution/CNR3CDecon.h>
+//Disable until repaired
+//#include <mspass/algorithms/deconvolution/GeneralIterDecon.h>
+#include <mspass/algorithms/deconvolution/CNRDeconEngine.h>
 PYBIND11_MAKE_OPAQUE(std::vector<double>);
 
 
@@ -163,7 +164,7 @@ PYBIND11_MODULE(deconvolution, m) {
     .def("get_number_tapers",&MultiTaperXcorDecon::get_number_tapers,"Get number of Slepian tapers used by the operator")
     .def("get_time_bandwidth_product",&MultiTaperXcorDecon::get_time_bandwidth_product,"Get time bandwidt product of Slepian tapers used by the operator")
   ;
-  /* this wrapper is propertly constructed, but for now we disable it
+  /* this binding code is properly constructed, but for now we disable it
    * because it has known bugs that need to be squashed.  It should be
    * turned back on if and when those bugs are squashed.
   py::class_<GeneralIterDecon,ScalarDecon>(m,"GeneralIterDecon","Water level frequency domain operator")
@@ -180,6 +181,37 @@ PYBIND11_MODULE(deconvolution, m) {
   ;
   */
 
+  py::class_<CNRDeconEngine,FFTDeconOperator>(m,"CNRDeconEngine",
+       "Colored noise regularized deconvolution engine - used for single station and array data")
+    .def(py::init<>())
+    .def(py::init<const AntelopePf&>())
+    .def("initialize_inverse_operator",
+        py::overload_cast<const TimeSeries&,const TimeSeries&>(&CNRDeconEngine::initialize_inverse_operator),
+        "Load required data to initialize frequency domain inverse operator - overloaded version using time domain noise vector")
+    .def("initialize_inverse_operator",
+        py::overload_cast<const TimeSeries&,const PowerSpectrum&>(&CNRDeconEngine::initialize_inverse_operator),
+        "Load required data to initialize frequency domain inverse operator - overloaded version using precomputed power spectrum of noise")
+    .def("deconvolve",&CNRDeconEngine::deconvolve,
+        "Deconvolve Seismogram data using inverse operator loaded previously - shape to specified bandwidth arg1 to arg2 frequency")
+    .def("get_operator_dt",&CNRDeconEngine::get_operator_dt,"Return operator sample interval")
+    .def("compute_noise_spectrum",
+        py::overload_cast<const TimeSeries&>(&CNRDeconEngine::compute_noise_spectrum),
+        "Computes a noise spectrum from a TimeSeries object using the same multitaper parameters as the inverse operator")
+    .def("compute_noise_spectrum",
+        py::overload_cast<const Seismogram&>(&CNRDeconEngine::compute_noise_spectrum),
+        "Computes a noise spectrum from a Seismogram object using the same multitaper parameters as the inverse operator with average of three components")
+    .def("ideal_output",&CNRDeconEngine::ideal_output,"Return the ideal output of the currently loaded operator")
+    .def("actual_output",&CNRDeconEngine::actual_output,"Return the actual output of the currently loaded operator")
+    .def("inverse_wavelet",&CNRDeconEngine::inverse_wavelet,
+        "Return the time-domain inverse operator computed form current frequency domain operator")
+    .def("QCMetrics",&CNRDeconEngine::QCMetrics,"Return a Metadata container of QC metrics computed by this algorithm")
+  ;  
+
+
+/* This algorithm was the prototype for CNRDeconEngine.   It is depricated with prejudice which here means I'm 
+   removing the bindings for the old version.   The original algorithm will be placed for at least a while in some 
+   dustbin.  When that is gone remove this comment.  GLP - July 2024 */
+  /*
   py::class_<CNR3CDecon,FFTDeconOperator>(m,"CNR3CDecon",
        "Colored noise regularized three component deconvolution")
     .def(py::init<>())
@@ -218,6 +250,7 @@ PYBIND11_MODULE(deconvolution, m) {
     .def("data_spectrum",&CNR3CDecon::data_spectrum,
          "Return average power spectrum of signal on all 3 components of the data")
   ;
+  */
 
   py::class_<MTPowerSpectrumEngine>(m,"MTPowerSpectrumEngine",
       "Processing object used compute multitaper power spectrum estimates from time series data")
@@ -244,7 +277,7 @@ PYBIND11_MODULE(deconvolution, m) {
     .def("nfft",&MTPowerSpectrumEngine::fftsize,"Return size of fft workspace in this operator")
     /* We do pickle for this object in a different way than I've ever done this
     before.  This object can be define by only 3 numbers that are expanded in
-    the constructor what can be very large arrays.  An untested hypothesis that
+    the constructor into what can be very large arrays.  An untested hypothesis that
     this approach builds on is that it is cheaper to recompute the tapers when
     this object gets serialized than it is to serialize, move, and deserialize
     the large arrays.   It definitely simplifies this binding code.  If the
