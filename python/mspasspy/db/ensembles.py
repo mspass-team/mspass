@@ -235,9 +235,6 @@ def TimeIntervalReader(
                             fix_overlaps=fix_overlaps,
                             zero_gaps=zero_gaps,
                             object_history=object_history,
-                            alg_name=alg_name,
-                            alg_id=alg_id,
-                            dryrun=dryrun,
                         )
 
                     if datum.live or save_zombies:
@@ -287,9 +284,6 @@ def TimeIntervalReader(
                         fix_overlaps=fix_overlaps,
                         zero_gaps=zero_gaps,
                         object_history=object_history,
-                        alg_name=alg_name,
-                        alg_id=alg_id,
-                        dryrun=dryrun,
                     )
                 # Merge can kill data for a variety of reasons
                 # The cutsy boolean name controls if the dead are retained
