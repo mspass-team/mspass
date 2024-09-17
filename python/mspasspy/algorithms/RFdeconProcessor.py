@@ -405,6 +405,7 @@ def RFdecon(
     alg_name="RFdecon",
     alg_id=None,
     dryrun=False,
+    engine=None,       #added 11/03/2023
 ):
     """
     Use this function to compute conventional receiver functions
@@ -487,7 +488,12 @@ def RFdecon(
      The orientations are always the same as the input.
     """
 
-    processor = RFdeconProcessor(alg, pf)
+    #processor = RFdeconProcessor(alg, pf) #11/03/23
+    #added 11/03/23
+    if  engine==None:
+        processor = RFdeconProcessor(alg, pf)
+    else:
+        processor = engine
 
     try:
         if wavelet is not None:
