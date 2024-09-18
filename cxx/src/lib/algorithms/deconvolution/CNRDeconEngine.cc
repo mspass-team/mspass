@@ -283,7 +283,7 @@ PowerSpectrum CNRDeconEngine::compute_noise_spectrum(const Seismogram& n)
   }catch(...){throw;};
 }
 
-/* Small helper used by deconvolve method to validate the sample
+/* Small helper used by process method to validate the sample
    rate of wavelet and data loaded for processing.   Uses a
    frozen fractional value test to allow for some data with slippery
    clocks.  Returns true of the d.dt and operator_dt are significantly
@@ -464,11 +464,11 @@ void CNRDeconEngine::compute_gdamp_inverse(const TimeSeries& wavelet, const Powe
   }catch(...){throw;};
 }
 
-Seismogram CNRDeconEngine::deconvolve(const Seismogram& d, const PowerSpectrum& psnoise, 
+Seismogram CNRDeconEngine::process(const Seismogram& d, const PowerSpectrum& psnoise, 
     const double fl, const double fh)
 {
   try{
-    string base_error("CNRDeconEngine::deconvolve:  ");
+    string base_error("CNRDeconEngine::process:  ");
     this->update_shaping_wavelet(fl,fh);
     Seismogram rfest(d);
     // needs work:  post_bandwidth_data(rfest,signal_bwd);

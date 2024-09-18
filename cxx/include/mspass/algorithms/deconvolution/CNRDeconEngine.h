@@ -27,7 +27,7 @@ enum class CNR3C_algorithms{
 class CNRDeconEngine : public FFTDeconOperator
 {
 public:
-  CNRDeconEngine();
+  //CNRDeconEngine(){};
   /* design note - delete when finished.
 
      The constructor uses the pf to initialize operator properties.
@@ -49,7 +49,7 @@ public:
   void initialize_inverse_operator(const mspass::seismic::TimeSeries& wavelet,
           const mspass::seismic::PowerSpectrum& noise_spectrum);
   virtual ~CNRDeconEngine(){};
-  mspass::seismic::Seismogram deconvolve(const mspass::seismic::Seismogram& d, 
+  mspass::seismic::Seismogram process(const mspass::seismic::Seismogram& d, 
       const mspass::seismic::PowerSpectrum& psnoise,
         const double fl, const double fh);
   double get_operator_dt() const
@@ -122,7 +122,7 @@ private:
         const mspass::seismic::PowerSpectrum& psnoise);
     void compute_gdamp_inverse(const mspass::seismic::TimeSeries& wavelet,
         const mspass::seismic::PowerSpectrum& psnoise);
-  /* These are QC metrics computed by deconvolve method.  Saved to allow them
+  /* These are QC metrics computed by process method.  Saved to allow them
   to be use in QCmetrics method. */
   double regularization_bandwidth_fraction;
   double peak_snr[3];
