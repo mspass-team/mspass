@@ -148,6 +148,7 @@ PowerSpectrum MTPowerSpectrumEngine::apply(const TimeSeries& d)
          << "Cannot proceed.  Returning a null result";
       result.elog.log_error("MTPowerSpectrumEngine::apply",
             ss.str(), ErrorSeverity::Invalid);
+      result.kill();
       return result;
     }
 
