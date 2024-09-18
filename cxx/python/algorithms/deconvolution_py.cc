@@ -183,7 +183,9 @@ PYBIND11_MODULE(deconvolution, m) {
 
   py::class_<CNRDeconEngine,FFTDeconOperator>(m,"CNRDeconEngine",
        "Colored noise regularized deconvolution engine - used for single station and array data")
+    /* A default constructor this object is always invalid so we don't include this binding.
     .def(py::init<>())
+    */
     .def(py::init<const AntelopePf&>())
     .def("initialize_inverse_operator",
         py::overload_cast<const TimeSeries&,const TimeSeries&>(&CNRDeconEngine::initialize_inverse_operator),
@@ -191,7 +193,7 @@ PYBIND11_MODULE(deconvolution, m) {
     .def("initialize_inverse_operator",
         py::overload_cast<const TimeSeries&,const PowerSpectrum&>(&CNRDeconEngine::initialize_inverse_operator),
         "Load required data to initialize frequency domain inverse operator - overloaded version using precomputed power spectrum of noise")
-    .def("deconvolve",&CNRDeconEngine::deconvolve,
+    .def("process",&CNRDeconEngine::process,
         "Deconvolve Seismogram data using inverse operator loaded previously - shape to specified bandwidth arg1 to arg2 frequency")
     .def("get_operator_dt",&CNRDeconEngine::get_operator_dt,"Return operator sample interval")
     .def("compute_noise_spectrum",
