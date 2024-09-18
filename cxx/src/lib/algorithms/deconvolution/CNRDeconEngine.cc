@@ -42,17 +42,16 @@ CNRDeconEngine::CNRDeconEngine(const AntelopePf& pf)
     instead of number of samples as it is less error prone to a user than
     requiring them to compute the number from the sample interval. */
     double ts,te;
-    int winlength;
     ts=pf.get_double("deconvolution_data_window_start");
     te=pf.get_double("deconvolution_data_window_end");
-    winlength=round((te-ts)/operator_dt)+1;
+    this->winlength=round((te-ts)/this->operator_dt)+1;
     /* In this algorithm we are very careful to avoid circular convolution
     artifacts that I (glp) suspect may be a problem in some frequency domain
     implementations of rf deconvolution.   Here we set the length of the fft
     (nfft) to a minimum of 3 times the window size.   That allows 1 window
     of padding around both ends of the waveform being deconvolved.  Circular
     shift is used to put the result back in a rational time base. */
-    int minwinsize=3*(winlength);
+    int minwinsize=3*(this->winlength);
     /* This complicated set of tests to set nfft is needed to mesh with
      * ShapingWavelet constructor and FFTDeconOperator api constraints created by
      * use in other classes in this directory that also use these */
@@ -66,6 +65,10 @@ CNRDeconEngine::CNRDeconEngine(const AntelopePf& pf)
       Metadata pfcopy(pf);
       pfcopy.put("operator_nfft",nfftneeded);
       this->shapingwavelet=ShapingWavelet(pfcopy);
+    }
+    else
+    {
+      this->shapingwavelet=ShapingWavelet(pf);
     }
     /* ShapingWavelet has more options than can be accepted in this algorithm
     so this test is needed */
@@ -103,9 +106,8 @@ CNRDeconEngine::CNRDeconEngine(const AntelopePf& pf)
     int noise_winlength=round((te-ts)/operator_dt)+1;
     double tbp=pf.get_double("time_bandwidth_product");
     long ntapers=pf.get_long("number_tapers");
-    this->noise_engine=MTPowerSpectrumEngine(noise_winlength,tbp,ntapers);
-    /* winlength was set above */
-    this->signal_engine=MTPowerSpectrumEngine(this->winlength,tbp,ntapers);
+    this->noise_engine=MTPowerSpectrumEngine(noise_winlength,tbp,ntapers,noise_winlength,this->operator_dt);
+    this->signal_engine=MTPowerSpectrumEngine(this->winlength,tbp,ntapers,this->winlength,this->operator_dt);
     string sval;
     sval=pf.get_string("taper_type");
     if(sval=="linear")
@@ -269,10 +271,15 @@ PowerSpectrum CNRDeconEngine::compute_noise_spectrum(const Seismogram& n)
     for(int k=0;k<3;++k)
     {
       tswork=TimeSeries(ExtractComponent(n,k),"Invalid");
+      PowerSpectrum psnoise = this->noise_engine.apply(tswork);
+      if(psnoise.dead())
+      {
+        return psnoise;
+      }
       if(k==0)
-        avg3c = this->noise_engine.apply(tswork);
+        avg3c = psnoise;
       else
-        avg3c += this->noise_engine.apply(tswork);
+        avg3c += psnoise;
     }
     /* We define total power as the average on all three
     components */
@@ -326,7 +333,6 @@ void CNRDeconEngine::compute_winv(const TimeSeries& wavelet, const PowerSpectrum
     if(this->taper_data) wavelet_taper->apply(w);
     switch(algorithm)
     {
-      /* Note all the algorithms here alter wavelet by applying a taper */
       case CNR3C_algorithms::generalized_water_level:
         compute_gwl_inverse(w,psnoise);
         break;
@@ -415,12 +421,38 @@ void CNRDeconEngine::compute_gwl_inverse(const TimeSeries& wavelet, const PowerS
 void CNRDeconEngine::compute_gdamp_inverse(const TimeSeries& wavelet, const PowerSpectrum& psnoise)
 {
   try{
+    cout << "Entered compute_gdamp_inverse"<<endl;
+    cout << "wavelet ntps="<<wavelet.npts()<<endl;
     /* Assume if we got here wavelet.npts() == nfft*/
-    ComplexArray b_fft(wavelet.npts(),wavelet.s[0]);
+    ComplexArray b_fft;
+    if(wavelet.npts()==FFTDeconOperator::nfft)
+    {
+      b_fft = ComplexArray(wavelet.npts(),wavelet.s[0]);
+    }
+    else if(wavelet.npts() < FFTDeconOperator::nfft)
+    {
+      /* In this case we zero pad*/
+      std::vector<double> btmp;
+      btmp.reserve(FFTDeconOperator::nfft);
+      for(auto i=0;i<wavelet.npts();++i) btmp.push_back(wavelet.s[i]);
+      for(auto i=wavelet.npts();i<FFTDeconOperator::nfft;++i) btmp.push_back(0.0);
+      b_fft = ComplexArray(FFTDeconOperator::nfft,btmp);
+    }
+    else
+    {
+      /* land here if we need to change the fft size - if this happens don't force power of 2*/
+      this->change_size(wavelet.npts());
+    }
+    cout << "computing forward fft"<<endl;
+    cout << "fft size="<< FFTDeconOperator::nfft<<endl;
     gsl_fft_complex_forward(b_fft.ptr(),1,FFTDeconOperator::nfft,
           wavetable,workspace);
+    cout << "copying"<<endl;
+    cout << "array size="<<b_fft.size()<<endl;
     ComplexArray conj_b_fft(b_fft);
+    cout << "Computing conjugate"<<endl;
     conj_b_fft.conj();
+    cout << "Computing denominator"<<endl;
     ComplexArray denom(conj_b_fft*b_fft);
     /* Compute scaling constants for noise based on noise_floor and the
     noise spectrum */
@@ -434,14 +466,14 @@ void CNRDeconEngine::compute_gdamp_inverse(const TimeSeries& wavelet, const Powe
     vector<double> work(psnoise.spectrum);
     maxnoise=std::max_element(work.begin(),work.end());
     //Spectrum is power but need amplitude in this context so sqrt here
-    double scaled_noise_floor=noise_floor*sqrt(*maxnoise);
+    double scaled_noise_floor=noise_floor*sqrt(*maxnoise);\
+    cout << "Entering loop to compute inverse - nfft="<<nfft<<endl;
 
     for(int k=0;k<nfft;++k)
     {
       double *ptr;
       ptr=denom.ptr(k);
       double f;
-
       f=df*static_cast<double>(k);
       if(f>fNy) f=2.0*fNy-f;  // Fold frequency axis
       double namp=sqrt(psnoise.power(f));
@@ -460,10 +492,22 @@ void CNRDeconEngine::compute_gdamp_inverse(const TimeSeries& wavelet, const Powe
       /* ptr points to the real part - an oddity of this interface */
       *ptr += theta;
     }
+    cout << "computing winv"<<endl;
     winv=conj_b_fft/denom;
   }catch(...){throw;};
 }
-
+/* Computes deconvolution of data in d using inverse operator that was assumed 
+to be previously loaded via the initialize_wavelet method.   Note a potential 
+confusion is that because this opeation is done in the frequency domain 
+we do NOT apply the shaping wavelet filter to either the data (numerator) or 
+the denominator (the inverse wavelet) as required by convolutional quelling 
+(an obscure name for this regularization from an old Backus paper).   The reason 
+is the form is (f)(d)/(f)(w)  where f is the shaping wavelet filter, d is 
+the numerator fft, and w is the wavelet fft.   The f terms cancel so we 
+don't apply them to either the numerator or denominator.  We do need to 
+post filter with the shaping wavelet, which is done here, or the output 
+will almost always be junk.
+*/
 Seismogram CNRDeconEngine::process(const Seismogram& d, const PowerSpectrum& psnoise, 
     const double fl, const double fh)
 {
@@ -510,8 +554,6 @@ Seismogram CNRDeconEngine::process(const Seismogram& d, const PowerSpectrum& psn
         double sigamp=abs(z);
         double namp=sqrt(psnoise.power(f));
         double snr=sigamp/namp;
-        //Debug
-        //cout <<f<<" "<< sigamp<<" "<<namp<<" "<<snr<<endl;
 
         if(snr > snrmax) snrmax=snr;
         if(snr > this->band_snr_floor) ++nhighsnr;
@@ -520,7 +562,7 @@ Seismogram CNRDeconEngine::process(const Seismogram& d, const PowerSpectrum& psn
                   / static_cast<double>(FFTDeconOperator::nfft/2);
       peak_snr[k]=snrmax;
       ComplexArray rftmp=numerator*winv;
-      rftmp=(*shapingwavelet.wavelet())*rftmp;
+      rftmp=(*this->shapingwavelet.wavelet())*rftmp;
       gsl_fft_complex_inverse(rftmp.ptr(), 1, FFTDeconOperator::nfft,
           wavetable, workspace);
       wvec.clear();
@@ -611,7 +653,7 @@ TimeSeries CNRDeconEngine::inverse_wavelet(const TimeSeries& wavelet, const doub
     need to sort that out in debugging behaviour*/
     double timeshift(tshift0);
     timeshift+=wavelet.t0();
-    timeshift -= operator_dt*((double)winlength);
+    timeshift -= operator_dt*((double)this->winlength);
     CoreTimeSeries invcore(this->FFTDeconOperator::FourierInverse(this->winv,
         *this->shapingwavelet.wavelet(),operator_dt,timeshift));
     TimeSeries result(invcore,"Invalid");

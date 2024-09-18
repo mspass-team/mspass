@@ -42,7 +42,24 @@ public:
      grungy work to assure all that gets done correction is handled
      in python.
      */
-  CNRDeconEngine(const mspass::utility::AntelopePf& md);
+   /*! Construct from AntelopePf container.
+   
+   This is currently the only valid constructor for this object. 
+   The operator requires a fair number of parameters for construction 
+   that include secondary groups of parameters in a hierarchy.  
+   An AntelopePf is one way to handle that with a human readable form.
+   An alternative is yaml but that is not currently supported as 
+   an external format.  The AntelopePf object API is a generic 
+   way to handle parameter data hierarchies that is in MsPASS.  
+   Most user's will interact with the object only indirectly 
+   via python wrappers.   All a user needs to do is define all the 
+   required key-value pairs and get the obscure pf format correct.
+   To use this constructor one passes an instance of the object 
+   of type AntelopePf that is normally constructed by reading a
+   text file with the "pf" format or retrieved from another 
+   AntelopePf with the get_branch method.  
+   */
+  CNRDeconEngine(const mspass::utility::AntelopePf& pf);
   CNRDeconEngine(const CNRDeconEngine& parent);
   void initialize_inverse_operator(const mspass::seismic::TimeSeries& wavelet,
           const mspass::seismic::TimeSeries& noise_data);
