@@ -1,3 +1,4 @@
+import logging
 import numpy as np
 import seisbench.models as sbm
 
@@ -7,6 +8,7 @@ from obspy.geodetics import gps2dist_azimuth, kilometers2degrees
 from mspasspy.ccore.seismic import TimeSeries, TimeSeriesEnsemble
 from mspasspy.ccore.algorithms.basic import TimeWindow
 from mspasspy.algorithms.window import WindowData
+from obspy import UTCDateTime
 
 
 def annotate_arrival_time(
@@ -18,7 +20,7 @@ def annotate_arrival_time(
 ):
     """
     Predict the arrival time of the P wave using the provided seisbench WaveformModel.
-    The arrival time will saved as metadata in the input TimeSeries object and can be accessed using \
+    The arrival time will be saved as metadata in the input TimeSeries object and can be accessed using \
         the key 'p_wave_picks'. Time is stored in the relative format using the start time of the TimeSeries.
 
     :param timeseries: The time series data to predict the arrival time.
@@ -28,14 +30,20 @@ def annotate_arrival_time(
     :param model_args: arguments to initialize a new model if not provided
     :type timeseries: mspasspy.ccore.seismic.TimeSeries
     :type threshold: float
-    :type time_window: mspasspy.ccore.algorithms.basic.TimeWindow
+    :type time_window: mspasspy.ccore.algorithms.basic.TimeWindow defined as absolute time in UTC
     :type model: seisbench.models.base.WaveformModel
     :type model_args: dict
     """
 
+    default_threshold = 0.2
+
     # Check the input arguments
     if not 0 <= threshold <= 1:
-        raise ValueError("Threshold must be between 0 and 1")
+        logging.warning('Threshold should be in the range of [0, 1]. Using default threshold {}}'.format(default_threshold))
+        threshold = default_threshold
+
+    # convert timeseries to absolute time
+    timeseries.rtoa()
 
     # load pretrained model based on the args if not provided
     if model == None:
@@ -50,11 +58,23 @@ def annotate_arrival_time(
     stream = ts_ensemble.toStream()
 
     # apply the window if provided and convert time series to stream
-    start_time = stream[0].stats.starttime
+    start_time_utc = stream[0].stats.starttime.timestamp # UTC timestamp
+    end_time_utc = stream[0].stats.endtime.timestamp # UTC timestamp
+
+    # adjust the time window if it is out of the time range of the time series
+    if time_window:
+        if time_window.end < start_time_utc or time_window.start > end_time_utc:
+            time_window.start = start_time_utc
+            time_window.end = end_time_utc
+            logging.warning('Time window is out of the time range of the time series. Adjusting the time window to the time range of the time series.')
+        if time_window.end > end_time_utc:
+            time_window.end = end_time_utc
+        if time_window.start < start_time_utc:
+            time_window.start = start_time_utc
+    
     windowed_stream = (
-        stream.trim(starttime=start_time + time_window.start, endtime=start_time + time_window.end)
-        if time_window
-        else stream
+        stream.trim(UTCDateTime(time_window.start), UTCDateTime(time_window.end)) \
+        if time_window else stream
     )
 
     # prediction result is the probability for picks over time
@@ -70,11 +90,8 @@ def annotate_arrival_time(
     # Step 2: Find all the index with probability value greater than the threshold
     indices = np.where(data > threshold)[0]
 
-    # # Step 3: Calculate the corresponding time
-    p_wave_picks = trace.times()[indices]
+    # # Step 3: Calculate the corresponding time in utc timestamp
+    p_wave_picks = trace.times("timestamp")[indices]
 
-    # Step 4: Save the arrival time in the relative format
-    # Adjust the arrival time if a time window is provided
-    if time_window:
-        p_wave_picks += time_window.start
+    # Step 4: Save the arrival time in absolute time
     timeseries["p_wave_picks"] = p_wave_picks

@@ -26,7 +26,7 @@ def test_annotate_arrival_time():
     pn_preds = pn_model.annotate(Stream(stream[0]))
     trace = pn_preds[0]
     assert trace.stats.channel == "PhaseNet_P"
-    seis_picks = trace.times()
+    seis_picks = trace.times("timestamp")
 
     assert np.array_equal(mspass_picks, seis_picks)
 
@@ -42,7 +42,7 @@ def test_annotate_arrival_time_threshold():
     pn_preds = pn_model.annotate(Stream(stream[0]))
     trace = pn_preds[0]
     assert trace.stats.channel == "PhaseNet_P"
-    seis_picks = trace.times()
+    seis_picks = trace.times("timestamp")
 
     assert len(mspass_picks) < len(seis_picks)
 
@@ -51,18 +51,20 @@ def test_annotate_arrival_time_window():
 
     # picks from mspass
     timeseries = Trace2TimeSeries(stream[0])
-    annotate_arrival_time(timeseries, threshold = 0, time_window=TimeWindow(100, 1000))
+    window_start = UTCDateTime(2009, 4, 6, 1, 30).timestamp
+    window_end = window_start + 1000
+    annotate_arrival_time(timeseries, threshold = 0, time_window=TimeWindow(window_start, window_end))
     mspass_picks = timeseries["p_wave_picks"]
 
     assert len(mspass_picks) > 0
-    assert np.all(mspass_picks >= 100)
-    assert np.all(mspass_picks <= 1000)
+    assert np.all(mspass_picks >= window_start)
+    assert np.all(mspass_picks <= window_end)
 
     # picks from seisbench
     new_stream = Stream(stream[0])
-    new_stream.trim(starttime=new_stream[0].stats.starttime + 100, endtime=new_stream[0].stats.starttime + 1000)
+    new_stream.trim(UTCDateTime(window_start), UTCDateTime(window_end))
     pn_preds = pn_model.annotate(new_stream)
-    seis_picks = pn_preds[0].times() + 100
+    seis_picks = pn_preds[0].times("timestamp")
 
     assert np.array_equal(mspass_picks, seis_picks)
 
