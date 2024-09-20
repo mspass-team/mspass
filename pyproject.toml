@@ -8,11 +8,7 @@ authors = [
 dynamic = ["dependencies", "scripts", "version"]
 
 [build-system]
-<<<<<<< HEAD
 requires = ["setuptools>=64", "setuptools_scm>=8", "wheel", "numpy"]
-=======
-requires = ["setuptools", "wheel"]
->>>>>>> c1e978ba (specify seisbench version for different python version)
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools.dynamic]
