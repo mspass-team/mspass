@@ -526,7 +526,7 @@ def MCXcorPrepP(
     return [enswork, beam0]
 
 
-def dbxcor_weights(ensemble, stack, residual_norm_floor=0.01):
+def dbxcor_weights(ensemble, stack, residual_norm_floor=0.00001):
     """
     Computes the robust weights used originally in dbxcor for each
     member of ensemble.   Result is returned in a parallel numpy
@@ -560,12 +560,14 @@ def dbxcor_weights(ensemble, stack, residual_norm_floor=0.01):
     The method returns robust weights relative to the vector of data in
     this object.
     :type stack:  `TimeSeries`.
+    TODO:  not correct in this debug test - same as dbxcor now
     :param residual_norm_floor:   floor in the ratio norm2(r)/norm2(d)
     used as described above.
     :type residual_norm_floor:  float
     :return: numpy vector of weights parallel with ensemble.member.  Dead
     members will have a negative weight in this vector.
     """
+    print("DEBUG:  residual_norm_floor=",residual_norm_floor)
     norm_floor = np.finfo(np.float32).eps * stack.npts
     N = len(ensemble.member)
     wts = np.zeros(N)
@@ -574,6 +576,7 @@ def dbxcor_weights(ensemble, stack, residual_norm_floor=0.01):
     s_unit = np.array(stack.data)
     nrm_s = np.linalg.norm(stack.data)
     s_unit /= nrm_s
+    print("i d_dot_stack nrm_d nrm_r wt")
     for i in range(N):
         if ensemble.member[i].dead():
             wts[i] = -1.0
@@ -587,13 +590,18 @@ def dbxcor_weights(ensemble, stack, residual_norm_floor=0.01):
                 # Give zero weight in this situation
                 wts[i] = 0.0
             elif nrm_r / nrm_d < residual_norm_floor:
-                denom = residual_norm_floor * nrm_d
+                denom = residual_norm_floor *nrm_d * nrm_d
                 wts[i] = abs(d_dot_stack) / denom
+            # this attempts to duplicate dbxcor
+            #if nrm_r < norm_floor or nrm_d < norm_floor or abs(d_dot_stack) < norm_floor:
+            #    wts[i] = residual_norm_floor
             else:
                 denom = nrm_r * nrm_d
                 # dbxcor has logic to avoid an nan from a machine 0
                 # denom.  Not needed her because of conditional chain here
                 wts[i] = abs(d_dot_stack) / denom
+                
+        print(i,d_dot_stack,nrm_d,nrm_r,wts[i])
 
     # rescale weights so largest is 1 - easier to understand
     maxwt = np.max(wts)
@@ -781,6 +789,9 @@ def robust_stack(
         )
         raise ValueError(message)
 
+    # below we clone common stuff form member[0] if ensemble 
+    # that is safe only because this function guarantees member 0 is not dead
+    # or irregular
     ensemble = regularize_ensemble(
         ensemble, timespan.start, timespan.end, pad_fraction_cutoff
     )
@@ -819,11 +830,8 @@ def robust_stack(
             stack.t0 = timespan.start
             # this works because we can assume ensemble is not empty and clean
             stack.dt = ensemble.member[0].dt
-        # constructor defaults time base to relative so need to handle GMT
-        # should not be the norm but we need to handle this
-        # This is a pretty obscure part of the ccore api
-        if ensemble.member[0].time_is_UTC:
-            stack.tref = TimeReferenceType.UTC
+        # Make sure the stack has the same time base as the input
+        stack.tref = ensemble.member[0].tref
 
         # Always compute the median stack as a starting point
         # that was the algorithm of dbxcor and there are good reasons for it
@@ -1454,10 +1462,11 @@ def align_and_stack(
         # this clones the Metadata of beam for the output
         rbeam = robust_stack(
             rens,
-            stack0=rbeam0,
+            #stack0=rbeam0,  # testing - this should enable median stack start
             method=robust_stack_method,
-            timespan_method="stack0",
+            #timespan_method="stack0",
             residual_norm_floor=residual_norm_floor,
+            stack_md=Metadata(rbeam0),
         )
         delta_rbeam = rbeam - rbeam0
         nrm_delta = np.linalg.norm(delta_rbeam.data)
@@ -1796,7 +1805,7 @@ def _set_phases(
     return d
 
 
-def _get_search_range(d, Pkey="Ptime", pPkey="pPTime", PPkey="PPtime"):
+def _get_search_range(d, Pkey="Ptime", pPkey="pPTime", PPkey="PPtime", duration_undefined=20.0):
     """
     Small internal function used to standardize the handling of the search
     range for P coda.   It returns a time duration to use as the search
@@ -1807,13 +1816,18 @@ def _get_search_range(d, Pkey="Ptime", pPkey="pPTime", PPkey="PPtime"):
 
     This function should not normally be used except as a component of the
     MCXcorPrepP function.   It has no safeties and is pretty simple.
-    That simple recipe, however, took some work to establish tha tis documented
+    That simple recipe, however, took some work to establish that is documented
     a notebook in the distribution.
     """
     if d.live:
         depth = d["source_depth"]
         if depth > 100.0:
-            tend = d[pPkey]
+            if d.is_defined(pPkey):
+                tend = d[pPkey]
+            elif d.is_defined(PPkey):
+                tend = d[PPkey]
+            else:
+                d[Pkey] + duration_undefined
         else:
             tend = d[PPkey]
         duration = tend - d[Pkey]
