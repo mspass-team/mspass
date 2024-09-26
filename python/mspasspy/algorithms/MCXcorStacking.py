@@ -526,7 +526,7 @@ def MCXcorPrepP(
     return [enswork, beam0]
 
 
-def dbxcor_weights(ensemble, stack, residual_norm_floor=0.00001):
+def dbxcor_weights(ensemble, stack, residual_norm_floor=0.1):
     """
     Computes the robust weights used originally in dbxcor for each
     member of ensemble.   Result is returned in a parallel numpy
@@ -535,7 +535,7 @@ def dbxcor_weights(ensemble, stack, residual_norm_floor=0.00001):
     This function is made for speed and has no safeties.  It assumes
     all the members of ensemble are the same and it is the same length
     as stack.  It will throw an exception if that is violated so callers
-    should guarantee that happens.
+    should guarantee that does not happen.
 
     This function adds a feature not found in the original Pavlis and Vernon(2011)
     paper via the `residual_norm_floor` argument.   Experience with this algorithm
@@ -546,10 +546,17 @@ def dbxcor_weights(ensemble, stack, residual_norm_floor=0.00001):
     and suboptimal noise reduction.  This argument handles that by not allowing
     the L2 norm of the residual to fall below a floor computed from the
     ratio ||r||/||d||.   i.e. if ||r|| < residual_norm_floor*||d|| it is
-    set to the value passed as `residual_norm_floor`.
+    set to the value passed as `residual_norm_floor`.  Note that setting 
+    this to 1.0 effectively turns off the residual norm term in the 
+    weight equation which I now recognize is the cross-correlation of the 
+    beam and datum at zero lag.  That is true, however, only if the 
+    ensemble members are all time aligned perfectly.   
 
     Returns a numpy vector of weights.  Any dead data will have a weight of
-    -1.0 (test for negative is sufficient).
+    -1.0 (test for negative is sufficient).  In addition the function has a
+    safety to handle receiving a vector of all zeros.  If the function detects
+    all 0s for a datum marked live it will silently return a weight of 0 
+    for that datum.
 
     :param ensemble:  `TimeSeriesEnsemble` of data from which weights are to
     be computed.
@@ -560,14 +567,13 @@ def dbxcor_weights(ensemble, stack, residual_norm_floor=0.00001):
     The method returns robust weights relative to the vector of data in
     this object.
     :type stack:  `TimeSeries`.
-    TODO:  not correct in this debug test - same as dbxcor now
-    :param residual_norm_floor:   floor in the ratio norm2(r)/norm2(d)
-    used as described above.
-    :type residual_norm_floor:  float
+    :param residual_norm_floor:  nondimensional floor in the ratio norm2(r)/norm2(d)
+    used as described above.  Default is 0.1 which is reasonable for high snr 
+    signals.   Data with irregular quality can profit from smaller values of this parameter.
+    :type residual_norm_floor:  float 
     :return: numpy vector of weights parallel with ensemble.member.  Dead
     members will have a negative weight in this vector.
     """
-    print("DEBUG:  residual_norm_floor=",residual_norm_floor)
     norm_floor = np.finfo(np.float32).eps * stack.npts
     N = len(ensemble.member)
     wts = np.zeros(N)
@@ -576,7 +582,7 @@ def dbxcor_weights(ensemble, stack, residual_norm_floor=0.00001):
     s_unit = np.array(stack.data)
     nrm_s = np.linalg.norm(stack.data)
     s_unit /= nrm_s
-    print("i d_dot_stack nrm_d nrm_r wt")
+    #print("i d_dot_stack nrm_d nrm_r wt")
     for i in range(N):
         if ensemble.member[i].dead():
             wts[i] = -1.0
@@ -601,7 +607,7 @@ def dbxcor_weights(ensemble, stack, residual_norm_floor=0.00001):
                 # denom.  Not needed her because of conditional chain here
                 wts[i] = abs(d_dot_stack) / denom
                 
-        print(i,d_dot_stack,nrm_d,nrm_r,wts[i])
+        #print(i,d_dot_stack,nrm_d,nrm_r,wts[i])
 
     # rescale weights so largest is 1 - easier to understand
     maxwt = np.max(wts)
@@ -816,7 +822,7 @@ def robust_stack(
     else:
         # bit of a weird logic here - needed because we need option for
         # dbxcor method to use median stack as starting point or use
-        # the input via stack0.  This does that
+        # the input via stack0.  This does that in what is admittedly a confusing way
         #
         # Also this is a bit of a weird trick using inheritance to construct a
         # TimeSeries object for stack using an uncommon constructor.
@@ -856,7 +862,7 @@ def _dbxcor_stacker(
     stack0,
     eps=0.001,
     maxiterations=20,
-    residual_norm_floor=0.01,
+    residual_norm_floor=0.1,
 ) -> tuple:
     """
     Runs the dbxcor robust stacking algorithm on `enemble` with initial
@@ -982,7 +988,7 @@ def align_and_stack(
     time_shift_limit=2.0,
     abort_irregular_sampling=False,
     convergence=0.001,
-    residual_norm_floor=0.01,
+    residual_norm_floor=0.1,
 ) -> tuple:
     """
     This function uses an initial estimate of the array stack passed as
@@ -1459,12 +1465,12 @@ def align_and_stack(
     for i in range(MAXITERATION):
         xcorens = beam_align(xcorens, beam, time_shift_limit=time_shift_limit)
         rens = WindowData(xcorens, rwin.start, rwin.end, short_segment_handling="pad")
-        # this clones the Metadata of beam for the output
+        # this clones the Metadata of beam for the output using the stack_md 
+        # parameter - this won't work without that because of how robust stack 
+        # is implemented
         rbeam = robust_stack(
             rens,
-            #stack0=rbeam0,  # testing - this should enable median stack start
             method=robust_stack_method,
-            #timespan_method="stack0",
             residual_norm_floor=residual_norm_floor,
             stack_md=Metadata(rbeam0),
         )
