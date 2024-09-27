@@ -3,8 +3,6 @@ import numpy as np
 import seisbench.models as sbm
 
 from seisbench.models.base import WaveformModel
-from obspy.taup import TauPyModel
-from obspy.geodetics import gps2dist_azimuth, kilometers2degrees
 from mspasspy.ccore.seismic import TimeSeries, TimeSeriesEnsemble
 from mspasspy.ccore.algorithms.basic import TimeWindow
 from mspasspy.algorithms.window import WindowData
@@ -20,8 +18,9 @@ def annotate_arrival_time(
 ):
     """
     Predict the arrival time of the P wave using the provided seisbench WaveformModel.
-    The arrival time will be saved as metadata in the input TimeSeries object and can be accessed using \
-        the key 'p_wave_picks'. Time is stored in the relative format using the start time of the TimeSeries.
+    The arrival time will be saved as a dictionary in the input TimeSeries object and can be accessed using \
+        the key 'p_wave_picks'. In the dictionay, the key is the arrival time in the utc timestamp format, \ 
+        and the value is the probability of the pick.
 
     :param timeseries: The time series data to predict the arrival time.
     :param threshold: The probability threshold (0-1) to filter p-wave picks. Default value is 0.2.
@@ -29,7 +28,7 @@ def annotate_arrival_time(
     :param model: The model used to predict the arrival time.
     :param model_args: arguments to initialize a new model if not provided
     :type timeseries: mspasspy.ccore.seismic.TimeSeries
-    :type threshold: float
+    :type threshold: float. Default value is 0.2. Any picks with probability less than the threshold will be removed.
     :type time_window: mspasspy.ccore.algorithms.basic.TimeWindow defined as absolute time in UTC
     :type model: seisbench.models.base.WaveformModel
     :type model_args: dict
@@ -88,10 +87,13 @@ def annotate_arrival_time(
     data = trace.data
 
     # Step 2: Find all the index with probability value greater than the threshold
-    indices = np.where(data > threshold)[0]
+    indices = np.where(data >= threshold)[0]
 
-    # # Step 3: Calculate the corresponding time in utc timestamp
-    p_wave_picks = trace.times("timestamp")[indices]
+    # Step 3: Calculate the corresponding time in utc timestamp
+    timestamps = trace.times("timestamp")[indices]
 
-    # Step 4: Save the arrival time in absolute time
+    # Step 4: Create a dictionary with timestamps as keys and probability values as values
+    p_wave_picks = {ts: data[i] for ts, i in zip(timestamps, indices)}
+
+    # Step 5: Save the arrival time dictionary in absolute time
     timeseries["p_wave_picks"] = p_wave_picks
