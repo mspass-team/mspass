@@ -167,6 +167,27 @@ def estimate_ensemble_bandwidth(
     else:
         return [0, 0, 0]
 
+def _compute_default_robust_window(f_low,
+                                   ncycles=3,
+                                   starttime=2.0,
+                                   min_endtime_multiplier=3,
+                                   )->TimeWindow:
+    """
+    Small function to encapsulate the algorithm used to define the 
+    default robust window set by MCXcorPrepP.  Returns a time 
+    window with the starttime frozen as the function default 
+    argument.   endtime is the thing computed.  It is computed 
+    as ncycle times the period defined by the low frequency 
+    band edge f_low passed as arg0.   There is a safety 
+    called min_endtime_multiplier that would only be used if 
+    f_low is larger than 1 Hz - which for teleseismic P wave 
+    data means f_low is not reasonable.  
+    """
+    T = 1.0/f_low
+    endtime = ncycles*T
+    if endtime<min_endtime_multiplier:
+        endtime = starttime*min_endtime_multiplier
+    return TimeWindow(starttime,endtime)
 
 def MCXcorPrepP(
     ensemble,
@@ -523,6 +544,17 @@ def MCXcorPrepP(
     )
     beam0["correlation_window_start"] = correlation_window_start
     beam0["correlation_window_end"] = correlation_window_endtime
+    # finally use the low frequency band limit to set a default range 
+    # for the robust window
+    rw = _compute_default_robust_window(f_low)
+    # fudge this one sample to avoid a roundoff error on starttime computations
+    beam0["robust_window_start"] = correlation_window_start + beam0.dt
+    # make sure the end isn't larger than the correlation window end
+    if rw.end<correlation_window_endtime:
+        beam0["robust_window_end"] = rw.end
+    else:
+        # similar fudge by one sample for endtime
+        beam0["robust_window_end"] = correlation_window_endtime - beam0.dt
     return [enswork, beam0]
 
 
@@ -665,7 +697,7 @@ def robust_stack(
     timespan_method="ensemble_inner",
     pad_fraction_cutoff=0.05,
     residual_norm_floor=0.01,
-) -> TimeSeries:
+) -> tuple:
     """
     Generic function for robust stacking live members of a `TimeSeriesEnsemble`.
     An optional initial stack estimate can be used via tha stack0 argument.
@@ -721,46 +753,52 @@ def robust_stack(
     values they will be zero padded.
 
     :param ensemble:   input data to be stacked.   Should all be in
-    relative time with all members having the same relative time span.
+        relative time with all members having the same relative time span.
     :type ensemble:  TimeSeriesEnsemble
     :param method: Defines a name string of the method to be used to
-    compute the stack.
+        compute the stack.
     :type method:  string.  Currently must be one of two values or the
-    function will abort:   "median" or "dbxcor".  As the names imply
-    "median" will cause the function to return the median of the sample
-    vectors while "dbxcor" applies the dbxcor method.
+        function will abort:   "median" or "dbxcor".  As the names imply
+        "median" will cause the function to return the median of the sample
+        vectors while "dbxcor" applies the dbxcor method.
     :param stack0:  optional initial estimate for stack.  Estimators
-    other than median I know of use a loss function for downweighting
-    members of the stack that do not match the stack as defined by
-    some misfit metric.   This argument can be used to input an optional
-    starting estimate of the stack for the dbxcor method.  By default it
-    uses the median as the starting point, but this can be used to
-    input something else.   Note the function will silently ignore this
-    argument if method == "median".
+        other than median I know of use a loss function for downweighting
+        members of the stack that do not match the stack as defined by
+        some misfit metric.   This argument can be used to input an optional
+        starting estimate of the stack for the dbxcor method.  By default it
+        uses the median as the starting point, but this can be used to
+        input something else.   Note the function will silently ignore this
+        argument if method == "median".
     :type stack0:  TimeSeries.   Note the time span of this optional input
-    must be the same or wider than the ensemble member range defined by
-    the (internal to this module) validate_ensemble function or the
-    return will be return as a copy of this TimeSeries marked dead.
-    Default for this argument is None which means the median will be
-    used for the initial stack for dbxcor
+        must be the same or wider than the ensemble member range defined by
+        the (internal to this module) validate_ensemble function or the
+        return will be return as a copy of this TimeSeries marked dead.
+        Default for this argument is None which means the median will be
+        used for the initial stack for dbxcor
     :param stack_md:   optional Metadata container to define the
-    content of the stack output.  By default the output will have only
-    Metadata that duplicate required internal attributes (e.g. t0 and npts).
-    An exception is if stack0 is used the Metadata of that container will
-    be copied and this argument will be ignored.
+        content of the stack output.  By default the output will have only
+        Metadata that duplicate required internal attributes (e.g. t0 and npts).
+        An exception is if stack0 is used the Metadata of that container will
+        be copied and this argument will be ignored.
     :type stack_md:  Metadata container or None.  If stack0 is defined
-    this argument is ignored.   Otherwise it should be used to add
-    whatever Metadata is required to provide a tag that can be used to
-    identify the output.  If not specified the stack Metadata
-    will be only those produce from default construction of a
-    TimeSeries.  That is almost never what you want.   Reiterate,
-    however, that if stack0 is defined the output stack will be a
-    clone of stack0 with possible modifications of time and data
-    range attributes and anything the stack algorithm posts.
+        this argument is ignored.   Otherwise it should be used to add
+        whatever Metadata is required to provide a tag that can be used to
+        identify the output.  If not specified the stack Metadata
+        will be only those produce from default construction of a
+        TimeSeries.  That is almost never what you want.   Reiterate,
+        however, that if stack0 is defined the output stack will be a
+        clone of stack0 with possible modifications of time and data
+        range attributes and anything the stack algorithm posts.
     :param residual_norm_floor: floor on residuals used to compute dbxcor weight
-    function.  See docstring for `dbxcor_weights` for details.  Ignored
-    unless method is "dbxcor"
+        function.  See docstring for `dbxcor_weights` for details.  Ignored
+        unless method is "dbxcor"
     :type residual_norm_floor:   float (default 0.01)
+    :return:  tuple containing the requested stack as component 0.  The 
+        stack is returned as a `TimeSeries`  with optional Metadata copied 
+        from the (optional) stack_md argument.   Component 1 is defined only 
+        for the dbxcor method in which case it a numpy array containing th e
+        robust weights returned by the dbxcor algorithm.  If the method is 
+        set to "median" component 1 will be returned as a None type.  
     """
     alg = "robust_stack"
     # if other values for method are added they need to be added here
@@ -770,7 +808,12 @@ def robust_stack(
         raise ValueError(message)
     # don't test type - if we get illegal type let it thro0w an exception
     if ensemble.dead():
-        return ensemble
+        d_bad = TimeSeries()
+        message = "Received an input ensemble marked dead - cannot compute a stack"
+        d_bad.elog.log_error(alg,message,ErrorSeverity.Invalid)
+        # this isn't currently required by better to be explicit
+        d_bad.kill()
+        return [d_bad,None]
     if timespan_method == "stack0":
         if stack0:
             # intentionally don't test type of stack0
@@ -818,7 +861,7 @@ def robust_stack(
             message += "Recovery not implemented - stack returned is invalid"
 
             stack.elog.log_error("robust_stack", message, ErrorSeverity.Invalid)
-            return stack
+            return [stack,None]
     else:
         # bit of a weird logic here - needed because we need option for
         # dbxcor method to use median stack as starting point or use
@@ -847,14 +890,17 @@ def robust_stack(
             stack_vector = np.median(data_matrix, axis=0)
         stack.data = DoubleVector(stack_vector)
         stack.set_live()
-    if method == "dbxcor":
-        stack = _dbxcor_stacker(
+    if method == "median":
+        return [stack,None]
+    else:
+        # since method can only be median or dbxcor at this point this 
+        # block is exectuted only when method=="dbxcor"
+        # this works because _dbxcor returns a tuple of the right form
+        return _dbxcor_stacker(
             ensemble,
             stack,
             residual_norm_floor=residual_norm_floor,
         )
-
-    return stack
 
 
 def _dbxcor_stacker(
@@ -888,6 +934,7 @@ def _dbxcor_stacker(
     # useful shorthands
     N = stack0.npts
     M = len(ensemble.member)
+    wts = None   # needed to keep this symbol from going out of scope before return
     for i in range(maxiterations):
         wts = dbxcor_weights(ensemble, stack, residual_norm_floor=residual_norm_floor)
         newstack = np.zeros(N)
@@ -909,13 +956,16 @@ def _dbxcor_stacker(
         stack.data = DoubleVector(newstack)
         if i > 0 and relative_delta < eps:
             break
-    return stack
+    return [stack,wts]
 
 
-def beam_align(ensemble, beam, time_shift_limit=10.0):
+def beam_align(ensemble, beam, window=None, time_shift_limit=10.0):
     """
     Aligns ensemble members using signal defined by beam (arg1) argument.
+    
     Computes cross correlation between each ensemble member and the beam.
+    An optional window can be specified that is applied to each ensemble 
+    member before computing the cross correlation function. 
     All live ensemble members are shifted to align with time base of the
     beam.   Note that can be a huge shift if the beam is relative and
     the ensemble members are absolute time.  It should work in that context
@@ -923,25 +973,34 @@ def beam_align(ensemble, beam, time_shift_limit=10.0):
     teleseismic phase alignment where the expectation is all the ensemble
     members and the beam are in relative time with 0 defined by some
     estimate of the phase arrival time.   Will correctly handle irregular
-    window sizes between ensemble members and beam signal.
+    window sizes between ensemble members and beam signal.   
+    
+    It is important to recognize that if the window option is used 
+    it is applied only internally.   In that situation the output 
+    will be time shifted but the number of samples of each member 
+    will be the same.
 
     :param ensemble:  ensemble of data to be correlated with
-    beam data.
-    :type ensemble:  assume to be a TimeSeriesEnsemble
+        beam data.
+    :type ensemble:  assumed to be a TimeSeriesEnsemble
     :param beam:  common signal to correlate with ensemble members.
     :type beam:  assumed to be a TimeSeries object
+    :param window:  optional window to apply to ensemble members 
+        before computing cross correlation. 
+    :type window:  :py:class:`mspasspy.ccore.algorithms.basic.TimeWindow` 
     :param time_shift_limit:  ceiling on allowed time shift for
-    ensemble members.   Any computed shift with absolute value
-    larger than this value will be reset to this value with the
-    sign of the shift preserved.   (i.e. a negative lag will
-    be set to the negative of this number).  The default is 10.0
-    which is large for most data more or less making this an optional
-    parameter.
+        ensemble members.   Any computed shift with absolute value
+        larger than this value will be reset to this value with the
+        sign of the shift preserved.   (i.e. a negative lag will
+        be set to the negative of this number).  The default is 10.0
+        which is large for most data more or less making this an optional
+        parameter.
     :type time_shift_limit: float (may abort if you use an int
-    because the value can to sent to a C++ method that it type
-    sensitive)
+        because the value can to sent to a C++ method that it type
+        sensitive)
     :return:   copy of ensemble with the members time shifted to align with
-    the time base of beam.
+        the time base of beam.   Note if a window is defined it is not 
+        applied to the ensemble members.  
 
     """
     # this may not be necessary for internal use but if used
@@ -955,9 +1014,20 @@ def beam_align(ensemble, beam, time_shift_limit=10.0):
         message += "value must be positive"
         raise ValueError(message)
     for i in range(len(ensemble.member)):
-        d = ensemble.member[i]
+        d = TimeSeries(ensemble.member[i])
         # in this context not needed but tiny cost for robustness
         if d.live:
+            if window:
+                d = WindowData(d,
+                               window.start,
+                               window.end,
+                               short_segment_handling="truncate",
+                               )
+                if d.dead():
+                    # this should rarely if ever happen but safety prudent
+                    # in this case the return will have  truncated length for this datum
+                    ensemble.member[i]=d
+                    continue
             timelag = _xcor_shift(d, beam)
             # apply a ceiling/floor to allowed time shift via
             # the time_shift_limit arg
@@ -982,6 +1052,7 @@ def align_and_stack(
     robust_stack_window=None,
     robust_stack_window_keys=["robust_window_start", "robust_window_end"],
     robust_stack_method="dbxcor",
+    use_median_initial_stack=True,
     output_stack_window=None,
     robust_weight_key="robust_stack_weight",
     time_shift_key="arrival_time_correction",
@@ -1137,90 +1208,96 @@ def align_and_stack(
     by the `output_stack_window` argument.  See below for details.
 
     :param ensemble:   ensemble of data to be aligned and stacked.
-    This function requires all data to be on a relative time base.
-    It will throw a MsPASSError exception if any live datum has a UTC time base.
-    The assumption is all data have a time span that have the correlation
-    and robust windows inside the data time range.   Both windows are
-    carved from the inputs using the WindowData function which will kill
-    any members that do not satisfy this requirement.
+        This function requires all data to be on a relative time base.
+        It will throw a MsPASSError exception if any live datum has a UTC time base.
+        The assumption is all data have a time span that have the correlation
+        and robust windows inside the data time range.   Both windows are
+        carved from the inputs using the WindowData function which will kill
+        any members that do not satisfy this requirement.
     :type ensemble:  `TimeSeriesEnsemble` with some fairly rigid requirements.
-    (see above)
+        (see above)
     :param beam:  Estimate of stack (may be just one representative member)
-    used as the seed for initial alignment and stacking.
+        used as the seed for initial alignment and stacking.
     :type beam:  `TimeSeries`.  Must have a length consistent with window
-    parameters.
+        parameters.
     :param correlation_window: Used to specify the time window for
-    computing cross-correlations with the beam signal.   Closely linked to
-    `correlation_window_keys` as described above.
+        computing cross-correlations with the beam signal.   Closely linked to
+        `correlation_window_keys` as described above.
     :type correlation_window:  `TimeWindow` to define explicitly.  If None
-    (default) uses the recipe driven by `correlation_window_keys` (see above)
+        (default) uses the recipe driven by `correlation_window_keys` (see above)
     :param correlation_window_keys:   optional pair of Metadata keys used to
-    extract cross-correlation window attributes from beam Metadata container.
-    If defined component 0 is taken as the key for the start time of the window and
-    component 1 the key for the end time.
+        extract cross-correlation window attributes from beam Metadata container.
+        If defined component 0 is taken as the key for the start time of the window and
+        component 1 the key for the end time.
     :type correlation_window_key:  iterable list containing two strings.
-    Default is None which is taken to mean the span of the beam signal defines
-    the cross-correlation window.
+        Default is None which is taken to mean the span of the beam signal defines
+        the cross-correlation window.
     :param window_beam:  if True the parsed cross-correlation window attributes
-    are applied to the beam signal as well as the data before starting
-    processing.   Default is False which means the beam signal is used
-    directly in all cross-correlations.
+        are applied to the beam signal as well as the data before starting
+        processing.   Default is False which means the beam signal is used
+        directly in all cross-correlations.
     :param robust_stack_window: Provide an explicity `TimeWindow` used for
-    extracting the robust window for this algorithm.   Interacts with the
-    robust_stack_window_keys argument as described above.
+        extracting the robust window for this algorithm.   Interacts with the
+        robust_stack_window_keys argument as described above.
     :type robust_stack_window:  If defined must be a `TimeWindow` object.
-    If a None type (default) use the logic defined above to set this time window.
+        If a None type (default) use the logic defined above to set this time window.
     :param robust_stack_window_keys: specifies a pair of strings to be used
-    as keys to extract the strart time (component 0) and end time (component 1)
-    of the robust time window to use from the beam `TimeSeries.
+        as keys to extract the strart time (component 0) and end time (component 1)
+        of the robust time window to use from the beam `TimeSeries.
     :type robust_stack_window_keys: iterable list of two strings
     :param output_stack_window:  optional `TimeWindow` to apply to the
-    computed robust stack output.   Default returns a stack spanning the
-    inner range of all live members of the ensemble.
+        computed robust stack output.   Default returns a stack spanning the
+        inner range of all live members of the ensemble.
     :type output_stack_window:  `TimeWindow` object.  If None (default) the range
-    is derived from the ensemble member time ranges.
+        is derived from the ensemble member time ranges.
     :param robust_weight_key:  The robust weight used for each member to
-    compute the robust stack output is posted to the Metadata container of
-    each live member with this key.
+        compute the robust stack output is posted to the Metadata container of
+        each live member with this key.
     :type robust_weight_key:  string
     :param robust_stack_method:   keyword defining the method textract_input_beam_estimateo use for
-    computing the robust stack.  Currently accepted value are:
-    "dbxcor" (default) and "median".
+        computing the robust stack.  Currently accepted value are:
+        "dbxcor" (default) and "median".
     :type robust_stack_method:  string  - must be one of options listed above.
+    :param use_median_initial_stack:  If True (default) use the median stack as the initial 
+        estimate of the stack in the first iterative pass.  When False the signal in the 
+        `TimeSeries` passed via the "beam" argument is used for the initial estimate. 
     :param time_shift_key:  the time shift applied relative to the starting
-    point is posted to each live member with this key.  It is
-    IMPORTANT to realize this is the time for this pass.  If thisextract_input_beam_estimatefunctions
-    is applied more than once and you reuse this key the shift from the
-    previous run will be overwritten.  If you need to accumulate shifts
-    it needs to be handled outside this function.
+        point is posted to each live member with this key.  It is
+        IMPORTANT to realize this is the time for this pass.  If thisextract_input_beam_estimatefunctions
+        is applied more than once and you reuse this key the shift from the
+        previous run will be overwritten.  If you need to accumulate shifts
+        it needs to be handled outside this function.
     :type time_shift_key:  string  (default "arrival_time_correction")
     :param convergence:   fractional change in robust stack estimates in
-    iterative loop to define convergence.  This should not be changed
-    unless you deeply understand the algorithm.
+        iterative loop to define convergence.  This should not be changed
+        unless you deeply understand the algorithm.
     :type convergence:  real number (default 0.001)
-
-    :param time_shift_limit:
+    :param time_shift_limit: when time shifting data with the cross 
+        correlation algorithm any estimated time shift larger than 
+        this value will be truncated to this value with the sign 
+        of th shift preserved.
+    :type time_shift_limit:  float
     :param  abort_irregular_sampling: boolean that controls error
-    handling of data with irregular sample rates.  This function uses
-    a generous test for sample rate mismatch.  A mismatch is
-    detected only if the computed time skew over the time span of
-    the input beam signal is more than 1/2 of the beam sample interval
-    (beam.dt).  When set true the function will
-    abort with a ValueError exception if any ensemble member fails the
-    sample interval test.  If False (the default) offending ensemble
-    members are killed and a message is posted.  Note the actual
-    ensemble is modified so the return may have fewer data live
-    than the input when this mode is enabled.
+        handling of data with irregular sample rates.  This function uses
+        a generous test for sample rate mismatch.  A mismatch is
+        detected only if the computed time skew over the time span of
+        the input beam signal is more than 1/2 of the beam sample interval
+        (beam.dt).  When set true the function will
+        abort with a ValueError exception if any ensemble member fails the
+        sample interval test.  If False (the default) offending ensemble
+        members are killed and a message is posted.  Note the actual
+        ensemble is modified so the return may have fewer data live
+        than the input when this mode is enabled.
     :type abort_irregular_sampling:  boolean
     :param residual_norm_floor: floor on residuals used to compute dbxcor weight
-    function.  See docstring for `dbxcor_weights` for details.
+        function.  See docstring for `dbxcor_weights` for details.
     :type residual_norm_floor:   float (default 0.01)
 
     :return: tuple with 0 containing the original ensemble but time
-    shifted by cross-correlation.   Failed/discarded signals for the
-    stack are not killed but should be detected by not having the
-    time shift Metadata value set.   component 1 is the computed
-    stack windowed to the range defined by `stack_time_window`.
+        shifted by cross-correlation.   Failed/discarded signals for the
+        stack are not killed but should be detected by not having the
+        time shift Metadata value set.   component 1 is the computed
+        stack windowed to the range defined by `stack_time_window`.
     """
     alg = "align_and_stack"
     # xcor ensemble has the initial start time posted to each
@@ -1467,8 +1544,9 @@ def align_and_stack(
         rens = WindowData(xcorens, rwin.start, rwin.end, short_segment_handling="pad")
         # this clones the Metadata of beam for the output using the stack_md 
         # parameter - this won't work without that because of how robust stack 
-        # is implemented
-        rbeam = robust_stack(
+        # is implemented.  Note also that not passing an initial stack value 
+        # with the dbxcor method forces a median stack as the starting point
+        rbeam,wts = robust_stack(
             rens,
             method=robust_stack_method,
             residual_norm_floor=residual_norm_floor,
@@ -1478,14 +1556,22 @@ def align_and_stack(
         nrm_delta = np.linalg.norm(delta_rbeam.data)
         if nrm_delta / nrm_rbeam < convergence:
             break
+        # this updates the always longer beam signal for correlation 
+        # use rbeam is used for convergence testing
+        beam = _update_xcor_beam(xcorens,rens,beam,robust_stack_method,wts)
+        if beam.dead():
+            message = "all members were killed in robust stack estimation loop\n"
+            message += "Stack estimation failed"
+            beam.elog.log_error(alg,message,ErrorSeverity.Invalid)
+            return [ensemble,beam]
         rbeam0 = rbeam
         nrm_rbeam = np.linalg.norm(rbeam0.data)
     if i >= MAXITERATION:
         output_stack = rbeam
-        rbeam.kill()
+        beam.kill()
         message = "robust_stack iterative loop did not converge"
-        rbeam.elog.log_error(alg, message, ErrorSeverity.Invalid)
-        return [ensemble, rbeam]
+        beam.elog.log_error(alg, message, ErrorSeverity.Invalid)
+        return [ensemble, beam]
 
     # apply time shifts to original ensemble that we will return
     # and set the value for the attribute defined by "time_shift_key"
@@ -1590,7 +1676,90 @@ def align_and_stack(
     # TODO:  may want to always or optionally window ensemble output to output_stack_window
     return [ensemble, output_stack]
 
+# these are intended to use only on the output from align_and stack
+def beam_correlation(d,beam,window=None,aligned=True)->float:
+    """
+    Computes normalized peak cross-correlation value a datum with an array stack.
+    
+    Cross-correlation is a heavily used concept in seismology.   This function 
+    is a specialized version designed to compute a peak cross correlation 
+    value between a datum and an array stack.  The normal use is to call this 
+    function in a loop and post the results to each live member of the 
+    ensemble used to compute the beam.   Note it is assumed beam and d 
+    are filtered in the same passband.   Windowing is bombproof 
+    """
+    alg = beam_correlation
+    if not isinstance(d,TimeSeries):
+        message = alg
+        message += ":  arg0 must be a TimeSeries. Actual type={}".format(type(d))
+        raise TypeError(message)
+    if not isinstance(beam,TimeSeries):
+        message = alg
+        message += ":  arg0 must be a TimeSeries. Actual type={}".format(type(beam))
+        raise TypeError(message)
+    # assume beam is live but don't assume d is
+    if d.dead():
+        return 0.0
+    if window:
+        d1 = WindowData(d,window.start,window.end,short_segment_handling='pad')
+        d2 = WindowData(beam,window.start,window.end,short_segment_handling='pad')
+    else:
+        d1 = TimeSeries(d)
+        d2 = TimeSeries(beam)
+    nrm1 = np.norm(d1.data)
+    d1.data /= nrm1
+    nrm2 = np.norm(d2.data)
+    d2.data /= nrm2
+    if not aligned:
+        timelag = _xcor_shift(d1,d2)
+        d1.shift(timelag)
+    t0max = max(d1.t0,d2.t0)
+    etmin = min(d1.endtime(),d2.endtime())
+    d1s = d1.sample_number(t0max)
+    d2s = d2.sample_number(t0max)
+    d1e = d1.sample_number(etmin)
+    d2e = d2.sample_number(etmin)
+    # this may not be necessary but with rounding errors it could be needed
+    N = min(d1e-d1s,d2e-d2s)
+    return np.dot(d1.data[0:N],d2.data[0:N])
 
+
+def beam_coherence(d,beam,window=None,filter=True)->float:
+    alg = beam_correlation
+    if not isinstance(d,TimeSeries):
+        message = alg
+        message += ":  arg0 must be a TimeSeries. Actual type={}".format(type(d))
+        raise TypeError(message)
+    if not isinstance(beam,TimeSeries):
+        message = alg
+        message += ":  arg0 must be a TimeSeries. Actual type={}".format(type(beam))
+        raise TypeError(message)
+    # assume beam is live but don't assume d is
+    if d.dead():
+        return 0.0
+    if window is None:
+        st = min(d.t0,beam.t0)
+        et = max(d.endtime(),beam.endtime())
+        window = TimeWindow(st,et)
+    # Making a blatant assumption d and beam are on the same time base here
+    d1 = WindowData(d,window.start,window.end,short_segment_handling='pad')
+    d2 = WindowData(beam,window.start,window.end,short_segment_handling='pad')
+    # can now assume d1 and d2 are the same length and aligned 
+    # simplifies  this calculation
+    d1 = np.array(d1)
+    d2 = np.array(d2)
+    # make d1 and d2 unit vectors
+    nrmd1 = np.norm(d1)
+    #avoid divide by zero if d1 is all zeros
+    if nrmd1 <= 0.0:
+        return 0.0
+    else:
+        r = d1 - d2
+        coh = 1.0 - np.norm(r)/nrmd1
+        return coh    
+    
+
+# private functions - should be used only internally.  Use with care if imported
 def _coda_duration(ts, level, t0=0.0, search_start=None) -> TimeWindow:
     """
     Low-level function to estimate the range of the "coda" of a particular
@@ -1811,7 +1980,7 @@ def _set_phases(
     return d
 
 
-def _get_search_range(d, Pkey="Ptime", pPkey="pPTime", PPkey="PPtime", duration_undefined=20.0):
+def _get_search_range(d, Pkey="Ptime", pPkey="pPtime", PPkey="PPtime", duration_undefined=20.0):
     """
     Small internal function used to standardize the handling of the search
     range for P coda.   It returns a time duration to use as the search
@@ -1864,3 +2033,91 @@ def _xcor_shift(ts, beam):
     lag_of_max_in_samples = lags[np.argmax(xcor)]
     lagtime = ts.dt * lag_of_max_in_samples + ts.t0 - beam.t0
     return lagtime
+
+def _update_xcor_beam(xcorens,
+                      rens,
+                      beam0,
+                      robust_stack_method,
+                      wts)->TimeSeries:
+    """
+    Internal method used to update the beam signal used for cross correlation 
+    to the current best stack estimate.   
+    
+    :param xcorens:   ensemble data being used for cross-correlation 
+    :type xcorens:  TimeSeriesEnsemble
+    :param rens:  ensemble returned by robust_stack (Ignored for median stack)
+    :type rens:  TimeSeriesEnsemble
+    :param beam0: current beam estimate.   The output will have size 
+        determined by beam.t0 and beam.endtime()
+    :type beam:  TimeSeries
+    :param robust_stakc_method:  name of robust stacking method to use. 
+        Currently must either "dbxcor" or "median". 
+    :type robust_stack_method:  string
+    :param robust_weight_key:  key needed to extract robust stack weight 
+        from rens when running an estimator like dbxcor that uses a weighted 
+        stack.   ignored for median stack.
+    """
+    beam = TimeSeries(beam0)
+    # A tricky but fast way to initialize the data vector to all zeros
+    # warning this depends upon a special property of the C++ implementation
+    beam.set_npts(beam0.npts)
+    N = len(xcorens.member)
+    if robust_stack_method == "dbxcor":
+        # we can assume for internal use that xcorens and rens are the 
+        # same size. We don't assume all are live though to allow 
+        # flexibility in the algorithm
+        
+        sumwt = 0.0
+        for i in range(N):
+            if xcorens.member[i].live and rens.member[i].live:
+                if wts[i]>0.0:
+                    wt = wts[i]
+                    d = TimeSeries(xcorens.member[i])
+                    d *= wt
+                    # TimeSeries::operator+= handles time correctly so indexing is not needed here
+                    beam += d
+                    sumwt += wt
+        if sumwt>0.0:
+            # TimeSeries does not have operator /= defined but it does have *= defined
+            scale = 1.0/sumwt
+            beam *= scale
+        else:
+            beam.elog.log_error("_update_xcor_beam",
+                                "dbxcor weights are all 0.0 - all ensemble members were probably killed",
+                                ErrorSeverity.Invalid)
+            beam.kill()
+    else: 
+        # for now landing here means median stack - change if new algorithms addede
+        nlive = 0
+        # note sizes passed to shape are set above when validating inputs and are assumed to not have changed
+        Npts = beam.npts
+        gather_matrix = np.zeros(shape=[N, Npts])
+        for d in xcorens.member:
+            # always use the zero padding method of WindowData
+            # run silently for median stack.  Maybe should allow
+            # options for this case
+            dcut = WindowData(
+                d,
+                beam.t0,
+                beam.endtime(),
+                short_segment_handling="pad",
+                log_recoverable_errors=False,
+            )
+            if dcut.live:
+                # rounding effects with a window time range
+                # iteractions with t0 can cause the size of
+                # dcut to differ from beam.npts
+                # logic handles that
+                if dcut.npts == Npts:
+                    gather_matrix[nlive, :] = np.array(dcut.data)
+                elif dcut.npts < Npts:
+                    gather_matrix[nlive, 0 : dcut.npts] = np.array(dcut.data)
+                else:
+                    gather_matrix[nlive, :] = np.array(dcut.data[0:Npts])
+                nlive += 1
+        stack_vector = np.median(gather_matrix[0:nlive, :], axis=0)
+        # this matrix could be huge so we release it as quickly as possible
+        del gather_matrix
+        # logic above guarantees stack_vector is beam.npts in size
+        beam.data = DoubleVector(stack_vector)
+    return beam
