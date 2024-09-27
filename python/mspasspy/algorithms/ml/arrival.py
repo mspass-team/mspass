@@ -23,12 +23,14 @@ def annotate_arrival_time(
         and the value is the probability of the pick.
 
     :param timeseries: The time series data to predict the arrival time.
-    :param threshold: The probability threshold (0-1) to filter p-wave picks. Default value is 0.2.
-    :param time_window: The relative time window to filter the predicted arrival time. If not provided, the whole time series will be used.
+    :param threshold: The probability threshold (0-1) to filter p-wave picks. \ 
+        Any picks with probability less than the threshold will be removed. Default value is 0.2. 
+    :param time_window: The relative time window to filter the predicted arrival time. \ 
+        If not provided, the whole time series will be used.
     :param model: The model used to predict the arrival time.
     :param model_args: arguments to initialize a new model if not provided
     :type timeseries: mspasspy.ccore.seismic.TimeSeries
-    :type threshold: float. Default value is 0.2. Any picks with probability less than the threshold will be removed.
+    :type threshold: float
     :type time_window: mspasspy.ccore.algorithms.basic.TimeWindow defined as absolute time in UTC
     :type model: seisbench.models.base.WaveformModel
     :type model_args: dict
