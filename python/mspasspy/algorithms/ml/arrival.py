@@ -25,7 +25,7 @@ def annotate_arrival_time(
     :param timeseries: The time series data to predict the arrival time.
     :param threshold: The probability threshold (0-1) to filter p-wave picks. \ 
         Any picks with probability less than the threshold will be removed. Default value is 0.2. 
-    :param time_window: The relative time window to filter the predicted arrival time. \ 
+    :param time_window: The time window (in utc timestamp) to filter the predicted arrival time. \ 
         If not provided, the whole time series will be used.
     :param model: The model used to predict the arrival time.
     :param model_args: arguments to initialize a new model if not provided
