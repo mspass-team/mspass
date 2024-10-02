@@ -65,7 +65,7 @@ CoreSeismogram WindowData(const CoreSeismogram& parent, const TimeWindow& tw)
   // Perhaps should do this with blas or memcpy for efficiency
   //  but this makes the algorithm much clearer
   int i,ii,k;
-  for(i=is,ii=0;i<=ie;++i,++ii)
+  for(i=is,ii=0;i<=ie && i<parent.npts() && ii<outns;++i,++ii)
       for(k=0;k<3;++k)
       {
           result.u(k,ii)=parent.u(k,i);
@@ -109,7 +109,7 @@ CoreTimeSeries WindowData(const CoreTimeSeries& parent, const TimeWindow& tw)
   outns = round((tw.end-tw.start)/parent.dt()) + 1;  
   ie = is + outns - 1;
 	//Ridiculous (int) case to silence a bogus compiler warning
-  if( (is<0) || (ie>=((int)parent.npts())) )
+  if( (is<0) || (ie>((int)parent.npts())) )
   {
       ostringstream mess;
           mess << "WindowData(CoreTimeSeries):  Window mismatch"<<endl
@@ -126,9 +126,11 @@ CoreTimeSeries WindowData(const CoreTimeSeries& parent, const TimeWindow& tw)
   /* Using the time method here preserves subsample timing.*/
 	result.set_t0(parent.time(is));
 	// Necessary to use the push_back method below or we get leading zeros
-	result.s.clear();
-
-  for(int i=is;i<=ie;++i) result.s.push_back(parent.s[i]);
+	//result.s.clear();
+  //for(int i=is;i<=ie && i<parent.npts();++i) result.s.push_back(parent.s[i]);
+  int ii,i;
+  for(ii=0, i=is; i<=ie && i<parent.npts() && ii<outns; ++i, ++ii)
+    result.s[ii]=parent.s[i];
   return(result);
 }
 
@@ -169,7 +171,7 @@ Seismogram WindowData(const Seismogram& parent, const TimeWindow& tw)
   int outns,ie;
   outns = round((tw.end-tw.start)/parent.dt()) + 1;  
   ie = is + outns - 1;
-  if( (is<0) || (ie>parent.npts()) )
+  if( (is<0) || (ie>=parent.npts()) )
   {
       ostringstream mess;
       mess << "WindowData(Seismogram):  Window mismatch"<<endl
@@ -219,7 +221,7 @@ Seismogram WindowData(const Seismogram& parent, const TimeWindow& tw)
 	// Perhaps should do this with blas or memcpy for efficiency
   //  but this makes the algorithm much clearer
   int i,ii,k;
-  for(i=is,ii=0;i<=ie;++i,++ii)
+  for(i=is,ii=0;i<=ie && i<parent.npts() && ii<outns;++i,++ii)
       for(k=0;k<3;++k)
       {
           result.u(k,ii)=parent.u(k,i);
@@ -268,7 +270,7 @@ TimeSeries WindowData(const TimeSeries& parent, const TimeWindow& tw)
   outns = round((tw.end-tw.start)/parent.dt()) + 1;  
   ie = is + outns - 1;
 	//Ridiculous (int) case to silence a bogus compiler warning
-  if( (is<0) || (ie>=((int)parent.npts())) )
+  if( (is<0) || (ie>((int)parent.npts())) )
   {
       ostringstream mess;
           mess << "WindowData(TimeSeries):  Window mismatch"<<endl
@@ -308,7 +310,9 @@ TimeSeries WindowData(const TimeSeries& parent, const TimeWindow& tw)
 	/* That constuctor initalizes s to zeroes so we can copy directly
 	to the container without push_back.  memcpy might buy a small performance
 	gain but would make this more fragile that it already is. */
-	for(int i=is,ii=0;i<=ie;++i,++ii) result.s[ii] = parent.s[i];
+  int i,ii;
+	for(i=is,ii=0;i<=ie && i<parent.npts() && ii<outns;++i,++ii) 
+    result.s[ii] = parent.s[i];
 	/*This dynamic_cast may not be necessary, but makes the api clear */
 	result.load_history(dynamic_cast<const ProcessingHistory&>(parent));
 
