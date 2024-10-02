@@ -217,7 +217,6 @@ def CNRRFDecon(seis,
     bound to python of type `CNRDeconEngine` passed as the arg1 
     (symbol `engine`).   The engine is passed as an argument because 
     it has a fairly high instantiation cost.   The standard 
-    constructor uses a parameter file format with this set of 
     key-value pairs:
         `algorithm` - "generalized_water_level" or "color_noise_damping"
         `damping_factor`
@@ -354,7 +353,7 @@ def CNRRFDecon(seis,
             psnoise = engine.compute_noise_spectrum(n2use)
         else:
             message = alg
-            message += ":  use_3C_noise is set True bot noise data received is not a Seismogram object"
+            message += ":  use_3C_noise is set True but noise data received is not a Seismogram object"
             raise TypeError(message)
     else:
         if isinstance(n2use,TimeSeries):
@@ -363,7 +362,16 @@ def CNRRFDecon(seis,
             message = alg
             message += ":  use_3C_noise is set False bot noise data received is not a TimeSeries object"
             raise TypeError(message)
-            
+    if psnoise.dead():
+        dout = Seismogram()
+        dout.elog += psnoise.elog
+        message = "Failure in engine.compute_noise_spectrum;  see previous elog message for reason"
+        dout.elog.log_error("CNRDecon",message,ErrorSeverity.Invalid)
+        # default constructed Seismogram is already marked dead so no need for kill call
+        if return_wavelet:
+            return [dout,None,None] 
+        else:
+            return dout
     [d2use,flow,fhigh] = fetch_and_validate_bandwidth_data(d2use,
                                                            bandwidth_keys,
                                                            bandwidth_subdocument_key,
@@ -375,15 +383,24 @@ def CNRRFDecon(seis,
         return d2use
     
     engine.initialize_inverse_operator(w,psnoise)
-    dout = engine.deconvolve(d2use,flow,fhigh)
+    dout = engine.process(d2use,psnoise,flow,fhigh)
+    QCmd = engine.QCMetrics()
+    dout["CNRDecon_QCmetrics"] = QCmd
+    # These will be in the subdocument QCmd but duplicating them 
+    # at at the document level will make queries on easier
+    dout["CNRDecon_f_low"] = flow
+    dout["CNRDecon_f_high"] = fhigh
     return_value = []
     return_value.append(dout)
     if return_wavelet:
+        return_value=[]
+        return_value.append(dout)
         ao = engine.actual_output(wavelet)
         return_value.append[ao]
         ideal_out = engine.ideal_output()
         return_value.append(ideal_out)
-    return return_value
+    else:
+        return dout
 
 
 def CNRArrayDecon(ensemble,
@@ -588,7 +605,7 @@ def CNRArrayDecon(ensemble,
             # returns immediately if the datum is marked dead, but this 
             # makes the logic clear and the code base more robust for a near zero cost
             if d.live:
-                ensout.member[i] = engine.deconvolve(d,flow,fhigh)
+                ensout.member[i] = engine.process(d,flow,fhigh)
             
     return_value=[]
     return_value.append(ensout)
