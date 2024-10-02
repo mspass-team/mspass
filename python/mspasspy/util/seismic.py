@@ -8,6 +8,7 @@ from mspasspy.ccore.utility import Metadata, ErrorSeverity
 from mspasspy.ccore.algorithms.basic import TimeWindow
 from bson import json_util
 import numpy as np
+import pandas as pd
 
 
 def print_metadata(d, indent=2):
@@ -209,3 +210,60 @@ def ensemble_time_range(ensemble, metric="inner") -> TimeWindow:
         etime = np.mean(etvector)
     # Intentionally not using else to allow an easier extension
     return TimeWindow(stime, etime)
+
+def sort_ensemble(ensemble,key,nullvalue=0.0,ascending=True,drop_dead=True):
+    """
+    Sorts members of an ensemble by a single Metadata key value.
+    
+    For graphical QC one often needs to sort an ensemble by a metadata 
+    attribute to appraise how the attribute relates to a graphical 
+    display of that data.   This function does that with a memory 
+    intensive algorithm the makes a copy of the input that is returned.  
+    
+    :param ensemble:  input to be sorted 
+    :type ensemble: `TimeSeriesEnsemble` or `SeismogramEnsemble`
+    :param key: key of Metadata attribute whose value is to be used for sorting
+    :type key: string
+    :param nullvaue:   value assigned for sort for any ensemble member for 
+        which a value is not defined for the sort key.
+    :type nullvalue:  should match expected type of values associate with key. 
+        (default is a float 0.0)
+    :param ascending:  boolean defining direction of sort.  When True 
+        sort is in ascending order.  False returns data sorted in descending order.
+    :param drop_dead:  when True (default) any ensemble member marked dead will 
+        be not appear in the output.  When False dead data will get an implicit 
+        value defined by "nullvalue".   Where the dead appear will depend upon 
+        what that value is relative to the valid values. 
+    """
+    alg = "sort_ensemble"
+    if not isinstance(ensemble,(TimeSeriesEnsemble,SeismogramEnsemble)):
+        message = "arg0 must be a TimeSeriesEnsemble or SeismogramEnsemble object\n"
+        message += "Actual type={}".type(ensemble)
+        raise MsPASSError(alg,message,ErrorSeverity.Fatal)
+    vallist=list()
+    indexlist=list()
+    for i in range(len(ensemble.member)):
+        d = ensemble.member[i]
+        if d.live:
+            if d.is_defined(key):
+                vallist.append(d[key])
+            else:
+                vallist.append(nullvalue)
+            indexlist.append(i)
+        elif not drop_dead:
+            vallist.append(nullvalue)
+            indexlist.append(i)
+    dfdict = {key : vallist, "member_number" : indexlist}
+    df = pd.DataFrame(dfdict)
+    del dfdict
+    df.sort_values(key,ascending=ascending)
+    N = len(df)
+    if isinstance(ensemble,TimeSeriesEnsemble):
+        ensout = TimeSeriesEnsemble(Metadata(ensemble),N)
+    else:
+        ensout = SeismogramEnsemble(Metadata(ensemble),N)
+    for index, row in df.iterrows():
+        i = row["member_number"].astype(int)
+        ensout.member.append(ensemble.member[i])
+    return ensout
+
