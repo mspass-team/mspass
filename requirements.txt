@@ -11,11 +11,12 @@ boto3
 botocore
 moto
 requests 
-setuptools
+setuptools<60.0
 xarray<=2024.3.0
 zarr
 pandas==1.5.3
 numba
 multitaper
 ipympl
-
+seisbench==0.4.1; python_version < '3.9'
+seisbench>0.4.1; python_version >= '3.9'
