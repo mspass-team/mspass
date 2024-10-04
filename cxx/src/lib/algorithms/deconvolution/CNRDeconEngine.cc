@@ -421,8 +421,6 @@ void CNRDeconEngine::compute_gwl_inverse(const TimeSeries& wavelet, const PowerS
 void CNRDeconEngine::compute_gdamp_inverse(const TimeSeries& wavelet, const PowerSpectrum& psnoise)
 {
   try{
-    cout << "Entered compute_gdamp_inverse"<<endl;
-    cout << "wavelet ntps="<<wavelet.npts()<<endl;
     /* Assume if we got here wavelet.npts() == nfft*/
     ComplexArray b_fft;
     if(wavelet.npts()==FFTDeconOperator::nfft)
@@ -443,16 +441,10 @@ void CNRDeconEngine::compute_gdamp_inverse(const TimeSeries& wavelet, const Powe
       /* land here if we need to change the fft size - if this happens don't force power of 2*/
       this->change_size(wavelet.npts());
     }
-    cout << "computing forward fft"<<endl;
-    cout << "fft size="<< FFTDeconOperator::nfft<<endl;
     gsl_fft_complex_forward(b_fft.ptr(),1,FFTDeconOperator::nfft,
           wavetable,workspace);
-    cout << "copying"<<endl;
-    cout << "array size="<<b_fft.size()<<endl;
     ComplexArray conj_b_fft(b_fft);
-    cout << "Computing conjugate"<<endl;
     conj_b_fft.conj();
-    cout << "Computing denominator"<<endl;
     ComplexArray denom(conj_b_fft*b_fft);
     /* Compute scaling constants for noise based on noise_floor and the
     noise spectrum */
@@ -467,7 +459,6 @@ void CNRDeconEngine::compute_gdamp_inverse(const TimeSeries& wavelet, const Powe
     maxnoise=std::max_element(work.begin(),work.end());
     //Spectrum is power but need amplitude in this context so sqrt here
     double scaled_noise_floor=noise_floor*sqrt(*maxnoise);\
-    cout << "Entering loop to compute inverse - nfft="<<nfft<<endl;
 
     for(int k=0;k<nfft;++k)
     {
@@ -492,7 +483,6 @@ void CNRDeconEngine::compute_gdamp_inverse(const TimeSeries& wavelet, const Powe
       /* ptr points to the real part - an oddity of this interface */
       *ptr += theta;
     }
-    cout << "computing winv"<<endl;
     winv=conj_b_fft/denom;
   }catch(...){throw;};
 }
@@ -612,8 +602,6 @@ TimeSeries CNRDeconEngine::ideal_output()
 TimeSeries CNRDeconEngine::actual_output(const TimeSeries& wavelet)
 {
   try {
-    cout << "Entered actual_output; npts in wavelet="<<wavelet.npts()<<endl;
-    cout << "fft size="<<FFTDeconOperator::nfft<<endl;
       std::vector<double> work;
       if(wavelet.npts() == FFTDeconOperator::nfft)
       {
@@ -630,32 +618,15 @@ TimeSeries CNRDeconEngine::actual_output(const TimeSeries& wavelet)
           nend = wavelet.npts();
         for(i=0;i<nend;++i) work[i] = wavelet.s[i];
       }
-      cout << "Size of work before fft"<<work.size()<<endl;
-      /*
-      cout << "work content before fft"<<endl;
-      for(size_t i=0;i<work.size();++i) cout << work[i]<<endl;
-      */
       ComplexArray W(FFTDeconOperator::nfft,&(work[0]));
       gsl_fft_complex_forward(W.ptr(),1,FFTDeconOperator::nfft,wavetable,workspace);
-      cout << "work and fft of work"<<endl;
-      for(size_t i=0;i<work.size();++i) cout <<W[i].real() <<" + "<<W[i].imag()<<"i "<< work[i]<<endl;
-      cout << "winv in actual_output"<<endl;
-      for(size_t i=0;i<this->winv.size();++i) cout <<this->winv[i].real() <<" + "<<this->winv[i].imag()<<"i "<< endl;
       ComplexArray ao_fft;
       ao_fft=this->winv*W;
-      cout << "After appying inverse"<<endl;
-      for(size_t i=0;i<ao_fft.size();++i) cout <<ao_fft[i].real() <<" + "<<ao_fft[i].imag()<<"i "<< endl;
       ComplexArray *stmp = this->shapingwavelet.wavelet();
-      cout << "shaping wavelet"<<endl;
-      for(size_t i=0;i<(*stmp).size();++i) cout <<(*stmp)[i].real() <<" + "<<(*stmp)[i].imag()<<"i "<< endl;
       /* We always apply the shaping wavelet - this perhaps should be optional
       but probably better done with a none option for the shaping wavelet */
       ao_fft=(*shapingwavelet.wavelet())*ao_fft;
-      cout << "After appying shaping wavelet"<<endl;
-      for(size_t i=0;i<ao_fft.size();++i) cout <<ao_fft[i].real() <<" + "<<ao_fft[i].imag()<<"i "<< work[i]<<endl;
       gsl_fft_complex_inverse(ao_fft.ptr(),1,FFTDeconOperator::nfft,wavetable,workspace);
-      cout << "ao_fft after inverse" << endl;
-      for(size_t i=0;i<ao_fft.size();++i) cout <<ao_fft[i].real() <<" + "<<ao_fft[i].imag()<<"i "<<endl;
       vector<double> ao;
       ao.reserve(FFTDeconOperator::nfft);
       for(int k=0; k<ao_fft.size(); ++k) ao.push_back(ao_fft[k].real());
@@ -663,16 +634,11 @@ TimeSeries CNRDeconEngine::actual_output(const TimeSeries& wavelet)
       We handle the time through the CoreTimeSeries object. */
       int i0=FFTDeconOperator::nfft/2;
       ao=circular_shift(ao,i0);
-      cout << "circular shift i0="<<i0<<endl;
-      cout << "ao data vector size="<<ao.size()<<endl;
-      cout << "aofft and ao data vector";
-      for(size_t i=0;i<ao.size();++i) cout <<ao_fft[i].real() <<" + "<<ao_fft[i].imag()<<"i "<< ao[i]<<endl;
       TimeSeries result(wavelet);  // Use this to clone metadata and elog from wavelet
       result.set_npts(FFTDeconOperator::nfft);
       /* Force these even though they are likely already defined as
       in the parent wavelet TimeSeries. */
       result.set_live();
-      //result.s=ao;
       result.set_t0(operator_dt*(-(double)i0));
       result.set_dt(this->operator_dt);
       result.set_tref(TimeReferenceType::Relative);
