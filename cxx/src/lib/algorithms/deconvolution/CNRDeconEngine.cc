@@ -284,7 +284,7 @@ PowerSpectrum CNRDeconEngine::compute_noise_spectrum(const Seismogram& n)
     /* We define total power as the average on all three
     components */
     double scl=1.0/3.0;
-    for(int i=0;i<avg3c.nf();++i)
+    for(size_t i=0;i<avg3c.nf();++i)
          avg3c.spectrum[i]*=scl;
     return avg3c;
   }catch(...){throw;};
@@ -612,14 +612,50 @@ TimeSeries CNRDeconEngine::ideal_output()
 TimeSeries CNRDeconEngine::actual_output(const TimeSeries& wavelet)
 {
   try {
-      ComplexArray W(FFTDeconOperator::nfft,wavelet.s[0]);
+    cout << "Entered actual_output; npts in wavelet="<<wavelet.npts()<<endl;
+    cout << "fft size="<<FFTDeconOperator::nfft<<endl;
+      std::vector<double> work;
+      if(wavelet.npts() == FFTDeconOperator::nfft)
+      {
+        work = wavelet.s;
+      }
+      else
+      {
+        work.reserve(FFTDeconOperator::nfft);
+        size_t i,nend;
+        for(i=0;i<FFTDeconOperator::nfft;++i) work.push_back(0.0);
+        if(wavelet.npts()>FFTDeconOperator::nfft)
+          nend = FFTDeconOperator::nfft;
+        else
+          nend = wavelet.npts();
+        for(i=0;i<nend;++i) work[i] = wavelet.s[i];
+      }
+      cout << "Size of work before fft"<<work.size()<<endl;
+      /*
+      cout << "work content before fft"<<endl;
+      for(size_t i=0;i<work.size();++i) cout << work[i]<<endl;
+      */
+      ComplexArray W(FFTDeconOperator::nfft,&(work[0]));
       gsl_fft_complex_forward(W.ptr(),1,FFTDeconOperator::nfft,wavetable,workspace);
+      cout << "work and fft of work"<<endl;
+      for(size_t i=0;i<work.size();++i) cout <<W[i].real() <<" + "<<W[i].imag()<<"i "<< work[i]<<endl;
+      cout << "winv in actual_output"<<endl;
+      for(size_t i=0;i<this->winv.size();++i) cout <<this->winv[i].real() <<" + "<<this->winv[i].imag()<<"i "<< endl;
       ComplexArray ao_fft;
-      ao_fft=winv*W;
+      ao_fft=this->winv*W;
+      cout << "After appying inverse"<<endl;
+      for(size_t i=0;i<ao_fft.size();++i) cout <<ao_fft[i].real() <<" + "<<ao_fft[i].imag()<<"i "<< endl;
+      ComplexArray *stmp = this->shapingwavelet.wavelet();
+      cout << "shaping wavelet"<<endl;
+      for(size_t i=0;i<(*stmp).size();++i) cout <<(*stmp)[i].real() <<" + "<<(*stmp)[i].imag()<<"i "<< endl;
       /* We always apply the shaping wavelet - this perhaps should be optional
       but probably better done with a none option for the shaping wavelet */
       ao_fft=(*shapingwavelet.wavelet())*ao_fft;
+      cout << "After appying shaping wavelet"<<endl;
+      for(size_t i=0;i<ao_fft.size();++i) cout <<ao_fft[i].real() <<" + "<<ao_fft[i].imag()<<"i "<< work[i]<<endl;
       gsl_fft_complex_inverse(ao_fft.ptr(),1,FFTDeconOperator::nfft,wavetable,workspace);
+      cout << "ao_fft after inverse" << endl;
+      for(size_t i=0;i<ao_fft.size();++i) cout <<ao_fft[i].real() <<" + "<<ao_fft[i].imag()<<"i "<<endl;
       vector<double> ao;
       ao.reserve(FFTDeconOperator::nfft);
       for(int k=0; k<ao_fft.size(); ++k) ao.push_back(ao_fft[k].real());
@@ -627,6 +663,10 @@ TimeSeries CNRDeconEngine::actual_output(const TimeSeries& wavelet)
       We handle the time through the CoreTimeSeries object. */
       int i0=FFTDeconOperator::nfft/2;
       ao=circular_shift(ao,i0);
+      cout << "circular shift i0="<<i0<<endl;
+      cout << "ao data vector size="<<ao.size()<<endl;
+      cout << "aofft and ao data vector";
+      for(size_t i=0;i<ao.size();++i) cout <<ao_fft[i].real() <<" + "<<ao_fft[i].imag()<<"i "<< ao[i]<<endl;
       TimeSeries result(wavelet);  // Use this to clone metadata and elog from wavelet
       result.set_npts(FFTDeconOperator::nfft);
       /* Force these even though they are likely already defined as
