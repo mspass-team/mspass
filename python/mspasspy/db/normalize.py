@@ -99,7 +99,14 @@ class BasicMatcher(ABC):
         if load_if_defined is None:
             self.load_if_defined = []
         else:
-            self.load_if_defined = load_if_defined
+            # make sure self.load_if_defined and self.attributes_to_load do
+            # not contain the same keys.   self.attributes_to_load will supercede
+            # a duplicate in self.load_if_defined.
+            self.load_if_defined = []
+            for item in load_if_defined:
+                if item not in self.attributes_to_load:
+                    self.load_if_defined.append(item)
+
         if aliases is None:
             self.aliases = dict()
         elif isinstance(aliases, dict):
