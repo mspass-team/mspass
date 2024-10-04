@@ -170,9 +170,13 @@ def CNRRFDecon(seis,
     There are some complexities in the use of this function due to 
     issue in how the operator is initialized.   That is, the engine 
     is generic and made to work for this single station and the 
-    related array algorithm found in this same module.   A key point is 
-    that the default will not work so some combination of kwarg 
-    value is required.
+    related array algorithm found in this same module.   A key point is
+    that entering the required arguments (0 and 1) alone will never 
+    work and some combination of kwarg values is always required 
+    for the function to run.   That is admittedly a bit weird but 
+    a necessary evil to use the generic engine for speed.
+    The choices are:
+    
     1.  For standard P wave receiver function estimates the simplest 
         model is to require `seis` to be a Seismogram object rotated so 
         that one component can be used as a wavelet.  (ZNR, LQT, or FST)
@@ -216,7 +220,9 @@ def CNRRFDecon(seis,
     The main work of this function is done inside a C++ function 
     bound to python of type `CNRDeconEngine` passed as the arg1 
     (symbol `engine`).   The engine is passed as an argument because 
-    it has a fairly high instantiation cost.   The standard 
+    it has a fairly high instantiation cost. 
+    
+
     key-value pairs:
         `algorithm` - "generalized_water_level" or "color_noise_damping"
         `damping_factor`
@@ -390,15 +396,16 @@ def CNRRFDecon(seis,
     # at at the document level will make queries on easier
     dout["CNRDecon_f_low"] = flow
     dout["CNRDecon_f_high"] = fhigh
-    return_value = []
-    return_value.append(dout)
+    retval = []
+    retval.append(dout)
     if return_wavelet:
-        return_value=[]
-        return_value.append(dout)
-        ao = engine.actual_output(wavelet)
-        return_value.append[ao]
+        retval=[]
+        retval.append(dout)
+        ao = engine.actual_output(w)
+        retval.append(ao)
         ideal_out = engine.ideal_output()
-        return_value.append(ideal_out)
+        retval.append(ideal_out)
+        return retval
     else:
         return dout
 
@@ -526,7 +533,7 @@ def CNRArrayDecon(ensemble,
         raise TypeError(message)
     if ensemble.dead():
         return [ensemble]
-    if not isinstance(beam,[TimeSeries,Seismogram]):
+    if not isinstance(beam,(TimeSeries,Seismogram)):
         message = "Illegal type for required arg1 = "
         message += str(type(beam))
         message += "\nMust be a TimeSeries or Seismogram"
@@ -605,18 +612,18 @@ def CNRArrayDecon(ensemble,
             # returns immediately if the datum is marked dead, but this 
             # makes the logic clear and the code base more robust for a near zero cost
             if d.live:
-                ensout.member[i] = engine.process(d,flow,fhigh)
-            
-    return_value=[]
-    return_value.append(ensout)
+                ensout.member[i] = engine.process(d,psnoise,flow,fhigh)
     if return_wavelet:
-        return_value = []
-        ao = engine.actual_output()
-        return_value.append[ao]
+        retval = []
+        retval.append(ensout)
+        ao = engine.actual_output(beam)
+        retval.append(ao)
         ideal_out = engine.ideal_output()
-        return_value.append(ideal_out)
+        retval.append(ideal_out)
+    else:
+        retval = ensout
         
-    return return_value
+    return retval
 
 
     
