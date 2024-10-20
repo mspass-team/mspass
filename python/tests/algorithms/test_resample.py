@@ -30,6 +30,7 @@ def test_resample():
     upsampler = ScipyResampler(250.0)
     tsup = upsampler.resample(ts)
     assert np.isclose(tsup.dt, 0.004)
+    assert np.isclose(tsup["sampling_rate"], 250.0)
     # This computed npts is more robust.  Otherwise changes in helper
     # would break it
     npup = int(ts_npts * 250.0 / 100.0)
@@ -41,12 +42,14 @@ def test_resample():
     # Note plots of this output show the auto antialiasing works as
     # advertised in scipy
     assert np.isclose(tsds.dt, 0.2)
+    assert np.isclose(tsds["sampling_rate"], 5.0)
     assert tsds.npts == int(ts_npts * 5.0 / 100.0)
     # Repeat same downsampling with decimate
     ts = TimeSeries(ts0)
     decimator = ScipyDecimator(5.0)
     tsds = decimator.resample(ts)
     assert np.isclose(tsds.dt, 0.2)
+    assert np.isclose(tsds["sampling_rate"], 5.0)
     # the documentation doesn't tell me why by the scipy decimate
     # function seems to round npts up rather than use int
     assert tsds.npts == int(ts_npts * 5.0 / 100.0) + 1
@@ -54,17 +57,20 @@ def test_resample():
     seis0 = Seismogram(seis)
     seis = upsampler.resample(seis)
     assert np.isclose(seis.dt, 0.004)
+    assert np.isclose(seis["sampling_rate"], 250.0)
     npup = int(seis0.npts * 250.0 / 20.0)
     assert seis.npts == npup
     seis = Seismogram(seis0)
     seis = ds_resampler.resample(seis)
     assert np.isclose(seis.dt, 0.2)
+    assert np.isclose(seis["sampling_rate"], 5.0)
     assert seis.npts == int(ts_npts * 5.0 / 20.0)
     seis = Seismogram(seis0)
     seis = decimator.resample(seis)
     # again the round issue noted above
     dec_npts = int(seis0.npts * 5.0 / 20.0) + 1
     assert np.isclose(seis.dt, 0.2)
+    assert np.isclose(seis["sampling_rate"], 5.0)
     assert seis.npts == dec_npts
 
     tse = get_live_timeseries_ensemble(5)
@@ -75,6 +81,7 @@ def test_resample():
     for d in tse.member:
         assert d.live
         assert np.isclose(d.dt, 0.004)
+        assert np.isclose(d["sampling_rate"], 250.0)
         assert d.npts == npup
 
     tse = TimeSeriesEnsemble(tse0)
@@ -83,6 +90,7 @@ def test_resample():
     for d in tse.member:
         assert d.live
         assert np.isclose(d.dt, 0.2)
+        assert np.isclose(d["sampling_rate"], 5.0)
         assert d.npts == npup
 
     tse = TimeSeriesEnsemble(tse0)
@@ -91,6 +99,7 @@ def test_resample():
     for d in tse.member:
         assert d.live
         assert np.isclose(d.dt, 0.2)
+        assert np.isclose(d["sampling_rate"], 5.0)
         assert d.npts == npup
 
     seis_e = get_live_seismogram_ensemble(3)
@@ -100,6 +109,7 @@ def test_resample():
     for d in seis_e.member:
         assert d.live
         assert np.isclose(d.dt, 0.004)
+        assert np.isclose(d["sampling_rate"], 250.0)
         assert d.npts == npup
 
     seis_e = SeismogramEnsemble(seis_e0)
@@ -108,6 +118,7 @@ def test_resample():
     for d in seis_e.member:
         assert d.live
         assert np.isclose(d.dt, 0.2)
+        assert np.isclose(d["sampling_rate"], 5.0)
         assert d.npts == npup
 
     seis_e = SeismogramEnsemble(seis_e0)
@@ -116,6 +127,7 @@ def test_resample():
     for d in seis_e.member:
         assert d.live
         assert np.isclose(d.dt, 0.2)
+        assert np.isclose(d["sampling_rate"], 5.0)
         assert d.npts == npup
     # Now test resample function.   We define two operators
     # for 40 sps target
@@ -124,12 +136,14 @@ def test_resample():
 
     d = resample(ts, decimate40, resample40)
     assert d.dt == 0.025
+    assert d["sampling_rate"] == 40.0
     assert d.live
     assert d.npts == 104
     # print(d.dt,d.live,d.npts)
     d = resample(ts0, decimate40, resample40)
     # print(d.dt,d.live,d.npts)
     assert d.dt == 0.025
+    assert d["sampling_rate"] == 40.0
     assert d.live
     assert d.npts == 101
     d = resample(tse0, decimate40, resample40)
@@ -137,6 +151,7 @@ def test_resample():
     for d in tse0.member:
         # print(d.dt,d.live,d.npts)
         assert d.dt == 0.025
+        assert d["sampling_rate"] == 40.0
         assert d.live
         assert d.npts == 510
     d = resample(tse, decimate40, resample40)
@@ -144,6 +159,7 @@ def test_resample():
     for d in tse0.member:
         # print(d.dt,d.live,d.npts)
         assert d.dt == 0.025
+        assert d["sampling_rate"] == 40.0
         assert d.live
         assert d.npts == 510
 
@@ -156,6 +172,7 @@ def test_resample():
     for d in seis_e.member:
         # print(d.dt,d.live,d.npts)
         assert d.dt == 0.025
+        assert d["sampling_rate"] == 40.0
         assert d.live
         assert d.npts == 512
     d = resample(seis_e0, decimate40, resample40)
@@ -163,6 +180,7 @@ def test_resample():
     for d in seis_e0.member:
         # print(d.dt,d.live,d.npts)
         assert d.dt == 0.025
+        assert d["sampling_rate"] == 40.0
         assert d.live
         assert d.npts == 510
 
