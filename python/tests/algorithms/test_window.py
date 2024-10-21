@@ -650,14 +650,15 @@ def test_windowdata_exceptions():
             assert d.data[i, j] == 0.0
     assert d.elog.size() == 1
 
+
 def test_WindowData_autopad():
     """
-    Tests function added September 2024 that uses a soft test 
-    for the data range.   Returns a fixed length signal that 
-    is padded unless the actual time span is too short as 
-    defined by the fractional_mismatch_limit argument.   
+    Tests function added September 2024 that uses a soft test
+    for the data range.   Returns a fixed length signal that
+    is padded unless the actual time span is too short as
+    defined by the fractional_mismatch_limit argument.
     The function is a higher level function using WindowData
-    so tests are limited to the features it adds and 
+    so tests are limited to the features it adds and
     additional exceptions it handles.
     """
     # this duplicates code in test_WindowData
@@ -677,57 +678,60 @@ def test_WindowData_autopad():
     # make copies because WindowData can alter content
     ts0 = TimeSeries(ts)
     se0 = Seismogram(se)
-    
-    # first verify the function works correctly if the 
+
+    # first verify the function works correctly if the
     # stime:etime range is entirely within the data
     ts = TimeSeries(ts0)
-    ts = WindowData_autopad(ts,ts.time(10),ts.time(50))
+    ts = WindowData_autopad(ts, ts.time(10), ts.time(50))
     assert ts.live
     assert ts.npts == 41
-    
+
     se = Seismogram(se0)
-    se = WindowData_autopad(se,se.time(10),se.time(50))
+    se = WindowData_autopad(se, se.time(10), se.time(50))
     assert se.live
     assert se.npts == 41
-    
-    # verify automatic zero padding of first and last sample 
+
+    # verify automatic zero padding of first and last sample
     # when stime and etime are specified as that
     ts = TimeSeries(ts0)
-    # the time method works with negative and resolves her 
+    # the time method works with negative and resolves her
     # to one sample before start and one sample after end time
-    ts = WindowData_autopad(ts,ts.time(-1),ts.time(npts))
+    ts = WindowData_autopad(ts, ts.time(-1), ts.time(npts))
     assert ts.live
     assert ts.npts == npts + 2
     # isclose is not needed here as this is a hard set 0
     assert ts.data[0] == 0.0
-    assert ts.data[npts+1] == 0.0
+    assert ts.data[npts + 1] == 0.0
     # similar for Seismogram
     se = Seismogram(se0)
-    # the time method works with negative and resolves her 
+    # the time method works with negative and resolves her
     # to one sample before start and one sample after end time
-    se = WindowData_autopad(se,se.time(-1),se.time(npts))
+    se = WindowData_autopad(se, se.time(-1), se.time(npts))
     assert se.live
     assert se.npts == npts + 2
     for k in range(3):
-        assert se.data[k,0] == 0.0
-        assert se.data[k,npts+1] == 0.0
-    
-    # test error handling for this function - not made a separate function 
-    # as it isn't that complex 
+        assert se.data[k, 0] == 0.0
+        assert se.data[k, npts + 1] == 0.0
+
+    # test error handling for this function - not made a separate function
+    # as it isn't that complex
     d_foo = TimeSeriesEnsemble(2)
     d_foo.member.append(ts)
     d_foo.set_live()
-    with pytest.raises(TypeError,match="arg0 must be either a TimeSeries or Seismogram object"):
+    with pytest.raises(
+        TypeError, match="arg0 must be either a TimeSeries or Seismogram object"
+    ):
         # need to send TimeSeriesEnsemble to bypass type check of function decorator
-        ts = WindowData_autopad(d_foo,se.time(10),se.time(50))
-    
+        ts = WindowData_autopad(d_foo, se.time(10), se.time(50))
+
     # only test this for TimeSeries - no reason to think it would behave differently for Seismogram
     ts = TimeSeries(ts0)
-    ts = WindowData_autopad(ts,ts.t0,ts.time(3*npts))
+    ts = WindowData_autopad(ts, ts.t0, ts.time(3 * npts))
     assert ts.dead()
     # this is actually 2 because it passes through WindowDataAtomic that also posts a log message
     # Using >= to make the test more robust in the event that changes
     assert ts.elog.size() >= 1
+
 
 def test_TopMute():
     ts = TimeSeries(100)
