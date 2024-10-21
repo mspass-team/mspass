@@ -229,6 +229,21 @@ class ScipyResampler(BasicResampler):
             )
             mspass_object.set_npts(n_resampled)
             mspass_object.dt = self.dt
+            # Check for "sampling_rate" attribute
+            if mspass_object.is_defined("sampling_rate"):
+                sampling_rate = mspass_object["sampling_rate"]
+                # Check if sampling_rate is consistent with 1/dt
+                if abs(sampling_rate - 1.0 / mspass_object.dt) > 1e-6:
+                    # Record inconsistency in error log (elog)
+                    message = "sampling_rate inconsistent with 1/dt; updating to 1/dt"
+                    mspass_object.elog.log_error("resample",
+                                                 message,
+                                                 ErrorSeverity.Complaint)
+                # Update sampling_rate to 1/dt
+                mspass_object["sampling_rate"] = 1.0 / mspass_object.dt
+            else:
+                # Set sampling_rate to 1/dt
+                mspass_object["sampling_rate"] = 1.0 / mspass_object.dt
             # We have to go through this conversion to avoid TypeError exceptions
             # i.e we can't just copy the entire vector rsdata to the data vector
             dv = DoubleVector(rsdata)
@@ -243,6 +258,21 @@ class ScipyResampler(BasicResampler):
             )
             mspass_object.set_npts(n_resampled)
             mspass_object.dt = self.dt
+            # Check for "sampling_rate" attribute
+            if mspass_object.is_defined("sampling_rate"):
+                sampling_rate = mspass_object["sampling_rate"]
+                # Check if sampling_rate is consistent with 1/dt
+                if abs(sampling_rate - 1.0 / mspass_object.dt) > 1e-6:
+                    # Record inconsistency in error log (elog)
+                    message = "sampling_rate inconsistent with 1/dt; updating to 1/dt"
+                    mspass_object.elog.log_error("resample",
+                                                 message,
+                                                 ErrorSeverity.Complaint)
+                # Update sampling_rate to 1/dt
+                mspass_object["sampling_rate"] = 1.0 / mspass_object.dt
+            else:
+                # Set sampling_rate to 1/dt
+                mspass_object["sampling_rate"] = 1.0 / mspass_object.dt
             # We have to go through this conversion to avoid TypeError exceptions
             # i.e we can't just copy the entire vector rsdata to the data vector
             dm = dmatrix(rsdata)
@@ -376,6 +406,21 @@ class ScipyDecimator(BasicResampler):
                 dsdata_npts = len(dsdata)
                 mspass_object.set_npts(dsdata_npts)
                 mspass_object.dt = self.dt
+                # Check for "sampling_rate" attribute
+                if mspass_object.is_defined("sampling_rate"):
+                    sampling_rate = mspass_object["sampling_rate"]
+                    # Check if sampling_rate is consistent with 1/dt
+                    if abs(sampling_rate - 1.0 / mspass_object.dt) > 1e-6:
+                        # Record inconsistency in error log (elog)
+                        message = "sampling_rate inconsistent with 1/dt; updating to 1/dt"
+                        mspass_object.elog.log_error("resample",
+                                                     message,
+                                                     ErrorSeverity.Complaint)
+                    # Update sampling_rate to 1/dt
+                    mspass_object["sampling_rate"] = 1.0 / mspass_object.dt
+                else:
+                    # Set sampling_rate to 1/dt
+                    mspass_object["sampling_rate"] = 1.0 / mspass_object.dt
                 # We have to go through this conversion to avoid TypeError exceptions
                 # i.e we can't just copy the entire vector rsdata to the data vector
                 mspass_object.data = DoubleVector(dsdata)
@@ -405,6 +450,21 @@ class ScipyDecimator(BasicResampler):
                 dsdata_npts = msize[1]
                 mspass_object.set_npts(dsdata_npts)
                 mspass_object.dt = self.dt
+                # Check for "sampling_rate" attribute
+                if mspass_object.is_defined("sampling_rate"):
+                    sampling_rate = mspass_object["sampling_rate"]
+                    # Check if sampling_rate is consistent with 1/dt
+                    if abs(sampling_rate - 1.0 / mspass_object.dt) > 1e-6:
+                        # Record inconsistency in error log (elog)
+                        message = "sampling_rate inconsistent with 1/dt; updating to 1/dt"
+                        mspass_object.elog.log_error("resample",
+                                                 message,
+                                                 ErrorSeverity.Complaint)
+                    # Update sampling_rate to 1/dt
+                    mspass_object["sampling_rate"] = 1.0 / mspass_object.dt
+                else:
+                    # Set sampling_rate to 1/dt
+                    mspass_object["sampling_rate"] = 1.0 / mspass_object.dt
                 # We have to go through this conversion to avoid TypeError exceptions
                 # i.e we can't just copy the entire vector rsdata to the data vector
                 mspass_object.data = dmatrix(dsdata)

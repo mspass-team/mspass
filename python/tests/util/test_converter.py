@@ -14,9 +14,10 @@ from helper import (
 from unittest import mock
 
 with mock.patch.dict(
-    sys.modules, {"pyspark": None, "dask": None, "dask.dataframe": None}
+        sys.modules, {"pyspark": None, "dask": None, "dask.dataframe": None}
 ):
     from mspasspy.util.converter import Textfile2Dataframe
+
 
     def test_Textfile2Dataframe_no_parallel():
         pf = AntelopePf("python/tests/data/test_import.pf")
@@ -64,7 +65,6 @@ with mock.patch.dict(
             df = Textfile2Dataframe(
                 textfile, header_line=0, parallel=p, insert_column={"test_col": 1}
             )
-
 
 from mspasspy.ccore.utility import dmatrix, Metadata, AntelopePf, MsPASSError
 from mspasspy.ccore.seismic import DoubleVector, Seismogram, TimeSeries
@@ -193,6 +193,7 @@ def test_Metadata2dict():
 
 
 def test_TimeSeries2Trace():
+    updateSamplingRateMessage = "sampling_rate inconsistent with 1/dt; updating to 1/dt"
     tr = TimeSeries2Trace(test_TimeSeries2Trace.ts1)
     assert tr.stats["delta"] == test_TimeSeries2Trace.ts1.dt
     assert tr.stats["sampling_rate"] == 1.0 / test_TimeSeries2Trace.ts1.dt
@@ -202,6 +203,65 @@ def test_TimeSeries2Trace():
     assert tr.stats["net"] == test_TimeSeries2Trace.ts1.get("net")
     assert tr.stats["npts"] == test_TimeSeries2Trace.ts1.get("npts")
     assert tr.stats["sampling_rate"] == test_TimeSeries2Trace.ts1.get("sampling_rate")
+    # error log should be empty or the message should not be updateSamplingRateMessage because the sampling_rate is defined and correct
+    assert test_TimeSeries2Trace.ts1.elog.size() == 0 or not test_TimeSeries2Trace.ts1.elog.get_error_log()[
+                                                                 0].message != updateSamplingRateMessage
+    # test for case when "sampling_rate" is not defined in ts1
+    # create a new copy of ts1 without "sampling_rate" defined
+    ts_size = 255
+    ts1_copy = TimeSeries()
+    ts1_copy.data = DoubleVector(np.random.rand(ts_size))
+    ts1_copy.live = True
+    ts1_copy.dt = test_TimeSeries2Trace.ts1.dt
+    ts1_copy.t0 = 0
+    ts1_copy.npts = ts_size
+    ts1_copy.put("net", "IU")
+    ts1_copy.put("npts", ts_size)
+    assert not ts1_copy.is_defined("sampling_rate")
+    tr = TimeSeries2Trace(ts1_copy)
+    # same test as former case with defined "sampling_rate"
+    assert tr.stats["delta"] == ts1_copy.dt
+    assert tr.stats["sampling_rate"] == 1.0 / ts1_copy.dt
+    assert tr.stats["npts"] == ts1_copy.npts
+    assert tr.stats["starttime"] == obspy.core.UTCDateTime(ts1_copy.t0)
+
+    assert tr.stats["net"] == ts1_copy.get("net")
+    assert tr.stats["npts"] == ts1_copy.get("npts")
+    assert tr.stats["sampling_rate"] == ts1_copy.get("sampling_rate")
+    # error log should be empty or the message should not be updateSamplingRateMessage because the sampling_rate is not defined
+    assert ts1_copy.elog.size() == 0 or not ts1_copy.elog.get_error_log()[0].message != updateSamplingRateMessage
+
+    # test for "sampling_rate" of ts1_copy
+    assert ts1_copy.is_defined("sampling_rate")
+    assert ts1_copy.get("sampling_rate") == 1.0 / ts1_copy.dt
+
+    # test for case when "sampling_rate" is defined wrongly in ts1
+    # create a new copy of ts1 with "sampling_rate" defined wrongly(a negative value)
+    ts_size = 255
+    sampling_rate = -20.0
+    ts1_copy = TimeSeries()
+    ts1_copy.data = DoubleVector(np.random.rand(ts_size))
+    ts1_copy.live = True
+    ts1_copy.dt = test_TimeSeries2Trace.ts1.dt
+    ts1_copy.t0 = 0
+    ts1_copy.npts = ts_size
+    ts1_copy.put("net", "IU")
+    ts1_copy.put("npts", ts_size)
+    ts1_copy.put("sampling_rate", sampling_rate)
+    assert ts1_copy.is_defined("sampling_rate")
+    tr = TimeSeries2Trace(ts1_copy)
+    # same test as former case with defined "sampling_rate"
+    assert tr.stats["delta"] == ts1_copy.dt
+    assert tr.stats["sampling_rate"] == 1.0 / ts1_copy.dt
+    assert tr.stats["npts"] == ts1_copy.npts
+    assert tr.stats["starttime"] == obspy.core.UTCDateTime(ts1_copy.t0)
+
+    assert tr.stats["net"] == ts1_copy.get("net")
+    assert tr.stats["npts"] == ts1_copy.get("npts")
+    assert tr.stats["sampling_rate"] == ts1_copy.get("sampling_rate")
+    # message of error log should be updateSamplingRateMessage because the sampling_rate is defined wrongly and need to be updated
+    assert ts1_copy.elog.get_error_log()[0].algorithm == "TimeSeries2Trace" and ts1_copy.elog.get_error_log()[
+        0].message == updateSamplingRateMessage
 
 
 def test_Trace2TimeSeries():
