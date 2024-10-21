@@ -139,6 +139,25 @@ def TimeSeries2Trace(ts):
     # These are required by obspy but optional in mspass.  Hence, we have
     # to extract them with caution.  Note defaults are identical to
     # Trace constructor
+
+    # Check for "sampling_rate" attribute
+    if ts.is_defined(Keywords.sampling_rate):
+        sampling_rate = ts["sampling_rate"]
+        # Check if sampling_rate is consistent with 1/dt
+        if abs(sampling_rate - 1.0 / ts.dt) > 1e-6:
+            # Record inconsistency in error log (elog)
+            message = "sampling_rate inconsistent with 1/dt; updating to 1/dt"
+            ts.elog.log_error("TimeSeries2Trace",
+                             message,
+                             ErrorSeverity.Complaint)
+        # Update sampling_rate to 1/dt
+        ts["sampling_rate"] = 1.0 / ts.dt
+        dresult.stats["sampling_rate"] = 1.0 / ts.dt
+    else:
+        # Set sampling_rate to 1/dt
+        ts["sampling_rate"] = 1.0 / ts.dt
+        dresult.stats["sampling_rate"] = 1.0 / ts.dt
+
     if ts.is_defined(Keywords.net):
         dresult.stats["network"] = ts.get_string(Keywords.net)
     else:
@@ -167,6 +186,7 @@ def TimeSeries2Trace(ts):
     # are computed by Trace (i.e. endtime) or are already set above
     do_not_copy = [
         "delta",
+        "sampling_rate",
         "npts",
         "starttime",
         "endtime",
