@@ -236,9 +236,9 @@ class ScipyResampler(BasicResampler):
                 if abs(sampling_rate - 1.0 / mspass_object.dt) > 1e-6:
                     # Record inconsistency in error log (elog)
                     message = "sampling_rate inconsistent with 1/dt; updating to 1/dt"
-                    mspass_object.elog.log_error("TimeSeries2Trace",
+                    mspass_object.elog.log_error("resample",
                                                  message,
-                                                 ErrorSeverity.Invalid)
+                                                 ErrorSeverity.Complaint)
                 # Update sampling_rate to 1/dt
                 mspass_object["sampling_rate"] = 1.0 / mspass_object.dt
             else:
@@ -265,9 +265,9 @@ class ScipyResampler(BasicResampler):
                 if abs(sampling_rate - 1.0 / mspass_object.dt) > 1e-6:
                     # Record inconsistency in error log (elog)
                     message = "sampling_rate inconsistent with 1/dt; updating to 1/dt"
-                    mspass_object.elog.log_error("TimeSeries2Trace",
+                    mspass_object.elog.log_error("resample",
                                                  message,
-                                                 ErrorSeverity.Invalid)
+                                                 ErrorSeverity.Complaint)
                 # Update sampling_rate to 1/dt
                 mspass_object["sampling_rate"] = 1.0 / mspass_object.dt
             else:
@@ -413,9 +413,9 @@ class ScipyDecimator(BasicResampler):
                     if abs(sampling_rate - 1.0 / mspass_object.dt) > 1e-6:
                         # Record inconsistency in error log (elog)
                         message = "sampling_rate inconsistent with 1/dt; updating to 1/dt"
-                        mspass_object.elog.log_error("TimeSeries2Trace",
-                                          message,
-                                          ErrorSeverity.Invalid)
+                        mspass_object.elog.log_error("resample",
+                                                     message,
+                                                     ErrorSeverity.Complaint)
                     # Update sampling_rate to 1/dt
                     mspass_object["sampling_rate"] = 1.0 / mspass_object.dt
                 else:
@@ -457,9 +457,9 @@ class ScipyDecimator(BasicResampler):
                     if abs(sampling_rate - 1.0 / mspass_object.dt) > 1e-6:
                         # Record inconsistency in error log (elog)
                         message = "sampling_rate inconsistent with 1/dt; updating to 1/dt"
-                        mspass_object.elog.log_error("TimeSeries2Trace",
-                                                     message,
-                                                     ErrorSeverity.Invalid)
+                        mspass_object.elog.log_error("resample",
+                                                 message,
+                                                 ErrorSeverity.Complaint)
                     # Update sampling_rate to 1/dt
                     mspass_object["sampling_rate"] = 1.0 / mspass_object.dt
                 else:

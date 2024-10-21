@@ -149,7 +149,7 @@ def TimeSeries2Trace(ts):
             message = "sampling_rate inconsistent with 1/dt; updating to 1/dt"
             ts.elog.log_error("TimeSeries2Trace",
                              message,
-                             ErrorSeverity.Invalid)
+                             ErrorSeverity.Complaint)
         # Update sampling_rate to 1/dt
         ts["sampling_rate"] = 1.0 / ts.dt
         dresult.stats["sampling_rate"] = 1.0 / ts.dt
