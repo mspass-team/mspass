@@ -98,5 +98,5 @@ setup(
     ),
     package_data={"": ["*.yaml", "*.pf"]},
     include_package_data=True,
-    install_requires=["pyyaml"],
+    install_requires = ["pyyaml"]
 )
