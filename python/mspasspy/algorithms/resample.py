@@ -236,9 +236,9 @@ class ScipyResampler(BasicResampler):
                 if abs(sampling_rate - 1.0 / mspass_object.dt) > 1e-6:
                     # Record inconsistency in error log (elog)
                     message = "sampling_rate inconsistent with 1/dt; updating to 1/dt"
-                    mspass_object.elog.log_error("resample",
-                                                 message,
-                                                 ErrorSeverity.Complaint)
+                    mspass_object.elog.log_error(
+                        "resample", message, ErrorSeverity.Complaint
+                    )
                 # Update sampling_rate to 1/dt
                 mspass_object["sampling_rate"] = 1.0 / mspass_object.dt
             else:
@@ -265,9 +265,9 @@ class ScipyResampler(BasicResampler):
                 if abs(sampling_rate - 1.0 / mspass_object.dt) > 1e-6:
                     # Record inconsistency in error log (elog)
                     message = "sampling_rate inconsistent with 1/dt; updating to 1/dt"
-                    mspass_object.elog.log_error("resample",
-                                                 message,
-                                                 ErrorSeverity.Complaint)
+                    mspass_object.elog.log_error(
+                        "resample", message, ErrorSeverity.Complaint
+                    )
                 # Update sampling_rate to 1/dt
                 mspass_object["sampling_rate"] = 1.0 / mspass_object.dt
             else:
@@ -412,10 +412,12 @@ class ScipyDecimator(BasicResampler):
                     # Check if sampling_rate is consistent with 1/dt
                     if abs(sampling_rate - 1.0 / mspass_object.dt) > 1e-6:
                         # Record inconsistency in error log (elog)
-                        message = "sampling_rate inconsistent with 1/dt; updating to 1/dt"
-                        mspass_object.elog.log_error("resample",
-                                                     message,
-                                                     ErrorSeverity.Complaint)
+                        message = (
+                            "sampling_rate inconsistent with 1/dt; updating to 1/dt"
+                        )
+                        mspass_object.elog.log_error(
+                            "resample", message, ErrorSeverity.Complaint
+                        )
                     # Update sampling_rate to 1/dt
                     mspass_object["sampling_rate"] = 1.0 / mspass_object.dt
                 else:
@@ -456,10 +458,12 @@ class ScipyDecimator(BasicResampler):
                     # Check if sampling_rate is consistent with 1/dt
                     if abs(sampling_rate - 1.0 / mspass_object.dt) > 1e-6:
                         # Record inconsistency in error log (elog)
-                        message = "sampling_rate inconsistent with 1/dt; updating to 1/dt"
-                        mspass_object.elog.log_error("resample",
-                                                 message,
-                                                 ErrorSeverity.Complaint)
+                        message = (
+                            "sampling_rate inconsistent with 1/dt; updating to 1/dt"
+                        )
+                        mspass_object.elog.log_error(
+                            "resample", message, ErrorSeverity.Complaint
+                        )
                     # Update sampling_rate to 1/dt
                     mspass_object["sampling_rate"] = 1.0 / mspass_object.dt
                 else:
