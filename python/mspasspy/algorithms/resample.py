@@ -208,8 +208,8 @@ class ScipyResampler(BasicResampler):
         # We do this test at the top to avoid having returns testing for
         # a dead datum in each of the if conditional blocks below
         if isinstance(
-                mspass_object,
-                (TimeSeries, Seismogram, TimeSeriesEnsemble, SeismogramEnsemble),
+            mspass_object,
+            (TimeSeries, Seismogram, TimeSeriesEnsemble, SeismogramEnsemble),
         ):
             if mspass_object.dead():
                 return mspass_object
@@ -221,7 +221,7 @@ class ScipyResampler(BasicResampler):
 
         if isinstance(mspass_object, TimeSeries):
             data_time_span = (
-                    mspass_object.endtime() - mspass_object.t0 + mspass_object.dt
+                mspass_object.endtime() - mspass_object.t0 + mspass_object.dt
             )
             n_resampled = int(data_time_span * self.samprate)
             rsdata = signal.resample(
@@ -236,7 +236,7 @@ class ScipyResampler(BasicResampler):
             mspass_object.data = dv
         elif isinstance(mspass_object, Seismogram):
             data_time_span = (
-                    mspass_object.endtime() - mspass_object.t0 + mspass_object.dt
+                mspass_object.endtime() - mspass_object.t0 + mspass_object.dt
             )
             n_resampled = int(data_time_span * self.samprate)
             rsdata = signal.resample(
@@ -348,8 +348,8 @@ class ScipyDecimator(BasicResampler):
         # We do this test at the top to avoid having returns testing for
         # a dead datum in each of the if conditional blocks below
         if isinstance(
-                mspass_object,
-                (TimeSeries, Seismogram, TimeSeriesEnsemble, SeismogramEnsemble),
+            mspass_object,
+            (TimeSeries, Seismogram, TimeSeriesEnsemble, SeismogramEnsemble),
         ):
             if mspass_object.dead():
                 return mspass_object
@@ -426,16 +426,16 @@ class ScipyDecimator(BasicResampler):
 
 @mspass_func_wrapper
 def resample(
-        mspass_object,
-        decimator,
-        resampler,
-        verify_operators=True,
-        object_history=False,
-        alg_name="resample",
-        alg_id=None,
-        dryrun=False,
-        inplace_return=False,
-        function_return_key=None,
+    mspass_object,
+    decimator,
+    resampler,
+    verify_operators=True,
+    object_history=False,
+    alg_name="resample",
+    alg_id=None,
+    dryrun=False,
+    inplace_return=False,
+    function_return_key=None,
 ):
     """
     Resample any valid data object to a common sample rate (sample interval).
