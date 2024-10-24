@@ -4375,9 +4375,12 @@ class Database(pymongo.database.Database):
         fh = gfsh.get(file_id=gridfs_id)
         if isinstance(mspass_object, (TimeSeries, Seismogram)):
             if not mspass_object.is_defined("npts"):
-                raise KeyError(
-                    "Database._read_data_from_gridfs:  Required key npts is not defined"
-                )
+                message = "Required key npts is not defined in the document for this datum"
+                mspass_object.elog.log_error("Database._read_data_from_gridfs",
+                                             message,
+                                             ErrorSeverity.Invalid)
+                mspass_object.kill()
+                return 
             else:
                 if mspass_object.npts != mspass_object["npts"]:
                     message = "Database._read_data_from_gridfs: "
@@ -4396,19 +4399,22 @@ class Database(pymongo.database.Database):
             np_arr = np.frombuffer(fh.read(npts * 8 * 3))
             file_size = fh.tell()
             if file_size != npts * 8 * 3:
-                # Note we can only detect the cases where given npts is larger than
-                # the number of points in the file
-                emess = (
-                    "Database._read_data_from_gridfs: Size mismatch in sample data. Number of points in gridfs file = %d but expected %d"
-                    % (file_size / 8, (3 * mspass_object["npts"]))
-                )
-                raise ValueError(emess)
+                message = "Size mismatch in sample data.\n"
+                message += "Number of points in gridfs file=%d but wf document expected %d".format(file_size/8, (3 * mspass_object["npts"]))
+                mspass_object.elog.log_error("Database._read_data_from_gridfs",
+                                             message,
+                                             ErrorSeverity.Invalid,
+                                             )
+                mspass_object.kill()
+                return
             # v1 did a transpose on write that this reversed - unnecessary
             # np_arr = np_arr.reshape(npts, 3).transpose()
             np_arr = np_arr.reshape(3, npts)
             mspass_object.data = dmatrix(np_arr)
         else:
-            raise TypeError("only TimeSeries and Seismogram are supported")
+            message = "Database._read_data_from_gridfs:  arg0 must be a TimeSeries or Seismogram\n"
+            message += "Actual type=" + str(type(mspass_object))
+            raise TypeError(message)
         if mspass_object.npts > 0:
             mspass_object.set_live()
         else:
