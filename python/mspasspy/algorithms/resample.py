@@ -208,8 +208,8 @@ class ScipyResampler(BasicResampler):
         # We do this test at the top to avoid having returns testing for
         # a dead datum in each of the if conditional blocks below
         if isinstance(
-            mspass_object,
-            (TimeSeries, Seismogram, TimeSeriesEnsemble, SeismogramEnsemble),
+                mspass_object,
+                (TimeSeries, Seismogram, TimeSeriesEnsemble, SeismogramEnsemble),
         ):
             if mspass_object.dead():
                 return mspass_object
@@ -221,7 +221,7 @@ class ScipyResampler(BasicResampler):
 
         if isinstance(mspass_object, TimeSeries):
             data_time_span = (
-                mspass_object.endtime() - mspass_object.t0 + mspass_object.dt
+                    mspass_object.endtime() - mspass_object.t0 + mspass_object.dt
             )
             n_resampled = int(data_time_span * self.samprate)
             rsdata = signal.resample(
@@ -229,28 +229,14 @@ class ScipyResampler(BasicResampler):
             )
             mspass_object.set_npts(n_resampled)
             mspass_object.dt = self.dt
-            # Check for "sampling_rate" attribute
-            if mspass_object.is_defined("sampling_rate"):
-                sampling_rate = mspass_object["sampling_rate"]
-                # Check if sampling_rate is consistent with 1/dt
-                if abs(sampling_rate - 1.0 / mspass_object.dt) > 1e-6:
-                    # Record inconsistency in error log (elog)
-                    message = "sampling_rate inconsistent with 1/dt; updating to 1/dt"
-                    mspass_object.elog.log_error("resample",
-                                                 message,
-                                                 ErrorSeverity.Complaint)
-                # Update sampling_rate to 1/dt
-                mspass_object["sampling_rate"] = 1.0 / mspass_object.dt
-            else:
-                # Set sampling_rate to 1/dt
-                mspass_object["sampling_rate"] = 1.0 / mspass_object.dt
+            mspass_object["sampling_rate"] = self.samprate
             # We have to go through this conversion to avoid TypeError exceptions
             # i.e we can't just copy the entire vector rsdata to the data vector
             dv = DoubleVector(rsdata)
             mspass_object.data = dv
         elif isinstance(mspass_object, Seismogram):
             data_time_span = (
-                mspass_object.endtime() - mspass_object.t0 + mspass_object.dt
+                    mspass_object.endtime() - mspass_object.t0 + mspass_object.dt
             )
             n_resampled = int(data_time_span * self.samprate)
             rsdata = signal.resample(
@@ -258,21 +244,7 @@ class ScipyResampler(BasicResampler):
             )
             mspass_object.set_npts(n_resampled)
             mspass_object.dt = self.dt
-            # Check for "sampling_rate" attribute
-            if mspass_object.is_defined("sampling_rate"):
-                sampling_rate = mspass_object["sampling_rate"]
-                # Check if sampling_rate is consistent with 1/dt
-                if abs(sampling_rate - 1.0 / mspass_object.dt) > 1e-6:
-                    # Record inconsistency in error log (elog)
-                    message = "sampling_rate inconsistent with 1/dt; updating to 1/dt"
-                    mspass_object.elog.log_error("resample",
-                                                 message,
-                                                 ErrorSeverity.Complaint)
-                # Update sampling_rate to 1/dt
-                mspass_object["sampling_rate"] = 1.0 / mspass_object.dt
-            else:
-                # Set sampling_rate to 1/dt
-                mspass_object["sampling_rate"] = 1.0 / mspass_object.dt
+            mspass_object["sampling_rate"] = self.samprate
             # We have to go through this conversion to avoid TypeError exceptions
             # i.e we can't just copy the entire vector rsdata to the data vector
             dm = dmatrix(rsdata)
@@ -376,8 +348,8 @@ class ScipyDecimator(BasicResampler):
         # We do this test at the top to avoid having returns testing for
         # a dead datum in each of the if conditional blocks below
         if isinstance(
-            mspass_object,
-            (TimeSeries, Seismogram, TimeSeriesEnsemble, SeismogramEnsemble),
+                mspass_object,
+                (TimeSeries, Seismogram, TimeSeriesEnsemble, SeismogramEnsemble),
         ):
             if mspass_object.dead():
                 return mspass_object
@@ -406,21 +378,7 @@ class ScipyDecimator(BasicResampler):
                 dsdata_npts = len(dsdata)
                 mspass_object.set_npts(dsdata_npts)
                 mspass_object.dt = self.dt
-                # Check for "sampling_rate" attribute
-                if mspass_object.is_defined("sampling_rate"):
-                    sampling_rate = mspass_object["sampling_rate"]
-                    # Check if sampling_rate is consistent with 1/dt
-                    if abs(sampling_rate - 1.0 / mspass_object.dt) > 1e-6:
-                        # Record inconsistency in error log (elog)
-                        message = "sampling_rate inconsistent with 1/dt; updating to 1/dt"
-                        mspass_object.elog.log_error("resample",
-                                                     message,
-                                                     ErrorSeverity.Complaint)
-                    # Update sampling_rate to 1/dt
-                    mspass_object["sampling_rate"] = 1.0 / mspass_object.dt
-                else:
-                    # Set sampling_rate to 1/dt
-                    mspass_object["sampling_rate"] = 1.0 / mspass_object.dt
+                mspass_object["sampling_rate"] = self.samprate
                 # We have to go through this conversion to avoid TypeError exceptions
                 # i.e we can't just copy the entire vector rsdata to the data vector
                 mspass_object.data = DoubleVector(dsdata)
@@ -450,21 +408,7 @@ class ScipyDecimator(BasicResampler):
                 dsdata_npts = msize[1]
                 mspass_object.set_npts(dsdata_npts)
                 mspass_object.dt = self.dt
-                # Check for "sampling_rate" attribute
-                if mspass_object.is_defined("sampling_rate"):
-                    sampling_rate = mspass_object["sampling_rate"]
-                    # Check if sampling_rate is consistent with 1/dt
-                    if abs(sampling_rate - 1.0 / mspass_object.dt) > 1e-6:
-                        # Record inconsistency in error log (elog)
-                        message = "sampling_rate inconsistent with 1/dt; updating to 1/dt"
-                        mspass_object.elog.log_error("resample",
-                                                 message,
-                                                 ErrorSeverity.Complaint)
-                    # Update sampling_rate to 1/dt
-                    mspass_object["sampling_rate"] = 1.0 / mspass_object.dt
-                else:
-                    # Set sampling_rate to 1/dt
-                    mspass_object["sampling_rate"] = 1.0 / mspass_object.dt
+                mspass_object["sampling_rate"] = self.samprate
                 # We have to go through this conversion to avoid TypeError exceptions
                 # i.e we can't just copy the entire vector rsdata to the data vector
                 mspass_object.data = dmatrix(dsdata)
@@ -482,16 +426,16 @@ class ScipyDecimator(BasicResampler):
 
 @mspass_func_wrapper
 def resample(
-    mspass_object,
-    decimator,
-    resampler,
-    verify_operators=True,
-    object_history=False,
-    alg_name="resample",
-    alg_id=None,
-    dryrun=False,
-    inplace_return=False,
-    function_return_key=None,
+        mspass_object,
+        decimator,
+        resampler,
+        verify_operators=True,
+        object_history=False,
+        alg_name="resample",
+        alg_id=None,
+        dryrun=False,
+        inplace_return=False,
+        function_return_key=None,
 ):
     """
     Resample any valid data object to a common sample rate (sample interval).
