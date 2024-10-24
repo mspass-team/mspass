@@ -15,6 +15,7 @@ from helper import get_live_timeseries
 
 pn_model = sbm.PhaseNet.from_pretrained("stead")
 
+
 def test_annotate_arrival_time():
     """
     Test the annotate_arrival_time function.
@@ -26,7 +27,7 @@ def test_annotate_arrival_time():
     # picks from mspass
     timeseries = Trace2TimeSeries(stream[0])
     annotate_arrival_time(timeseries, 0)
-    mspass_picks = timeseries["p_wave_picks"] # should be a dictionary
+    mspass_picks = timeseries["p_wave_picks"]  # should be a dictionary
     # assert that for each pick, the value is a float number that is between 0 and 1
     assert all(0 <= value <= 1 for value in mspass_picks.values())
 
@@ -34,7 +35,7 @@ def test_annotate_arrival_time():
     pn_preds = pn_model.annotate(Stream(stream[0]))
     trace = pn_preds[0]
     assert trace.stats.channel == "PhaseNet_P"
-    seis_picks = trace.times("timestamp") # should be an array
+    seis_picks = trace.times("timestamp")  # should be an array
 
     # Convert both to sets of rounded values
     mspass_set = set(round(v, 6) for v in mspass_picks.keys())
@@ -42,6 +43,7 @@ def test_annotate_arrival_time():
 
     # Compare the sets
     assert mspass_set == seis_set
+
 
 def test_annotate_arrival_time_threshold():
     """
@@ -64,6 +66,7 @@ def test_annotate_arrival_time_threshold():
     # assert that the number of picks from mspass is less than the number of picks from seisbench
     assert len(mspass_picks) < len(seis_picks)
 
+
 def test_annotate_arrival_time_window():
     """
     Test the annotate_arrival_time function with a time window.
@@ -76,7 +79,9 @@ def test_annotate_arrival_time_window():
     timeseries = Trace2TimeSeries(stream[0])
     window_start = UTCDateTime(2009, 4, 6, 1, 30).timestamp
     window_end = window_start + 1000
-    annotate_arrival_time(timeseries, threshold = 0, time_window=TimeWindow(window_start, window_end))
+    annotate_arrival_time(
+        timeseries, threshold=0, time_window=TimeWindow(window_start, window_end)
+    )
     mspass_picks = timeseries["p_wave_picks"]
 
     assert len(mspass_picks.keys()) > 0
@@ -97,6 +102,7 @@ def test_annotate_arrival_time_window():
     # Compare the sets
     assert mspass_set == seis_set
 
+
 def test_annotate_arrival_time_for_mseed():
     """
     Test the annotate_arrival_time function for a mseed file.
@@ -108,8 +114,10 @@ def test_annotate_arrival_time_for_mseed():
     timeseries = Trace2TimeSeries(trace)
 
     window_start = UTCDateTime(2011, 3, 11, 6, 35).timestamp
-    window_end = window_start + 1200 # 20 minutes
-    annotate_arrival_time(timeseries, 0.1, time_window=TimeWindow(window_start, window_end))
+    window_end = window_start + 1200  # 20 minutes
+    annotate_arrival_time(
+        timeseries, 0.1, time_window=TimeWindow(window_start, window_end)
+    )
     mspass_picks = timeseries["p_wave_picks"]
 
     # assert the picks are not empty
@@ -130,13 +138,14 @@ def test_annotate_arrival_time_for_mseed():
 
     # Convert both to sets of rounded values
     mspass_set = set(round(v, 6) for v in mspass_picks.keys())
-    seis_set = set(round(v, 6) for v in seis_picks) 
+    seis_set = set(round(v, 6) for v in seis_picks)
 
     # every pick in mspass should be in seisbench
     assert mspass_set.issubset(seis_set)
 
     # assert that the number of picks from mspass is less than the number of picks from seisbench
     assert len(mspass_picks) < len(seis_picks)
+
 
 def get_mseed_trace_for_test():
     file_path = os.path.join(os.getcwd(), "python/tests/data/db_mseeds/test_277.mseed")
@@ -157,6 +166,7 @@ def get_trace_for_test():
         starttime=t,
         endtime=t + 3600,
     )
+
 
 if __name__ == "__main__":
     test_annotate_arrival_time_window()
