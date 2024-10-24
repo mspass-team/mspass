@@ -147,9 +147,7 @@ def TimeSeries2Trace(ts):
         if abs(sampling_rate - 1.0 / ts.dt) > 1e-6:
             # Record inconsistency in error log (elog)
             message = "sampling_rate inconsistent with 1/dt; updating to 1/dt"
-            ts.elog.log_error("TimeSeries2Trace",
-                             message,
-                             ErrorSeverity.Complaint)
+            ts.elog.log_error("TimeSeries2Trace", message, ErrorSeverity.Complaint)
         # Update sampling_rate to 1/dt
         ts["sampling_rate"] = 1.0 / ts.dt
         dresult.stats["sampling_rate"] = 1.0 / ts.dt
