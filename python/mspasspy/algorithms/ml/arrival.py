@@ -40,7 +40,11 @@ def annotate_arrival_time(
 
     # Check the input arguments
     if not 0 <= threshold <= 1:
-        logging.warning('Threshold should be in the range of [0, 1]. Using default threshold {}}'.format(default_threshold))
+        logging.warning(
+            "Threshold should be in the range of [0, 1]. Using default threshold {}}".format(
+                default_threshold
+            )
+        )
         threshold = default_threshold
 
     # convert timeseries to absolute time
@@ -51,7 +55,11 @@ def annotate_arrival_time(
         # 'stead' model was trained on STEAD for 100 epochs with a learning rate of 0.01.
         # use sbm.PhaseNet.list_pretrained(details=True) to list out other supported models
         # when using this model, please reference the SeisBench publications listed at https://github.com/seisbench/seisbench
-        pretrained_model = "stead" if (model_args == None or "name" not in model_args) else model_args["name"]
+        pretrained_model = (
+            "stead"
+            if (model_args == None or "name" not in model_args)
+            else model_args["name"]
+        )
         model = sbm.PhaseNet.from_pretrained(pretrained_model)
 
     ts_ensemble = TimeSeriesEnsemble()
@@ -59,23 +67,26 @@ def annotate_arrival_time(
     stream = ts_ensemble.toStream()
 
     # apply the window if provided and convert time series to stream
-    start_time_utc = stream[0].stats.starttime.timestamp # UTC timestamp
-    end_time_utc = stream[0].stats.endtime.timestamp # UTC timestamp
+    start_time_utc = stream[0].stats.starttime.timestamp  # UTC timestamp
+    end_time_utc = stream[0].stats.endtime.timestamp  # UTC timestamp
 
     # adjust the time window if it is out of the time range of the time series
     if time_window:
         if time_window.end < start_time_utc or time_window.start > end_time_utc:
             time_window.start = start_time_utc
             time_window.end = end_time_utc
-            logging.warning('Time window is out of the time range of the time series. Adjusting the time window to the time range of the time series.')
+            logging.warning(
+                "Time window is out of the time range of the time series. Adjusting the time window to the time range of the time series."
+            )
         if time_window.end > end_time_utc:
             time_window.end = end_time_utc
         if time_window.start < start_time_utc:
             time_window.start = start_time_utc
-    
+
     windowed_stream = (
-        stream.trim(UTCDateTime(time_window.start), UTCDateTime(time_window.end)) \
-        if time_window else stream
+        stream.trim(UTCDateTime(time_window.start), UTCDateTime(time_window.end))
+        if time_window
+        else stream
     )
 
     # prediction result is the probability for picks over time

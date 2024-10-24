@@ -908,8 +908,8 @@ def WindowData_autopad(
     return dw
 
 
-# TODO:   this function does not support history mechanism because the 
-# standard decorator is does not support a bound std::vector<TimeSeries> 
+# TODO:   this function does not support history mechanism because the
+# standard decorator is does not support a bound std::vector<TimeSeries>
 # container.  I requires one of the four MsPASS data objects.
 def merge(
     tsvector,
@@ -1059,7 +1059,7 @@ def merge(
       dead.  When set True, gaps will be zeroed and with a record of
       gap positions posted to the Metadata of the output.  See above
       for details.
-    :param zero_gaps:  boolean controlling how gaps are to be handled. 
+    :param zero_gaps:  boolean controlling how gaps are to be handled.
     See above for details of the algorithm.
     :type zero_gaps:  boolean (default False)
     :param object_history: boolean to enable or disable saving object
