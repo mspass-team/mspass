@@ -370,21 +370,7 @@
             <span class="p">)</span>
             <span class="n">mspass_object</span><span class="o">.</span><span class="n">set_npts</span><span class="p">(</span><span class="n">n_resampled</span><span class="p">)</span>
             <span class="n">mspass_object</span><span class="o">.</span><span class="n">dt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span>
-            <span class="c1"># Check for &quot;sampling_rate&quot; attribute</span>
-            <span class="k">if</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="s2">&quot;sampling_rate&quot;</span><span class="p">):</span>
-                <span class="n">sampling_rate</span> <span class="o">=</span> <span class="n">mspass_object</span><span class="p">[</span><span class="s2">&quot;sampling_rate&quot;</span><span class="p">]</span>
-                <span class="c1"># Check if sampling_rate is consistent with 1/dt</span>
-                <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">sampling_rate</span> <span class="o">-</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">dt</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">1e-6</span><span class="p">:</span>
-                    <span class="c1"># Record inconsistency in error log (elog)</span>
-                    <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;sampling_rate inconsistent with 1/dt; updating to 1/dt&quot;</span>
-                    <span class="n">mspass_object</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="s2">&quot;resample&quot;</span><span class="p">,</span>
-                                                 <span class="n">message</span><span class="p">,</span>
-                                                 <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span><span class="p">)</span>
-                <span class="c1"># Update sampling_rate to 1/dt</span>
-                <span class="n">mspass_object</span><span class="p">[</span><span class="s2">&quot;sampling_rate&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">dt</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="c1"># Set sampling_rate to 1/dt</span>
-                <span class="n">mspass_object</span><span class="p">[</span><span class="s2">&quot;sampling_rate&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">dt</span>
+            <span class="n">mspass_object</span><span class="p">[</span><span class="s2">&quot;sampling_rate&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">samprate</span>
             <span class="c1"># We have to go through this conversion to avoid TypeError exceptions</span>
             <span class="c1"># i.e we can&#39;t just copy the entire vector rsdata to the data vector</span>
             <span class="n">dv</span> <span class="o">=</span> <span class="n">DoubleVector</span><span class="p">(</span><span class="n">rsdata</span><span class="p">)</span>
@@ -399,21 +385,7 @@
             <span class="p">)</span>
             <span class="n">mspass_object</span><span class="o">.</span><span class="n">set_npts</span><span class="p">(</span><span class="n">n_resampled</span><span class="p">)</span>
             <span class="n">mspass_object</span><span class="o">.</span><span class="n">dt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span>
-            <span class="c1"># Check for &quot;sampling_rate&quot; attribute</span>
-            <span class="k">if</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="s2">&quot;sampling_rate&quot;</span><span class="p">):</span>
-                <span class="n">sampling_rate</span> <span class="o">=</span> <span class="n">mspass_object</span><span class="p">[</span><span class="s2">&quot;sampling_rate&quot;</span><span class="p">]</span>
-                <span class="c1"># Check if sampling_rate is consistent with 1/dt</span>
-                <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">sampling_rate</span> <span class="o">-</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">dt</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">1e-6</span><span class="p">:</span>
-                    <span class="c1"># Record inconsistency in error log (elog)</span>
-                    <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;sampling_rate inconsistent with 1/dt; updating to 1/dt&quot;</span>
-                    <span class="n">mspass_object</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="s2">&quot;resample&quot;</span><span class="p">,</span>
-                                                 <span class="n">message</span><span class="p">,</span>
-                                                 <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span><span class="p">)</span>
-                <span class="c1"># Update sampling_rate to 1/dt</span>
-                <span class="n">mspass_object</span><span class="p">[</span><span class="s2">&quot;sampling_rate&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">dt</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="c1"># Set sampling_rate to 1/dt</span>
-                <span class="n">mspass_object</span><span class="p">[</span><span class="s2">&quot;sampling_rate&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">dt</span>
+            <span class="n">mspass_object</span><span class="p">[</span><span class="s2">&quot;sampling_rate&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">samprate</span>
             <span class="c1"># We have to go through this conversion to avoid TypeError exceptions</span>
             <span class="c1"># i.e we can&#39;t just copy the entire vector rsdata to the data vector</span>
             <span class="n">dm</span> <span class="o">=</span> <span class="n">dmatrix</span><span class="p">(</span><span class="n">rsdata</span><span class="p">)</span>
@@ -547,21 +519,7 @@
                 <span class="n">dsdata_npts</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">dsdata</span><span class="p">)</span>
                 <span class="n">mspass_object</span><span class="o">.</span><span class="n">set_npts</span><span class="p">(</span><span class="n">dsdata_npts</span><span class="p">)</span>
                 <span class="n">mspass_object</span><span class="o">.</span><span class="n">dt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span>
-                <span class="c1"># Check for &quot;sampling_rate&quot; attribute</span>
-                <span class="k">if</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="s2">&quot;sampling_rate&quot;</span><span class="p">):</span>
-                    <span class="n">sampling_rate</span> <span class="o">=</span> <span class="n">mspass_object</span><span class="p">[</span><span class="s2">&quot;sampling_rate&quot;</span><span class="p">]</span>
-                    <span class="c1"># Check if sampling_rate is consistent with 1/dt</span>
-                    <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">sampling_rate</span> <span class="o">-</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">dt</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">1e-6</span><span class="p">:</span>
-                        <span class="c1"># Record inconsistency in error log (elog)</span>
-                        <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;sampling_rate inconsistent with 1/dt; updating to 1/dt&quot;</span>
-                        <span class="n">mspass_object</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="s2">&quot;resample&quot;</span><span class="p">,</span>
-                                                     <span class="n">message</span><span class="p">,</span>
-                                                     <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span><span class="p">)</span>
-                    <span class="c1"># Update sampling_rate to 1/dt</span>
-                    <span class="n">mspass_object</span><span class="p">[</span><span class="s2">&quot;sampling_rate&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">dt</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="c1"># Set sampling_rate to 1/dt</span>
-                    <span class="n">mspass_object</span><span class="p">[</span><span class="s2">&quot;sampling_rate&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">dt</span>
+                <span class="n">mspass_object</span><span class="p">[</span><span class="s2">&quot;sampling_rate&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">samprate</span>
                 <span class="c1"># We have to go through this conversion to avoid TypeError exceptions</span>
                 <span class="c1"># i.e we can&#39;t just copy the entire vector rsdata to the data vector</span>
                 <span class="n">mspass_object</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">DoubleVector</span><span class="p">(</span><span class="n">dsdata</span><span class="p">)</span>
@@ -591,21 +549,7 @@
                 <span class="n">dsdata_npts</span> <span class="o">=</span> <span class="n">msize</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
                 <span class="n">mspass_object</span><span class="o">.</span><span class="n">set_npts</span><span class="p">(</span><span class="n">dsdata_npts</span><span class="p">)</span>
                 <span class="n">mspass_object</span><span class="o">.</span><span class="n">dt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span>
-                <span class="c1"># Check for &quot;sampling_rate&quot; attribute</span>
-                <span class="k">if</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="s2">&quot;sampling_rate&quot;</span><span class="p">):</span>
-                    <span class="n">sampling_rate</span> <span class="o">=</span> <span class="n">mspass_object</span><span class="p">[</span><span class="s2">&quot;sampling_rate&quot;</span><span class="p">]</span>
-                    <span class="c1"># Check if sampling_rate is consistent with 1/dt</span>
-                    <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">sampling_rate</span> <span class="o">-</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">dt</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">1e-6</span><span class="p">:</span>
-                        <span class="c1"># Record inconsistency in error log (elog)</span>
-                        <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;sampling_rate inconsistent with 1/dt; updating to 1/dt&quot;</span>
-                        <span class="n">mspass_object</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="s2">&quot;resample&quot;</span><span class="p">,</span>
-                                                 <span class="n">message</span><span class="p">,</span>
-                                                 <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span><span class="p">)</span>
-                    <span class="c1"># Update sampling_rate to 1/dt</span>
-                    <span class="n">mspass_object</span><span class="p">[</span><span class="s2">&quot;sampling_rate&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">dt</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="c1"># Set sampling_rate to 1/dt</span>
-                    <span class="n">mspass_object</span><span class="p">[</span><span class="s2">&quot;sampling_rate&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">dt</span>
+                <span class="n">mspass_object</span><span class="p">[</span><span class="s2">&quot;sampling_rate&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">samprate</span>
                 <span class="c1"># We have to go through this conversion to avoid TypeError exceptions</span>
                 <span class="c1"># i.e we can&#39;t just copy the entire vector rsdata to the data vector</span>
                 <span class="n">mspass_object</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">dmatrix</span><span class="p">(</span><span class="n">dsdata</span><span class="p">)</span>
