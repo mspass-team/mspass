@@ -4285,7 +4285,12 @@ class Database(pymongo.database.Database):
                             alg, message, ErrorSeverity.Complaint
                         )
                         mspass_object.dt = tr.stats.delta
-                    if tr.stats.endtime.timestamp != mspass_object.endtime():
+                    # be less dogmatic here as endtime is computed.
+                    # error only if computed time difference exceed half a sample
+                    if (
+                        abs(tr.stats.endtime.timestamp - mspass_object.endtime())
+                        > mspass_object.dt / 2.0
+                    ):
                         message = "Inconsistent endtimes detected\n"
                         message += (
                             "Endtime expected from MongoDB document = {}\n".format(
@@ -4375,12 +4380,14 @@ class Database(pymongo.database.Database):
         fh = gfsh.get(file_id=gridfs_id)
         if isinstance(mspass_object, (TimeSeries, Seismogram)):
             if not mspass_object.is_defined("npts"):
-                message = "Required key npts is not defined in the document for this datum"
-                mspass_object.elog.log_error("Database._read_data_from_gridfs",
-                                             message,
-                                             ErrorSeverity.Invalid)
+                message = (
+                    "Required key npts is not defined in the document for this datum"
+                )
+                mspass_object.elog.log_error(
+                    "Database._read_data_from_gridfs", message, ErrorSeverity.Invalid
+                )
                 mspass_object.kill()
-                return 
+                return
             else:
                 if mspass_object.npts != mspass_object["npts"]:
                     message = "Database._read_data_from_gridfs: "
@@ -4400,11 +4407,14 @@ class Database(pymongo.database.Database):
             file_size = fh.tell()
             if file_size != npts * 8 * 3:
                 message = "Size mismatch in sample data.\n"
-                message += "Number of points in gridfs file=%d but wf document expected %d".format(file_size/8, (3 * mspass_object["npts"]))
-                mspass_object.elog.log_error("Database._read_data_from_gridfs",
-                                             message,
-                                             ErrorSeverity.Invalid,
-                                             )
+                message += "Number of points in gridfs file=%d but wf document expected %d".format(
+                    file_size / 8, (3 * mspass_object["npts"])
+                )
+                mspass_object.elog.log_error(
+                    "Database._read_data_from_gridfs",
+                    message,
+                    ErrorSeverity.Invalid,
+                )
                 mspass_object.kill()
                 return
             # v1 did a transpose on write that this reversed - unnecessary
