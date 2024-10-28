@@ -689,6 +689,10 @@ def FDring results as a subdocument.
         fcutoff = 2.0*tbp*S.df()
         # use the mspass butterworth filter for speed - obspy
         # version requires a conversion to Trace objects
+        # TODO:   setting low_poles to 0 seems necessary to 
+        # enable lowpass filter turning off low corner terms
+        # I (GLP) am not sure why that is necessary looking at the 
+        # C++ code.  
         if bwd.low_edge_f>fcutoff:
             use_lowcorner=True
             low_poles = poles
