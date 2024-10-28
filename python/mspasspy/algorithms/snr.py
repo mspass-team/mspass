@@ -21,9 +21,7 @@ import matplotlib.pyplot as plt
 
 def EstimateBandwidth(S,N,snr_threshold=1.5,df_smoother=None,f0=1.0)->BandwidthData:
     """
-    Estimates a set of signal bandwidth estimates returned in the the essage = alg + ":  arg1 must be a PowerSpectrum object for noise estimate; actual type={}".format(type(S))
-        raise TypeError(message)
-
+    Estimates a set of signal bandwidth estimates returned in the the 
     class `BandwidthData`.  The algorithm is most appropriate for body 
     waves recorded at teleseimic distances from earthquake sources.   
     The reason is that the algorithm is most appropriate for signal 
@@ -33,9 +31,10 @@ def EstimateBandwidth(S,N,snr_threshold=1.5,df_smoother=None,f0=1.0)->BandwidthD
     The smallest events typically are only visible in the traditional 
     short-period band.   The most difficult are the ones that have
     signals in both the short and long period band but have high 
-    noise levels viewed raw because:type S:  :py:class:`mspasspy.ccore.seismic.PowerSpectrum` data this algorithm is an either 
-    or:  either return the short period band data or the long period 
-    band data.
+    noise levels in the microseism band making a single bandwidth 
+    the wrong model.  This function handles that by only returning the 
+    band data for the section near the search start defined by the 
+    "f0" argument.
     
     The algorithm works by searching from a starting frequency defined 
     by the "f0" argument.  The basic idea is it hunts up and down the 
@@ -53,8 +52,6 @@ def EstimateBandwidth(S,N,snr_threshold=1.5,df_smoother=None,f0=1.0)->BandwidthD
         it marks the first point found as the high frequency band 
         edge and continues hunt backward to attempt to define
         the low frequency band edge.  
-    essage = alg + ":  arg1 must be a PowerSpectrum object for noise estimate; actual type={}".format(type(S))
-        raise TypeError(message)
 
     The "df_smoother" argument can be used to smooth the internally 
     generated signal-to-noise ratio vector.   It is particularly useful 
@@ -105,8 +102,7 @@ def EstimateBandwidth(S,N,snr_threshold=1.5,df_smoother=None,f0=1.0)->BandwidthD
        Note the low edge can be zero which must be handled 
        carefully if the output is used for designing a filter.
        Further all values will be 0 if no points in the snr curve 
-       exceed the defined threshold.essage = alg + ":  arg1 must be a PowerSpectrum object for noise estimate; actual type={}".format(type(S))
-        raise TypeError(message)
+       exceed the defined threshold.
     """
     alg = "EstimateBandwidth"
     if not isinstance(S,PowerSpectrum):
@@ -372,45 +368,43 @@ def _reformat_mspass_error(
     log_message += suffix_message
     return log_message
 
-
 def FD_snr_estimator(
     data_object,
     noise_window=TimeWindow(-130.0, -5.0),
     noise_spectrum_engine=None,
     signal_window=TimeWindow(-5.0, 120.0),
     signal_spectrum_engine=None,
-    band_cutoff_snr=2.0,
+    band_cutoff_snr=1.5,
     signal_detection_minimum_bandwidth=6.0,
+    f_low_zero_test=None,
     tbp=4,
     ntapers=6,
-    high_frequency_search_start=2.0,
-    fix_high_edge=True,
+    f0=1.0,
     poles=3,
     perc=95.0,
     optional_metrics=None,
     save_spectra=False,
-):
-    # optional_metrics=['snr_stats','filtered_envelope','filtered_L2','filtered_Linf','filtered_MAD','filtered_perc']):
+)->tuple:
     """
     Estimates one or more amplitude metrics of signal-to-noise from a TimeSeries object.
-    An implicit assumptdef FDcan be used to compute one or several
-    signal-to-noise ratio estimates based on an estimated bandwidth using
-    the C++ function EstimateBandwidth.  The function has a fair number of
-    options, but the core metrics computed are the bandwidth estimates
-    computed by that function.  It uses a fairly simple search algorithm
-    that functions well for most earthquake sources.  For the low end the
-    algorithm searches from the first frequency indistinguishable from DC to
-    find the lowest frequency for which the snr exceeds a threshold specified
-    by the input parameter 'band_cutoff_snr'.   It does a similar search
-    from the high end from a point 80% of Nyquist - a good choice for all
-    modern digital data that use FIR antialias filters.   Both searches are
-    not just defined with just the first frequency to satisfy the snr
-    threshold criteria.  Only when a group of frequencies more than 2 times
-    the time-bandwidth product exceed the threshold is the band edge
-    defined.   The actual band edge is then defined as the first frequency
-    exceeding the threshold.  That more elaborate algorithm was used to
-    prevent pure lines in either the signal or noise spectrum from
-    corrupting the estimates.
+    Results are returned as a set of key-value pairs in a python dict.
+
+    FD_snr_estimator first estimates bandwidth with the function in this 
+    module called `EstimateBandwidth`.  See the docstring of that function 
+    for how the bandwidth is estimated.  The metrics this function 
+    computes all depend upon that bandwidth estimate.  The default return 
+    of this function is the return of `EstimateBandwidth` translated to 
+    keyp-value pairs.   Those are:
+
+      *low_f_band_edge* - lowest frequency exceeding threshold
+      *high_f_band_edge* - highest frequency exeeding threshold 
+      *high_f_band_edge_snr* and *low_f_band_edge_snr* are the snr values
+        at the band edges
+      *spectrum_frequency_range* - total frequency band for estimate 
+        (really just 0 to Nyquist).
+      *bandwidth* - bandwidth of estimate in dB. 
+        i.e. 20*log10(high_f_band_edge/low_f_band_edge)
+      *bandwidth_fraction* - bandwidth/spectrum_frequency_range
 
     A set of optional metrics can be computed.  All optional metrics use
     the bandwidth estimates in one way or another.   Optional metrics are
@@ -428,8 +422,21 @@ def FD_snr_estimator(
     All of these optional metrics first copy the data_object and then
     filter the copy with a Butterworth bandpass filter with the number of
     poles specified by the npoles argument and corners at the estimated
-    band edge by the EstimateBandwidth function.   The metrics computed
-    are time domain snr estimates computed with he filtered data.  They are
+    band edge by the EstimateBandwidth function.  The algorithm automatically
+    handles the case of a zero low frequency edge.   That is, with large events
+    the low band edge can be computed as 0 frequency.   More commonly the band edge
+    is computed as one or two rayleigh bins above 0.  A bandpass filtered applied 
+    with a corner too close to 0 can produced distorted (or null) results.  
+    To prevent that the default behavior is to revert to a low pass filter 
+    versus a bandpass filter when the estimated value of low_f_band_edge is small. 
+    By default "small" is defined as <= 2.0*tbp*df, where tbp is the 
+    time bandwidth product for the multitaper spectral estimates (in optional 
+    argument) and df is the frequency sampling interval of the spectrum computed from 
+    the data in `signal_window`.  You can use a different recipe by passing 
+    a value for the optional parameter "f_low_zero_test" which will replace 
+    the computed value using the formula above for switching to a lowpass filter.
+    The optional metrics are time domain estimates computed from 
+    the bandpass (lowpass) filtered data.  They are
     actually computed from functions in this same module that can be
     used independently and have their own docstring description. The
     functions called have the following names in order of the keyword
@@ -444,128 +451,113 @@ def FD_snr_estimator(
     save_spectra true as those are power spectra.
 
     :param data_object:  TimeSeries object to be processed. For Seismogram
-    objects the assumption is algorithm would be used for a single
-    component (e.g longitudinal or vertical for a P phase)
-
+      objects the assumption is algorithm would be used for a single
+      component (e.g longitudinal or vertical for a P phase)
     :param noise_window: defines the time window to use for computing the
-    spectrum considered noise. The time span can be either relative or
-    UTC (absolute) time but we do not check for consistency.  This low
-    level function assumes they are consistent.  If not, the calculations
-    are nearly guaranteed to fail.  Type must be mspasspy.ccore.TimeWindow.
-def FD
+      spectrum considered noise. The time span can be either relative or
+      UTC (absolute) time but we do not check for consistency.  This low
+      level function assumes they are consistent.  If not, the calculations
+      are nearly guaranteed to fail.  Type must be mspasspy.ccore.TimeWindow.
+    :type noise_window:  :py:class:`mspasspy.ccore.algorithms.basic.TimeWindow`
+      default -130 to -5 s.
     :param signal_window: defines the time window to use that defines what
-    you consider "the signal".  The time span can be either relative or
-    UTC (absolute) time but we do not check for consistency.  This low
-    level function assumes they are consistent.  If not, the calculations
-    are nearly guaranteed to fail.  Type must be mspasspy.ccore.TimeWindow.
-
+      you consider "the signal".  The time span can be either relative or
+      UTC (absolute) time but we do not check for consistency.  This low
+      level function assumes they are consistent.  If not, the calculations
+      are nearly guaranteed to fail.  Type must be mspasspy.ccore.TimeWindow.
+    :type signal_window:  :py:class:`mspasspy.ccore.algorithms.basic.TimeWindow`
+      default -5 to 120 s
     :param noise_spectrum_engine: is expected to either by a None type
-    or an instance of a ccore object called an MTPowerSpectralEngine.
-    When None an instance of MTPowerSpectralEngine is computed for
-    each call to this function.   That is a convenience for small
-    jobs or when called with data from mixed sample rates and/or variable
-    length time windows.   It is very inefficient to use the default
-    approach for processing large data sets and really for any use in a
-    map operation with dask or spark.  Normal use should be for the user to
-    predefine an MtPowerSpectralEngine from the expected window sizedef FD
-
+      or an instance of a ccore object called an MTPowerSpectralEngine.
+      When None an instance of MTPowerSpectralEngine is computed for
+      each call to this function.   That is a convenience for small
+      jobs or when called with data from mixed sample rates and/or variable
+      length time windows.   It is very inefficient to use the default
+      approach for processing large data sets and really for any use in a
+      map operation with dask or spark.  Normal use should be for the user to
+      predefine an MtPowerSpectralEngine from the expected window sizedef FD
+    :type noise_spectrum_engine: None (default) or an instance of 
+      :py:class:`mspasspy.ccore.algorithms.deconvolution.MTPowerSpectrumEngine`
     :param signal_spectrum_engine:  is the comparable MTPowerSpectralEngine
-    to use to compute the signal power spectrum.   Default is None with the
-    same caveat as above for the noise_spectrum_engine.
-
+      to use to compute the signal power spectrum.   Default is None with the
+      same caveat as above for the noise_spectrum_engine.
+    :type signal_spectrum_engine: None (default) or an instance of 
+      :py:class:`mspasspy.ccore.algorithms.deconvolution.MTPowerSpectrumEngine`
     :param band_cutoff_snr:   defines the signal-to-noise ratio floor
-    used in the search for band edges.  See description of the algorithm
-    above and in the user's manual.  Default is 2.0
-
+      used in the search for band edges.  See description of the algorithm
+      above and in the user's manual.  Default is 1.5
+    :type band_cutoff_snr: float
     :param signal_detection_minimum_bandwidth:  As noted above this
-    algorithm first tries to estimate the bandwidth of data where the
-    signal level exceeds the noise level defined by the parameter
-    band_cutoff_snr.  It then computes the bandwidth of the data in
-    dB computed as log10(f_high/f_low).  For almost any application
-    if the working bandwidth falls below some threshold the data is
-    junk to all intends and purpose.  A factor more relevant to this
-    algorithm is that the "optional parameters"  will all be meaningless
-    and a waste of computational effort if the bandwidth is too small.
-    A particular extreme example is zero bandwidth that happens all the
-    time if no frequency band exceeds the band_cutoff_snr for a range
-    over that minimum defined by the time-bandwidth product.  The
-    default is 6.0. (One octave which is roughly the width of the traditional
-    short-period band) which allows optional metrics to be computed
-    but may be too small for some applications.  If your application
-    requires higher snr and wider bandwidth adjust this parameter
-    and/or band_cutoff_snr.
-
+      algorithm first tries to estimate the bandwidth of data where the
+      signal level exceeds the noise level defined by the parameter
+      band_cutoff_snr.  It then computes the bandwidth of the data in
+      dB computed as 20*log10(f_high/f_low).  For almost any application
+      if the working bandwidth falls below some threshold the data is
+      junk to all intends and purpose.  A factor more relevant to this
+      algorithm is that the "optional parameters"  will all be meaningless
+      and a waste of computational effort if the bandwidth is too small.
+      A particular extreme example is zero bandwidth that happens all the
+      time if no frequency band exceeds the band_cutoff_snr for a range
+      over that minimum defined by the time-bandwidth product.  The
+      default is 6.0. (One octave which is roughly the width of the traditional
+      short-period band) which allows optional metrics to be computed
+      but may be too small for some applications.  If your application
+      requires higher snr and wider bandwidth adjust this parameter
+      and/or band_cutoff_snr.
+    :type signal_detection_minimum_bandwidth:  float (default 6.0 dB)
+    :param f_low_zero_test: optional lower bound on frequency to use for 
+       test to disable the low frequency corner.   (see above)
+    :type f_low_zero_test:  float (default is None which causes the test to 
+        revert to 2.0*tbp*df (see above).  
     :param tbp:  time-bandwidth product to use for computing the set of
-    Slepian functions used for the multitaper estimator.  This parameter is
-    used only if the noise_spectrum_engine or signal_spectrum_engine
-    arguments are set as None.  The default is 4.0
-
+      Slepian functions used for the multitaper estimator.  This parameter is
+      used only if the noise_spectrum_engine or signal_spectrum_engine
+      arguments are set as None.  
+    :type tbp:  float (default 4.0)
     :param ntapers:  is the number of Slepian functions (tapers) to compute
-    for the multitaper estimators. Like tbp it is referenced only if
-    noise_spectrum_engine or signal_spectrum_engine are set to None.
-    Note the function will throw an exception if the ntaper parameter is
-    not consistent with the time-bandwidth def FDroduct.  That is, thedef FD
-
-    :param high_frequency_search_start: Used to specify the upper frequency
-      used to start the search for the upper end of the bandwidth by
-      the function EstimateBandwidth.  Default is 2.0 which reasonable fordef FD
-      analysis of teleseimic P phases or you the bandwidth may be
-      grossly underestimated.
-    :param fix_high_edge:   boolean controlling upper search behavior.
-      When set True the search from the upper frequency limit is disabled
-      and the upper band limit edge is set as the value passed as
-      high_frequency_search_start.  False enables the search.
-      True is most useful for teleseismic body waves as many stations have
-      a series of closely enough spaced lines (presumably from electronic
-      sources) that set the high edge incorrectly.   False would be
-      more appropriate for most local and regional earthquake data.
-      The default is True.
-
+      for the multitaper estimators. Like tbp it is referenced only if
+      noise_spectrum_engine or signal_spectrum_engine are set to None.
+      Note the function will throw an exception if the ntaper parameter is
+      not consistent with the time-bandwidth product.
+    :type ntapers:  integer (default 6)
+    :param f0:   frequency to use to start search for bandwidth up and down 
+      the frequency axis (see above).  
+    :type f0:  float (default 1.0)
     :param npoles:   defines number of poles to us for the Butterworth
-    bandpass applied for the "filtered" metrics (see above).  Default is 3.
-
+      bandpass or lowpass applied for the "filtered" metrics (see above).  Default is 3.
+    :type npoles:  integer (default 3)
     :param perc:   used only if 'filtered_perc' is in the optional metrics list.
-    Specifies the perc parameter as used in seismic unix.  Uses the percentage
-    point specified of the sorted abs of all amplitudes.  (Not perc=50.0 is
-    identical to MAD)  Default is 95.0 which is 2 sigma for Gaussian noise.
-
+      Specifies the perc parameter as used in seismic unix.  Uses the percentage
+      point specified of the sorted abs of all amplitudes.  (Not perc=50.0 is
+      identical to MAD)  Default is 95.0 which is 2 sigma for Gaussian noise.
+    :type perc:  float (default 95.0)
     :param optional_metrics: is an iterable container containing one or more
-    of the optional snr metrics discussed above.
-
-    :param store_as_subdocument:  This parameter is included for
-    flexibility but should not normally be changed by the user.  As noted
-    earlier the outputs of this function are best abstracted as Metadata.
-    When this parameter is False the Metadata members are all posted with
-    directly to data_object's Metadata container.  If set True the
-    internally generated python dict is copied and stored with a key
-    defined through the subdocument_key argument.  See use below in
-    function arrival_snr.
-def FDring results as a subdocument.
-    This parameter is ignored unless store_as_subdocument is True.
-    Default is "snr_data"
-
+      of the optional snr metrics discussed above. Typos in names will create 
+      log messages but will not cause the function to abort.
+    :type optional_metrics:  should be a list of strings matching the set of 
+       required keywords.  Default is None which means none of the optional 
+       metrics will be computed.  
     :param save_spectra:   If set True (default is False) the function
-    will pickle the computed noise and signal spectra and save the
-    strings created along with a set of related metadata defining the
-    time range to the output python dict (these will be saved in MongoDB
-    when db is defined - see below).   This option should ONLY be used
-    for spot checking, discovery of why an snr metric has unexpected
-    results using graphics, or a research topic where the spectra would
-    be of interest.  It is a very bad idea to turn this option on if
-    you are processing a large quantity of data and saving the results
-    to MongoDB as it will bloat the arrival collection.  Consider a
-    different strategy if that essential for your work.
-
+      will pickle the computed noise and signal spectra and save the
+      strings created along with a set of related metadata defining the
+      time range to the output python dict (these will be saved in MongoDB
+      when db is defined - see below).   This option should ONLY be used
+      for spot checking, discovery of why an snr metric has unexpected
+      results using graphics, or a research topic where the spectra would
+      be of interest.  It is a very bad idea to turn this option on if
+      you are processing a large quantity of data and saving the results
+      to MongoDB as it may bloat the database.  Consider a
+      different strategy if that essential for your work.
     :return:  python tuple with two components.  0 is a python dict with
-    the computed metrics associated with keys defined above.  1 is a
-    mspass.ccore.ErrorLogger object. Any errors in computng any of the
-    metrics will be posted to this logger.  Users should then test this
-    object using it's size() method and if it the log is not empty (size >0)
-    the caller should handle that condition.   For normal use that means
-    pushing any messages the log contains to the original data object's
-    error log.  Component 0 will also be empty with no log entry if
-    the estimated bandwidth falls below the threshold defined by the
-    parameter signal_detection_minimum_bandwidth.
+      the computed metrics associated with keys defined above.  1 is a
+      mspass.ccore.ErrorLogger object. Any errors in computng any of the
+      metrics will be posted to this logger.  Users should then test this
+      object using it's size() method and if it the log is not empty (size >0)
+      the caller should handle that condition.   For normal use that means
+      pushing any messages the log contains to the original data object's
+      error log.  Component 0 will also be empty with no log entry if
+      the estimated bandwidth falls below the threshold defined by the
+      parameter signal_detection_minimum_bandwidth.
     """
     algname = "FN_snr_estimator"
     my_logger = ErrorLogger()
@@ -640,7 +632,7 @@ def FDring results as a subdocument.
         #    high_frequency_search_start,
         #    fix_high_edge,
         #)
-        bwd = EstimateBandwidth(S,N)
+        bwd = EstimateBandwidth(S,N,snr_threshold=band_cutoff_snr,f0=f0)
         # DEBUG
         ymax=np.max(S.spectrum)
         ymin=np.min(N.spectrum)
@@ -651,6 +643,12 @@ def FDring results as a subdocument.
         ax2.semilogy(x,y,'-')
         plt.show()
 
+        #TODO:   the C++ function implementing this method does not handle the case of low_f edge 0.  
+        #This is a workaround.
+        if bwd.low_edge_f<=0.0:
+            bandwidth=20.*np.log10(bwd.high_edge_f/S.df())
+        else:
+            bandwidth = bwd.bandwidth()
         # here we return empty result if the bandwidth is too low
         if bwd.bandwidth() < signal_detection_minimum_bandwidth:
             return [dict(), my_logger]
@@ -660,8 +658,8 @@ def FDring results as a subdocument.
         snrdata["low_f_band_edge_snr"] = bwd.low_edge_snr
         snrdata["high_f_band_edge_snr"] = bwd.high_edge_snr
         snrdata["spectrum_frequency_range"] = bwd.f_range
+        snrdata["bandwidth"] bandwidth 
         snrdata["bandwidth_fraction"] = bwd.bandwidth_fraction()
-        snrdata["bandwidth"] = bwd.bandwidth()
         if save_spectra:
             snrdata["signal_spectrum"] = pickle.dumps(S)
             snrdata["noise_spectrum"] = pickle.dumps(N)
@@ -685,8 +683,10 @@ def FDring results as a subdocument.
     # here will need to be changed to create a more exclusive test
 
     if optional_metrics:
-        # frozen for now TODO:  should have a kwarg setup 
-        fcutoff = 2.0*tbp*S.df()
+        if f_low_zero_test:
+            fcutoff = f_low_zero_test
+        else:
+            fcutoff = 2.0*tbp*S.df()
         # use the mspass butterworth filter for speed - obspy
         # version requires a conversion to Trace objects
         # TODO:   setting low_poles to 0 seems necessary to 
@@ -853,8 +853,8 @@ def arrival_snr(
     signal_detection_minimum_bandwidth=6.0,
     tbp=4.0,
     ntapers=6,
-    high_frequency_search_start=2.0,
-    fix_high_edge=True,
+    f_low_zero_test=None,
+    f0=1.0,
     poles=3,
     perc=95.0,
     save_spectra=False,
@@ -915,9 +915,8 @@ def arrival_snr(
     see the usage.   The following are added for this specialization:
 
     :param phase_name:  Name tag for the seismic phase being analyzed.
-    This string is saved to the output subdocument with the key "phase".
-    The default is "P"
-
+      This string is saved to the output subdocument with the key "phase".
+      The default is "P"
     :param arrival_time_key:  key (string) used to fetch an arrival time
       if the data are in UTC and the time window received does not overlap
       the data range (see above)
@@ -929,16 +928,14 @@ def arrival_snr(
       failed.   When False the datum is returned silently but
       will have no snr data defined in a dict stored with the key
       metadata_output_key (i.e. that attribute will be undefined in output)
-
     :param metadata_output_key:  is a string used as a key under which the
-    subdocument (python dict) created internally is stored.  Default is
-    "Parrival".   The idea is if multiple phases are being analyzed
-    each phase should have a different key set by this argument
-    (e.g. if PP were also being analyzed in the same workflow you
-     might use a key like "PParrival").
-
+      subdocument (python dict) created internally is stored.  Default is
+      "Parrival".   The idea is if multiple phases are being analyzed
+      each phase should have a different key set by this argument
+      (e.g. if PP were also being analyzed in the same workflow you
+       might use a key like "PParrival").
     :return:  a copy of data_object with the the results stored under
-    the key defined by the metadata_output_key argument.
+      the key defined by the metadata_output_key argument.
     """
     if not isinstance(data_object, TimeSeries):
         raise TypeError("arrival_snr:  input arg0 must be a TimeSeries")
@@ -978,10 +975,10 @@ def arrival_snr(
         signal_spectrum_engine=signal_spectrum_engine,
         band_cutoff_snr=band_cutoff_snr,
         signal_detection_minimum_bandwidth=signal_detection_minimum_bandwidth,
+        f_low_zero_test=f_low_zero_test,
         tbp=tbp,
         ntapers=ntapers,
-        high_frequency_search_start=high_frequency_search_start,
-        fix_high_edge=fix_high_edge,
+        f0=f0,
         poles=poles,
         perc=perc,
         optional_metrics=optional_metrics,
@@ -1012,13 +1009,13 @@ def broadband_snr_QC(
     noise_spectrum_engine=None,
     signal_window=TimeWindow(-5.0, 120.0),
     signal_spectrum_engine=None,
-    band_cutoff_snr=2.0,
+    band_cutoff_snr=1.5,
     signal_detection_minimum_bandwidth=6.0,
+    f_low_zero_test=None,
     tbp=4.0,
     ntapers=6,
-    high_frequency_search_start=2.0,
-    fix_high_edge=True,
-    kill_null_signals=False,
+    f0=1.0,
+    kill_null_signals=True,
     poles=3,
     perc=95.0,
     phase_name="P",
@@ -1066,7 +1063,7 @@ def broadband_snr_QC(
     winnowing of the your data.   See User's Manual for more on
     this concept.
 
-    The input of arg 0 (data_object) can be either a TimeSeries or
+    The input of arg0 (data_object) can be either a TimeSeries or
     a Seismogram object.  If a Seismogram object is passed the "component"
     argument is used to extract the specified single channel from the Seismogram
     object and that component is used for processing.  That is necessary
@@ -1087,79 +1084,60 @@ def broadband_snr_QC(
     is a Seismogram it tries to fetch site_lat.   That is true of all coordinate
     data loaded by normalization from a source and receiver collection.
 
-    The following args are passed directly to the function FD_snr_estimator:
-    noise_window, noise_spectrum_engine, signal_window, signal_spectrum_engine,
-    band_cutoff_snr, signal_detection_minimum_bandwidth, tbp, ntapers,
-    high_frequency_search_start, fix_high_edge, npoles, perc, optional_metrics,
-    and save_spectrum.  Below we only describe arguments added by this
-    function:
-
-    data_object,
-    phase_name="P",
-    metadata_output_key="Parrival",
-    use_measured_arrival_time=False,
-    measured_arrival_time_key="Ptime",
-    taup_model=None,
-    component=2,
-    source_collection="source",
-    receiver_collection=None,
+    Most of the arguments to this function are passed directly to 
+    `FD_snr_estimator`.   See the docstring of that function for reference. 
+    The following are additional parameters specific to this function:
 
     :param data_object:  An atomic MsPASS data object to which the
-    algorithms requested should be applied.   Currently that means a
-    TimeSeries or Seismogram object.   Any other input will result
-    in a TypeError exception.  As noted above for Seismogram input the
-    component argument defines which data component is to be used for the
-    snr computations.
-
+      algorithms requested should be applied.   Currently that means a
+      TimeSeries or Seismogram object.   Any other input will result
+      in a TypeError exception.  As noted above for Seismogram input the
+      component argument defines which data component is to be used for the
+      snr computations.
     :param component: integer (0, 1, or 2) defining which component of a
-    Seismogram object to use to compute the requested snr metrics.   This
-    parameter is ignored if the input is a TimeSeries.
-
+      Seismogram object to use to compute the requested snr metrics.   This
+      parameter is ignored if the input is a TimeSeries.
     :param metadata_output_key:  string defining the key where the results
-    are to be posted to the returned data_object.   The results are always
-    posted to a python dictionary and then posted to the returned
-    data_object with this key.   Default is "Parrival"
-
+      are to be posted to the returned data_object.   The results are always
+      posted to a python dictionary and then posted to the returned
+      data_object with this key.   Default is "Parrival"
     :param use_measured_arrival_time:  boolean defining the method used to
-    define the time reference for windowing used for snr calculations.
-    When True the function will attempt to fetch a phase arrival time with
-    the key defined by the "measured_arrival_time_key" argument.  In that
-    mode if the fetch fails the data_object will be killed and an error
-    posted to elog.   That somewhat brutal choice was intentional as the
-    expectation is if you want to use measured arrival times you don't
-    want data where there are no picks.   The default is True to make
-    the defaults consistent.  The reason is that the tau-p calculator
-    handle is passed to the function when using model-based travel times.
-    There is no way to default that so it defaults to None.
-
+      define the time reference for windowing used for snr calculations.
+      When True the function will attempt to fetch a phase arrival time with
+      the key defined by the "measured_arrival_time_key" argument.  In that
+      mode if the fetch fails the data_object will be killed and an error
+      posted to elog.   That somewhat brutal choice was intentional as the
+      expectation is if you want to use measured arrival times you don't
+      want data where there are no picks.   The default is True to make
+      the defaults consistent.  The reason is that the tau-p calculator
+      handle is passed to the function when using model-based travel times.
+      There is no way to default that so it defaults to None.
     :param measured_arrival_time_key: is the key used to fetch a
-    measured arrival time.   This parameter is ignored if use_measured_arrival_time
-    is False.
-
+      measured arrival time.   This parameter is ignored if use_measured_arrival_time
+      is False.
     :param taup_model: when use_measured_arrival_time is False this argument
-    is required.  It defaults as None because there is no way the author
-    knows to initialize it to anything valid.  If set it MUST be an instance
-    of the obspy class TauPyModel (https://docs.obspy.org/packages/autogen/obspy.taup.tau.TauPyModel.html#obspy.taup.tau.TauPyModel)
-    Mistakes in use of this argument can cause a MsPASSError exception to
-    be thrown (not logged thrown as a fatal error) in one of two ways:
-    (1)  If use_measured_arrival_time is False this argument must be defined,
-    and (2) if it is defined it MUST be an instance of TauPyModel.
-
+      is required.  It defaults as None because there is no way the author
+      knows to initialize it to anything valid.  If set it MUST be an instance
+      of the obspy class TauPyModel 
+      (https://docs.obspy.org/packages/autogen/obspy.taup.tau.TauPyModel.html#obspy.taup.tau.TauPyModel)
+      Mistakes in use of this argument can cause a MsPASSError exception to
+      be thrown (not logged thrown as a fatal error) in one of two ways:
+      (1)  If use_measured_arrival_time is False this argument must be defined,
+      and (2) if it is defined it MUST be an instance of TauPyModel.
     :param source_collection:  normalization collection for source data.
-    The default is the MsPASS name "source" which means the function will
-    try to load the source hypocenter coordinates (when required) as
-    source_lat, source_lon, source_depth, and source_time from the input
-    data_object.  The id of that document is posted to the output dictionary
-    stored under metadata_output_key.
-
+      The default is the MsPASS name "source" which means the function will
+      try to load the source hypocenter coordinates (when required) as
+      source_lat, source_lon, source_depth, and source_time from the input
+      data_object.  The id of that document is posted to the output dictionary
+      stored under metadata_output_key.
     :param receiver_collection:  when set this name will override the
-    automatic setting of the expected normalization collection naming
-    for receiver functions (see above).  The default is None which causes
-    the automatic switching to be involked.  If it is any other string
-    the automatic naming will be overridden.
+      automatic setting of the expected normalization collection naming
+      for receiver functions (see above).  The default is None which causes
+      the automatic switching to be involked.  If it is any other string
+      the automatic naming will be overridden.
 
     :return:  the data_object modified by insertion of the snr QC data
-    in the object's Metadata under the key defined by metadata_output_key.
+      in the object's Metadata under the key defined by metadata_output_key.
     """
     if data_object.dead():
         return data_object
@@ -1239,10 +1217,10 @@ def broadband_snr_QC(
         signal_spectrum_engine=signal_spectrum_engine,
         band_cutoff_snr=band_cutoff_snr,
         signal_detection_minimum_bandwidth=signal_detection_minimum_bandwidth,
+        f_low_zero_test=f_low_zero_test,
         tbp=tbp,
         ntapers=ntapers,
-        high_frequency_search_start=high_frequency_search_start,
-        fix_high_edge=fix_high_edge,
+        f0=f0,
         poles=poles,
         perc=perc,
         optional_metrics=optional_metrics,
@@ -1338,56 +1316,47 @@ def save_snr_arrival(
             one of the wf collections).
 
     :param db:  MongoDB database handle to use for transactions that
-    are the focus of this algorithm.
-
+      are the focus of this algorithm.
     :param doc_to_save:  python dictionary containing data to be saved.
-    Where and now this is saved is controlled by save_collection,
-    use_update, and subdocument_key as described above.
-
+      Where and now this is saved is controlled by save_collection,
+      use_update, and subdocument_key as described above.
     :param wfid:   waveform document id of the parent datum.   It is
-    assumed to be an ObjectId of linking the data in doc_to_save to
-    the parent.   It is ALWAYS saved in the output with the key "wfid".
-
+      assumed to be an ObjectId of linking the data in doc_to_save to
+      the parent.   It is ALWAYS saved in the output with the key "wfid".
     :param wf_collection:  string defining the collection from which the
-    datum from which the data stored in doc_to_save are associated.   wfid
-    is assumed define a valid document in wf_collection.   Default is
-    "wf_Seismogram".
-
+      datum from which the data stored in doc_to_save are associated.   wfid
+      is assumed define a valid document in wf_collection.   Default is
+      "wf_Seismogram".
     :param save_collection:  string defining the collection name to which
-    doc_to_save should be pushed.   See above for how this name interacts
-    with other parameters.
-
+      doc_to_save should be pushed.   See above for how this name interacts
+      with other parameters.
     :param subdocument_key:   Optional key for saving doc_to_save as a
-    a subdocument in the save_collection.   Default is None which means
-    the contents of doc_to_save will be saved (or update) as is.
-    For saves to (default) arrival collection this parameter should
-    normally be left None, but is allowed.   If save_collection is the
-    parent waveform collection setting this to some sensible key is
-    recommended to avoid possible name collisions with waveform
-    Metadata key-value pairs.    Default is None which means no
-    subdocuments are created.
-
+      a subdocument in the save_collection.   Default is None which means
+      the contents of doc_to_save will be saved (or update) as is.
+      For saves to (default) arrival collection this parameter should
+      normally be left None, but is allowed.   If save_collection is the
+      parent waveform collection setting this to some sensible key is
+      recommended to avoid possible name collisions with waveform
+      Metadata key-value pairs.    Default is None which means no
+      subdocuments are created.
     :param use_update:  boolean controlling whether or not to use
-    updates or inserts for the contents of doc_to_save.  See above for
-    a description of how this interacts with other arguments to this
-    function.  Default is False.
-
+      updates or inserts for the contents of doc_to_save.  See above for
+      a description of how this interacts with other arguments to this
+      function.  Default is False.
     :param update_id:   ObjectId of target document when running in update
-    mode.  When save_collection is the same as wf_collection this parameter
-    is ignored and the required id passed as wfid will be used for the
-    update key matching.   Also ignored with the default behavior if
-    inserting doc_to_save as a new document.  Required only if running
-    with a different collection and updating is desired.  The type example
-    noted above would be updates to existing arrival informations
-    created from a css3.0 database.
-
+      mode.  When save_collection is the same as wf_collection this parameter
+      is ignored and the required id passed as wfid will be used for the
+      update key matching.   Also ignored with the default behavior if
+      inserting doc_to_save as a new document.  Required only if running
+      with a different collection and updating is desired.  The type example
+      noted above would be updates to existing arrival informations
+      created from a css3.0 database.
     :param validate_wfid:   When set True the id defined by the
-    required argument wfid will be validated by querying wf_collection.
-    In this mode if wfid is not found the function will silently return None.
-    Callers using this mode should handle that condition.
-
+      required argument wfid will be validated by querying wf_collection.
+      In this mode if wfid is not found the function will silently return None.
+      Callers using this mode should handle that condition.
     :return:  ObjectId of saved record.  None if something went wrong
-    and nothing was saved.
+      and nothing was saved.
     """
     dbwfcol = db[wf_collection]
     if validate_wfid:
