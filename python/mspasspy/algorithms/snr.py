@@ -658,7 +658,7 @@ def FD_snr_estimator(
         snrdata["low_f_band_edge_snr"] = bwd.low_edge_snr
         snrdata["high_f_band_edge_snr"] = bwd.high_edge_snr
         snrdata["spectrum_frequency_range"] = bwd.f_range
-        snrdata["bandwidth"] bandwidth 
+        snrdata["bandwidth"] = bandwidth 
         snrdata["bandwidth_fraction"] = bwd.bandwidth_fraction()
         if save_spectra:
             snrdata["signal_spectrum"] = pickle.dumps(S)
