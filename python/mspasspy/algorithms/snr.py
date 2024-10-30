@@ -45,9 +45,7 @@ def EstimateBandwidth(S,N,snr_threshold=1.5,df_smoother=None,f0=1.0)->BandwidthD
     1.  If no point in the snr curve exceeds the valued defined by 
         "snr_threshold" the function returns immediately with all 
         attributes of the `BandwidthData` object set to 0.
-    2.  If the snr value at f0 does not exceed the threshold the essage = alg + ":  arg1 must be a PowerSpectrum object for noise estimate; actual type={}".format(type(S))
-        raise TypeError(message)
-
+    2.  If the snr value at f0 does not exceed the threshold it searches down
         until it finds a value exceeding the threshold.  In that situation 
         it marks the first point found as the high frequency band 
         edge and continues hunt backward to attempt to define
@@ -96,7 +94,7 @@ def EstimateBandwidth(S,N,snr_threshold=1.5,df_smoother=None,f0=1.0)->BandwidthD
        - "low_edge_f" low frequency corner of estimated bandwidth
        - "low_edge_snr" snr at low corner
        - "high_edge_f" high frequency corner of estimated bandwidth
-       - "high_edge_snr" snr at high corner:type S:  :py:class:`mspasspy.ccore.seismic.PowerSpectrum`
+       - "high_edge_snr" snr at high corner
        - "f_range" total frequency range of estimate (range of S)
        
        Note the low edge can be zero which must be handled 
@@ -639,8 +637,8 @@ def FD_snr_estimator(
         x=[bwd.low_edge_f,bwd.high_edge_f,bwd.high_edge_f,bwd.low_edge_f,bwd.low_edge_f]
         y=[ymin,ymin,ymax,ymax,ymin]
         fig2,ax2=plt.subplots(1)
-        ax2.semilogy(S.frequencies(),S.spectrum,'-',N.frequencies(),N.spectrum,':')
-        ax2.semilogy(x,y,'-')
+        ax2.loglog(S.frequencies(),S.spectrum,'-',N.frequencies(),N.spectrum,':')
+        ax2.loglog(x,y,'-')
         plt.show()
 
         #TODO:   the C++ function implementing this method does not handle the case of low_f edge 0.  
