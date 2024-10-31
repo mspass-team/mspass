@@ -15,6 +15,7 @@ from mspasspy.ccore.algorithms.amplitudes import (
     BandwidthData,
 )
 from mspasspy.ccore.algorithms.basic import TimeWindow, Butterworth, _ExtractComponent
+from mspasspy.algorithms.signals import filter
 from mspasspy.algorithms.window import WindowData
 import matplotlib.pyplot as plt
 
@@ -715,6 +716,14 @@ def FD_snr_estimator(
         nfilt = WindowData(filtered_data, noise_window.start, noise_window.end)
         sfilt = WindowData(filtered_data, signal_window.start, signal_window.end)
 
+        # this is needed externally as a signal to use a lowpass instead of
+        # bandpass to recreate the filtered data
+        if use_lowcorner:
+            snrdata["filter_type"] = "bandpass"
+        else:
+            snrdata["filter_type"] = "lowpass"
+        snrdata["filter_number_poles"] = poles
+
         # In this implementation we don't need this any longer so we
         # delete it here.  If options are added beware
         del filtered_data
@@ -1380,10 +1389,7 @@ def save_snr_arrival(
 def visualize_qcdata(
     d,
     component=2,
-    qc_subdoc_key=None,
-    f_low_zero_test=None,
-    tbp=4,
-    poles=3,
+    qc_subdoc_key="Parrival",
 ):
     """
     Creates a set of plots to visualize qc results computed from
@@ -1396,11 +1402,23 @@ def visualize_qcdata(
 
     This function generates graphics and must not be used in
     a large data processing job.   It is for exploratory work only
-    for use on a small subset of data.
+    for use on a small subset of data.   Note "exploratory" also
+    implies it is not as robust as a processing function and
+    may fail in ways that require debugging.
 
-    f_low_zero_test, tbp, and poles are required to match
-    FD_snr_estimator - use defaults or same values used for
-    running that function.
+    :param d:  Datum to display
+    :type d:  :py:class:`mspasspy.ccore.seismic.TimeSeries` or
+      :py:class:`mapsspy.ccore.seismic.Seismogram`.
+    :param component:  component to display if input is a
+       `Seismogram` object.  Ignore if input is a `TimeSeries`.
+    :type component:  integer
+    :param qc_subdoc_key:  key used to fetch the subdocument
+       from d normally used to store the output from
+       `broadband_snr_QC`.  If set to None will attempt
+       to fetch required attributes from Metdata container
+       of d.
+    :type qc_subdoc_key:  string or None.  Default "Parrival"
+       is default of `broadband_arrival_QC`.
     """
 
     def pts2box(xmin, xmax, ymin, ymax) -> tuple:
@@ -1447,54 +1465,44 @@ def visualize_qcdata(
         ax.loglog(S.frequencies(), S.spectrum, "-", N.frequencies(), N.spectrum, ":")
         ax.loglog(x, y, "-")
         plt.show()
-        # duplicates code in FD_snr_estimator - maintenance issue is they should stay consistent
-        if f_low_zero_test:
-            fcutoff = f_low_zero_test
+        if "filter_type" in doc:
+            ftype = doc["filter_type"]
+            npoles = doc["filter_number_poles"]
+            # not sure this is necessary - confusing scope rules of python in this context
+            filtered_data = TimeSeries()
+            # mismatch here that should not be significant.  Using the obspy filter
+            # here but FD_snr_estimator (the core snr function) uses the mspass
+            # Butterworth implementation.  Should not matter for this function
+            if ftype == "lowpass":
+                filtered_data = filter(d, "lowpass", freq=f_high, corners=npoles)
+            else:
+                filtered_data = filter(
+                    d, "bandpass", freqmin=f_low, freqmax=f_high, corners=npoles
+                )
+            # now do the seismic plots
+            fig2, ax2 = plt.subplots(2)
+            fig2.suptitle("Time Series Data")
+            ax2[0].plot(d.time_axis(), d.data)
+            ymin = np.min(d.data)
+            ymax = np.max(d.data)
+            xn, yn = pts2box(nwin.start, nwin.end, ymin, ymax)
+            xs, ys = pts2box(swin.start, swin.end, ymin, ymax)
+            ax2[0].plot(xn, yn)
+            ax2[0].plot(xs, ys)
+            ax2[0].set_title("Input data")
+            ax2[1].plot(filtered_data.time_axis(), filtered_data.data)
+            ax2[1].plot(xn, yn)
+            ax2[1].plot(xs, ys)
+            ax2[1].set_title("Filtered to bandwidth estimate")
+            plt.show()
         else:
-            fcutoff = 2.0 * tbp * S.df()
-        # use the mspass butterworth filter for speed - obspy
-        # version requires a conversion to Trace objects
-        # TODO:   setting low_poles to 0 seems necessary to
-        # enable lowpass filter turning off low corner terms
-        # I (GLP) am not sure why that is necessary looking at the
-        # C++ code.
-        if f_low > fcutoff:
-            use_lowcorner = True
-            low_poles = poles
-        else:
-            use_lowcorner = False
-            low_poles = 0
-        BWfilt = Butterworth(
-            False,
-            use_lowcorner,
-            True,
-            low_poles,
-            f_low,
-            poles,
-            f_low,
-            d.dt,
-        )
-        filtered_data = TimeSeries(d)
-        BWfilt.apply(filtered_data)
-        # now do the seismic plots
-        fig2, ax2 = plt.subplots(2)
-        fig2.suptitle("Time Series Data")
-        ax2[0].plot(d.time_axis(), d.data)
-        ymin = np.min(d.data)
-        ymax = np.max(d.data)
-        xn, yn = pts2box(nwin.start, nwin.end, ymin, ymax)
-        xs, ys = pts2box(swin.start, swin.end, ymin, ymax)
-        ax2[0].plot(xn, yn)
-        ax2[0].plot(xs, ys)
-        ax2[0].set_title("Input data")
-        ax2[1].plot(filtered_data.time_axis(), filtered_data.data)
-        ax2[1].plot(xn, yn)
-        ax2[1].plot(xs, ys)
-        ax2[1].set_title("Filtered to bandwidth estimate")
-        plt.show()
+            print(
+                "This datum was not run with optional metrics to define filtered data"
+            )
+            print("Cannot make the time series data showing oiginal and filtered data")
     else:
         message = (
             "Missing required metadata with keys signal_spectrum and noise_spectrum\n"
         )
         message += "You probably need to run the data through broadband_snr_QC with save_spectra set True"
-        raise MsPaSSError("visuallize_qcdata", message, ErrorSeverity.Invalid)
+        raise MsPASSError("visuallize_qcdata", message, ErrorSeverity.Invalid)
