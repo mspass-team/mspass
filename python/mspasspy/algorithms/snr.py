@@ -1386,6 +1386,105 @@ def save_snr_arrival(
     return save_id
 
 
+def filter_by_snr_bandwidth(
+    d, qcdoc=None, subdoc_key="Parrival", bandpass_low_f_limit=0.02, npoles=4
+):
+    """
+    Filter function to automatically handle data processed with arrival_snr
+    or broadband_snr_QC.
+
+    The two MsPASS functions `arrival_snr` and `broadband_snr_QC` are
+    front ends to a lower level function called `FD_broadband_snr`.
+    That function is designed to estimate the bandwidth of a signal
+    and compute a suite of snr metrics that can be used to winnow
+    data for further processing.   One often wants to then filter the
+    data so processed into the frequency band the algorithm determines.
+    This function does that automaticallty for any atomic datum
+    previously processed with `arrival_snr` or `broadband_snr_QC`.
+
+    An important complication this function handles is that for large
+    earthquakes the low frequency band edge can be 0 or close
+    (meaning within a few Rayleigh bins) of 0.   In that situation
+    a bandpass filter with the corner near 0 is unstable and the
+    filter operator would fail if you tried to use that corner.
+    This function handles that all automatically if you use the
+    defaults for `arrival_snr` or `broadband_snr_QC`.  If you
+    change any of the defaults you may need to change one of the kwargs
+    for this function.   See descriptions below for guidance.
+
+    :param d: atomic MsPASS data object to be filtered.
+    :type d: :py:class:`mspasspy.ccore.seismic.TimeSeries` or
+       :py:class:`mspasspy.ccore.seismic.Seismogram`
+    :param qcdoc:  use attributes stored in a dictionary.
+       Use this approach if you want to impose attributes externally.
+       If defined the contents of this dictionary will be used.  If it
+       isn't define the function will use subdoc_key to try to fetch
+       the same data. Using a dictionary passed via this argument
+       is a way to filter an ensemble in a common band for all members.
+    :type qdoc:  dict or None (default)
+    :param subdoc_key: subdocument Metadata key to use to fetch data posted
+       by `arrival_snr` or `broadband_snr_QC`.  Both by default post the
+       computed attributes to a subdocument (python dictionary) that can
+       be fetched from the Metadata of d with a particular key.  This
+       argument is the key that should be used to fetch that data.  The
+       default is the default for `arrival_snr` and `broadband_snr_QC`.
+       Note if no data is found for this key the function attempts to
+       extract the required attributes from the top level of the
+       Metadata container of d.  If that fails the function will kill
+       the datum and post an elog message.
+    :type subdoc_key:  string (default "Parrival")
+    :param bandpass_low_f_limit:
+    :type bandpass_low_f_limit:  float (default 0.02 = 1/50 s)
+    :param npoles:  number of poles to use for Butterworth filter function
+       if not defined in the datum's Metadata.
+    :type npoles:  integer (default 4)
+    """
+    alg = "filter_by_snr_bandwidth"
+    if not isinstance(d, (TimeSeries, Seismogram)):
+        message = alg + ":  arg0 has illegal type={}\n".format(type(d))
+        message += "Must be a TimeSeries or Seismogram object"
+        raise ValueError(message)
+    if d.dead():
+        return d
+    # qcdoc overides all else
+    if qcdoc:
+        doc = qcdoc
+    elif d.is_defined(subdoc_key):
+        doc = d[subdoc_key]
+    else:
+        # do this automatically and depend upon later messages if it
+        # doesn't work
+        doc = dict(d)
+    if "low_f_band_edge" in doc and "high_f_band_edge" in doc:
+        f_low = doc["low_f_band_edge"]
+        f_high = doc["high_f_band_edge"]
+        if "filter_type" in doc:
+            ftype = doc["filter_type"]
+            npoles = doc["filter_number_poles"]
+        else:
+            if f_low < bandpass_low_f_limit:
+                ftype = "lowpass"
+            else:
+                ftype = "bandpass"
+        # mismatch here that should not be significant.  Using the obspy filter
+        # here but FD_snr_estimator (the core snr function) uses the mspass
+        # Butterworth implementation.  Should not matter for this function
+        if ftype == "lowpass":
+            filtered_data = filter(d, "lowpass", freq=f_high, corners=npoles)
+        else:
+            filtered_data = filter(
+                d, "bandpass", freqmin=f_low, freqmax=f_high, corners=npoles
+            )
+        return filtered_data
+    else:
+        message = (
+            "Required arguments low_f_band_edge and high_f_band_edge where not defined"
+        )
+        d.elog.log_error(alg, message, ErrorSeverity.Invalid)
+        d.kill()
+        return d
+
+
 def visualize_qcdata(
     d,
     component=2,
@@ -1466,20 +1565,7 @@ def visualize_qcdata(
         ax.loglog(x, y, "-")
         plt.show()
         if "filter_type" in doc:
-            ftype = doc["filter_type"]
-            npoles = doc["filter_number_poles"]
-            # not sure this is necessary - confusing scope rules of python in this context
-            filtered_data = TimeSeries()
-            # mismatch here that should not be significant.  Using the obspy filter
-            # here but FD_snr_estimator (the core snr function) uses the mspass
-            # Butterworth implementation.  Should not matter for this function
-            if ftype == "lowpass":
-                filtered_data = filter(d, "lowpass", freq=f_high, corners=npoles)
-            else:
-                filtered_data = filter(
-                    d, "bandpass", freqmin=f_low, freqmax=f_high, corners=npoles
-                )
-            # now do the seismic plots
+            filtered_data = filter_by_snr_bandwidth(d, subdoc_key=qc_subdoc_key)
             fig2, ax2 = plt.subplots(2)
             fig2.suptitle("Time Series Data")
             ax2[0].plot(d.time_axis(), d.data)
