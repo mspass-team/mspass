@@ -18,119 +18,132 @@ from mspasspy.ccore.algorithms.basic import TimeWindow, Butterworth, _ExtractCom
 from mspasspy.algorithms.window import WindowData
 import matplotlib.pyplot as plt
 
-def EstimateBandwidth(S,N,snr_threshold=1.5,df_smoother=None,f0=1.0)->BandwidthData:
+
+def EstimateBandwidth(
+    S, N, snr_threshold=1.5, df_smoother=None, f0=1.0
+) -> BandwidthData:
     """
-    Estimates a set of signal bandwidth estimates returned in the the 
-    class `BandwidthData`.  The algorithm is most appropriate for body 
-    waves recorded at teleseimic distances from earthquake sources.   
-    The reason is that the algorithm is most appropriate for signal 
-    and noise spectra typical of that type of data.  In particular, 
-    broadband noise is very colored by the microseisms.   Large enough 
-    signals can exceed the microseism peak but smaller events will not.  
-    The smallest events typically are only visible in the traditional 
+    Estimates a set of signal bandwidth estimates returned in the the
+    class `BandwidthData`.  The algorithm is most appropriate for body
+    waves recorded at teleseimic distances from earthquake sources.
+    The reason is that the algorithm is most appropriate for signal
+    and noise spectra typical of that type of data.  In particular,
+    broadband noise is very colored by the microseisms.   Large enough
+    signals can exceed the microseism peak but smaller events will not.
+    The smallest events typically are only visible in the traditional
     short-period band.   The most difficult are the ones that have
-    signals in both the short and long period band but have high 
-    noise levels in the microseism band making a single bandwidth 
-    the wrong model.  This function handles that by only returning the 
-    band data for the section near the search start defined by the 
+    signals in both the short and long period band but have high
+    noise levels in the microseism band making a single bandwidth
+    the wrong model.  This function handles that by only returning the
+    band data for the section near the search start defined by the
     "f0" argument.
-    
-    The algorithm works by searching from a starting frequency defined 
-    by the "f0" argument.  The basic idea is it hunts up and down the 
-    frequency axis until it detects the band edge.   The "band edge" 
-    detection is defined as the point where the signal-to-noise ratio 
-    first falls below the value defined by the "snr_threshold" argument. 
+
+    The algorithm works by searching from a starting frequency defined
+    by the "f0" argument.  The basic idea is it hunts up and down the
+    frequency axis until it detects the band edge.   The "band edge"
+    detection is defined as the point where the signal-to-noise ratio
+    first falls below the value defined by the "snr_threshold" argument.
     The algorithm has two variants of note:
-    1.  If no point in the snr curve exceeds the valued defined by 
-        "snr_threshold" the function returns immediately with all 
+    1.  If no point in the snr curve exceeds the valued defined by
+        "snr_threshold" the function returns immediately with all
         attributes of the `BandwidthData` object set to 0.
     2.  If the snr value at f0 does not exceed the threshold it searches down
-        until it finds a value exceeding the threshold.  In that situation 
-        it marks the first point found as the high frequency band 
+        until it finds a value exceeding the threshold.  In that situation
+        it marks the first point found as the high frequency band
         edge and continues hunt backward to attempt to define
-        the low frequency band edge.  
+        the low frequency band edge.
 
-    The "df_smoother" argument can be used to smooth the internally 
-    generated signal-to-noise ratio vector.   It is particularly useful 
-    for data with noise containing spectral lines that can create 
-    incorrect bandwidth data.  It is rarely necessary if the 
-    power spectra are computed with the multitaper method as that 
-    method produces spectra that are inherently smooth at a specified 
-    scale.  In that case if smoothing is desired we recommend the 
-    smoothing width be of the form k*tbp*df where tbp is the time 
-    bandwidth product, df is the Rayleigh bin size, and k is some 
-    small multipler (note multitaper spectra a inherently smoothed 
+    The "df_smoother" argument can be used to smooth the internally
+    generated signal-to-noise ratio vector.   It is particularly useful
+    for data with noise containing spectral lines that can create
+    incorrect bandwidth data.  It is rarely necessary if the
+    power spectra are computed with the multitaper method as that
+    method produces spectra that are inherently smooth at a specified
+    scale.  In that case if smoothing is desired we recommend the
+    smoothing width be of the form k*tbp*df where tbp is the time
+    bandwidth product, df is the Rayleigh bin size, and k is some
+    small multipler (note multitaper spectra a inherently smoothed
     by 2*tbp*df).
-    
+
     :param S: power spectrum computed from signal time window.
     :type S:  :py:class:`mspasspy.ccore.seismic.PowerSpectrum`
-    :param N: power spectrum computed from noise time window 
-       (Note S and N do not need to be on the same frequency 
-       grid but the signal grid is used to compute the signal to 
+    :param N: power spectrum computed from noise time window
+       (Note S and N do not need to be on the same frequency
+       grid but the signal grid is used to compute the signal to
        noise ratio curve)
     :type N:  :py:class:`mspasspy.ccore.seismic.PowerSpectrum`
-    :param snr_threshold:  value of snr used to define the 
-       band edges.   As noted above the algorithm searches from 
-       the value f0 for the first points above and below that 
-       frequency where the snr curve has a value less than or 
+    :param snr_threshold:  value of snr used to define the
+       band edges.   As noted above the algorithm searches from
+       the value f0 for the first points above and below that
+       frequency where the snr curve has a value less than or
        equal to this value.
     :type snr_threshold:  float (default 1.5)
-       grid but the signal grid is used to compute the signal to 
-       spectrum within the range defined by this parameter. 
-       i.e. the number of points in the smoother is 
+       grid but the signal grid is used to compute the signal to
+       spectrum within the range defined by this parameter.
+       i.e. the number of points in the smoother is
        round(df_smoother/S.df())
-    :type df_smoother:  float (default is None which is taken 
-       as a signal turn off this option and not smooth the 
+    :type df_smoother:  float (default is None which is taken
+       as a signal turn off this option and not smooth the
        snr curve.)
-    :param f0:  frequency to start searching up and down 
+    :param f0:  frequency to start searching up and down
        the frequency axis.
     :type f0:  float (default 1.0)
-    
-    :return:  Returns an instance of the `BandwidthData` class.  
-       `BandwidthData` has the following attributes that are 
+
+    :return:  Returns an instance of the `BandwidthData` class.
+       `BandwidthData` has the following attributes that are
        set by this function:
-       
+
        - "low_edge_f" low frequency corner of estimated bandwidth
        - "low_edge_snr" snr at low corner
        - "high_edge_f" high frequency corner of estimated bandwidth
        - "high_edge_snr" snr at high corner
        - "f_range" total frequency range of estimate (range of S)
-       
-       Note the low edge can be zero which must be handled 
+
+       Note the low edge can be zero which must be handled
        carefully if the output is used for designing a filter.
-       Further all values will be 0 if no points in the snr curve 
+       Further all values will be 0 if no points in the snr curve
        exceed the defined threshold.
     """
     alg = "EstimateBandwidth"
-    if not isinstance(S,PowerSpectrum):
-        message = alg + ":  arg0 must be a PowerSpectrum object computed from signal; actual type={}".format(type(S))
+    if not isinstance(S, PowerSpectrum):
+        message = (
+            alg
+            + ":  arg0 must be a PowerSpectrum object computed from signal; actual type={}".format(
+                type(S)
+            )
+        )
         raise TypeError(message)
-    if not isinstance(N,PowerSpectrum):
-        message = alg + ":  arg1 must be a PowerSpectrum object for noise estimate; actual type={}".format(type(N))
+    if not isinstance(N, PowerSpectrum):
+        message = (
+            alg
+            + ":  arg1 must be a PowerSpectrum object for noise estimate; actual type={}".format(
+                type(N)
+            )
+        )
         raise TypeError(message)
-    # use the S grid to define the snr curve - note N grid can be different 
+    # use the S grid to define the snr curve - note N grid can be different
     snrdata = np.zeros(S.nf())
     for i in range(S.nf()):
         f = S.frequency(i)
         i_n = N.sample_number(f)
         # conditional needed in case S and N are computed with different sample intervals
-        if i_n<N.nf():
-            snrdata[i] = S.spectrum[i]/N.spectrum[i_n]
+        if i_n < N.nf():
+            snrdata[i] = S.spectrum[i] / N.spectrum[i_n]
         else:
             snrdata[i] = 1.0
     # S and N are power, convert to amplitude
     snrdata = np.sqrt(snrdata)
     if df_smoother:
-        smoother_npts = round(df_smoother/S.df())
+        smoother_npts = round(df_smoother / S.df())
         # silently do nothing if the smoother requested is smaller than df
-        if smoother_npts>1:
-            smoother=np.ones(smoother_npts)/smoother_npts
-            np.convolve(snrdata,smoother,mode='valid')
+        if smoother_npts > 1:
+            smoother = np.ones(smoother_npts) / smoother_npts
+            np.convolve(snrdata, smoother, mode="valid")
     result = BandwidthData()
-    result.f_range = S.frequency(S.nf()-1) - S.frequency(0)
+    result.f_range = S.frequency(S.nf() - 1) - S.frequency(0)
     # test for no data exceeding tbhreshold - send null result if that is the case
-    snrmax = np.max(snrdata)  
-    if snrmax<snr_threshold:
+    snrmax = np.max(snrdata)
+    if snrmax < snr_threshold:
         result.high_edge_f = 0.0
         result.high_edge_snr = 0.0
         result.low_edge_f = 0.0
@@ -140,42 +153,44 @@ def EstimateBandwidth(S,N,snr_threshold=1.5,df_smoother=None,f0=1.0)->BandwidthD
     i0 = S.sample_number(f0)
     # search upward in f
     i = i0
-    while(i<len(snrdata)):
-        if snrdata[i]<=snr_threshold:
+    while i < len(snrdata):
+        if snrdata[i] <= snr_threshold:
             break
         else:
             i += 1
-    # this should never happen with any data using antialias filters but 
+    # this should never happen with any data using antialias filters but
     # is possible if the inputs are bad
-    if i>=len(snrdata):
+    if i >= len(snrdata):
         i = len(snrdata) - 1
-    if i>i0:
+    if i > i0:
         result.high_edge_f = S.frequency(i)
         result.high_edge_snr = snrdata[i]
     else:
-        # if we land here snr at f0 is less than the threshold 
-        # in that case search backward to find the first 
-        # point above the threshold (there has to be one because of 
+        # if we land here snr at f0 is less than the threshold
+        # in that case search backward to find the first
+        # point above the threshold (there has to be one because of
         # test for max snrdata above)
         i = i0
-        while(snrdata[i]<snr_threshold and i>=0):  # i>=0 test not essential but safer
+        while (
+            snrdata[i] < snr_threshold and i >= 0
+        ):  # i>=0 test not essential but safer
             i -= 1
         result.high_edge_f = S.frequency(i)
         result.high_edge_snr = snrdata[i]
         i0 = i
-    
+
     # now search backward to find low edge
     i = i0
     # gt 0 so if 0 is above threshold i will be 0 on exiting this loop
-    while(i>0):
-        if snrdata[i]<=snr_threshold:
+    while i > 0:
+        if snrdata[i] <= snr_threshold:
             break
         else:
             i -= 1
     result.low_edge_f = S.frequency(i)
     result.low_edge_snr = snrdata[i]
     return result
-    
+
 
 def _window_invalid(d, win):
     """
@@ -365,6 +380,7 @@ def _reformat_mspass_error(
     log_message += suffix_message
     return log_message
 
+
 def FD_snr_estimator(
     data_object,
     noise_window=TimeWindow(-130.0, -5.0),
@@ -381,25 +397,25 @@ def FD_snr_estimator(
     perc=95.0,
     optional_metrics=None,
     save_spectra=False,
-)->tuple:
+) -> tuple:
     """
     Estimates one or more amplitude metrics of signal-to-noise from a TimeSeries object.
     Results are returned as a set of key-value pairs in a python dict.
 
-    FD_snr_estimator first estimates bandwidth with the function in this 
-    module called `EstimateBandwidth`.  See the docstring of that function 
-    for how the bandwidth is estimated.  The metrics this function 
-    computes all depend upon that bandwidth estimate.  The default return 
-    of this function is the return of `EstimateBandwidth` translated to 
+    FD_snr_estimator first estimates bandwidth with the function in this
+    module called `EstimateBandwidth`.  See the docstring of that function
+    for how the bandwidth is estimated.  The metrics this function
+    computes all depend upon that bandwidth estimate.  The default return
+    of this function is the return of `EstimateBandwidth` translated to
     keyp-value pairs.   Those are:
 
       *low_f_band_edge* - lowest frequency exceeding threshold
-      *high_f_band_edge* - highest frequency exeeding threshold 
+      *high_f_band_edge* - highest frequency exeeding threshold
       *high_f_band_edge_snr* and *low_f_band_edge_snr* are the snr values
         at the band edges
-      *spectrum_frequency_range* - total frequency band for estimate 
+      *spectrum_frequency_range* - total frequency band for estimate
         (really just 0 to Nyquist).
-      *bandwidth* - bandwidth of estimate in dB. 
+      *bandwidth* - bandwidth of estimate in dB.
         i.e. 20*log10(high_f_band_edge/low_f_band_edge)
       *bandwidth_fraction* - bandwidth/spectrum_frequency_range
 
@@ -422,17 +438,17 @@ def FD_snr_estimator(
     band edge by the EstimateBandwidth function.  The algorithm automatically
     handles the case of a zero low frequency edge.   That is, with large events
     the low band edge can be computed as 0 frequency.   More commonly the band edge
-    is computed as one or two rayleigh bins above 0.  A bandpass filtered applied 
-    with a corner too close to 0 can produced distorted (or null) results.  
-    To prevent that the default behavior is to revert to a low pass filter 
-    versus a bandpass filter when the estimated value of low_f_band_edge is small. 
-    By default "small" is defined as <= 2.0*tbp*df, where tbp is the 
-    time bandwidth product for the multitaper spectral estimates (in optional 
-    argument) and df is the frequency sampling interval of the spectrum computed from 
-    the data in `signal_window`.  You can use a different recipe by passing 
-    a value for the optional parameter "f_low_zero_test" which will replace 
+    is computed as one or two rayleigh bins above 0.  A bandpass filtered applied
+    with a corner too close to 0 can produced distorted (or null) results.
+    To prevent that the default behavior is to revert to a low pass filter
+    versus a bandpass filter when the estimated value of low_f_band_edge is small.
+    By default "small" is defined as <= 2.0*tbp*df, where tbp is the
+    time bandwidth product for the multitaper spectral estimates (in optional
+    argument) and df is the frequency sampling interval of the spectrum computed from
+    the data in `signal_window`.  You can use a different recipe by passing
+    a value for the optional parameter "f_low_zero_test" which will replace
     the computed value using the formula above for switching to a lowpass filter.
-    The optional metrics are time domain estimates computed from 
+    The optional metrics are time domain estimates computed from
     the bandpass (lowpass) filtered data.  They are
     actually computed from functions in this same module that can be
     used independently and have their own docstring description. The
@@ -473,12 +489,12 @@ def FD_snr_estimator(
       approach for processing large data sets and really for any use in a
       map operation with dask or spark.  Normal use should be for the user to
       predefine an MtPowerSpectralEngine from the expected window sizedef FD
-    :type noise_spectrum_engine: None (default) or an instance of 
+    :type noise_spectrum_engine: None (default) or an instance of
       :py:class:`mspasspy.ccore.algorithms.deconvolution.MTPowerSpectrumEngine`
     :param signal_spectrum_engine:  is the comparable MTPowerSpectralEngine
       to use to compute the signal power spectrum.   Default is None with the
       same caveat as above for the noise_spectrum_engine.
-    :type signal_spectrum_engine: None (default) or an instance of 
+    :type signal_spectrum_engine: None (default) or an instance of
       :py:class:`mspasspy.ccore.algorithms.deconvolution.MTPowerSpectrumEngine`
     :param band_cutoff_snr:   defines the signal-to-noise ratio floor
       used in the search for band edges.  See description of the algorithm
@@ -502,14 +518,14 @@ def FD_snr_estimator(
       requires higher snr and wider bandwidth adjust this parameter
       and/or band_cutoff_snr.
     :type signal_detection_minimum_bandwidth:  float (default 6.0 dB)
-    :param f_low_zero_test: optional lower bound on frequency to use for 
+    :param f_low_zero_test: optional lower bound on frequency to use for
        test to disable the low frequency corner.   (see above)
-    :type f_low_zero_test:  float (default is None which causes the test to 
-        revert to 2.0*tbp*df (see above).  
+    :type f_low_zero_test:  float (default is None which causes the test to
+        revert to 2.0*tbp*df (see above).
     :param tbp:  time-bandwidth product to use for computing the set of
       Slepian functions used for the multitaper estimator.  This parameter is
       used only if the noise_spectrum_engine or signal_spectrum_engine
-      arguments are set as None.  
+      arguments are set as None.
     :type tbp:  float (default 4.0)
     :param ntapers:  is the number of Slepian functions (tapers) to compute
       for the multitaper estimators. Like tbp it is referenced only if
@@ -517,8 +533,8 @@ def FD_snr_estimator(
       Note the function will throw an exception if the ntaper parameter is
       not consistent with the time-bandwidth product.
     :type ntapers:  integer (default 6)
-    :param f0:   frequency to use to start search for bandwidth up and down 
-      the frequency axis (see above).  
+    :param f0:   frequency to use to start search for bandwidth up and down
+      the frequency axis (see above).
     :type f0:  float (default 1.0)
     :param npoles:   defines number of poles to us for the Butterworth
       bandpass or lowpass applied for the "filtered" metrics (see above).  Default is 3.
@@ -529,11 +545,11 @@ def FD_snr_estimator(
       identical to MAD)  Default is 95.0 which is 2 sigma for Gaussian noise.
     :type perc:  float (default 95.0)
     :param optional_metrics: is an iterable container containing one or more
-      of the optional snr metrics discussed above. Typos in names will create 
+      of the optional snr metrics discussed above. Typos in names will create
       log messages but will not cause the function to abort.
-    :type optional_metrics:  should be a list of strings matching the set of 
-       required keywords.  Default is None which means none of the optional 
-       metrics will be computed.  
+    :type optional_metrics:  should be a list of strings matching the set of
+       required keywords.  Default is None which means none of the optional
+       metrics will be computed.
     :param save_spectra:   If set True (default is False) the function
       will pickle the computed noise and signal spectra and save the
       strings created along with a set of related metadata defining the
@@ -593,7 +609,7 @@ def FD_snr_estimator(
         # First extract the required windows and compute the power spectra
         n = WindowData(data_object, noise_window.start, noise_window.end)
         s = WindowData(data_object, signal_window.start, signal_window.end)
- 
+
         # WARNING:  this handler depends upon an implementation details
         # that could be a maintenance issue.  The python code has a catch
         # that kills a datum where windowing fails.   The C++ code throws
@@ -616,7 +632,7 @@ def FD_snr_estimator(
             sengine = MTPowerSpectrumEngine(s.npts, tbp, ntapers, s.npts * 2, s.dt)
         N = nengine.apply(n)
         S = sengine.apply(s)
-        #bwd = EstimateBandwidth(
+        # bwd = EstimateBandwidth(
         #    S.df(),
         #    S,
         #    N,
@@ -624,14 +640,14 @@ def FD_snr_estimator(
         #    tbp,
         #    high_frequency_search_start,
         #    fix_high_edge,
-        #)
-        bwd = EstimateBandwidth(S,N,snr_threshold=band_cutoff_snr,f0=f0)
-        # The low edge can be zero but that will not work correctly with the 
-        # bandwidth method of bwd.  That C++ function has a bug in that it doesn't 
+        # )
+        bwd = EstimateBandwidth(S, N, snr_threshold=band_cutoff_snr, f0=f0)
+        # The low edge can be zero but that will not work correctly with the
+        # bandwidth method of bwd.  That C++ function has a bug in that it doesn't
         # handle that highly possible error condition.  This is a workaround
 
-        if bwd.low_edge_f<=0.0:
-            bandwidth=20.*np.log10(bwd.high_edge_f/S.df())
+        if bwd.low_edge_f <= 0.0:
+            bandwidth = 20.0 * np.log10(bwd.high_edge_f / S.df())
         else:
             bandwidth = bwd.bandwidth()
         # here we return empty result if the bandwidth is too low
@@ -643,7 +659,7 @@ def FD_snr_estimator(
         snrdata["low_f_band_edge_snr"] = bwd.low_edge_snr
         snrdata["high_f_band_edge_snr"] = bwd.high_edge_snr
         snrdata["spectrum_frequency_range"] = bwd.f_range
-        snrdata["bandwidth"] = bandwidth 
+        snrdata["bandwidth"] = bandwidth
         snrdata["bandwidth_fraction"] = bwd.bandwidth_fraction()
         if save_spectra:
             snrdata["signal_spectrum"] = pickle.dumps(S)
@@ -671,18 +687,18 @@ def FD_snr_estimator(
         if f_low_zero_test:
             fcutoff = f_low_zero_test
         else:
-            fcutoff = 2.0*tbp*S.df()
+            fcutoff = 2.0 * tbp * S.df()
         # use the mspass butterworth filter for speed - obspy
         # version requires a conversion to Trace objects
-        # TODO:   setting low_poles to 0 seems necessary to 
+        # TODO:   setting low_poles to 0 seems necessary to
         # enable lowpass filter turning off low corner terms
-        # I (GLP) am not sure why that is necessary looking at the 
-        # C++ code.  
-        if bwd.low_edge_f>fcutoff:
-            use_lowcorner=True
+        # I (GLP) am not sure why that is necessary looking at the
+        # C++ code.
+        if bwd.low_edge_f > fcutoff:
+            use_lowcorner = True
             low_poles = poles
         else:
-            use_lowcorner=False
+            use_lowcorner = False
             low_poles = 0
         BWfilt = Butterworth(
             False,
@@ -891,7 +907,7 @@ def arrival_snr(
     :param arrival_time_key:  key (string) used to fetch an arrival time
       if the data are in UTC and the time window received does not overlap
       the data range (see above)
-    :param kill_null_signals:  boolean controlling how null snr estimator 
+    :param kill_null_signals:  boolean controlling how null snr estimator
       returns are handled.  When True (default) if FD_snr_estimator returns a null
       result (no apparent signal) that input datum is killed before being
       returned.  In that situation no snr metrics will be in the output because
@@ -1055,8 +1071,8 @@ def broadband_snr_QC(
     is a Seismogram it tries to fetch site_lat.   That is true of all coordinate
     data loaded by normalization from a source and receiver collection.
 
-    Most of the arguments to this function are passed directly to 
-    `FD_snr_estimator`.   See the docstring of that function for reference. 
+    Most of the arguments to this function are passed directly to
+    `FD_snr_estimator`.   See the docstring of that function for reference.
     The following are additional parameters specific to this function:
 
     :param data_object:  An atomic MsPASS data object to which the
@@ -1089,7 +1105,7 @@ def broadband_snr_QC(
     :param taup_model: when use_measured_arrival_time is False this argument
       is required.  It defaults as None because there is no way the author
       knows to initialize it to anything valid.  If set it MUST be an instance
-      of the obspy class TauPyModel 
+      of the obspy class TauPyModel
       (https://docs.obspy.org/packages/autogen/obspy.taup.tau.TauPyModel.html#obspy.taup.tau.TauPyModel)
       Mistakes in use of this argument can cause a MsPASSError exception to
       be thrown (not logged thrown as a fatal error) in one of two ways:
@@ -1361,44 +1377,47 @@ def save_snr_arrival(
     return save_id
 
 
-def visualize_qcdata(d,
-                        component=2,
-                        qc_subdoc_key=None,
-                        f_low_zero_test=None,
-                        tbp=4,
-                        poles=3,
-                        ):
+def visualize_qcdata(
+    d,
+    component=2,
+    qc_subdoc_key=None,
+    f_low_zero_test=None,
+    tbp=4,
+    poles=3,
+):
     """
-    Creates a set of plots to visualize qc results computed from 
-    spectral estimates.  Requires the input datum d to have 
-    the spectra stored in metadata as pickled serialization of 
+    Creates a set of plots to visualize qc results computed from
+    spectral estimates.  Requires the input datum d to have
+    the spectra stored in metadata as pickled serialization of
     spectra used for the estimators.  That requires the data to
-    have been run with the option "save_spectra=True" in on 
-    of the QC function that use FD_snr_estimator.  The function 
+    have been run with the option "save_spectra=True" in on
+    of the QC function that use FD_snr_estimator.  The function
     with throw a MsPASSError exception if that metadata is missing.
-    
-    This function generates graphics and must not be used in 
+
+    This function generates graphics and must not be used in
     a large data processing job.   It is for exploratory work only
-    for use on a small subset of data. 
-    
-    f_low_zero_test, tbp, and poles are required to match 
-    FD_snr_estimator - use defaults or same values used for 
+    for use on a small subset of data.
+
+    f_low_zero_test, tbp, and poles are required to match
+    FD_snr_estimator - use defaults or same values used for
     running that function.
     """
-    def pts2box(xmin,xmax,ymin,ymax)->tuple:
+
+    def pts2box(xmin, xmax, ymin, ymax) -> tuple:
         """
-        Small internal to convert range xmin to xmax and 
-        same for y (ymin to yamx) to a list of points that 
-        can be passed to plot to produce a box with that range. 
-        returns a tuple with 0 the x values and 1 the y values 
-        that define the box. 
+        Small internal to convert range xmin to xmax and
+        same for y (ymin to yamx) to a list of points that
+        can be passed to plot to produce a box with that range.
+        returns a tuple with 0 the x values and 1 the y values
+        that define the box.
         """
-        x = [xmin,xmax,xmax,xmin,xmin]
-        y = [ymin,ymin,ymax,ymax,ymin]
-        return tuple([x,y])
-    if isinstance(d,Seismogram):
-        d = _ExtractComponent(d,component)   
-    if not isinstance(d,TimeSeries):
+        x = [xmin, xmax, xmax, xmin, xmin]
+        y = [ymin, ymin, ymax, ymax, ymin]
+        return tuple([x, y])
+
+    if isinstance(d, Seismogram):
+        d = _ExtractComponent(d, component)
+    if not isinstance(d, TimeSeries):
         message = "arg0 value must be a TimeSeries object\n"
         message += "Actual type={}".str(type(d))
         raise ValueError(message)
@@ -1412,36 +1431,38 @@ def visualize_qcdata(d,
         pdata = doc["noise_spectrum"]
         N = pickle.loads(pdata)
         del pdata
-        # If we get here we can assume these Metadata values have been 
-        swin = TimeWindow(doc['signal_window_start_time'],doc['signal_window_end_time'])
-        nwin = TimeWindow(doc['noise_window_start_time'],doc['noise_window_end_time'])
-        f_low = doc['low_f_band_edge']
-        f_high = doc['high_f_band_edge']
-        ymax=np.max(S.spectrum)
-        ymin=np.min(N.spectrum)
+        # If we get here we can assume these Metadata values have been
+        swin = TimeWindow(
+            doc["signal_window_start_time"], doc["signal_window_end_time"]
+        )
+        nwin = TimeWindow(doc["noise_window_start_time"], doc["noise_window_end_time"])
+        f_low = doc["low_f_band_edge"]
+        f_high = doc["high_f_band_edge"]
+        ymax = np.max(S.spectrum)
+        ymin = np.min(N.spectrum)
         # this draws a box around band estimate
-        x,y = pts2box(f_low,f_high,ymin,ymax)
-        fig,ax=plt.subplots(1)
+        x, y = pts2box(f_low, f_high, ymin, ymax)
+        fig, ax = plt.subplots(1)
         fig.suptitle("Spectrum estimates")
-        ax.loglog(S.frequencies(),S.spectrum,'-',N.frequencies(),N.spectrum,':')
-        ax.loglog(x,y,'-')
+        ax.loglog(S.frequencies(), S.spectrum, "-", N.frequencies(), N.spectrum, ":")
+        ax.loglog(x, y, "-")
         plt.show()
         # duplicates code in FD_snr_estimator - maintenance issue is they should stay consistent
         if f_low_zero_test:
             fcutoff = f_low_zero_test
         else:
-            fcutoff = 2.0*tbp*S.df()
+            fcutoff = 2.0 * tbp * S.df()
         # use the mspass butterworth filter for speed - obspy
         # version requires a conversion to Trace objects
-        # TODO:   setting low_poles to 0 seems necessary to 
+        # TODO:   setting low_poles to 0 seems necessary to
         # enable lowpass filter turning off low corner terms
-        # I (GLP) am not sure why that is necessary looking at the 
-        # C++ code.  
-        if f_low>fcutoff:
-            use_lowcorner=True
+        # I (GLP) am not sure why that is necessary looking at the
+        # C++ code.
+        if f_low > fcutoff:
+            use_lowcorner = True
             low_poles = poles
         else:
-            use_lowcorner=False
+            use_lowcorner = False
             low_poles = 0
         BWfilt = Butterworth(
             False,
@@ -1456,22 +1477,24 @@ def visualize_qcdata(d,
         filtered_data = TimeSeries(d)
         BWfilt.apply(filtered_data)
         # now do the seismic plots
-        fig2,ax2 = plt.subplots(2)
+        fig2, ax2 = plt.subplots(2)
         fig2.suptitle("Time Series Data")
-        ax2[0].plot(d.time_axis(),d.data)
-        ymin=np.min(d.data)
-        ymax=np.max(d.data)
-        xn,yn = pts2box(nwin.start,nwin.end,ymin,ymax)
-        xs,ys = pts2box(swin.start,swin.end,ymin,ymax)
-        ax2[0].plot(xn,yn)
-        ax2[0].plot(xs,ys)
+        ax2[0].plot(d.time_axis(), d.data)
+        ymin = np.min(d.data)
+        ymax = np.max(d.data)
+        xn, yn = pts2box(nwin.start, nwin.end, ymin, ymax)
+        xs, ys = pts2box(swin.start, swin.end, ymin, ymax)
+        ax2[0].plot(xn, yn)
+        ax2[0].plot(xs, ys)
         ax2[0].set_title("Input data")
-        ax2[1].plot(filtered_data.time_axis(),filtered_data.data)
-        ax2[1].plot(xn,yn)
-        ax2[1].plot(xs,ys)
+        ax2[1].plot(filtered_data.time_axis(), filtered_data.data)
+        ax2[1].plot(xn, yn)
+        ax2[1].plot(xs, ys)
         ax2[1].set_title("Filtered to bandwidth estimate")
         plt.show()
     else:
-        message = "Missing required metadata with keys signal_spectrum and noise_spectrum\n"
+        message = (
+            "Missing required metadata with keys signal_spectrum and noise_spectrum\n"
+        )
         message += "You probably need to run the data through broadband_snr_QC with save_spectra set True"
-        raise MsPaSSError("visuallize_qcdata",message,ErrorSeverity.Invalid)
+        raise MsPaSSError("visuallize_qcdata", message, ErrorSeverity.Invalid)
