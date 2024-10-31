@@ -16,7 +16,6 @@ from mspasspy.ccore.algorithms.amplitudes import (
 )
 from mspasspy.ccore.algorithms.basic import TimeWindow, Butterworth, _ExtractComponent
 from mspasspy.algorithms.window import WindowData
-# DEBUG
 import matplotlib.pyplot as plt
 
 def EstimateBandwidth(S,N,snr_threshold=1.5,df_smoother=None,f0=1.0)->BandwidthData:
@@ -149,7 +148,7 @@ def EstimateBandwidth(S,N,snr_threshold=1.5,df_smoother=None,f0=1.0)->BandwidthD
     # this should never happen with any data using antialias filters but 
     # is possible if the inputs are bad
     if i>=len(snrdata):
-        i = len(snrdata) + 1
+        i = len(snrdata) - 1
     if i>i0:
         result.high_edge_f = S.frequency(i)
         result.high_edge_snr = snrdata[i]
@@ -160,7 +159,7 @@ def EstimateBandwidth(S,N,snr_threshold=1.5,df_smoother=None,f0=1.0)->BandwidthD
         # test for max snrdata above)
         i = i0
         while(snrdata[i]<snr_threshold and i>=0):  # i>=0 test not essential but safer
-            i -= 0
+            i -= 1
         result.high_edge_f = S.frequency(i)
         result.high_edge_snr = snrdata[i]
         i0 = i
@@ -594,11 +593,7 @@ def FD_snr_estimator(
         # First extract the required windows and compute the power spectra
         n = WindowData(data_object, noise_window.start, noise_window.end)
         s = WindowData(data_object, signal_window.start, signal_window.end)
-        # DEBUG
-        fig1,ax1=plt.subplots(2)
-        ax1[0].plot(s.time_axis(),s.data)
-        ax1[1].plot(n.time_axis(),n.data)
-        plt.show()
+ 
         # WARNING:  this handler depends upon an implementation details
         # that could be a maintenance issue.  The python code has a catch
         # that kills a datum where windowing fails.   The C++ code throws
@@ -631,18 +626,10 @@ def FD_snr_estimator(
         #    fix_high_edge,
         #)
         bwd = EstimateBandwidth(S,N,snr_threshold=band_cutoff_snr,f0=f0)
-        # DEBUG
-        ymax=np.max(S.spectrum)
-        ymin=np.min(N.spectrum)
-        x=[bwd.low_edge_f,bwd.high_edge_f,bwd.high_edge_f,bwd.low_edge_f,bwd.low_edge_f]
-        y=[ymin,ymin,ymax,ymax,ymin]
-        fig2,ax2=plt.subplots(1)
-        ax2.loglog(S.frequencies(),S.spectrum,'-',N.frequencies(),N.spectrum,':')
-        ax2.loglog(x,y,'-')
-        plt.show()
+        # The low edge can be zero but that will not work correctly with the 
+        # bandwidth method of bwd.  That C++ function has a bug in that it doesn't 
+        # handle that highly possible error condition.  This is a workaround
 
-        #TODO:   the C++ function implementing this method does not handle the case of low_f edge 0.  
-        #This is a workaround.
         if bwd.low_edge_f<=0.0:
             bandwidth=20.*np.log10(bwd.high_edge_f/S.df())
         else:
@@ -711,20 +698,6 @@ def FD_snr_estimator(
         BWfilt.apply(filtered_data)
         nfilt = WindowData(filtered_data, noise_window.start, noise_window.end)
         sfilt = WindowData(filtered_data, signal_window.start, signal_window.end)
-        # DEBUG
-        fig,ax = plt.subplots(2)
-        ax[0].plot(data_object.time_axis(),data_object.data)
-        ax[1].plot(filtered_data.time_axis(),filtered_data.data)
-        xmarker=[]
-        ymarker=[]
-        xmarker.append(noise_window.start)
-        xmarker.append(noise_window.end)
-        xmarker.append(signal_window.start)
-        xmarker.append(signal_window.end)
-        for i in range(4):
-            ymarker.append(0.0)
-        ax[1].plot(xmarker,ymarker,'+')
-        plt.show()
 
         # In this implementation we don't need this any longer so we
         # delete it here.  If options are added beware
@@ -1386,3 +1359,119 @@ def save_snr_arrival(
         save_id = dbcol.insert_one(doc).inserted_id
 
     return save_id
+
+
+def visualize_qcdata(d,
+                        component=2,
+                        qc_subdoc_key=None,
+                        f_low_zero_test=None,
+                        tbp=4,
+                        poles=3,
+                        ):
+    """
+    Creates a set of plots to visualize qc results computed from 
+    spectral estimates.  Requires the input datum d to have 
+    the spectra stored in metadata as pickled serialization of 
+    spectra used for the estimators.  That requires the data to
+    have been run with the option "save_spectra=True" in on 
+    of the QC function that use FD_snr_estimator.  The function 
+    with throw a MsPASSError exception if that metadata is missing.
+    
+    This function generates graphics and must not be used in 
+    a large data processing job.   It is for exploratory work only
+    for use on a small subset of data. 
+    
+    f_low_zero_test, tbp, and poles are required to match 
+    FD_snr_estimator - use defaults or same values used for 
+    running that function.
+    """
+    def pts2box(xmin,xmax,ymin,ymax)->tuple:
+        """
+        Small internal to convert range xmin to xmax and 
+        same for y (ymin to yamx) to a list of points that 
+        can be passed to plot to produce a box with that range. 
+        returns a tuple with 0 the x values and 1 the y values 
+        that define the box. 
+        """
+        x = [xmin,xmax,xmax,xmin,xmin]
+        y = [ymin,ymin,ymax,ymax,ymin]
+        return tuple([x,y])
+    if isinstance(d,Seismogram):
+        d = _ExtractComponent(d,component)   
+    if not isinstance(d,TimeSeries):
+        message = "arg0 value must be a TimeSeries object\n"
+        message += "Actual type={}".str(type(d))
+        raise ValueError(message)
+    if qc_subdoc_key:
+        doc = d[qc_subdoc_key]
+    else:
+        doc = dict(d)
+    if "signal_spectrum" in doc and "noise_spectrum" in doc:
+        pdata = doc["signal_spectrum"]
+        S = pickle.loads(pdata)
+        pdata = doc["noise_spectrum"]
+        N = pickle.loads(pdata)
+        del pdata
+        # If we get here we can assume these Metadata values have been 
+        swin = TimeWindow(doc['signal_window_start_time'],doc['signal_window_end_time'])
+        nwin = TimeWindow(doc['noise_window_start_time'],doc['noise_window_end_time'])
+        f_low = doc['low_f_band_edge']
+        f_high = doc['high_f_band_edge']
+        ymax=np.max(S.spectrum)
+        ymin=np.min(N.spectrum)
+        # this draws a box around band estimate
+        x,y = pts2box(f_low,f_high,ymin,ymax)
+        fig,ax=plt.subplots(1)
+        fig.suptitle("Spectrum estimates")
+        ax.loglog(S.frequencies(),S.spectrum,'-',N.frequencies(),N.spectrum,':')
+        ax.loglog(x,y,'-')
+        plt.show()
+        # duplicates code in FD_snr_estimator - maintenance issue is they should stay consistent
+        if f_low_zero_test:
+            fcutoff = f_low_zero_test
+        else:
+            fcutoff = 2.0*tbp*S.df()
+        # use the mspass butterworth filter for speed - obspy
+        # version requires a conversion to Trace objects
+        # TODO:   setting low_poles to 0 seems necessary to 
+        # enable lowpass filter turning off low corner terms
+        # I (GLP) am not sure why that is necessary looking at the 
+        # C++ code.  
+        if f_low>fcutoff:
+            use_lowcorner=True
+            low_poles = poles
+        else:
+            use_lowcorner=False
+            low_poles = 0
+        BWfilt = Butterworth(
+            False,
+            use_lowcorner,
+            True,
+            low_poles,
+            f_low,
+            poles,
+            f_low,
+            d.dt,
+        )
+        filtered_data = TimeSeries(d)
+        BWfilt.apply(filtered_data)
+        # now do the seismic plots
+        fig2,ax2 = plt.subplots(2)
+        fig2.suptitle("Time Series Data")
+        ax2[0].plot(d.time_axis(),d.data)
+        ymin=np.min(d.data)
+        ymax=np.max(d.data)
+        xn,yn = pts2box(nwin.start,nwin.end,ymin,ymax)
+        xs,ys = pts2box(swin.start,swin.end,ymin,ymax)
+        ax2[0].plot(xn,yn)
+        ax2[0].plot(xs,ys)
+        ax2[0].set_title("Input data")
+        ax2[1].plot(filtered_data.time_axis(),filtered_data.data)
+        ax2[1].plot(xn,yn)
+        ax2[1].plot(xs,ys)
+        ax2[1].set_title("Filtered to bandwidth estimate")
+        plt.show()
+    else:
+        message = "Missing required metadata with keys signal_spectrum and noise_spectrum\n"
+        message += "You probably need to run the data through broadband_snr_QC with save_spectra set True"
+        raise MsPaSSError("visuallize_qcdata",message,ErrorSeverity.Invalid)
