@@ -150,6 +150,8 @@ def estimate_ensemble_bandwidth(
     :type snr_doc_key:  string (default "Parrival" = default of
     `broadband_snr_QC`)
     """
+    if ensemble.dead():
+        return [0.0, 0.0, 0]
     f_l = []
     f_h = []
     for d in ensemble.member:
@@ -165,7 +167,7 @@ def estimate_ensemble_bandwidth(
         f_high = np.median(f_h)
         return [f_low, f_high, len(f_h)]
     else:
-        return [0, 0, 0]
+        return [0.0, 0.0, 0]
 
 
 def _compute_default_robust_window(
@@ -1099,6 +1101,7 @@ def align_and_stack(
     abort_irregular_sampling=False,
     convergence=0.01,
     residual_norm_floor=0.1,
+    demean_residuals=True,
 ) -> tuple:
     """
     This function uses an initial estimate of the array stack passed as
@@ -1241,6 +1244,18 @@ def align_and_stack(
     endtime inconsistency is treated the same way.  i.e. it is treated as
     a problem if the average ensemble endtime - the correlation window
     endtime is less than the `time_shift_limit`.
+    
+    A related issue is that arrival times estimated by this algorithm 
+    will be biased by the model mismatch with whatever signal was used 
+    as the initial beam estimae.  In dbxcor that was handled by forcing 
+    the user to manually pick the first arrival of the computed stack.   
+    That could be done if desired but would require you to devise a scheme 
+    to do that picking.   The default here is handled by the boolean 
+    parameter demean_residuals.  When True (the default) the vector 
+    of computed time shifts is corrected by the mean value of the group.
+    Note that is common practice in regional tomography inversion anyway.  
+    For reasonable sized ensembles it will tend to yield data that when 
+    aligned by arrival time are all close to 0 relative time.
 
     Note the output stack normally spans a different time range than
     either the correlation or robust windows.   That property is defined
@@ -1332,6 +1347,10 @@ def align_and_stack(
     :param residual_norm_floor: floor on residuals used to compute dbxcor weight
         function.  See docstring for `dbxcor_weights` for details.
     :type residual_norm_floor:   float (default 0.01)
+    :param demean_residuals: boolean controlling if the computed shifts 
+        are corrected with a demean operation.   Default is True which 
+        means the set of all time shifts computed by this function will 
+        have zero mean.  
 
     :return: tuple with 0 containing the original ensemble but time
         shifted by cross-correlation.   Failed/discarded signals for the
@@ -1360,6 +1379,11 @@ def align_and_stack(
         message += "Must be a TimeSeries"
         raise TypeError(message)
     if ensemble.dead():
+        return [ensemble, beam]
+    if beam.dead():
+        message = "ensemble was marked live but beam input was marked dead - cannot process this ensemble"
+        ensemble.elog.log_error(alg,message,ErrorSeverity.Invalid)
+        ensemble.kill()
         return [ensemble, beam]
     ensemble = regularize_sampling(ensemble, beam.dt, Nsamp=beam.npts)
     if ensemble.dead():
@@ -1576,6 +1600,24 @@ def align_and_stack(
     # and set the value for the attribute defined by "time_shift_key"
     # argument.   This has to be done here so we can properly cut the
     # window to be stacked
+    #
+    # first remove the average time shift if requested to get more 
+    # rational arrival times - otherwise will be biased by initial beam time
+    if demean_residuals:
+        allshifts=[]
+        for i in range(len(ensemble.member)):
+            if ensemble.member[i].live:
+                initial_starttime = ensemble.member[i][it0_key]
+                tshift = ensemble.member[i].t0 - initial_starttime
+                allshifts.append(tshift)
+        tshift_mean = np.average(allshifts)
+        # debug
+        print("Applying average time shift of ",tshift_mean)
+        for i in range(len(ensemble.member)):
+            if ensemble.member[i].live:
+                # this method alters the t0 values of the ensemble members
+                # when used plots will tend to be aligned with 0 relative time
+                ensemble.member[i].shift(tshift_mean)
     for i in range(len(ensemble.member)):
         if ensemble.member[i].live:
             # in this context it0_key should always be defined
@@ -1875,6 +1917,148 @@ def post_MCXcor_metrics(
         d[key] = amp
     return d
 
+def demean_residuals(ensemble,
+                     measured_time_key="Ptime_xcor",
+                     model_time_key="Ptime",
+                     residual_time_key="Presidual",
+                     corrected_measured_time_key="Pmeasured",
+                     center_method="median",
+                     center_estimate_key="Presidual_bias",
+                     kill_on_failure=False,
+                     ):
+    """
+    Residuals measured by any method are always subject to a bias 
+    from Earth structure and earthquake location errors.   With the 
+    MsPASS multichannel xcor algorithm there is an additional bias 
+    inherited from the choice of the initial beam estimate that can 
+    produce an even larger bias.   This algorithm id designed to 
+    process an ensemble to remove and estimate of center from the 
+    residuals stored in the Metadata containers of the ensemble members. 
+    
+    The arguments can be used to change the keys used to access 
+    attributes needed to compute the residual and store the result. 
+    The formula is trivial an with kwarg symbols is:
+        
+        residual_time_key = measured_time_key - model_time_key - bias
+        
+    where bias is the estimate of center computed from the vector 
+    of (uncorrected) residual extracted from the ensemble members.
+    Each member of the ensemble where the measured and model times 
+    are defined will have a value set for the residual_time_key in 
+    the output.  The actual estimate of bias will be posted to the 
+    output in the ensemble's Mewtadata container with the key 
+    defined by the argument "center_estimate_key".
+    
+    Note the corrected (by estimate of center that is) measured 
+    phase arrival time will be stored in each member with the key 
+    defined by the "corrected_measured_time_key" argument.  By default 
+    that is a different key than measured_time_key but some many want 
+    to make measured_time_key==corrected_measured_time_key to reduce 
+    complexity.  That is allowed but is a choice not a requirement. 
+    Again, default will make a new entry for the corrected value. 
+    
+    :param ensemble:  ensemble object to be processed.   Assumes 
+       the members have defined values for the keys defined by 
+       the "measured_time_key" and "model_time_key".  
+    :type ensemble:  :py:class:`mspasspy.ccore.seismic.TimeSeriesEnsemble` 
+       or :py:class:`mspasspy.ccore.seismic.SeismogramEnsemble`.  The function 
+       will throw a ValueError exception if this require arg is any other
+       type.
+    :param measured_time_key:  key to use to fetch the measured arrival 
+       time of interest from member Metadata containers. 
+    :type measured_time_key: string (default "Ptime_xcor")
+    :param model_time_key:  key to use to fetch the arrival time computed 
+       from an earth model and location estimate.  Each member is assumed 
+       to have this value defined.
+    :type model_time_key:  string (default "Ptime")
+    :param residual_time_key:   key use to store the output demeaned 
+       residual.   Be warned that this will overwrite a previously stored value
+       if the key was previously defined for something else.  That can, 
+       however, be a useful feature if the same data are reprocessed.
+    :type residual_time_key:  string (default "Presidual")
+    :param corrected_mesured_time_key:   key to use to save the bias 
+       corrected measured time estimate.   This value is just the 
+       input measured time value minus the computed bias. 
+    :type corrected_measured_time_key:  string (default "Pmeasured")
+    :param center_method:  method of center method to use to compute 
+       bias correction from vector of residuals.  Valid values are: "median" 
+       to use the median and "mean" ("average" is also accepted an is treated as "mean")
+       to use the average/mean value operator. 
+    :type center_method: string (default "median")
+    :param center_estimate_key:  key to use to post the estimated center of 
+       the vector of residuals.  Note that value is posted to the ensemble's 
+       Metadata container, not the members.  Be warned, however, that 
+       currentlyh when ensemble data are saved this value will be posted to 
+       all members before saving. Be sure this name does not overwrite 
+       some other desired member Metdata when that happens.
+    :type center_estimate_key:  string (default "Presidual_bias")
+    :param kill_on_failure:  boolean controlling what the function does 
+       to the output ensemble if the algorithm totally fails.  "totally fails"
+       in this case means it the number of residuals it could compute was 
+       less than or equal 1.  If set True the output will be killed. 
+       When False it will be returned with no values set for the 
+       keys defined by "residual_time_key" and "center_estimate_key". 
+       Default is False.
+       
+    :return:  edited copy of input ensemble altering only Metadata containers
+       
+    """
+    alg = "demean_residuals"
+    if not isinstance(ensemble,(TimeSeriesEnsemble,SeismogramEnsemble)):
+        message = alg + ":  arg0 has invalid type={}\n".format(str(type(ensemble)))
+        message += "Must be TimeSeriesEnsemble or SeismogramEnsemble"
+        raise TypeError(message)
+    if ensemble.dead():
+        return ensemble
+    valid_center_methods=["mean","average","median"]
+    if center_method not in valid_center_methods:
+        message = "center_method={} is not a valid - defaulting to median"
+        ensemble.elog.log_error(alg,message,ErrorSeverity.Complaint)
+        center_method = "median"
+    residuals = list()
+    r_index = list()
+    number_problem_members=0
+    message=""
+    for i in range(len(ensemble.member)):
+        if ensemble.member[i].live:
+            # use d as shorthand to reduce complexity of expressions
+            d = ensemble.member[i]
+            if d.is_defined(measured_time_key) and d.is_defined(model_time_key):
+                r = d[measured_time_key] - d[model_time_key]
+                residuals.append(r)
+                r_index.append(i)
+            else:
+                message += "member {} is missing one or both of keys {} and {}\n".format(i,measured_time_key,model_time_key)
+                number_problem_members += 1
+    if number_problem_members>0:
+        ensemble_message = "Could not compute residuals for all live members - list problems:\n"
+        ensemble_message += message
+        ensemble.elog.log_error(alg,ensemble_message,ErrorSeverity.Complaint)
+    if len(residuals) <= 1:
+        message = "Number of residuals computed = {} - demean is not feasible".format(len(residuals))
+        ensemble.elog.log_error(alg,message,ErrorSeverity.Complaint)
+        if kill_on_failure:
+            ensemble.kill()
+        return ensemble
+    if center_method in ["average","mean"]:
+        r_mean = np.average(residuals)
+    else:
+        # for now this means median - if more methods are added they 
+        # should appear in elif blocks above this
+        r_mean = np.median(residuals)
+      
+    # drive the setting of computed output with the residuals dictionary
+    # that is a clean mechanism to guarantee 
+    for i in r_index:
+        # we can assume these will resolve or i would not have been set 
+        # in the r_index list
+        r = ensemble.member[i][measured_time_key] - ensemble.member[i][model_time_key]
+        r -= r_mean
+        ensemble.member[i][residual_time_key] = r
+        ensemble.member[i][corrected_measured_time_key] = ensemble.member[i][measured_time_key] - r_mean
+    ensemble[center_estimate_key] = r_mean
+    return ensemble
+ 
 
 def remove_incident_wavefield(d, beam):
     """
