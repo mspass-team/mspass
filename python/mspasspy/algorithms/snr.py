@@ -21,7 +21,7 @@ import matplotlib.pyplot as plt
 
 
 def EstimateBandwidth(
-    S, N, snr_threshold=1.5, df_smoother=None, f0=1.0
+    S, N, snr_threshold=1.5, df_smoother=None, f0=1.0, f_max=None,
 ) -> BandwidthData:
     """
     Estimates a set of signal bandwidth estimates returned in the the
@@ -122,6 +122,15 @@ def EstimateBandwidth(
             )
         )
         raise TypeError(message)
+    # set the ceiling on the high frequency band edge
+    # Default is 80% of Nyquist
+    if f_max:
+        if f_max>S.Nyquist():
+            # silently reset to Nyquist if f_max is illegal
+            high_f_ceiling = 0.8*S.Nyquist()
+        high_f_ceiling = f_max
+    else:
+        high_f_ceiling = 0.8*S.Nyquist()
     # use the S grid to define the snr curve - note N grid can be different
     snrdata = np.zeros(S.nf())
     for i in range(S.nf()):
@@ -152,15 +161,15 @@ def EstimateBandwidth(
         return result
     # get index of search start
     i0 = S.sample_number(f0)
+    i_max = S.sample_number(high_f_ceiling)
     # search upward in f
     i = i0
-    while i < len(snrdata):
+    while i < i_max:
         if snrdata[i] <= snr_threshold:
             break
         else:
             i += 1
-    # this should never happen with any data using antialias filters but
-    # is possible if the inputs are bad
+    # this should never happen but avoids a seg fault if it does
     if i >= len(snrdata):
         i = len(snrdata) - 1
     if i > i0:
