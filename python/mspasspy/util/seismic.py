@@ -265,5 +265,7 @@ def sort_ensemble(ensemble,key,nullvalue=0.0,ascending=True,drop_dead=True):
     for index, row in df.iterrows():
         i = row["member_number"].astype(int)
         ensout.member.append(ensemble.member[i])
+    if N>0:
+        ensout.set_live()
     return ensout
 
