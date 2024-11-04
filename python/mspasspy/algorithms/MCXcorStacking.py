@@ -1174,7 +1174,7 @@ def align_and_stack(
             signal-to-noise data with pure junk and produce a clean
             stack that is defined.   Note recent experience has shown
             that with large, consistent ensembles the dbxcor robust
-            estimate tends to converge to the focus on the signal closest
+            estimate tends to converge to the focus on the signal closestbeam_correlation
             to the median stack.  The reason is that the median stack
             is always used as the initial estimator.   Hence, it can
             be thought of as a median stack that uses the full data
@@ -1470,7 +1470,7 @@ def align_and_stack(
             message = "Illegal type for robust_stack_window={}\m".format(
                 str(type(robust_stack_window))
             )
-            message += "For this option must be a TimeWindow object"
+            message += "when using robust_stack_window option value passed must be a TimeWindow object"
             raise ValueError(message)
 
     elif robust_stack_window_keys:
@@ -1706,7 +1706,8 @@ def beam_correlation(d, beam, window=None, aligned=True) -> float:
     d2e = d2.sample_number(etmin)
     # this may not be necessary but with rounding errors it could be needed
     N = min(d1e - d1s, d2e - d2s)
-    return np.dot(d1.data[0:N], d2.data[0:N])
+    xcor_0 = np.dot(d1.data[0:N], d2.data[0:N])
+    return abs(xcor_0)
 
 
 def beam_coherence(d, beam, window=None) -> float:
@@ -1741,24 +1742,26 @@ def beam_coherence(d, beam, window=None) -> float:
     # Making a blatant assumption d and beam are on the same time base here
     d1 = WindowData(d, window.start, window.end, short_segment_handling="pad")
     d2 = WindowData(beam, window.start, window.end, short_segment_handling="pad")
-    # make d1 and d2 unit vectors
+    # return 0 immediately if the data vector is all zeros
     nrmd1 = np.linalg.norm(d1.data)
+    if nrmd1<=0.0:
+        return 0.0
+    # make d2 a unit vector
     nrmd2 = np.linalg.norm(d2.data)
-    # avoid divide by zero if either are all zeros
-    if nrmd2 <= 0.0 or nrmd2 <= 0.0:
+    if nrmd2<=0.0:
         return 0.0
     else:
-        # normalize d1 and d2 to unit vectors
-        d1 *= 1.0 / nrmd1
-        d2 *= 1.0 / nrmd2
-        r = d1 - d2
-        coh = 1.0 - np.linalg.norm(r.data)
-        if coh < 0.0:
-            # This can happen easily if there is a scaling error and
-            # d1 has a much larger amplitude than d2.   coh is defined
-            # as never less than 0 so this is needed.
-            coh = 0.0
-        return coh
+        d2 *= 1.0/nrmd2
+    # this may not be necessary but more robust - assumes window can 
+    # return inconsistent lengths due to subsample rounding issue
+    N = min(d1.npts,d2.npts)
+    amp = np.dot(d1.data[0:N],d2.data[0:N])
+    d2 *= amp
+    r = d1 - d2
+    coh = 1.0 - np.linalg.norm(r.data)/nrmd1
+    if coh < 0.0:
+        coh = 0.0
+    return coh
 
 
 def amplitude_relative_to_beam(d, beam, normalize_beam=True, window=None):
@@ -2429,6 +2432,13 @@ def _update_xcor_beam(xcorens, beam0, robust_stack_method, wts) -> TimeSeries:
     # A tricky but fast way to initialize the data vector to all zeros
     # warning this depends upon a special property of the C++ implementation
     beam.set_npts(beam0.npts)
+    # Cautioniously copy these to beam.   Maybe should log an error if they 
+    # aren't defined but for now do this silently.   Possible 
+    # maintenace issue if these keys ever change in MCXcorPPrep. 
+    # at present it sets these in ensemble's Metadata container
+    for key in ["MCXcor_f_low", "MCXcor_f_high", "MCXcor_npoles"]:
+        if xcorens.is_defined(key):
+            beam[key] = xcorens[key]
     stime = beam.t0
     etime = beam.endtime()
     N = len(xcorens.member)
