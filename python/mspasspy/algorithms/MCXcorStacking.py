@@ -902,6 +902,7 @@ def robust_stack(
         # Always compute the median stack as a starting point
         # that was the algorithm of dbxcor and there are good reasons for it
         data_matrix = np.zeros(shape=[M, N])
+        ii = 0
         for i in range(M_e):
             if ensemble.member[i].live:
                 d = WindowData(
@@ -913,7 +914,8 @@ def robust_stack(
                 # this makes this bombproof.  Subject otherwise to
                 # subsample t0 rounding ambiguity
                 N2use = min(N, d.npts)
-                data_matrix[i, 0:N2use] = np.array(d.data[0:N2use])
+                data_matrix[ii, 0:N2use] = np.array(d.data[0:N2use])
+                ii += 1
         stack_vector = np.median(data_matrix, axis=0)
         stack.data = DoubleVector(stack_vector)
         stack.set_live()
@@ -1459,7 +1461,10 @@ def align_and_stack(
         xcorwin = TimeWindow(beam.t0, beam.endtime())
         windows_extracted_from_metadata = False
     if xcor_window_is_defined and window_beam:
-        beam = WindowData(beam, xcorwin.start, xcorwin.end)
+        beam = WindowData(beam, xcorwin.start, xcorwin.end, short_segment_handling="truncate")
+        # this shouldn't happen but requires an exit if it did
+        if beam.dead():
+            return [ensemble,beam]
     # now a simpler logic to handle robust window
     if robust_stack_window:
         if isinstance(robust_stack_window, TimeWindow):
