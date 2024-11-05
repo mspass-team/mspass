@@ -514,7 +514,7 @@ def test_TimeSeries():
     # 104 because of the 4 append operations above
     assert len(taxis) == 104
     assert taxis[0] == ts.t0
-    assert taxis[ts.npts-1] == ts.t0 + (ts.npts-1)*ts.dt
+    assert taxis[ts.npts - 1] == ts.t0 + (ts.npts - 1) * ts.dt
     # These metadata constructor used for cracking miniseed files
     md = Metadata()
     md["delta"] = 0.01

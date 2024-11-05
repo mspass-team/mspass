@@ -535,24 +535,28 @@ def WindowDataAtomic(
             # than using python loops
             istart = dpadded.sample_number(dcut.t0)
             iend = dpadded.sample_number(dcut.endtime()) + 1
-            # subsample rounding can cause iend to be one sample to large. 
-            # this would be easier to handle with a python loop but it 
+            # subsample rounding can cause iend to be one sample to large.
+            # this would be easier to handle with a python loop but it
             # would be much slower
-            if iend>dpadded.npts:
-                di = iend-dpadded.npts
+            if iend > dpadded.npts:
+                di = iend - dpadded.npts
                 if di == 1:
                     iend = dpadded.npts
                     icend = dcut.npts - 1
                     if isinstance(d, TimeSeries):
                         dpadded.data[istart:iend] = dcut.data[0:icend]
                     else:
-                        dpadded.data[:, istart:iend] = dcut.data[:,0:icend]
+                        dpadded.data[:, istart:iend] = dcut.data[:, 0:icend]
                 else:
                     message = "Unexpected return from C++ WindowData function in pad option section\n"
-                    message += "Computed sample number for padded sample number start={} and end={}\n".format(istart,iend)
+                    message += "Computed sample number for padded sample number start={} and end={}\n".format(
+                        istart, iend
+                    )
                     message += "Allowed index range = 0 to {}\n".format(dpadded.npts)
-                    message += "This should not happen and is a bug that should be reported"
-                    raise MsPASSError(alg,message,ErrorSeverity.Fatal)
+                    message += (
+                        "This should not happen and is a bug that should be reported"
+                    )
+                    raise MsPASSError(alg, message, ErrorSeverity.Fatal)
             else:
                 if isinstance(d, TimeSeries):
                     dpadded.data[istart:iend] = dcut.data
@@ -908,8 +912,8 @@ def WindowData_autopad(
     return dw
 
 
-# TODO:   this function does not support history mechanism because the 
-# standard decorator is does not support a bound std::vector<TimeSeries> 
+# TODO:   this function does not support history mechanism because the
+# standard decorator is does not support a bound std::vector<TimeSeries>
 # container.  I requires one of the four MsPASS data objects.
 def merge(
     tsvector,
@@ -1059,7 +1063,7 @@ def merge(
       dead.  When set True, gaps will be zeroed and with a record of
       gap positions posted to the Metadata of the output.  See above
       for details.
-    :param zero_gaps:  boolean controlling how gaps are to be handled. 
+    :param zero_gaps:  boolean controlling how gaps are to be handled.
     See above for details of the algorithm.
     :type zero_gaps:  boolean (default False)
     :param object_history: boolean to enable or disable saving object

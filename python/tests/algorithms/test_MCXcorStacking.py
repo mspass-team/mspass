@@ -197,7 +197,7 @@ def test_align_and_stack():
     for d in eo.member:
         print(d["robust_stack_weight"])
     assert eo.member[ibad].live
-    # note the value tested here depends on the default for the 
+    # note the value tested here depends on the default for the
     # residual_norm_floor parameter.  This works with current default 0.1
     assert eo.member[ibad]["robust_stack_weight"] < 0.005
     # Repeat test 1 with median stack
@@ -406,7 +406,7 @@ def test_align_and_stack_error_handlers():
     #    print(e.message)
     assert nentries == 2
 
-    # test case where windows are not consistent 
+    # test case where windows are not consistent
     # should recover and leave error message in beam
     e = TimeSeriesEnsemble(e0)
     w = TimeSeries(e.member[0])
@@ -742,10 +742,10 @@ def test_ensemble_time_range():
         e = ensemble_time_range(e, metric=m)
 
 
-#test_align_and_stack()
-#test_align_and_stack_error_handlers()
-#test_coda_duration()
-#test_MCXcorPrepP()
-#test_set_phases()
-#test_regularize_sampling()
-#test_ensemble_time_range()
+# test_align_and_stack()
+# test_align_and_stack_error_handlers()
+# test_coda_duration()
+# test_MCXcorPrepP()
+# test_set_phases()
+# test_regularize_sampling()
+# test_ensemble_time_range()

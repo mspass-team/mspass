@@ -85,12 +85,12 @@ def verify_snr_outputs_match(so1, so2):
 
 def test_snr():
     """
-    Test function for snr module.   This function is currently incomplete as it 
-    needs to test a new implemenation of the EstimateBandwidth function 
-    independent from the higher level functions tested here.   Most of that 
+    Test function for snr module.   This function is currently incomplete as it
+    needs to test a new implemenation of the EstimateBandwidth function
+    independent from the higher level functions tested here.   Most of that
     function is tested by this one since some of the higher level functions use
-    the EstimateBandwidth function.   
-    
+    the EstimateBandwidth function.
+
     TODO:  the biggest gap her is that most of the error handlers are tested.
     """
     with open("python/tests/data/snrtestdata", "rb") as pickle_file:
@@ -135,7 +135,7 @@ def test_snr():
     tval = fd_snr_output[0]["high_f_band_edge"]
     assert np.isclose(tval, 15.414097650391602)
     tval = fd_snr_output[0]["low_f_band_edge_snr"]
-    assert np.isclose(tval,10.208843934129755)
+    assert np.isclose(tval, 10.208843934129755)
     tval = fd_snr_output[0]["high_f_band_edge_snr"]
     assert np.isclose(tval, 1.8193522428502547)
     tval = fd_snr_output[0]["bandwidth_fraction"]
@@ -169,7 +169,7 @@ def test_snr():
     tval = fd_snr_output[0]["high_f_band_edge"]
     assert np.isclose(tval, 15.414097650391602)
     tval = fd_snr_output[0]["low_f_band_edge_snr"]
-    assert np.isclose(tval,10.208843934129755)
+    assert np.isclose(tval, 10.208843934129755)
     tval = fd_snr_output[0]["high_f_band_edge_snr"]
     assert np.isclose(tval, 1.8193522428502547)
     tval = fd_snr_output[0]["bandwidth_fraction"]
@@ -178,7 +178,7 @@ def test_snr():
     assert np.isclose(tval, 65.34343456806027)
     tval = fd_snr_output[0]["spectrum_frequency_range"]
     assert np.isclose(tval, 50.0)
-    
+
     # optional metric validation
     tval = fd_snr_output[0]["mean_snr"]
     assert np.isclose(tval, 19.319007409878544)
@@ -284,4 +284,3 @@ def test_snr():
         update_id=idout,
     )
     assert idout2 == idout
-

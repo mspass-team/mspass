@@ -58,8 +58,8 @@ class RFdeconProcessor:
     def __init__(self, alg="LeastSquares", pf="RFdeconProcessor.pf"):
         self.algorithm = alg
         self.pf = AntelopePf(pf)
-        # use a copy in what is more or less a switch-case block 
-        # to be robust - I don't think any of the constructors below 
+        # use a copy in what is more or less a switch-case block
+        # to be robust - I don't think any of the constructors below
         # alter pfhandle but the cost is tiny for this stability
         pfhandle = AntelopePf(self.pf)
         if self.algorithm == "LeastSquares":
@@ -423,17 +423,17 @@ def RFdecon(
 
     :param d:  Seismogram input data.  See notes above about
     time span of these data.
-    :param engine:   optional instance of a RFdeconProcessor 
-    object.   By default the function instantiates an instance of 
-    a processor for each call to the function.   For algorithms 
-    like the multitaper based algorithms with a high initialization 
-    cost performance will improve by sending an instance to the 
-    function via this argument.   
-    :type engine:  None or an instance of `RFdeconProcessor`.   
-    When None (default) an instance of an `RFdeconProcessor` is 
+    :param engine:   optional instance of a RFdeconProcessor
+    object.   By default the function instantiates an instance of
+    a processor for each call to the function.   For algorithms
+    like the multitaper based algorithms with a high initialization
+    cost performance will improve by sending an instance to the
+    function via this argument.
+    :type engine:  None or an instance of `RFdeconProcessor`.
+    When None (default) an instance of an `RFdeconProcessor` is
     created on entry based on the keyword defined by the `alg`
-    argument.   The algorithm built into the instance of 
-    `RFdeconProcessor` is used if engine is not null.  
+    argument.   The algorithm built into the instance of
+    `RFdeconProcessor` is used if engine is not null.
     :param alg: The algorithm to be applied, used for initializing
      a RFdeconProcessor object.  Ignored if `engine` is used.
     :param pf: The pf file to be parsed, used for inititalizing a
@@ -477,17 +477,21 @@ def RFdecon(
            Note this functionality is implemented via the mspass_func_wrapper decorator.
 
     :return:  Normally returns Seismogram object containing the RF estimates.
-     The orientations are always the same as the input.  If `return-wavelets` is set 
-     True returns a tuple with three components:  0 - `Seismogram` returned as with 
-     default, 1 - ideal output wavelet `TimeSeries`, 2 - actual output wavelet 
-     stored as a `TimeSeries` object.  
+     The orientations are always the same as the input.  If `return-wavelets` is set
+     True returns a tuple with three components:  0 - `Seismogram` returned as with
+     default, 1 - ideal output wavelet `TimeSeries`, 2 - actual output wavelet
+     stored as a `TimeSeries` object.
     """
 
     if engine:
-        if isinstance(engine,RFdeconProcessor):
+        if isinstance(engine, RFdeconProcessor):
             processor = engine
         else:
-            message = "RFdecon:   illegal type for define by engine argment = {}\n".format(type(engine))
+            message = (
+                "RFdecon:   illegal type for define by engine argment = {}\n".format(
+                    type(engine)
+                )
+            )
             message += "If defined must be an instance of RFdeconProcessor"
             raise TypeError(message)
     else:
@@ -498,7 +502,7 @@ def RFdecon(
             processor.loadwavelet(wavelet, dtype="raw_vector")
         else:
             # processor.loadwavelet(d,dtype='Seismogram',window=True,component=wcomp)
-            processor.loadwavelet(d, window=True,component=wcomp)
+            processor.loadwavelet(d, window=True, component=wcomp)
         if processor.uses_noise:
             if noisedata != None:
                 processor.loadnoise(noisedata, dtype="raw_vector")
