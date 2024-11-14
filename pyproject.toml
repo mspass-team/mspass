@@ -5,7 +5,8 @@ authors = [
     {name = "Ian Wang", email = "yinzhi.wang.cug@gmail.com"},
     {name = "Gary Pavlis", email = "pavlis@indiana.edu"},
 ]
-dynamic = ["dependencies", "scripts", "version"]
+dynamic = ["dependencies", "scripts", "version", "optional-dependencies"]
+requires-python = ">=3.8"
 
 [build-system]
 requires = ["setuptools>=64", "setuptools_scm>=8", "wheel", "numpy"]
@@ -17,17 +18,6 @@ dependencies = {file = ["requirements.txt"]}
 [tool.setuptools-extensions]
 cmake-extension = "setup:CMakeExtension"
 cmake-build = "setup:CMakeBuild"
-
-[tool.poetry.dependencies]
-python = "^3.8"
-
-[tool.poetry.extras]
-complete = ["numpy", "pandas", "scipy", "matplotlib"]
-
-[tool.poetry.scripts]
-mspass-dbclean = "mspasspy.db.script.dbclean:main"
-mspass-dbverify = "mspasspy.db.script.dbverify:main"
-mspass-normalize_mseed = "mspasspy.db.script.normalize_mseed:main"
 
 [tool.setuptools_scm]
 
