@@ -86,12 +86,6 @@ ENTRY_POINTS = {
     ],
 }
 
-complete_deps = ["numpy", "pandas", "scipy", "matplotlib"]
-seisbench_deps = [
-    "seisbench==0.4.1; python_version < '3.9'",
-    "seisbench>0.4.1; python_version >= '3.9'",
-]
-
 setup(
     name="mspasspy",
     ext_modules=[CMakeExtension("mspasspy.ccore")],
@@ -104,10 +98,5 @@ setup(
     ),
     package_data={"": ["*.yaml", "*.pf"]},
     include_package_data=True,
-    install_requires=[],
-    python_requires=">=3.8",
-    extras_require={
-        "complete": complete_deps,
-        "seisbench": complete_deps + seisbench_deps,
-    }
+    install_requires=["pyyaml"],
 )
