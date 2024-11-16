@@ -5,8 +5,8 @@ Created on Thu Nov 14 14:33:17 2024
 
 @author: pavlis
 """
-#from mspasspy.util.Janitor import Janitor
-from Janitor import Janitor
+from mspasspy.util.Janitor import Janitor
+#from Janitor import Janitor
 from helper import (
     get_live_seismogram,
     get_live_timeseries,
