@@ -35,25 +35,8 @@ MongoDB.   However, for reasons outlined in the section
 :ref:`data_object_design_concepts` a schema feature
 was added as a component of MsPASS.  We emphasize the
 schema in this design, however, can be thought of as more
-like guidelines than rigid rules.
-The default schema for a Database assumes the data set is a set of
-TimeSeries object.  That implies the dataset is defined in the
-collection we call :code:`wf_TimeSeries`.   If the dataset is already
-assembled into three component bundles (:code:`Seismogram` objects)
-the Database constructor needs to be informed of that through this
-alternative construct:
-
-.. code-block:: python
-
-    from mspasspy.db.client import Client
-    from mspasspy.db.database import Database
-    dbclient = Client()
-    db=Database(dbclient, 'database_name', db_schema='wf_Seismogram')
-
-If your workflow requires reading both TimeSeries and Seismogram
-data, best practice (i.e. it isn't required but a good idea)
-would be to create two handles with one using the wf_TimeSeries
-and the other using the wf_Seismogram schema.
+like guidelines than rigid rules.  Elements of the schema 
+are discussed at length in the section :ref:`data_object_design_concepts`.
 
 Create
 ~~~~~~~~~~
@@ -63,10 +46,11 @@ the synonymous word "save".   Here we list all save methods with a brief
 description of each method.  Consult the docstring pages for detailed
 and most up to date usage:
 
-1.  :code:`save_data` is probably the most common method you will use.  The
-    first argument is one of the atomic objects defined in MsPASS
-    (Seismogram or TimeSeries) that you wish to save.  Options are
-    described in the docstring.  Here is an example usage:
+1.  :py:meth:`mspasspy.db.database.save_data` is probably the most common method you will use.  
+    It is the standard method for saving any seismic data object to 
+    managed by the MongoDB database. Options are
+    described in the docstring.  Here is an example code fragment showing usage for saving 
+    one atomic datum:
 
     .. code-block:: python
 
@@ -80,30 +64,26 @@ and most up to date usage:
         d = Trace2TimeSeries(dtr)
         db.save_data(d)
 
-    By default :code:`save_data` stores all Metadata except those linked to
-    normalized collections (:code:`source`, :code:`channel`, and/or :code:`site`) with no
-    safety checks.  We discuss additional common options in a later section.
+    Ensembles (groups of seismic data objects) are saved through the same method
+    of :py:class:`mspasspy.db.database.Database`.  The following code fragment 
+    illustrates saving a :py:class:`mspasspy.ccore.seismic.SeismogramEnsemble` 
+    group created by running a :py:class:`mspasspy.ccore.seismic.TimeSeriesEnsemble`
+    through the :py:func:`mspasspy.algorithms.bundle.bundle_seed_data` function.
+    Note for the internal MsPASS data objects 
+    :py:meth:`mspasspy.db.database.Database.save_data` detects the data type 
+    and automatically stores the results in the appropriate waveform collection.
 
-2.  :code:`save_ensemble_data`  is similar to :code:`save_data` except the first argument
-    is an Ensemble object.  There are currently two of them:  (1) TimeSeriesEnsemble
-    and (2) SeismogramEnsemble.   As discussed in the section
-    :ref:`data_object_design_concepts` an Ensemble
-    is a generalization of the idea of a "gather" in seismic reflection processing.
-    The :code:`save_ensemble_data` method is a convenience function for saving Ensembles.
-    Ensembles are containers of atomic objects.  :code:`save_ensemble_data`
-    is mostly a loop over the container saving the atomic objects it contains
-    to the wf_TimeSeries (for TimeSeriesEnsembles) or wf_Seismogram
-    (for Seismogram objects).  The method has one feature that differs form
-    :code:`save_data`; Ensemble objects may and often do contain attributes
-    common to the entire group in a separate Metadata container linked to the
-    ensemble as a whole.  Prior to entering the loop for saving the atomic
-    members of the ensemble the contents of the Ensemble's Metadata container
-    are copied verbatim to each member.  If previous values existed in any
-    of the members they will be silently replaced by the ensemble groups version.
+    .. code-block:: python
 
-3.  :code:`save_catalog` should be viewed mostly as a convenience method to build
+        # code to create a TimeSeriesEnsemble d would be here
+        d3c = bundle_seed_data(d)
+        db.save_data(d3c)
+
+2.  :py:meth:`mspasspy.db.database.save_catalog` 
+    should be viewed mostly as a convenience method to build
     the :code:`source` collection from QUAKEML data downloaded from FDSN data
-    centers via obspy's web services functions.   :code:`save_catalog` can be
+    centers via obspy's web services functions.   
+    :py:meth:`mspasspy.db.database.save_catalog` can be
     thought of as a converter that translates the contents of a QUAKEML
     file or string for storage as a set of MongoDB documents in the :code:`source`
     collection.  We used obspy's :code:`Catalog` object as an intermediary to
@@ -133,9 +113,10 @@ and most up to date usage:
     This particular example pulls 11 large aftershocks of the 2011 Tohoku
     Earthquake.
 
-4.  :code:`save_inventory` is similar in concept to :code:`save_catalog`, but instead of
-    translating data for source information it translates information to
-    MsPASS for station metadata.  The station information problem is slightly
+3.  :py:meth:`save_inventory` 
+    is similar in concept to :py:meth:`mspasspy.db.database.save_catalog`, but instead of
+    translating data for source information it translates station information. 
+    The station information problem is slightly
     more complicated than the source problem because of an implementation
     choice we made in MsPASS.   That is, because a primary goal of MsPASS
     was to support three-component seismograms as a core data type, there
@@ -148,7 +129,8 @@ and most up to date usage:
     already solved the problem of downloading station metadata from
     FDSN web services with their
     `read_inventory function <https://docs.obspy.org/packages/obspy.core.inventory.html>`__.
-    As with :code:`save_catalog` :code:`save_inventory` can be thought of as a translator
+    As with :py:meth:`mspasspy.db.database.save_catalog`,
+    :py:meth:`mspasspy.db.database.save_inventory` can be thought of as a translator
     from data downloaded with web services to the form needed in MsPASS.
     It may be helpful to realize that Obspy's Inventory object is actually
     a python translation of the data structure defined by the
@@ -184,9 +166,9 @@ and most up to date usage:
     in the StationXML data as translated by obspy.   In the read section
     below we describe how to retrieve response data from :code:`channel`.
 
-    Finally, we note a key feature of the :code:`save_inventory` method:
+    Users should note a key feature of the :py:meth:`mspasspy.db.database.save_inventory` method:
     it enforces a seed convention to avoid saving duplicate documents.
-    As noted earlier he SEED standard uses the keys we call net, sta, chan,
+    As noted earlier the SEED standard uses the keys we call net, sta, chan,
     and loc along with a time interval to define a unique block of
     receiver metadata.   The :code:`save_inventory` method enforces
     the unique combination of these keys in a save.  It always will
@@ -194,6 +176,16 @@ and most up to date usage:
     If you need to modify an existing site or channel
     collection that has invalid documents you will need to write a custom function to override that
     behaviour or rebuild the collection as needed with web services.
+
+    Finally, it is important to note that :py:meth:`mspasspy.db.database.save_inventory`
+    is appropriate for data recorded and cataloged within the bounds of the SEED 
+    standard.   Users should realize that there is nothing in the database framework 
+    that limit what can be managed to SEED data.   e.g. something like a simple 
+    integer indexing scheme for station and source data would relatively easy to implement
+    with or without an associated schema definition.   One of the biggest strengths of 
+    MongoDB for managing research data is that is that type of flexibility in data 
+    management.  MsPASS treats SEED as yet another format, not the catholic faith 
+    with which it is treated by many seismology packages today.
 
 Read
 ~~~~~~~
@@ -204,27 +196,42 @@ and Seismogram.  There are also convenience functions for reading ensembles.
 As with the save operators we discuss here the key methods, but refer the
 reader to the sphinx documentation for full usage.
 
-1.  :code:`read_data` is the core method for reading atomic data.  The method has
-    one required argument.  That argument is an ObjectID for the document used
-    to define the read operation OR a MongoDB document (python dict) that
-    contains the ObjectID.  The ObjectID is guaranteed to provide a
-    unique key to one and only one document and is the way this reader
-    finds one and only one record to fetch per call.  The most common use
-    is the for with a MongoDB document in a construct like the following
-    in a serial job:
+1.  :py:meth:`mspasspy.db.database.read_data` is the core method for reading seismic data.  
+    The method has
+    one required argument.  To allow reading atomic and ensemble data 
+    through the same interface that argument should be one of two 
+    data types:  (a) a python dictionary that is assumed to be an 
+    image of a MongoDB document, or (b) a MongoDB "cursor" object 
+    (the left hand side of any query with the standard MongoDB 
+    collection :code:`find` method.   The first is used to read 
+    a single atomic datum and the second is used to read ensembles. 
+    Here is a typical serial loop to processing one atomic datum 
+    in each pass through the loop:
 
     .. code-block:: python
 
-    query={...Some MongoDB query dict entry...}
-    cursor=db.wf_TimeSeries.find(query) # Changed to wf_Seismogram for 3D data
-    for doc in cursor:
-      d=db.read_data(doc)  # Add option collection='wf_Seismogram' for 3C reads
+        query={...Some MongoDB query dict entry...}
+        cursor=db.wf_TimeSeries.find(query) # Change to wf_Seismogram for 3D data
+        for doc in cursor:
+            d=db.read_data(doc)  
 
     By default :code:`read_data` will use the waveform collection defined
     in the schema defined for the handle.  The default for the standard
     MsPASS schema is TimeSeries.   As the comment in the example states
     if you are trying to read from a different collection (i.e wf_Seismogram
     or wf_miniseed) you need to specify that alternative with the collection argument.
+
+    Reading ensembles is similar, but uses a query operator.   Here is an example 
+    that processes sources gathers defined by (previously set) values of a
+    an attribute here called :code:`source_id`:
+
+    ..code-block::python
+
+        srcids = db.wf_TimeSeries.distinct('source_id')
+        for sid in srcids:
+            query = {'source_id' : sid}
+            cursor = db.wf_TimeSeries.find(query)
+            ensemble = db.read_data(cursor)
 
     The data objects in MsPASS are stored internally as C++ objects with
     multiple elements illustrated in the figure below.   Although these
@@ -258,7 +265,8 @@ reader to the sphinx documentation for full usage.
     That section also gives details about ProcessingHistory and the error
     log and the reasons they are part of MsPASS.
 
-    By default :code:`read_data` reads Metadata in what we call "promiscuous" mode.
+    By default :py:meth:`mspasspy.db.database.read_data` 
+    reads Metadata in what we call "promiscuous" mode.
     That means it takes in all metadata stored in the wf collection at which
     it is is pointed and loads the results into the objects Metadata container
     with no type checking or filtering.  Alternatives are "cautious"
@@ -283,71 +291,29 @@ reader to the sphinx documentation for full usage.
     3.  The "pedantic" mode is mainly of use for data export where a
         type mismatch could produce invalid data required by another package.
 
-2.  A closely related function to :code:`read_data` is :code:`read_ensemble_data`.  Like
-    :code:`save_ensemble_data` it is mostly a loop to assemble an ensemble of
-    atomic data using a sequence of calls to :code:`read_data`.  The sequence of
-    what to read is defined by arg 0.   That arg must be one of two things:
-    (a) a python list of ObjectIDs or (b) a cursor object created by a query
-    that uniquely defines the ensemble contnts.  The example code below illustrates how this is done.
-    This code fragment assumes the variable :code:`source_id` was defined earlier
-    and defines (a) a valid ObjectId in the source collection, and (b) has
-    been defined in wf_TimeSeries previously by a cross-referencing function.  Notice we
-    also include a size check with the MongoDB function count_documents
-    to impose constraints on the query. That is always good practice.
-
-    .. code-block:: python
-
-        query = {"source_id": source_id}
-        ndocs = db.wf_TimeSeries.count_documents(query)
-        if ndocs == 0:
-            print("No data found for source_id = ", source_id)
-        elif ndocs > TOOBIG:
-            print("Number of documents matching source_id=", source_id, " is ", ndocs,
-                "Exceeds the internal limit on the ensemble size=", TOBIG)
-        else:
-            cursor = db.wf_TimeSeries.find(query)
-            ens = db.read_ensemble_data(cursoe)
-
-3.  A workflow that needs to read and process a large data sets in
+2.  A workflow that needs to read and process a large data sets in
     a parallel environment should use
-    the parallel equivalent of :code:`read_data` and :code:`read_ensemble_data` called
-    :code:`read_distributed_data`.  MsPASS supports two parallel frameworks called
+    the parallel equivalent of :py:meth:`mspasspy.db.database.read_data` called
+    :py:func:`mspasspy.io.distributed.read_distributed_data`.  
+    MsPASS supports two parallel frameworks called
     SPARK and DASK.   Both abstract the concept of the parallel data set in
     a container they call an RDD and Bag respectively.   Both are best thought
     of as a handle to the entire data set that can be passed between
-    processing functions.   The :code:`read_distributed_data` method is critical
-    to improve performance of a parallel workflow.  The use of storage
+    processing functions.   :py:func:`mspasspy.io.distributed.read_distributed_data`
+    can significantly improve performance of a parallel workflow.  The use of storage
     in MongoDB's gridfs in combination with SPARK or DASK
     are known to help reduce io bottlenecks
-    in a parallel environment.  SPARK and DASK have internal mechanisms to schedule
-    IO to optimize throughput, particularly with reads made through the gridfs
-    mechanism we use as the default data storage.  :code:`read_distributed_data`
-    provides the mechanism to accomplish that.
+    in a parallel environment.  
 
-    :code:`read_distributed_data` has a very different call structure than the
+    :py:func:`mspasspy.io.distributed.read_distributed_data` 
+    has a very different call structure than the
     other seismic data readers.  It is not a method of Database, but a
-    separate function call.  The input to be read by this function is
-    defined by arg 2 (C counting starting at 0).  It expects to be passed a
-    MongoDB cursor object, which is the standard return from the database
-    find operation.   As with the other functions discussed in this section
-    a block of example code should make this clearer:
-
-    .. code-block:: python
-
-        from mspasspy.db.client import Client
-        from mspasspy.db.database import Database,read_distributed_data
-        dbclient = Client()
-        # This is the name used to acccess the database of interest assumed
-        # to contain data loaded previously.  Name used would change for user
-        dbname = 'distributed_data_example'  # name of db set in MongoDB - example
-        db = Database(dbclient,dbname)
-        # This example reads all the data currently stored in this database
-        cursor = db.wf_TimeSeries.find({})
-        rdd0 = read_distributed_data(dbclient, dbname, cursor)
-
-    The output of the read is the SPARK RDD that we assign the symbol rdd0.
-    If you are using DASK instead of SPARK you would add the optional
-    argument :code:`format='dask'`.
+    separate function call.  It is best understood in the context of 
+    parallel processing discussed in the sections titled 
+    :ref:`parallel_processing` and :ref:`parallel_io`.  See those 
+    sections of this manual and the docstring of 
+    :py:func:`mspasspy.io.distributed.read_distributed_data` 
+    for usage and examples.
 
 Update
 ~~~~~~
