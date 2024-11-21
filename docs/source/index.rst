@@ -71,6 +71,7 @@ package.
    user_manual/handling_errors
    user_manual/data_editing
    user_manual/header_math
+   user_manual/arrival_time_measurement
    user_manual/graphics
    user_manual/signal_to_noise
    user_manual/adapting_algorithms

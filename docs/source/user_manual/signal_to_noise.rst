@@ -151,8 +151,9 @@ The others should be thought of as convenient wrappers to run
 The "FD" in `FD_snr_estimator` function is short for "Frequency Domain"
 emphasizing that FD is the key idea of the algorithm.  Specifically,
 the function computes the
-power spectrum of the signal and noise windows tha are used to compute a series of
-broadband snr metrics you can use to sort out signals worth processing further.
+power spectrum of the data inside the signal and noise windows.
+The spectral estimates are used to compute a series of
+snr metrics you can use to sort out signals worth processing further.
 The algorithm makes a fundamental assumption that the optimal frequency band
 of a given signal can be defined by a high and low corner frequency.
 In marginal snr conditions that assumption can easily be wrong.
@@ -160,44 +161,103 @@ A type example is teleseismic P waves that have signals in the
 traditional short period and long period bands, but the signal level does
 not exceed the microseism peak.  Nonetheless, the single passband assumption
 is an obvious first order approach we have found useful for automated
-data winnowing.
+data winnowing of teleseismic body wave signals.   The algorithm
+is nearly guaranteed to work badly on local earthquake data where the
+single passband assumption is often violated.
 
 The function attempts to determine the data passband by a process illustrated in the
-Figure below.  The algorithm is a bidirectional search.  The lower passband edge
-initiates at the highest frequency distinguishable from zero as
-defined by the time-bandwidth product (`tbp` input parameter).  The upper
-passband edge search is initiated either from a user specified frequency
-or the default of 80% of Nyquist.  Both searches increment/decrement through
-frequency bins computing the ratio of the signal power spectral density to
-the estimated noise power spectral density.  An input parameter with the
-tag `band_cutoff_snr` defines the minimum snr the algorithm assumes is
-indicating a signal is present.   A special feature of the search possible
-because of the use of multitaper spectra uses the `tbp` parameter.
-A property of multitaper spectra is the spectra are smoothed at a scale of the
-number of frequency binds defined by the time-bandwidth product through
-the formula:
+Figure below.  The algorithm is a bidirectional search initiated from
+an initial starting frequency defined by the parameter `f0`.
+The algorithm first search upward (increasing f) from f0 until
+it detects the first point where the snr drops below a threshold
+defined by the argument `band_cutoff_snr`.   That frequency is marked
+as the upper band edge.  The process is then repeated searching in the
+opposite direction (i.e. incrementally testing snr at frequencies below f0)
+until low frequency band edge is found where the snr drops below
+`band_cutoff_snr`.   There are two complications the algorithm needs to
+handle:
 
-.. math::
+#.  If the snr at `f0` is less than `band_cutoff_srn` the initial
+    search works backward to lower and lower frequency until a point with
+    with snr above the threshold is reach.  If none is ever found the
+    datum will be killed with an error message noting no signal was detected.
+#.  There are multiple complications with the backward search to find the
+    low-frequency corner.   First, the definition of 0 frequency is dependent
+    upon the spectral estimation method.   Our implementation, however, uses
+    the multitaper method to compute spectral estimates.  Because of that
+    a key property is the so called time-bandwidth product,
+    :math:`W = T \Delta f` where :math:`T` is the window length in seconds
+    and :math:`\Delta f` is the desired frequency resolution of a
+    spectral estimate in Hz.   It is convenient to think of :math:`\Delta f`
+    in terms of the number of Rayleigh bins, :math:`\Delta f_R = \frac{1}{T}`
+    which is the frequency resolution of the discrete Fourier
+    transform for a signal of duration :math:`T`.
+    A key point is that increasing the time-bandwidth products causes the
+    spectral estimates to progressively smoother.   For this application
+    we found using `tbp=4` with 8 tapers or `tbp=5` and 10 tapers
+    are good choices as they produce
+    smoother spectra that produces more stable results.
+    Readers unfamiliar with
+    multitaper spectral methods may find it useful begin with
+    the `matlab help file in their multitaper estimator <https://www.mathworks.com/help/signal/ref/pmtm.html>`__.
+    There is also a large literature applying the technique to a range of
+    practical problems easily found by any library search engine.
+    We chose to use the multitaper because it always produces a more
+    stable estimator for this application because of its reliable smoothing
+    properties.  The low-frequency edge detection is a particular case.
+    With multitaper spectra the lowest frequency indistinguishable from 0
+    is :math:`W \Delta f_R`.  The low band edge is treated as 0 if the
+    low frequency band edge drops below 2 times that frequency.  The
+    factor of 2 is a fudge factor to assure the set of metrics we
+    describe next are reliable for large events.
 
-    W = T \Delta f
+Once, `FD_snr_estimator` has an estimate of the bandwidth of the data
+it does one of two things:  (1) computes a filtered version of the signal
+in that passband, or (2) if the bandwidth is below a threshold specified
+by the parameter `signal_detection_minimum_bandwidth` the datum is killed
+and an error message is posted to the return.
 
-where :math:`T` is the window length in seconds and
-:math:`\Delta f` is the desired frequency resolution of a
-spectral estimate in Hz.   It is convenient to think of :math:`Delta f`
-in terms of the number of Rayleigh bins, :math:`\frac{1}{T}`
-which is the frequency resolution of the discrete Fourier
-transform for a signal of duration :math:`T`.
+`FD_snr_estimator` also has a set of "optional" metrics it can compute.
+`FD_snr_estimator` should be viewed as a lower level function that
+is generic.   Most applications will likely prefer the two higher
+level functions called
+:py:func:`mspasspy.algorithms.snr.arrival_snr` or
+:py:func:`mspasspy.algorithms.snr.broadband_snr_QC`.  Both
+enable all or a subset of the "optional metrics" by default.
+The optional metrics that :py:func:`mspasspy.algorithms.snr.FD_snr_estimator`
+can compute are defined by any a set of keywords passed via the
+function argument `optional_metrics`.  These are:
 
-A key point is that increasing the time-bandwidth products causes the
-spectral estimates to progressively smoother.   For this application
-we found using `tbp=4` with 8 tapers or `tbp=5` and 10 tapers
-are good choices as they produce
-smoother spectra that produces more stable results.
-Readers unfamiliar with
-multitaper spectral methods may find it useful begin with
-the `matlab help file in their multitaper estimator <https://www.mathworks.com/help/signal/ref/pmtm.html>`__.
-There is also a large literature applying the technique to a range of
-practical problems easily found by any library search engine.
-We chose to use the multitaper because it always produces a more
-stable estimator for this application because of its reliable smoothing
-properties.
+#. If "snr_stats" appears in `optional_metrics` it triggers the
+   computation of five attribute with keys:  *snr_band_maximum*, *snr_band_minimum*, *snr_band_1/4*,
+   *snr_band_3/4*, and *snr_band_median*. All are computed directly
+   from the discrete spectral estimates.  Specifically, a vector of
+   signal-to-noise values is computed on the frequency grid defined by
+   the signal spectrum of all values exceeding the signal-to-noise
+   threshold value passed to the function.  That vector is used to compute
+   the stock statistics many may recognize as what is used in a "box plot".
+   As the names imply "maximum" and "minimum" are the smallest and largest values
+   respectively, "1/4" and "3/4" are the 25% and 75% points respectively, and
+   "median" is the 50% point.
+#. A second family of snr metrics can be computed.  They are a family because
+   they are computed from a common algorithm.   Although they can be specified
+   independently note that the computational effort to compute one is not
+   significantly different from all.   The common algorithm is that the data
+   passed to the function are first filtered by the bandwidth defined
+   by the estimates saved as *low_f_band_edge* to *high_f_band_edge*.  A
+   detail is that if the *low_f_band_edge* is detected as indistinguishable
+   from zero a lowpass filter is applied.  Otherwise a zero phase Butterworth
+   filter is applied with the band edge estimates as the corner frequencies.
+   The following are computed from that filtered data:
+   - *filtered_L2* computes the RMS value of the filtered signal
+   - *filtered_Linf* computes the peak absolute value of the signal
+   - *filtered_MAD* computes the median absolute difference of the filtered signal vector
+   - *filtered_perc* computes the amplitude as a specfied percentage value
+     (default is 95%).   "perc" may be mysterious to anyone not familiar with
+     Seismic Unix.  perc is commonly used in Seismic Unix plotting to normalize
+     amplitudes.   Note perc of 100% is identical to the maximum value.
+   - *filtered_envelope* uses the numpy envelope function and the result is
+     the maximum value of the filtered data passed through the envelope.
+     The result for most data differs little from the largest absolute value.
+  Note all of the above are implemented using the amplitude functions discussed
+  at beginning of this section 
