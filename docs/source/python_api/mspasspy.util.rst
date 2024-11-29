@@ -17,6 +17,14 @@ decorators
     :undoc-members:
     :show-inheritance:
 
+Janitor
+--------
+
+.. automodule:: mspasspy.util.Janitor
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 logging_helper
 --------------
 
@@ -26,7 +34,7 @@ logging_helper
     :show-inheritance:
 
 seismic
-------
+--------
 
 .. automodule:: mspasspy.util.seismic
     :members:
