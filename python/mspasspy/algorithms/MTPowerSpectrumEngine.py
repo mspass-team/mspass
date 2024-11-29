@@ -26,18 +26,18 @@ class MTPowerSpectrumEngine:
     instance if something that invalidates the previous call has changed.
 
     :param winsize:   Number of samples expected for data window.  Note this
-    argument defines the size of the eigentapers so it defines the size of
-    input time series the object expect to process.
+      argument defines the size of the eigentapers so it defines the size of
+      input time series the object expect to process.
     :param tbp:  multitaper time-bandwidth product
     :param number_tapers:  number of tapers to use for estimators (See Prieto's)
-    documentation for details)
+      documentation for details)
     :param nfft:  optional size of the fft work arrays to use.  nfft should be
-    greater than or equal winsize.  When greater zero padding is used in the
-    usual way.  Default is 0 which sets nfft to 2*winsize.  If nfft<winsize
-    a diagnostic message will be printed and nfft will be set equal to winsize.
+      greater than or equal winsize.  When greater zero padding is used in the
+      usual way.  Default is 0 which sets nfft to 2*winsize.  If nfft<winsize
+      a diagnostic message will be printed and nfft will be set equal to winsize.
     :param iadapt:  integer argument passed to Prieto's MTspec that sets the
-    eigentaper weighting scheme.  See Prieto's MTspect class documentation
-    for options.  Default is 0 which enables the adaptive weighting scheme.
+      eigentaper weighting scheme.  See Prieto's MTspect class documentation
+      for options.  Default is 0 which enables the adaptive weighting scheme.
     """
 
     def __init__(
