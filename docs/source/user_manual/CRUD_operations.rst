@@ -204,7 +204,7 @@ and Seismogram.  There are also convenience functions for reading ensembles.
 As with the save operators we discuss here the key methods, but refer the
 reader to the sphinx documentation for full usage.
 
-1.  :code:`read_data` is the core method for reading atomic data.  The method has
+#.  :code:`read_data` is the core method for reading atomic data.  The method has
     one required argument.  That argument is an ObjectID for the document used
     to define the read operation OR a MongoDB document (python dict) that
     contains the ObjectID.  The ObjectID is guaranteed to provide a
@@ -215,10 +215,10 @@ reader to the sphinx documentation for full usage.
 
     .. code-block:: python
 
-    query={...Some MongoDB query dict entry...}
-    cursor=db.wf_TimeSeries.find(query) # Changed to wf_Seismogram for 3D data
-    for doc in cursor:
-      d=db.read_data(doc)  # Add option collection='wf_Seismogram' for 3C reads
+      query={...Some MongoDB query dict entry...}
+      cursor=db.wf_TimeSeries.find(query) # Changed to wf_Seismogram for 3D data
+      for doc in cursor:
+        d=db.read_data(doc)  # Add option collection='wf_Seismogram' for 3C reads
 
     By default :code:`read_data` will use the waveform collection defined
     in the schema defined for the handle.  The default for the standard
@@ -283,7 +283,7 @@ reader to the sphinx documentation for full usage.
     3.  The "pedantic" mode is mainly of use for data export where a
         type mismatch could produce invalid data required by another package.
 
-2.  A closely related function to :code:`read_data` is :code:`read_ensemble_data`.  Like
+#.  A closely related function to :code:`read_data` is :code:`read_ensemble_data`.  Like
     :code:`save_ensemble_data` it is mostly a loop to assemble an ensemble of
     atomic data using a sequence of calls to :code:`read_data`.  The sequence of
     what to read is defined by arg 0.   That arg must be one of two things:
@@ -308,7 +308,7 @@ reader to the sphinx documentation for full usage.
             cursor = db.wf_TimeSeries.find(query)
             ens = db.read_ensemble_data(cursoe)
 
-3.  A workflow that needs to read and process a large data sets in
+#.  A workflow that needs to read and process a large data sets in
     a parallel environment should use
     the parallel equivalent of :code:`read_data` and :code:`read_ensemble_data` called
     :code:`read_distributed_data`.  MsPASS supports two parallel frameworks called
@@ -468,7 +468,7 @@ other hand, the common old SAC model of one waveform per file is an abomination
 for storing millions of waveforms on any HPC system.   If your application
 requires frequent delete operations for cleanup during a workflow
 we strongly advise you store all your data with the
-gridfs option. 
+gridfs option.
 
 Key IO Concepts
 ~~~~~~~~~~~~~~~~~
