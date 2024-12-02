@@ -89,7 +89,7 @@ def dummy_func(
     dryrun=False,
     inplace_return=False,
     function_return_key=None,
-    **kwargs
+    **kwargs,
 ):
     return "dummy"
 
@@ -283,7 +283,7 @@ class dummy_class_method_wrapper:
         dryrun=False,
         inplace_return=False,
         function_return_key=None,
-        **kwargs
+        **kwargs,
     ):
         return "Finish"
 
@@ -375,7 +375,7 @@ def dummy_func_2(
     alg_id=None,
     dryrun=False,
     inplace_return=True,
-    **kwargs
+    **kwargs,
 ):
     if isinstance(data, obspy.Trace):
         data.data = np.array([0, 1, 2])

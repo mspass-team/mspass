@@ -30,7 +30,7 @@ def filter(
     alg_id=None,
     dryrun=False,
     inplace_return=True,
-    **options
+    **options,
 ):
     """
     This function filters the data of mspasspy objects. Note it is wrapped by mspass_func_wrapper, so the processing
@@ -70,7 +70,7 @@ def detrend(
     dryrun=False,
     inplace_return=True,
     type="simple",
-    **options
+    **options,
 ):
     """
     This function removes a trend from the data, which is a mspasspy object. Note it is wrapped by mspass_func_wrapper,
@@ -113,7 +113,7 @@ def interpolate(
     starttime=None,
     npts=None,
     time_shift=0.0,
-    **kwargs
+    **kwargs,
 ):
     """
     This function interpolates data, which is a mspasspy object. Note it is wrapped by mspass_func_wrapper,
@@ -229,7 +229,7 @@ def correlate_stream_template(
     dryrun=False,
     template_time=None,
     return_type="seismogram",
-    **kwargs
+    **kwargs,
 ):
     res = obspy.signal.cross_correlation.correlate_stream_template(
         stream, template, template_time
@@ -261,7 +261,7 @@ def correlation_detector(
     details=None,
     plot=None,
     return_type="seismogram",
-    **kwargs
+    **kwargs,
 ):
     tem_list = []
     for template in templates:
@@ -277,7 +277,7 @@ def correlation_detector(
         similarity_func,
         details,
         plot,
-        **kwargs
+        **kwargs,
     )
     converted_detections = []
     for detection in detections:
