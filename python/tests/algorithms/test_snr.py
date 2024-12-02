@@ -84,6 +84,15 @@ def verify_snr_outputs_match(so1, so2):
 
 
 def test_snr():
+    """
+    Test function for snr module.   This function is currently incomplete as it
+    needs to test a new implemenation of the EstimateBandwidth function
+    independent from the higher level functions tested here.   Most of that
+    function is tested by this one since some of the higher level functions use
+    the EstimateBandwidth function.
+
+    TODO:  the biggest gap her is that most of the error handlers are tested.
+    """
     with open("python/tests/data/snrtestdata", "rb") as pickle_file:
         ts = pickle.load(pickle_file)
     nwin = TimeWindow(-200.0, -50.0)
@@ -114,25 +123,25 @@ def test_snr():
         ts,
         noise_window=nwin,
         signal_window=swin,
-        high_frequency_search_start=30.0,
-        fix_high_edge=False,
+        f0=1.0,
+        band_cutoff_snr=2.0,
     )
     print(json_util.dumps(fd_snr_output[0], indent=2))
 
     elog = fd_snr_output[1]
     assert elog.size() == 0
     tval = fd_snr_output[0]["low_f_band_edge"]
-    assert np.isclose(tval, 0.016663889351774704)
+    assert np.isclose(tval, 0.0)
     tval = fd_snr_output[0]["high_f_band_edge"]
-    assert np.isclose(tval, 14.18930178303616)
+    assert np.isclose(tval, 15.414097650391602)
     tval = fd_snr_output[0]["low_f_band_edge_snr"]
-    assert np.isclose(tval, 5.139865241663943)
+    assert np.isclose(tval, 10.208843934129755)
     tval = fd_snr_output[0]["high_f_band_edge_snr"]
-    assert np.isclose(tval, 2.208403126119803)
+    assert np.isclose(tval, 1.8193522428502547)
     tval = fd_snr_output[0]["bandwidth_fraction"]
-    assert np.isclose(tval, 0.28345275787368773)
+    assert np.isclose(tval, 0.308281953007832)
     tval = fd_snr_output[0]["bandwidth"]
-    assert np.isclose(tval, 58.60369304597239)
+    assert np.isclose(tval, 65.34343456806027)
     tval = fd_snr_output[0]["spectrum_frequency_range"]
     assert np.isclose(tval, 50.0)
 
@@ -141,6 +150,7 @@ def test_snr():
         ts,
         noise_window=nwin,
         signal_window=swin,
+        band_cutoff_snr=2.0,
         optional_metrics=[
             "snr_stats",
             "filtered_envelope",
@@ -153,49 +163,49 @@ def test_snr():
     print(json_util.dumps(fd_snr_output[0], indent=2))
     elog = fd_snr_output[1]
     assert elog.size() == 0
-
+    # these values should be the same as avove
     tval = fd_snr_output[0]["low_f_band_edge"]
-    assert np.isclose(tval, 0.016663889351774704)
+    assert np.isclose(tval, 0.0)
     tval = fd_snr_output[0]["high_f_band_edge"]
-    assert np.isclose(tval, 2.0)
+    assert np.isclose(tval, 15.414097650391602)
     tval = fd_snr_output[0]["low_f_band_edge_snr"]
-    assert np.isclose(tval, 5.139865241663943)
+    assert np.isclose(tval, 10.208843934129755)
     tval = fd_snr_output[0]["high_f_band_edge_snr"]
-    assert np.isclose(tval, 38.93492742182266)
+    assert np.isclose(tval, 1.8193522428502547)
     tval = fd_snr_output[0]["bandwidth_fraction"]
-    assert np.isclose(tval, 0.0396667222129645)
+    assert np.isclose(tval, 0.308281953007832)
     tval = fd_snr_output[0]["bandwidth"]
-    assert np.isclose(tval, 41.58507244860155)
+    assert np.isclose(tval, 65.34343456806027)
     tval = fd_snr_output[0]["spectrum_frequency_range"]
     assert np.isclose(tval, 50.0)
 
     # optional metric validation
     tval = fd_snr_output[0]["mean_snr"]
-    assert np.isclose(tval, 44.53333678023763)
+    assert np.isclose(tval, 19.319007409878544)
     tval = fd_snr_output[0]["maximum_snr"]
-    assert np.isclose(tval, 116.20203792513574)
+    assert np.isclose(tval, 116.20203792513581)
     tval = fd_snr_output[0]["median_snr"]
-    assert np.isclose(tval, 44.94472248711368)
+    assert np.isclose(tval, 11.0556385265721898)
     tval = fd_snr_output[0]["minimum_snr"]
-    assert np.isclose(tval, 5.139865241663943)
+    assert np.isclose(tval, 0.8505634189930033)
     tval = fd_snr_output[0]["q3_4_snr"]
-    assert np.isclose(tval, 50.83560657581158)
+    assert np.isclose(tval, 36.014785627993845)
     tval = fd_snr_output[0]["q1_4_snr"]
-    assert np.isclose(tval, 37.67904956081205)
+    assert np.isclose(tval, 3.0112995924822457)
     tval = fd_snr_output[0]["stats_are_valid"]
     assert tval
     tval = fd_snr_output[0]["snr_filtered_envelope_peak"]
-    assert np.isclose(tval, 1554.4362973532727)
+    assert np.isclose(tval, 851.7318300557693)
     tval = fd_snr_output[0]["snr_filtered_rms"]
-    assert np.isclose(tval, 103.68819833856637)
+    assert np.isclose(tval, 34.447418941396464)
     tval = fd_snr_output[0]["snr_filtered_peak"]
-    assert np.isclose(tval, 936.4358549803269)
+    assert np.isclose(tval, 508.43856288106366)
     tval = fd_snr_output[0]["snr_perc"]
     assert np.isclose(tval, 95.0)
     tval = fd_snr_output[0]["snr_filtered_perc"]
-    assert np.isclose(tval, 95.50754573098855)
+    assert np.isclose(tval, 16.6541565593841)
     tval = fd_snr_output[0]["snr_filtered_mad"]
-    assert np.isclose(tval, 1.5821450295131423)
+    assert np.isclose(tval, 1.2763130717405682)
 
     master = fd_snr_output[0]
 

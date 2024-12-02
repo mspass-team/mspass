@@ -13,7 +13,7 @@ using namespace mspass::seismic;
 using namespace mspass::utility;
 
 
-/* Cautious comparison of two string metadata fields defined by key.\
+/* Cautious comparison of two string metadata fields defined by key.
 Return -1 if x<y, 0 if x==y, and +1 if x>y.
 
 Undefined values require a definition.   two undefined field compare equal but
@@ -127,7 +127,7 @@ Seismogram dogtag(vector<CoreTimeSeries>& bundle)
   result.kill();
   return result;
 }
-/* This function is useful standalone as a way o bundle data assembled
+/* This function is useful standalone as a way to bundle data assembled
 from reading TimeSeries from MongoDB.  We use it below to handle ensemble
 groupings that are irregular but it has broader use provided the data
 are from miniseed and have chan defined.    */
@@ -162,11 +162,19 @@ Seismogram BundleSEEDGroup(const std::vector<TimeSeries>& d,
         chans_this_group.push_back("DEADCHANNEL");
         continue;
       }
-      net=d[i].get_string(SEISMICMD_net);
+      /* net and loc may not always be defined - handle them carefully and 
+         use an internal string to define them as undefined */
+      if(d[i].is_defined(SEISMICMD_net))
+        net=d[i].get_string(SEISMICMD_net);
+      else
+        net = "Undefined";
+      if(d[i].is_defined(SEISMICMD_loc))
+        loc=d[i].get_string(SEISMICMD_loc);
+      else
+        loc = "Undefined";
       sta=d[i].get_string(SEISMICMD_sta);
       chan=d[i].get_string(SEISMICMD_chan);
       sta2.assign(chan,0,2);
-      loc=d[i].get_string(SEISMICMD_loc);
       chans_this_group.push_back(chan);
       networks.insert(net);
       stations.insert(sta);
@@ -183,8 +191,6 @@ Seismogram BundleSEEDGroup(const std::vector<TimeSeries>& d,
     if( (stations.size()!=1) || (networks.size()!=1)
          || (loccodes.size()!=1) || (sta2set.size()!=1) )
     {
-      /* Note this code segment is repeated too many times in this function.
-      I may be wise at some point to make it a file scope function like dogtag.*/
       for(size_t i=i0;i<=iend;++i)
       {
         bundle.push_back(dynamic_cast<const CoreTimeSeries&>(d[i]));
@@ -385,12 +391,42 @@ Seismogram BundleSEEDGroup(const std::vector<TimeSeries>& d,
     return d3c;
   }catch(...){throw;};
 }
-/* Warning this function will alter the order of the ensemble.  A const
+/* channel and loc codes are relics when converting scalar data to Seismogram
+   objects.  We call this function to remove them from outputs if they are defined. 
+*/
+void clear_channel_metadata(Seismogram& d)
+{
+  /* Do nothing to any datum marked dead */
+  if(d.live())
+  {
+    if(d.is_defined(SEISMICMD_chan)) d.erase(SEISMICMD_chan);
+    if(d.is_defined(SEISMICMD_loc)) d.erase(SEISMICMD_loc);
+  }
+}
+/*Workhorse function to create an ensemble of Seismogram objects from a input 
+ensemble of TimeSeries objects.
+
+This function works only with data derived from seed/miniseed data where the 
+infamous net, sta, chan, and loc codes define a unique channel of data from 
+some instrument somewhere on the earth.  It will not work unless that constraint
+is true. 
+
+ Warning this function will alter the order of the ensemble.  A const
 version could be written but it would need to copy d before calling the sort*/
 LoggingEnsemble<Seismogram> bundle_seed_data(LoggingEnsemble<TimeSeries>& d)
 {
   string algname("bundle_seed_data");
   try{
+    if(d.dead())
+    {
+      LoggingEnsemble<Seismogram> d3c(dynamic_cast<Metadata&>(d),0);
+      d3c.elog += d.elog;
+      stringstream ss;
+      ss << "Received an ensemble marked dead; returning an empty ensemble cloning only ensemble Metadata and elog containers"<<endl;
+      d3c.elog.log_error(algname,ss.str(),ErrorSeverity::Invalid);
+      /* this isn't really necessary but better for clarity */
+      d3c.kill();
+    }
     std::sort(d.member.begin(),d.member.end(),greater_seedorder());
     /* this constructor clones the ensemble metadata */
     LoggingEnsemble<Seismogram> ens3c(dynamic_cast<Metadata&>(d),d.member.size()/3);
@@ -415,8 +451,13 @@ LoggingEnsemble<Seismogram> bundle_seed_data(LoggingEnsemble<TimeSeries>& d)
         else
         {
           /* In this situation we have to  just drop the bad datum and
-          blunder on.  We assume the elog has no data that way and some
-          other process handled this wrong .*/
+          blunder on.  The best we can do then is log the error to the ensemble 
+          elog container.  The history will be incomplete but at least we 
+          leave a record of the problem in the ensemble.*/
+          stringstream ss;
+          ss << "Member "<<i<<" of input ensemble was marked dead and lacked required net, sta, chan, and loc keys"<<endl;
+          ss << "That datum was dropped from processing and could not be recovered.  History will be incomplete"<<endl;
+          ens3c.elog.log_error(algname,ss.str(),ErrorSeverity::Complaint);
           continue;
         }
       }
@@ -517,6 +558,7 @@ LoggingEnsemble<Seismogram> bundle_seed_data(LoggingEnsemble<TimeSeries>& d)
                 d3c.kill();
                 d3c.elog.log_error(err);
               }
+              clear_channel_metadata(d3c);
               ens3c.member.push_back(d3c);
             }
             else
@@ -530,6 +572,7 @@ LoggingEnsemble<Seismogram> bundle_seed_data(LoggingEnsemble<TimeSeries>& d)
               Among other things it has to handle channels marked dead
               */
               Seismogram dgrp(BundleSEEDGroup(d.member,i0,iend));
+              clear_channel_metadata(dgrp);
               ens3c.member.push_back(dgrp);
             }
           }

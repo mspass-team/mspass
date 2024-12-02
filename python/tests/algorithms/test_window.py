@@ -126,7 +126,7 @@ def test_scale():
     amp = _scale(d, ScalingMethod.Peak, 1.0, win)
     print("Peak amplitude returned by scale funtion=", amp)
     calib = d.get_double("calib")
-    print("Calib value retrieved (assumed inital 1.0)=", calib)
+    print("Calib value retrieved (assumed initial 1.0)=", calib)
     print("Testing python scale function wrapper - first on a TimeSeries with defaults")
     d2 = TimeSeries(dts)
     dscaled = scale(d2)
@@ -140,8 +140,27 @@ def test_scale():
     assert amp == 200.0
     print("starting tests of scale on ensembles")
     print(
-        "first test TimeSeriesEnemble with 5 scaled copies of same vector used earlier in this test"
+        "first test TimeSeriesEnsemble with 5 scaled copies of same vector used earlier in this test"
     )
+    # test handling of all zeros in sample arrays for both TimeSeries and Seismogram
+    # testing only with rms - this is mostly for handlers not the numerics anyway
+    d2 = TimeSeries(dts)
+    for i in range(d2.npts):
+        d2.data[i] = 0.0
+    d2 = scale(d2)
+    assert d2.live
+    assert d2.elog.size() == 1
+    assert np.count_nonzero(d2.data) == 0
+
+    d = Seismogram(d3c)
+    # trick to initialize data matrix to all 0s - uses a special feature
+    # of the c++ api of the set_npts method
+    d.set_npts(d3c.npts)
+    d = scale(d)
+    assert d.live
+    assert d.elog.size() == 1
+    assert np.count_nonzero(d.data) == 0
+
     ens = TimeSeriesEnsemble()
     scls = [2.0, 4.0, 1.0, 10.0, 5.0]  # note 4 s the median of this vector
     npts = dts.npts
