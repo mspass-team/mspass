@@ -281,71 +281,62 @@ def FD_snr_estimator(
     save_spectra true as those are power spectra.
 
     :param data_object:  TimeSeries object to be processed. For Seismogram
-    objects the assumption is algorithm would be used for a single
-    component (e.g longitudinal or vertical for a P phase)
-
+      objects the assumption is algorithm would be used for a single
+      component (e.g longitudinal or vertical for a P phase)
     :param noise_window: defines the time window to use for computing the
-    spectrum considered noise. The time span can be either relative or
-    UTC (absolute) time but we do not check for consistency.  This low
-    level function assumes they are consistent.  If not, the calculations
-    are nearly guaranteed to fail.  Type must be mspasspy.ccore.TimeWindow.
-
+      spectrum considered noise. The time span can be either relative or
+      UTC (absolute) time but we do not check for consistency.  This low
+      level function assumes they are consistent.  If not, the calculations
+      are nearly guaranteed to fail.  Type must be mspasspy.ccore.TimeWindow.
     :param signal_window: defines the time window to use that defines what
-    you consider "the signal".  The time span can be either relative or
-    UTC (absolute) time but we do not check for consistency.  This low
-    level function assumes they are consistent.  If not, the calculations
-    are nearly guaranteed to fail.  Type must be mspasspy.ccore.TimeWindow.
-
+      you consider "the signal".  The time span can be either relative or
+      UTC (absolute) time but we do not check for consistency.  This low
+      level function assumes they are consistent.  If not, the calculations
+      are nearly guaranteed to fail.  Type must be mspasspy.ccore.TimeWindow.
     :param noise_spectrum_engine: is expected to either by a None type
-    or an instance of a ccore object called an MTPowerSpectralEngine.
-    When None an instance of MTPowerSpectralEngine is computed for
-    each call to this function.   That is a convenience for small
-    jobs or when called with data from mixed sample rates and/or variable
-    length time windows.   It is very inefficient to use the default
-    approach for processing large data sets and really for any use in a
-    map operation with dask or spark.  Normal use should be for the user to
-    predefine an MtPowerSpectralEngine from the expected window size
-    for a given data sample rate and include it in the function call.
-
+      or an instance of a ccore object called an MTPowerSpectralEngine.
+      When None an instance of MTPowerSpectralEngine is computed for
+      each call to this function.   That is a convenience for small
+      jobs or when called with data from mixed sample rates and/or variable
+      length time windows.   It is very inefficient to use the default
+      approach for processing large data sets and really for any use in a
+      map operation with dask or spark.  Normal use should be for the user to
+      predefine an MtPowerSpectralEngine from the expected window size
+      for a given data sample rate and include it in the function call.
     :param signal_spectrum_engine:  is the comparable MTPowerSpectralEngine
-    to use to compute the signal power spectrum.   Default is None with the
-    same caveat as above for the noise_spectrum_engine.
-
+      to use to compute the signal power spectrum.   Default is None with the
+      same caveat as above for the noise_spectrum_engine.
     :param band_cutoff_snr:   defines the signal-to-noise ratio floor
-    used in the search for band edges.  See description of the algorithm
-    above and in the user's manual.  Default is 2.0
-
+      used in the search for band edges.  See description of the algorithm
+      above and in the user's manual.  Default is 2.0
     :param signal_detection_minimum_bandwidth:  As noted above this
-    algorithm first tries to estimate the bandwidth of data where the
-    signal level exceeds the noise level defined by the parameter
-    band_cutoff_snr.  It then computes the bandwidth of the data in
-    dB computed as log10(f_high/f_low).  For almost any application
-    if the working bandwidth falls below some threshold the data is
-    junk to all intends and purpose.  A factor more relevant to this
-    algorithm is that the "optional parameters"  will all be meaningless
-    and a waste of computational effort if the bandwidth is too small.
-    A particular extreme example is zero bandwidth that happens all the
-    time if no frequency band exceeds the band_cutoff_snr for a range
-    over that minimum defined by the time-bandwidth product.  The
-    default is 6.0. (One octave which is roughly the width of the traditional
-    short-period band) which allows optional metrics to be computed
-    but may be too small for some applications.  If your application
-    requires higher snr and wider bandwidth adjust this parameter
-    and/or band_cutoff_snr.
-
+      algorithm first tries to estimate the bandwidth of data where the
+      signal level exceeds the noise level defined by the parameter
+      band_cutoff_snr.  It then computes the bandwidth of the data in
+      dB computed as log10(f_high/f_low).  For almost any application
+      if the working bandwidth falls below some threshold the data is
+      junk to all intends and purpose.  A factor more relevant to this
+      algorithm is that the "optional parameters"  will all be meaningless
+      and a waste of computational effort if the bandwidth is too small.
+      A particular extreme example is zero bandwidth that happens all the
+      time if no frequency band exceeds the band_cutoff_snr for a range
+      over that minimum defined by the time-bandwidth product.  The
+      default is 6.0. (One octave which is roughly the width of the traditional
+      short-period band) which allows optional metrics to be computed
+      but may be too small for some applications.  If your application
+      requires higher snr and wider bandwidth adjust this parameter
+      and/or band_cutoff_snr.
     :param tbp:  time-bandwidth product to use for computing the set of
-    Slepian functions used for the multitaper estimator.  This parameter is
-    used only if the noise_spectrum_engine or signal_spectrum_engine
-    arguments are set as None.  The default is 4.0
-
+      Slepian functions used for the multitaper estimator.  This parameter is
+      used only if the noise_spectrum_engine or signal_spectrum_engine
+      arguments are set as None.  The default is 4.0
     :param ntapers:  is the number of Slepian functions (tapers) to compute
-    for the multitaper estimators. Like tbp it is referenced only if
-    noise_spectrum_engine or signal_spectrum_engine are set to None.
-    Note the function will throw an exception if the ntaper parameter is
-    not consistent with the time-bandwidth product.  That is, the
-    maximum number of tapers is round(2*tbp-1).   Default is 6 which is
-    consistent with default tbp=4.0 where the maximum recommended is 8
-
+      for the multitaper estimators. Like tbp it is referenced only if
+      noise_spectrum_engine or signal_spectrum_engine are set to None.
+      Note the function will throw an exception if the ntaper parameter is
+      not consistent with the time-bandwidth product.  That is, the
+      maximum number of tapers is round(2*tbp-1).   Default is 6 which is
+      consistent with default tbp=4.0 where the maximum recommended is 8
     :param high_frequency_search_start: Used to specify the upper frequency
       used to start the search for the upper end of the bandwidth by
       the function EstimateBandwidth.  Default is 2.0 which reasonable for
@@ -361,53 +352,47 @@ def FD_snr_estimator(
       sources) that set the high edge incorrectly.   False would be
       more appropriate for most local and regional earthquake data.
       The default is True.
-
     :param npoles:   defines number of poles to us for the Butterworth
-    bandpass applied for the "filtered" metrics (see above).  Default is 3.
-
+      bandpass applied for the "filtered" metrics (see above).  Default is 3.
     :param perc:   used only if 'filtered_perc' is in the optional metrics list.
-    Specifies the perc parameter as used in seismic unix.  Uses the percentage
-    point specified of the sorted abs of all amplitudes.  (Not perc=50.0 is
-    identical to MAD)  Default is 95.0 which is 2 sigma for Gaussian noise.
+      Specifies the perc parameter as used in seismic unix.  Uses the percentage
+      point specified of the sorted abs of all amplitudes.  (Not perc=50.0 is
+      identical to MAD)  Default is 95.0 which is 2 sigma for Gaussian noise.
 
     :param optional_metrics: is an iterable container containing one or more
-    of the optional snr metrics discussed above.
-
+      of the optional snr metrics discussed above.
     :param store_as_subdocument:  This parameter is included for
-    flexibility but should not normally be changed by the user.  As noted
-    earlier the outputs of this function are best abstracted as Metadata.
-    When this parameter is False the Metadata members are all posted with
-    directly to data_object's Metadata container.  If set True the
-    internally generated python dict is copied and stored with a key
-    defined through the subdocument_key argument.  See use below in
-    function arrival_snr.
-
+      flexibility but should not normally be changed by the user.  As noted
+      earlier the outputs of this function are best abstracted as Metadata.
+      When this parameter is False the Metadata members are all posted with
+      directly to data_object's Metadata container.  If set True the
+      internally generated python dict is copied and stored with a key
+      defined through the subdocument_key argument.  See use below in
+      function arrival_snr.
     :param subdocument_key:  key for storing results as a subdocument.
-    This parameter is ignored unless store_as_subdocument is True.
-    Default is "snr_data"
-
+      This parameter is ignored unless store_as_subdocument is True.
+      Default is "snr_data"
     :param save_spectra:   If set True (default is False) the function
-    will pickle the computed noise and signal spectra and save the
-    strings created along with a set of related metadata defining the
-    time range to the output python dict (these will be saved in MongoDB
-    when db is defined - see below).   This option should ONLY be used
-    for spot checking, discovery of why an snr metric has unexpected
-    results using graphics, or a research topic where the spectra would
-    be of interest.  It is a very bad idea to turn this option on if
-    you are processing a large quantity of data and saving the results
-    to MongoDB as it will bloat the arrival collection.  Consider a
-    different strategy if that essential for your work.
-
+      will pickle the computed noise and signal spectra and save the
+      strings created along with a set of related metadata defining the
+      time range to the output python dict (these will be saved in MongoDB
+      when db is defined - see below).   This option should ONLY be used
+      for spot checking, discovery of why an snr metric has unexpected
+      results using graphics, or a research topic where the spectra would
+      be of interest.  It is a very bad idea to turn this option on if
+      you are processing a large quantity of data and saving the results
+      to MongoDB as it will bloat the arrival collection.  Consider a
+      different strategy if that essential for your work.
     :return:  python tuple with two components.  0 is a python dict with
-    the computed metrics associated with keys defined above.  1 is a
-    mspass.ccore.ErrorLogger object. Any errors in computng any of the
-    metrics will be posted to this logger.  Users should then test this
-    object using it's size() method and if it the log is not empty (size >0)
-    the caller should handle that condition.   For normal use that means
-    pushing any messages the log contains to the original data object's
-    error log.  Component 0 will also be empty with no log entry if
-    the estimated bandwidth falls below the threshold defined by the
-    parameter signal_detection_minimum_bandwidth.
+      the computed metrics associated with keys defined above.  1 is a
+      mspass.ccore.ErrorLogger object. Any errors in computng any of the
+      metrics will be posted to this logger.  Users should then test this
+      object using it's size() method and if it the log is not empty (size >0)
+      the caller should handle that condition.   For normal use that means
+      pushing any messages the log contains to the original data object's
+      error log.  Component 0 will also be empty with no log entry if
+      the estimated bandwidth falls below the threshold defined by the
+      parameter signal_detection_minimum_bandwidth.
     """
     algname = "FN_snr_estimator"
     my_logger = ErrorLogger()

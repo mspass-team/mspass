@@ -109,5 +109,5 @@ setup(
     extras_require={
         "complete": complete_deps,
         "seisbench": complete_deps + seisbench_deps,
-    }
+    },
 )

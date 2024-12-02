@@ -3,11 +3,11 @@
 Importing Tabular Data
 =========================
 *Prof. Gary L. Pavlis*
-~~~~~~~~~~~~~~~~~~~~~~~~
+---------------------------
 
 
 Concepts
-~~~~~~~~~~~~
+----------
 
 Few seismologists and surprising few "IT professionals" appreciate
 the full significance of the
@@ -41,7 +41,7 @@ types of tabular data:
   describe a special interface in MsPASS to import data from Datascope tables.
 
 In MsPASS the central concept used to unify these diverse sources is the
-concept of a :code:`DataFrame`.   :code:`DataFrame`s are THE data structure that is the
+concept of a :code:`DataFrame`.  A :code:`DataFrame` is THE data structure that is the
 focus of the commonly used
 `pandas <https://pandas.pydata.org/docs/>`__ python package.
 The name does not come from a fuzzy animal but is apparently
@@ -55,7 +55,7 @@ All "imports" below can be thought of as ways to convert a table
 stored some other way to a DataFrame.
 
 Import/Export Tables Stored in Files
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+---------------------------------------
 Importing data from any common tabular data format I know is
 essentially a solved problem through the pandas, :code:`DataFrame` API.
 
@@ -108,7 +108,7 @@ evil for the file format.  See the tutorial for a more extensive
 explanation of this example.
 
 Import/Export Data from an SQL server
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+----------------------------------------
 
 Importing data from an SQL server or writing a DataFrame to an
 SQL server are best thought of as different methods of the
@@ -120,7 +120,7 @@ IO sections for pandas, dask, and pyspark for details on the
 correct incantation for your needs.
 
 Import/Export of Data from Datascope
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+----------------------------------------
 
 Although the Datascope (Antelope) database is an implementation of
 a relational database, it does not work with the SQL API of
@@ -132,8 +132,8 @@ there are a lot of known ways that the Antelope software can be used
 in combination with MsPASS to handle novel research problems.
 As a result, we created a special API to interact with data
 managed by an Antelope database.   The MsPASS API aims to
-loosely mimic core SQL functionality using pandas
-:code:`DataFrame`s as the intermediary.
+loosely mimic core SQL functionality using the pandas
+:code:`DataFrame` implementation as the intermediary.
 
 A python class called
 :py:class:`DatascopeDatabase<mspasspy.preprocessing.css30.datascope.DatascopeDatabase>`
