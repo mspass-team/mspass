@@ -1,0 +1,558 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>mspasspy.util.Janitor &mdash; MsPASS 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=f6245a2f"></script>
+      <script src="../../../_static/doctools.js?v=888ff710"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
+      <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />  
+
+  <style>
+    .wy-nav-content { max-width: 1600px; }
+  </style>
+
+  
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            MsPASS
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/quick_start.html">Getting Started in a Nutshell</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/run_mspass_with_docker.html">Run MsPASS with Docker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_docker_compose.html">Deploy MsPASS with Docker Compose</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_conda.html">Deploy MsPASS with Conda</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_conda.html#advanced-setup-considerations">Advanced Setup Considerations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_on_HPC.html">Deploying MsPASS on an HPC cluster</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_conda_and_coiled.html">Deploy MsPASS with Conda and Coiled</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/introduction.html">Introduction</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Data Management</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/database_concepts.html">Database Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/normalization.html">Normalization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/importing_tabular_data.html">Importing Tabular Data</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Seismic Data Objects</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/data_object_design_concepts.html">Data Object Design Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/numpy_scipy_interface.html">Using numpy/scipy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/obspy_interface.html">Using ObsPy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/time_standard_constraints.html">Time Standard Constraints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/processing_history_concepts.html">Processing History Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/continuous_data.html">Continuous Data Handling with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/schema_choices.html">What database schema should I use?</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Data Processing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/algorithms.html">Algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/importing_data.html">Importing Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/handling_errors.html">Handling Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/data_editing.html">Data Editing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/cleaning_metadata.html">Cleaning Inconsistent Metadata</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/header_math.html">Header (Metadata) Math</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/graphics.html">Graphics in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/signal_to_noise.html">Signal to Noise Ratio Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/parallel_processing.html">Parallel Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/memory_management.html">Memory Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/io.html">I/O in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/parallel_io.html">Parallel IO in MsPASS</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">FAQ</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/FAQ.html">Frequency Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/development_strategies.html">How do I develop a new workflow from scratch?</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../python_api/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../cxx_api/index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../mspass_schema/mspass_schema.html">MsPASS Schema</a></li>
+</ul>
+
+    <a href= "../../../genindex.html">Index</a>
+  
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">MsPASS</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">mspasspy.util.Janitor</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for mspasspy.util.Janitor</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Created on Wed Nov 13 14:56:53 2024</span>
+
+<span class="sd">@author: pavlis</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">yaml</span>
+<span class="kn">from</span> <span class="nn">mspasspy.ccore.utility</span> <span class="kn">import</span> <span class="n">MsPASSError</span>
+<span class="kn">from</span> <span class="nn">mspasspy.ccore.seismic</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">TimeSeries</span><span class="p">,</span>
+    <span class="n">Seismogram</span><span class="p">,</span>
+    <span class="n">TimeSeriesEnsemble</span><span class="p">,</span>
+    <span class="n">SeismogramEnsemble</span><span class="p">,</span>
+    <span class="n">_CoreTimeSeries</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<div class="viewcode-block" id="Janitor"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.Janitor.Janitor">[docs]</a><span class="k">class</span> <span class="nc">Janitor</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generic handler to clean up the Metadata namespace of a MsPASS data object.</span>
+
+<span class="sd">    In data processing it is common for Metadata attributes to become</span>
+<span class="sd">    inconsistent with the data.   An example is a &quot;chan&quot; attribute makes</span>
+<span class="sd">    no sense if the data have passed through an algorithm to convert a set</span>
+<span class="sd">    of TimeSeries objects into Seismogram objects.  The name of the class</span>
+<span class="sd">    is meant as a memory device that the object is used to clear attributes</span>
+<span class="sd">    that are junk/trash that need to be removed.</span>
+
+<span class="sd">    There are two fundamentally different conceptual ways for the Janitor</span>
+<span class="sd">    to handle the trash.  First, is to discard them forever.   That is the</span>
+<span class="sd">    approach of the method called `clean`.  When `clean` is called on a</span>
+<span class="sd">    datum the inconsistent attributes (trash) are thrown away</span>
+<span class="sd">    (like garbage sent to a landfill).  The alternative is the to</span>
+<span class="sd">    bag up the garbage and put it somewhere until you are ready to</span>
+<span class="sd">    deal with it.  That s the idea of the two methods called</span>
+<span class="sd">    `collect_trash` and `bag_trash`.   `collect_trash` removes</span>
+<span class="sd">    trash attributes from the object but returns the trash in</span>
+<span class="sd">    a container (implmented a dictonary).   The `bag_trash` takes</span>
+<span class="sd">    the result from `collect_trash` and posts it back to the</span>
+<span class="sd">    object as a subdocument (a python dictionary) with a specified</span>
+<span class="sd">    key.  That mode can be useful for an experimental algorithm where</span>
+<span class="sd">    you may need to pull some trash from the bag later but need to</span>
+<span class="sd">    get the debris out of the way for understanding.</span>
+
+<span class="sd">    Handling of ensemles is potentially ambiguous as both the ensemble</span>
+<span class="sd">    container itself and all the members have a Metadata container.</span>
+<span class="sd">    For that reason the class has a seperate set of keys that define</span>
+<span class="sd">    attributes to be retained for ensembles.   The default for enssembles</span>
+<span class="sd">    is an empty list because in most cases the ensemble metadata is</span>
+<span class="sd">    loaded from a normalizing collection and does not need to be retained.</span>
+<span class="sd">    (e.g. source attributes for a common source gather)</span>
+
+<span class="sd">    This class can be thought of as an inline version of the</span>
+<span class="sd">    `clean` and `clean_collection` methods of</span>
+<span class="sd">    :py:class:`mspasspy.db.database.Database`.  That is, the database</span>
+<span class="sd">    versions can be used to do a similar operation of data previously</span>
+<span class="sd">    stored in MongoDB.   This methds of this class would normally occur as the</span>
+<span class="sd">    function in a map operator or in an assignment in a serial loop.</span>
+
+<span class="sd">    The defaults for the class are designed to be appropriate for</span>
+<span class="sd">    stock use.  The variable args for the constructor can be used to</span>
+<span class="sd">    override the list of attribute keys that the Janitor should treat</span>
+<span class="sd">    as not junk.  The default are loaded from a yaml file.   You can also</span>
+<span class="sd">    change the namespace by specifying an alterate name for the yaml file.</span>
+<span class="sd">    The file is expected to contain keys to retain with the dictionary</span>
+<span class="sd">    keys &quot;TimeSeries&quot; and &quot;Seismogram&quot;.   See the default in</span>
+<span class="sd">    mspass/data/yaml/Janitor.yaml to see the format.</span>
+
+<span class="sd">    :param keeper_file:   yaml file containing the keys to be retained</span>
+<span class="sd">      for TimeSeries and Seismogram objects.</span>
+<span class="sd">    :type keeper_file:  string defining yaml file name.  Default is None</span>
+<span class="sd">      which assumed a default path of $MSPASS_HOME/data/yaml/Janitor.yaml.</span>
+<span class="sd">    :param TimeSeries_keepers:  Use to override list defined in yaml</span>
+<span class="sd">      file for TimeSeries objects.  If defined, it</span>
+<span class="sd">      should be list of attributes to be retained.  Use this option</span>
+<span class="sd">      with caution as the list is not checked for required Metadata.</span>
+<span class="sd">      Use the default yaml file for guidance.</span>
+<span class="sd">    :type TimeSeries_keepers:  assumeed to be a list of strings of</span>
+<span class="sd">      attributes to be retained for TimeSeries objects.</span>
+<span class="sd">      Default is None which causes this</span>
+<span class="sd">      argument to be ignored and using the yaml file to define the</span>
+<span class="sd">      list of attributes to be retained.</span>
+<span class="sd">    :param Seismogram_keepers:  Use to override list defined in yaml file</span>
+<span class="sd">      for Seismogram objects.  If defined, it should</span>
+<span class="sd">      be a list of  attributes to be retained.  Use this option</span>
+<span class="sd">      with caution as the list is not checked for required Metadata.</span>
+<span class="sd">      Use the default yaml file for guidance.</span>
+<span class="sd">    :type Seismogram_keepers:  assumeed to be a list of strings of</span>
+<span class="sd">      attributes to be retained.  Default is None which causes this</span>
+<span class="sd">      argument to be ignored and using the yaml file to define the</span>
+<span class="sd">      list of attributes to be retained.</span>
+<span class="sd">    :param ensemble_keepers:  Use to override the content of a</span>
+<span class="sd">      yaml file.   If defined it replaces the yaml file defnition of</span>
+<span class="sd">      what attribute keys should be retained.</span>
+<span class="sd">    :type ensemble_keepers:  list of strings defining keys of</span>
+<span class="sd">      attributes that should not be treated as junk and retained.</span>
+<span class="sd">    :param process_ensemble_members:   boolean controlling behavior</span>
+<span class="sd">      with ensemble objects.  With ensembles there are two possible</span>
+<span class="sd">      definitions of what Metadata container is to be cleaned.  That is,</span>
+<span class="sd">      the ensemble itself has a Metadata container and each atomic</span>
+<span class="sd">      member has a Metdata container.  When True the cleaning opeators</span>
+<span class="sd">      are applied to the members.  When False the ensemble container is</span>
+<span class="sd">      handled if the datum is an ensemble.  This argument is ignored</span>
+<span class="sd">      when processing atomic data.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">keepers_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">TimeSeries_keepers</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">Seismogram_keepers</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">ensemble_keepers</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">process_ensemble_members</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="k">if</span> <span class="n">keepers_file</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s2">&quot;MSPASS_HOME&quot;</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">:</span>
+                <span class="n">keepers_file</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;MSPASS_HOME&quot;</span><span class="p">])</span>
+                    <span class="o">+</span> <span class="s2">&quot;/data/yaml/Janitor.yaml&quot;</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">keepers_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span>
+                    <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;/../data/yaml/Janitor.yaml&quot;</span>
+                <span class="p">)</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">keepers_file</span><span class="p">):</span>
+            <span class="k">if</span> <span class="s2">&quot;MSPASS_HOME&quot;</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">:</span>
+                <span class="n">keepers_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                    <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;MSPASS_HOME&quot;</span><span class="p">]),</span>
+                    <span class="s2">&quot;data/yaml&quot;</span><span class="p">,</span>
+                    <span class="n">keepers_file</span><span class="p">,</span>
+                <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">keepers_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s2">&quot;../data/yaml&quot;</span><span class="p">,</span> <span class="n">keepers_file</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">keepers_file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">stream</span><span class="p">:</span>
+                <span class="n">keepers_dict</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">stream</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">yaml</span><span class="o">.</span><span class="n">YAMLError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
+                <span class="s2">&quot;Janitor constructor:  Parser failed reading keepers_file=&quot;</span>
+                <span class="o">+</span> <span class="n">keepers_file</span><span class="p">,</span>
+                <span class="s2">&quot;Fatal&quot;</span><span class="p">,</span>
+            <span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
+        <span class="k">except</span> <span class="ne">EnvironmentError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
+                <span class="s2">&quot;Janitor constructor:  Cannot open keepers_file = &quot;</span> <span class="o">+</span> <span class="n">keepers_file</span><span class="p">,</span>
+                <span class="s2">&quot;Fatal&quot;</span><span class="p">,</span>
+            <span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_parse_yaml_file</span><span class="p">(</span><span class="n">keepers_dict</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">process_ensemble_members</span> <span class="o">=</span> <span class="n">process_ensemble_members</span>
+        <span class="k">if</span> <span class="n">TimeSeries_keepers</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">TimeSeries_keepers</span> <span class="o">=</span> <span class="n">TimeSeries_keepers</span>
+        <span class="k">if</span> <span class="n">Seismogram_keepers</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Seismogram_keepers</span> <span class="o">=</span> <span class="n">Seismogram_keepers</span>
+        <span class="k">if</span> <span class="n">ensemble_keepers</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ensemle_keepers</span> <span class="o">=</span> <span class="n">ensemble_keepers</span>
+
+<div class="viewcode-block" id="Janitor.clean"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.Janitor.Janitor.clean">[docs]</a>    <span class="k">def</span> <span class="nf">clean</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">datum</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Process datum to remove all Metadata with keys not defined in</span>
+<span class="sd">        this instance of Janitor.  Returns the datum with the attributes</span>
+<span class="sd">        it treats as junk removed.  For ensembles if</span>
+<span class="sd">        self.process_ensemble_members s True the operation will be appplied</span>
+<span class="sd">        on all ensemble members.  When False the Metadata container will</span>
+<span class="sd">        be altered.</span>
+
+<span class="sd">        :param datum:   data objet to be processed.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">dtype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_validate_datum</span><span class="p">(</span><span class="n">datum</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">datum</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
+            <span class="k">return</span> <span class="n">datum</span>
+        <span class="k">if</span> <span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;ensemble&quot;</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">datum</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ensemble_keepers</span><span class="p">:</span>
+                    <span class="n">datum</span><span class="o">.</span><span class="n">erase</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">process_ensemble_members</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">datum</span><span class="o">.</span><span class="n">member</span><span class="p">)):</span>
+                    <span class="n">datum</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">clean</span><span class="p">(</span><span class="n">datum</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># this uses _CoreTimeSeries as a base class to TimeSeries</span>
+            <span class="c1"># to be more robust - resolves True fr a TimeSeries</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">datum</span><span class="p">,</span> <span class="n">_CoreTimeSeries</span><span class="p">):</span>
+                <span class="n">keepers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">TimeSeries_keepers</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># currently this can only be Seismogram - if data</span>
+                <span class="c1"># types supported is exteded needs a change</span>
+                <span class="n">keepers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Seismogram_keepers</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">datum</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">keepers</span><span class="p">:</span>
+                    <span class="n">datum</span><span class="o">.</span><span class="n">erase</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">datum</span></div>
+
+<div class="viewcode-block" id="Janitor.collect_trash"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.Janitor.Janitor.collect_trash">[docs]</a>    <span class="k">def</span> <span class="nf">collect_trash</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">datum</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Processes datum by extracting attributes that this</span>
+<span class="sd">        instance of Janitor does not define as a keeper.  It then</span>
+<span class="sd">        clears the attributes it treats as junk before returning</span>
+<span class="sd">        the attributes it cleared in a python dictionary.   When</span>
+<span class="sd">        run on ensembles the self.ensemble_keeper slist is used to</span>
+<span class="sd">        edit the ensemble Metadata container.   When datum is</span>
+<span class="sd">        an ensemble the ensemble members are not altered.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">dtype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_validate_datum</span><span class="p">(</span><span class="n">datum</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">datum</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
+            <span class="k">return</span> <span class="n">datum</span>
+        <span class="k">if</span> <span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;ensemble&quot;</span><span class="p">:</span>
+            <span class="n">keepers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ensemble_keepers</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># this uses _CoreTimeSeries as a base class to TimeSeries</span>
+            <span class="c1"># to be more robust - resolves True fr a TimeSeries</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">datum</span><span class="p">,</span> <span class="n">_CoreTimeSeries</span><span class="p">):</span>
+                <span class="n">keepers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">TimeSeries_keepers</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># currently this can only be Seismogram - if data</span>
+                <span class="c1"># types supported is exteded needs a change</span>
+                <span class="n">keepers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Seismogram_keepers</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">datum</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">keepers</span><span class="p">:</span>
+                <span class="n">result</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">datum</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+                <span class="n">datum</span><span class="o">.</span><span class="n">erase</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span></div>
+
+<div class="viewcode-block" id="Janitor.bag_trash"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.Janitor.Janitor.bag_trash">[docs]</a>    <span class="k">def</span> <span class="nf">bag_trash</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">datum</span><span class="p">,</span> <span class="n">trashbag_key</span><span class="o">=</span><span class="s2">&quot;trash&quot;</span><span class="p">,</span> <span class="n">ensemble_trashbag_key</span><span class="o">=</span><span class="s2">&quot;ensemble_trash&quot;</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method bundles up trash in a python dictionary and posts it</span>
+<span class="sd">        back to the datum with a specified key.   This allows the</span>
+<span class="sd">        trash data to be retained but put into the auxiliary trash bag</span>
+<span class="sd">        container to simplify the datum&#39;s Metadata namespace.  The idea</span>
+<span class="sd">        is to allow an algorithm to pull junk from the trashcan if necesary</span>
+<span class="sd">        at a later stage.</span>
+
+<span class="sd">        Note for ensembles there are two different entities that are handled</span>
+<span class="sd">        separately.   Any attributes in the ensemble&#39;s Metadata are</span>
+<span class="sd">        processed against self.ensemble_keepers and any junk is bagged into</span>
+<span class="sd">        a dictionary stored back in to the ensemble&#39;s Metadata container</span>
+<span class="sd">        with the key defined by the ensemble_trashbag_key.   Members</span>
+<span class="sd">        are only processed if self.prococss_ensemble_members is True.</span>
+<span class="sd">        When True the members will also be passed through this</span>
+<span class="sd">        method with the handling depending on the type of the members.</span>
+
+<span class="sd">        :param datum:  MsPASS data objet to be processed.</span>
+<span class="sd">        :type datum:  Must be a MsPASS data object</span>
+<span class="sd">          (`TimeSeries`,`Seismogram`, `TimeSeriesEnsemble`, or `SeismogramEnsemle`)</span>
+<span class="sd">          or this method will raise a MsPASSError exception marked Fatal.</span>
+<span class="sd">        :param trashbag_key:   dictinary key used to post the trash bag</span>
+<span class="sd">          for atomic data or the members of ensembles when self.process_ensemble_members</span>
+<span class="sd">          is True.</span>
+<span class="sd">        :type trashbag_key:  str (default &quot;trash&quot;)</span>
+<span class="sd">        :param ensemble_trashbag_key:  dictionary key to use post the</span>
+<span class="sd">          trashbag dictionary constructed from an ensemble&#39;s Metadata</span>
+<span class="sd">          container.  Ignored for atomic data.  Note this key should</span>
+<span class="sd">          be distinct from trashbag_key or the member trashbags will be</span>
+<span class="sd">          overwritten by the ensemble trashbag if the ensemble is saved.</span>
+<span class="sd">        :type ensemble_trashbag_key:  str (default &quot;ensemble_trash&quot;</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">dtype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_validate_datum</span><span class="p">(</span><span class="n">datum</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">datum</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
+            <span class="k">return</span> <span class="n">datum</span>
+
+        <span class="k">if</span> <span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;ensemble&quot;</span><span class="p">:</span>
+            <span class="n">trash</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collect_trash</span><span class="p">(</span><span class="n">datum</span><span class="p">)</span>
+            <span class="n">datum</span><span class="p">[</span><span class="n">ensemble_trashbag_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">trash</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">process_ensemble_members</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">datum</span><span class="o">.</span><span class="n">member</span><span class="p">)):</span>
+                    <span class="n">trash</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collect_trash</span><span class="p">(</span><span class="n">datum</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                    <span class="n">datum</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">trashbag_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">trash</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">trash</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collect_trash</span><span class="p">(</span><span class="n">datum</span><span class="p">)</span>
+            <span class="n">datum</span><span class="p">[</span><span class="n">trashbag_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">trash</span>
+        <span class="k">return</span> <span class="n">datum</span></div>
+
+<div class="viewcode-block" id="Janitor.add2keepers"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.Janitor.Janitor.add2keepers">[docs]</a>    <span class="k">def</span> <span class="nf">add2keepers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">keeper_type</span><span class="o">=</span><span class="s2">&quot;atomic&quot;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Adds a new key to the namespace for a data type.</span>
+
+<span class="sd">        It is often useful to extend the namespace during processing</span>
+<span class="sd">        without having to create a special instance of a Janitor from</span>
+<span class="sd">        a yaml file.   Use this method to add a key to the list of</span>
+<span class="sd">        attributes defined as a keeper.</span>
+
+<span class="sd">        :param key:  key of the attribute to add to a the list of keeper</span>
+<span class="sd">           names in this Janitor.   Note if the name already exists in</span>
+<span class="sd">           the list this method does nothing.</span>
+<span class="sd">        :type key:  str</span>
+<span class="sd">        :param keeper_type:  defines the data to to which key should be</span>
+<span class="sd">          added.  Normal use is one the following keywword whose use</span>
+<span class="sd">          should be clear:  &quot;TimeSeries&quot;,&quot;Seismogam&quot;, and &quot;ensemble&quot;.</span>
+<span class="sd">          Also accepts the special keyword &quot;atomic&quot; which means the</span>
+<span class="sd">          key is added to the list of keepers for both TimeSeries and</span>
+<span class="sd">          Seismogram objects.</span>
+<span class="sd">        :type keeper_type:  str (default &quot;atomic&quot;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">keeper_type</span> <span class="o">==</span> <span class="s2">&quot;atomic&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add2keepers</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="s2">&quot;TimeSeries&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add2keepers</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="s2">&quot;Seismogram&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">keeper_type</span> <span class="o">==</span> <span class="s2">&quot;TimeSeries&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">TimeSeries_keepers</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">TimeSeries_keepers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">keeper_type</span> <span class="o">==</span> <span class="s2">&quot;Seismogram&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">Seismogram_keepers</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">Seismogram_keepers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">keeper_type</span> <span class="o">==</span> <span class="s2">&quot;ensemble&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ensemble_keepers</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ensemble_keepers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;Janitor.add2keepers:  illegal value for keeper_type=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">keeper_type</span>
+            <span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_parse_yaml_file</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">keepers_dict</span><span class="p">,</span>
+        <span class="n">TimeSeries_key</span><span class="o">=</span><span class="s2">&quot;TimeSeries&quot;</span><span class="p">,</span>
+        <span class="n">Seismogram_key</span><span class="o">=</span><span class="s2">&quot;Seismogram&quot;</span><span class="p">,</span>
+        <span class="n">ensemble_key</span><span class="o">=</span><span class="s2">&quot;Ensemble&quot;</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Internal method to parse dictionary returned by pyyaml</span>
+<span class="sd">        parsing of a specified keepers definition.  kwarg</span>
+<span class="sd">        vales specify keys for lists for TimeSeries and Seismogram</span>
+<span class="sd">        the parser expects to see.  This method will throw an</span>
+<span class="sd">        exception if either are missing.  Normally called only by</span>
+<span class="sd">        constructor, but could be used to redefine a Janitor with a</span>
+<span class="sd">        parsed result from a different yaml file.  Normally that would</span>
+<span class="sd">        be silly, however, as the same thing would be clearer with</span>
+<span class="sd">        just redefining the instance of Janitor.  This was made a method</span>
+<span class="sd">        largely to encapsulate the translation step the yaml dict to</span>
+<span class="sd">        the pair of lists the constructor needs to define.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">TimeSeries_key</span> <span class="ow">in</span> <span class="n">keepers_dict</span> <span class="ow">and</span> <span class="n">Seismogram_key</span> <span class="ow">in</span> <span class="n">keepers_dict</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">TimeSeries_keepers</span> <span class="o">=</span> <span class="n">keepers_dict</span><span class="p">[</span><span class="n">TimeSeries_key</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Seismogram_keepers</span> <span class="o">=</span> <span class="n">keepers_dict</span><span class="p">[</span><span class="n">Seismogram_key</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;Janitor._parse_yaml_file:  &quot;</span>
+            <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Missing required keys = </span><span class="si">{}</span><span class="s2"> and </span><span class="si">{}</span><span class="s2"> for TimeSeries and Seismogram object keepers defintions respectively&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">TimeSeries_key</span><span class="p">,</span> <span class="n">Seismogram_key</span>
+            <span class="p">)</span>
+            <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="s2">&quot;Fatal&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ensemble_key</span> <span class="ow">in</span> <span class="n">keepers_dict</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ensemble_keepers</span> <span class="o">=</span> <span class="n">keepers_dict</span><span class="p">[</span><span class="n">ensemble_key</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ensemble_keepers</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">def</span> <span class="nf">_validate_datum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">datum</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called internally by processing methods to validate the</span>
+<span class="sd">        type of a datum input to processing methods through</span>
+<span class="sd">        required arg0.   Returns  &quot;atomic&quot; if datum is an atomic datum</span>
+<span class="sd">        (TimeSeries or Seismogram) or  &quot;ensemble&quot; if the datum is a valid</span>
+<span class="sd">        ensemble object (TimeSeriesEnsemble or SeismgoramEnsemble).</span>
+<span class="sd">        Will raise a MsPASSError if the datum is not a valid mspass</span>
+<span class="sd">        data object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">datum</span><span class="p">,</span> <span class="p">(</span><span class="n">TimeSeries</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">)):</span>
+            <span class="k">return</span> <span class="s2">&quot;atomic&quot;</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">datum</span><span class="p">,</span> <span class="p">(</span><span class="n">TimeSeriesEnsemble</span><span class="p">,</span> <span class="n">SeismogramEnsemble</span><span class="p">)):</span>
+            <span class="k">return</span> <span class="s2">&quot;ensemble&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;Cannot process input datum of type=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">datum</span><span class="p">)))</span>
+            <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="s2">&quot;Fatal&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MiniseedJanitor"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.Janitor.MiniseedJanitor">[docs]</a><span class="k">class</span> <span class="nc">MiniseedJanitor</span><span class="p">(</span><span class="n">Janitor</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convenience class for handling data read from wf_miniseed.</span>
+
+<span class="sd">    Data loaded from miniseed files in MsPASS tend to have some debris</span>
+<span class="sd">    that is not needed once the data are loaded into memory for processng.</span>
+<span class="sd">    This is a conveniene class that loads a different yaml file to</span>
+<span class="sd">    create a stock Janitor for handling data loaded from wf_miniseed.</span>
+
+<span class="sd">    WARNING:  use this class only on data immediately after loading</span>
+<span class="sd">    from wf_miniseed.  It will eliminate miniseed specific debris that</span>
+<span class="sd">    is a perfect example of why a Janitor is useful.   It should not, however,</span>
+<span class="sd">    be used after any processing that loads additional attributes or</span>
+<span class="sd">    it will almost certainly delete useful attributes.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">&quot;MiniseedJanitor.yaml&quot;</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020-2021, Ian Wang.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

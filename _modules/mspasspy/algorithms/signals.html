@@ -88,6 +88,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/importing_data.html">Importing Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/handling_errors.html">Handling Errors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/data_editing.html">Data Editing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/cleaning_metadata.html">Cleaning Inconsistent Metadata</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/header_math.html">Header (Metadata) Math</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/graphics.html">Graphics in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/signal_to_noise.html">Signal to Noise Ratio Estimation</a></li>
@@ -171,7 +172,7 @@
     <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">inplace_return</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="o">**</span><span class="n">options</span>
+    <span class="o">**</span><span class="n">options</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function filters the data of mspasspy objects. Note it is wrapped by mspass_func_wrapper, so the processing</span>
@@ -211,7 +212,7 @@
     <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">inplace_return</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;simple&quot;</span><span class="p">,</span>
-    <span class="o">**</span><span class="n">options</span>
+    <span class="o">**</span><span class="n">options</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function removes a trend from the data, which is a mspasspy object. Note it is wrapped by mspass_func_wrapper,</span>
@@ -254,7 +255,7 @@
     <span class="n">starttime</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">npts</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">time_shift</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
-    <span class="o">**</span><span class="n">kwargs</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function interpolates data, which is a mspasspy object. Note it is wrapped by mspass_func_wrapper,</span>
@@ -370,7 +371,7 @@
     <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">template_time</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">return_type</span><span class="o">=</span><span class="s2">&quot;seismogram&quot;</span><span class="p">,</span>
-    <span class="o">**</span><span class="n">kwargs</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">):</span>
     <span class="n">res</span> <span class="o">=</span> <span class="n">obspy</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">cross_correlation</span><span class="o">.</span><span class="n">correlate_stream_template</span><span class="p">(</span>
         <span class="n">stream</span><span class="p">,</span> <span class="n">template</span><span class="p">,</span> <span class="n">template_time</span>
@@ -402,7 +403,7 @@
     <span class="n">details</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">plot</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">return_type</span><span class="o">=</span><span class="s2">&quot;seismogram&quot;</span><span class="p">,</span>
-    <span class="o">**</span><span class="n">kwargs</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">):</span>
     <span class="n">tem_list</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">template</span> <span class="ow">in</span> <span class="n">templates</span><span class="p">:</span>
@@ -418,7 +419,7 @@
         <span class="n">similarity_func</span><span class="p">,</span>
         <span class="n">details</span><span class="p">,</span>
         <span class="n">plot</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">converted_detections</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">detection</span> <span class="ow">in</span> <span class="n">detections</span><span class="p">:</span>

@@ -7,6 +7,7 @@ attached and a warning it is part essay and part educational material.
 
 May want to start with a autobiograph8cal sketch noting my 50 yr history in computing
 Key points are:
+
 - linear files and impact on common Formats
 - miniseed first format to break the linear file model
 - format is not the data is a key idea of MsPASS abstractions

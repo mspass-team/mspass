@@ -105,6 +105,7 @@
 <li class="toctree-l1"><a class="reference internal" href="importing_data.html">Importing Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="handling_errors.html">Handling Errors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_editing.html">Data Editing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cleaning_metadata.html">Cleaning Inconsistent Metadata</a></li>
 <li class="toctree-l1"><a class="reference internal" href="header_math.html">Header (Metadata) Math</a></li>
 <li class="toctree-l1"><a class="reference internal" href="graphics.html">Graphics in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="signal_to_noise.html">Signal to Noise Ratio Estimation</a></li>
@@ -351,15 +352,12 @@ unique key to one and only one document and is the way this reader
 finds one and only one record to fetch per call.  The most common use
 is the for with a MongoDB document in a construct like the following
 in a serial job:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">query</span><span class="o">=</span><span class="p">{</span><span class="o">...</span><span class="n">Some</span> <span class="n">MongoDB</span> <span class="n">query</span> <span class="nb">dict</span> <span class="n">entry</span><span class="o">...</span><span class="p">}</span>
+<span class="n">cursor</span><span class="o">=</span><span class="n">db</span><span class="o">.</span><span class="n">wf_TimeSeries</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">)</span> <span class="c1"># Changed to wf_Seismogram for 3D data</span>
+<span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">cursor</span><span class="p">:</span>
+  <span class="n">d</span><span class="o">=</span><span class="n">db</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>  <span class="c1"># Add option collection=&#39;wf_Seismogram&#39; for 3C reads</span>
 </pre></div>
 </div>
-<p>query={…Some MongoDB query dict entry…}
-cursor=db.wf_TimeSeries.find(query) # Changed to wf_Seismogram for 3D data
-for doc in cursor:</p>
-<blockquote>
-<div><p>d=db.read_data(doc)  # Add option collection=’wf_Seismogram’ for 3C reads</p>
-</div></blockquote>
 <p>By default <code class="code docutils literal notranslate"><span class="pre">read_data</span></code> will use the waveform collection defined
 in the schema defined for the handle.  The default for the standard
 MsPASS schema is TimeSeries.   As the comment in the example states

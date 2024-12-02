@@ -91,6 +91,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/importing_data.html">Importing Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/handling_errors.html">Handling Errors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/data_editing.html">Data Editing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/cleaning_metadata.html">Cleaning Inconsistent Metadata</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/header_math.html">Header (Metadata) Math</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/graphics.html">Graphics in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/signal_to_noise.html">Signal to Noise Ratio Estimation</a></li>
@@ -148,13 +149,18 @@
 <li class="toctree-l4"><a class="reference internal" href="#mspasspy.util.decorators.timeseries_ensemble_copy_helper"><code class="docutils literal notranslate"><span class="pre">timeseries_ensemble_copy_helper()</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="#module-mspasspy.util.Janitor">Janitor</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.util.Janitor.Janitor"><code class="docutils literal notranslate"><span class="pre">Janitor</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.util.Janitor.MiniseedJanitor"><code class="docutils literal notranslate"><span class="pre">MiniseedJanitor</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="#module-mspasspy.util.logging_helper">logging_helper</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#mspasspy.util.logging_helper.ensemble_error"><code class="docutils literal notranslate"><span class="pre">ensemble_error()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mspasspy.util.logging_helper.info"><code class="docutils literal notranslate"><span class="pre">info()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mspasspy.util.logging_helper.reduce"><code class="docutils literal notranslate"><span class="pre">reduce()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#seismic">seismic</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#module-mspasspy.util.seismic">seismic</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#mspasspy.util.seismic.ensemble_time_range"><code class="docutils literal notranslate"><span class="pre">ensemble_time_range()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mspasspy.util.seismic.number_live"><code class="docutils literal notranslate"><span class="pre">number_live()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mspasspy.util.seismic.print_metadata"><code class="docutils literal notranslate"><span class="pre">print_metadata()</span></code></a></li>
@@ -686,6 +692,203 @@ or all of them are still alive.</p>
 <dd></dd></dl>
 
 </section>
+<section id="module-mspasspy.util.Janitor">
+<span id="janitor"></span><h2>Janitor<a class="headerlink" href="#module-mspasspy.util.Janitor" title="Permalink to this heading"></a></h2>
+<p>Created on Wed Nov 13 14:56:53 2024</p>
+<p>&#64;author: pavlis</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="mspasspy.util.Janitor.Janitor">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.util.Janitor.</span></span><span class="sig-name descname"><span class="pre">Janitor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keepers_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">TimeSeries_keepers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Seismogram_keepers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ensemble_keepers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">process_ensemble_members</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/Janitor.html#Janitor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.Janitor.Janitor" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Generic handler to clean up the Metadata namespace of a MsPASS data object.</p>
+<p>In data processing it is common for Metadata attributes to become
+inconsistent with the data.   An example is a “chan” attribute makes
+no sense if the data have passed through an algorithm to convert a set
+of TimeSeries objects into Seismogram objects.  The name of the class
+is meant as a memory device that the object is used to clear attributes
+that are junk/trash that need to be removed.</p>
+<p>There are two fundamentally different conceptual ways for the Janitor
+to handle the trash.  First, is to discard them forever.   That is the
+approach of the method called <cite>clean</cite>.  When <cite>clean</cite> is called on a
+datum the inconsistent attributes (trash) are thrown away
+(like garbage sent to a landfill).  The alternative is the to
+bag up the garbage and put it somewhere until you are ready to
+deal with it.  That s the idea of the two methods called
+<cite>collect_trash</cite> and <cite>bag_trash</cite>.   <cite>collect_trash</cite> removes
+trash attributes from the object but returns the trash in
+a container (implmented a dictonary).   The <cite>bag_trash</cite> takes
+the result from <cite>collect_trash</cite> and posts it back to the
+object as a subdocument (a python dictionary) with a specified
+key.  That mode can be useful for an experimental algorithm where
+you may need to pull some trash from the bag later but need to
+get the debris out of the way for understanding.</p>
+<p>Handling of ensemles is potentially ambiguous as both the ensemble
+container itself and all the members have a Metadata container.
+For that reason the class has a seperate set of keys that define
+attributes to be retained for ensembles.   The default for enssembles
+is an empty list because in most cases the ensemble metadata is
+loaded from a normalizing collection and does not need to be retained.
+(e.g. source attributes for a common source gather)</p>
+<p>This class can be thought of as an inline version of the
+<cite>clean</cite> and <cite>clean_collection</cite> methods of
+<a class="reference internal" href="mspasspy.db.html#mspasspy.db.database.Database" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.database.Database</span></code></a>.  That is, the database
+versions can be used to do a similar operation of data previously
+stored in MongoDB.   This methds of this class would normally occur as the
+function in a map operator or in an assignment in a serial loop.</p>
+<p>The defaults for the class are designed to be appropriate for
+stock use.  The variable args for the constructor can be used to
+override the list of attribute keys that the Janitor should treat
+as not junk.  The default are loaded from a yaml file.   You can also
+change the namespace by specifying an alterate name for the yaml file.
+The file is expected to contain keys to retain with the dictionary
+keys “TimeSeries” and “Seismogram”.   See the default in
+mspass/data/yaml/Janitor.yaml to see the format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>keeper_file</strong> (<em>string defining yaml file name.  Default is None
+which assumed a default path</em><em> of </em><em>$MSPASS_HOME/data/yaml/Janitor.yaml.</em>) – yaml file containing the keys to be retained
+for TimeSeries and Seismogram objects.</p></li>
+<li><p><strong>TimeSeries_keepers</strong> (<em>assumeed to be a list</em><em> of </em><em>strings</em><em> of
+</em><em>attributes to be retained for TimeSeries objects.
+Default is None which causes this
+argument to be ignored and using the yaml file to define the
+list</em><em> of </em><em>attributes to be retained.</em>) – Use to override list defined in yaml
+file for TimeSeries objects.  If defined, it
+should be list of attributes to be retained.  Use this option
+with caution as the list is not checked for required Metadata.
+Use the default yaml file for guidance.</p></li>
+<li><p><strong>Seismogram_keepers</strong> (<em>assumeed to be a list</em><em> of </em><em>strings</em><em> of
+</em><em>attributes to be retained.  Default is None which causes this
+argument to be ignored and using the yaml file to define the
+list</em><em> of </em><em>attributes to be retained.</em>) – Use to override list defined in yaml file
+for Seismogram objects.  If defined, it should
+be a list of  attributes to be retained.  Use this option
+with caution as the list is not checked for required Metadata.
+Use the default yaml file for guidance.</p></li>
+<li><p><strong>ensemble_keepers</strong> (<em>list</em><em> of </em><em>strings defining keys</em><em> of
+</em><em>attributes that should not be treated as junk and retained.</em>) – Use to override the content of a
+yaml file.   If defined it replaces the yaml file defnition of
+what attribute keys should be retained.</p></li>
+<li><p><strong>process_ensemble_members</strong> – boolean controlling behavior
+with ensemble objects.  With ensembles there are two possible
+definitions of what Metadata container is to be cleaned.  That is,
+the ensemble itself has a Metadata container and each atomic
+member has a Metdata container.  When True the cleaning opeators
+are applied to the members.  When False the ensemble container is
+handled if the datum is an ensemble.  This argument is ignored
+when processing atomic data.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.util.Janitor.Janitor.add2keepers">
+<span class="sig-name descname"><span class="pre">add2keepers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keeper_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'atomic'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/Janitor.html#Janitor.add2keepers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.Janitor.Janitor.add2keepers" title="Permalink to this definition"></a></dt>
+<dd><p>Adds a new key to the namespace for a data type.</p>
+<p>It is often useful to extend the namespace during processing
+without having to create a special instance of a Janitor from
+a yaml file.   Use this method to add a key to the list of
+attributes defined as a keeper.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<em>str</em>) – key of the attribute to add to a the list of keeper
+names in this Janitor.   Note if the name already exists in
+the list this method does nothing.</p></li>
+<li><p><strong>keeper_type</strong> (<em>str</em><em> (</em><em>default &quot;atomic&quot;</em><em>)</em>) – defines the data to to which key should be
+added.  Normal use is one the following keywword whose use
+should be clear:  “TimeSeries”,”Seismogam”, and “ensemble”.
+Also accepts the special keyword “atomic” which means the
+key is added to the list of keepers for both TimeSeries and
+Seismogram objects.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.util.Janitor.Janitor.bag_trash">
+<span class="sig-name descname"><span class="pre">bag_trash</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datum</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trashbag_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'trash'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ensemble_trashbag_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'ensemble_trash'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/Janitor.html#Janitor.bag_trash"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.Janitor.Janitor.bag_trash" title="Permalink to this definition"></a></dt>
+<dd><p>This method bundles up trash in a python dictionary and posts it
+back to the datum with a specified key.   This allows the
+trash data to be retained but put into the auxiliary trash bag
+container to simplify the datum’s Metadata namespace.  The idea
+is to allow an algorithm to pull junk from the trashcan if necesary
+at a later stage.</p>
+<p>Note for ensembles there are two different entities that are handled
+separately.   Any attributes in the ensemble’s Metadata are
+processed against self.ensemble_keepers and any junk is bagged into
+a dictionary stored back in to the ensemble’s Metadata container
+with the key defined by the ensemble_trashbag_key.   Members
+are only processed if self.prococss_ensemble_members is True.
+When True the members will also be passed through this
+method with the handling depending on the type of the members.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>datum</strong> (Must be a MsPASS data object
+(<cite>TimeSeries</cite>,`Seismogram`, <cite>TimeSeriesEnsemble</cite>, or <cite>SeismogramEnsemle</cite>)
+or this method will raise a MsPASSError exception marked Fatal.) – MsPASS data objet to be processed.</p></li>
+<li><p><strong>trashbag_key</strong> (<em>str</em><em> (</em><em>default &quot;trash&quot;</em><em>)</em>) – dictinary key used to post the trash bag
+for atomic data or the members of ensembles when self.process_ensemble_members
+is True.</p></li>
+<li><p><strong>ensemble_trashbag_key</strong> (<em>str</em><em> (</em><em>default &quot;ensemble_trash&quot;</em>) – dictionary key to use post the
+trashbag dictionary constructed from an ensemble’s Metadata
+container.  Ignored for atomic data.  Note this key should
+be distinct from trashbag_key or the member trashbags will be
+overwritten by the ensemble trashbag if the ensemble is saved.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.util.Janitor.Janitor.clean">
+<span class="sig-name descname"><span class="pre">clean</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datum</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/Janitor.html#Janitor.clean"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.Janitor.Janitor.clean" title="Permalink to this definition"></a></dt>
+<dd><p>Process datum to remove all Metadata with keys not defined in
+this instance of Janitor.  Returns the datum with the attributes
+it treats as junk removed.  For ensembles if
+self.process_ensemble_members s True the operation will be appplied
+on all ensemble members.  When False the Metadata container will
+be altered.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>datum</strong> – data objet to be processed.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.util.Janitor.Janitor.collect_trash">
+<span class="sig-name descname"><span class="pre">collect_trash</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datum</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../_modules/mspasspy/util/Janitor.html#Janitor.collect_trash"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.Janitor.Janitor.collect_trash" title="Permalink to this definition"></a></dt>
+<dd><p>Processes datum by extracting attributes that this
+instance of Janitor does not define as a keeper.  It then
+clears the attributes it treats as junk before returning
+the attributes it cleared in a python dictionary.   When
+run on ensembles the self.ensemble_keeper slist is used to
+edit the ensemble Metadata container.   When datum is
+an ensemble the ensemble members are not altered.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mspasspy.util.Janitor.MiniseedJanitor">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.util.Janitor.</span></span><span class="sig-name descname"><span class="pre">MiniseedJanitor</span></span><a class="reference internal" href="../_modules/mspasspy/util/Janitor.html#MiniseedJanitor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.Janitor.MiniseedJanitor" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mspasspy.util.Janitor.Janitor" title="mspasspy.util.Janitor.Janitor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Janitor</span></code></a></p>
+<p>Convenience class for handling data read from wf_miniseed.</p>
+<p>Data loaded from miniseed files in MsPASS tend to have some debris
+that is not needed once the data are loaded into memory for processng.
+This is a conveniene class that loads a different yaml file to
+create a stock Janitor for handling data loaded from wf_miniseed.</p>
+<p>WARNING:  use this class only on data immediately after loading
+from wf_miniseed.  It will eliminate miniseed specific debris that
+is a perfect example of why a Janitor is useful.   It should not, however,
+be used after any processing that loads additional attributes or
+it will almost certainly delete useful attributes.</p>
+</dd></dl>
+
+</section>
 <section id="module-mspasspy.util.logging_helper">
 <span id="logging-helper"></span><h2>logging_helper<a class="headerlink" href="#module-mspasspy.util.logging_helper" title="Permalink to this heading"></a></h2>
 <dl class="py function">
@@ -756,9 +959,9 @@ the processing history will still be replicated.</p>
 </dd></dl>
 
 </section>
-<section id="seismic">
-<h2>seismic<a class="headerlink" href="#seismic" title="Permalink to this heading"></a></h2>
-<span class="target" id="module-mspasspy.util.seismic"></span><dl class="py function">
+<section id="module-mspasspy.util.seismic">
+<span id="seismic"></span><h2>seismic<a class="headerlink" href="#module-mspasspy.util.seismic" title="Permalink to this heading"></a></h2>
+<dl class="py function">
 <dt class="sig sig-object py" id="mspasspy.util.seismic.ensemble_time_range">
 <span class="sig-prename descclassname"><span class="pre">mspasspy.util.seismic.</span></span><span class="sig-name descname"><span class="pre">ensemble_time_range</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ensemble</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'inner'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.basic.TimeWindow" title="mspasspy.ccore.algorithms.basic.TimeWindow"><span class="pre">TimeWindow</span></a></span></span><a class="reference internal" href="../_modules/mspasspy/util/seismic.html#ensemble_time_range"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.seismic.ensemble_time_range" title="Permalink to this definition"></a></dt>
 <dd><p>Scans a Seismic data ensemble returning a measure of the

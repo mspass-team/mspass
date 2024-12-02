@@ -88,6 +88,7 @@
 <li class="toctree-l1"><a class="reference internal" href="user_manual/importing_data.html">Importing Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="user_manual/handling_errors.html">Handling Errors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="user_manual/data_editing.html">Data Editing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user_manual/cleaning_metadata.html">Cleaning Inconsistent Metadata</a></li>
 <li class="toctree-l1"><a class="reference internal" href="user_manual/header_math.html">Header (Metadata) Math</a></li>
 <li class="toctree-l1"><a class="reference internal" href="user_manual/graphics.html">Graphics in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="user_manual/signal_to_noise.html">Signal to Noise Ratio Estimation</a></li>
@@ -205,6 +206,8 @@
       </ul></li>
       <li><a href="python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Add2">Add2 (class in mspasspy.algorithms.edit)</a>
 </li>
+      <li><a href="python_api/mspasspy.util.html#mspasspy.util.Janitor.Janitor.add2keepers">add2keepers() (mspasspy.util.Janitor.Janitor method)</a>
+</li>
       <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.utility.MetadataDefinitions.add_alias">add_alias() (mspasspy.ccore.utility.MetadataDefinitions method)</a>
 
       <ul>
@@ -255,10 +258,10 @@
         <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeriesVector.append">(mspasspy.ccore.seismic.TimeSeriesVector method)</a>
 </li>
       </ul></li>
-      <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.utility.Metadata.append_chain">append_chain() (mspasspy.ccore.utility.Metadata method)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.utility.Metadata.append_chain">append_chain() (mspasspy.ccore.utility.Metadata method)</a>
+</li>
       <li><a href="python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Add.apply">apply() (mspasspy.algorithms.edit.Add method)</a>
 
       <ul>
@@ -344,6 +347,8 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.utility.LogData.badness">badness (mspasspy.ccore.utility.LogData property)</a>
+</li>
+      <li><a href="python_api/mspasspy.util.html#mspasspy.util.Janitor.Janitor.bag_trash">bag_trash() (mspasspy.util.Janitor.Janitor method)</a>
 </li>
       <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.amplitudes.BandwidthData.bandwidth">bandwidth() (mspasspy.ccore.algorithms.amplitudes.BandwidthData method)</a>
 </li>
@@ -518,7 +523,11 @@
       <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.circular_shift">circular_shift() (in module mspasspy.ccore.algorithms.deconvolution)</a>
 </li>
       <li><a href="python_api/mspasspy.db.html#mspasspy.db.database.Database.clean">clean() (mspasspy.db.database.Database method)</a>
+
+      <ul>
+        <li><a href="python_api/mspasspy.util.html#mspasspy.util.Janitor.Janitor.clean">(mspasspy.util.Janitor.Janitor method)</a>
 </li>
+      </ul></li>
       <li><a href="python_api/mspasspy.db.html#mspasspy.db.database.Database.clean_collection">clean_collection() (mspasspy.db.database.Database method)</a>
 </li>
       <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.DoubleVector.clear">clear() (mspasspy.ccore.algorithms.deconvolution.DoubleVector method)</a>
@@ -550,6 +559,8 @@
       <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.amplitudes.ScalingMethod.ClipPerc">ClipPerc (mspasspy.ccore.algorithms.amplitudes.ScalingMethod attribute)</a>
 </li>
       <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.CNR3CDecon">CNR3CDecon (class in mspasspy.ccore.algorithms.deconvolution)</a>
+</li>
+      <li><a href="python_api/mspasspy.util.html#mspasspy.util.Janitor.Janitor.collect_trash">collect_trash() (mspasspy.util.Janitor.Janitor method)</a>
 </li>
       <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.utility.MetadataDefinitions.collection">collection() (mspasspy.ccore.utility.MetadataDefinitions method)</a>
 
@@ -1135,12 +1146,14 @@
 <h2 id="J">J</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.utility.LogData.job_id">job_id (mspasspy.ccore.utility.LogData property)</a>
+      <li><a href="python_api/mspasspy.util.html#mspasspy.util.Janitor.Janitor">Janitor (class in mspasspy.util.Janitor)</a>
 </li>
-      <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.utility.BasicProcessingHistory.jobid">jobid() (mspasspy.ccore.utility.BasicProcessingHistory method)</a>
+      <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.utility.LogData.job_id">job_id (mspasspy.ccore.utility.LogData property)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.utility.BasicProcessingHistory.jobid">jobid() (mspasspy.ccore.utility.BasicProcessingHistory method)</a>
+</li>
       <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.utility.BasicProcessingHistory.jobname">jobname() (mspasspy.ccore.utility.BasicProcessingHistory method)</a>
 </li>
       <li><a href="python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.datascope.DatascopeDatabase.join">join() (mspasspy.preprocessing.css30.datascope.DatascopeDatabase method)</a>
@@ -1381,6 +1394,8 @@
 </li>
       <li><a href="python_api/mspasspy.db.html#mspasspy.db.normalize.MiniseedDBMatcher">MiniseedDBMatcher (class in mspasspy.db.normalize)</a>
 </li>
+      <li><a href="python_api/mspasspy.util.html#mspasspy.util.Janitor.MiniseedJanitor">MiniseedJanitor (class in mspasspy.util.Janitor)</a>
+</li>
       <li><a href="python_api/mspasspy.db.html#mspasspy.db.normalize.MiniseedMatcher">MiniseedMatcher (class in mspasspy.db.normalize)</a>
 </li>
       <li><a href="python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Mod">Mod (class in mspasspy.algorithms.edit)</a>
@@ -1456,6 +1471,8 @@
         <li><a href="python_api/mspasspy.util.html#module-mspasspy.util.converter">mspasspy.util.converter</a>
 </li>
         <li><a href="python_api/mspasspy.util.html#module-mspasspy.util.decorators">mspasspy.util.decorators</a>
+</li>
+        <li><a href="python_api/mspasspy.util.html#module-mspasspy.util.Janitor">mspasspy.util.Janitor</a>
 </li>
         <li><a href="python_api/mspasspy.util.html#module-mspasspy.util.logging_helper">mspasspy.util.logging_helper</a>
 </li>
@@ -1780,6 +1797,13 @@
 
       <ul>
         <li><a href="python_api/mspasspy.util.html#module-mspasspy.util.decorators">module</a>
+</li>
+      </ul></li>
+      <li>
+    mspasspy.util.Janitor
+
+      <ul>
+        <li><a href="python_api/mspasspy.util.html#module-mspasspy.util.Janitor">module</a>
 </li>
       </ul></li>
       <li>

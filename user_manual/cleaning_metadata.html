@@ -1,0 +1,399 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cleaning Inconsistent Metadata &mdash; MsPASS 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=f6245a2f"></script>
+      <script src="../_static/doctools.js?v=888ff710"></script>
+      <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Header (Metadata) Math" href="header_math.html" />
+    <link rel="prev" title="Data Editing" href="data_editing.html" />  
+
+  <style>
+    .wy-nav-content { max-width: 1600px; }
+  </style>
+
+  
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            MsPASS
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/quick_start.html">Getting Started in a Nutshell</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/run_mspass_with_docker.html">Run MsPASS with Docker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_docker_compose.html">Deploy MsPASS with Docker Compose</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda.html">Deploy MsPASS with Conda</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda.html#advanced-setup-considerations">Advanced Setup Considerations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_HPC.html">Deploying MsPASS on an HPC cluster</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda_and_coiled.html">Deploy MsPASS with Conda and Coiled</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Data Management</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="database_concepts.html">Database Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="normalization.html">Normalization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="importing_tabular_data.html">Importing Tabular Data</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Seismic Data Objects</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="data_object_design_concepts.html">Data Object Design Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="numpy_scipy_interface.html">Using numpy/scipy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="obspy_interface.html">Using ObsPy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="time_standard_constraints.html">Time Standard Constraints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="processing_history_concepts.html">Processing History Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="continuous_data.html">Continuous Data Handling with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="schema_choices.html">What database schema should I use?</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Data Processing</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="algorithms.html">Algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="importing_data.html">Importing Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="handling_errors.html">Handling Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_editing.html">Data Editing</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Cleaning Inconsistent Metadata</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#gary-l-pavlis"><em>Gary L. Pavlis</em></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#concepts">Concepts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#janitor-class">Janitor class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#examples">Examples</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#usage">Usage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#basic-usage">Basic usage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#application-to-ensembles">Application to ensembles</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#miniseed-data">Miniseed Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#parallel-workflow">Parallel workflow</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="header_math.html">Header (Metadata) Math</a></li>
+<li class="toctree-l1"><a class="reference internal" href="graphics.html">Graphics in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="signal_to_noise.html">Signal to Noise Ratio Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="parallel_processing.html">Parallel Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="memory_management.html">Memory Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="io.html">I/O in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parallel_io.html">Parallel IO in MsPASS</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">FAQ</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="FAQ.html">Frequency Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development_strategies.html">How do I develop a new workflow from scratch?</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../python_api/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cxx_api/index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mspass_schema/mspass_schema.html">MsPASS Schema</a></li>
+</ul>
+
+    <a href= "../genindex.html">Index</a>
+  
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">MsPASS</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Cleaning Inconsistent Metadata</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/mspass-team/mspass/blob/master/docs/source/user_manual/cleaning_metadata.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="cleaning-inconsistent-metadata">
+<span id="cleaning-metadata"></span><h1>Cleaning Inconsistent Metadata<a class="headerlink" href="#cleaning-inconsistent-metadata" title="Permalink to this heading"></a></h1>
+<section id="gary-l-pavlis">
+<h2><em>Gary L. Pavlis</em><a class="headerlink" href="#gary-l-pavlis" title="Permalink to this heading"></a></h2>
+</section>
+<section id="concepts">
+<h2>Concepts<a class="headerlink" href="#concepts" title="Permalink to this heading"></a></h2>
+<p>One of the strengths of MsPASS as a framework for research computing is the
+<cite>Metadata</cite> container that is conceptually nearly identical to a python dictionary.
+That is, a <cite>Metadata</cite> container stores attributes accessible via a string-valued
+using constructs like the following:  <code class="code docutils literal notranslate"><span class="pre">x=d['sta']</span></code>.
+as a way to more clearly handle things that define what the
+modern concept of “Metadata” means.   The dark side of the flexibility
+of containers like <cite>Metadata</cite> or a python dictionary is that the information
+they contain can easily become stale and/or inconsistent with the data
+with which they are associated.  A common case in MsPASS is when
+a set of three <cite>TimeSeries</cite> objects are run through the
+<code class="xref py py-func docutils literal notranslate"><span class="pre">mspasspy.algorithms.bundle.bundle()</span></code> function to create a <cite>Seismogram</cite>
+object.   That function leaves debris from cloning the parents
+related to the single channel inputs.   That is, attributes with
+keys “chan”, “loc”, “channel_id”, “channel_lat”, etc.  Those attributes
+are inconsistent with the concept of a <cite>Seismogram</cite>, which is defined
+as an assembled bundle of three channels.   The keys are inconsistent
+because the data are defined by three different components and the ones
+defined are always referring to only one of the three components.</p>
+<p>The example of the issue created by the
+<code class="xref py py-func docutils literal notranslate"><span class="pre">mspasspy.algorithms.bundle.bundle()</span></code> function
+could been solved by appropriate modifications to that function.
+The problem of functions creating stale/inconsistent metadata,
+however, is ubiquitous.  For that reason we developed
+a generic solution in MsPASS.   We implemented a metadata cleaner
+class with the mnemonic name <a class="reference internal" href="../python_api/mspasspy.util.html#mspasspy.util.Janitor.Janitor" title="mspasspy.util.Janitor.Janitor"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.util.Janitor.Janitor</span></code></a>.
+The class has methods to clear inconsistent Metadata from data
+during processing to reduce the volume of junk attributes stored in
+the database.   The remainder of this section uses examples to illustrate
+the use of an instance of a <a class="reference internal" href="../python_api/mspasspy.util.html#mspasspy.util.Janitor.Janitor" title="mspasspy.util.Janitor.Janitor"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.util.Janitor.Janitor</span></code></a>.</p>
+</section>
+<section id="janitor-class">
+<h2>Janitor class<a class="headerlink" href="#janitor-class" title="Permalink to this heading"></a></h2>
+<p>An instance of a <code class="code docutils literal notranslate"><span class="pre">Janitor</span></code> can be thought of as a robotic cleaner that
+keeps only attributes it is told to keep.  An analogy for a physical janitor
+is a person with instructions to clean out an office and retain only papers,
+pens, or pencils on a desk.  Throw everything else away.  For
+seismic processing an instance of a <code class="code docutils literal notranslate"><span class="pre">Janitor</span></code> is told what keys to
+retain in any Metadata container.  Any key not defined in that list is to
+be treated as junk/trash.</p>
+<p><a class="reference internal" href="../python_api/mspasspy.util.html#mspasspy.util.Janitor.Janitor" title="mspasspy.util.Janitor.Janitor"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.util.Janitor.Janitor</span></code></a> has three processing methods
+that can be used to handle junk differently:</p>
+<ol class="arabic simple">
+<li><p><a class="reference internal" href="../python_api/mspasspy.util.html#mspasspy.util.Janitor.Janitor.clean" title="mspasspy.util.Janitor.Janitor.clean"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mspasspy.util.Janitor.Janitor.clean()</span></code></a> silently discards
+all attributes not in the list of “keepers”.  It returns an edited
+copy of the input.</p></li>
+<li><p><a class="reference internal" href="../python_api/mspasspy.util.html#mspasspy.util.Janitor.Janitor.bag_trash" title="mspasspy.util.Janitor.Janitor.bag_trash"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mspasspy.util.Janitor.Janitor.bag_trash()</span></code></a> does not
+discard attributes it treats as trash but bundles them up into
+a python dictionary (the bag), removes the originals, and posts the trash
+bag content with a user defined key. It returns and edited copy of
+the input with the trash attributes removed and placed in the bag
+python dictionary.</p></li>
+<li><p><a class="reference internal" href="../python_api/mspasspy.util.html#mspasspy.util.Janitor.Janitor.collect_trash" title="mspasspy.util.Janitor.Janitor.collect_trash"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mspasspy.util.Janitor.Janitor.collect_trash()</span></code></a> is best
+thought of as a lower-level function most users are unlikely to need.
+Unlike the other methods of <code class="code docutils literal notranslate"><span class="pre">Janitor</span></code>, it returns a
+python dictionary that the trash bag.
+It is called by the <a class="reference internal" href="../python_api/mspasspy.util.html#mspasspy.util.Janitor.Janitor.bag_trash" title="mspasspy.util.Janitor.Janitor.bag_trash"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mspasspy.util.Janitor.Janitor.bag_trash()</span></code></a>
+to create the python dictionary it posts back to the datum it is
+handling.  This method exists largely to allow alternative ways to
+handle the trash.</p></li>
+</ol>
+<p>Note that in all cases an instance of a <code class="code docutils literal notranslate"><span class="pre">Janitor</span></code> needs to be
+instantiated before it can be used.   The constructor initializes
+the list of “keepers” for different seismic data types.  The default
+constructor reads from yaml format file found in the mspass source
+code tree in data/yaml.  The default list is easily changed by
+created a new yaml format file and passing that file name to the
+class constructor via the <code class="code docutils literal notranslate"><span class="pre">keepers_file</span></code> argument.   See the docstring for
+<a class="reference internal" href="../python_api/mspasspy.util.html#mspasspy.util.Janitor.Janitor" title="mspasspy.util.Janitor.Janitor"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.util.Janitor.Janitor</span></code></a> for details.</p>
+</section>
+<section id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading"></a></h2>
+<section id="usage">
+<h3>Usage<a class="headerlink" href="#usage" title="Permalink to this heading"></a></h3>
+<p>The examples below illustrate a range of applications of the
+<code class="code docutils literal notranslate"><span class="pre">Janitor</span></code> class.   None of them are complete python scripts
+that can be run as all have incomplete initializations.   The examples
+are intended to starting points to aid development of workflows using
+this class.</p>
+</section>
+<section id="basic-usage">
+<h3>Basic usage<a class="headerlink" href="#basic-usage" title="Permalink to this heading"></a></h3>
+<p>This is a trivial example that is a variant of
+part of the pytest module used for this
+class.  It uses a test function to generate an <code class="code docutils literal notranslate"><span class="pre">TimeSeries</span></code>
+object with zeros in the data array and minimal Metadata.
+The script adds an undefined Metadata value of the “foo-bar”
+construct used in many tutorials.   The assert statements
+verify that the <code class="code docutils literal notranslate"><span class="pre">clean</span></code> method clears the debris:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mspasspy.util.Janitor</span> <span class="kn">import</span> <span class="n">Janitor</span>
+<span class="c1"># this will resolve only when run with pytest</span>
+<span class="kn">from</span> <span class="nn">helper</span> <span class="kn">import</span> <span class="n">get_live_timeseries</span>
+<span class="c1"># default constructor assign to the symbol cleaner</span>
+<span class="n">cleaner</span> <span class="o">=</span> <span class="n">Janitor</span><span class="p">()</span>
+<span class="n">datum</span> <span class="o">=</span> <span class="n">get_live_timeseries</span><span class="p">()</span>
+<span class="c1"># assign a metadata key-value pair not in keepers list of cleaner</span>
+<span class="n">datum</span><span class="p">[</span><span class="s2">&quot;foo&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;bar&quot;</span>
+<span class="k">assert</span> <span class="s2">&quot;foo&quot;</span> <span class="ow">in</span> <span class="n">datum</span>
+<span class="n">datum</span> <span class="o">=</span> <span class="n">cleaner</span><span class="o">.</span><span class="n">clean</span><span class="p">(</span><span class="n">datum</span><span class="p">)</span>
+<span class="k">assert</span> <span class="s2">&quot;foo&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">datum</span>
+</pre></div>
+</div>
+</section>
+<section id="application-to-ensembles">
+<h3>Application to ensembles<a class="headerlink" href="#application-to-ensembles" title="Permalink to this heading"></a></h3>
+<p>The second example below demonstrates an ambiguity the <code class="code docutils literal notranslate"><span class="pre">Janitor</span></code>
+has to handle.   That is, with ensemble object there are two things
+the cleaner may have to take care of:  (1) the <code class="code docutils literal notranslate"><span class="pre">Metadata</span></code> for
+the ensemble object itself, and (2) the content of the atomic data
+that are bundled in the “ensemble”.   That is handled by the constructor
+and the difference in the usage is displayed in this example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mspasspy.util.Janitor</span> <span class="kn">import</span> <span class="n">Janitor</span>
+<span class="c1"># this will resolve only if run with pytest</span>
+<span class="kn">from</span> <span class="nn">helper</span> <span class="kn">import</span> <span class="n">get_live_timeseries_ensemble</span>
+<span class="kn">from</span> <span class="nn">mspasspy.ccore.seismic</span> <span class="kn">import</span> <span class="n">TimeSeriesEnsemble</span>
+<span class="c1"># generate a junk ensemble with 3 members using helper function</span>
+<span class="n">e1</span> <span class="o">=</span> <span class="n">get_live_timeseries_ensemble</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="c1"># add undefined key-value pair to each ensemble member</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">e1</span><span class="o">.</span><span class="n">member</span><span class="p">)):</span>
+  <span class="n">e1</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s2">&quot;foo&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;bar&quot;</span>
+<span class="c1"># add an invalid key to the ensemble&#39;s metadata</span>
+<span class="n">e1</span><span class="p">[</span><span class="s2">&quot;badkey&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;badvalue&quot;</span>
+<span class="c1"># use the copy constructor for this object from C++ bindings as best practice</span>
+<span class="n">e_save</span> <span class="o">=</span> <span class="n">TimeSeriesEnsemble</span><span class="p">(</span><span class="n">e1</span><span class="p">)</span>
+<span class="c1"># default Janitor behavior cleans members</span>
+<span class="n">member_cleaner</span> <span class="o">=</span> <span class="n">Janitor</span><span class="p">()</span>
+<span class="n">e1</span> <span class="o">=</span> <span class="n">member_cleaner</span><span class="o">.</span><span class="n">clean</span><span class="p">(</span><span class="n">e1</span><span class="p">)</span>
+<span class="c1"># removes foo from members</span>
+<span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">e1</span><span class="o">.</span><span class="n">member</span><span class="p">:</span>
+  <span class="k">assert</span> <span class="s2">&quot;foo&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">d</span>
+<span class="c1"># does not alter ensemble Metadata container</span>
+<span class="k">assert</span> <span class="s2">&quot;badkey&quot;</span> <span class="ow">in</span> <span class="n">e1</span>
+<span class="k">assert</span> <span class="n">e1</span><span class="p">[</span><span class="s2">&quot;badkey&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;badvalue&quot;</span>
+<span class="c1"># Now create an instance that does the opposite.</span>
+<span class="n">ensemble_cleaner</span> <span class="o">=</span> <span class="n">Janitor</span><span class="p">(</span><span class="n">process_ensemble_members</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">e1</span> <span class="o">=</span> <span class="n">TimeSeriesEnsemble</span><span class="p">(</span><span class="n">e_copy</span><span class="p">)</span>
+<span class="c1"># note the asserts below all have the reverse logic of above</span>
+<span class="n">e1</span> <span class="o">=</span> <span class="n">member_cleaner</span><span class="o">.</span><span class="n">clean</span><span class="p">(</span><span class="n">e1</span><span class="p">)</span>
+<span class="c1"># now foo is still in all members</span>
+<span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">e1</span><span class="o">.</span><span class="n">member</span><span class="p">:</span>
+  <span class="k">assert</span> <span class="s2">&quot;foo&quot;</span> <span class="ow">in</span> <span class="n">d</span>
+<span class="c1"># Now the ensemble has badkey cleared</span>
+<span class="k">assert</span> <span class="s2">&quot;badkey&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">e1</span>
+</pre></div>
+</div>
+</section>
+<section id="miniseed-data">
+<h3>Miniseed Data<a class="headerlink" href="#miniseed-data" title="Permalink to this heading"></a></h3>
+<p>The MsPASS indexing function for miniseed data loads the common content of
+miniseed packet headers and several computed quantities like
+start time and end time.   Some of those like the “format” attribute,
+which in this case is always “miniseed”,
+are an example of an attribute that is inconsistent
+with the data once a <code class="code docutils literal notranslate"><span class="pre">TimeSeries</span></code> object is constructed from
+a miniseed file or file image.  Because miniseed data are the most common
+starting point for most seismology workflows, there is a special
+subclass of <a class="reference internal" href="../python_api/mspasspy.util.html#mspasspy.util.Janitor.Janitor" title="mspasspy.util.Janitor.Janitor"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.util.Janitor.Janitor</span></code></a> called
+<a class="reference internal" href="../python_api/mspasspy.util.html#mspasspy.util.Janitor.MiniseedJanitor" title="mspasspy.util.Janitor.MiniseedJanitor"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.util.Janitor.MiniseedJanitor</span></code></a>.   It differs
+only in the initialization where the default yaml file is specialized
+for reading from raw miniseed data.   This class should only be used
+immediately after reading from <em>wf_miniseed</em> records.  The following
+is a sketch of a typical algorithm:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mspasspy.util.Janitor</span> <span class="kn">import</span> <span class="n">MiniseedJanitor</span>
+  <span class="o">...</span> <span class="n">additional</span> <span class="n">initializations</span> <span class="o">...</span>
+
+<span class="n">janitor</span> <span class="o">=</span> <span class="n">MiniseedJanitor</span><span class="p">()</span>
+<span class="c1"># assumes symbol db is a database handle constructed earlier</span>
+<span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_miniseed</span><span class="o">.</span><span class="n">find</span><span class="p">({})</span>
+<span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">cursor</span><span class="p">:</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span><span class="n">collection</span><span class="o">=</span><span class="s2">&quot;wf_miniseed&quot;</span><span class="p">)</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">janitor</span><span class="o">.</span><span class="n">clean</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+      <span class="o">...</span> <span class="n">additional</span> <span class="n">processing</span> <span class="n">functions</span> <span class="o">...</span>
+</pre></div>
+</div>
+</section>
+<section id="parallel-workflow">
+<h3>Parallel workflow<a class="headerlink" href="#parallel-workflow" title="Permalink to this heading"></a></h3>
+<p>This is a sketch of a code segment illustrating the use of a
+<code class="code docutils literal notranslate"><span class="pre">Janitor</span></code> in a parallel workflow.  The example reads
+a collection of <code class="code docutils literal notranslate"><span class="pre">TimeSeriesEnsembles</span></code>, runs the
+<code class="xref py py-func docutils literal notranslate"><span class="pre">mspasspy.algorithms.bundle.bundle()</span></code> function to
+convert each to a <code class="code docutils literal notranslate"><span class="pre">SeismogramEnsemble</span></code>, and then
+runs the instance of <code class="code docutils literal notranslate"><span class="pre">Janitor</span></code> before saving the results.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span>  <span class="o">...</span> <span class="n">Initialization</span> <span class="n">code</span> <span class="n">would</span> <span class="n">go</span> <span class="n">above</span> <span class="n">this</span> <span class="n">point</span> <span class="o">...</span>
+<span class="n">janitor</span> <span class="o">=</span> <span class="n">Janitor</span><span class="p">()</span>
+<span class="c1"># generate a list of queries defining all common source gathers</span>
+<span class="c1"># defined in the data set</span>
+<span class="n">srcids</span><span class="o">=</span><span class="n">db</span><span class="o">.</span><span class="n">wf_TimeSeries</span><span class="o">.</span><span class="n">distinct</span><span class="p">(</span><span class="s2">&quot;source_id&quot;</span><span class="p">)</span>
+<span class="n">queries</span><span class="o">=</span><span class="nb">list</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">sid</span> <span class="ow">in</span> <span class="n">srcids</span><span class="p">:</span>
+   <span class="n">queries</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;source_id&quot;</span> <span class="p">:</span> <span class="n">sid</span><span class="p">})</span>
+<span class="c1"># parallel job using parallel reader and writer</span>
+<span class="n">mydata</span> <span class="o">=</span> <span class="n">read_distributed_data</span><span class="p">(</span><span class="n">queries</span><span class="p">,</span><span class="n">collection</span><span class="o">=</span><span class="s2">&quot;wf_TimeSeries&quot;</span><span class="p">)</span>
+<span class="n">mydata</span> <span class="o">=</span> <span class="n">mydata</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">rotate_to_standard</span><span class="p">)</span>
+<span class="n">mydata</span> <span class="o">=</span> <span class="n">mydata</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">bundle</span><span class="p">)</span>
+<span class="n">mydata</span> <span class="o">=</span> <span class="n">mydata</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">janitr</span><span class="o">.</span><span class="n">clean</span><span class="p">)</span>
+<span class="n">saved_ids</span> <span class="o">=</span> <span class="n">write_distributed_data</span><span class="p">(</span><span class="n">mydata</span><span class="p">,</span>
+                               <span class="n">db</span><span class="p">,</span>
+                               <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;wf_Seismogram&quot;</span><span class="p">,</span>
+                               <span class="n">data_are_atomic</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                             <span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="data_editing.html" class="btn btn-neutral float-left" title="Data Editing" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="header_math.html" class="btn btn-neutral float-right" title="Header (Metadata) Math" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020-2021, Ian Wang.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

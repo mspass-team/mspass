@@ -91,6 +91,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/importing_data.html">Importing Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/handling_errors.html">Handling Errors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/data_editing.html">Data Editing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/cleaning_metadata.html">Cleaning Inconsistent Metadata</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/header_math.html">Header (Metadata) Math</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/graphics.html">Graphics in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/signal_to_noise.html">Signal to Noise Ratio Estimation</a></li>
@@ -996,21 +997,23 @@ for consistency with the previous call and only recreate the mtspec
 instance if something that invalidates the previous call has changed.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>winsize</strong> – Number of samples expected for data window.  Note this</p>
-</dd>
-</dl>
-<p>argument defines the size of the eigentapers so it defines the size of
-input time series the object expect to process.
-:param tbp:  multitaper time-bandwidth product
-:param number_tapers:  number of tapers to use for estimators (See Prieto’s)
-documentation for details)
-:param nfft:  optional size of the fft work arrays to use.  nfft should be
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>winsize</strong> – Number of samples expected for data window.  Note this
+argument defines the size of the eigentapers so it defines the size of
+input time series the object expect to process.</p></li>
+<li><p><strong>tbp</strong> – multitaper time-bandwidth product</p></li>
+<li><p><strong>number_tapers</strong> – number of tapers to use for estimators (See Prieto’s)
+documentation for details)</p></li>
+<li><p><strong>nfft</strong> – optional size of the fft work arrays to use.  nfft should be
 greater than or equal winsize.  When greater zero padding is used in the
 usual way.  Default is 0 which sets nfft to 2*winsize.  If nfft&lt;winsize
-a diagnostic message will be printed and nfft will be set equal to winsize.
-:param iadapt:  integer argument passed to Prieto’s MTspec that sets the
+a diagnostic message will be printed and nfft will be set equal to winsize.</p></li>
+<li><p><strong>iadapt</strong> – integer argument passed to Prieto’s MTspec that sets the
 eigentaper weighting scheme.  See Prieto’s MTspect class documentation
-for options.  Default is 0 which enables the adaptive weighting scheme.</p>
+for options.  Default is 0 which enables the adaptive weighting scheme.</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.algorithms.MTPowerSpectrumEngine.MTPowerSpectrumEngine.apply">
 <span class="sig-name descname"><span class="pre">apply</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/MTPowerSpectrumEngine.html#MTPowerSpectrumEngine.apply"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.MTPowerSpectrumEngine.MTPowerSpectrumEngine.apply" title="Permalink to this definition"></a></dt>
@@ -3975,35 +3978,22 @@ aware of this if you unpickle the spectra created if you set
 save_spectra true as those are power spectra.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>data_object</strong> – TimeSeries object to be processed. For Seismogram</p>
-</dd>
-</dl>
-<p>objects the assumption is algorithm would be used for a single
-component (e.g longitudinal or vertical for a P phase)</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>noise_window</strong> – defines the time window to use for computing the</p>
-</dd>
-</dl>
-<p>spectrum considered noise. The time span can be either relative or
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data_object</strong> – TimeSeries object to be processed. For Seismogram
+objects the assumption is algorithm would be used for a single
+component (e.g longitudinal or vertical for a P phase)</p></li>
+<li><p><strong>noise_window</strong> – defines the time window to use for computing the
+spectrum considered noise. The time span can be either relative or
 UTC (absolute) time but we do not check for consistency.  This low
 level function assumes they are consistent.  If not, the calculations
-are nearly guaranteed to fail.  Type must be mspasspy.ccore.TimeWindow.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>signal_window</strong> – defines the time window to use that defines what</p>
-</dd>
-</dl>
-<p>you consider “the signal”.  The time span can be either relative or
+are nearly guaranteed to fail.  Type must be mspasspy.ccore.TimeWindow.</p></li>
+<li><p><strong>signal_window</strong> – defines the time window to use that defines what
+you consider “the signal”.  The time span can be either relative or
 UTC (absolute) time but we do not check for consistency.  This low
 level function assumes they are consistent.  If not, the calculations
-are nearly guaranteed to fail.  Type must be mspasspy.ccore.TimeWindow.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>noise_spectrum_engine</strong> – is expected to either by a None type</p>
-</dd>
-</dl>
-<p>or an instance of a ccore object called an MTPowerSpectralEngine.
+are nearly guaranteed to fail.  Type must be mspasspy.ccore.TimeWindow.</p></li>
+<li><p><strong>noise_spectrum_engine</strong> – is expected to either by a None type
+or an instance of a ccore object called an MTPowerSpectralEngine.
 When None an instance of MTPowerSpectralEngine is computed for
 each call to this function.   That is a convenience for small
 jobs or when called with data from mixed sample rates and/or variable
@@ -4011,27 +4001,15 @@ length time windows.   It is very inefficient to use the default
 approach for processing large data sets and really for any use in a
 map operation with dask or spark.  Normal use should be for the user to
 predefine an MtPowerSpectralEngine from the expected window size
-for a given data sample rate and include it in the function call.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>signal_spectrum_engine</strong> – is the comparable MTPowerSpectralEngine</p>
-</dd>
-</dl>
-<p>to use to compute the signal power spectrum.   Default is None with the
-same caveat as above for the noise_spectrum_engine.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>band_cutoff_snr</strong> – defines the signal-to-noise ratio floor</p>
-</dd>
-</dl>
-<p>used in the search for band edges.  See description of the algorithm
-above and in the user’s manual.  Default is 2.0</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>signal_detection_minimum_bandwidth</strong> – As noted above this</p>
-</dd>
-</dl>
-<p>algorithm first tries to estimate the bandwidth of data where the
+for a given data sample rate and include it in the function call.</p></li>
+<li><p><strong>signal_spectrum_engine</strong> – is the comparable MTPowerSpectralEngine
+to use to compute the signal power spectrum.   Default is None with the
+same caveat as above for the noise_spectrum_engine.</p></li>
+<li><p><strong>band_cutoff_snr</strong> – defines the signal-to-noise ratio floor
+used in the search for band edges.  See description of the algorithm
+above and in the user’s manual.  Default is 2.0</p></li>
+<li><p><strong>signal_detection_minimum_bandwidth</strong> – As noted above this
+algorithm first tries to estimate the bandwidth of data where the
 signal level exceeds the noise level defined by the parameter
 band_cutoff_snr.  It then computes the bandwidth of the data in
 dB computed as log10(f_high/f_low).  For almost any application
@@ -4046,29 +4024,18 @@ default is 6.0. (One octave which is roughly the width of the traditional
 short-period band) which allows optional metrics to be computed
 but may be too small for some applications.  If your application
 requires higher snr and wider bandwidth adjust this parameter
-and/or band_cutoff_snr.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>tbp</strong> – time-bandwidth product to use for computing the set of</p>
-</dd>
-</dl>
-<p>Slepian functions used for the multitaper estimator.  This parameter is
+and/or band_cutoff_snr.</p></li>
+<li><p><strong>tbp</strong> – time-bandwidth product to use for computing the set of
+Slepian functions used for the multitaper estimator.  This parameter is
 used only if the noise_spectrum_engine or signal_spectrum_engine
-arguments are set as None.  The default is 4.0</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>ntapers</strong> – is the number of Slepian functions (tapers) to compute</p>
-</dd>
-</dl>
-<p>for the multitaper estimators. Like tbp it is referenced only if
+arguments are set as None.  The default is 4.0</p></li>
+<li><p><strong>ntapers</strong> – is the number of Slepian functions (tapers) to compute
+for the multitaper estimators. Like tbp it is referenced only if
 noise_spectrum_engine or signal_spectrum_engine are set to None.
 Note the function will throw an exception if the ntaper parameter is
 not consistent with the time-bandwidth product.  That is, the
 maximum number of tapers is round(2*tbp-1).   Default is 6 which is
-consistent with default tbp=4.0 where the maximum recommended is 8</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
+consistent with default tbp=4.0 where the maximum recommended is 8</p></li>
 <li><p><strong>high_frequency_search_start</strong> – Used to specify the upper frequency
 used to start the search for the upper end of the bandwidth by
 the function EstimateBandwidth.  Default is 2.0 which reasonable for
@@ -4084,50 +4051,27 @@ a series of closely enough spaced lines (presumably from electronic
 sources) that set the high edge incorrectly.   False would be
 more appropriate for most local and regional earthquake data.
 The default is True.</p></li>
-<li><p><strong>npoles</strong> – defines number of poles to us for the Butterworth</p></li>
-</ul>
-</dd>
-</dl>
-<p>bandpass applied for the “filtered” metrics (see above).  Default is 3.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>perc</strong> – used only if ‘filtered_perc’ is in the optional metrics list.</p>
-</dd>
-</dl>
-<p>Specifies the perc parameter as used in seismic unix.  Uses the percentage
+<li><p><strong>npoles</strong> – defines number of poles to us for the Butterworth
+bandpass applied for the “filtered” metrics (see above).  Default is 3.</p></li>
+<li><p><strong>perc</strong> – used only if ‘filtered_perc’ is in the optional metrics list.
+Specifies the perc parameter as used in seismic unix.  Uses the percentage
 point specified of the sorted abs of all amplitudes.  (Not perc=50.0 is
-identical to MAD)  Default is 95.0 which is 2 sigma for Gaussian noise.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>optional_metrics</strong> – is an iterable container containing one or more</p>
-</dd>
-</dl>
-<p>of the optional snr metrics discussed above.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>store_as_subdocument</strong> – This parameter is included for</p>
-</dd>
-</dl>
-<p>flexibility but should not normally be changed by the user.  As noted
+identical to MAD)  Default is 95.0 which is 2 sigma for Gaussian noise.</p></li>
+<li><p><strong>optional_metrics</strong> – is an iterable container containing one or more
+of the optional snr metrics discussed above.</p></li>
+<li><p><strong>store_as_subdocument</strong> – This parameter is included for
+flexibility but should not normally be changed by the user.  As noted
 earlier the outputs of this function are best abstracted as Metadata.
 When this parameter is False the Metadata members are all posted with
 directly to data_object’s Metadata container.  If set True the
 internally generated python dict is copied and stored with a key
 defined through the subdocument_key argument.  See use below in
-function arrival_snr.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>subdocument_key</strong> – key for storing results as a subdocument.</p>
-</dd>
-</dl>
-<p>This parameter is ignored unless store_as_subdocument is True.
-Default is “snr_data”</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>save_spectra</strong> – If set True (default is False) the function</p>
-</dd>
-</dl>
-<p>will pickle the computed noise and signal spectra and save the
+function arrival_snr.</p></li>
+<li><p><strong>subdocument_key</strong> – key for storing results as a subdocument.
+This parameter is ignored unless store_as_subdocument is True.
+Default is “snr_data”</p></li>
+<li><p><strong>save_spectra</strong> – If set True (default is False) the function
+will pickle the computed noise and signal spectra and save the
 strings created along with a set of related metadata defining the
 time range to the output python dict (these will be saved in MongoDB
 when db is defined - see below).   This option should ONLY be used
@@ -4136,13 +4080,12 @@ results using graphics, or a research topic where the spectra would
 be of interest.  It is a very bad idea to turn this option on if
 you are processing a large quantity of data and saving the results
 to MongoDB as it will bloat the arrival collection.  Consider a
-different strategy if that essential for your work.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>python tuple with two components.  0 is a python dict with</p>
+different strategy if that essential for your work.</p></li>
+</ul>
 </dd>
-</dl>
-<p>the computed metrics associated with keys defined above.  1 is a
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>python tuple with two components.  0 is a python dict with
+the computed metrics associated with keys defined above.  1 is a
 mspass.ccore.ErrorLogger object. Any errors in computng any of the
 metrics will be posted to this logger.  Users should then test this
 object using it’s size() method and if it the log is not empty (size &gt;0)
@@ -4151,6 +4094,8 @@ pushing any messages the log contains to the original data object’s
 error log.  Component 0 will also be empty with no log entry if
 the estimated bandwidth falls below the threshold defined by the
 parameter signal_detection_minimum_bandwidth.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">

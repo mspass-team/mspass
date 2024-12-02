@@ -23,7 +23,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Graphics in MsPASS" href="graphics.html" />
-    <link rel="prev" title="Data Editing" href="data_editing.html" />  
+    <link rel="prev" title="Cleaning Inconsistent Metadata" href="cleaning_metadata.html" />  
 
   <style>
     .wy-nav-content { max-width: 1600px; }
@@ -91,6 +91,7 @@
 <li class="toctree-l1"><a class="reference internal" href="importing_data.html">Importing Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="handling_errors.html">Handling Errors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_editing.html">Data Editing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cleaning_metadata.html">Cleaning Inconsistent Metadata</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Header (Metadata) Math</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#concepts">Concepts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#unary-operators">Unary Operators</a></li>
@@ -212,8 +213,8 @@ operation that is to be performed.  In the example that means
 <p>All the unary operators use exactly the same API and can be used the
 same way but for different arithmetic operations with a constant.
 The following table summarizes the available operators:</p>
-<table class="docutils align-default" id="id3">
-<caption><span class="caption-number">Table 8 </span><span class="caption-text">Unary Metadata Operators</span><a class="headerlink" href="#id3" title="Permalink to this table"></a></caption>
+<table class="docutils align-default" id="id1">
+<caption><span class="caption-number">Table 8 </span><span class="caption-text">Unary Metadata Operators</span><a class="headerlink" href="#id1" title="Permalink to this table"></a></caption>
 <colgroup>
 <col style="width: 25.0%" />
 <col style="width: 12.5%" />
@@ -278,8 +279,8 @@ overwritten.</p>
 <p>The names for the <code class="docutils literal notranslate"><span class="pre">op</span></code> variable above are illustrated in the table below.
 They are essentially the same as the unary operators with a “2” added to the
 name.</p>
-<table class="docutils align-default" id="id4">
-<caption><span class="caption-number">Table 9 </span><span class="caption-text">Binary Metadata Operators</span><a class="headerlink" href="#id4" title="Permalink to this table"></a></caption>
+<table class="docutils align-default" id="id2">
+<caption><span class="caption-number">Table 9 </span><span class="caption-text">Binary Metadata Operators</span><a class="headerlink" href="#id2" title="Permalink to this table"></a></caption>
 <colgroup>
 <col style="width: 33.3%" />
 <col style="width: 33.3%" />
@@ -379,24 +380,25 @@ hand coded as needed.  The main thing they give you over a “roll you own”
 implementation is automatic handling of the following standard features of
 the MsPASS framework:</p>
 <ul class="simple">
-<li><p>All handle error consistently using the ErrorLogging mechanism of MsPASS
-data objects.</p></li>
+<li><p>All handle error consistently using the <code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.util.ErrorLogger</span></code>
+mechanism of MsPASS data objects.</p></li>
 <li><p>All behave identically on some common error situations.  There are three
-common errors all handle that
-users need to be aware of.  (1) If a key-value that the operator needs to fetch from
+common errors all these functions handle.  (1) If a key-value
+that the operator needs to fetch from
 Metadata is not defined the operator will kill the datum missing and
 log a standard message.  (2) if
-the value extracted fails for the defined <a href="#id1"><span class="problematic" id="id2">`</span></a>arithmetic operation the datum will again
-be killed with a standard message posted to the elog attribute of the
+the value extracted fails for the defined arithmetic operation the datum will again
+be killed with a standard message posted to the <code class="code docutils literal notranslate"><span class="pre">elog</span></code> attribute of the
 data object. An example of this would be trying to do arithmetic on
-an attribute with a string value.  (3) If the operator receives a datum that is not a MsPASS
+an attribute with a string value.  (3) If the operator receives
+a datum that is not a MsPASS
 data object the operator will throw a MsPASSError object marked Fatal.</p></li>
-<li><p>All operators handle Ensembles in a consistent manner.   Editing Metadata
+<li><p>All the operators handle Ensembles in a consistent manner.   Editing Metadata
 for an Ensemble object has an ambiguity because Ensemble objects often
 have attributes independent of the members (e.g. a common source gather
 may only have the source coordinates in the ensemble container.)  To
 handle this all the apply methods have a common, optional argument
-<cite>apply_to_members</cite>.   When set True the operator will automatically
+<code class="code docutils literal notranslate"><span class="pre">apply_to_members</span></code>.   When set True the operator will automatically
 apply the operation to each member of the ensemble in a simple, serial loop.
 When false the operation is applied to the ensemble metadata container.</p></li>
 <li><p>All the operators have wrappers to optionally enable the object-level
@@ -441,7 +443,7 @@ operators described in this section as a part of the workflow.</p></li>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="data_editing.html" class="btn btn-neutral float-left" title="Data Editing" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="cleaning_metadata.html" class="btn btn-neutral float-left" title="Cleaning Inconsistent Metadata" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="graphics.html" class="btn btn-neutral float-right" title="Graphics in MsPASS" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

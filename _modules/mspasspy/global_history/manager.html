@@ -88,6 +88,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/importing_data.html">Importing Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/handling_errors.html">Handling Errors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/data_editing.html">Data Editing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/cleaning_metadata.html">Cleaning Inconsistent Metadata</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/header_math.html">Header (Metadata) Math</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/graphics.html">Graphics in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/signal_to_noise.html">Signal to Noise Ratio Estimation</a></li>
@@ -321,7 +322,7 @@
     <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">alg_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="o">**</span><span class="n">kwargs</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">     This decorator method add more functionaliy on the standard spark map method and be a part of member functions</span>
@@ -407,7 +408,7 @@
                 <span class="n">object_history</span><span class="o">=</span><span class="n">object_history</span><span class="p">,</span>
                 <span class="n">alg_name</span><span class="o">=</span><span class="n">alg_name</span><span class="p">,</span>
                 <span class="n">alg_id</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">alg_id</span><span class="p">),</span>
-                <span class="o">**</span><span class="n">kwargs</span>
+                <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="p">)</span>
 
@@ -423,7 +424,7 @@
     <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">alg_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="o">**</span><span class="n">kwargs</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">     This decorator method add more functionaliy on the standard dask map method and be a part of member functions</span>
@@ -509,7 +510,7 @@
             <span class="n">object_history</span><span class="o">=</span><span class="n">object_history</span><span class="p">,</span>
             <span class="n">alg_name</span><span class="o">=</span><span class="n">alg_name</span><span class="p">,</span>
             <span class="n">alg_id</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">alg_id</span><span class="p">),</span>
-            <span class="o">**</span><span class="n">kwargs</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
         <span class="p">)</span>
 
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">object_history</span><span class="o">=</span><span class="n">object_history</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
@@ -524,7 +525,7 @@
     <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">alg_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="o">**</span><span class="n">kwargs</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">     This decorator method add more functionaliy on the standard spark reduce method and be a part of member functions</span>
@@ -583,7 +584,7 @@
                 <span class="n">object_history</span><span class="o">=</span><span class="n">object_history</span><span class="p">,</span>
                 <span class="n">alg_name</span><span class="o">=</span><span class="n">alg_name</span><span class="p">,</span>
                 <span class="n">alg_id</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">alg_id</span><span class="p">),</span>
-                <span class="o">**</span><span class="n">kwargs</span>
+                <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="p">)</span>
 
@@ -601,7 +602,7 @@
     <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">alg_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="o">**</span><span class="n">kwargs</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">     This decorator method add more functionaliy on the standard dask fold method and be a part of member functions</span>
@@ -660,7 +661,7 @@
                 <span class="n">object_history</span><span class="o">=</span><span class="n">object_history</span><span class="p">,</span>
                 <span class="n">alg_name</span><span class="o">=</span><span class="n">alg_name</span><span class="p">,</span>
                 <span class="n">alg_id</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">alg_id</span><span class="p">),</span>
-                <span class="o">**</span><span class="n">kwargs</span>
+                <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="p">)</span>
 

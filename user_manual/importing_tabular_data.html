@@ -98,6 +98,7 @@
 <li class="toctree-l1"><a class="reference internal" href="importing_data.html">Importing Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="handling_errors.html">Handling Errors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_editing.html">Data Editing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cleaning_metadata.html">Cleaning Inconsistent Metadata</a></li>
 <li class="toctree-l1"><a class="reference internal" href="header_math.html">Header (Metadata) Math</a></li>
 <li class="toctree-l1"><a class="reference internal" href="graphics.html">Graphics in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="signal_to_noise.html">Signal to Noise Ratio Estimation</a></li>
@@ -186,9 +187,9 @@ is just a different implementation of a relational database.  Below we
 describe a special interface in MsPASS to import data from Datascope tables.</p></li>
 </ul>
 <p>In MsPASS the central concept used to unify these diverse sources is the
-concept of a <code class="code docutils literal notranslate"><span class="pre">DataFrame</span></code>.   <a href="#id2"><span class="problematic" id="id3">:code:`DataFrame`s are THE data structure that is the
+concept of a <code class="code docutils literal notranslate"><span class="pre">DataFrame</span></code>.  A <code class="code docutils literal notranslate"><span class="pre">DataFrame</span></code> is THE data structure that is the
 focus of the commonly used
-`pandas &lt;https://pandas.pydata.org/docs/&gt;`__</span></a> python package.
+<a class="reference external" href="https://pandas.pydata.org/docs/">pandas</a> python package.
 The name does not come from a fuzzy animal but is apparently
 a acronymn derived from “PANel DAta”.  “panel” is, in fact,
 an odd synonym for “table”.  Pandas and their extension in
@@ -273,8 +274,8 @@ there are a lot of known ways that the Antelope software can be used
 in combination with MsPASS to handle novel research problems.
 As a result, we created a special API to interact with data
 managed by an Antelope database.   The MsPASS API aims to
-loosely mimic core SQL functionality using pandas
-:code:<a href="#id4"><span class="problematic" id="id5">`</span></a>DataFrame`s as the intermediary.</p>
+loosely mimic core SQL functionality using the pandas
+<code class="code docutils literal notranslate"><span class="pre">DataFrame</span></code> implementation as the intermediary.</p>
 <p>A python class called
 <a class="reference internal" href="../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.datascope.DatascopeDatabase" title="mspasspy.preprocessing.css30.datascope.DatascopeDatabase"><code class="xref py py-class docutils literal notranslate"><span class="pre">DatascopeDatabase</span></code></a>
 is used as the agent for interacting with an
