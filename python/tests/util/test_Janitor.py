@@ -235,5 +235,5 @@ def test_janitor_error_handlers():
     errors in the yaml file.  I do not know how to test those handlers
     without creating junk files that would only confuse the code base.
     """
-    with pytest.raises(MsPASSError, match="Cannnot open keepers_file"):
+    with pytest.raises(MsPASSError, match="Cannot open keepers_file"):
         j = Janitor(keepers_file="bad_file_name")
