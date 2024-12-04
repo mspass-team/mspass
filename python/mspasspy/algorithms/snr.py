@@ -495,15 +495,6 @@ def FD_snr_estimator(
       are nearly guaranteed to fail.  Type must be mspasspy.ccore.TimeWindow.
     :type signal_window:  :py:class:`mspasspy.ccore.algorithms.basic.TimeWindow`
       default -5 to 120 s
-    :param noise_spectrum_engine: is expected to either by a None type
-      or an instance of a ccore object called an MTPowerSpectralEngine.
-      When None an instance of MTPowerSpectralEngine is computed for
-      each call to this function.   That is a convenience for small
-      jobs or when called with data from mixed sample rates and/or variable
-      length time windows.   It is very inefficient to use the default
-      approach for processing large data sets and really for any use in a
-      map operation with dask or spark.  Normal use should be for the user to
-      predefine an MtPowerSpectralEngine from the expected window sizedef FD
     :type noise_spectrum_engine: None (default) or an instance of
       :py:class:`mspasspy.ccore.algorithms.deconvolution.MTPowerSpectrumEngine`
     :param signal_spectrum_engine:  is the comparable MTPowerSpectralEngine
@@ -515,6 +506,12 @@ def FD_snr_estimator(
       used in the search for band edges.  See description of the algorithm
       above and in the user's manual.  Default is 1.5
     :type band_cutoff_snr: float
+    :param signal_spectrum_engine:  is the comparable MTPowerSpectralEngine
+      to use to compute the signal power spectrum.   Default is None with the
+      same caveat as above for the noise_spectrum_engine.
+    :param band_cutoff_snr:   defines the signal-to-noise ratio floor
+      used in the search for band edges.  See description of the algorithm
+      above and in the user's manual.  Default is 2.0
     :param signal_detection_minimum_bandwidth:  As noted above this
       algorithm first tries to estimate the bandwidth of data where the
       signal level exceeds the noise level defined by the parameter

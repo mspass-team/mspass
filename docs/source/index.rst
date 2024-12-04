@@ -70,9 +70,11 @@ package.
    user_manual/importing_data
    user_manual/handling_errors
    user_manual/data_editing
+   user_manual/cleaning_metadata
    user_manual/header_math
    user_manual/graphics
    user_manual/signal_to_noise
+   user_manual/arrival_time_measurement
    user_manual/adapting_algorithms
 
 .. toctree::

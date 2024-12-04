@@ -1,4 +1,4 @@
-.. _mongodb_and_mspass
+.. _mongodb_and_mspass:
 
 Using MongoDB with MsPASS
 ==============================

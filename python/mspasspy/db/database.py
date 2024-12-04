@@ -227,7 +227,7 @@ class Database(pymongo.database.Database):
         write_concern=None,
         read_concern=None,
         session=None,
-        **kwargs
+        **kwargs,
     ):
         """
         Create a new :class:`mspasspy.db.collection.Collection` in this
@@ -294,7 +294,7 @@ class Database(pymongo.database.Database):
                 write_concern,
                 read_concern,
                 session=s,
-                **kwargs
+                **kwargs,
             )
 
     def set_metadata_schema(self, schema):

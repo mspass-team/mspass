@@ -180,7 +180,7 @@ def mspass_spark_map(
     alg_id=None,
     alg_name=None,
     parameters=None,
-    **kwargs
+    **kwargs,
 ):
     """
      This decorator method add more functionaliy on the standard spark map method and be a part of member functions
@@ -266,7 +266,7 @@ def mspass_spark_map(
                 object_history=object_history,
                 alg_name=alg_name,
                 alg_id=str(alg_id),
-                **kwargs
+                **kwargs,
             )
         )
 
@@ -282,7 +282,7 @@ def mspass_dask_map(
     alg_id=None,
     alg_name=None,
     parameters=None,
-    **kwargs
+    **kwargs,
 ):
     """
      This decorator method add more functionaliy on the standard dask map method and be a part of member functions
@@ -368,7 +368,7 @@ def mspass_dask_map(
             object_history=object_history,
             alg_name=alg_name,
             alg_id=str(alg_id),
-            **kwargs
+            **kwargs,
         )
 
     return self.map(func, *args, object_history=object_history, **kwargs)
@@ -383,7 +383,7 @@ def mspass_spark_reduce(
     alg_id=None,
     alg_name=None,
     parameters=None,
-    **kwargs
+    **kwargs,
 ):
     """
      This decorator method add more functionaliy on the standard spark reduce method and be a part of member functions
@@ -442,7 +442,7 @@ def mspass_spark_reduce(
                 object_history=object_history,
                 alg_name=alg_name,
                 alg_id=str(alg_id),
-                **kwargs
+                **kwargs,
             )
         )
 
@@ -460,7 +460,7 @@ def mspass_dask_fold(
     alg_id=None,
     alg_name=None,
     parameters=None,
-    **kwargs
+    **kwargs,
 ):
     """
      This decorator method add more functionaliy on the standard dask fold method and be a part of member functions
@@ -519,7 +519,7 @@ def mspass_dask_fold(
                 object_history=object_history,
                 alg_name=alg_name,
                 alg_id=str(alg_id),
-                **kwargs
+                **kwargs,
             )
         )
 

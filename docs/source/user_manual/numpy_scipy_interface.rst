@@ -58,9 +58,7 @@ So what is the difference?   If you execute this code fragment in MsPASS:
   print("Type of numpy object=",type(x_numpy))
   print("Type of mspass data vector=",type(x_mspass.data))
 
-You should get this output:
-
-.. code-block:: python
+You should get this output::
 
   Type of numpy object= <class 'numpy.ndarray'>
   Type of mspass data vector= <class 'mspasspy.ccore.seismic.DoubleVector'>

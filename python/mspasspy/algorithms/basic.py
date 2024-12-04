@@ -25,7 +25,7 @@ def ExtractComponent(
     dryrun=False,
     inplace_return=False,
     function_return_key=None,
-    **kwargs
+    **kwargs,
 ):
     """
     Extract single component from three-component data.
@@ -92,7 +92,7 @@ def ator(
     dryrun=False,
     inplace_return=True,
     function_return_key=None,
-    **kwargs
+    **kwargs,
 ):
     """
     Absolute to relative time conversion.
@@ -132,7 +132,7 @@ def rtoa(
     dryrun=False,
     inplace_return=True,
     function_return_key=None,
-    **kwargs
+    **kwargs,
 ):
     """
     Relative to absolute time conversion.
@@ -172,7 +172,7 @@ def rotate(
     dryrun=False,
     inplace_return=True,
     function_return_key=None,
-    **kwargs
+    **kwargs,
 ):
     """
     Rotate data using a P wave type coordinate definition.
@@ -217,7 +217,7 @@ def rotate_to_standard(
     dryrun=False,
     inplace_return=True,
     function_return_key=None,
-    **kwargs
+    **kwargs,
 ):
     """
     Apply inverse transformation matrix to return data to cardinal direction components.
@@ -274,7 +274,7 @@ def free_surface_transformation(
     dryrun=False,
     inplace_return=True,
     function_return_key=None,
-    **kwargs
+    **kwargs,
 ):
     """
     Computes and applies the Kennett [1991] free surface transformation matrix.
@@ -468,7 +468,7 @@ def transform(
     dryrun=False,
     inplace_return=True,
     function_return_key=None,
-    **kwargs
+    **kwargs,
 ):
     """
     Applies an arbitrary transformation matrix to the data.
@@ -807,7 +807,7 @@ def linear_taper(
     dryrun=False,
     inplace_return=True,
     function_return_key=None,
-    **kwargs
+    **kwargs,
 ):
     """
     Taper front and/or end of a data object with a linear taper.
@@ -857,7 +857,7 @@ def cosine_taper(
     dryrun=False,
     inplace_return=True,
     function_return_key=None,
-    **kwargs
+    **kwargs,
 ):
     """
     Taper front and/or end of a data object with a half cosine function.
@@ -906,7 +906,7 @@ def vector_taper(
     dryrun=False,
     inplace_return=True,
     function_return_key=None,
-    **kwargs
+    **kwargs,
 ):
     """
     Apply a general taper defined by a vector to the data object.
