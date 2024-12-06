@@ -3,7 +3,9 @@
 #include <pybind11/stl.h>
 #include <pybind11/stl_bind.h>
 #include <pybind11/operators.h>
+#include <pybind11/embed.h>
 
+#include <boost/archive/text_oarchive.hpp>
 
 #include <mspass/algorithms/deconvolution/WaterLevelDecon.h>
 #include <mspass/algorithms/deconvolution/LeastSquareDecon.h>
@@ -119,7 +121,7 @@ PYBIND11_MODULE(deconvolution, m) {
     .def("inverse_wavelet",py::overload_cast<double>(&WaterLevelDecon::inverse_wavelet))
     .def("QCMetrics",&WaterLevelDecon::QCMetrics,"Return ideal output of for inverse")
   ;
-  py::class_<LeastSquareDecon,ScalarDecon>(m,"LeastSquareDecon","Water level frequency domain operator")
+  py::class_<LeastSquareDecon,ScalarDecon>(m,"LeastSquareDecon","Damped least squares frequency domain operator")
     .def(py::init<const Metadata>())
     .def("changeparameter",&LeastSquareDecon::changeparameter,"Change operator parameters")
     .def("process",&LeastSquareDecon::process,"Process previously loaded data")
@@ -127,6 +129,21 @@ PYBIND11_MODULE(deconvolution, m) {
     .def("inverse_wavelet",py::overload_cast<>(&LeastSquareDecon::inverse_wavelet))
     .def("inverse_wavelet",py::overload_cast<double>(&LeastSquareDecon::inverse_wavelet))
     .def("QCMetrics",&LeastSquareDecon::QCMetrics,"Return ideal output of for inverse")
+    .def(py::pickle(
+      [](const LeastSquareDecon &self) {
+        stringstream sstm;
+        boost::archive::text_oarchive artm(sstm);
+        artm<<self;
+        return py::make_tuple(sstm.str());
+      },
+      [](py::tuple t) {
+        stringstream sstm(t[0].cast<std::string>());
+        boost::archive::text_iarchive artm(sstm);
+        LeastSquareDecon lsd;
+        artm >> lsd;
+        return lsd;
+      }
+    ))
   ;
   py::class_<MultiTaperSpecDivDecon,ScalarDecon>(m,"MultiTaperSpecDivDecon","Water level frequency domain operator")
     .def(py::init<const Metadata>())
@@ -141,6 +158,21 @@ PYBIND11_MODULE(deconvolution, m) {
     .def("get_taperlen",&MultiTaperSpecDivDecon::get_taperlen,"Get length of the Slepian tapers used by the operator")
     .def("get_number_tapers",&MultiTaperSpecDivDecon::get_number_tapers,"Get number of Slepian tapers used by the operator")
     .def("get_time_bandwidth_product",&MultiTaperSpecDivDecon::get_time_bandwidth_product,"Get time bandwidt product of Slepian tapers used by the operator")
+    .def(py::pickle(
+      [](const MultiTaperSpecDivDecon &self) {
+        stringstream sstm;
+        boost::archive::text_oarchive artm(sstm);
+        artm<<self;
+        return py::make_tuple(sstm.str());
+      },
+      [](py::tuple t) {
+        stringstream sstm(t[0].cast<std::string>());
+        boost::archive::text_iarchive artm(sstm);
+        MultiTaperSpecDivDecon lsd;
+        artm >> lsd;
+        return lsd;
+      }
+    ))
   ;
   py::class_<FFTDeconOperator>(m,"FFTDeconOperator","Base class used by frequency domain deconvolution methods")
     .def(py::init<>())
@@ -163,6 +195,21 @@ PYBIND11_MODULE(deconvolution, m) {
     .def("get_taperlen",&MultiTaperXcorDecon::get_taperlen,"Get length of the Slepian tapers used by the operator")
     .def("get_number_tapers",&MultiTaperXcorDecon::get_number_tapers,"Get number of Slepian tapers used by the operator")
     .def("get_time_bandwidth_product",&MultiTaperXcorDecon::get_time_bandwidth_product,"Get time bandwidt product of Slepian tapers used by the operator")
+    .def(py::pickle(
+      [](const MultiTaperXcorDecon &self) {
+        stringstream sstm;
+        boost::archive::text_oarchive artm(sstm);
+        artm<<self;
+        return py::make_tuple(sstm.str());
+      },
+      [](py::tuple t) {
+        stringstream sstm(t[0].cast<std::string>());
+        boost::archive::text_iarchive artm(sstm);
+        MultiTaperXcorDecon lsd;
+        artm >> lsd;
+        return lsd;
+      }
+    ))
   ;
   /* this binding code is properly constructed, but for now we disable it
    * because it has known bugs that need to be squashed.  It should be
@@ -207,11 +254,26 @@ PYBIND11_MODULE(deconvolution, m) {
     .def("inverse_wavelet",&CNRDeconEngine::inverse_wavelet,
         "Return the time-domain inverse operator computed form current frequency domain operator")
     .def("QCMetrics",&CNRDeconEngine::QCMetrics,"Return a Metadata container of QC metrics computed by this algorithm")
-  ;  
+    .def(py::pickle(
+      [](const CNRDeconEngine &self) {
+        stringstream sstm;
+        boost::archive::text_oarchive artm(sstm);
+        artm<<self;
+        return py::make_tuple(sstm.str());
+      },
+      [](py::tuple t) {
+        stringstream sstm(t[0].cast<std::string>());
+        boost::archive::text_iarchive artm(sstm);
+        CNRDeconEngine lsd;
+        artm >> lsd;
+        return lsd;
+      }
+    ))
+  ;
 
 
-/* This algorithm was the prototype for CNRDeconEngine.   It is depricated with prejudice which here means I'm 
-   removing the bindings for the old version.   The original algorithm will be placed for at least a while in some 
+/* This algorithm was the prototype for CNRDeconEngine.   It is depricated with prejudice which here means I'm
+   removing the bindings for the old version.   The original algorithm will be placed for at least a while in some
    dustbin.  When that is gone remove this comment.  GLP - July 2024 */
   /*
   py::class_<CNR3CDecon,FFTDeconOperator>(m,"CNR3CDecon",
