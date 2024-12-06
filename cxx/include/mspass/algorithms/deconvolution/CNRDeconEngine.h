@@ -1,5 +1,10 @@
 #ifndef __CNR_DECON_ENGINE_H__
 #define __CNR_DECON_ENGINE_H__
+#include <boost/archive/text_iarchive.hpp>
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/serialization/base_object.hpp>
+#include <boost/serialization/shared_ptr.hpp>
+
 #include "mspass/utility/AntelopePf.h"
 #include "mspass/algorithms/deconvolution/ShapingWavelet.h"
 #include "mspass/algorithms/deconvolution/MTPowerSpectrumEngine.h"
@@ -23,11 +28,10 @@ enum class CNR3C_algorithms{
     generalized_water_level,
     colored_noise_damping
 };
-
 class CNRDeconEngine : public FFTDeconOperator
 {
 public:
-  //CNRDeconEngine(){};
+  CNRDeconEngine();
   /* design note - delete when finished.
 
      The constructor uses the pf to initialize operator properties.
@@ -43,21 +47,21 @@ public:
      in python.
      */
    /*! Construct from AntelopePf container.
-   
-   This is currently the only valid constructor for this object. 
-   The operator requires a fair number of parameters for construction 
-   that include secondary groups of parameters in a hierarchy.  
+
+   This is currently the only valid constructor for this object.
+   The operator requires a fair number of parameters for construction
+   that include secondary groups of parameters in a hierarchy.
    An AntelopePf is one way to handle that with a human readable form.
-   An alternative is yaml but that is not currently supported as 
-   an external format.  The AntelopePf object API is a generic 
-   way to handle parameter data hierarchies that is in MsPASS.  
-   Most user's will interact with the object only indirectly 
-   via python wrappers.   All a user needs to do is define all the 
+   An alternative is yaml but that is not currently supported as
+   an external format.  The AntelopePf object API is a generic
+   way to handle parameter data hierarchies that is in MsPASS.
+   Most user's will interact with the object only indirectly
+   via python wrappers.   All a user needs to do is define all the
    required key-value pairs and get the obscure pf format correct.
-   To use this constructor one passes an instance of the object 
+   To use this constructor one passes an instance of the object
    of type AntelopePf that is normally constructed by reading a
-   text file with the "pf" format or retrieved from another 
-   AntelopePf with the get_branch method.  
+   text file with the "pf" format or retrieved from another
+   AntelopePf with the get_branch method.
    */
   CNRDeconEngine(const mspass::utility::AntelopePf& pf);
   CNRDeconEngine(const CNRDeconEngine& parent);
@@ -66,7 +70,7 @@ public:
   void initialize_inverse_operator(const mspass::seismic::TimeSeries& wavelet,
           const mspass::seismic::PowerSpectrum& noise_spectrum);
   virtual ~CNRDeconEngine(){};
-  mspass::seismic::Seismogram process(const mspass::seismic::Seismogram& d, 
+  mspass::seismic::Seismogram process(const mspass::seismic::Seismogram& d,
       const mspass::seismic::PowerSpectrum& psnoise,
         const double fl, const double fh);
   double get_operator_dt() const
@@ -130,7 +134,13 @@ private:
     regularization.   If noise amplitude (not power) is less than noise_floor
     the floor is set like a water level as noise_max*noise_level.*/
     double snr_regularization_floor;
+    /* These are QC metrics computed by process method.  Saved to allow them
+    to be use in QCmetrics method. */
+    double regularization_bandwidth_fraction;
+    double peak_snr[3];
+    double signal_bandwidth_fraction[3];
     mspass::algorithms::deconvolution::ComplexArray winv;
+    /*** Private methods *****/
     void update_shaping_wavelet(const double fl, const double fh);
     /* These are two algorithms for computing inverse operator in the frequency domain*/
     void compute_winv(const mspass::seismic::TimeSeries& wavelet,
@@ -139,11 +149,37 @@ private:
         const mspass::seismic::PowerSpectrum& psnoise);
     void compute_gdamp_inverse(const mspass::seismic::TimeSeries& wavelet,
         const mspass::seismic::PowerSpectrum& psnoise);
-  /* These are QC metrics computed by process method.  Saved to allow them
-  to be use in QCmetrics method. */
-  double regularization_bandwidth_fraction;
-  double peak_snr[3];
-  double signal_bandwidth_fraction[3];
+  friend boost::serialization::access;
+  template<class Archive>
+  void serialize(Archive& ar, const unsigned int version)
+  {
+      /* See boost documentation for why these are needed.
+      tapers are referenced through a polymorphic shared_ptr.
+      It seems all subclasses to be used need this incantation*/
+      ar.register_type(static_cast<LinearTaper *>(NULL));
+      ar.register_type(static_cast<CosineTaper *>(NULL));
+      ar.register_type(static_cast<VectorTaper *>(NULL));
+      ar & boost::serialization::base_object<FFTDeconOperator>(*this);
+      ar & algorithm;
+      ar & taper_data;
+      /* These two are the polymorphic pointers that cause complications*/
+      ar & wavelet_taper;
+      ar & data_taper;
+      ar & damp;
+      ar & noise_floor;
+      ar & band_snr_floor;
+      ar & operator_dt;
+      ar & shaping_wavelet_number_poles;
+      ar & shapingwavelet;
+      ar & signal_engine;
+      ar & noise_engine;
+      ar & snr_regularization_floor;
+      ar & winv;
+      ar & regularization_bandwidth_fraction;
+      ar & peak_snr;
+      ar & signal_bandwidth_fraction;
+
+  }
 };
 }  // End namespace enscapsulation
 #endif

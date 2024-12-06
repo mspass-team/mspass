@@ -3,6 +3,9 @@
 #include "mspass/utility/Metadata.h"
 #include "mspass/algorithms/deconvolution/ComplexArray.h"
 #include "mspass/seismic/CoreTimeSeries.h"
+#include <boost/archive/text_iarchive.hpp>
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/serialization/vector.hpp>
 namespace mspass::algorithms::deconvolution{
 /*! \brief Frequency domain shaping wavelet.
 
@@ -92,6 +95,16 @@ private:
     ComplexArray w;
     double dt,df;
     std::string wavelet_name;
+    friend boost::serialization::access;
+    template<class Archive>
+    void serialize(Archive &ar, const unsigned int version)
+    {
+        ar & nfft;
+        ar & dt;
+        ar & df;
+        ar & wavelet_name;
+        ar & w;
+    }
 };
 }
 #endif

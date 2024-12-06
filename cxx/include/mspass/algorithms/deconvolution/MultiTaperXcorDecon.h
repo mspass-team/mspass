@@ -1,6 +1,10 @@
 #ifndef __SIMPLE_MULTITAPER_DECON_H__
 #define __SIMPLE_MULTITAPER_DECON_H__
 #include <vector>
+#include <boost/archive/text_iarchive.hpp>
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/serialization/base_object.hpp>
+#include <boost/serialization/vector.hpp>
 #include "mspass/utility/Metadata.h"
 #include "mspass/utility/dmatrix.h"
 #include "mspass/seismic/CoreTimeSeries.h"
@@ -11,7 +15,8 @@ namespace mspass::algorithms::deconvolution{
 class MultiTaperXcorDecon: public FFTDeconOperator, public ScalarDecon
 {
 public:
-
+    /*! Default constructor.   Do not use - only for declarations */
+    MultiTaperXcorDecon() : FFTDeconOperator(), ScalarDecon(){};
     MultiTaperXcorDecon(const mspass::utility::Metadata &md,const std::vector<double> &noise,
                     const std::vector<double> &wavelet,const std::vector<double> &data);
     MultiTaperXcorDecon(const mspass::utility::Metadata &md);
@@ -108,6 +113,21 @@ private:
      * an inefficiency for straight application */
     ComplexArray ao_fft;
     int apply();
+    friend boost::serialization::access;
+    template<class Archive>
+    void serialize(Archive &ar, const unsigned int version)
+    {
+        ar & boost::serialization::base_object<FFTDeconOperator>(*this);
+        ar & boost::serialization::base_object<ScalarDecon>(*this);
+        ar & noise;
+        ar & nw;
+        ar & damp;
+        ar & nseq;
+        ar & taperlen;
+        ar & tapers;
+        ar & winv;
+        ar & ao_fft;
+    }
 };
 }
 #endif

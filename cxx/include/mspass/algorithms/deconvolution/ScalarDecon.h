@@ -6,6 +6,11 @@
 #include "mspass/algorithms/deconvolution/BasicDeconOperator.h"
 #include "mspass/algorithms/deconvolution/ShapingWavelet.h"
 #include "mspass/seismic/CoreTimeSeries.h"
+
+#include <boost/archive/text_iarchive.hpp>
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/serialization/vector.hpp>
+
 namespace mspass::algorithms::deconvolution{
 /*! \brief Base class decon operator for single station 3C decon (receiver functions).
 
@@ -91,6 +96,16 @@ protected:
     std::vector<double> wavelet;
     std::vector<double> result;
     ShapingWavelet shapingwavelet;
+private:
+  friend boost::serialization::access;
+  template<class Archive>
+  void serialize(Archive &ar, const unsigned int version)
+  {
+      ar & data;
+      ar & wavelet;
+      ar & result;
+      ar & shapingwavelet;
+  }
 };
 }
 #endif

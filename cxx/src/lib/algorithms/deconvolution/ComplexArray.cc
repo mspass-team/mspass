@@ -9,13 +9,14 @@ using namespace mspass::utility;
 ComplexArray::ComplexArray()
 {
     nsamp=0;
-    data=NULL;
+    /* Note declaration of shared_ptr initializes it with a NULL
+       pointer equivalent - no initialization is needed */
 }
 ComplexArray::ComplexArray(vector<Complex64> &d)
 {
     nsamp=d.size();
-    data=new FortranComplex64[nsamp];
-    for(int i=0; i<nsamp; i++)
+    data = std::shared_ptr<FortranComplex64[]>(new FortranComplex64[nsamp]);
+    for(std::size_t i=0; i<nsamp; i++)
     {
         data[i].real=d[i].real();
         data[i].imag=d[i].imag();
@@ -24,8 +25,8 @@ ComplexArray::ComplexArray(vector<Complex64> &d)
 ComplexArray::ComplexArray(vector<Complex32> &d)
 {
     nsamp=d.size();
-    data=new FortranComplex64[nsamp];
-    for(int i=0; i<nsamp; i++)
+    data = std::shared_ptr<FortranComplex64[]>(new FortranComplex64[nsamp]);
+    for(std::size_t i=0; i<nsamp; i++)
     {
         data[i].real=d[i].real();
         data[i].imag=d[i].imag();
@@ -34,8 +35,8 @@ ComplexArray::ComplexArray(vector<Complex32> &d)
 ComplexArray::ComplexArray(int n, FortranComplex32 *d)
 {
     nsamp=n;
-    data=new FortranComplex64[nsamp];
-    for(int i=0; i<nsamp; i++)
+    data = std::shared_ptr<FortranComplex64[]>(new FortranComplex64[nsamp]);
+    for(std::size_t i=0; i<nsamp; i++)
     {
         data[i].real=d[i].real;
         data[i].imag=d[i].imag;
@@ -44,8 +45,8 @@ ComplexArray::ComplexArray(int n, FortranComplex32 *d)
 ComplexArray::ComplexArray(int n, FortranComplex64 *d)
 {
     nsamp=n;
-    data=new FortranComplex64[nsamp];
-    for(int i=0; i<nsamp; i++)
+    data = std::shared_ptr<FortranComplex64[]>(new FortranComplex64[nsamp]);
+    for(std::size_t i=0; i<nsamp; i++)
     {
         data[i].real=d[i].real;
         data[i].imag=d[i].imag;
@@ -54,8 +55,8 @@ ComplexArray::ComplexArray(int n, FortranComplex64 *d)
 ComplexArray::ComplexArray(int n, float *d)
 {
     nsamp=n;
-    data=new FortranComplex64[nsamp];
-    for(int i=0; i<nsamp; i++)
+    data = std::shared_ptr<FortranComplex64[]>(new FortranComplex64[nsamp]);
+    for(std::size_t i=0; i<nsamp; i++)
     {
         data[i].real=d[i];
         data[i].imag=0.0;
@@ -64,8 +65,8 @@ ComplexArray::ComplexArray(int n, float *d)
 ComplexArray::ComplexArray(int n, double *d)
 {
     nsamp=n;
-    data=new FortranComplex64[nsamp];
-    for(int i=0; i<nsamp; i++)
+    data = std::shared_ptr<FortranComplex64[]>(new FortranComplex64[nsamp]);
+    for(std::size_t i=0; i<nsamp; i++)
     {
         data[i].real=d[i];
         data[i].imag=0.0;
@@ -74,8 +75,8 @@ ComplexArray::ComplexArray(int n, double *d)
 ComplexArray::ComplexArray(int n)
 {
     nsamp=n;
-    data=new FortranComplex64[nsamp];
-    for(int i=0; i<nsamp; i++)
+    data = std::shared_ptr<FortranComplex64[]>(new FortranComplex64[nsamp]);
+    for(std::size_t i=0; i<nsamp; i++)
     {
         data[i].real=0.0;
         data[i].imag=0.0;
@@ -87,8 +88,8 @@ ComplexArray::ComplexArray(vector<double> mag,vector<double> phase)
     nsamp=mag.size();
     if(nsamp==phase.size())
     {
-        data=new FortranComplex64[nsamp];
-        for(int i=0; i<nsamp; i++)
+        data = std::shared_ptr<FortranComplex64[]>(new FortranComplex64[nsamp]);
+        for(std::size_t i=0; i<nsamp; i++)
         {
             Complex64 temp=polar(mag[i],phase[i]);
             data[i].real=temp.real();
@@ -105,8 +106,8 @@ ComplexArray::ComplexArray(vector<double> mag,vector<double> phase)
 ComplexArray::ComplexArray(const ComplexArray &parent)
 {
     nsamp=parent.nsamp;
-    data=new FortranComplex64[nsamp];
-    for(int i=0; i<nsamp; i++)
+    data = std::shared_ptr<FortranComplex64[]>(new FortranComplex64[nsamp]);
+    for(std::size_t i=0; i<nsamp; i++)
     {
         data[i].real=parent.data[i].real;
         data[i].imag=parent.data[i].imag;
@@ -116,20 +117,21 @@ ComplexArray& ComplexArray::operator=(const ComplexArray &parent)
 {
     if(&parent != this)
     {
-        nsamp=parent.nsamp;
-        delete [] data;
-        data=new FortranComplex64[nsamp];
-        for(int i=0; i<nsamp; i++)
+        this->nsamp=parent.nsamp;
+        this->data = std::shared_ptr<FortranComplex64[]>(new FortranComplex64[nsamp]);
+        for(std::size_t i=0; i<nsamp; i++)
         {
-            data[i].real=parent.data[i].real;
-            data[i].imag=parent.data[i].imag;
+            this->data[i].real=parent.data[i].real;
+            this->data[i].imag=parent.data[i].imag;
         }
     }
     return *this;
 }
 ComplexArray::~ComplexArray()
 {
-    delete[] data;
+    /*Original implementation used a raw pointer for data array.   Changed
+      Dec. 2024 to shared_ptr so this destructor now does nothing.*/
+    //delete[] data;
 }
 double *ComplexArray::ptr()
 {
@@ -154,7 +156,7 @@ ComplexArray& ComplexArray::operator +=(const ComplexArray& other)
 	<< "Sizes must match to use this operator"<<endl;
       throw MsPASSError(sserr.str(),ErrorSeverity::Invalid);
     }
-    for(int i=0; i<nsamp; i++)
+    for(std::size_t i=0; i<nsamp; i++)
     {
         data[i].real+=other.data[i].real;
         data[i].imag+=other.data[i].imag;
@@ -172,7 +174,7 @@ ComplexArray& ComplexArray::operator -=(const ComplexArray& other)
 	<< "Sizes must match to use this operator"<<endl;
       throw MsPASSError(sserr.str(),ErrorSeverity::Invalid);
     }
-    for(int i=0; i<nsamp; i++)
+    for(std::size_t i=0; i<nsamp; i++)
     {
         data[i].real-=other.data[i].real;
         data[i].imag-=other.data[i].imag;
@@ -190,7 +192,7 @@ ComplexArray& ComplexArray::operator *= (const ComplexArray& other)
 	<< "Sizes must match to use this operator"<<endl;
       throw MsPASSError(sserr.str(),ErrorSeverity::Invalid);
   }
-  for(int i=0; i<nsamp; i++)
+  for(std::size_t i=0; i<nsamp; i++)
   {
     Complex64 z1(data[i].real,data[i].imag);
     Complex64 z2(other.data[i].real,other.data[i].imag);
@@ -211,7 +213,7 @@ ComplexArray& ComplexArray::operator /= (const ComplexArray& other)
 	<< "Sizes must match to use this operator"<<endl;
       throw MsPASSError(sserr.str(),ErrorSeverity::Invalid);
   }
-  for(int i=0; i<nsamp; i++)
+  for(std::size_t i=0; i<nsamp; i++)
   {
     Complex64 z1(data[i].real,data[i].imag);
     Complex64 z2(other.data[i].real,other.data[i].imag);
@@ -222,7 +224,7 @@ ComplexArray& ComplexArray::operator /= (const ComplexArray& other)
   /* For efficiency we scan this array for nans rather than
   put that in the loop above - standard advice for efficiency in
   vector operators on modern computers */
-  for(int i=0;i<nsamp;++i)
+  for(std::size_t i=0;i<nsamp;++i)
   {
     if(gsl_isnan(data[i].real) || gsl_isnan(data[i].imag) )
     {
@@ -272,28 +274,28 @@ const ComplexArray ComplexArray::operator/(const ComplexArray& other)const noexc
 }
 void ComplexArray::conj()
 {
-    for(int i=0; i<nsamp; i++)
+    for(std::size_t i=0; i<nsamp; i++)
         data[i].imag=-data[i].imag;
 }
 vector<double> ComplexArray::abs() const
 {
     vector<double> result;
     result.reserve(nsamp);
-    for(int i=0; i<nsamp; i++)
+    for(std::size_t i=0; i<nsamp; i++)
         result.push_back(sqrt((double)data[i].real*data[i].real+data[i].imag*data[i].imag));
     return result;
 }
 double ComplexArray::rms() const
 {
     double result=0;
-    for(int i=0; i<nsamp; i++)
+    for(std::size_t i=0; i<nsamp; i++)
         result+=((double)data[i].real*data[i].real+data[i].imag*data[i].imag)/nsamp/nsamp;
     return sqrt(result);
 }
 double ComplexArray::norm2() const
 {
     double result=0;
-    for(int i=0; i<nsamp; i++)
+    for(std::size_t i=0; i<nsamp; i++)
         result+=((double)data[i].real*data[i].real+data[i].imag*data[i].imag);
     return sqrt(result);
 }
@@ -301,7 +303,7 @@ vector<double> ComplexArray::phase() const
 {
     vector<double> result;
     result.reserve(nsamp);
-    for(int i=0; i<nsamp; i++)
+    for(std::size_t i=0; i<nsamp; i++)
         result.push_back(atan2((double)data[i].imag,(double)data[i].real));
     return result;
 }

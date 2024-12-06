@@ -11,7 +11,26 @@ using namespace mspass::utility;
 using namespace mspass::algorithms;
 using namespace mspass::seismic;
 using namespace mspass::algorithms::deconvolution;
-CNRDeconEngine::CNRDeconEngine(const AntelopePf& pf) 
+CNRDeconEngine::CNRDeconEngine() : FFTDeconOperator()
+{
+  /* This constructor does not initialize everything.  It initializes
+  only the simple types and the values are not necessarily reasonable. */
+  algorithm = CNR3C_algorithms::colored_noise_damping;
+  taper_data = false;
+  damp=1.0;
+  noise_floor = 1.5;
+  band_snr_floor = 1.5;
+  shaping_wavelet_number_poles=3;
+  snr_regularization_floor = 2.0;
+  /* These are computed private variables - we initialize them all to 0*/
+  regularization_bandwidth_fraction = 0.0;
+  for(auto i=0;i<3;++i)
+  {
+    peak_snr[i] = 0.0;
+    signal_bandwidth_fraction[i] = 0.0;
+  }
+}
+CNRDeconEngine::CNRDeconEngine(const AntelopePf& pf)
   : FFTDeconOperator(dynamic_cast<const Metadata&>(pf))
 {
   try{
@@ -184,7 +203,7 @@ CNRDeconEngine::CNRDeconEngine(const AntelopePf& pf)
   }catch(...){throw;};
 }
 /* Standard copy constructor */
-CNRDeconEngine::CNRDeconEngine(const CNRDeconEngine& parent) 
+CNRDeconEngine::CNRDeconEngine(const CNRDeconEngine& parent)
   : shapingwavelet(parent.shapingwavelet),
       signal_engine(parent.signal_engine),
         noise_engine(parent.noise_engine),
@@ -327,7 +346,7 @@ bool sample_interval_invalid(const mspass::seismic::BasicTimeSeries& d,
 void CNRDeconEngine::compute_winv(const TimeSeries& wavelet, const PowerSpectrum& psnoise)
 {
   try{
-    /* Need to always create a local copy to allow taper option to work corectly.   
+    /* Need to always create a local copy to allow taper option to work corectly.
        Also wavelet is passed const so taper would not work anyway */
     TimeSeries w(wavelet);
     if(this->taper_data) wavelet_taper->apply(w);
@@ -486,19 +505,19 @@ void CNRDeconEngine::compute_gdamp_inverse(const TimeSeries& wavelet, const Powe
     winv=conj_b_fft/denom;
   }catch(...){throw;};
 }
-/* Computes deconvolution of data in d using inverse operator that was assumed 
-to be previously loaded via the initialize_wavelet method.   Note a potential 
-confusion is that because this opeation is done in the frequency domain 
-we do NOT apply the shaping wavelet filter to either the data (numerator) or 
-the denominator (the inverse wavelet) as required by convolutional quelling 
-(an obscure name for this regularization from an old Backus paper).   The reason 
-is the form is (f)(d)/(f)(w)  where f is the shaping wavelet filter, d is 
-the numerator fft, and w is the wavelet fft.   The f terms cancel so we 
-don't apply them to either the numerator or denominator.  We do need to 
-post filter with the shaping wavelet, which is done here, or the output 
+/* Computes deconvolution of data in d using inverse operator that was assumed
+to be previously loaded via the initialize_wavelet method.   Note a potential
+confusion is that because this opeation is done in the frequency domain
+we do NOT apply the shaping wavelet filter to either the data (numerator) or
+the denominator (the inverse wavelet) as required by convolutional quelling
+(an obscure name for this regularization from an old Backus paper).   The reason
+is the form is (f)(d)/(f)(w)  where f is the shaping wavelet filter, d is
+the numerator fft, and w is the wavelet fft.   The f terms cancel so we
+don't apply them to either the numerator or denominator.  We do need to
+post filter with the shaping wavelet, which is done here, or the output
 will almost always be junk.
 */
-Seismogram CNRDeconEngine::process(const Seismogram& d, const PowerSpectrum& psnoise, 
+Seismogram CNRDeconEngine::process(const Seismogram& d, const PowerSpectrum& psnoise,
     const double fl, const double fh)
 {
   try{
@@ -625,7 +644,8 @@ TimeSeries CNRDeconEngine::actual_output(const TimeSeries& wavelet)
       ComplexArray *stmp = this->shapingwavelet.wavelet();
       /* We always apply the shaping wavelet - this perhaps should be optional
       but probably better done with a none option for the shaping wavelet */
-      ao_fft=(*shapingwavelet.wavelet())*ao_fft;
+      ao_fft=(*stmp)*ao_fft;
+      //ao_fft=(*shapingwavelet.wavelet())*ao_fft;
       gsl_fft_complex_inverse(ao_fft.ptr(),1,FFTDeconOperator::nfft,wavetable,workspace);
       vector<double> ao;
       ao.reserve(FFTDeconOperator::nfft);

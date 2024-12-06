@@ -6,14 +6,13 @@
 #include "mspass/algorithms/deconvolution/FFTDeconOperator.h"
 namespace mspass::algorithms
 {
-using mspass::algorithms::deconvolution::ComplexArray;
-using mspass::algorithms::deconvolution::circular_shift;
 using mspass::seismic::CoreTimeSeries;
 using mspass::seismic::CoreSeismogram;
 using mspass::seismic::TimeReferenceType;
 using mspass::utility::Metadata;
 using mspass::utility::MsPASSError;
 using mspass::utility::ErrorSeverity;
+using namespace mspass::algorithms::deconvolution;
 
 using namespace std;
 Butterworth::Butterworth()
