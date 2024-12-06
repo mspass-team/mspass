@@ -25,6 +25,10 @@ if (CMAKE_BUILD_TYPE STREQUAL "Debug")
   message (STATUS "Enabled Coverage")
 endif ()
 
+# Necessary for MacOS running 14.x OS with Xcode command tools 
+# Commented out by default
+set(CMAKE_OSX_SYSROOT /Library/Developer/CommandLineTools/SDKs/MacOSX14.5.sdk)
+
 find_package (yaml-cpp 0.5.0)
 if (NOT YAML_CPP_INCLUDE_DIR)
   message (STATUS "Building yaml-cpp")
