@@ -19,6 +19,7 @@
 using namespace std;
 using namespace mspass::algorithms::deconvolution;
 using mspass::utility::AntelopePf;
+using mspass::utility::pfread;
 
 const std::string test_fname("serialization_output");
 template <class T> void save_data(const T& d)
@@ -49,7 +50,8 @@ int main(int argc, char **argv)
     assert (z.size() == z2.size());
     for(auto i=0;i<10;++i) assert(z[i] == z2[i]);
     cout << "Testing serialization of FFTDeconOperator" <<endl;
-    AntelopePf pf("RFdeconProcessor.pf");
+    //AntelopePf pf("RFdeconProcessor.pf");
+    AntelopePf pf=pfread("RFdeconProcessor.pf");
     WaterLevelDecon wl(pf.get_branch("WaterLevel"));
     FFTDeconOperator fftdo(dynamic_cast<FFTDeconOperator&>(wl));
     save_data<FFTDeconOperator>(fftdo);
