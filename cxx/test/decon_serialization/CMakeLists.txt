@@ -1,5 +1,5 @@
 add_executable(test_decon_serialization test_decon_serialization.cc)
-configure_file(RFdeconProcessor.pf RFDeconProcessor.pf COPYONLY)
+configure_file(RFdeconProcessor.pf RFdeconProcessor.pf COPYONLY)
 configure_file(CNRDeconEngine.pf CNRDeconEngine.pf COPYONLY)
 
 include_directories(
