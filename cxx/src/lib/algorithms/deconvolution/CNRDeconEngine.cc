@@ -195,11 +195,8 @@ CNRDeconEngine::CNRDeconEngine(const AntelopePf& pf)
     }
     else
     {
-      //wavelet_taper=NULL;
-      //data_taper=NULL;
       this->taper_data=false;
     }
-
   }catch(...){throw;};
 }
 /* Standard copy constructor */
@@ -257,7 +254,7 @@ void CNRDeconEngine::initialize_inverse_operator(const TimeSeries& wavelet,
         const TimeSeries& noise_data)
 {
   /* Assume wavelet and noise_data have the correct sample rate.
-  python wrapper should guarantee that */
+  * python wrapper should guarantee that */
   PowerSpectrum psnoise(this->compute_noise_spectrum(noise_data));
   this->initialize_inverse_operator(wavelet,psnoise);
 }
@@ -271,8 +268,12 @@ PowerSpectrum CNRDeconEngine::compute_noise_spectrum(const TimeSeries& n)
   try{
     if(n.npts()!=noise_engine.taper_length())
     {
+      /* use this varaint of the construtor too allow the fft size to 
+       * be automatically changed if necessary.  */
       this->noise_engine=MTPowerSpectrumEngine(n.npts(),
         noise_engine.time_bandwidth_product(),noise_engine.number_tapers());
+      /* with auto fft we also need this to set the df and dt correctly */
+      this->noise_engine.set_df(this->operator_dt);
     }
     return this->noise_engine.apply(n);
   }catch(...){throw;};
@@ -284,8 +285,11 @@ PowerSpectrum CNRDeconEngine::compute_noise_spectrum(const Seismogram& n)
     TimeSeries tswork;
     if(n.npts()!=noise_engine.taper_length())
     {
+      /* this may change fft size and will set dt wrong so we need the 
+       * call to set_df afterward to correct that. */
       noise_engine=MTPowerSpectrumEngine(n.npts(),
          noise_engine.time_bandwidth_product(),noise_engine.number_tapers());
+      noise_engine.set_df(this->operator_dt);
     }
     for(int k=0;k<3;++k)
     {
@@ -645,7 +649,6 @@ TimeSeries CNRDeconEngine::actual_output(const TimeSeries& wavelet)
       /* We always apply the shaping wavelet - this perhaps should be optional
       but probably better done with a none option for the shaping wavelet */
       ao_fft=(*stmp)*ao_fft;
-      //ao_fft=(*shapingwavelet.wavelet())*ao_fft;
       gsl_fft_complex_inverse(ao_fft.ptr(),1,FFTDeconOperator::nfft,wavetable,workspace);
       vector<double> ao;
       ao.reserve(FFTDeconOperator::nfft);
