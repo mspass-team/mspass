@@ -106,6 +106,8 @@ PYBIND11_MODULE(deconvolution, m) {
     .def("change_parameter",&ScalarDecon::changeparameter,"Change deconvolution parameters")
     .def("change_shaping_wavelet",&ScalarDecon::change_shaping_wavelet,
             "Change the shaping wavelet applied to output")
+    .def("get_shaping_wavelet",&ScalarDecon::get_shaping_wavelet,
+	    "Get the shaping wavelet used by this operator")
     .def("actual_output",&ScalarDecon::actual_output,"Return actual output of inverse*wavelet")
     .def("ideal_output",&ScalarDecon::ideal_output,"Return ideal output of for inverse")
     .def("inverse_wavelet",py::overload_cast<>(&ScalarDecon::inverse_wavelet))
@@ -120,6 +122,21 @@ PYBIND11_MODULE(deconvolution, m) {
     .def("inverse_wavelet",py::overload_cast<>(&WaterLevelDecon::inverse_wavelet))
     .def("inverse_wavelet",py::overload_cast<double>(&WaterLevelDecon::inverse_wavelet))
     .def("QCMetrics",&WaterLevelDecon::QCMetrics,"Return ideal output of for inverse")
+    .def(py::pickle(
+      [](const WaterLevelDecon &self) {
+        stringstream sstm;
+        boost::archive::text_oarchive artm(sstm);
+        artm<<self;
+        return py::make_tuple(sstm.str());
+      },
+      [](py::tuple t) {
+        stringstream sstm(t[0].cast<std::string>());
+        boost::archive::text_iarchive artm(sstm);
+        WaterLevelDecon lsd;
+        artm >> lsd;
+        return lsd;
+      }
+    ))
   ;
   py::class_<LeastSquareDecon,ScalarDecon>(m,"LeastSquareDecon","Damped least squares frequency domain operator")
     .def(py::init<const Metadata>())

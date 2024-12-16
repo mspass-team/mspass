@@ -36,6 +36,22 @@ template <class T> T restore_data()
     ia >> d;
     return d;
 }
+bool shaping_wavelets_match(ShapingWavelet& s1,
+         ShapingWavelet& s2)
+{
+  if(s1.freq_bin_size()!=s2.freq_bin_size())return false;
+  if(s1.sample_interval() != s2.sample_interval())return false;
+  if(s1.type() != s2.type())return false;
+  if(s1.size() != s2.size())return false;
+  /* This may fail if precision is not sufficient*/
+  assert(s1.size()>0);  // next pointless if not true
+  ComplexArray *w1 = s1.wavelet();
+  ComplexArray *w2 = s2.wavelet();
+  cout << "Size of wavelts being tested = "<<s1.size()<<endl;
+  if(w1->rms() != w2->rms()) return false;
+  cout << "rms of s1 wavelet in test="<<w1->rms()<<endl;
+  return true;
+}
 
 int main(int argc, char **argv)
 {
@@ -61,6 +77,11 @@ int main(int argc, char **argv)
     cout << "Testing serialization of WaterLevelDecon" <<endl;
     save_data<WaterLevelDecon>(wl);
     WaterLevelDecon wl2(restore_data<WaterLevelDecon>());
+    // compare the sahping wavelets
+    cout << "Testng if shaping wavelets were serialized corectly"<<endl;
+    ShapingWavelet sw1 = wl.get_shaping_wavelet();
+    ShapingWavelet sw2 = wl2.get_shaping_wavelet();
+    assert(shaping_wavelets_match(sw1,sw2));
     cout << "Testing serialization of LeastSquareDecon" <<endl;
     LeastSquareDecon lsd(pf.get_branch("LeastSquare"));
     save_data<LeastSquareDecon>(lsd);
