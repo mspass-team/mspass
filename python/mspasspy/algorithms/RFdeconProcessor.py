@@ -4,11 +4,11 @@
 This file contains a class definition for a wrapper for
 the suite of scalar deconvolution methods supported by mspass.
 It demonstrates the concept of a processing object created
-by wrapping C code.  It also contains a top-level function 
+by wrapping C code.  It also contains a top-level function
 that is a pythonic interface that meshes with MsPASS schedulers
 for parallel processing called `RFdecon`.   `RFdecon` is a
-wrapper for all single-station methods.   It cannot be used for 
-array methods.  
+wrapper for all single-station methods.   It cannot be used for
+array methods.
 
 Created on Fri Jul 31 06:24:10 2020
 
@@ -16,7 +16,7 @@ Created on Fri Jul 31 06:24:10 2020
 """
 import numpy as np
 
-from mspasspy.ccore.seismic import DoubleVector
+from mspasspy.ccore.seismic import DoubleVector,Seismogram
 from mspasspy.ccore.utility import AntelopePf, Metadata, MsPASSError, ErrorSeverity
 from mspasspy.util.converter import Metadata2dict
 from mspasspy.algorithms.window import WindowData
@@ -43,39 +43,44 @@ class RFdeconProcessor:
     """
 
     def __repr__(self) -> str:
-        repr_str = "{type}(alg='{alg}', pf='{pf}')".format(
-            type=str(self.__class__), alg=self.algorithm, pf=self.pf
+        repr_str = "{type}(alg='{alg}', md='{md}')".format(
+            type=str(self.__class__), alg=self.algorithm, md=self.md
         )
         return repr_str
 
     def __str__(self) -> str:
         md_str = str(Metadata2dict(self.md))
-        processor_str = "{type}(alg='{alg}', pf='{pf}', md={md})".format(
-            type=str(self.__class__), alg=self.algorithm, pf=self.pf, md=md_str
+        processor_str = "{type}(alg='{alg}', md='{md}')".format(
+            type=str(self.__class__), alg=self.algorithm, md=self.md
         )
         return processor_str
 
     def __init__(self, alg="LeastSquares", pf="RFdeconProcessor.pf"):
         self.algorithm = alg
-        self.pf = AntelopePf(pf)
         # use a copy in what is more or less a switch-case block
         # to be robust - I don't think any of the constructors below
         # alter pfhandle but the cost is tiny for this stability
-        pfhandle = AntelopePf(self.pf)
+        pfhandle = AntelopePf(pf)
         if self.algorithm == "LeastSquares":
-            self.md = pfhandle.get_branch("LeastSquare")
+            # In this and elif blocks below we convert
+            # return of get_branch to a Metadata container
+            # that is necessary because get_branch retuns the
+            # AntelopePf subclass and we want this to be a clean
+            # Metdata object.   Further, at present a pf will not
+            # serialize
+            self.md = Metadata(pfhandle.get_branch("LeastSquare"))
             self.processor = LeastSquareDecon(self.md)
             self.__uses_noise = False
         elif alg == "WaterLevel":
-            self.md = pfhandle.get_branch("WaterLevel")
+            self.md = Metadata(pfhandle.get_branch("WaterLevel"))
             self.processor = WaterLevelDecon(self.md)
             self.__uses_noise = False
         elif alg == "MultiTaperXcor":
-            self.md = pfhandle.get_branch("MultiTaperXcor")
+            self.md = Metadata(pfhandle.get_branch("MultiTaperXcor"))
             self.processor = MultiTaperXcorDecon(self.md)
             self.__uses_noise = True
         elif alg == "MultiTaperSpecDiv":
-            self.md = pfhandle.get_branch("MultiTaperSpecDiv")
+            self.md = Metadata(pfhandle.get_branch("MultiTaperSpecDiv"))
             self.processor = MultiTaperSpecDivDecon(self.md)
             self.__uses_noise = True
         elif alg == "GeneralizedIterative":
@@ -314,43 +319,41 @@ class RFdeconProcessor:
         self.processor.process()
         return self.processor.inverse_filter()
 
-    def QCMetrics(self):
+
+    def QCMetrics(self,prediction_error_key="prediction_error")->dict:
         """
         All decon algorithms compute a set of algorithm dependent quality
-        control metrics.  This method returns the metrics as a set of fixed
-        name:value pairs in a mspass.Metadata object.   The details are
-        algorithm dependent.  See related documentation for metrics computed
-        by different algorithms.
+        control metrics.  The return is a Metadata container.
+        All this wrapper really does is translate that return into
+        a python dictionary that can be used as the base of a subdocument
+        posting to outputs.  This method MUST ONLY BE CALLED after
+        calling the process method of the C++ engine.
         """
-        if self.algorithm == "LeastSquares":
-            processor = LeastSquareDecon(self.md)
-        elif self.algorithm == "WaterLevel":
-            processor = WaterLevelDecon(self.md)
-        elif self.algorithm == "MultiTaperXcor":
-            processor = MultiTaperXcorDecon(self.md)
-        elif self.algorithm == "MultiTaperSpecDiv":
-            processor = MultiTaperSpecDivDecon(self.md)
-        if hasattr(self, "dvector"):
-            processor.loaddata(DoubleVector(self.dvector))
-        if hasattr(self, "wvector"):
-            processor.loadwavelet(DoubleVector(self.wvector))
-        if self.__uses_noise and hasattr(self, "nvector"):
-            processor.loadnoise(DoubleVector(self.nvector))
-        return processor.QCMetrics()
+        # the base of what is returned is an echo of the input parameter set
+        qcmd = dict(self.md)
+        # merge in an output of the implementations QCMetrics method
+        qcmeth_output = dict(self.processor.QCMetrics())
+        # warning this merge operator was only implemented in python 3.9
+        qcmd = qcmd | qcmeth_output
+        # always compute the prediction error
+        perr = self._prediction_error()
+        qcmd[prediction_error_key] = perr
+        return dict(qcmd)
 
     def change_parameters(self, md):
         """
         Use this method to change the internal parameter setting of the
-        processor.  It can be used, for example, to switch from the damped
-        least square method to the water level method.  Note the input
-        must be a complete definition for a parameter set defining a
-        particular algorithm.  i.e. this is not an update method but
-        t reinitializes the processor.
+        processor.  It can only change the parameters for a particular
+        algorithm.   A new instance of this class needs to be created if
+        you need to switch to a different algorithm.   It does little
+        more than call the read_metadata of the already loaded processor.
+        All the scalar decon methods implement that method.
 
         :param md: is a mspass.Metadata object containing required parameters
         for the alternative algorithm.
         """
         self.md = Metadata(md)
+        self.processor.read_metadata(self.md)
 
     @property
     def uses_noise(self):
@@ -371,6 +374,18 @@ class RFdeconProcessor:
         else:
             return TimeWindow  # always initialize even if not used
 
+    def _prediction_error(self)->float:
+        """
+        Small internal function used to compute prediction error of
+        deconvolution operator defined as norm(ao-io)/norm(io) where
+        norm is L2.
+        """
+        ao = self.actual_output()
+        io = self.ideal_output()
+        # with internal use can assume ao and io are the same length
+        err = ao - io
+        return np.linalg.norm(err.data)/np.linalg.norm(io.data)
+
 
 @mspass_func_wrapper
 def RFdecon(
@@ -382,7 +397,7 @@ def RFdecon(
     noisedata=None,
     wcomp=2,
     ncomp=2,
-    return_wavelets=False,
+    QCdocument_key="RFdecon_properties",
     object_history=False,
     alg_name="RFdecon",
     alg_id=None,
@@ -422,46 +437,64 @@ def RFdecon(
     normally set a unique id for the algid argument.
 
     :param d:  Seismogram input data.  See notes above about
-    time span of these data.
+      time span of these data.
+    :type d:  Must be a `Seismogram` object or the function will throw
+      a TypeError exceptionl
     :param engine:   optional instance of a RFdeconProcessor
-    object.   By default the function instantiates an instance of
-    a processor for each call to the function.   For algorithms
-    like the multitaper based algorithms with a high initialization
-    cost performance will improve by sending an instance to the
-    function via this argument.
+      object.   By default the function instantiates an instance of
+      a processor for each call to the function.   For algorithms
+      like the multitaper based algorithms with a high initialization
+      cost performance will improve by sending an instance to the
+      function via this argument.
     :type engine:  None or an instance of `RFdeconProcessor`.
-    When None (default) an instance of an `RFdeconProcessor` is
-    created on entry based on the keyword defined by the `alg`
-    argument.   The algorithm built into the instance of
-    `RFdeconProcessor` is used if engine is not null.
+      When None (default) an instance of an `RFdeconProcessor` is
+      created on entry based on the keyword defined by the `alg`
+      argument.   The algorithm built into the instance of
+      `RFdeconProcessor` is used if engine is not null.
     :param alg: The algorithm to be applied, used for initializing
-     a RFdeconProcessor object.  Ignored if `engine` is used.
+       a RFdeconProcessor object.  Ignored if `engine` is used.
     :param pf: The pf file to be parsed, used for inititalizing a
-     RFdeconProcessor.  Ignored if `engine` is used.
+       RFdeconProcessor.  Ignored if `engine` is used.
+    :type pf:  string defining an absolute path for the file name
+       or a path relative to a directory defined by PFPATH.
     :param wavelet:   vector of doubles (numpy array or the
-     std::vector container internal to TimeSeries object) defining
-     the wavelet to use to compute deconvolution operator.
-     Default is None which assumes processor was set up to use
-     a component of d as the wavelet estimate.
+       std::vector container internal to TimeSeries object) defining
+       the wavelet to use to compute deconvolution operator.
+       Default is None which assumes processor was set up to use
+       a component of d as the wavelet estimate.
+    :type wavelet:  None or an iterable vector container
+       (in MsPASS that means a python array, a numpy array, or a DoubleVector)
     :param noisedata:  vector of doubles (numpy array or the
-     std::vector container internal to TimeSeries object) defining
-     noise data to use for computing regularization.  Not all RF
-     estimation algorithms use noise estimators so this parameter
-     is optional.   It can also be extracted from d depending on
-     parameter file options.
+       std::vector container internal to TimeSeries object) defining
+       noise data to use for computing regularization.  Not all RF
+       estimation algorithms use noise estimators so this parameter
+       is optional.   It can also be extracted from d depending on
+       parameter file options.
+    :type noisedata:  None or an iterable vector container
+       (in MsPASS that means a python array, a numpy array, or a DoubleVector)
     :param wcomp:  When defined from Seismogram d the wavelet
-     estimate in conventional RFs is one of the components that
-     are most P wave dominated. That is always one of three
-     things:  Z, L of LQT, or the L component from the output of
-     Kennett's free surface transformation operator.  The
-     default is 2, which for ccore.Seismogram is always one of
-     the above.   This parameter would be changed only if the
-     data has undergone some novel transformation not yet invented
-     and the best wavelet estimate was on in 2 (3 with FORTRAN
-     and matlab numbering).
+       estimate in conventional RFs is one of the components that
+       are most P wave dominated. That is always one of three
+       things:  Z, L of LQT, or the L component from the output of
+       Kennett's free surface transformation operator.  The
+       default is 2, which for ccore.Seismogram is always one of
+       the above.   This parameter would be changed only if the
+       data has undergone some novel transformation not yet invented
+       and the best wavelet estimate was on in 2 (3 with FORTRAN
+       and matlab numbering).
+     :type wcomp:  int (must 0, 1, or 2)
      :param ncomp: component number to use to compute noise.  This is used
-     only if the algorithm in processor requires a noise estimate.
-     Normally it should be the same as wcomp and is by default (2).
+       only if the algorithm in processor requires a noise estimate.
+       Normally it should be the same as wcomp and is by default (2).
+     :type ncomp:  int (must be 0, 1, or 2)
+     :param QCdocument_key:   A summary of the parameters defining the
+        deconvolution operator (really a dump of the pf content used for
+        creating the engine) and computed QC attributes are posted to a
+        python dictionary.   That content is posted to the outputs
+        Metadata container with the key defined by this argument.
+        In MongoDB lingo that means when saved to the database the
+        dictionary content associated with this key becomes a "subdocument".
+     :type QCdocument_key:  string (default is "RFdecon_properties")
      :param object_history: boolean to enable or disable saving object
            level history.  Default is False.  Note this functionality is
            implemented via the mspass_func_wrapper decorator.
@@ -483,6 +516,11 @@ def RFdecon(
      stored as a `TimeSeries` object.
     """
 
+    if not isinstance(d,Seismogram):
+        message = "RFdecon:  arg0 is of type={}.  Must be a Seismogram object".format(str(type(d)))
+        raise TypeError(message)
+    if d.dead():
+        return d
     if engine:
         if isinstance(engine, RFdeconProcessor):
             processor = engine
@@ -556,4 +594,8 @@ def RFdecon(
             "RFdecon", "Unexpected exception caught", ErrorSeverity.Invalid
         )
     finally:
+        # assume this method creates the dictionary we use as base for the
+        # QC subdocument.  Note that always includes the prediction error
+        subdoc = processor.QCMetrics()
+        result[QCdocument_key] = subdoc
         return result
