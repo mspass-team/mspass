@@ -221,4 +221,21 @@ def test_CNRRFDecon():
     d_decon,aout,iout = CNRRFDecon(d,engine,noise_window=nw,return_wavelet=True)
     d_e,aout_e,iout_e = load_expected_result()
     # may want to window this to reduce the size of the test data pattern file
+    assert np.isclose(d_decon.data,d_e.data).all() 
+    assert np.isclose(aout.data,aout_e.data).all()
+    assert np.isclose(iout.data,iout_e.data).all()
+    # run on noisy data but just verify the differences are consistent 
+    # with simulated noise level
+    d = Seismogram(d0wn)
+
+def test_CNRArrayDecon():
+    # generate simulation wavelet, error free data, and data with noise
+    # copied before use below
+    w0 = make_simulation_wavelet()
+    d0 = make_test_data()
+    d0wn = make_test_data(noise_level=5.0)
+    # this creates the expected output of both CNR function with 
+    # error free simulation data
+    d_e,aout_e,iout_e = load_expected_result()
+    
     
