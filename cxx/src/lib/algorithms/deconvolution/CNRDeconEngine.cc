@@ -1,6 +1,7 @@
 #include <string>
 #include "mspass/utility/MsPASSError.h"
 #include "mspass/algorithms/algorithms.h"
+#include "mspass/algorithms/amplitudes.h"
 #include "mspass/algorithms/deconvolution/CNRDeconEngine.h"
 
 
@@ -8,9 +9,9 @@ namespace mspass::algorithms::deconvolution
 {
 using namespace std;
 using namespace mspass::utility;
-using namespace mspass::algorithms;
 using namespace mspass::seismic;
 using namespace mspass::algorithms::deconvolution;
+using mspass::algorithms::amplitudes::normalize;
 CNRDeconEngine::CNRDeconEngine() : FFTDeconOperator()
 {
   /* This constructor does not initialize everything.  It initializes
@@ -657,6 +658,7 @@ TimeSeries CNRDeconEngine::actual_output(const TimeSeries& wavelet)
       We handle the time through the CoreTimeSeries object. */
       int i0=FFTDeconOperator::nfft/2;
       ao=circular_shift(ao,i0);
+      ao = normalize<double>(ao);
       TimeSeries result(wavelet);  // Use this to clone metadata and elog from wavelet
       result.set_npts(FFTDeconOperator::nfft);
       /* Force these even though they are likely already defined as

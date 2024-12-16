@@ -89,6 +89,9 @@ public:
     std::string type() {
         return wavelet_name;
     };
+    int size()const{
+      return w.size();
+    };
 private:
     int nfft;
     /*! Frequency domain form of the shaping wavelet. */

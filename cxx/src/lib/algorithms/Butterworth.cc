@@ -3,6 +3,7 @@
 #include "misc/blas.h"
 #include "mspass/algorithms/Butterworth.h"
 #include "mspass/utility/MsPASSError.h"
+#include "mspass/algorithms/amplitudes.h"
 #include "mspass/algorithms/deconvolution/FFTDeconOperator.h"
 namespace mspass::algorithms
 {
@@ -12,6 +13,7 @@ using mspass::seismic::TimeReferenceType;
 using mspass::utility::Metadata;
 using mspass::utility::MsPASSError;
 using mspass::utility::ErrorSeverity;
+using mspass::algorithms::amplitudes::normalize;
 using namespace mspass::algorithms::deconvolution;
 
 using namespace std;
@@ -246,6 +248,7 @@ CoreTimeSeries Butterworth::impulse_response(const int n)
 	result.set_tref(TimeReferenceType::Relative);
 	result.set_live();
 	this->apply(result.s);
+  result.s = normalize<double>(result.s);
 	return result;
 }
 /* Fraction of 1/dt used to cause disabling low pass (upper) corner*/

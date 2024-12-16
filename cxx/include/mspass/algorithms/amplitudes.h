@@ -273,6 +273,22 @@ template <typename Tdata> double scale_ensemble(mspass::seismic::Ensemble<Tdata>
     return avgamp;
   }catch(...){throw;};
 }
+/*! Convert an std::vector to a unit vector based on L2 norm.*/
+template <class T> std::vector<T> normalize(const std::vector<T>& d)
+{
+  size_t N = d.size();
+  std::vector<T> result;
+  result.reserve(N);
+  double d_nrm(0.0);;
+  for(size_t i=0;i<N;++i)
+  {
+    d_nrm += (d[i]*d[i]);
+    result.push_back(d[i]);
+  }
+  d_nrm = sqrt(d_nrm);
+  for(size_t i=0;i<N;++i) result[i] /= d_nrm;
+  return result;
+}
 /*! \brief Holds parameters defining a passband computed from snr.
 
 This deconvolution operator has the option to determine the optimal

@@ -63,6 +63,11 @@ public:
      a zero phase impulse response.  This method changes the
      wavelet set with the operator. */
     void change_shaping_wavelet(const ShapingWavelet& nsw);
+    /*! getter for ShapingWavelet stored with the operator. */
+    ShapingWavelet get_shaping_wavelet() const
+    {
+	    return this->shapingwavelet;
+    };
     /* \brief Return the ideal output of the deconvolution operator.
 
     All deconvolution operators have a implicit or explicit ideal output
@@ -72,7 +77,7 @@ public:
     mspass::seismic::CoreTimeSeries ideal_output() {
         return this->shapingwavelet.impulse_response();
     };
-    /*! \brif Return the actual output of the deconvolution operator.
+    /*! \brief Return the actual output of the deconvolution operator.
 
     The actual output is defined as w^-1*w and is compable to resolution
     kernels in linear inverse theory.   Although not required we would
