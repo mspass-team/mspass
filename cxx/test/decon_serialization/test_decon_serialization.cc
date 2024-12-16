@@ -67,7 +67,7 @@ int main(int argc, char **argv)
     for(auto i=0;i<10;++i) assert(z[i] == z2[i]);
     cout << "Testing serialization of FFTDeconOperator" <<endl;
     //AntelopePf pf("RFdeconProcessor.pf");
-    AntelopePf pf=pfread("RFdeconProcessor.pf");
+    AntelopePf pf=pfread("./test/decon_serialization/RFdeconProcessor.pf");
     WaterLevelDecon wl(pf.get_branch("WaterLevel"));
     FFTDeconOperator fftdo(dynamic_cast<FFTDeconOperator&>(wl));
     save_data<FFTDeconOperator>(fftdo);
@@ -123,8 +123,8 @@ int main(int argc, char **argv)
     /* CNRDeconEngine requires a different pf file for now.  Could put it in branch 
        for this test file but for now made a separate file. */
     cout << "Reading pf to create CNRDeconEngine instance"<<endl;
-    AntelopePf pfcnr("CNRDeconEngine.pf");
-    cout << "Calling pf constructor for CNRDeconEngine"<<endl;
+    AntelopePf pfcnr = pfread("./test/decon_serialization/CNRDeconEngine.pf");
+    cout << "Calling constructor for CNRDeconEngine"<<endl;
     CNRDeconEngine e1(pfcnr);
     cout << "Testing serialization writer"<<endl;
     save_data<CNRDeconEngine>(e1);
