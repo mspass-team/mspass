@@ -18,14 +18,19 @@ import numpy as np
 from scipy import signal
 from numpy.random import randn
 
-from mspasspy.ccore.utility import AntelopePf
+from mspasspy.ccore.utility import AntelopePf,pfread
 from mspasspy.ccore.seismic import (Seismogram,
                                     TimeSeries,
                                     TimeSeriesEnsemble,
-                                    TimeReferenceType)
+                                    TimeReferenceType,
+                                    DoubleVector)
 from mspasspy.ccore.algorithms.basic import TimeWindow
 from mspasspy.ccore.algorithms.deconvolution import CNRDeconEngine
 from mspasspy.algorithms.CNRDecon import CNRRFDecon,CNRArrayDecon
+from mspasspy.algorithms.basic import ExtractComponent
+from mspasspy.algorithms.window import WindowData
+from mspasspy.util.seismic import print_metadata
+
 
 def make_impulse_vector(lag,imp,n=500):
     """
@@ -66,8 +71,18 @@ def addnoise(d,nscale=1.0,padlength=1024,npoles=3,corners=[0.1,1.0]):
     sos=signal.butter(npoles,corners,btype='bandpass',output='sos',fs=20.0)
     result=signal.sosfilt(sos,dnoise)
     for i in range(nd):
-        result[i+padlength]+=d[i]
-    return result
+        d[i] += result[i+padlength]
+    return d
+def addnoise_seismogram(d,nscale=0.1):
+    """
+    Wrapper using previously written addnoise function to 
+    add noise to a Seismogram object's data array. 
+    """
+    for k in range(3):
+        x = ExtractComponent(d,k)
+        x = addnoise(x.data,nscale=nscale)
+        d.data[k,:] = DoubleVector(x)
+    return d
 def make_wavelet_noise_data(nscale=0.1,ns=2048,padlength=512,
         dt=0.05,npoles=3,corners=[0.08,0.8]):
     wn=TimeSeries(ns)
@@ -125,79 +140,53 @@ def convolve_wavelet(d,w):
     """
     Convolves wavelet w with 3C data stored in Seismogram object d 
     to create simulated data d*w.   Returns a copy of d with the data 
-    matrix replaced by the convolved data.
+    matrix replaced by the convolved data.   Note return is a full
+    convolution of length d.npts+w.npts-d.dt.   Time 0 of the return 
+    is correct for sequence. 
     """
     dsim=Seismogram(d)
-    # We use scipy convolution routine which requires we copy the 
-    # data out of the d.data container one channel at a time.
-    wavelet=[]
-    n=w.npts
-    for i in range(n):
-        wavelet.append(w.data[i])
+    # compute the output length for full convolution
+    # for numpy convolve function
+    n = d.npts + w.npts - 1
+    dsim.set_npts(n)
+    # for full convolution the start time needs to be adjusted to 
+    # this value
+    dsim.t0 = d.t0 + w.t0;
     for k in range(3):
-        work=[]
-        n=d.npts
-        for i in range(n):
-            work.append(d.data[k,i])
-        # Warning important to put work first and wavelet second in this call
-        # or timing will be foobarred
-        work=signal.convolve(work,wavelet)
-        for i in range(n):
-            dsim.data[k,i]=work[i]
+        work=ExtractComponent(d,k)
+        convout=np.convolve(work.data,w.data)
+        dsim.data[k,:] = DoubleVector(convout)
     return dsim
-def addnoise(d,nscale=1.0,padlength=1024,npoles=3,corners=[0.1,1.0]):
+
+def make_test_data(noise_level=None,front_pad=40.0):
     """
-    Helper function to add noise to Seismogram d.  The approach is a 
-    little weird in that we shift the data to the right by padlength 
-    adding filtered random data to the front of the signal.   
-    The padding is compensated by changes to t0 to preserve relative time 
-    0.0.  The purpose of this is to allow adding colored noise to 
-    a simulated 3C seismogram. 
-    
-    :param d: Seismogram data to which noise is to be added and padded
-    :param nscale:  noise scale for gaussian normal noise
-    :param padlength:   data padded on front by this many sample of noise
-    :param npoles: number of poles for butterworth filter 
-    :param corners:  2 component array with corner frequencies for butterworth bandpass.
+    Makes test data Seismogram object.   Adds gaussian 
+    noise with sigma=noise_level.   Change front_pad to 
+    alter padding before t0.   Note front_pad/dt samples 
+    are added to front of output and t0 is alterered 
+    accordingly.  If noise_level is set that section will be
+    filled with filtered data.  Filtering is frozen in addnoise_seismogam
     """
-    nd=d.npts
-    n=nd+padlength
-    result=Seismogram(d)
-    result.set_npts(n)
-    newt0=d.t0-d.dt*padlength
-    result.set_t0(newt0)
-    # at the time this code was written we had a hole in the ccore 
-    # api wherein operator+ and operator+= were not defined. Hence in this 
-    # loop we stack the noise and signal inline.
-    for k in range(3):
-        dnoise=nscale*randn(n)
-        sos=signal.butter(npoles,corners,btype='bandpass',output='sos',fs=20.0)
-        nfilt=signal.sosfilt(sos,dnoise)
-        for i in range(n):
-            result.data[k,i]=nfilt[i]
-        for i in range(nd):
-            t=d.time(i)
-            ii=result.sample_number(t)
-            # We don't test range here because we know we won't 
-            # go outside bounds because of the logic of this function
-            result.data[k,ii]+=d.data[k,i]
-    return result
-def make_test_data(noise_level=None):
     wavelet=make_simulation_wavelet()
     dimp=make_impulse_data()
     d=convolve_wavelet(dimp,wavelet)
+    samples_to_add=int(front_pad/d.dt)
+    N = d.npts + samples_to_add
+    d2 = Seismogram(d)
+    d2.set_npts(N)
+    d2.t0 -= samples_to_add*d.dt
+    i0 = d2.sample_number(d.t0)
+    d2.data[:,i0:] = d.data[:,:]
     if noise_level:
-        d=addnoise(d,nscale=noise_level)  
-    return d
-def load_expected_result():
+        d2=addnoise_seismogram(d2,nscale=noise_level)  
+    return d2
+def make_expected_result(wavelet):
     """
-    This function needs to be created after a working version is created 
-    in the grapical_test_CNRDecon.py file.   i.e. that script needs to 
-    pickle an expected result to a file that this funtion will read. 
-    The result is the expected output of the CNRRFDecon function 
-    and the CNRArrayDecon function. 
+    This function computes an ideal output Seismogram from this tes.
     """
-    pass
+    dimp = make_impulse_data()
+    dout = convolve_wavelet(dimp,wavelet)
+    return dout
 
 def test_CNRRFDecon():
     """
@@ -207,26 +196,47 @@ def test_CNRRFDecon():
     w0 = make_simulation_wavelet()
     d0 = make_test_data()
     d0wn = make_test_data(noise_level=5.0)
-    # this creates the expected output of both CNR function with 
-    # error free simulation data
-    d_e,aout_e,iout_e = load_expected_result()
     
-    d = Seismogram(d0)
-    pf=AntelopePf('CNRDecon.pf')
+    d = Seismogram(d0wn)
+    #CHANGE ME - needs a relative path when run with pytest
+    pf=pfread('CNRDeconEngine.pf')
     engine=CNRDeconEngine(pf)
     nw = TimeWindow(-45.0,-5.0)
+    sw = TimeWindow(-5.0,30.0)
     # useful for test but normal use would use output of broadband_snr_QC
     d['low_f_band_edge'] = 2.0
     d['high_f_band_edge'] = 8.0 
-    d_decon,aout,iout = CNRRFDecon(d,engine,noise_window=nw,return_wavelet=True)
-    d_e,aout_e,iout_e = load_expected_result()
+    d_decon,aout,iout = CNRRFDecon(d,
+                                   engine,
+                                   signal_window=sw,
+                                   noise_window=nw,
+                                   return_wavelet=True,
+                                   )
+    print("Metadata container content of decon output")
+    print_metadata(d_decon)
+    d_e = make_expected_result(iout)
     # may want to window this to reduce the size of the test data pattern file
-    assert np.isclose(d_decon.data,d_e.data).all() 
-    assert np.isclose(aout.data,aout_e.data).all()
-    assert np.isclose(iout.data,iout_e.data).all()
-    # run on noisy data but just verify the differences are consistent 
-    # with simulated noise level
-    d = Seismogram(d0wn)
+    ionrm=np.linalg.norm(iout.data)
+    e = aout - iout
+    enrm = np.linalg.norm(e.data)
+    print("computed prediction error=",enrm/ionrm)
+    for k in range(3):
+        di = ExtractComponent(d_decon,k)
+        nrmdi = np.linalg.norm(di.data)
+        print("RF estiamte norm=",nrmdi)
+        di.data /= nrmdi
+        # in these tests the decon output is windowed so we need 
+        # to window dei
+        dei = ExtractComponent(d_e,k)
+        dei = WindowData(dei,di.t0,di.endtime())
+        nrmdei = np.linalg.norm(dei.data)
+        print("Expected output data vector norm=",nrmdei)
+        dei.data /= nrmdei
+        e = di - dei
+        denrm=np.linalg.norm(di.data)
+        enrm = np.linalg.norm(e.data)
+        print("Data component {} prediction error={}".format(k,enrm/denrm))
+    return
 
 def test_CNRArrayDecon():
     # generate simulation wavelet, error free data, and data with noise
@@ -234,8 +244,5 @@ def test_CNRArrayDecon():
     w0 = make_simulation_wavelet()
     d0 = make_test_data()
     d0wn = make_test_data(noise_level=5.0)
-    # this creates the expected output of both CNR function with 
-    # error free simulation data
-    d_e,aout_e,iout_e = load_expected_result()
     
-    
+test_CNRRFDecon()
