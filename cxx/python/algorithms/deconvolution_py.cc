@@ -263,7 +263,7 @@ PYBIND11_MODULE(deconvolution, m) {
     .def("compute_noise_spectrum",
         py::overload_cast<const TimeSeries&>(&CNRDeconEngine::compute_noise_spectrum),
         "Computes a noise spectrum from a TimeSeries object using the same multitaper parameters as the inverse operator")
-    .def("compute_noise_spectrum",
+    .def("compute_noise_spectrum_3C",
         py::overload_cast<const Seismogram&>(&CNRDeconEngine::compute_noise_spectrum),
         "Computes a noise spectrum from a Seismogram object using the same multitaper parameters as the inverse operator with average of three components")
     .def("ideal_output",&CNRDeconEngine::ideal_output,"Return the ideal output of the currently loaded operator")
