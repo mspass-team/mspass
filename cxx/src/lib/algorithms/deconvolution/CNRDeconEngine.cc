@@ -224,6 +224,7 @@ CNRDeconEngine::CNRDeconEngine(const CNRDeconEngine& parent)
     this->peak_snr[i] = parent.peak_snr[i];
     this->signal_bandwidth_fraction[i] = parent.signal_bandwidth_fraction[i];
   }
+  winv_t0_lag = parent.winv_t0_lag;
 }
 CNRDeconEngine& CNRDeconEngine::operator=(const CNRDeconEngine& parent)
 {
@@ -233,6 +234,7 @@ CNRDeconEngine& CNRDeconEngine::operator=(const CNRDeconEngine& parent)
     this->signal_engine=parent.signal_engine;
     this->noise_engine=parent.noise_engine;
     this->winv=parent.winv;
+    this->winv_t0_lag = parent.winv_t0_lag;
     this->algorithm = parent.algorithm;
     this->taper_data = parent.taper_data;
     this->wavelet_taper = parent.wavelet_taper;
@@ -278,7 +280,7 @@ PowerSpectrum CNRDeconEngine::compute_noise_spectrum(const TimeSeries& n)
   try{
     if(n.npts()!=noise_engine.taper_length())
     {
-      /* use this varaint of the construtor too allow the fft size to 
+      /* use this varaint of the construtor too allow the fft size to
        * be automatically changed if necessary.  */
       this->noise_engine=MTPowerSpectrumEngine(n.npts(),
         noise_engine.time_bandwidth_product(),noise_engine.number_tapers());
@@ -303,7 +305,7 @@ PowerSpectrum CNRDeconEngine::compute_noise_spectrum(const Seismogram& n)
     TimeSeries tswork;
     if(n.npts()!=noise_engine.taper_length())
     {
-      /* this may change fft size and will set dt wrong so we need the 
+      /* this may change fft size and will set dt wrong so we need the
        * call to set_df afterward to correct that. */
       noise_engine=MTPowerSpectrumEngine(n.npts(),
          noise_engine.time_bandwidth_product(),noise_engine.number_tapers());
@@ -371,6 +373,7 @@ void CNRDeconEngine::compute_winv(const TimeSeries& wavelet, const PowerSpectrum
     /* Need to always create a local copy to allow taper option to work corectly.
        Also wavelet is passed const so taper would not work anyway */
     TimeSeries w(wavelet);
+    this->winv_t0_lag = w.sample_number(0.0);
     if(this->taper_data) wavelet_taper->apply(w);
     switch(algorithm)
     {
@@ -653,18 +656,21 @@ TimeSeries CNRDeconEngine::actual_output(const TimeSeries& wavelet)
   result.set_t0(operator_dt*(-(double)i0));
   result.set_dt(this->operator_dt);
   result.set_tref(TimeReferenceType::Relative);
-  /* We need to require that wavelet time range is consistent with 
-   * opeator.   We assume relative time so we demand wavelet t0 be less 
-   * than or equal to nff2/2 to assure a wavelet signal is in the 
+  /* We need to require that wavelet time range is consistent with
+   * operator.   We assume relative time so we demand wavelet t0 be less
+   * than or equal to nff2/2 to assure a wavelet signal is in the
    * the range -nfft/2 to nff2/2.  */
-  int w0_i;
-  w0_i = wavelet.sample_number(0.0);
+  int w_t0_lag;
+  w_t0_lag = wavelet.sample_number(0.0);
+  /* We correct the relative phase of the input wavelet to that
+  saved when winv was created. */
+  w_t0_lag -= this->winv_t0_lag;
   /* note we handle two extremes differently*/
-  if(w0_i>=FFTDeconOperator::nfft)
+  if(w_t0_lag>=FFTDeconOperator::nfft)
   {
     stringstream ss;
     ss << "actual_output method received wavelet with t0="
-       << wavelet.t0() << " that resolves to offset of "<<w0_i<<" samples"
+       << wavelet.t0() << " that resolves to offset of "<<w_t0_lag<<" samples"
        <<endl
        <<"That exceeds buffer for frequency domain calculation of size="
        <<FFTDeconOperator::nfft
@@ -677,11 +683,11 @@ TimeSeries CNRDeconEngine::actual_output(const TimeSeries& wavelet)
     result.set_npts(0);
     return result;
   }
-  else if(w0_i>(FFTDeconOperator::nfft)/2)
+  else if(w_t0_lag>(FFTDeconOperator::nfft)/2)
   {
     stringstream ss;
     ss << "Warning: actual output method received wavelet with t0="
-       << wavelet.t0() << " that resolves to offset of "<<w0_i<<" samples"
+       << wavelet.t0() << " that resolves to offset of "<<w_t0_lag<<" samples"
        <<endl
        <<"That exceeds the midpoint of the frequency domain buffer used by this method="
        <<FFTDeconOperator::nfft/2
@@ -709,6 +715,8 @@ TimeSeries CNRDeconEngine::actual_output(const TimeSeries& wavelet)
           nend = wavelet.npts();
         for(i=0;i<nend;++i) work[i] = wavelet.s[i];
       }
+      /* This converts wavelet to zero phase - needed to preserve timing.*/
+      work = circular_shift(work,w_t0_lag);
       ComplexArray W(FFTDeconOperator::nfft,&(work[0]));
       gsl_fft_complex_forward(W.ptr(),1,FFTDeconOperator::nfft,wavetable,workspace);
       ComplexArray ao_fft;
