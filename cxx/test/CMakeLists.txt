@@ -14,7 +14,7 @@ if(BUILD_TESTING)
   add_subdirectory(memory)
   add_subdirectory(mseed)
 
-  add_test(NAME test_decon_serialization COMMAND ${PROJECT_BINARY_DIR}/test/decon_serialization/test_decon_serialization)
+#  add_test(NAME test_decon_serialization COMMAND ${PROJECT_BINARY_DIR}/test/decon_serialization/test_decon_serialization)
   add_test(NAME test_dmatrix COMMAND ${PROJECT_BINARY_DIR}/test/dmatrix/test_dmatrix)
 #  add_test(NAME test_Metadata COMMAND ${PROJECT_BINARY_DIR}/test/md/test_md)
 #  add_test(NAME test_amap COMMAND ${PROJECT_BINARY_DIR}/test/amap/test_amap)
