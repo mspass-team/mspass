@@ -2,13 +2,18 @@ cmake_minimum_required (VERSION 3.4)
 
 project (mspass Fortran C CXX)
 
-#set (default_build_type "Release")
-set (default_build_type "Debug")
+set (default_build_type "Release")
+#set (default_build_type "Debug")
 if (NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
   message (STATUS "Setting build type to '${default_build_type}' as none was specified.")
   set (CMAKE_BUILD_TYPE "${default_build_type}" CACHE STRING "Choose the type of build." FORCE)
 endif ()
 message (STATUS "CMAKE_BUILD_TYPE = ${CMAKE_BUILD_TYPE}")
+
+
+# Necessary for MacOS running 14.x OS with Xcode command tools 
+# Commented out by default
+set(CMAKE_OSX_SYSROOT "/Library/Developer/CommandLineTools/SDKs/MacOSX14.5.sdk")
 
 set (CMAKE_CXX_STANDARD 17)
 set (CMAKE_CXX_FLAGS_DEBUG "-Wall  -Wno-sign-compare -O0 -g")
@@ -24,12 +29,8 @@ if (CMAKE_BUILD_TYPE STREQUAL "Debug")
   set(CMAKE_CXX_OUTPUT_EXTENSION_REPLACE ON)
   message (STATUS "Enabled Coverage")
 endif ()
-
-# Necessary for MacOS running 14.x OS with Xcode command tools 
-# Commented out by default
-set(CMAKE_OSX_SYSROOT /Library/Developer/CommandLineTools/SDKs/MacOSX14.5.sdk)
-
-find_package (yaml-cpp 0.5.0)
+#find_package (yaml-cpp 0.5.0)
+find_package (yaml-cpp 0.8.0)
 if (NOT YAML_CPP_INCLUDE_DIR)
   message (STATUS "Building yaml-cpp")
   include (cmake/yaml-cpp.cmake)
