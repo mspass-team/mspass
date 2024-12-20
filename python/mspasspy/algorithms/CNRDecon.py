@@ -12,8 +12,12 @@ Created on Tue May 28 19:22:10 2024
 
 @author: pavlis
 """
+import numpy as np
+
 from mspasspy.ccore.seismic import TimeSeries, Seismogram, SeismogramEnsemble
-from mspasspy.ccore.utility import MsPASSError, ErrorSeverity, Metadata
+from mspasspy.ccore.algorithms.basic import _WindowData3C
+from mspasspy.ccore.utility import ErrorSeverity
+from mspasspy.ccore.algorithms.deconvolution import CNRDeconEngine
 from mspasspy.algorithms.window import WindowData
 from mspasspy.algorithms.basic import ExtractComponent
 
@@ -78,23 +82,15 @@ def validate_bandwidth_data(d, bd, bdkeys):
         if bd[0] < 0.0 or bd[1] < 0.0:
             message = "Error parsing require bandwidth data\n"
             if bd[0] < 0.0:
-                message += (
-                    "Could not fetch data for low frequency corner using key {}\n",
-                    format(bdkeys[0]),
-                )
+                message += "Could not fetch data for low frequency corner using key {}\n".format(bdkeys[0])
             if bd[1] < 0.0:
-                message += (
-                    "Could not fetch data for high frequency corner using key {}\n",
-                    format(bdkeys[1]),
-                )
+                message += "Could not fetch data for high frequency corner using key {}\n".format(bdkeys[1])
             d.elog.log_error(alg, message, ErrorSeverity.Invalid)
             d.kill()
         elif bd[1] <= bd[0]:
-            message = (
-                "Invalid bandwidth data retrieved:  flow={} and fhigh={}\n".format(
+            message = "Invalid bandwidth data retrieved:  flow={} and fhigh={}\n".format(
                     bd[0], bd[1]
                 )
-            )
             message += "Require flow<fhigh"
             d.elog.log_error(alg, message, ErrorSeverity.Invalid)
             d.kill()
@@ -156,171 +152,222 @@ def fetch_and_validate_bandwidth_data(
         d = validate_bandwidth_data(d, bdvals, bdkeys)
     return [d, bdvals[0], bdvals[1]]
 
+def prediction_error(engine,wavelet)->float:
+    """
+    Computes prediction error of deconvolution operator defined as 
+    norm(ao-io)/norm(io) where ao is the return from the 
+    actual_output method of engine and io is the return from 
+    the ideal_output of engine.  The computed norm is L2
+    :param engine:   assumed valid instance of a CNRDeconEngine 
+       class
+    :param wavelet:   wavelet TimeSeries object used in deconvolution.
+       For this operator it is not necessarily constant this 
+       required for actual_output method.
+    """
+
+    # with internal use can assume ao and io are the same length
+    # and time aligned - caution 
+    ao = engine.actual_output(wavelet)
+    io = engine.ideal_output()
+    err = ao - io
+    return np.linalg.norm(err.data)/np.linalg.norm(io.data)
+
 
 def CNRRFDecon(
     seis,
     engine,
     component=2,
-    wavelet=None,
-    noise_data=None,
+    noise_spectrum=None,
     signal_window=None,
     noise_window=None,
-    use_3C_noise=False,
+    use_3C_noise=True,
     bandwidth_subdocument_key=None,
     bandwidth_keys=["low_f_band_edge", "high_f_band_edge"],
+    QCdata_key="CNRFDecon_properties",
     return_wavelet=False,
 ) -> tuple:
     """
-    Uses the CNRRFDeconEngine instance passed as `engine` to deconvolve
-    the content of the input `Seismogram` object passed via `seis` (arg0).
-    The "CNR" algorithm used a "colored noise regularization" algorithm
-    that has two novel features:
+    Uses the CNRRFDeconEngine instance passed as `engine` to 
+    produce a "receiver function" type of deconvolution from an 
+    input `Seismogram` object passed through arg0.   I define a 
+    "receiver function" as the output of a deconvolution 
+    from a single seismogram input.   That differs from an array 
+    deconvolution where multiple seismograms are used to compute 
+    the convolution operator.   The `CNRDeconEngine` C++ class 
+    used by this function has a sibling called `CNRArrayDecon` that 
+    uses the same engine but is an array method.   
+    
+    As a "receiver function" algorithm this function demands some 
+    restrictions on the input that are checked before it will run.
+    1.   The input through arg0 must be a `Seismgram`.
+    2.   An instance of a `CNRDeconEngine` is required and must 
+         be entered via arg1.
+    3.   The algorithm requires a segment of the input Seismogram 
+         data it should treat as signal and a power spectrum
+         estimate of the noise to use for regularization.   
+         
+    For flexibility the way you can satisify item 3 has some 
+    complexity.   There are two combinations of arguments that 
+    can be used to satisfy requirement 3
+    1.  Define BOTH signal_window and noise_window (both args are None 
+        by default).   When that constraint is true the input 
+        Seismogram (seis == arg0) is cut into two segments defined 
+        by the noise_window and signal_window `TimeWindow` objects.  
+        The segment defined by "signal_window" will be deconvolved in 
+        the frequency domain using the component defined by the 
+        `component` argument as the wavelet estimate.   Since this 
+        algorithm is designed for P wave data that is expected to 
+        be some estimate of the longitudinal component (Z of RTZ, L of LQT, 
+        of P of the free surface transformation).  This algorithm 
+        then computes a noise spectrum estimate internally from the 
+        waveform segment extracted with using the noise_window time range. 
+        If use_3C_noise is set True the average of all three components is 
+        used for the spectrum estimate.   When False the spectrum is 
+        computed form the longitudinal component defined with the 
+        "component" argument.  NOTE:   this approach should be viewed
+        as the standard usage of this function.
+    2.  An alternative approach is triggered by passing a valid 
+        `PowerSpectrum` object via the "noise_data" argument.   When 
+        that is the case the spectrum estimate in the object received is 
+        used for the inverse operator regularization.   In this 
+        case the data are assumed already windowed if signal_window is 
+        None and noise_window is ignored.  When signal_window is defined 
+        the data for deconvolution is windowed to that time range 
+        before running the deconvolution operator.   
+        
+    An alternative way to look at this is the function uses the following 
+    logic to sort out valid inputs.  It is written in python pseudocode
+    
+       if noise_data:
+           if signal_window:
+               seis = WindowData(seis,signal_window.start, signal_window.end)
+           deconvolve seis 
+       elif signal_window and noise_window:
+           seis = WindowData(seis,signal_window.start, signal_window.end)
+           noise = WindowData(seis,noise_window.start,noise_window.end)
+           noise_spectrum = engine.compute_spectrum(noise)
+           deconvolve seis using noise_spectrum
+       else:
+           raise exception
+         
+    The algorithm applied by this function has two novel features:
     1.  The bandwidth of the deconvolution operator is adjusted based on
         estimated bandwith from the spectrum of the signal and noise.
-        The bandwwidth properties by are extracted from Metadata
+        The bandwwidth properties are extracted from Metadata
         using keys with defaults defined by values stored in a
         subdocument (python dict) accessed by the key defined by
         the "bandwidth_keys" argument.  The defaults are those
         set by the mspass function broadband_snr_QC.
     2.  The inverse is regularized by by a frequency dependent damping
         using the noise spectrum.
-
-    There are some complexities in the use of this function due to
-    issue in how the operator is initialized.   That is, the engine
-    is generic and made to work for this single station and the
-    related array algorithm found in this same module.   A key point is
-    that entering the required arguments (0 and 1) alone will never
-    work and some combination of kwarg values is always required
-    for the function to run.   That is admittedly a bit weird but
-    a necessary evil to use the generic engine for speed.
-    The choices are:
-
-    1.  For standard P wave receiver function estimates the simplest
-        model is to require `seis` to be a Seismogram object rotated so
-        that one component can be used as a wavelet.  (ZNR, LQT, or FST)
-        In that case `component` should specify the component to extract
-        that should be treated as the source wavelet (Z,L, or P component).
-        In that case normal use would set the signal_window as a time
-        window relative to the P time of the data section to be deconvolved.
-        Normal use for this context would set the `noise_window` to
-        a `TimeWindow` of data before P that should be treated as the noise.
-        In that situation we use WindowData to carve out both windows
-        from the input `seis` Seismogram data.  i.e. the algorithm
-        assumes the input `seis` spans a time range that incluces
-        the range of `signal_window` and `noise_window`.
-    2.  An alternative is to window the signal and noise data
-        before calling this function.   If that is the case the algorithm
-        expects `signal_window` and `noise_window` to be the default
-        None type and the `seis` input defines the signal_window and
-        `noise_data` are already windowed versions of the data to use
-        to compute the operator.
-    3.  There are nonstandard variations possible with 2 that depend on
-        the boolean argument `use_3C_noise`.  When True in this context
-        `noise_data` is assumed to be a `Seismogram` object.  When False
-        it is required to be a `TimeSeries.   The difference is that when
-        True the average power of the noise on all three components is used
-        for the damping of the inverse.  When false the spectrum used
-        is expected to be computed from a scalar signal.   Note that means
-        for option 1 if `use_3C_model` is False the spectrum is computed
-        from the same component used to define the wavelet.
-    4.  To compute so called S-wave receiver functions all three of the
-        above options can work BUT you must change the parameters
-        appropriately.  In particular, when windows are used they
-        must be very different from P.  The different options allow some
-        variation in choices.   In all case, however, a key difference is
-        that for S data the estimate is actually precursors to S so
-        the signal of interest precedes S, which would normally be time 0.
-        The function currently has no procedure to reverse the time as is
-        common practice for handlign S-RF data.
-
-    Any other usage may not work or produce invalid results.
+         
+    Examples found in tutorials demonstrate how this algorithm 
+    produce usable output in marginal snr conditions that would cause 
+    other common RF decon operators to produce junk.  
+    
 
     The main work of this function is done inside a C++ function
     bound to python of type `CNRDeconEngine` passed as the arg1
     (symbol `engine`).   The engine is passed as an argument because
-    it has a fairly high instantiation cost.
+    it has a fairly high instantiation cost.   Note that object 
+    is always instantiated an AntelopePf file that defines its 
+    properties.  See the comments in the default file and the 
+    documentation of the C++ class for guidance on setting the 
+    engine parameters.  
 
 
-    key-value pairs:
-        `algorithm` - "generalized_water_level" or "color_noise_damping"
-        `damping_factor`
-        `noise_floor`
-        `target_sample_interval`
-        `deconvolution_window_start`
-        `deconvolution_window_end`
-        `operator_nfft`  - optrional overide of default nfft size computed by power of 2
-        TODO:   easier to do from mod of CNR3CDecon.pf
 
     Function arguments:
 
     :param seis:   `Seismogram` object containing data to be deconvolved.
-    As noted above it should normally be the section of data that is to be
-    deconvolved or a larger window that will contain data defined by
-    the signal_window and noise_window sections,.
+      As noted above it should normally be the section of data that is to be
+      deconvolved or a larger window that will contain data spanning the time
+      range defined by the signal_window and noise_window arguments.
     :type seis:  Must be a `Seismogram` object.
     :param engine:   Instance of the CNRDeconEngine object noted above.
-    Most of the behavior of the operator is defined by this engine object.
+        Most of the behavior of the operator is defined by this engine object.
     :type engine:  `CNRDeconEngine`
     :param component:   component of seis to use as the wavelet estimate.
-    This parameter is only used if the wavelet argument is None (the default).
-    If signal_window is define the data are first windowed to that range
-    before the wavelet is extracted from the specified component.  Note that is
-    the classic "rexceiver function" concept where some P component is extracted
-    as the wavelet estimate.
+        As noted above this function is designed for P wave data so ths 
+        should defined the component number of seis to assume is an 
+        estimate of the source wavelet. 
     :type component: integer (default 2)
-    :param wavelet:   Alternative way to specify wavelet to use for deconvolution,
-    When defined (default is None meaning undefined) the signal it contains
-    will be used to estimate a deconvolution operator using the colored noise
-    method.
-    :type wavelet:  `TimeSeries`
-    :param noise_data:   Alternative way to define data to be used to compute
-    noise spectrum for wavelet regularization.   When defined the spectrum of the signal
-    contained in this atomic seismic object is used to regularize the inverse
-    operator for the deconvolution.
-    :type noise_data:  must be a `TimeSeries` object unless the `use_3C_noise`
-    boolean (see below) is set True.  When that is True and this arg is not
-    None it the contents must be a `Seismogram` object.
-    :param signal_window:   time span to extract as the signal to be deconvolved.
+    :param wavelet:   Alternative way to specify wavelet to use for deconvolution, f
+    :param noise_spectrum:   Alternative way to define data to be used 
+        to regularize the deconvolution operator.  See above for 
+        usage restrictions.
+    :type noise_spectrum:  `PowerSpectrum` object or None.   If None (default)
+        both the `signal_window` and `noise_window` must be defines 
+        (see above for the full logic).
+    :param signal_window:   time span to extract as the signal to be    
+        deconvolved.  If defined it is always used.   Only allowed to 
+        be None if `noise_spectrum` is defined.
     :type signal_window:  mspasspy `TimeWindow` object.
     :param noise_window:  similar to signal_window but for data section that
-    is to be defined as noise.  This arg is ignored even if set if the
-    `noise_data` argument contains a valid seismic datum.
+        is to be defined as noise.  Ignored if `noise_spectrum` is defined. 
+        Otherwise it is required and data in the specified time range is 
+        used to regularize the inverse operator in the frequency domain.
+    :type noise_window:  `TimeSeries` object or None (default)  Note 
+        can be None only if `noise_spectum` is defined.
     :param use_3C_noise:  When True the power spectrum used for regularizing
-    the inverse for deconvolution will be computed from the average power
-    spectrum on all three components.   When False (default) the spectrum
-    is derived by extracting a TimeSeries from that defined by the
-    component argument.  The function tests for consistency of possiblel
-    combinations.  The function will thrown an exception if use_3C_noise is
-    set True and `noise_data` defined but not a `Seismogram` object.  If
-    False and `noise_data` is a `Seismogram` the noise spectrum will be
-    computed from the data defined by the `component` index (0, 1, or 2)
+        the inverse for deconvolution will be computed from the average power
+        spectrum on all three components.   When False (default) the spectrum
+        is derived by extracting a TimeSeries from that defined by the
+        component argument.  Ignored if `noise_spectrum` is defined
     :param bandwidth_subdocument_key:  When set (default is None)
-    bandwidth data will be extracted from a subdocument retrieved with
-    this key.   e.g. the broadband_snr_QC function, which would be the normal
-    input, has a default of `Parrival` into which snr data are posted including
-    bandwidth estimates.  When set the function first retrieves the
-    subdocument dict and then the keys defined by `bandwidth_keys` are
-    extracted from that dict container.   When this arg is None (default)
-    the `bandwidth_keys` are assumed to be defined directly in the Metadata
-    container of seis.
+        bandwidth data will be extracted from a subdocument retrieved with
+        this key.   e.g. the broadband_snr_QC function, which would be the normal
+        input, has a default of `Parrival` into which snr data are posted including
+        bandwidth estimates.  When set the function first retrieves the
+        subdocument dict and then the keys defined by `bandwidth_keys` are
+        extracted from that dict container.   When this arg is None (default)
+        the `bandwidth_keys` are assumed to be defined directly in the Metadata
+        container of seis.
     :type bandwidth_subdocument_key:  string
     :param bandwidth_keys:  must define a tuple with two strings that are
-    keys defining the bandwidth defined for the inverse operator.   Those
-    values should normally be computed by using the MsPASS function
-    `broadband_srr_QC`.  The 0 component of the tuple is assumed to be
-    a key to use to extract the low frequency corner estimate for the data
-    bandwidth.   Component 1 is the key used to extract the high frequency
-    corner.  Note the relationship of this parameter to
-    `bandwidth_subdocument_key` described immediately above.
-    :type bandwidth_keys:  tuple with two strings defining value keys.
+        keys defining the bandwidth defined for the inverse operator.   Those
+        values should normally be computed by using the MsPASS function
+        `broadband_srr_QC`.  The 0 component of the tuple is assumed to be
+        a key to use to extract the low frequency corner estimate for the data
+        bandwidth.   Component 1 is the key used to extract the high frequency
+        corner.  Note the relationship of this parameter to
+        `bandwidth_subdocument_key` described immediately above.
+    :type bandwidth_keys:  tuple with two strings defining value keys.  
+        Defaults are keys used by `broadband_snr_QC` so this parameter 
+        will not need to be changed unless a different algorithm is used 
+        to estimate te bandwidth parameters.
+    :param QCdata_key:   The engine has a QCMetrics method that 
+        posts some useful data for evaluating results.  This function 
+        adds others.  The combination is posted to a python dict 
+        that is then pushed to the return datum's Metadata container 
+        with this key.  The result when stored in MongoDB is a 
+        "subdocument" with this key.
+    :type QCdata_key:  string (default "CNRFDecon_properties" )
     :param return_wavelet:  When False (default) only the estimated
-    receiver function is returned.  When True the return is a tuple
-    with 0 containing the RF estimate, 1 containing the actual_output
-    of the operator and 1 containing the ideal outpu wavelet.
+        receiver function is returned.  When True the return is a tuple
+        with 0 containing the RF estimate, 1 containing the actual_output
+        of the operator and 1 containing the ideal outpu wavelet.
     :return:  `Seismogram` when return_wavelet is False and a tuple as
-    described above if True.
+        described above if True.
 
     """
+    # required arg type checks
+    alg = "CNRRFDecon"
+    if not isinstance(seis,Seismogram):
+        message = alg
+        message += ":  illegal type={} for arg0\n".format(str(type(seis)))
+        message += "arg0 must be a Seismogram object"
+        raise TypeError(message)
+    if seis.dead():
+        if return_wavelet:
+            return [seis,None,None]
+        else:
+            return seis
+    if not isinstance(engine,CNRDeconEngine):
+        message = alg
+        message += ":  required arg1 (engine) is invalid type={}\n".format(str(type(engine)))
+        message += "Must be an instance of a CNRDeconEngine"
+        raise TypeError(message)
     if component not in [0, 1, 2]:
         message = (
             "Illegal value received with component={}.  must be 0, 1, or 2".format(
@@ -328,115 +375,111 @@ def CNRRFDecon(
             )
         )
         raise ValueError(message)
-    alg = "CNRRFDecon"
-    if wavelet:
-        w = wavelet
+        
+    if signal_window:
+        # using the C++ bound function for efficiency here
+        # the pybind11 code will throw a bit of an obscure but decipherable 
+        # message if signal_window is an invalid type
+        d = _WindowData3C(seis,signal_window)
     else:
-        if signal_window:
-            d2use = WindowData(seis, signal_window.start, signal_window.end)
-        else:
-            d2use = seis
-        w = ExtractComponent(d2use, component)
-    if noise_data:
-        n2use = noise_data
+        # important to make  copy here as error conditions could clobber
+        # origial
+        d = Seismogram(seis)
+    
+    if noise_spectrum:
+        if noise_spectrum.dead():
+            message = "Received noise_spectrum PowerSpectrum object marked dead - cannot process this datum"
+            d.elog.log_error(alg,message,ErrorSeverity.Invalid)
+            d.kill()
+            if return_wavelet:
+                return [d,None,None]
+            else:
+                return d
+        psnoise = noise_spectrum
     else:
         if noise_window:
-            n2use = WindowData(seis, noise_window.start, noise_window.end)
+            n = _WindowData3C(seis,noise_window)
+            if use_3C_noise:
+                psnoise = engine.compute_noise_spectrum_3C(n)
+            else:
+                n = ExtractComponent(n,component)
+                psnoise = engine.compute_noise_spectrum(n)
+            if psnoise.dead():
+                # this appends elog contents to data elog before returning it dead
+                d.elog += psnoise.elog
+                message = "Failure in engine.compute_noise_spectrum;  see previous elog message for reason"
+                d.elog.log_error("CNRDecon", message, ErrorSeverity.Invalid)
+                d.kill()
+                # default constructed Seismogram is already marked dead so no need for kill call
+                if return_wavelet:
+                    return [d, None, None]
+                else:
+                    return d
         else:
-            message = "Illegal argument combination.   noise_data argument "
-            message += "is None but noise_window argument was also undefined\n"
+            message = alg
+            message += ":  illegal argument combination\n"
+            message += "When noise_spectrum is not defined BOTH signal_window and noise_window arguments must be defined"
             raise ValueError(message)
-    if use_3C_noise and isinstance(n2use, TimeSeries):
-        message = "Illegal argument combination.   "
-        message += "received a TimeSeries as noise_data but use_3C_noise was set True"
-        raise ValueError(message)
-    if not use_3C_noise and isinstance(n2use, Seismogram):
-        n2use = ExtractComponent(n2use, component)
+    
     odt = engine.get_operator_dt()
-    if w.dt != odt:
-        message = "wavelet dt = {} does not match fixed operator dt={}\n".format(
-            w.dt, odt
+    if d.dt != odt:
+        message = "datum dt = {} does not match fixed operator dt={}\n".format(
+            d.dt, odt
         )
         message += "Cannot deconvolve this datum; killing output"
-        d2use.kill()
-        d2use.set_npts(0)
-        d2use.elog.log_error(alg, message, ErrorSeverity.Invalid)
-        return d2use
-    if d2use.dt != odt:
-        message = "data dt = {} does not match fixed operator dt={}\n".format(
-            d2use.dt, odt
-        )
-        message += "Cannot deconvolve this datum; killing output"
-        d2use.kill()
-        d2use.set_npts(0)
-        d2use.elog.log_error(alg, message, ErrorSeverity.Invalid)
-        return d2use
-    # have to test noise separately because of option to load noise data
-    # as a separate Seismogram object
-    if n2use.dt != odt:
-        message = "noise data dt = {} does not match fixed operator dt={}\n".format(
-            d2use.dt, odt
-        )
-        message += "Cannot deconvolve this datum; killing output"
-        d2use.kill()
-        d2use.set_npts(0)
-        d2use.elog.log_error(alg, message, ErrorSeverity.Invalid)
-        return d2use
-    if use_3C_noise:
-        if isinstance(n2use, Seismogram):
-            psnoise = engine.compute_noise_spectrum(n2use)
-        else:
-            message = alg
-            message += ":  use_3C_noise is set True but noise data received is not a Seismogram object"
-            raise TypeError(message)
-    else:
-        if isinstance(n2use, TimeSeries):
-            psnoise = engine.compute_noise_spectrum(n2use)
-        else:
-            message = alg
-            message += ":  use_3C_noise is set False bot noise data received is not a TimeSeries object"
-            raise TypeError(message)
-    if psnoise.dead():
-        dout = Seismogram()
-        dout.elog += psnoise.elog
-        message = "Failure in engine.compute_noise_spectrum;  see previous elog message for reason"
-        dout.elog.log_error("CNRDecon", message, ErrorSeverity.Invalid)
-        # default constructed Seismogram is already marked dead so no need for kill call
+        d.kill()
+        d.set_npts(0)
+        d.elog.log_error(alg, message, ErrorSeverity.Invalid)
         if return_wavelet:
-            return [dout, None, None]
+            return [d,None,None]
         else:
-            return dout
-    [d2use, flow, fhigh] = fetch_and_validate_bandwidth_data(
-        d2use,
+            return d
+
+
+    [d, flow, fhigh] = fetch_and_validate_bandwidth_data(
+        d,
         bandwidth_keys,
         bandwidth_subdocument_key,
     )
 
     # A datume can be killed in the above test so return immediately if
     # that happened
-    if d2use.dead():
-        return d2use
-
+    if d.dead():
+        if return_wavelet:
+            return [d,None,None]
+        else:
+            return d
+    # for an RF a data component is used as a wavelet
+    w = ExtractComponent(d,component)
     engine.initialize_inverse_operator(w, psnoise)
-    dout = engine.process(d2use, psnoise, flow, fhigh)
-    QCmd = engine.QCMetrics()
-    dout["CNRDecon_QCmetrics"] = QCmd
-    # These will be in the subdocument QCmd but duplicating them
-    # at at the document level will make queries on easier
-    dout["CNRDecon_f_low"] = flow
-    dout["CNRDecon_f_high"] = fhigh
-    retval = []
-    retval.append(dout)
+    d = engine.process(d, psnoise, flow, fhigh)
+    if d.dead():
+        if return_wavelet:
+            return [d,None,None]
+        else:
+            return d
+    else:
+        QCmd = engine.QCMetrics()
+        # convert to a dict for posting
+        QCmd = dict(QCmd)
+        QCmd['algorithm'] = alg
+        # this is not currently computed in the C++ operator
+        # but is a critical metric that is easily computed with numpy
+        # note RFdeconProcessor has this same algorithm which is 
+        # a maintenance issue to assure they are consistent
+        pe = prediction_error(engine,w)
+        QCmd["prediction_error"]=pe
+        d[QCdata_key] = QCmd
     if return_wavelet:
         retval = []
-        retval.append(dout)
+        retval.append(d)
         ao = engine.actual_output(w)
         retval.append(ao)
         ideal_out = engine.ideal_output()
         retval.append(ideal_out)
         return retval
     else:
-        return dout
+        return d
 
 
 def CNRArrayDecon(
@@ -494,7 +537,7 @@ def CNRArrayDecon(
         2.  If `noise_spectrum` is undefined (i.e. None type default)
             the two arguments `signal_window` and `noise_window` must both
             be defined as valid mspass `TimeWindow` objects.  In this mode
-            beam and all the members of ensemble are assumed to be in
+            beam and all the members of the ensemble are assumed to be in
             relative time and of sufficient duration that we can use
             `WindowData` to extract required data.  Note the time range
             of the `noise_window` is only relevant to the beam
@@ -521,8 +564,8 @@ def CNRArrayDecon(
     It is not at all clear which are preferred or even if it matters.
 
     The other key issue in a solution produced by the algorithm used in
-    CNRDeconEngine is the bandwidth used to shape the output.   The engine
-    `deconvolve` method has arguments for the low and high frequency corners
+    CNRDeconEngine is the bandwidth used to shape the output.   The engine's'
+    deconvolution algorithm has arguments for the low and high frequency corners
     that should be used to set the shaping wavelet for the output.
     With an ensemble the choice of what that bandwidth should be is
     not clear.   The default extracts the required data form the
@@ -559,15 +602,21 @@ def CNRArrayDecon(
     if not isinstance(ensemble, SeismogramEnsemble):
         message = "Illegal type for arg0 = "
         message += str(type(ensemble))
-        message += "\nMust be a TimeSeriesEnsemble"
+        message += "\nMust be a SeismogramEnsemble"
         raise TypeError(message)
-    if ensemble.dead():
-        return [ensemble]
     if not isinstance(beam, (TimeSeries, Seismogram)):
         message = "Illegal type for required arg1 = "
         message += str(type(beam))
         message += "\nMust be a TimeSeries or Seismogram"
         raise TypeError(message)
+    if ensemble.dead() or beam.dead():
+        if beam.dead():
+            message="Received beam input marked dead - cannot proceed"
+            ensemble.elog.log_error(prog,message,ErrorSeverity.Invalid)
+            ensemble.kill() 
+        if return_wavelet:
+            return[ensemble,None,None]
+        return ensemble
 
     # if noise_spectrum is defined noise_windowing is ignored
     if noise_spectrum:
@@ -586,7 +635,10 @@ def CNRArrayDecon(
             message += "Killing entire ensemble because we cannot deconvolve these data with this algorithm without noise data"
             ensemble.elog.log_error(prog, message, ErrorSeverity.Invalid)
             ensemble.kill()
-            return [ensemble]
+            if return_wavelet:
+                return [ensemble,None,None]
+            else:
+                return ensemble
         if isinstance(n2use, TimeSeries) and use_3C_noise:
             message = (
                 "beam is a TimeSeries but requested 3C noise with windowing enabled\n"
@@ -599,10 +651,10 @@ def CNRArrayDecon(
             # noise is extracted, now we need to extract the beam component
             # as the wavelet
             beam = ExtractComponent(beam, beam_component)
-        # this method is overloaded.  When input is Seismogram
-        # it will automatically compute average spectrum of all
-        # three components
-        psnoise = engine.compute_noise_spectrum(n2use)
+        if use_3C_noise:
+            psnoise = engine.compute_noise_spectrum3C(n2use)
+        else:
+            psnoise = engine.compute_noise_spectrum(n2use)
         beam = WindowData(beam, signal_window.start, signal_window.end)
     else:
         message = "Illegal argument combination.\n"
@@ -632,7 +684,10 @@ def CNRArrayDecon(
             ensout.elog = beam.elog
             ensout.elog.log_error(prog, message, ErrorSeverity.Invalid)
             ensout.kill()
-            return [ensout]
+            if return_wavelet:
+                return [ensout,None,None]
+            else:
+                return ensout
     for i in range(len(ensout.member)):
         if ensout.member[i].live:
             d = ensout.member[i]  # only an alias in this context
