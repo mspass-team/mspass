@@ -1,5 +1,6 @@
 macro(fetch_yaml_cpp _download_module_path _download_root)
     set(YAML_CPP_DOWNLOAD_ROOT ${_download_root})
+    set(CMAKE_OSX_SYSROOT /Library/Developer/CommandLineTools/SDKs/MacOSX14.5.sdk)
     configure_file(
         ${_download_module_path}/yaml-cpp-download.cmake
         ${_download_root}/CMakeLists.txt
