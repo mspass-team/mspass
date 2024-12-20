@@ -1,4 +1,5 @@
 #include <string>
+#include <sstream>
 #include "mspass/utility/MsPASSError.h"
 #include "mspass/algorithms/algorithms.h"
 #include "mspass/algorithms/amplitudes.h"
@@ -266,6 +267,14 @@ void CNRDeconEngine::initialize_inverse_operator(const TimeSeries& wavelet,
 }
 PowerSpectrum CNRDeconEngine::compute_noise_spectrum(const TimeSeries& n)
 {
+  if(n.dead())
+  {
+    PowerSpectrum badout;
+    badout.elog.log_error("CNRDeconEngine:compute_noise",
+        "Received noise data segment marked dead",
+        ErrorSeverity::Invalid);
+    return badout;
+  }
   try{
     if(n.npts()!=noise_engine.taper_length())
     {
@@ -281,6 +290,14 @@ PowerSpectrum CNRDeconEngine::compute_noise_spectrum(const TimeSeries& n)
 }
 PowerSpectrum CNRDeconEngine::compute_noise_spectrum(const Seismogram& n)
 {
+  if(n.dead())
+  {
+    PowerSpectrum badout;
+    badout.elog.log_error("CNRDeconEngine:compute_noise",
+        "Received noise data segment marked dead",
+        ErrorSeverity::Invalid);
+    return badout;
+  }
   try{
     PowerSpectrum avg3c;
     TimeSeries tswork;
@@ -625,6 +642,56 @@ TimeSeries CNRDeconEngine::ideal_output()
 }
 TimeSeries CNRDeconEngine::actual_output(const TimeSeries& wavelet)
 {
+  TimeSeries result(wavelet);  // Use this to clone metadata and elog from wavelet
+  result.set_npts(FFTDeconOperator::nfft);
+  /* Force these even though they are likely already defined as
+  in the parent wavelet TimeSeries. */
+  result.set_live();
+  /* We always shift this wavelet to the center of the data vector.
+  We handle the time through the CoreTimeSeries object. */
+  int i0=FFTDeconOperator::nfft/2;
+  result.set_t0(operator_dt*(-(double)i0));
+  result.set_dt(this->operator_dt);
+  result.set_tref(TimeReferenceType::Relative);
+  /* We need to require that wavelet time range is consistent with 
+   * opeator.   We assume relative time so we demand wavelet t0 be less 
+   * than or equal to nff2/2 to assure a wavelet signal is in the 
+   * the range -nfft/2 to nff2/2.  */
+  int w0_i;
+  w0_i = wavelet.sample_number(0.0);
+  /* note we handle two extremes differently*/
+  if(w0_i>=FFTDeconOperator::nfft)
+  {
+    stringstream ss;
+    ss << "actual_output method received wavelet with t0="
+       << wavelet.t0() << " that resolves to offset of "<<w0_i<<" samples"
+       <<endl
+       <<"That exceeds buffer for frequency domain calculation of size="
+       <<FFTDeconOperator::nfft
+       <<endl
+       <<"Cannot compute actual_output because we assume signal is in range t>0"
+       <<endl;
+    result.elog.log_error("CNRDeconEngine::actual_output",
+         ss.str(), ErrorSeverity::Invalid);
+    result.kill();
+    result.set_npts(0);
+    return result;
+  }
+  else if(w0_i>(FFTDeconOperator::nfft)/2)
+  {
+    stringstream ss;
+    ss << "Warning: actual output method received wavelet with t0="
+       << wavelet.t0() << " that resolves to offset of "<<w0_i<<" samples"
+       <<endl
+       <<"That exceeds the midpoint of the frequency domain buffer used by this method="
+       <<FFTDeconOperator::nfft/2
+       <<endl
+       <<"Result may be incorrect as the function assumes the signal is after time 0"
+       <<endl;
+    result.elog.log_error("CNRDeconEngine::actual_output",
+         ss.str(), ErrorSeverity::Complaint);
+  }
+
   try {
       std::vector<double> work;
       if(wavelet.npts() == FFTDeconOperator::nfft)
@@ -654,23 +721,12 @@ TimeSeries CNRDeconEngine::actual_output(const TimeSeries& wavelet)
       vector<double> ao;
       ao.reserve(FFTDeconOperator::nfft);
       for(int k=0; k<ao_fft.size(); ++k) ao.push_back(ao_fft[k].real());
-      /* We always shift this wavelet to the center of the data vector.
-      We handle the time through the CoreTimeSeries object. */
-      int i0=FFTDeconOperator::nfft/2;
       ao=circular_shift(ao,i0);
       ao = normalize<double>(ao);
-      TimeSeries result(wavelet);  // Use this to clone metadata and elog from wavelet
-      result.set_npts(FFTDeconOperator::nfft);
-      /* Force these even though they are likely already defined as
-      in the parent wavelet TimeSeries. */
-      result.set_live();
-      result.set_t0(operator_dt*(-(double)i0));
-      result.set_dt(this->operator_dt);
-      result.set_tref(TimeReferenceType::Relative);
       /* set_npts always initializes the s buffer so it is more efficient to
       copy ao elements rather than what was here before:
         result.s=ao;
-        */
+      */
       for(int k=0;k<FFTDeconOperator::nfft;++k) result.s[k]=ao[k];
       return result;
   } catch(...) {

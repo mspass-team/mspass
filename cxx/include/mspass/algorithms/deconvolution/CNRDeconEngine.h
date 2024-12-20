@@ -140,6 +140,10 @@ private:
     double peak_snr[3];
     double signal_bandwidth_fraction[3];
     mspass::algorithms::deconvolution::ComplexArray winv;
+    /* This is the lag from sample 0 for the time defines as 0 for the
+    wavelet used to compute the inverse.  It is needed to resolve time
+    in the actual_output method.*/
+    int winv_t0_lag;
     /*** Private methods *****/
     void update_shaping_wavelet(const double fl, const double fh);
     /* These are two algorithms for computing inverse operator in the frequency domain*/
@@ -175,6 +179,7 @@ private:
       ar & noise_engine;
       ar & snr_regularization_floor;
       ar & winv;
+      ar & winv_t0_lag;
       ar & regularization_bandwidth_fraction;
       ar & peak_snr;
       ar & signal_bandwidth_fraction;
