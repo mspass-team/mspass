@@ -2,12 +2,13 @@
 # -*- coding: utf-8 -*-
 
 import sys
+import os
 import pickle
 import numpy as np
 import pytest
 
-#CHANGE ME BEFORE COMMIT
-#sys.path.append("/geode2/home/u070/pavlis/Quartz/src/mspass/python/tests")
+# module to test
+sys.path.append("python/tests")
 from helper import (
     get_live_seismogram,
     get_live_timeseries,
@@ -39,6 +40,8 @@ def test_RFdeconProcessor():
     Test program for RFdeconProcessor class.  Duplicates some
     testing of RFdecon which uses this class.
     """
+    # needed to find pf file in engine constructor
+    os.environ["PFPATH"]="./data/pf"
     # Run the same sequence for all algorithms defined for
     # RFdeconProcessor
     alglist=["MultiTaperXcor","MultiTaperSpecDiv","LeastSquares","WaterLevel"]
@@ -93,6 +96,8 @@ def test_RFdecon():
     need to extract data from a preevent noise window.  That is tested
     independently here.
     """
+    # needed to find pf file in engine constructor
+    os.environ["PFPATH"]="./data/pf"
     # note this definition of 3000 samples at 20 sps and setting t0 to
     # -35 s must be consistent with data window parameters in the
     # RFdeconProcessor.pf file stored data/pf.
@@ -148,6 +153,8 @@ def test_RFdecon_error_handlers():
     variations in what would be posted to elog are too difficult to cover
     so we only test generic handling as kills.
     """
+    # needed to find pf file in engine constructor
+    os.environ["PFPATH"]="./data/pf"
     # this starting point will work with defaults. We dither copies of it
     # to test error handling of common issues
     seis0 = get_live_seismogram(3000, 20.0)

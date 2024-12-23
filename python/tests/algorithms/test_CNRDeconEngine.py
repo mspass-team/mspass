@@ -16,6 +16,7 @@ Created on Wed Dec 23 10:29:26 2020
 """
 import pytest
 import pickle
+import os
 import numpy as np
 from scipy import signal
 from numpy.random import randn
@@ -245,8 +246,8 @@ def test_CNRRFDecon():
     d0wn['high_f_band_edge'] = 8.0
     
     d = Seismogram(d0wn)
-    #CHANGE ME - needs a relative path when run with pytest
-    pf=pfread('data/pf/CNRDeconEngine.pf')
+    # use default pf file for this and all tests in this file
+    pf=pfread('./data/pf/CNRDeconEngine.pf')
     engine=CNRDeconEngine(pf)
     nw = TimeWindow(-45.0,-5.0)
     sw = TimeWindow(-5.0,30.0)
@@ -318,8 +319,7 @@ def test_CNRRFDecon_error_handlers():
     d0wn['high_f_band_edge'] = 8.0
     
     d = Seismogram(d0wn)
-    #CHANGE ME - needs a relative path when run with pytest
-    pf=pfread('data/pf/CNRDeconEngine.pf')
+    pf=pfread('./data/pf/CNRDeconEngine.pf')
     engine=CNRDeconEngine(pf)
     nw = TimeWindow(-45.0,-5.0)
     sw = TimeWindow(-5.0,30.0)
@@ -407,8 +407,7 @@ def test_CNRArrayDecon():
     # note noise level of 5.0 is a frozen constant in make_ensemble_data
     d0 = make_test_data(noise_level=1.0)
     w0 = ExtractComponent(d0,2)
-    #CHANGE ME - needs a relative path when run with pytest
-    pf=pfread('data/pf/CNRDeconEngine.pf')
+    pf=pfread('./data/pf/CNRDeconEngine.pf')
     engine=CNRDeconEngine(pf)
     nw = TimeWindow(-45.0,-5.0)
     sw = TimeWindow(-5.0,30.0)
@@ -490,8 +489,7 @@ def test_CNRArrayDecon_error_handlers():
     # pattern for seismogram wavelet input
     s0 = WindowData(d0,sw.start,sw.end)
     
-    #CHANGE ME - needs a relative path when run with pytest
-    pf=pfread('data/pf/CNRDeconEngine.pf')
+    pf=pfread('./data/pf/CNRDeconEngine.pf')
     engine=CNRDeconEngine(pf) 
     nw = TimeWindow(-45.0,-5.0)
     sw = TimeWindow(-5.0,30.0)
@@ -511,13 +509,13 @@ def test_CNRArrayDecon_error_handlers():
     # verify handlling of dead input
     e = SeismogramEnsemble(e0)
     e.kill()
-    w = Seismogram(w0)
+    w = Seismogram(d0)
     e_d = CNRArrayDecon(e, w, engine,noise_window=nw,signal_window=sw)
     assert e_d.dead()
     
     # dead wavelet creates dead output and an error message
     e = SeismogramEnsemble(e0)
-    w = Seismogram(w0)
+    w = Seismogram(d0)
     w.kill()
     e_d = CNRArrayDecon(e, w, engine,noise_window=nw,signal_window=sw)
     assert e_d.dead()
@@ -525,7 +523,7 @@ def test_CNRArrayDecon_error_handlers():
     
     # finally test handlers that log but do not throw exceptions
     e = SeismogramEnsemble(e0)
-    w = Seismogram(w0)
+    w = Seismogram(d0)
     e_d = CNRArrayDecon(e, 
                         w,
                         engine,
@@ -535,7 +533,7 @@ def test_CNRArrayDecon_error_handlers():
     assert e_d.dead()
     assert e_d.elog.size()>0
     
-test_CNRRFDecon()
-test_CNRRFDecon_error_handlers()
-test_CNRArrayDecon()
-test_CNRRFDecon_error_handlers()
+#test_CNRRFDecon()
+#test_CNRRFDecon_error_handlers()
+#test_CNRArrayDecon()
+#test_CNRRFDecon_error_handlers()
