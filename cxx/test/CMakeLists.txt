@@ -14,7 +14,9 @@ if(BUILD_TESTING)
   add_subdirectory(memory)
   add_subdirectory(mseed)
 
-  add_test(NAME test_decon_serialization COMMAND ${PROJECT_BINARY_DIR}/test/decon_serialization/test_decon_serialization WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+# note this test needs to access a data file in the run directory. 
+# we set that with WORKING_DIRECTORY and the special symbol after the keyword
+  add_test(NAME test_decon_serialization COMMAND ${PROJECT_BINARY_DIR}/test/decon_serialization/test_decon_serialization WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/decon_serialization)
   add_test(NAME test_dmatrix COMMAND ${PROJECT_BINARY_DIR}/test/dmatrix/test_dmatrix)
   add_test(NAME test_Metadata COMMAND ${PROJECT_BINARY_DIR}/test/md/test_md WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/md)
 #  add_test(NAME test_amap COMMAND ${PROJECT_BINARY_DIR}/test/amap/test_amap)
