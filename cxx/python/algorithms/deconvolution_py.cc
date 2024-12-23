@@ -251,7 +251,10 @@ PYBIND11_MODULE(deconvolution, m) {
     .def(py::init<>())
     */
     .def(py::init<const AntelopePf&>())
-    .def("initialize_inverse_operator",
+    /* This overloaded version is not currently used in python functions that
+    use this operator.   Left in the binding code for flexilitity but could be
+    deleted*/
+    .def("initialize_inverse_operator_TS",
         py::overload_cast<const TimeSeries&,const TimeSeries&>(&CNRDeconEngine::initialize_inverse_operator),
         "Load required data to initialize frequency domain inverse operator - overloaded version using time domain noise vector")
     .def("initialize_inverse_operator",

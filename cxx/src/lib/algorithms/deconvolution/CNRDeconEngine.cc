@@ -18,7 +18,6 @@ CNRDeconEngine::CNRDeconEngine() : FFTDeconOperator()
   /* This constructor does not initialize everything.  It initializes
   only the simple types and the values are not necessarily reasonable. */
   algorithm = CNR3C_algorithms::colored_noise_damping;
-  taper_data = false;
   damp=1.0;
   noise_floor = 1.5;
   band_snr_floor = 1.5;
@@ -129,76 +128,6 @@ CNRDeconEngine::CNRDeconEngine(const AntelopePf& pf)
     long ntapers=pf.get_long("number_tapers");
     this->noise_engine=MTPowerSpectrumEngine(noise_winlength,tbp,ntapers,noise_winlength,this->operator_dt);
     this->signal_engine=MTPowerSpectrumEngine(this->winlength,tbp,ntapers,this->winlength,this->operator_dt);
-    string sval;
-    sval=pf.get_string("taper_type");
-    if(sval=="linear")
-    {
-      double f0,f1,t1,t0;
-      AntelopePf pfb=pf.get_branch("LinearTaper");
-      AntelopePf pfbranch=pfb.get_branch("wavelet_taper");
-      f0=pfbranch.get_double("front0");
-      f1=pfbranch.get_double("front1");
-      t1=pfbranch.get_double("tail1");
-      t0=pfbranch.get_double("tail0");
-      wavelet_taper=shared_ptr<LinearTaper>(new LinearTaper(f0,f1,t1,t0));
-      pfbranch=pfb.get_branch("data_taper");
-      f0=pfbranch.get_double("front0");
-      f1=pfbranch.get_double("front1");
-      t1=pfbranch.get_double("tail1");
-      t0=pfbranch.get_double("tail0");
-      data_taper=shared_ptr<LinearTaper>(new LinearTaper(f0,f1,t1,t0));
-      this->taper_data=true;
-    }
-    else if(sval=="cosine")
-    {
-      double f0,f1,t1,t0;
-      AntelopePf pfb=pf.get_branch("CosineTaper");
-      AntelopePf pfbranch=pfb.get_branch("wavelet_taper");
-      f0=pfbranch.get_double("front0");
-      f1=pfbranch.get_double("front1");
-      t1=pfbranch.get_double("tail1");
-      t0=pfbranch.get_double("tail0");
-      wavelet_taper=shared_ptr<CosineTaper>(new CosineTaper(f0,f1,t1,t0));
-      pfbranch=pfb.get_branch("data_taper");
-      f0=pfbranch.get_double("front0");
-      f1=pfbranch.get_double("front1");
-      t1=pfbranch.get_double("tail1");
-      t0=pfbranch.get_double("tail0");
-      data_taper=shared_ptr<CosineTaper>(new CosineTaper(f0,f1,t1,t0));
-      this->taper_data=true;
-    }
-    else if(sval=="vector")
-    {
-      AntelopePf pfbranch=pf.get_branch("VectorTaper");
-      vector<double> tdataread;
-      list<string> tdl;
-      tdl=pfbranch.get_tbl("wavelet_taper_vector");
-      tdataread.reserve(tdl.size());
-      list<string>::iterator tptr;
-      for(tptr=tdl.begin();tptr!=tdl.end();++tptr)
-      {
-        double val;
-        sscanf(tptr->c_str(),"%lf",&val);
-        tdataread.push_back(val);
-      }
-      wavelet_taper=shared_ptr<VectorTaper>(new VectorTaper(tdataread));
-      tdataread.clear();
-      tdl.clear();
-      tdl=pfbranch.get_tbl("data_taper_vector");
-      tdataread.reserve(tdl.size());
-      for(tptr=tdl.begin();tptr!=tdl.end();++tptr)
-      {
-        double val;
-        sscanf(tptr->c_str(),"%lf",&val);
-        tdataread.push_back(val);
-      }
-      data_taper=shared_ptr<VectorTaper>(new VectorTaper(tdataread));
-      this->taper_data=true;
-    }
-    else
-    {
-      this->taper_data=false;
-    }
   }catch(...){throw;};
 }
 /* Standard copy constructor */
@@ -209,9 +138,6 @@ CNRDeconEngine::CNRDeconEngine(const CNRDeconEngine& parent)
           winv(parent.winv)
 {
   this->algorithm = parent.algorithm;
-  this->taper_data = parent.taper_data;
-  this->wavelet_taper = parent.wavelet_taper;
-  this->data_taper = parent.data_taper;
   this->damp = parent.damp;
   this->noise_floor = parent.noise_floor;
   this->band_snr_floor = parent.band_snr_floor;
@@ -236,9 +162,6 @@ CNRDeconEngine& CNRDeconEngine::operator=(const CNRDeconEngine& parent)
     this->winv=parent.winv;
     this->winv_t0_lag = parent.winv_t0_lag;
     this->algorithm = parent.algorithm;
-    this->taper_data = parent.taper_data;
-    this->wavelet_taper = parent.wavelet_taper;
-    this->data_taper = parent.data_taper;
     this->damp = parent.damp;
     this->noise_floor = parent.noise_floor;
     this->band_snr_floor = parent.band_snr_floor;
@@ -257,15 +180,47 @@ CNRDeconEngine& CNRDeconEngine::operator=(const CNRDeconEngine& parent)
 void CNRDeconEngine::initialize_inverse_operator(const TimeSeries& wavelet,
         const TimeSeries& noise_data)
 {
-  /* Assume wavelet and noise_data have the correct sample rate.
-  * python wrapper should guarantee that */
-  PowerSpectrum psnoise(this->compute_noise_spectrum(noise_data));
-  this->initialize_inverse_operator(wavelet,psnoise);
+  const string alg("CNRDeconEngine::initialize_inverse_operator");
+  if(wavelet.dead() || noise_data.dead())
+  {
+    string message;
+    message = alg + string(":  Received TimeSeries inputs marked dead\n");
+    if(wavelet.dead()) message += "wavelet signal input was marked dead\n";
+    if(noise_data.dead()) message += "noise data segment was marked dead\n";
+    throw MsPASSError(message,ErrorSeverity::Invalid);
+  }
+  try{
+    /* Assume wavelet and noise_data have the correct sample rate.
+    * python wrapper should guarantee that */
+    PowerSpectrum psnoise(this->compute_noise_spectrum(noise_data));
+    if(psnoise.dead())
+    {
+      string message;
+      message = alg + string("compute_noise_spectrum method failed - cannot compute inverse opeator");
+      throw MsPASSError(message,ErrorSeverity::Invalid);
+    }
+    this->initialize_inverse_operator(wavelet,psnoise);
+  }catch(...){throw;};
 }
 void CNRDeconEngine::initialize_inverse_operator(const TimeSeries& wavelet,
         const PowerSpectrum& noise_spectrum)
 {
-  this->compute_winv(wavelet,noise_spectrum);
+  string alg("CNRDeconEngine::initialize_inverse_operator");
+  if(wavelet.dead())
+  {
+    string message;
+    message = alg + string("Received wavelet signal marked dead");
+    throw MsPASSError(message,ErrorSeverity::Invalid);
+  }
+  if(noise_spectrum.dead())
+  {
+    string message;
+    message = alg + string("Received a PowerSpectrum object marked dead");
+    throw MsPASSError(message,ErrorSeverity::Invalid);
+  }
+  try{
+    this->compute_winv(wavelet,noise_spectrum);
+  }catch(...){throw;};
 }
 PowerSpectrum CNRDeconEngine::compute_noise_spectrum(const TimeSeries& n)
 {
@@ -327,7 +282,7 @@ PowerSpectrum CNRDeconEngine::compute_noise_spectrum(const Seismogram& n)
     /* We define total power as the average on all three
     components */
     double scl=1.0/3.0;
-    for(size_t i=0;i<avg3c.nf();++i)
+    for(int i=0;i<avg3c.nf();++i)
          avg3c.spectrum[i]*=scl;
     return avg3c;
   }catch(...){throw;};
@@ -369,12 +324,13 @@ bool sample_interval_invalid(const mspass::seismic::BasicTimeSeries& d,
   */
 void CNRDeconEngine::compute_winv(const TimeSeries& wavelet, const PowerSpectrum& psnoise)
 {
+  /* Because this is a private method we don't test if wavelet and psnoise
+  are marked dead.  Methods that call this one should always do so though.*/
   try{
     /* Need to always create a local copy to allow taper option to work corectly.
        Also wavelet is passed const so taper would not work anyway */
     TimeSeries w(wavelet);
     this->winv_t0_lag = w.sample_number(0.0);
-    if(this->taper_data) wavelet_taper->apply(w);
     switch(algorithm)
     {
       case CNR3C_algorithms::generalized_water_level:
@@ -545,11 +501,30 @@ will almost always be junk.
 Seismogram CNRDeconEngine::process(const Seismogram& d, const PowerSpectrum& psnoise,
     const double fl, const double fh)
 {
+  const string alg("CNRDeconEngine::process");
+  if(d.dead() || psnoise.dead())
+  {
+    Seismogram dout(d);
+    dout.set_npts(0);
+    if(d.dead())
+    {
+      dout.elog.log_error(alg,
+        "received Seismogram input segment marked dead - cannot process",
+        ErrorSeverity::Invalid);
+    }
+    if(psnoise.dead())
+    {
+      dout.elog.log_error(alg,
+        "received PowerSpectrum object marked dead - cannot process",
+        ErrorSeverity::Invalid);
+    }
+    dout.kill();
+    return dout;
+  }
   try{
     string base_error("CNRDeconEngine::process:  ");
     this->update_shaping_wavelet(fl,fh);
     Seismogram rfest(d);
-    // needs work:  post_bandwidth_data(rfest,signal_bwd);
     /* This is used to apply a shift to the fft outputs to put signals
     at relative time 0 */
     int t0_shift;
@@ -645,6 +620,16 @@ TimeSeries CNRDeconEngine::ideal_output()
 }
 TimeSeries CNRDeconEngine::actual_output(const TimeSeries& wavelet)
 {
+  if(wavelet.dead())
+  {
+    TimeSeries badout(wavelet);
+    badout.kill();
+    badout.set_npts(0);
+    badout.elog.log_error("CRFDeconEngine::actual_output",
+       "received wavelet data via arg0 marked dead - cannot procede",
+       ErrorSeverity::Invalid);
+    return badout;
+  }
   TimeSeries result(wavelet);  // Use this to clone metadata and elog from wavelet
   result.set_npts(FFTDeconOperator::nfft);
   /* Force these even though they are likely already defined as
@@ -707,7 +692,7 @@ TimeSeries CNRDeconEngine::actual_output(const TimeSeries& wavelet)
       else
       {
         work.reserve(FFTDeconOperator::nfft);
-        size_t i,nend;
+        int i,nend;
         for(i=0;i<FFTDeconOperator::nfft;++i) work.push_back(0.0);
         if(wavelet.npts()>FFTDeconOperator::nfft)
           nend = FFTDeconOperator::nfft;

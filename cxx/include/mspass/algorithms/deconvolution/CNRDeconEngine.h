@@ -102,10 +102,6 @@ public:
 
 private:
     CNR3C_algorithms algorithm;
-    bool taper_data;  //Set false only if none specified
-    /* As the name suggest we allow different tapers for data and wavelet */
-    std::shared_ptr<mspass::algorithms::BasicTaper> wavelet_taper;
-    std::shared_ptr<mspass::algorithms::BasicTaper> data_taper;
     /* For the colored noise damping algorithm the damper is frequency dependent.
        The same issue in water level that requires a floor on the water level
        applies to damping.   We use noise_floor to create a lower bound on
@@ -165,10 +161,6 @@ private:
       ar.register_type(static_cast<VectorTaper *>(NULL));
       ar & boost::serialization::base_object<FFTDeconOperator>(*this);
       ar & algorithm;
-      ar & taper_data;
-      /* These two are the polymorphic pointers that cause complications*/
-      ar & wavelet_taper;
-      ar & data_taper;
       ar & damp;
       ar & noise_floor;
       ar & band_snr_floor;
