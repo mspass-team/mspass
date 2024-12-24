@@ -6,6 +6,9 @@
 #include <iostream>
 #include <gsl/gsl_errno.h>
 #include <gsl/gsl_fft_complex.h>
+#include <boost/archive/text_iarchive.hpp>
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/serialization/shared_ptr.hpp>
 
 #define REAL(z,i) ((z)[2*(i)])
 #define IMAG(z,i) ((z)[2*(i)+1])
@@ -21,6 +24,14 @@ typedef struct FortranComplex64 {
     double real;
     double imag;
 } FortranComplex64;
+/* needed for boost serialization */
+template<class Archive>
+void serialize(Archive & ar, FortranComplex64 &z, const unsigned int version)
+{
+    ar & z.real;
+    ar & z.imag;
+}
+
 
 /* \brief Interfacing object to ease conversion between FORTRAN and C++ complex.
 
@@ -74,14 +85,14 @@ public:
       created with the new operator and the caller should
       be sure to use delete [] to free this memory when
       finished. */
-    template<class T> T *FortranData();
+    //template<class T> T *FortranData();
     /* This is same for what I think fortran calls
        double complex */
 //        double *FortranData();
     /* C representation.  This can be templated easily.
     See below.  The syntax is weird and should probably
     be wrapped with a typedef */
-    template<class T> std::vector<std::complex<T> > CPPData();
+    //template<class T> std::vector<std::complex<T> > CPPData();
 
 
     /* Operators are the most important elements of this
@@ -145,16 +156,41 @@ private:
        what standard numeric libraries (e.g. most fft routines)
        use.  */
     /*I decided to use 64 bit, since the GSL's fft routine is using that.*/
-    FortranComplex64 *data;
+    /* Changed from raw pointer to shared_ptr by glp - Dec 2024 */
+    //FortranComplex64 *data;
+    std::shared_ptr<FortranComplex64[]> data;
     int nsamp;
+    friend boost::serialization::access;
+    template<class Archive>
+    void save(Archive& ar, const unsigned int version) const
+    {
+      std::vector<FortranComplex64> dv;
+      dv.reserve(this->nsamp);
+      for(auto i=0;i<nsamp;++i) dv.push_back(this->data[i]);
+      ar & nsamp;
+      ar & dv;
+    }
+    template<class Archive>
+    void load(Archive &ar, const unsigned int version)
+    {
+        ar & this->nsamp;
+        std::vector<FortranComplex64> dv;
+        dv.reserve(this->nsamp);
+        ar & dv;
+        this->data = std::shared_ptr<FortranComplex64[]>
+                   (new FortranComplex64[this->nsamp]);
+        for(auto i=0;i<this->nsamp;++i) this->data[i] = dv[i];
+    }
+    BOOST_SERIALIZATION_SPLIT_MEMBER()
 };
 /* This would normally be in the .h file and since I don't think
    you've used templates worth showing you how it would work. */
+/*
 template <class T> std::vector<std::complex<T> > ComplexArray::CPPData()
 {
     std::vector<std::complex<T> > result;
     result.reserve(nsamp);
-    int i;
+    std::size_t  i;
     for(i=0; i<nsamp; ++i)
     {
         std::complex<T> z(data[i].real, data[i].imag);
@@ -162,50 +198,53 @@ template <class T> std::vector<std::complex<T> > ComplexArray::CPPData()
     }
     return result;
 }
+*/
 
+/*
 template<class T> T* ComplexArray::FortranData()
 {
     T* result=new T[nsamp];
-    for(int i=0; i<nsamp; i++)
+    for(std::size_t i=0; i<nsamp; i++)
         result[i]=data[i];
     return result;
 }
+*/
 
 template<class T> ComplexArray::ComplexArray(int n, std::vector<T> d)
 {
     nsamp=n;
     if(nsamp>d.size())
     {
-        data=new FortranComplex64[nsamp];
-        for(int i=0; i<d.size(); i++)
+        data = std::shared_ptr<FortranComplex64[]>(new FortranComplex64[nsamp]);
+        for(std::size_t i=0; i<d.size(); i++)
         {
-            data[i].real=d[i];
-            data[i].imag=0.0;
+            this->data[i].real=d[i];
+            this->data[i].imag=0.0;
         }
-        for(int i=d.size(); i<nsamp; i++)
+        for(std::size_t i=d.size(); i<nsamp; i++)
         {
-            data[i].real=0.0;
-            data[i].imag=0.0;
+            this->data[i].real=0.0;
+            this->data[i].imag=0.0;
         }
     }
     else
     {
-        data=new FortranComplex64[nsamp];
-        for(int i=0; i<nsamp; i++)
+        data = std::shared_ptr<FortranComplex64[]>(new FortranComplex64[nsamp]);
+        for(std::size_t i=0; i<nsamp; i++)
         {
-            data[i].real=d[i];
-            data[i].imag=0.0;
+            this->data[i].real=d[i];
+            this->data[i].imag=0.0;
         }
     }
 }
 template<class T> ComplexArray::ComplexArray(int n, T d)
 {
     nsamp=n;
-    data=new FortranComplex64[nsamp];
-    for(int i=0; i<nsamp; i++)
+    data = std::shared_ptr<FortranComplex64[]>(new FortranComplex64[nsamp]);
+    for(std::size_t i=0; i<nsamp; i++)
     {
-        data[i].real=d;
-        data[i].imag=0.0;
+        this->data[i].real=d;
+        this->data[i].imag=0.0;
     }
 }
 /*

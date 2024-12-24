@@ -102,29 +102,34 @@ template <typename Tdata> double scale(Tdata& d,const ScalingMethod method,
     {
       case ScalingMethod::Peak:
         amplitude=PeakAmplitude(windowed_data);
-        dscale = level/amplitude;
-        newcalib /= dscale;
         break;
       case ScalingMethod::ClipPerc:
         amplitude=PercAmplitude(windowed_data,level);
-        /* for this scaling we use level as perf and output level is frozen
-        to be scaled to order unity*/
-        dscale = 1.0/amplitude;
-        newcalib /= dscale;
         break;
       case ScalingMethod::MAD:
         amplitude=MADAmplitude(windowed_data);
-        dscale = level/amplitude;
-        newcalib /= dscale;
         break;
       case ScalingMethod::RMS:
       default:
         amplitude=RMSAmplitude(windowed_data);
-        dscale = level/amplitude;
-        newcalib /= dscale;
     };
-    d *= dscale;
-    d.put(scale_factor_key,newcalib);
+    /* needed to handle case with a vector of all 0s*/
+    if(amplitude>0.0)
+    {
+      dscale = level/amplitude;
+      newcalib /= dscale;
+      d *= dscale;
+      d.put(scale_factor_key,newcalib);
+    }
+    else
+    {
+      std::stringstream ss;
+      ss << "Data array is all 0s and cannot be scaled";
+      d.elog.log_error("scale",ss.str(),mspass::utility::ErrorSeverity::Complaint);
+      /* This may not be necessary but it assures this value is always set on 
+      return even if it means nothing*/
+      d.put(scale_factor_key,newcalib);
+    }
     return amplitude;
   }catch(...){throw;};
 }
@@ -239,6 +244,12 @@ template <typename Tdata> double scale_ensemble(mspass::seismic::Ensemble<Tdata>
 
     /* restore to a value instead of natural log*/
     avgamp=exp(avgamp);
+    /* Silently do nothing if all the data are zero.   Would be better to 
+    log an error but use as a "Core" object doesn't contain an elog attribute*/
+    if(avgamp<=0.0)
+    {
+      return 0.0;      
+    }
     double dscale=level/avgamp;
     /* Now scale the data and apply calib */
     for(dptr=d.member.begin();dptr!=d.member.end();++dptr)
@@ -261,6 +272,22 @@ template <typename Tdata> double scale_ensemble(mspass::seismic::Ensemble<Tdata>
     }
     return avgamp;
   }catch(...){throw;};
+}
+/*! Convert an std::vector to a unit vector based on L2 norm.*/
+template <class T> std::vector<T> normalize(const std::vector<T>& d)
+{
+  size_t N = d.size();
+  std::vector<T> result;
+  result.reserve(N);
+  double d_nrm(0.0);;
+  for(size_t i=0;i<N;++i)
+  {
+    d_nrm += (d[i]*d[i]);
+    result.push_back(d[i]);
+  }
+  d_nrm = sqrt(d_nrm);
+  for(size_t i=0;i<N;++i) result[i] /= d_nrm;
+  return result;
 }
 /*! \brief Holds parameters defining a passband computed from snr.
 

@@ -296,17 +296,19 @@ class TestDatabase:
         self.db._read_data_from_gridfs(tmp_seis_2, gridfs_id)
         assert all(a.any() == b.any() for a, b in zip(tmp_seis.data, tmp_seis_2.data))
 
-        with pytest.raises(KeyError, match="npts is not defined"):
-            tmp_seis_2.erase("npts")
-            self.db._read_data_from_gridfs(tmp_seis_2, gridfs_id)
+        # test handling of problems with npts - two error conditions
+        # note the next two tests in older version threw exceptions.
+        tmp_seis_2.erase("npts")
+        self.db._read_data_from_gridfs(tmp_seis_2, gridfs_id)
+        assert tmp_seis_2.dead()
+        assert tmp_seis_2.elog.size() == 1
 
-        with pytest.raises(ValueError) as err:
-            tmp_seis_2.npts = 256
-            self.db._read_data_from_gridfs(tmp_seis_2, gridfs_id)
-            assert (
-                str(err.value) == "ValueError: Size mismatch in sample data. "
-                "Number of points in gridfs file = 765 but expected 768"
-            )
+        tmp_seis_2.npts = 256
+        tmp_seis_2.set_live()
+        self.db._read_data_from_gridfs(tmp_seis_2, gridfs_id)
+        assert tmp_seis_2.dead()
+        # because we recycle tmp_seis the above adds another elog message
+        assert tmp_seis_2.elog.size() == 2
 
         tmp_ts = get_live_timeseries()
         ts_return = self.db._save_sample_data_to_gridfs(tmp_ts)

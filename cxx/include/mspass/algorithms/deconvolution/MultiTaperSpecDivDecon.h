@@ -1,6 +1,10 @@
 #ifndef __PAVLIS_MULTITAPER_DECON_H__
 #define __PAVLIS_MULTITAPER_DECON_H__
 #include <vector>
+#include <boost/archive/text_iarchive.hpp>
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/serialization/base_object.hpp>
+#include <boost/serialization/vector.hpp>
 #include "mspass/utility/Metadata.h"
 #include "mspass/utility/dmatrix.h"
 #include "mspass/algorithms/deconvolution/ComplexArray.h"
@@ -12,7 +16,8 @@ namespace mspass::algorithms::deconvolution{
 class MultiTaperSpecDivDecon: public ScalarDecon, public FFTDeconOperator
 {
 public:
-
+    /*! Default constructor.   Do not use - only for declarations */
+    MultiTaperSpecDivDecon() : ScalarDecon(),FFTDeconOperator(){};
     MultiTaperSpecDivDecon(const mspass::utility::Metadata &md,const std::vector<double> &noise,
                           const std::vector<double> &wavelet,const std::vector<double> &data);
     MultiTaperSpecDivDecon(const mspass::utility::Metadata &md);
@@ -121,6 +126,22 @@ private:
     option of bootstrap errors. */
     std::vector<ComplexArray> rfestimates;
     int apply();
+    friend boost::serialization::access;
+    template<class Archive>
+    void serialize(Archive &ar, const unsigned int version)
+    {
+        ar & boost::serialization::base_object<FFTDeconOperator>(*this);
+        ar & boost::serialization::base_object<ScalarDecon>(*this);
+        ar & noise;
+        ar & nw;
+        ar & damp;
+        ar & nseq;
+        ar & taperlen;
+        ar & tapers;
+        ar & winv;
+        ar & ao_fft;
+        ar & rfestimates;
+    }
 };
 }
 #endif

@@ -1,4 +1,5 @@
 #include "mspass/utility/MsPASSError.h"
+#include "mspass/algorithms/amplitudes.h"
 #include "mspass/algorithms/deconvolution/LeastSquareDecon.h"
 #include "mspass/algorithms/deconvolution/MultiTaperXcorDecon.h"
 namespace mspass::algorithms::deconvolution
@@ -6,6 +7,7 @@ namespace mspass::algorithms::deconvolution
 using namespace std;
 using namespace mspass::seismic;
 using namespace mspass::utility;
+using mspass::algorithms::amplitudes::normalize;
 
 LeastSquareDecon::LeastSquareDecon(const LeastSquareDecon &parent)
     : FFTDeconOperator(parent)
@@ -103,7 +105,8 @@ void LeastSquareDecon::process()
 
     //apply shaping wavelet but only to rf estimate - actual output and
     //inverse_wavelet methods apply it to when needed there for efficiency
-    rf_fft=(*shapingwavelet.wavelet())*rf_fft;
+    ShapingWavelet sw(this->get_shaping_wavelet());
+    rf_fft=(*sw.wavelet())*rf_fft;
 
     //ifft gets result
     gsl_fft_complex_inverse(rf_fft.ptr(), 1, nfft, wavetable, workspace);
@@ -148,14 +151,6 @@ CoreTimeSeries LeastSquareDecon::actual_output()
         /* Getting dt from here is unquestionably a flaw in the api, but will
         retain for now.   Perhaps should a copy of dt in the ScalarDecon object. */
         double dt=this->shapingwavelet.sample_interval();
-        /* Old API
-        result.t0= (-dt*((double)i0));
-        result.dt=dt;
-        result.live=true;
-        result.tref=TimeReferenceType::Relative;
-        result.s=ao;
-        result.ns=nfft;
-        */
 
         result.set_t0(-dt*((double)i0));
         result.set_dt(dt);
@@ -163,6 +158,7 @@ CoreTimeSeries LeastSquareDecon::actual_output()
         result.set_npts(nfft);
         result.set_tref(TimeReferenceType::Relative);
         for(int k=0;k<nfft;++k)result.s[k]=ao[k];
+        result.s = normalize<double>(result.s);
         return result;
     } catch(...) {
         throw;
@@ -190,7 +186,11 @@ CoreTimeSeries LeastSquareDecon::inverse_wavelet()
 }
 Metadata LeastSquareDecon::QCMetrics()
 {
-    cerr << "LeastSquareDecon::QCMetrics not yet implemented"<<endl;
-    return Metadata();
+  /* Return only an empty Metadata container.  Done as it is
+  easier to maintain the code letting python do this work.
+  This also anticipates new metrics being added which would be
+  easier in python.*/
+  Metadata md;
+  return md;
 }
 } //End namespace

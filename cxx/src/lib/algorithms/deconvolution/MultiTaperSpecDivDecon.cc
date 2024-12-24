@@ -5,6 +5,7 @@
 #include "mspass/utility/Metadata.h"
 #include "mspass/utility/MsPASSError.h"
 #include "mspass/utility/utility.h"
+#include "mspass/algorithms/amplitudes.h"
 #include "mspass/algorithms/deconvolution/MultiTaperSpecDivDecon.h"
 #include "mspass/algorithms/deconvolution/dpss.h"
 /* this include is local to this directory*/
@@ -14,6 +15,7 @@ namespace mspass::algorithms::deconvolution
 using namespace std;
 using namespace mspass::seismic;
 using namespace mspass::utility;
+using mspass::algorithms::amplitudes::normalize;
 
 MultiTaperSpecDivDecon::MultiTaperSpecDivDecon(const Metadata &md)
     : ScalarDecon(md), FFTDeconOperator(md)
@@ -110,20 +112,11 @@ int MultiTaperSpecDivDecon::read_metadata(const Metadata &md,bool refresh)
             set them as follows */
             seql=0;
             int sequ=nseq-1;
-	    //DEBUG
-	    /*
-	    cerr << "Size of taperlen passed to dpss_cals"<<this->taperlen<<endl;
-	    cerr << "nw="<<nw<<" seql="<<seql<<" sequ="<<sequ<<endl;
-	    */
             dpss_calc(taperlen, nw, seql, sequ, work);
-	    /*
-	    cerr << "Raw vector of tapers returned by dpss_calc"<<endl;
-	    for(i=0;i<(nseq*taperlen);++i) cerr << work[i]<<endl;
-	    */
             /* The tapers are stored in row order in work.  We preserve that
             here but use the dmatrix to store the values as transpose*/
             tapers=dmatrix(nseq,taperlen);
-            vector<double> norms;
+            //vector<double> norms;
             for(i=0,ii=0; i<nseq; ++i)
             {
                 for(j=0; j<taperlen; ++j)
@@ -132,18 +125,9 @@ int MultiTaperSpecDivDecon::read_metadata(const Metadata &md,bool refresh)
                     ++ii;
                 }
             }
-	    //DEBUG
-	    /*
-	    cerr << "Calling normalize_rows"<<endl;
-            norms=normalize_rows(tapers);
-	    for(i=0;i<norms.size();++i) cerr <<"eigentaper "<<i<<" has L2 norm "
-		    << norms[i]<<endl;
-		    */
             delete [] work;
             shapingwavelet=ShapingWavelet(md,nfft);
         }
-        //DEBUG
-        //cerr<< "Exiting constructor - damp="<<damp<<endl;
         return 0;
     } catch(...) {
         throw;
@@ -207,20 +191,6 @@ vector<ComplexArray> MultiTaperSpecDivDecon::taper_data(const vector<double>& si
     tdata.reserve(ntapers);
     vector<double> work;
     work.reserve(nfft);
-    //DEBUG
-    /*
-    cerr<<"in taper_data;  ntapers="<<ntapers<<endl
-	    << "nfft variable="<<nfft<<endl;
-    cerr << "signal vector size="<<signal.size()<<endl;
-    cerr << "taper matrix taper length="<<tapers.columns()<<endl;
-    */
-    if(tapers.columns()!=signal.size())
-    {
-      cerr << "MultiTaperSpecDivDecon::taper_data method: "
-	      << "Data vector length received ="<<signal.size()
-	      << " is inconsistent with taper length="<<tapers.columns()<<endl
-	      << "Zeroing data outside taper length"<<endl;
-    }
     for(j=0; j<nfft; ++j) work.push_back(0.0);
     for(i=0; i<ntapers; ++i)
     {
@@ -229,10 +199,6 @@ vector<ComplexArray> MultiTaperSpecDivDecon::taper_data(const vector<double>& si
         for(j=0; j<this->tapers.columns(); ++j)
         {
             work[j]=tapers(i,j)*signal[j];
-            //DEBUG
-	    /*
-	    cerr << "i,j="<<i<<","<<j<<" taper(i,j)="<<tapers(i ,j)<<" signal[j]="<<signal[j]<<" work[j]="<<work[j]<<endl;
-	    */
         }
         /* Force zero pads always */
         ComplexArray cwork(nfft,work);
@@ -244,13 +210,6 @@ void MultiTaperSpecDivDecon::process()
 {
   const string base_error("MultiTaperSpecDivDecon::process():  ");
   try{
-	  //DEBUG
-	  /*
-	  cerr << "Entered process method"<<endl;
-	  cerr << "wavelet, data, noise vectors"<<endl;
-	  for(int itest=0;itest<wavelet.size();++itest)
-	    cerr << wavelet[itest]<<" "<<data[itest]<<" "<<noise[itest]<<endl;
-	    */
     /* WARNING about this algorithm. At present there is nothing to stop
     a coding error of calling the algorithm with inconsistent signal and
     noise data vectors. */
@@ -268,19 +227,6 @@ void MultiTaperSpecDivDecon::process()
     {
         gsl_fft_complex_forward(tdata[i].ptr(),1,nfft,wavetable,workspace);
     }
-    //DEBUG
-    /*
-    double dtaper01(0.0);
-    for(j=0;j<nfft;++j)
-    {
-        Complex64 z0,z1,dz;
-        z0=tdata[0][j];
-        z1=tdata[1][j];
-        dz=z1-z0;
-        dtaper01+=abs(dz);
-    }
-    cerr << "taper 0 and 1 sum of abs(dz) values "<<dtaper01<<endl;
-    */
 
     /* Now we need to do the same for the wavelet data */
     vector<ComplexArray> wdata;
@@ -309,14 +255,10 @@ void MultiTaperSpecDivDecon::process()
     vector<double>::iterator nptr;
     /* This makes the scaling indepndent of the choise for tiem bandwidth product*/
     double scale=damp/(static_cast<double>(nseq));
-    //DEBUG
-    //cout << "scale computed from damp="<<damp<<" and nseq="<<nseq<<" is "<<scale<<endl;
     for(nptr=noise_spectrum.begin(); nptr!=noise_spectrum.end(); ++nptr)
     {
         (*nptr) *= scale;
     }
-    //DEBUG
-    //vector<double> snr;
     /* We compute a RF estimate for each taper independently usinga  variant of
     the water level method.  The variant is that the level is frequency dependent
     defined by sacled noise level.
@@ -331,8 +273,6 @@ void MultiTaperSpecDivDecon::process()
       numbers while the wdata vector is a complex fft outputs in fortran
       style.  We use two different indices, but that is a tad dangerous
       UNLESS constructor guarantees nfft is ndata.size()*2 doubles*/
-      // DEBUG - try using a pure water level
-      //double b_rms=work.rms();
       int number_regularized(0);
       for(j=0;j<nfft;++j)
       {
@@ -343,9 +283,6 @@ void MultiTaperSpecDivDecon::process()
         double re=(*z);
         double im=(*(z+1));
         double amp=sqrt( re*re +im*im);
-        //DEBUG
-        //snr.push_back(amp/noise_spectrum[j]);
-	//cerr << "j="<<j<<"amp,noiseamp "<<amp<<", "<<noise_spectrum[j]<<endl;
 	/* this normalization assumes noise_spectrum is amplitude NOT
 	 * power spectrum values */
         if(amp<noise_spectrum[j])
@@ -365,22 +302,8 @@ void MultiTaperSpecDivDecon::process()
 	  }
           ++number_regularized;
         }
-        //DEBUG water level
-        /*
-        if(abs(work[j])<b_rms*0.01)  // water level of normalized 0.01
-        {
-            (*z)/=abs(work[j])*b_rms*0.01;
-            (*(z+1))/=abs(work[j])*b_rms*0.01;
-        }
-        */
       }
       denominator.push_back(work);
-      //DEBUG
-      /*
-      cout << "Taper number "<<i<<" regularized number of points="
-	      << number_regularized<<endl;
-      snr.clear();
-      */
     }
     /* Probably should save these in private area for this estimator*/
     //vector<ComplexArray> rfestimates;
@@ -422,8 +345,6 @@ void MultiTaperSpecDivDecon::process()
     rf estimate.  We compute this as a simple average. */
     result.clear();
     for(j=0;j<nfft;++j)result.push_back(0.0);
-    //DEBUG - make sure averaging works
-    //for(i=0;i<1;++i)
     vector<double> wtmp;
     for(i=0;i<nseq;++i)
     {
@@ -436,30 +357,10 @@ void MultiTaperSpecDivDecon::process()
       {
         result[j]+=work[j].real();
       }
-      //DEBUG
-      /*
-      if(i>0)
-      {
-          double sumabs(0.0),sumdif(0.0);
-          for(j=0;j<data.size();++j)
-          {
-              sumabs+=abs(result[j]);
-              sumdif+=abs(result[j]-wtmp[j]);
-          }
-          cerr << "Sum of abs values of rf="<<sumabs<<endl
-              << "Sum of abs diffs from previous="<<sumdif<<endl;
-          wtmp=result;
-      }
-      else
-          wtmp=result;
-      */
-      // end DEBUG
     }
     double nrmscl=1.0/((double)nseq);
     for(j=0;j<nfft;++j) result[j]*=nrmscl;
     /* Finally do a circular shift if requested. */
-    //DEBUG
-    //cerr << "Applying sample shift ="<<sample_shift<<endl;
     if(sample_shift>0)
         result=circular_shift(result,-sample_shift);
   }catch(...){throw;};
@@ -484,6 +385,7 @@ CoreTimeSeries MultiTaperSpecDivDecon::actual_output()
       We handle the time through the CoreTimeSeries object. */
       int i0=nfft/2;
       ao=circular_shift(ao,i0);
+      ao = normalize<double>(ao);
       CoreTimeSeries result(nfft);
       /* Getting dt from here is unquestionably a flaw in the api, but will
       retain for now.   Perhaps should a copy of dt in the ScalarDecon object. */
@@ -598,11 +500,11 @@ std::vector<CoreTimeSeries> MultiTaperSpecDivDecon::all_actual_outputs
 
 Metadata MultiTaperSpecDivDecon::QCMetrics()
 {
-    try {
-        throw MsPASSError("MultiTaperSpecDivDecon::QCMetrics method not yet implemented",
-         ErrorSeverity::Invalid);
-    } catch(...) {
-        throw;
-    };
+  /* Return only an empty Metadata container.  Done as it is
+  easier to maintain the code letting python do this work.
+  This also anticipates new metrics being added which would be
+  easier in python.*/
+  Metadata md;
+  return md;
 }
 } //End namespace

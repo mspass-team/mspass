@@ -8,12 +8,14 @@
 #include "mspass/algorithms/deconvolution/ShapingWavelet.h"
 #include "mspass/algorithms/deconvolution/wavelet.h"
 #include "mspass/algorithms/deconvolution/FFTDeconOperator.h"
+#include "mspass/algorithms/amplitudes.h"
 #include "mspass/algorithms/Butterworth.h"
 namespace mspass::algorithms::deconvolution
 {
 using namespace std;
 using namespace mspass::seismic;
 using namespace mspass::utility;
+using mspass::algorithms::amplitudes::normalize;
 
 ShapingWavelet::ShapingWavelet(const Metadata& md, int nfftin)
 {
@@ -281,13 +283,6 @@ CoreTimeSeries ShapingWavelet::impulse_response()
         gsl_fft_complex_wavetable_free (wavetable);
         gsl_fft_complex_workspace_free (workspace);
         CoreTimeSeries result(nfft);
-        /* old API
-        result.tref=TimeReferenceType::Relative;
-        result.ns=nfft;
-        result.dt=dt;
-        result.t0 = dt*(-(double)nfft/2);
-        result.live=true;
-        */
 
         result.set_tref(TimeReferenceType::Relative);
         result.set_npts(nfft);
@@ -302,6 +297,7 @@ CoreTimeSeries ShapingWavelet::impulse_response()
         result.s.clear();
 	      for(k=0;k<nfft;++k) result.s.push_back(iwf[k].real());
 	      result.s=circular_shift(result.s,shift);
+        result.s = normalize<double>(result.s);
         return result;
     } catch(...) {
         throw;

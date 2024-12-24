@@ -1,6 +1,9 @@
 #ifndef __SIMPLE_WATER_LEVEL_DECON_H__
 #define __SIMPLE_WATER_LEVEL_DECON_H__
 #include <vector>
+#include <boost/archive/text_iarchive.hpp>
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/serialization/base_object.hpp>
 #include "mspass/utility/Metadata.h"
 #include "mspass/algorithms/deconvolution/ScalarDecon.h"
 #include "mspass/algorithms/deconvolution/FFTDeconOperator.h"
@@ -10,6 +13,11 @@ namespace mspass::algorithms::deconvolution{
 class WaterLevelDecon : public FFTDeconOperator, public ScalarDecon
 {
 public:
+    WaterLevelDecon() : FFTDeconOperator(),ScalarDecon()
+    {
+      this->wlv=0.1;
+      this->regularization_fraction=0.0;
+    };
     WaterLevelDecon(const WaterLevelDecon &parent);
     WaterLevelDecon(const mspass::utility::Metadata &md);
     WaterLevelDecon(const mspass::utility::Metadata &md,const std::vector<double> &wavelet,const std::vector<double> &data);
@@ -68,6 +76,15 @@ private:
     /* QC metrics.   */
     /* This is the fraction of frequencies below the water level */
     double regularization_fraction;
+    friend boost::serialization::access;
+    template<class Archive>
+    void serialize(Archive &ar, const unsigned int version)
+    {
+        ar & boost::serialization::base_object<FFTDeconOperator>(*this);
+        ar & boost::serialization::base_object<ScalarDecon>(*this);
+        ar & wlv;
+        ar & regularization_fraction;
+    }
 };
 }
 #endif

@@ -3,14 +3,17 @@
 #include <pybind11/stl.h>
 #include <pybind11/stl_bind.h>
 #include <pybind11/operators.h>
+#include <pybind11/embed.h>
 
+#include <boost/archive/text_oarchive.hpp>
 
 #include <mspass/algorithms/deconvolution/WaterLevelDecon.h>
 #include <mspass/algorithms/deconvolution/LeastSquareDecon.h>
 #include <mspass/algorithms/deconvolution/MultiTaperXcorDecon.h>
 #include <mspass/algorithms/deconvolution/MultiTaperSpecDivDecon.h>
-#include <mspass/algorithms/deconvolution/GeneralIterDecon.h>
-#include <mspass/algorithms/deconvolution/CNR3CDecon.h>
+//Disable until repaired
+//#include <mspass/algorithms/deconvolution/GeneralIterDecon.h>
+#include <mspass/algorithms/deconvolution/CNRDeconEngine.h>
 PYBIND11_MAKE_OPAQUE(std::vector<double>);
 
 
@@ -103,6 +106,8 @@ PYBIND11_MODULE(deconvolution, m) {
     .def("change_parameter",&ScalarDecon::changeparameter,"Change deconvolution parameters")
     .def("change_shaping_wavelet",&ScalarDecon::change_shaping_wavelet,
             "Change the shaping wavelet applied to output")
+    .def("get_shaping_wavelet",&ScalarDecon::get_shaping_wavelet,
+	    "Get the shaping wavelet used by this operator")
     .def("actual_output",&ScalarDecon::actual_output,"Return actual output of inverse*wavelet")
     .def("ideal_output",&ScalarDecon::ideal_output,"Return ideal output of for inverse")
     .def("inverse_wavelet",py::overload_cast<>(&ScalarDecon::inverse_wavelet))
@@ -117,8 +122,23 @@ PYBIND11_MODULE(deconvolution, m) {
     .def("inverse_wavelet",py::overload_cast<>(&WaterLevelDecon::inverse_wavelet))
     .def("inverse_wavelet",py::overload_cast<double>(&WaterLevelDecon::inverse_wavelet))
     .def("QCMetrics",&WaterLevelDecon::QCMetrics,"Return ideal output of for inverse")
+    .def(py::pickle(
+      [](const WaterLevelDecon &self) {
+        stringstream sstm;
+        boost::archive::text_oarchive artm(sstm);
+        artm<<self;
+        return py::make_tuple(sstm.str());
+      },
+      [](py::tuple t) {
+        stringstream sstm(t[0].cast<std::string>());
+        boost::archive::text_iarchive artm(sstm);
+        WaterLevelDecon lsd;
+        artm >> lsd;
+        return lsd;
+      }
+    ))
   ;
-  py::class_<LeastSquareDecon,ScalarDecon>(m,"LeastSquareDecon","Water level frequency domain operator")
+  py::class_<LeastSquareDecon,ScalarDecon>(m,"LeastSquareDecon","Damped least squares frequency domain operator")
     .def(py::init<const Metadata>())
     .def("changeparameter",&LeastSquareDecon::changeparameter,"Change operator parameters")
     .def("process",&LeastSquareDecon::process,"Process previously loaded data")
@@ -126,6 +146,21 @@ PYBIND11_MODULE(deconvolution, m) {
     .def("inverse_wavelet",py::overload_cast<>(&LeastSquareDecon::inverse_wavelet))
     .def("inverse_wavelet",py::overload_cast<double>(&LeastSquareDecon::inverse_wavelet))
     .def("QCMetrics",&LeastSquareDecon::QCMetrics,"Return ideal output of for inverse")
+    .def(py::pickle(
+      [](const LeastSquareDecon &self) {
+        stringstream sstm;
+        boost::archive::text_oarchive artm(sstm);
+        artm<<self;
+        return py::make_tuple(sstm.str());
+      },
+      [](py::tuple t) {
+        stringstream sstm(t[0].cast<std::string>());
+        boost::archive::text_iarchive artm(sstm);
+        LeastSquareDecon lsd;
+        artm >> lsd;
+        return lsd;
+      }
+    ))
   ;
   py::class_<MultiTaperSpecDivDecon,ScalarDecon>(m,"MultiTaperSpecDivDecon","Water level frequency domain operator")
     .def(py::init<const Metadata>())
@@ -140,6 +175,21 @@ PYBIND11_MODULE(deconvolution, m) {
     .def("get_taperlen",&MultiTaperSpecDivDecon::get_taperlen,"Get length of the Slepian tapers used by the operator")
     .def("get_number_tapers",&MultiTaperSpecDivDecon::get_number_tapers,"Get number of Slepian tapers used by the operator")
     .def("get_time_bandwidth_product",&MultiTaperSpecDivDecon::get_time_bandwidth_product,"Get time bandwidt product of Slepian tapers used by the operator")
+    .def(py::pickle(
+      [](const MultiTaperSpecDivDecon &self) {
+        stringstream sstm;
+        boost::archive::text_oarchive artm(sstm);
+        artm<<self;
+        return py::make_tuple(sstm.str());
+      },
+      [](py::tuple t) {
+        stringstream sstm(t[0].cast<std::string>());
+        boost::archive::text_iarchive artm(sstm);
+        MultiTaperSpecDivDecon lsd;
+        artm >> lsd;
+        return lsd;
+      }
+    ))
   ;
   py::class_<FFTDeconOperator>(m,"FFTDeconOperator","Base class used by frequency domain deconvolution methods")
     .def(py::init<>())
@@ -162,8 +212,23 @@ PYBIND11_MODULE(deconvolution, m) {
     .def("get_taperlen",&MultiTaperXcorDecon::get_taperlen,"Get length of the Slepian tapers used by the operator")
     .def("get_number_tapers",&MultiTaperXcorDecon::get_number_tapers,"Get number of Slepian tapers used by the operator")
     .def("get_time_bandwidth_product",&MultiTaperXcorDecon::get_time_bandwidth_product,"Get time bandwidt product of Slepian tapers used by the operator")
+    .def(py::pickle(
+      [](const MultiTaperXcorDecon &self) {
+        stringstream sstm;
+        boost::archive::text_oarchive artm(sstm);
+        artm<<self;
+        return py::make_tuple(sstm.str());
+      },
+      [](py::tuple t) {
+        stringstream sstm(t[0].cast<std::string>());
+        boost::archive::text_iarchive artm(sstm);
+        MultiTaperXcorDecon lsd;
+        artm >> lsd;
+        return lsd;
+      }
+    ))
   ;
-  /* this wrapper is propertly constructed, but for now we disable it
+  /* this binding code is properly constructed, but for now we disable it
    * because it has known bugs that need to be squashed.  It should be
    * turned back on if and when those bugs are squashed.
   py::class_<GeneralIterDecon,ScalarDecon>(m,"GeneralIterDecon","Water level frequency domain operator")
@@ -180,6 +245,57 @@ PYBIND11_MODULE(deconvolution, m) {
   ;
   */
 
+  py::class_<CNRDeconEngine,FFTDeconOperator>(m,"CNRDeconEngine",
+       "Colored noise regularized deconvolution engine - used for single station and array data")
+    /* A default constructor this object is always invalid so we don't include this binding.
+    .def(py::init<>())
+    */
+    .def(py::init<const AntelopePf&>())
+    /* This overloaded version is not currently used in python functions that
+    use this operator.   Left in the binding code for flexilitity but could be
+    deleted*/
+    .def("initialize_inverse_operator_TS",
+        py::overload_cast<const TimeSeries&,const TimeSeries&>(&CNRDeconEngine::initialize_inverse_operator),
+        "Load required data to initialize frequency domain inverse operator - overloaded version using time domain noise vector")
+    .def("initialize_inverse_operator",
+        py::overload_cast<const TimeSeries&,const PowerSpectrum&>(&CNRDeconEngine::initialize_inverse_operator),
+        "Load required data to initialize frequency domain inverse operator - overloaded version using precomputed power spectrum of noise")
+    .def("process",&CNRDeconEngine::process,
+        "Deconvolve Seismogram data using inverse operator loaded previously - shape to specified bandwidth arg1 to arg2 frequency")
+    .def("get_operator_dt",&CNRDeconEngine::get_operator_dt,"Return operator sample interval")
+    .def("compute_noise_spectrum",
+        py::overload_cast<const TimeSeries&>(&CNRDeconEngine::compute_noise_spectrum),
+        "Computes a noise spectrum from a TimeSeries object using the same multitaper parameters as the inverse operator")
+    .def("compute_noise_spectrum_3C",
+        py::overload_cast<const Seismogram&>(&CNRDeconEngine::compute_noise_spectrum),
+        "Computes a noise spectrum from a Seismogram object using the same multitaper parameters as the inverse operator with average of three components")
+    .def("ideal_output",&CNRDeconEngine::ideal_output,"Return the ideal output of the currently loaded operator")
+    .def("actual_output",&CNRDeconEngine::actual_output,"Return the actual output of the currently loaded operator")
+    .def("inverse_wavelet",&CNRDeconEngine::inverse_wavelet,
+        "Return the time-domain inverse operator computed form current frequency domain operator")
+    .def("QCMetrics",&CNRDeconEngine::QCMetrics,"Return a Metadata container of QC metrics computed by this algorithm")
+    .def(py::pickle(
+      [](const CNRDeconEngine &self) {
+        stringstream sstm;
+        boost::archive::text_oarchive artm(sstm);
+        artm<<self;
+        return py::make_tuple(sstm.str());
+      },
+      [](py::tuple t) {
+        stringstream sstm(t[0].cast<std::string>());
+        boost::archive::text_iarchive artm(sstm);
+        CNRDeconEngine lsd;
+        artm >> lsd;
+        return lsd;
+      }
+    ))
+  ;
+
+
+/* This algorithm was the prototype for CNRDeconEngine.   It is depricated with prejudice which here means I'm
+   removing the bindings for the old version.   The original algorithm will be placed for at least a while in some
+   dustbin.  When that is gone remove this comment.  GLP - July 2024 */
+  /*
   py::class_<CNR3CDecon,FFTDeconOperator>(m,"CNR3CDecon",
        "Colored noise regularized three component deconvolution")
     .def(py::init<>())
@@ -218,6 +334,7 @@ PYBIND11_MODULE(deconvolution, m) {
     .def("data_spectrum",&CNR3CDecon::data_spectrum,
          "Return average power spectrum of signal on all 3 components of the data")
   ;
+  */
 
   py::class_<MTPowerSpectrumEngine>(m,"MTPowerSpectrumEngine",
       "Processing object used compute multitaper power spectrum estimates from time series data")
@@ -244,7 +361,7 @@ PYBIND11_MODULE(deconvolution, m) {
     .def("nfft",&MTPowerSpectrumEngine::fftsize,"Return size of fft workspace in this operator")
     /* We do pickle for this object in a different way than I've ever done this
     before.  This object can be define by only 3 numbers that are expanded in
-    the constructor what can be very large arrays.  An untested hypothesis that
+    the constructor into what can be very large arrays.  An untested hypothesis that
     this approach builds on is that it is cheaper to recompute the tapers when
     this object gets serialized than it is to serialize, move, and deserialize
     the large arrays.   It definitely simplifies this binding code.  If the

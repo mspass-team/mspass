@@ -3,6 +3,8 @@
 #include <string>
 #include <gsl/gsl_errno.h>
 #include <gsl/gsl_fft_complex.h>
+#include <boost/archive/text_iarchive.hpp>
+#include <boost/archive/text_oarchive.hpp>
 #include "mspass/utility/Metadata.h"
 #include "mspass/seismic/CoreTimeSeries.h"
 #include "mspass/algorithms/TimeWindow.h"
@@ -57,6 +59,25 @@ protected:
     gsl_fft_complex_wavetable *wavetable;
     gsl_fft_complex_workspace *workspace;
     ComplexArray winv;
+private:
+    friend boost::serialization::access;
+    template<class Archive>
+    void save(Archive& ar, const unsigned int version) const
+    {
+        ar & nfft;
+        ar & sample_shift;
+        ar & winv;
+    }
+    template<class Archive>
+    void load(Archive &ar, const unsigned int version)
+    {
+      ar & this->nfft;
+      ar & this->sample_shift;
+      ar & winv;
+      this->wavetable = gsl_fft_complex_wavetable_alloc (this->nfft);
+      this->workspace = gsl_fft_complex_workspace_alloc (this->nfft);
+    }
+    BOOST_SERIALIZATION_SPLIT_MEMBER()
 };
 
 /* This helper is best referenced here */
