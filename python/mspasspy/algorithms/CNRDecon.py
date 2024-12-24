@@ -82,15 +82,21 @@ def validate_bandwidth_data(d, bd, bdkeys):
         if bd[0] < 0.0 or bd[1] < 0.0:
             message = "Error parsing require bandwidth data\n"
             if bd[0] < 0.0:
-                message += "Could not fetch data for low frequency corner using key {}\n".format(bdkeys[0])
+                message += "Could not fetch data for low frequency corner using key {}\n".format(
+                    bdkeys[0]
+                )
             if bd[1] < 0.0:
-                message += "Could not fetch data for high frequency corner using key {}\n".format(bdkeys[1])
+                message += "Could not fetch data for high frequency corner using key {}\n".format(
+                    bdkeys[1]
+                )
             d.elog.log_error(alg, message, ErrorSeverity.Invalid)
             d.kill()
         elif bd[1] <= bd[0]:
-            message = "Invalid bandwidth data retrieved:  flow={} and fhigh={}\n".format(
+            message = (
+                "Invalid bandwidth data retrieved:  flow={} and fhigh={}\n".format(
                     bd[0], bd[1]
                 )
+            )
             message += "Require flow<fhigh"
             d.elog.log_error(alg, message, ErrorSeverity.Invalid)
             d.kill()
@@ -152,7 +158,8 @@ def fetch_and_validate_bandwidth_data(
         d = validate_bandwidth_data(d, bdvals, bdkeys)
     return [d, bdvals[0], bdvals[1]]
 
-def prediction_error(engine,wavelet)->float:
+
+def prediction_error(engine, wavelet) -> float:
     """
     Computes prediction error of deconvolution operator defined as
     norm(ao-io)/norm(io) where ao is the return from the
@@ -170,7 +177,7 @@ def prediction_error(engine,wavelet)->float:
     ao = engine.actual_output(wavelet)
     io = engine.ideal_output()
     err = ao - io
-    return np.linalg.norm(err.data)/np.linalg.norm(io.data)
+    return np.linalg.norm(err.data) / np.linalg.norm(io.data)
 
 
 def CNRRFDecon(
@@ -353,19 +360,21 @@ def CNRRFDecon(
     """
     # required arg type checks
     alg = "CNRRFDecon"
-    if not isinstance(seis,Seismogram):
+    if not isinstance(seis, Seismogram):
         message = alg
         message += ":  illegal type={} for arg0\n".format(str(type(seis)))
         message += "arg0 must be a Seismogram object"
         raise TypeError(message)
     if seis.dead():
         if return_wavelet:
-            return [seis,None,None]
+            return [seis, None, None]
         else:
             return seis
-    if not isinstance(engine,CNRDeconEngine):
+    if not isinstance(engine, CNRDeconEngine):
         message = alg
-        message += ":  required arg1 (engine) is invalid type={}\n".format(str(type(engine)))
+        message += ":  required arg1 (engine) is invalid type={}\n".format(
+            str(type(engine))
+        )
         message += "Must be an instance of a CNRDeconEngine"
         raise TypeError(message)
     if component not in [0, 1, 2]:
@@ -380,7 +389,7 @@ def CNRRFDecon(
         # using the C++ bound function for efficiency here
         # the pybind11 code will throw a bit of an obscure but decipherable
         # message if signal_window is an invalid type
-        d = _WindowData3C(seis,signal_window)
+        d = _WindowData3C(seis, signal_window)
     else:
         # important to make  copy here as error conditions could clobber
         # origial
@@ -389,20 +398,20 @@ def CNRRFDecon(
     if noise_spectrum:
         if noise_spectrum.dead():
             message = "Received noise_spectrum PowerSpectrum object marked dead - cannot process this datum"
-            d.elog.log_error(alg,message,ErrorSeverity.Invalid)
+            d.elog.log_error(alg, message, ErrorSeverity.Invalid)
             d.kill()
             if return_wavelet:
-                return [d,None,None]
+                return [d, None, None]
             else:
                 return d
         psnoise = noise_spectrum
     else:
         if noise_window:
-            n = _WindowData3C(seis,noise_window)
+            n = _WindowData3C(seis, noise_window)
             if use_3C_noise:
                 psnoise = engine.compute_noise_spectrum_3C(n)
             else:
-                n = ExtractComponent(n,component)
+                n = ExtractComponent(n, component)
                 psnoise = engine.compute_noise_spectrum(n)
             if psnoise.dead():
                 # this appends elog contents to data elog before returning it dead
@@ -431,10 +440,9 @@ def CNRRFDecon(
         d.set_npts(0)
         d.elog.log_error(alg, message, ErrorSeverity.Invalid)
         if return_wavelet:
-            return [d,None,None]
+            return [d, None, None]
         else:
             return d
-
 
     [d, flow, fhigh] = fetch_and_validate_bandwidth_data(
         d,
@@ -446,11 +454,11 @@ def CNRRFDecon(
     # that happened
     if d.dead():
         if return_wavelet:
-            return [d,None,None]
+            return [d, None, None]
         else:
             return d
     # for an RF a data component is used as a wavelet
-    w = ExtractComponent(d,component)
+    w = ExtractComponent(d, component)
     # the engine can throw an exception we need to handle
     try:
         engine.initialize_inverse_operator(w, psnoise)
@@ -459,27 +467,27 @@ def CNRRFDecon(
         d.elog.log_error(err)
         d.kill()
     except Exception as generr:
-        d.elog.log_error("CNRDecon","Unexpected exception",ErrorSeverity.Invalid)
-        d.elog.log_error("CNRDecon",str(generr),ErrorSeverity.Invalid)
+        d.elog.log_error("CNRDecon", "Unexpected exception", ErrorSeverity.Invalid)
+        d.elog.log_error("CNRDecon", str(generr), ErrorSeverity.Invalid)
         d.kill()
     # note d can be killed and returned or marked dead by the error handlers
     # in both cases we can't continue
     if d.dead():
         if return_wavelet:
-            return [d,None,None]
+            return [d, None, None]
         else:
             return d
     else:
         QCmd = engine.QCMetrics()
         # convert to a dict for posting
         QCmd = dict(QCmd)
-        QCmd['algorithm'] = alg
+        QCmd["algorithm"] = alg
         # this is not currently computed in the C++ operator
         # but is a critical metric that is easily computed with numpy
         # note RFdeconProcessor has this same algorithm which is
         # a maintenance issue to assure they are consistent
-        pe = prediction_error(engine,w)
-        QCmd["prediction_error"]=pe
+        pe = prediction_error(engine, w)
+        QCmd["prediction_error"] = pe
         d[QCdata_key] = QCmd
     if return_wavelet:
         retval = []
@@ -622,11 +630,11 @@ def CNRArrayDecon(
         raise TypeError(message)
     if ensemble.dead() or beam.dead():
         if beam.dead():
-            message="Received beam input marked dead - cannot proceed"
-            ensemble.elog.log_error(prog,message,ErrorSeverity.Invalid)
+            message = "Received beam input marked dead - cannot proceed"
+            ensemble.elog.log_error(prog, message, ErrorSeverity.Invalid)
             ensemble.kill()
         if return_wavelet:
-            return[ensemble,None,None]
+            return [ensemble, None, None]
         return ensemble
 
     # if noise_spectrum is defined noise_windowing is ignored
@@ -647,7 +655,7 @@ def CNRArrayDecon(
             ensemble.elog.log_error(prog, message, ErrorSeverity.Invalid)
             ensemble.kill()
             if return_wavelet:
-                return [ensemble,None,None]
+                return [ensemble, None, None]
             else:
                 return ensemble
         if isinstance(n2use, TimeSeries) and use_3C_noise:
@@ -669,12 +677,14 @@ def CNRArrayDecon(
         # we cannot proceed if the noise spectrum estimation failed
         if psnoise.dead():
             ensout.elog += psnoise.elog
-            ensout.log_error(alg,
-              "compute_noise_spectrum failed - cannot process this ensemble",
-              ErrorSeverity.Invalid)
+            ensout.log_error(
+                alg,
+                "compute_noise_spectrum failed - cannot process this ensemble",
+                ErrorSeverity.Invalid,
+            )
             ensout.kill()
             if return_wavelet:
-                return [ensout,None,None]
+                return [ensout, None, None]
             else:
                 return ensout
         beam = WindowData(beam, signal_window.start, signal_window.end)
@@ -697,15 +707,16 @@ def CNRArrayDecon(
         ensout.elog.log_error(err)
         ensout.kill()
     except Exception as generr:
-        ensout.elog.log_error("CNRArrayDecon","Unexpected exception",ErrorSeverity.Invalid)
-        ensout.elog.log_error("CNRArrayDecon",str(generr),ErrorSeverity.Invalid)
+        ensout.elog.log_error(
+            "CNRArrayDecon", "Unexpected exception", ErrorSeverity.Invalid
+        )
+        ensout.elog.log_error("CNRArrayDecon", str(generr), ErrorSeverity.Invalid)
         ensout.kill()
     if ensout.dead():
         if return_wavelet:
-            return [ensout,None,None]
+            return [ensout, None, None]
         else:
             return ensout
-
 
     if use_wavelet_bandwidth:
         [beam, flow, fhigh] = fetch_and_validate_bandwidth_data(
@@ -721,7 +732,7 @@ def CNRArrayDecon(
             ensout.elog.log_error(prog, message, ErrorSeverity.Invalid)
             ensout.kill()
             if return_wavelet:
-                return [ensout,None,None]
+                return [ensout, None, None]
             else:
                 return ensout
     for i in range(len(ensout.member)):

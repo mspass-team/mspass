@@ -16,7 +16,7 @@ Created on Fri Jul 31 06:24:10 2020
 """
 import numpy as np
 
-from mspasspy.ccore.seismic import DoubleVector,Seismogram
+from mspasspy.ccore.seismic import DoubleVector, Seismogram
 from mspasspy.ccore.utility import AntelopePf, Metadata, MsPASSError, ErrorSeverity
 from mspasspy.util.converter import Metadata2dict
 from mspasspy.algorithms.window import WindowData
@@ -319,8 +319,7 @@ class RFdeconProcessor:
         self.processor.process()
         return self.processor.inverse_filter()
 
-
-    def QCMetrics(self,prediction_error_key="prediction_error")->dict:
+    def QCMetrics(self, prediction_error_key="prediction_error") -> dict:
         """
         All decon algorithms compute a set of algorithm dependent quality
         control metrics.  The return is a Metadata container.
@@ -373,7 +372,7 @@ class RFdeconProcessor:
         else:
             return TimeWindow  # always initialize even if not used
 
-    def _prediction_error(self)->float:
+    def _prediction_error(self) -> float:
         """
         Small internal function used to compute prediction error of
         deconvolution operator defined as norm(ao-io)/norm(io) where
@@ -383,7 +382,7 @@ class RFdeconProcessor:
         io = self.ideal_output()
         # with internal use can assume ao and io are the same length
         err = ao - io
-        return np.linalg.norm(err.data)/np.linalg.norm(io.data)
+        return np.linalg.norm(err.data) / np.linalg.norm(io.data)
 
 
 @mspass_func_wrapper
@@ -515,8 +514,10 @@ def RFdecon(
      stored as a `TimeSeries` object.
     """
 
-    if not isinstance(d,Seismogram):
-        message = "RFdecon:  arg0 is of type={}.  Must be a Seismogram object".format(str(type(d)))
+    if not isinstance(d, Seismogram):
+        message = "RFdecon:  arg0 is of type={}.  Must be a Seismogram object".format(
+            str(type(d))
+        )
         raise TypeError(message)
     if d.dead():
         return d
