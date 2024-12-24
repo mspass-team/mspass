@@ -333,8 +333,7 @@ class RFdeconProcessor:
         qcmd = dict(self.md)
         # merge in an output of the implementations QCMetrics method
         qcmeth_output = dict(self.processor.QCMetrics())
-        # warning this merge operator was only implemented in python 3.9
-        qcmd = qcmd | qcmeth_output
+        qcmd.update(qcmeth_output)
         # always compute the prediction error
         perr = self._prediction_error()
         qcmd[prediction_error_key] = perr
