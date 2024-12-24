@@ -332,20 +332,15 @@ AntelopePf::AntelopePf(string pfbase)
         list<string> pffiles;
         const std::string mspass_home_envname("MSPASS_HOME");
         char *base;
-        cout << "DEBUG:  Entered AntelopePf(string pfbase) constructor"<<endl;
         /* Note man page for getenv says explicitly the return of getenv should not
                 be touched - i.e. don't free it*/
         base=getenv(mspass_home_envname.c_str());
         if(base!=NULL)
         {
             pffiles.push_back(data_directory()+"/pf/"+pfbase);
-            //DEBUG
-            cout << "getenv returned base="<<base<<endl;
         }
         const string envname("PFPATH");
         char *s=getenv(envname.c_str());
-            //DEBUG
-            cout << "getenv returned PFPATH="<<s<<endl;
         if(s==NULL)
         {
             pffiles.push_back(pfbase);
@@ -362,12 +357,9 @@ AntelopePf::AntelopePf(string pfbase)
         }
         list<string>::iterator pfptr;
         int nread;
-        //DEBUG
-        cout << "Entering loop over pffiles list"<<endl;
 
         for(nread=0,pfptr=pffiles.begin(); pfptr!=pffiles.end(); ++pfptr)
         {
-            cout << "Working on pf number="<<nread<<" with file name="<<*pfptr<<endl;
             // Skip pf files that do not exist
             if(access(pfptr->c_str(),R_OK)) continue;
             if(nread==0)
