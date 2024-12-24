@@ -81,6 +81,8 @@ def test_RFdeconProcessor():
         print("prederr=",prederr)
         assert prederr < 0.1
 
+    # this must be cleared to keep later pytest scripts from failing
+    os.environ.pop('PFPATH', None)
 
 
 
@@ -143,6 +145,8 @@ def test_RFdecon():
         w = ExtractComponent(w,2)
         d_decon = RFdecon(d,alg=alg,engine=deconengine,noisedata=n.data,wavelet=w.data)
         assert d_decon.live
+    # this must be cleared to keep later pytest scripts from failing
+    os.environ.pop('PFPATH', None)
 
 def test_RFdecon_error_handlers():
     """
@@ -192,10 +196,5 @@ def test_RFdecon_error_handlers():
     dret = RFdecon(d,engine=engine)
     assert dret.dead()
     assert dret.elog.size()>0
-    
-# debug only  - remove before commit
-#import os
-#os.environ["PFPATH"] = "/geode2/home/u070/pavlis/Quartz/src/mspass/data/pf"
-#test_RFdecon()
-#test_RFdeconProcessor()
-#test_RFdecon_error_handlers()
+    # this must be cleared to keep later pytest scripts from failing
+    os.environ.pop('PFPATH', None)
