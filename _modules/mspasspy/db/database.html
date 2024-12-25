@@ -4427,7 +4427,12 @@
                             <span class="n">alg</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span>
                         <span class="p">)</span>
                         <span class="n">mspass_object</span><span class="o">.</span><span class="n">dt</span> <span class="o">=</span> <span class="n">tr</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">delta</span>
-                    <span class="k">if</span> <span class="n">tr</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">endtime</span><span class="o">.</span><span class="n">timestamp</span> <span class="o">!=</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">endtime</span><span class="p">():</span>
+                    <span class="c1"># be less dogmatic here as endtime is computed.</span>
+                    <span class="c1"># error only if computed time difference exceed half a sample</span>
+                    <span class="k">if</span> <span class="p">(</span>
+                        <span class="nb">abs</span><span class="p">(</span><span class="n">tr</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">endtime</span><span class="o">.</span><span class="n">timestamp</span> <span class="o">-</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">endtime</span><span class="p">())</span>
+                        <span class="o">&gt;</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">dt</span> <span class="o">/</span> <span class="mf">2.0</span>
+                    <span class="p">):</span>
                         <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;Inconsistent endtimes detected</span><span class="se">\n</span><span class="s2">&quot;</span>
                         <span class="n">message</span> <span class="o">+=</span> <span class="p">(</span>
                             <span class="s2">&quot;Endtime expected from MongoDB document = </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
@@ -4517,9 +4522,14 @@
         <span class="n">fh</span> <span class="o">=</span> <span class="n">gfsh</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">file_id</span><span class="o">=</span><span class="n">gridfs_id</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="p">(</span><span class="n">TimeSeries</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">)):</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="s2">&quot;npts&quot;</span><span class="p">):</span>
-                <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span>
-                    <span class="s2">&quot;Database._read_data_from_gridfs:  Required key npts is not defined&quot;</span>
+                <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="s2">&quot;Required key npts is not defined in the document for this datum&quot;</span>
                 <span class="p">)</span>
+                <span class="n">mspass_object</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
+                    <span class="s2">&quot;Database._read_data_from_gridfs&quot;</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span>
+                <span class="p">)</span>
+                <span class="n">mspass_object</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+                <span class="k">return</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">npts</span> <span class="o">!=</span> <span class="n">mspass_object</span><span class="p">[</span><span class="s2">&quot;npts&quot;</span><span class="p">]:</span>
                     <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;Database._read_data_from_gridfs: &quot;</span>
@@ -4538,19 +4548,25 @@
             <span class="n">np_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">frombuffer</span><span class="p">(</span><span class="n">fh</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">npts</span> <span class="o">*</span> <span class="mi">8</span> <span class="o">*</span> <span class="mi">3</span><span class="p">))</span>
             <span class="n">file_size</span> <span class="o">=</span> <span class="n">fh</span><span class="o">.</span><span class="n">tell</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">file_size</span> <span class="o">!=</span> <span class="n">npts</span> <span class="o">*</span> <span class="mi">8</span> <span class="o">*</span> <span class="mi">3</span><span class="p">:</span>
-                <span class="c1"># Note we can only detect the cases where given npts is larger than</span>
-                <span class="c1"># the number of points in the file</span>
-                <span class="n">emess</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="s2">&quot;Database._read_data_from_gridfs: Size mismatch in sample data. Number of points in gridfs file = </span><span class="si">%d</span><span class="s2"> but expected </span><span class="si">%d</span><span class="s2">&quot;</span>
-                    <span class="o">%</span> <span class="p">(</span><span class="n">file_size</span> <span class="o">/</span> <span class="mi">8</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="n">mspass_object</span><span class="p">[</span><span class="s2">&quot;npts&quot;</span><span class="p">]))</span>
+                <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;Size mismatch in sample data.</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Number of points in gridfs file=</span><span class="si">%d</span><span class="s2"> but wf document expected </span><span class="si">%d</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">file_size</span> <span class="o">/</span> <span class="mi">8</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="n">mspass_object</span><span class="p">[</span><span class="s2">&quot;npts&quot;</span><span class="p">])</span>
                 <span class="p">)</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">emess</span><span class="p">)</span>
+                <span class="n">mspass_object</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
+                    <span class="s2">&quot;Database._read_data_from_gridfs&quot;</span><span class="p">,</span>
+                    <span class="n">message</span><span class="p">,</span>
+                    <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="n">mspass_object</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+                <span class="k">return</span>
             <span class="c1"># v1 did a transpose on write that this reversed - unnecessary</span>
             <span class="c1"># np_arr = np_arr.reshape(npts, 3).transpose()</span>
             <span class="n">np_arr</span> <span class="o">=</span> <span class="n">np_arr</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">npts</span><span class="p">)</span>
             <span class="n">mspass_object</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">dmatrix</span><span class="p">(</span><span class="n">np_arr</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;only TimeSeries and Seismogram are supported&quot;</span><span class="p">)</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;Database._read_data_from_gridfs:  arg0 must be a TimeSeries or Seismogram</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Actual type=&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">))</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">npts</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">mspass_object</span><span class="o">.</span><span class="n">set_live</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>

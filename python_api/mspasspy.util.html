@@ -165,6 +165,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#mspasspy.util.seismic.number_live"><code class="docutils literal notranslate"><span class="pre">number_live()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mspasspy.util.seismic.print_metadata"><code class="docutils literal notranslate"><span class="pre">print_metadata()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mspasspy.util.seismic.regularize_sampling"><code class="docutils literal notranslate"><span class="pre">regularize_sampling()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.util.seismic.sort_ensemble"><code class="docutils literal notranslate"><span class="pre">sort_ensemble()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#module-mspasspy.util.seispp">seispp</a><ul>
@@ -1084,6 +1085,32 @@ ensemble member does not have a matching sample interval.  When
 False (the default) the function uses the MsPASS error logging
 to hold a message an kills any member datum with a problem.
 :type abort_on_error:  boolean</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.util.seismic.sort_ensemble">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.util.seismic.</span></span><span class="sig-name descname"><span class="pre">sort_ensemble</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ensemble</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nullvalue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ascending</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop_dead</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/seismic.html#sort_ensemble"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.seismic.sort_ensemble" title="Permalink to this definition"></a></dt>
+<dd><p>Sorts members of an ensemble by a single Metadata key value.</p>
+<p>For graphical QC one often needs to sort an ensemble by a metadata
+attribute to appraise how the attribute relates to a graphical
+display of that data.   This function does that with a memory
+intensive algorithm the makes a copy of the input that is returned.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ensemble</strong> (<cite>TimeSeriesEnsemble</cite> or <cite>SeismogramEnsemble</cite>) – input to be sorted</p></li>
+<li><p><strong>key</strong> (<em>string</em>) – key of Metadata attribute whose value is to be used for sorting</p></li>
+<li><p><strong>nullvaue</strong> – value assigned for sort for any ensemble member for
+which a value is not defined for the sort key.</p></li>
+<li><p><strong>ascending</strong> – boolean defining direction of sort.  When True
+sort is in ascending order.  False returns data sorted in descending order.</p></li>
+<li><p><strong>drop_dead</strong> – when True (default) any ensemble member marked dead will
+be not appear in the output.  When False dead data will get an implicit
+value defined by “nullvalue”.   Where the dead appear will depend upon
+what that value is relative to the valid values.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 </section>

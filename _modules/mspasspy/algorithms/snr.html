@@ -146,18 +146,207 @@
 <span class="kn">from</span> <span class="nn">scipy.signal</span> <span class="kn">import</span> <span class="n">hilbert</span>
 <span class="kn">from</span> <span class="nn">obspy.geodetics</span> <span class="kn">import</span> <span class="n">locations2degrees</span>
 <span class="kn">from</span> <span class="nn">mspasspy.ccore.utility</span> <span class="kn">import</span> <span class="n">MsPASSError</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="p">,</span> <span class="n">ErrorLogger</span>
-<span class="kn">from</span> <span class="nn">mspasspy.ccore.seismic</span> <span class="kn">import</span> <span class="n">TimeSeries</span><span class="p">,</span> <span class="n">Seismogram</span>
+<span class="kn">from</span> <span class="nn">mspasspy.ccore.seismic</span> <span class="kn">import</span> <span class="n">TimeSeries</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">,</span> <span class="n">PowerSpectrum</span>
 <span class="kn">from</span> <span class="nn">mspasspy.ccore.algorithms.deconvolution</span> <span class="kn">import</span> <span class="n">MTPowerSpectrumEngine</span>
 <span class="kn">from</span> <span class="nn">mspasspy.ccore.algorithms.amplitudes</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">RMSAmplitude</span><span class="p">,</span>
     <span class="n">PercAmplitude</span><span class="p">,</span>
     <span class="n">MADAmplitude</span><span class="p">,</span>
     <span class="n">PeakAmplitude</span><span class="p">,</span>
-    <span class="n">EstimateBandwidth</span><span class="p">,</span>
     <span class="n">BandwidthStatistics</span><span class="p">,</span>
+    <span class="n">BandwidthData</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">mspasspy.ccore.algorithms.basic</span> <span class="kn">import</span> <span class="n">TimeWindow</span><span class="p">,</span> <span class="n">Butterworth</span><span class="p">,</span> <span class="n">_ExtractComponent</span>
+<span class="kn">from</span> <span class="nn">mspasspy.algorithms.signals</span> <span class="kn">import</span> <span class="nb">filter</span>
 <span class="kn">from</span> <span class="nn">mspasspy.algorithms.window</span> <span class="kn">import</span> <span class="n">WindowData</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+
+<div class="viewcode-block" id="EstimateBandwidth"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.snr.EstimateBandwidth">[docs]</a><span class="k">def</span> <span class="nf">EstimateBandwidth</span><span class="p">(</span>
+    <span class="n">S</span><span class="p">,</span>
+    <span class="n">N</span><span class="p">,</span>
+    <span class="n">snr_threshold</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span>
+    <span class="n">df_smoother</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">f0</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+    <span class="n">f_max</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BandwidthData</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Estimates a set of signal bandwidth estimates returned in the the</span>
+<span class="sd">    class `BandwidthData`.  The algorithm is most appropriate for body</span>
+<span class="sd">    waves recorded at teleseimic distances from earthquake sources.</span>
+<span class="sd">    The reason is that the algorithm is most appropriate for signal</span>
+<span class="sd">    and noise spectra typical of that type of data.  In particular,</span>
+<span class="sd">    broadband noise is very colored by the microseisms.   Large enough</span>
+<span class="sd">    signals can exceed the microseism peak but smaller events will not.</span>
+<span class="sd">    The smallest events typically are only visible in the traditional</span>
+<span class="sd">    short-period band.   The most difficult are the ones that have</span>
+<span class="sd">    signals in both the short and long period band but have high</span>
+<span class="sd">    noise levels in the microseism band making a single bandwidth</span>
+<span class="sd">    the wrong model.  This function handles that by only returning the</span>
+<span class="sd">    band data for the section near the search start defined by the</span>
+<span class="sd">    &quot;f0&quot; argument.</span>
+
+<span class="sd">    The algorithm works by searching from a starting frequency defined</span>
+<span class="sd">    by the &quot;f0&quot; argument.  The basic idea is it hunts up and down the</span>
+<span class="sd">    frequency axis until it detects the band edge.   The &quot;band edge&quot;</span>
+<span class="sd">    detection is defined as the point where the signal-to-noise ratio</span>
+<span class="sd">    first falls below the value defined by the &quot;snr_threshold&quot; argument.</span>
+<span class="sd">    The algorithm has two variants of note:</span>
+<span class="sd">    1.  If no point in the snr curve exceeds the valued defined by</span>
+<span class="sd">        &quot;snr_threshold&quot; the function returns immediately with all</span>
+<span class="sd">        attributes of the `BandwidthData` object set to 0.</span>
+<span class="sd">    2.  If the snr value at f0 does not exceed the threshold it searches down</span>
+<span class="sd">        until it finds a value exceeding the threshold.  In that situation</span>
+<span class="sd">        it marks the first point found as the high frequency band</span>
+<span class="sd">        edge and continues hunt backward to attempt to define</span>
+<span class="sd">        the low frequency band edge.</span>
+
+<span class="sd">    The &quot;df_smoother&quot; argument can be used to smooth the internally</span>
+<span class="sd">    generated signal-to-noise ratio vector.   It is particularly useful</span>
+<span class="sd">    for data with noise containing spectral lines that can create</span>
+<span class="sd">    incorrect bandwidth data.  It is rarely necessary if the</span>
+<span class="sd">    power spectra are computed with the multitaper method as that</span>
+<span class="sd">    method produces spectra that are inherently smooth at a specified</span>
+<span class="sd">    scale.  In that case if smoothing is desired we recommend the</span>
+<span class="sd">    smoothing width be of the form k*tbp*df where tbp is the time</span>
+<span class="sd">    bandwidth product, df is the Rayleigh bin size, and k is some</span>
+<span class="sd">    small multipler (note multitaper spectra a inherently smoothed</span>
+<span class="sd">    by 2*tbp*df).</span>
+
+<span class="sd">    :param S: power spectrum computed from signal time window.</span>
+<span class="sd">    :type S:  :py:class:`mspasspy.ccore.seismic.PowerSpectrum`</span>
+<span class="sd">    :param N: power spectrum computed from noise time window</span>
+<span class="sd">       (Note S and N do not need to be on the same frequency</span>
+<span class="sd">       grid but the signal grid is used to compute the signal to</span>
+<span class="sd">       noise ratio curve)</span>
+<span class="sd">    :type N:  :py:class:`mspasspy.ccore.seismic.PowerSpectrum`</span>
+<span class="sd">    :param snr_threshold:  value of snr used to define the</span>
+<span class="sd">       band edges.   As noted above the algorithm searches from</span>
+<span class="sd">       the value f0 for the first points above and below that</span>
+<span class="sd">       frequency where the snr curve has a value less than or</span>
+<span class="sd">       equal to this value.</span>
+<span class="sd">    :type snr_threshold:  float (default 1.5)</span>
+<span class="sd">       grid but the signal grid is used to compute the signal to</span>
+<span class="sd">       spectrum within the range defined by this parameter.</span>
+<span class="sd">       i.e. the number of points in the smoother is</span>
+<span class="sd">       round(df_smoother/S.df())</span>
+<span class="sd">    :type df_smoother:  float (default is None which is taken</span>
+<span class="sd">       as a signal turn off this option and not smooth the</span>
+<span class="sd">       snr curve.)</span>
+<span class="sd">    :param f0:  frequency to start searching up and down</span>
+<span class="sd">       the frequency axis.</span>
+<span class="sd">    :type f0:  float (default 1.0)</span>
+
+<span class="sd">    :return:  Returns an instance of the `BandwidthData` class.</span>
+<span class="sd">       `BandwidthData` has the following attributes that are</span>
+<span class="sd">       set by this function:</span>
+
+<span class="sd">       - &quot;low_edge_f&quot; low frequency corner of estimated bandwidth</span>
+<span class="sd">       - &quot;low_edge_snr&quot; snr at low corner</span>
+<span class="sd">       - &quot;high_edge_f&quot; high frequency corner of estimated bandwidth</span>
+<span class="sd">       - &quot;high_edge_snr&quot; snr at high corner</span>
+<span class="sd">       - &quot;f_range&quot; total frequency range of estimate (range of S)</span>
+
+<span class="sd">       Note the low edge can be zero which must be handled</span>
+<span class="sd">       carefully if the output is used for designing a filter.</span>
+<span class="sd">       Further all values will be 0 if no points in the snr curve</span>
+<span class="sd">       exceed the defined threshold.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">alg</span> <span class="o">=</span> <span class="s2">&quot;EstimateBandwidth&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">PowerSpectrum</span><span class="p">):</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">alg</span>
+            <span class="o">+</span> <span class="s2">&quot;:  arg0 must be a PowerSpectrum object computed from signal; actual type=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="nb">type</span><span class="p">(</span><span class="n">S</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">PowerSpectrum</span><span class="p">):</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">alg</span>
+            <span class="o">+</span> <span class="s2">&quot;:  arg1 must be a PowerSpectrum object for noise estimate; actual type=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="nb">type</span><span class="p">(</span><span class="n">N</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+    <span class="c1"># set the ceiling on the high frequency band edge</span>
+    <span class="c1"># Default is 80% of Nyquist</span>
+    <span class="k">if</span> <span class="n">f_max</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">f_max</span> <span class="o">&gt;</span> <span class="n">S</span><span class="o">.</span><span class="n">Nyquist</span><span class="p">():</span>
+            <span class="c1"># silently reset to Nyquist if f_max is illegal</span>
+            <span class="n">high_f_ceiling</span> <span class="o">=</span> <span class="mf">0.8</span> <span class="o">*</span> <span class="n">S</span><span class="o">.</span><span class="n">Nyquist</span><span class="p">()</span>
+        <span class="n">high_f_ceiling</span> <span class="o">=</span> <span class="n">f_max</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">high_f_ceiling</span> <span class="o">=</span> <span class="mf">0.8</span> <span class="o">*</span> <span class="n">S</span><span class="o">.</span><span class="n">Nyquist</span><span class="p">()</span>
+    <span class="c1"># use the S grid to define the snr curve - note N grid can be different</span>
+    <span class="n">snrdata</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">S</span><span class="o">.</span><span class="n">nf</span><span class="p">())</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">S</span><span class="o">.</span><span class="n">nf</span><span class="p">()):</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">frequency</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="n">i_n</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">sample_number</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="c1"># conditional needed in case S and N are computed with different sample intervals</span>
+        <span class="k">if</span> <span class="n">i_n</span> <span class="o">&lt;</span> <span class="n">N</span><span class="o">.</span><span class="n">nf</span><span class="p">():</span>
+            <span class="n">snrdata</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">spectrum</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">/</span> <span class="n">N</span><span class="o">.</span><span class="n">spectrum</span><span class="p">[</span><span class="n">i_n</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">snrdata</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+    <span class="c1"># S and N are power, convert to amplitude</span>
+    <span class="n">snrdata</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">snrdata</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">df_smoother</span><span class="p">:</span>
+        <span class="n">smoother_npts</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">df_smoother</span> <span class="o">/</span> <span class="n">S</span><span class="o">.</span><span class="n">df</span><span class="p">())</span>
+        <span class="c1"># silently do nothing if the smoother requested is smaller than df</span>
+        <span class="k">if</span> <span class="n">smoother_npts</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">smoother</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">smoother_npts</span><span class="p">)</span> <span class="o">/</span> <span class="n">smoother_npts</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">convolve</span><span class="p">(</span><span class="n">snrdata</span><span class="p">,</span> <span class="n">smoother</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;valid&quot;</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">BandwidthData</span><span class="p">()</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">f_range</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">frequency</span><span class="p">(</span><span class="n">S</span><span class="o">.</span><span class="n">nf</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">S</span><span class="o">.</span><span class="n">frequency</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="c1"># test for no data exceeding tbhreshold - send null result if that is the case</span>
+    <span class="n">snrmax</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">snrdata</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">snrmax</span> <span class="o">&lt;</span> <span class="n">snr_threshold</span><span class="p">:</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">high_edge_f</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">high_edge_snr</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">low_edge_f</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">low_edge_snr</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">return</span> <span class="n">result</span>
+    <span class="c1"># get index of search start</span>
+    <span class="n">i0</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">sample_number</span><span class="p">(</span><span class="n">f0</span><span class="p">)</span>
+    <span class="n">i_max</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">sample_number</span><span class="p">(</span><span class="n">high_f_ceiling</span><span class="p">)</span>
+    <span class="c1"># search upward in f</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="n">i0</span>
+    <span class="k">while</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">i_max</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">snrdata</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">snr_threshold</span><span class="p">:</span>
+            <span class="k">break</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="c1"># this should never happen but avoids a seg fault if it does</span>
+    <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">snrdata</span><span class="p">):</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">snrdata</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="n">i0</span><span class="p">:</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">high_edge_f</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">frequency</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">high_edge_snr</span> <span class="o">=</span> <span class="n">snrdata</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># if we land here snr at f0 is less than the threshold</span>
+        <span class="c1"># in that case search backward to find the first</span>
+        <span class="c1"># point above the threshold (there has to be one because of</span>
+        <span class="c1"># test for max snrdata above)</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="n">i0</span>
+        <span class="k">while</span> <span class="p">(</span>
+            <span class="n">snrdata</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">snr_threshold</span> <span class="ow">and</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="mi">0</span>
+        <span class="p">):</span>  <span class="c1"># i&gt;=0 test not essential but safer</span>
+            <span class="n">i</span> <span class="o">-=</span> <span class="mi">1</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">high_edge_f</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">frequency</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">high_edge_snr</span> <span class="o">=</span> <span class="n">snrdata</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">i0</span> <span class="o">=</span> <span class="n">i</span>
+
+    <span class="c1"># now search backward to find low edge</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="n">i0</span>
+    <span class="c1"># gt 0 so if 0 is above threshold i will be 0 on exiting this loop</span>
+    <span class="k">while</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">snrdata</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">snr_threshold</span><span class="p">:</span>
+            <span class="k">break</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">i</span> <span class="o">-=</span> <span class="mi">1</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">low_edge_f</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">frequency</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">low_edge_snr</span> <span class="o">=</span> <span class="n">snrdata</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">result</span></div>
 
 
 <span class="k">def</span> <span class="nf">_window_invalid</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">win</span><span class="p">):</span>
@@ -355,41 +544,37 @@
     <span class="n">noise_spectrum_engine</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">signal_window</span><span class="o">=</span><span class="n">TimeWindow</span><span class="p">(</span><span class="o">-</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">120.0</span><span class="p">),</span>
     <span class="n">signal_spectrum_engine</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">band_cutoff_snr</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
+    <span class="n">band_cutoff_snr</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span>
     <span class="n">signal_detection_minimum_bandwidth</span><span class="o">=</span><span class="mf">6.0</span><span class="p">,</span>
+    <span class="n">f_low_zero_test</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">tbp</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
     <span class="n">ntapers</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span>
-    <span class="n">high_frequency_search_start</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
-    <span class="n">fix_high_edge</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">f0</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
     <span class="n">poles</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
     <span class="n">perc</span><span class="o">=</span><span class="mf">95.0</span><span class="p">,</span>
     <span class="n">optional_metrics</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">save_spectra</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-<span class="p">):</span>
-    <span class="c1"># optional_metrics=[&#39;snr_stats&#39;,&#39;filtered_envelope&#39;,&#39;filtered_L2&#39;,&#39;filtered_Linf&#39;,&#39;filtered_MAD&#39;,&#39;filtered_perc&#39;]):</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Estimates one or more amplitude metrics of signal-to-noise from a TimeSeries object.</span>
-<span class="sd">    An implicit assumption is that the analysis is centered on a timeable &quot;phase&quot;</span>
-<span class="sd">    like P, PP, etc.</span>
+<span class="sd">    Results are returned as a set of key-value pairs in a python dict.</span>
 
-<span class="sd">    This is a python function that can be used to compute one or several</span>
-<span class="sd">    signal-to-noise ratio estimates based on an estimated bandwidth using</span>
-<span class="sd">    the C++ function EstimateBandwidth.  The function has a fair number of</span>
-<span class="sd">    options, but the core metrics computed are the bandwidth estimates</span>
-<span class="sd">    computed by that function.  It uses a fairly simple search algorithm</span>
-<span class="sd">    that functions well for most earthquake sources.  For the low end the</span>
-<span class="sd">    algorithm searches from the first frequency indistinguishable from DC to</span>
-<span class="sd">    find the lowest frequency for which the snr exceeds a threshold specified</span>
-<span class="sd">    by the input parameter &#39;band_cutoff_snr&#39;.   It does a similar search</span>
-<span class="sd">    from the high end from a point 80% of Nyquist - a good choice for all</span>
-<span class="sd">    modern digital data that use FIR antialias filters.   Both searches are</span>
-<span class="sd">    not just defined with just the first frequency to satisfy the snr</span>
-<span class="sd">    threshold criteria.  Only when a group of frequencies more than 2 times</span>
-<span class="sd">    the time-bandwidth product exceed the threshold is the band edge</span>
-<span class="sd">    defined.   The actual band edge is then defined as the first frequency</span>
-<span class="sd">    exceeding the threshold.  That more elaborate algorithm was used to</span>
-<span class="sd">    prevent pure lines in either the signal or noise spectrum from</span>
-<span class="sd">    corrupting the estimates.</span>
+<span class="sd">    FD_snr_estimator first estimates bandwidth with the function in this</span>
+<span class="sd">    module called `EstimateBandwidth`.  See the docstring of that function</span>
+<span class="sd">    for how the bandwidth is estimated.  The metrics this function</span>
+<span class="sd">    computes all depend upon that bandwidth estimate.  The default return</span>
+<span class="sd">    of this function is the return of `EstimateBandwidth` translated to</span>
+<span class="sd">    keyp-value pairs.   Those are:</span>
+
+<span class="sd">      *low_f_band_edge* - lowest frequency exceeding threshold</span>
+<span class="sd">      *high_f_band_edge* - highest frequency exeeding threshold</span>
+<span class="sd">      *high_f_band_edge_snr* and *low_f_band_edge_snr* are the snr values</span>
+<span class="sd">        at the band edges</span>
+<span class="sd">      *spectrum_frequency_range* - total frequency band for estimate</span>
+<span class="sd">        (really just 0 to Nyquist).</span>
+<span class="sd">      *bandwidth* - bandwidth of estimate in dB.</span>
+<span class="sd">        i.e. 20*log10(high_f_band_edge/low_f_band_edge)</span>
+<span class="sd">      *bandwidth_fraction* - bandwidth/spectrum_frequency_range</span>
 
 <span class="sd">    A set of optional metrics can be computed.  All optional metrics use</span>
 <span class="sd">    the bandwidth estimates in one way or another.   Optional metrics are</span>
@@ -407,8 +592,21 @@
 <span class="sd">    All of these optional metrics first copy the data_object and then</span>
 <span class="sd">    filter the copy with a Butterworth bandpass filter with the number of</span>
 <span class="sd">    poles specified by the npoles argument and corners at the estimated</span>
-<span class="sd">    band edge by the EstimateBandwidth function.   The metrics computed</span>
-<span class="sd">    are time domain snr estimates computed with he filtered data.  They are</span>
+<span class="sd">    band edge by the EstimateBandwidth function.  The algorithm automatically</span>
+<span class="sd">    handles the case of a zero low frequency edge.   That is, with large events</span>
+<span class="sd">    the low band edge can be computed as 0 frequency.   More commonly the band edge</span>
+<span class="sd">    is computed as one or two rayleigh bins above 0.  A bandpass filtered applied</span>
+<span class="sd">    with a corner too close to 0 can produced distorted (or null) results.</span>
+<span class="sd">    To prevent that the default behavior is to revert to a low pass filter</span>
+<span class="sd">    versus a bandpass filter when the estimated value of low_f_band_edge is small.</span>
+<span class="sd">    By default &quot;small&quot; is defined as &lt;= 2.0*tbp*df, where tbp is the</span>
+<span class="sd">    time bandwidth product for the multitaper spectral estimates (in optional</span>
+<span class="sd">    argument) and df is the frequency sampling interval of the spectrum computed from</span>
+<span class="sd">    the data in `signal_window`.  You can use a different recipe by passing</span>
+<span class="sd">    a value for the optional parameter &quot;f_low_zero_test&quot; which will replace</span>
+<span class="sd">    the computed value using the formula above for switching to a lowpass filter.</span>
+<span class="sd">    The optional metrics are time domain estimates computed from</span>
+<span class="sd">    the bandpass (lowpass) filtered data.  They are</span>
 <span class="sd">    actually computed from functions in this same module that can be</span>
 <span class="sd">    used independently and have their own docstring description. The</span>
 <span class="sd">    functions called have the following names in order of the keyword</span>
@@ -430,21 +628,26 @@
 <span class="sd">      UTC (absolute) time but we do not check for consistency.  This low</span>
 <span class="sd">      level function assumes they are consistent.  If not, the calculations</span>
 <span class="sd">      are nearly guaranteed to fail.  Type must be mspasspy.ccore.TimeWindow.</span>
+<span class="sd">    :type noise_window:  :py:class:`mspasspy.ccore.algorithms.basic.TimeWindow`</span>
+<span class="sd">      default -130 to -5 s.</span>
 <span class="sd">    :param signal_window: defines the time window to use that defines what</span>
 <span class="sd">      you consider &quot;the signal&quot;.  The time span can be either relative or</span>
 <span class="sd">      UTC (absolute) time but we do not check for consistency.  This low</span>
 <span class="sd">      level function assumes they are consistent.  If not, the calculations</span>
 <span class="sd">      are nearly guaranteed to fail.  Type must be mspasspy.ccore.TimeWindow.</span>
-<span class="sd">    :param noise_spectrum_engine: is expected to either by a None type</span>
-<span class="sd">      or an instance of a ccore object called an MTPowerSpectralEngine.</span>
-<span class="sd">      When None an instance of MTPowerSpectralEngine is computed for</span>
-<span class="sd">      each call to this function.   That is a convenience for small</span>
-<span class="sd">      jobs or when called with data from mixed sample rates and/or variable</span>
-<span class="sd">      length time windows.   It is very inefficient to use the default</span>
-<span class="sd">      approach for processing large data sets and really for any use in a</span>
-<span class="sd">      map operation with dask or spark.  Normal use should be for the user to</span>
-<span class="sd">      predefine an MtPowerSpectralEngine from the expected window size</span>
-<span class="sd">      for a given data sample rate and include it in the function call.</span>
+<span class="sd">    :type signal_window:  :py:class:`mspasspy.ccore.algorithms.basic.TimeWindow`</span>
+<span class="sd">      default -5 to 120 s</span>
+<span class="sd">    :type noise_spectrum_engine: None (default) or an instance of</span>
+<span class="sd">      :py:class:`mspasspy.ccore.algorithms.deconvolution.MTPowerSpectrumEngine`</span>
+<span class="sd">    :param signal_spectrum_engine:  is the comparable MTPowerSpectralEngine</span>
+<span class="sd">      to use to compute the signal power spectrum.   Default is None with the</span>
+<span class="sd">      same caveat as above for the noise_spectrum_engine.</span>
+<span class="sd">    :type signal_spectrum_engine: None (default) or an instance of</span>
+<span class="sd">      :py:class:`mspasspy.ccore.algorithms.deconvolution.MTPowerSpectrumEngine`</span>
+<span class="sd">    :param band_cutoff_snr:   defines the signal-to-noise ratio floor</span>
+<span class="sd">      used in the search for band edges.  See description of the algorithm</span>
+<span class="sd">      above and in the user&#39;s manual.  Default is 1.5</span>
+<span class="sd">    :type band_cutoff_snr: float</span>
 <span class="sd">    :param signal_spectrum_engine:  is the comparable MTPowerSpectralEngine</span>
 <span class="sd">      to use to compute the signal power spectrum.   Default is None with the</span>
 <span class="sd">      same caveat as above for the noise_spectrum_engine.</span>
@@ -455,7 +658,7 @@
 <span class="sd">      algorithm first tries to estimate the bandwidth of data where the</span>
 <span class="sd">      signal level exceeds the noise level defined by the parameter</span>
 <span class="sd">      band_cutoff_snr.  It then computes the bandwidth of the data in</span>
-<span class="sd">      dB computed as log10(f_high/f_low).  For almost any application</span>
+<span class="sd">      dB computed as 20*log10(f_high/f_low).  For almost any application</span>
 <span class="sd">      if the working bandwidth falls below some threshold the data is</span>
 <span class="sd">      junk to all intends and purpose.  A factor more relevant to this</span>
 <span class="sd">      algorithm is that the &quot;optional parameters&quot;  will all be meaningless</span>
@@ -468,52 +671,39 @@
 <span class="sd">      but may be too small for some applications.  If your application</span>
 <span class="sd">      requires higher snr and wider bandwidth adjust this parameter</span>
 <span class="sd">      and/or band_cutoff_snr.</span>
+<span class="sd">    :type signal_detection_minimum_bandwidth:  float (default 6.0 dB)</span>
+<span class="sd">    :param f_low_zero_test: optional lower bound on frequency to use for</span>
+<span class="sd">       test to disable the low frequency corner.   (see above)</span>
+<span class="sd">    :type f_low_zero_test:  float (default is None which causes the test to</span>
+<span class="sd">        revert to 2.0*tbp*df (see above).</span>
 <span class="sd">    :param tbp:  time-bandwidth product to use for computing the set of</span>
 <span class="sd">      Slepian functions used for the multitaper estimator.  This parameter is</span>
 <span class="sd">      used only if the noise_spectrum_engine or signal_spectrum_engine</span>
-<span class="sd">      arguments are set as None.  The default is 4.0</span>
+<span class="sd">      arguments are set as None.</span>
+<span class="sd">    :type tbp:  float (default 4.0)</span>
 <span class="sd">    :param ntapers:  is the number of Slepian functions (tapers) to compute</span>
 <span class="sd">      for the multitaper estimators. Like tbp it is referenced only if</span>
 <span class="sd">      noise_spectrum_engine or signal_spectrum_engine are set to None.</span>
 <span class="sd">      Note the function will throw an exception if the ntaper parameter is</span>
-<span class="sd">      not consistent with the time-bandwidth product.  That is, the</span>
-<span class="sd">      maximum number of tapers is round(2*tbp-1).   Default is 6 which is</span>
-<span class="sd">      consistent with default tbp=4.0 where the maximum recommended is 8</span>
-<span class="sd">    :param high_frequency_search_start: Used to specify the upper frequency</span>
-<span class="sd">      used to start the search for the upper end of the bandwidth by</span>
-<span class="sd">      the function EstimateBandwidth.  Default is 2.0 which reasonable for</span>
-<span class="sd">      teleseismic P wave data.  Should be change for usage other than</span>
-<span class="sd">      analysis of teleseimic P phases or you the bandwidth may be</span>
-<span class="sd">      grossly underestimated.</span>
-<span class="sd">    :param fix_high_edge:   boolean controlling upper search behavior.</span>
-<span class="sd">      When set True the search from the upper frequency limit is disabled</span>
-<span class="sd">      and the upper band limit edge is set as the value passed as</span>
-<span class="sd">      high_frequency_search_start.  False enables the search.</span>
-<span class="sd">      True is most useful for teleseismic body waves as many stations have</span>
-<span class="sd">      a series of closely enough spaced lines (presumably from electronic</span>
-<span class="sd">      sources) that set the high edge incorrectly.   False would be</span>
-<span class="sd">      more appropriate for most local and regional earthquake data.</span>
-<span class="sd">      The default is True.</span>
+<span class="sd">      not consistent with the time-bandwidth product.</span>
+<span class="sd">    :type ntapers:  integer (default 6)</span>
+<span class="sd">    :param f0:   frequency to use to start search for bandwidth up and down</span>
+<span class="sd">      the frequency axis (see above).</span>
+<span class="sd">    :type f0:  float (default 1.0)</span>
 <span class="sd">    :param npoles:   defines number of poles to us for the Butterworth</span>
-<span class="sd">      bandpass applied for the &quot;filtered&quot; metrics (see above).  Default is 3.</span>
+<span class="sd">      bandpass or lowpass applied for the &quot;filtered&quot; metrics (see above).  Default is 3.</span>
+<span class="sd">    :type npoles:  integer (default 3)</span>
 <span class="sd">    :param perc:   used only if &#39;filtered_perc&#39; is in the optional metrics list.</span>
 <span class="sd">      Specifies the perc parameter as used in seismic unix.  Uses the percentage</span>
 <span class="sd">      point specified of the sorted abs of all amplitudes.  (Not perc=50.0 is</span>
 <span class="sd">      identical to MAD)  Default is 95.0 which is 2 sigma for Gaussian noise.</span>
-
+<span class="sd">    :type perc:  float (default 95.0)</span>
 <span class="sd">    :param optional_metrics: is an iterable container containing one or more</span>
-<span class="sd">      of the optional snr metrics discussed above.</span>
-<span class="sd">    :param store_as_subdocument:  This parameter is included for</span>
-<span class="sd">      flexibility but should not normally be changed by the user.  As noted</span>
-<span class="sd">      earlier the outputs of this function are best abstracted as Metadata.</span>
-<span class="sd">      When this parameter is False the Metadata members are all posted with</span>
-<span class="sd">      directly to data_object&#39;s Metadata container.  If set True the</span>
-<span class="sd">      internally generated python dict is copied and stored with a key</span>
-<span class="sd">      defined through the subdocument_key argument.  See use below in</span>
-<span class="sd">      function arrival_snr.</span>
-<span class="sd">    :param subdocument_key:  key for storing results as a subdocument.</span>
-<span class="sd">      This parameter is ignored unless store_as_subdocument is True.</span>
-<span class="sd">      Default is &quot;snr_data&quot;</span>
+<span class="sd">      of the optional snr metrics discussed above. Typos in names will create</span>
+<span class="sd">      log messages but will not cause the function to abort.</span>
+<span class="sd">    :type optional_metrics:  should be a list of strings matching the set of</span>
+<span class="sd">       required keywords.  Default is None which means none of the optional</span>
+<span class="sd">       metrics will be computed.</span>
 <span class="sd">    :param save_spectra:   If set True (default is False) the function</span>
 <span class="sd">      will pickle the computed noise and signal spectra and save the</span>
 <span class="sd">      strings created along with a set of related metadata defining the</span>
@@ -523,7 +713,7 @@
 <span class="sd">      results using graphics, or a research topic where the spectra would</span>
 <span class="sd">      be of interest.  It is a very bad idea to turn this option on if</span>
 <span class="sd">      you are processing a large quantity of data and saving the results</span>
-<span class="sd">      to MongoDB as it will bloat the arrival collection.  Consider a</span>
+<span class="sd">      to MongoDB as it may bloat the database.  Consider a</span>
 <span class="sd">      different strategy if that essential for your work.</span>
 <span class="sd">    :return:  python tuple with two components.  0 is a python dict with</span>
 <span class="sd">      the computed metrics associated with keys defined above.  1 is a</span>
@@ -573,6 +763,7 @@
         <span class="c1"># First extract the required windows and compute the power spectra</span>
         <span class="n">n</span> <span class="o">=</span> <span class="n">WindowData</span><span class="p">(</span><span class="n">data_object</span><span class="p">,</span> <span class="n">noise_window</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="n">noise_window</span><span class="o">.</span><span class="n">end</span><span class="p">)</span>
         <span class="n">s</span> <span class="o">=</span> <span class="n">WindowData</span><span class="p">(</span><span class="n">data_object</span><span class="p">,</span> <span class="n">signal_window</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="n">signal_window</span><span class="o">.</span><span class="n">end</span><span class="p">)</span>
+
         <span class="c1"># WARNING:  this handler depends upon an implementation details</span>
         <span class="c1"># that could be a maintenance issue.  The python code has a catch</span>
         <span class="c1"># that kills a datum where windowing fails.   The C++ code throws</span>
@@ -595,16 +786,24 @@
             <span class="n">sengine</span> <span class="o">=</span> <span class="n">MTPowerSpectrumEngine</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">npts</span><span class="p">,</span> <span class="n">tbp</span><span class="p">,</span> <span class="n">ntapers</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">npts</span> <span class="o">*</span> <span class="mi">2</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">dt</span><span class="p">)</span>
         <span class="n">N</span> <span class="o">=</span> <span class="n">nengine</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
         <span class="n">S</span> <span class="o">=</span> <span class="n">sengine</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
-        <span class="n">bwd</span> <span class="o">=</span> <span class="n">EstimateBandwidth</span><span class="p">(</span>
-            <span class="n">S</span><span class="o">.</span><span class="n">df</span><span class="p">(),</span>
-            <span class="n">S</span><span class="p">,</span>
-            <span class="n">N</span><span class="p">,</span>
-            <span class="n">band_cutoff_snr</span><span class="p">,</span>
-            <span class="n">tbp</span><span class="p">,</span>
-            <span class="n">high_frequency_search_start</span><span class="p">,</span>
-            <span class="n">fix_high_edge</span><span class="p">,</span>
-        <span class="p">)</span>
+        <span class="c1"># bwd = EstimateBandwidth(</span>
+        <span class="c1">#    S.df(),</span>
+        <span class="c1">#    S,</span>
+        <span class="c1">#    N,</span>
+        <span class="c1">#    band_cutoff_snr,</span>
+        <span class="c1">#    tbp,</span>
+        <span class="c1">#    high_frequency_search_start,</span>
+        <span class="c1">#    fix_high_edge,</span>
+        <span class="c1"># )</span>
+        <span class="n">bwd</span> <span class="o">=</span> <span class="n">EstimateBandwidth</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">snr_threshold</span><span class="o">=</span><span class="n">band_cutoff_snr</span><span class="p">,</span> <span class="n">f0</span><span class="o">=</span><span class="n">f0</span><span class="p">)</span>
+        <span class="c1"># The low edge can be zero but that will not work correctly with the</span>
+        <span class="c1"># bandwidth method of bwd.  That C++ function has a bug in that it doesn&#39;t</span>
+        <span class="c1"># handle that highly possible error condition.  This is a workaround</span>
 
+        <span class="k">if</span> <span class="n">bwd</span><span class="o">.</span><span class="n">low_edge_f</span> <span class="o">&lt;=</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="n">bandwidth</span> <span class="o">=</span> <span class="mf">20.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">bwd</span><span class="o">.</span><span class="n">high_edge_f</span> <span class="o">/</span> <span class="n">S</span><span class="o">.</span><span class="n">df</span><span class="p">())</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">bandwidth</span> <span class="o">=</span> <span class="n">bwd</span><span class="o">.</span><span class="n">bandwidth</span><span class="p">()</span>
         <span class="c1"># here we return empty result if the bandwidth is too low</span>
         <span class="k">if</span> <span class="n">bwd</span><span class="o">.</span><span class="n">bandwidth</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">signal_detection_minimum_bandwidth</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">[</span><span class="nb">dict</span><span class="p">(),</span> <span class="n">my_logger</span><span class="p">]</span>
@@ -614,8 +813,8 @@
         <span class="n">snrdata</span><span class="p">[</span><span class="s2">&quot;low_f_band_edge_snr&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bwd</span><span class="o">.</span><span class="n">low_edge_snr</span>
         <span class="n">snrdata</span><span class="p">[</span><span class="s2">&quot;high_f_band_edge_snr&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bwd</span><span class="o">.</span><span class="n">high_edge_snr</span>
         <span class="n">snrdata</span><span class="p">[</span><span class="s2">&quot;spectrum_frequency_range&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bwd</span><span class="o">.</span><span class="n">f_range</span>
+        <span class="n">snrdata</span><span class="p">[</span><span class="s2">&quot;bandwidth&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bandwidth</span>
         <span class="n">snrdata</span><span class="p">[</span><span class="s2">&quot;bandwidth_fraction&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bwd</span><span class="o">.</span><span class="n">bandwidth_fraction</span><span class="p">()</span>
-        <span class="n">snrdata</span><span class="p">[</span><span class="s2">&quot;bandwidth&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bwd</span><span class="o">.</span><span class="n">bandwidth</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">save_spectra</span><span class="p">:</span>
             <span class="n">snrdata</span><span class="p">[</span><span class="s2">&quot;signal_spectrum&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">S</span><span class="p">)</span>
             <span class="n">snrdata</span><span class="p">[</span><span class="s2">&quot;noise_spectrum&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">N</span><span class="p">)</span>
@@ -639,13 +838,27 @@
     <span class="c1"># here will need to be changed to create a more exclusive test</span>
 
     <span class="k">if</span> <span class="n">optional_metrics</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">f_low_zero_test</span><span class="p">:</span>
+            <span class="n">fcutoff</span> <span class="o">=</span> <span class="n">f_low_zero_test</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">fcutoff</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">tbp</span> <span class="o">*</span> <span class="n">S</span><span class="o">.</span><span class="n">df</span><span class="p">()</span>
         <span class="c1"># use the mspass butterworth filter for speed - obspy</span>
         <span class="c1"># version requires a conversion to Trace objects</span>
+        <span class="c1"># TODO:   setting low_poles to 0 seems necessary to</span>
+        <span class="c1"># enable lowpass filter turning off low corner terms</span>
+        <span class="c1"># I (GLP) am not sure why that is necessary looking at the</span>
+        <span class="c1"># C++ code.</span>
+        <span class="k">if</span> <span class="n">bwd</span><span class="o">.</span><span class="n">low_edge_f</span> <span class="o">&gt;</span> <span class="n">fcutoff</span><span class="p">:</span>
+            <span class="n">use_lowcorner</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">low_poles</span> <span class="o">=</span> <span class="n">poles</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">use_lowcorner</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">low_poles</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="n">BWfilt</span> <span class="o">=</span> <span class="n">Butterworth</span><span class="p">(</span>
             <span class="kc">False</span><span class="p">,</span>
+            <span class="n">use_lowcorner</span><span class="p">,</span>
             <span class="kc">True</span><span class="p">,</span>
-            <span class="kc">True</span><span class="p">,</span>
-            <span class="n">poles</span><span class="p">,</span>
+            <span class="n">low_poles</span><span class="p">,</span>
             <span class="n">bwd</span><span class="o">.</span><span class="n">low_edge_f</span><span class="p">,</span>
             <span class="n">poles</span><span class="p">,</span>
             <span class="n">bwd</span><span class="o">.</span><span class="n">high_edge_f</span><span class="p">,</span>
@@ -655,6 +868,15 @@
         <span class="n">BWfilt</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">filtered_data</span><span class="p">)</span>
         <span class="n">nfilt</span> <span class="o">=</span> <span class="n">WindowData</span><span class="p">(</span><span class="n">filtered_data</span><span class="p">,</span> <span class="n">noise_window</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="n">noise_window</span><span class="o">.</span><span class="n">end</span><span class="p">)</span>
         <span class="n">sfilt</span> <span class="o">=</span> <span class="n">WindowData</span><span class="p">(</span><span class="n">filtered_data</span><span class="p">,</span> <span class="n">signal_window</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="n">signal_window</span><span class="o">.</span><span class="n">end</span><span class="p">)</span>
+
+        <span class="c1"># this is needed externally as a signal to use a lowpass instead of</span>
+        <span class="c1"># bandpass to recreate the filtered data</span>
+        <span class="k">if</span> <span class="n">use_lowcorner</span><span class="p">:</span>
+            <span class="n">snrdata</span><span class="p">[</span><span class="s2">&quot;filter_type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;bandpass&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">snrdata</span><span class="p">[</span><span class="s2">&quot;filter_type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;lowpass&quot;</span>
+        <span class="n">snrdata</span><span class="p">[</span><span class="s2">&quot;filter_number_poles&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">poles</span>
+
         <span class="c1"># In this implementation we don&#39;t need this any longer so we</span>
         <span class="c1"># delete it here.  If options are added beware</span>
         <span class="k">del</span> <span class="n">filtered_data</span>
@@ -682,7 +904,6 @@
                     <span class="c1"># left in place to keep code more robust in the event</span>
                     <span class="c1"># of a change</span>
                     <span class="n">newmessage</span> <span class="o">=</span> <span class="n">_reformat_mspass_error</span><span class="p">(</span>
-                        <span class="n">err</span><span class="p">,</span>
                         <span class="s2">&quot;BandwithStatistics throw the following error</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
                         <span class="s2">&quot;Five snr_stats attributes were not computed&quot;</span><span class="p">,</span>
                     <span class="p">)</span>
@@ -781,8 +1002,8 @@
     <span class="n">signal_detection_minimum_bandwidth</span><span class="o">=</span><span class="mf">6.0</span><span class="p">,</span>
     <span class="n">tbp</span><span class="o">=</span><span class="mf">4.0</span><span class="p">,</span>
     <span class="n">ntapers</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span>
-    <span class="n">high_frequency_search_start</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
-    <span class="n">fix_high_edge</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">f_low_zero_test</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">f0</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
     <span class="n">poles</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
     <span class="n">perc</span><span class="o">=</span><span class="mf">95.0</span><span class="p">,</span>
     <span class="n">save_spectra</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -843,31 +1064,27 @@
 <span class="sd">    see the usage.   The following are added for this specialization:</span>
 
 <span class="sd">    :param phase_name:  Name tag for the seismic phase being analyzed.</span>
-<span class="sd">    This string is saved to the output subdocument with the key &quot;phase&quot;.</span>
-<span class="sd">    The default is &quot;P&quot;</span>
-
+<span class="sd">      This string is saved to the output subdocument with the key &quot;phase&quot;.</span>
+<span class="sd">      The default is &quot;P&quot;</span>
 <span class="sd">    :param arrival_time_key:  key (string) used to fetch an arrival time</span>
 <span class="sd">      if the data are in UTC and the time window received does not overlap</span>
 <span class="sd">      the data range (see above)</span>
-
 <span class="sd">    :param kill_null_signals:  boolean controlling how null snr estimator</span>
-<span class="sd">    returns are handled.  When True (default) if FD_snr_estimator returns a null</span>
-<span class="sd">    result (no apparent signal) that input datum is killed before being</span>
-<span class="sd">    returned.  In that situation no snr metrics will be in the output because</span>
-<span class="sd">    null means FD_snr_estimator couldn&#39;t detect a signal and the algorithm</span>
-<span class="sd">    failed.   When False the datum is returned silently but</span>
-<span class="sd">    will have no snr data defined in a dict stored with the key</span>
-<span class="sd">    metadata_output_key (i.e. that attribute will be undefined in output)</span>
-
+<span class="sd">      returns are handled.  When True (default) if FD_snr_estimator returns a null</span>
+<span class="sd">      result (no apparent signal) that input datum is killed before being</span>
+<span class="sd">      returned.  In that situation no snr metrics will be in the output because</span>
+<span class="sd">      null means FD_snr_estimator couldn&#39;t detect a signal and the algorithm</span>
+<span class="sd">      failed.   When False the datum is returned silently but</span>
+<span class="sd">      will have no snr data defined in a dict stored with the key</span>
+<span class="sd">      metadata_output_key (i.e. that attribute will be undefined in output)</span>
 <span class="sd">    :param metadata_output_key:  is a string used as a key under which the</span>
-<span class="sd">    subdocument (python dict) created internally is stored.  Default is</span>
-<span class="sd">    &quot;Parrival&quot;.   The idea is if multiple phases are being analyzed</span>
-<span class="sd">    each phase should have a different key set by this argument</span>
-<span class="sd">    (e.g. if PP were also being analyzed in the same workflow you</span>
-<span class="sd">     might use a key like &quot;PParrival&quot;).</span>
-
+<span class="sd">      subdocument (python dict) created internally is stored.  Default is</span>
+<span class="sd">      &quot;Parrival&quot;.   The idea is if multiple phases are being analyzed</span>
+<span class="sd">      each phase should have a different key set by this argument</span>
+<span class="sd">      (e.g. if PP were also being analyzed in the same workflow you</span>
+<span class="sd">       might use a key like &quot;PParrival&quot;).</span>
 <span class="sd">    :return:  a copy of data_object with the the results stored under</span>
-<span class="sd">    the key defined by the metadata_output_key argument.</span>
+<span class="sd">      the key defined by the metadata_output_key argument.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data_object</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;arrival_snr:  input arg0 must be a TimeSeries&quot;</span><span class="p">)</span>
@@ -907,10 +1124,10 @@
         <span class="n">signal_spectrum_engine</span><span class="o">=</span><span class="n">signal_spectrum_engine</span><span class="p">,</span>
         <span class="n">band_cutoff_snr</span><span class="o">=</span><span class="n">band_cutoff_snr</span><span class="p">,</span>
         <span class="n">signal_detection_minimum_bandwidth</span><span class="o">=</span><span class="n">signal_detection_minimum_bandwidth</span><span class="p">,</span>
+        <span class="n">f_low_zero_test</span><span class="o">=</span><span class="n">f_low_zero_test</span><span class="p">,</span>
         <span class="n">tbp</span><span class="o">=</span><span class="n">tbp</span><span class="p">,</span>
         <span class="n">ntapers</span><span class="o">=</span><span class="n">ntapers</span><span class="p">,</span>
-        <span class="n">high_frequency_search_start</span><span class="o">=</span><span class="n">high_frequency_search_start</span><span class="p">,</span>
-        <span class="n">fix_high_edge</span><span class="o">=</span><span class="n">fix_high_edge</span><span class="p">,</span>
+        <span class="n">f0</span><span class="o">=</span><span class="n">f0</span><span class="p">,</span>
         <span class="n">poles</span><span class="o">=</span><span class="n">poles</span><span class="p">,</span>
         <span class="n">perc</span><span class="o">=</span><span class="n">perc</span><span class="p">,</span>
         <span class="n">optional_metrics</span><span class="o">=</span><span class="n">optional_metrics</span><span class="p">,</span>
@@ -941,13 +1158,13 @@
     <span class="n">noise_spectrum_engine</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">signal_window</span><span class="o">=</span><span class="n">TimeWindow</span><span class="p">(</span><span class="o">-</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">120.0</span><span class="p">),</span>
     <span class="n">signal_spectrum_engine</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">band_cutoff_snr</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
+    <span class="n">band_cutoff_snr</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span>
     <span class="n">signal_detection_minimum_bandwidth</span><span class="o">=</span><span class="mf">6.0</span><span class="p">,</span>
+    <span class="n">f_low_zero_test</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">tbp</span><span class="o">=</span><span class="mf">4.0</span><span class="p">,</span>
     <span class="n">ntapers</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span>
-    <span class="n">high_frequency_search_start</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
-    <span class="n">fix_high_edge</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">kill_null_signals</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">f0</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+    <span class="n">kill_null_signals</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">poles</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
     <span class="n">perc</span><span class="o">=</span><span class="mf">95.0</span><span class="p">,</span>
     <span class="n">phase_name</span><span class="o">=</span><span class="s2">&quot;P&quot;</span><span class="p">,</span>
@@ -995,7 +1212,7 @@
 <span class="sd">    winnowing of the your data.   See User&#39;s Manual for more on</span>
 <span class="sd">    this concept.</span>
 
-<span class="sd">    The input of arg 0 (data_object) can be either a TimeSeries or</span>
+<span class="sd">    The input of arg0 (data_object) can be either a TimeSeries or</span>
 <span class="sd">    a Seismogram object.  If a Seismogram object is passed the &quot;component&quot;</span>
 <span class="sd">    argument is used to extract the specified single channel from the Seismogram</span>
 <span class="sd">    object and that component is used for processing.  That is necessary</span>
@@ -1016,79 +1233,60 @@
 <span class="sd">    is a Seismogram it tries to fetch site_lat.   That is true of all coordinate</span>
 <span class="sd">    data loaded by normalization from a source and receiver collection.</span>
 
-<span class="sd">    The following args are passed directly to the function FD_snr_estimator:</span>
-<span class="sd">    noise_window, noise_spectrum_engine, signal_window, signal_spectrum_engine,</span>
-<span class="sd">    band_cutoff_snr, signal_detection_minimum_bandwidth, tbp, ntapers,</span>
-<span class="sd">    high_frequency_search_start, fix_high_edge, npoles, perc, optional_metrics,</span>
-<span class="sd">    and save_spectrum.  Below we only describe arguments added by this</span>
-<span class="sd">    function:</span>
-
-<span class="sd">    data_object,</span>
-<span class="sd">    phase_name=&quot;P&quot;,</span>
-<span class="sd">    metadata_output_key=&quot;Parrival&quot;,</span>
-<span class="sd">    use_measured_arrival_time=False,</span>
-<span class="sd">    measured_arrival_time_key=&quot;Ptime&quot;,</span>
-<span class="sd">    taup_model=None,</span>
-<span class="sd">    component=2,</span>
-<span class="sd">    source_collection=&quot;source&quot;,</span>
-<span class="sd">    receiver_collection=None,</span>
+<span class="sd">    Most of the arguments to this function are passed directly to</span>
+<span class="sd">    `FD_snr_estimator`.   See the docstring of that function for reference.</span>
+<span class="sd">    The following are additional parameters specific to this function:</span>
 
 <span class="sd">    :param data_object:  An atomic MsPASS data object to which the</span>
-<span class="sd">    algorithms requested should be applied.   Currently that means a</span>
-<span class="sd">    TimeSeries or Seismogram object.   Any other input will result</span>
-<span class="sd">    in a TypeError exception.  As noted above for Seismogram input the</span>
-<span class="sd">    component argument defines which data component is to be used for the</span>
-<span class="sd">    snr computations.</span>
-
+<span class="sd">      algorithms requested should be applied.   Currently that means a</span>
+<span class="sd">      TimeSeries or Seismogram object.   Any other input will result</span>
+<span class="sd">      in a TypeError exception.  As noted above for Seismogram input the</span>
+<span class="sd">      component argument defines which data component is to be used for the</span>
+<span class="sd">      snr computations.</span>
 <span class="sd">    :param component: integer (0, 1, or 2) defining which component of a</span>
-<span class="sd">    Seismogram object to use to compute the requested snr metrics.   This</span>
-<span class="sd">    parameter is ignored if the input is a TimeSeries.</span>
-
+<span class="sd">      Seismogram object to use to compute the requested snr metrics.   This</span>
+<span class="sd">      parameter is ignored if the input is a TimeSeries.</span>
 <span class="sd">    :param metadata_output_key:  string defining the key where the results</span>
-<span class="sd">    are to be posted to the returned data_object.   The results are always</span>
-<span class="sd">    posted to a python dictionary and then posted to the returned</span>
-<span class="sd">    data_object with this key.   Default is &quot;Parrival&quot;</span>
-
+<span class="sd">      are to be posted to the returned data_object.   The results are always</span>
+<span class="sd">      posted to a python dictionary and then posted to the returned</span>
+<span class="sd">      data_object with this key.   Default is &quot;Parrival&quot;</span>
 <span class="sd">    :param use_measured_arrival_time:  boolean defining the method used to</span>
-<span class="sd">    define the time reference for windowing used for snr calculations.</span>
-<span class="sd">    When True the function will attempt to fetch a phase arrival time with</span>
-<span class="sd">    the key defined by the &quot;measured_arrival_time_key&quot; argument.  In that</span>
-<span class="sd">    mode if the fetch fails the data_object will be killed and an error</span>
-<span class="sd">    posted to elog.   That somewhat brutal choice was intentional as the</span>
-<span class="sd">    expectation is if you want to use measured arrival times you don&#39;t</span>
-<span class="sd">    want data where there are no picks.   The default is True to make</span>
-<span class="sd">    the defaults consistent.  The reason is that the tau-p calculator</span>
-<span class="sd">    handle is passed to the function when using model-based travel times.</span>
-<span class="sd">    There is no way to default that so it defaults to None.</span>
-
+<span class="sd">      define the time reference for windowing used for snr calculations.</span>
+<span class="sd">      When True the function will attempt to fetch a phase arrival time with</span>
+<span class="sd">      the key defined by the &quot;measured_arrival_time_key&quot; argument.  In that</span>
+<span class="sd">      mode if the fetch fails the data_object will be killed and an error</span>
+<span class="sd">      posted to elog.   That somewhat brutal choice was intentional as the</span>
+<span class="sd">      expectation is if you want to use measured arrival times you don&#39;t</span>
+<span class="sd">      want data where there are no picks.   The default is True to make</span>
+<span class="sd">      the defaults consistent.  The reason is that the tau-p calculator</span>
+<span class="sd">      handle is passed to the function when using model-based travel times.</span>
+<span class="sd">      There is no way to default that so it defaults to None.</span>
 <span class="sd">    :param measured_arrival_time_key: is the key used to fetch a</span>
-<span class="sd">    measured arrival time.   This parameter is ignored if use_measured_arrival_time</span>
-<span class="sd">    is False.</span>
-
+<span class="sd">      measured arrival time.   This parameter is ignored if use_measured_arrival_time</span>
+<span class="sd">      is False.</span>
 <span class="sd">    :param taup_model: when use_measured_arrival_time is False this argument</span>
-<span class="sd">    is required.  It defaults as None because there is no way the author</span>
-<span class="sd">    knows to initialize it to anything valid.  If set it MUST be an instance</span>
-<span class="sd">    of the obspy class TauPyModel (https://docs.obspy.org/packages/autogen/obspy.taup.tau.TauPyModel.html#obspy.taup.tau.TauPyModel)</span>
-<span class="sd">    Mistakes in use of this argument can cause a MsPASSError exception to</span>
-<span class="sd">    be thrown (not logged thrown as a fatal error) in one of two ways:</span>
-<span class="sd">    (1)  If use_measured_arrival_time is False this argument must be defined,</span>
-<span class="sd">    and (2) if it is defined it MUST be an instance of TauPyModel.</span>
-
+<span class="sd">      is required.  It defaults as None because there is no way the author</span>
+<span class="sd">      knows to initialize it to anything valid.  If set it MUST be an instance</span>
+<span class="sd">      of the obspy class TauPyModel</span>
+<span class="sd">      (https://docs.obspy.org/packages/autogen/obspy.taup.tau.TauPyModel.html#obspy.taup.tau.TauPyModel)</span>
+<span class="sd">      Mistakes in use of this argument can cause a MsPASSError exception to</span>
+<span class="sd">      be thrown (not logged thrown as a fatal error) in one of two ways:</span>
+<span class="sd">      (1)  If use_measured_arrival_time is False this argument must be defined,</span>
+<span class="sd">      and (2) if it is defined it MUST be an instance of TauPyModel.</span>
 <span class="sd">    :param source_collection:  normalization collection for source data.</span>
-<span class="sd">    The default is the MsPASS name &quot;source&quot; which means the function will</span>
-<span class="sd">    try to load the source hypocenter coordinates (when required) as</span>
-<span class="sd">    source_lat, source_lon, source_depth, and source_time from the input</span>
-<span class="sd">    data_object.  The id of that document is posted to the output dictionary</span>
-<span class="sd">    stored under metadata_output_key.</span>
-
+<span class="sd">      The default is the MsPASS name &quot;source&quot; which means the function will</span>
+<span class="sd">      try to load the source hypocenter coordinates (when required) as</span>
+<span class="sd">      source_lat, source_lon, source_depth, and source_time from the input</span>
+<span class="sd">      data_object.  The id of that document is posted to the output dictionary</span>
+<span class="sd">      stored under metadata_output_key.</span>
 <span class="sd">    :param receiver_collection:  when set this name will override the</span>
-<span class="sd">    automatic setting of the expected normalization collection naming</span>
-<span class="sd">    for receiver functions (see above).  The default is None which causes</span>
-<span class="sd">    the automatic switching to be involked.  If it is any other string</span>
-<span class="sd">    the automatic naming will be overridden.</span>
+<span class="sd">      automatic setting of the expected normalization collection naming</span>
+<span class="sd">      for receiver functions (see above).  The default is None which causes</span>
+<span class="sd">      the automatic switching to be involked.  If it is any other string</span>
+<span class="sd">      the automatic naming will be overridden.</span>
 
 <span class="sd">    :return:  the data_object modified by insertion of the snr QC data</span>
-<span class="sd">    in the object&#39;s Metadata under the key defined by metadata_output_key.</span>
+<span class="sd">      in the object&#39;s Metadata under the key defined by metadata_output_key.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">data_object</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
         <span class="k">return</span> <span class="n">data_object</span>
@@ -1168,10 +1366,10 @@
         <span class="n">signal_spectrum_engine</span><span class="o">=</span><span class="n">signal_spectrum_engine</span><span class="p">,</span>
         <span class="n">band_cutoff_snr</span><span class="o">=</span><span class="n">band_cutoff_snr</span><span class="p">,</span>
         <span class="n">signal_detection_minimum_bandwidth</span><span class="o">=</span><span class="n">signal_detection_minimum_bandwidth</span><span class="p">,</span>
+        <span class="n">f_low_zero_test</span><span class="o">=</span><span class="n">f_low_zero_test</span><span class="p">,</span>
         <span class="n">tbp</span><span class="o">=</span><span class="n">tbp</span><span class="p">,</span>
         <span class="n">ntapers</span><span class="o">=</span><span class="n">ntapers</span><span class="p">,</span>
-        <span class="n">high_frequency_search_start</span><span class="o">=</span><span class="n">high_frequency_search_start</span><span class="p">,</span>
-        <span class="n">fix_high_edge</span><span class="o">=</span><span class="n">fix_high_edge</span><span class="p">,</span>
+        <span class="n">f0</span><span class="o">=</span><span class="n">f0</span><span class="p">,</span>
         <span class="n">poles</span><span class="o">=</span><span class="n">poles</span><span class="p">,</span>
         <span class="n">perc</span><span class="o">=</span><span class="n">perc</span><span class="p">,</span>
         <span class="n">optional_metrics</span><span class="o">=</span><span class="n">optional_metrics</span><span class="p">,</span>
@@ -1267,56 +1465,47 @@
 <span class="sd">            one of the wf collections).</span>
 
 <span class="sd">    :param db:  MongoDB database handle to use for transactions that</span>
-<span class="sd">    are the focus of this algorithm.</span>
-
+<span class="sd">      are the focus of this algorithm.</span>
 <span class="sd">    :param doc_to_save:  python dictionary containing data to be saved.</span>
-<span class="sd">    Where and now this is saved is controlled by save_collection,</span>
-<span class="sd">    use_update, and subdocument_key as described above.</span>
-
+<span class="sd">      Where and now this is saved is controlled by save_collection,</span>
+<span class="sd">      use_update, and subdocument_key as described above.</span>
 <span class="sd">    :param wfid:   waveform document id of the parent datum.   It is</span>
-<span class="sd">    assumed to be an ObjectId of linking the data in doc_to_save to</span>
-<span class="sd">    the parent.   It is ALWAYS saved in the output with the key &quot;wfid&quot;.</span>
-
+<span class="sd">      assumed to be an ObjectId of linking the data in doc_to_save to</span>
+<span class="sd">      the parent.   It is ALWAYS saved in the output with the key &quot;wfid&quot;.</span>
 <span class="sd">    :param wf_collection:  string defining the collection from which the</span>
-<span class="sd">    datum from which the data stored in doc_to_save are associated.   wfid</span>
-<span class="sd">    is assumed define a valid document in wf_collection.   Default is</span>
-<span class="sd">    &quot;wf_Seismogram&quot;.</span>
-
+<span class="sd">      datum from which the data stored in doc_to_save are associated.   wfid</span>
+<span class="sd">      is assumed define a valid document in wf_collection.   Default is</span>
+<span class="sd">      &quot;wf_Seismogram&quot;.</span>
 <span class="sd">    :param save_collection:  string defining the collection name to which</span>
-<span class="sd">    doc_to_save should be pushed.   See above for how this name interacts</span>
-<span class="sd">    with other parameters.</span>
-
+<span class="sd">      doc_to_save should be pushed.   See above for how this name interacts</span>
+<span class="sd">      with other parameters.</span>
 <span class="sd">    :param subdocument_key:   Optional key for saving doc_to_save as a</span>
-<span class="sd">    a subdocument in the save_collection.   Default is None which means</span>
-<span class="sd">    the contents of doc_to_save will be saved (or update) as is.</span>
-<span class="sd">    For saves to (default) arrival collection this parameter should</span>
-<span class="sd">    normally be left None, but is allowed.   If save_collection is the</span>
-<span class="sd">    parent waveform collection setting this to some sensible key is</span>
-<span class="sd">    recommended to avoid possible name collisions with waveform</span>
-<span class="sd">    Metadata key-value pairs.    Default is None which means no</span>
-<span class="sd">    subdocuments are created.</span>
-
+<span class="sd">      a subdocument in the save_collection.   Default is None which means</span>
+<span class="sd">      the contents of doc_to_save will be saved (or update) as is.</span>
+<span class="sd">      For saves to (default) arrival collection this parameter should</span>
+<span class="sd">      normally be left None, but is allowed.   If save_collection is the</span>
+<span class="sd">      parent waveform collection setting this to some sensible key is</span>
+<span class="sd">      recommended to avoid possible name collisions with waveform</span>
+<span class="sd">      Metadata key-value pairs.    Default is None which means no</span>
+<span class="sd">      subdocuments are created.</span>
 <span class="sd">    :param use_update:  boolean controlling whether or not to use</span>
-<span class="sd">    updates or inserts for the contents of doc_to_save.  See above for</span>
-<span class="sd">    a description of how this interacts with other arguments to this</span>
-<span class="sd">    function.  Default is False.</span>
-
+<span class="sd">      updates or inserts for the contents of doc_to_save.  See above for</span>
+<span class="sd">      a description of how this interacts with other arguments to this</span>
+<span class="sd">      function.  Default is False.</span>
 <span class="sd">    :param update_id:   ObjectId of target document when running in update</span>
-<span class="sd">    mode.  When save_collection is the same as wf_collection this parameter</span>
-<span class="sd">    is ignored and the required id passed as wfid will be used for the</span>
-<span class="sd">    update key matching.   Also ignored with the default behavior if</span>
-<span class="sd">    inserting doc_to_save as a new document.  Required only if running</span>
-<span class="sd">    with a different collection and updating is desired.  The type example</span>
-<span class="sd">    noted above would be updates to existing arrival informations</span>
-<span class="sd">    created from a css3.0 database.</span>
-
+<span class="sd">      mode.  When save_collection is the same as wf_collection this parameter</span>
+<span class="sd">      is ignored and the required id passed as wfid will be used for the</span>
+<span class="sd">      update key matching.   Also ignored with the default behavior if</span>
+<span class="sd">      inserting doc_to_save as a new document.  Required only if running</span>
+<span class="sd">      with a different collection and updating is desired.  The type example</span>
+<span class="sd">      noted above would be updates to existing arrival informations</span>
+<span class="sd">      created from a css3.0 database.</span>
 <span class="sd">    :param validate_wfid:   When set True the id defined by the</span>
-<span class="sd">    required argument wfid will be validated by querying wf_collection.</span>
-<span class="sd">    In this mode if wfid is not found the function will silently return None.</span>
-<span class="sd">    Callers using this mode should handle that condition.</span>
-
+<span class="sd">      required argument wfid will be validated by querying wf_collection.</span>
+<span class="sd">      In this mode if wfid is not found the function will silently return None.</span>
+<span class="sd">      Callers using this mode should handle that condition.</span>
 <span class="sd">    :return:  ObjectId of saved record.  None if something went wrong</span>
-<span class="sd">    and nothing was saved.</span>
+<span class="sd">      and nothing was saved.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">dbwfcol</span> <span class="o">=</span> <span class="n">db</span><span class="p">[</span><span class="n">wf_collection</span><span class="p">]</span>
     <span class="k">if</span> <span class="n">validate_wfid</span><span class="p">:</span>
@@ -1348,6 +1537,214 @@
         <span class="n">save_id</span> <span class="o">=</span> <span class="n">dbcol</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span><span class="o">.</span><span class="n">inserted_id</span>
 
     <span class="k">return</span> <span class="n">save_id</span></div>
+
+
+<div class="viewcode-block" id="filter_by_snr_bandwidth"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.snr.filter_by_snr_bandwidth">[docs]</a><span class="k">def</span> <span class="nf">filter_by_snr_bandwidth</span><span class="p">(</span>
+    <span class="n">d</span><span class="p">,</span> <span class="n">qcdoc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">subdoc_key</span><span class="o">=</span><span class="s2">&quot;Parrival&quot;</span><span class="p">,</span> <span class="n">bandpass_low_f_limit</span><span class="o">=</span><span class="mf">0.02</span><span class="p">,</span> <span class="n">npoles</span><span class="o">=</span><span class="mi">4</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Filter function to automatically handle data processed with arrival_snr</span>
+<span class="sd">    or broadband_snr_QC.</span>
+
+<span class="sd">    The two MsPASS functions `arrival_snr` and `broadband_snr_QC` are</span>
+<span class="sd">    front ends to a lower level function called `FD_broadband_snr`.</span>
+<span class="sd">    That function is designed to estimate the bandwidth of a signal</span>
+<span class="sd">    and compute a suite of snr metrics that can be used to winnow</span>
+<span class="sd">    data for further processing.   One often wants to then filter the</span>
+<span class="sd">    data so processed into the frequency band the algorithm determines.</span>
+<span class="sd">    This function does that automaticallty for any atomic datum</span>
+<span class="sd">    previously processed with `arrival_snr` or `broadband_snr_QC`.</span>
+
+<span class="sd">    An important complication this function handles is that for large</span>
+<span class="sd">    earthquakes the low frequency band edge can be 0 or close</span>
+<span class="sd">    (meaning within a few Rayleigh bins) of 0.   In that situation</span>
+<span class="sd">    a bandpass filter with the corner near 0 is unstable and the</span>
+<span class="sd">    filter operator would fail if you tried to use that corner.</span>
+<span class="sd">    This function handles that all automatically if you use the</span>
+<span class="sd">    defaults for `arrival_snr` or `broadband_snr_QC`.  If you</span>
+<span class="sd">    change any of the defaults you may need to change one of the kwargs</span>
+<span class="sd">    for this function.   See descriptions below for guidance.</span>
+
+<span class="sd">    :param d: atomic MsPASS data object to be filtered.</span>
+<span class="sd">    :type d: :py:class:`mspasspy.ccore.seismic.TimeSeries` or</span>
+<span class="sd">       :py:class:`mspasspy.ccore.seismic.Seismogram`</span>
+<span class="sd">    :param qcdoc:  use attributes stored in a dictionary.</span>
+<span class="sd">       Use this approach if you want to impose attributes externally.</span>
+<span class="sd">       If defined the contents of this dictionary will be used.  If it</span>
+<span class="sd">       isn&#39;t define the function will use subdoc_key to try to fetch</span>
+<span class="sd">       the same data. Using a dictionary passed via this argument</span>
+<span class="sd">       is a way to filter an ensemble in a common band for all members.</span>
+<span class="sd">    :type qdoc:  dict or None (default)</span>
+<span class="sd">    :param subdoc_key: subdocument Metadata key to use to fetch data posted</span>
+<span class="sd">       by `arrival_snr` or `broadband_snr_QC`.  Both by default post the</span>
+<span class="sd">       computed attributes to a subdocument (python dictionary) that can</span>
+<span class="sd">       be fetched from the Metadata of d with a particular key.  This</span>
+<span class="sd">       argument is the key that should be used to fetch that data.  The</span>
+<span class="sd">       default is the default for `arrival_snr` and `broadband_snr_QC`.</span>
+<span class="sd">       Note if no data is found for this key the function attempts to</span>
+<span class="sd">       extract the required attributes from the top level of the</span>
+<span class="sd">       Metadata container of d.  If that fails the function will kill</span>
+<span class="sd">       the datum and post an elog message.</span>
+<span class="sd">    :type subdoc_key:  string (default &quot;Parrival&quot;)</span>
+<span class="sd">    :param bandpass_low_f_limit:</span>
+<span class="sd">    :type bandpass_low_f_limit:  float (default 0.02 = 1/50 s)</span>
+<span class="sd">    :param npoles:  number of poles to use for Butterworth filter function</span>
+<span class="sd">       if not defined in the datum&#39;s Metadata.</span>
+<span class="sd">    :type npoles:  integer (default 4)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">alg</span> <span class="o">=</span> <span class="s2">&quot;filter_by_snr_bandwidth&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="p">(</span><span class="n">TimeSeries</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">)):</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="n">alg</span> <span class="o">+</span> <span class="s2">&quot;:  arg0 has illegal type=</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">d</span><span class="p">))</span>
+        <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Must be a TimeSeries or Seismogram object&quot;</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
+        <span class="k">return</span> <span class="n">d</span>
+    <span class="c1"># qcdoc overides all else</span>
+    <span class="k">if</span> <span class="n">qcdoc</span><span class="p">:</span>
+        <span class="n">doc</span> <span class="o">=</span> <span class="n">qcdoc</span>
+    <span class="k">elif</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="n">subdoc_key</span><span class="p">):</span>
+        <span class="n">doc</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="n">subdoc_key</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># do this automatically and depend upon later messages if it</span>
+        <span class="c1"># doesn&#39;t work</span>
+        <span class="n">doc</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s2">&quot;low_f_band_edge&quot;</span> <span class="ow">in</span> <span class="n">doc</span> <span class="ow">and</span> <span class="s2">&quot;high_f_band_edge&quot;</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
+        <span class="n">f_low</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;low_f_band_edge&quot;</span><span class="p">]</span>
+        <span class="n">f_high</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;high_f_band_edge&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s2">&quot;filter_type&quot;</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
+            <span class="n">ftype</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;filter_type&quot;</span><span class="p">]</span>
+            <span class="n">npoles</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;filter_number_poles&quot;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">f_low</span> <span class="o">&lt;</span> <span class="n">bandpass_low_f_limit</span><span class="p">:</span>
+                <span class="n">ftype</span> <span class="o">=</span> <span class="s2">&quot;lowpass&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">ftype</span> <span class="o">=</span> <span class="s2">&quot;bandpass&quot;</span>
+        <span class="c1"># mismatch here that should not be significant.  Using the obspy filter</span>
+        <span class="c1"># here but FD_snr_estimator (the core snr function) uses the mspass</span>
+        <span class="c1"># Butterworth implementation.  Should not matter for this function</span>
+        <span class="k">if</span> <span class="n">ftype</span> <span class="o">==</span> <span class="s2">&quot;lowpass&quot;</span><span class="p">:</span>
+            <span class="n">filtered_data</span> <span class="o">=</span> <span class="nb">filter</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="s2">&quot;lowpass&quot;</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="n">f_high</span><span class="p">,</span> <span class="n">corners</span><span class="o">=</span><span class="n">npoles</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">filtered_data</span> <span class="o">=</span> <span class="nb">filter</span><span class="p">(</span>
+                <span class="n">d</span><span class="p">,</span> <span class="s2">&quot;bandpass&quot;</span><span class="p">,</span> <span class="n">freqmin</span><span class="o">=</span><span class="n">f_low</span><span class="p">,</span> <span class="n">freqmax</span><span class="o">=</span><span class="n">f_high</span><span class="p">,</span> <span class="n">corners</span><span class="o">=</span><span class="n">npoles</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">filtered_data</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;Required arguments low_f_band_edge and high_f_band_edge where not defined&quot;</span>
+        <span class="p">)</span>
+        <span class="n">d</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+        <span class="n">d</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">d</span></div>
+
+
+<div class="viewcode-block" id="visualize_qcdata"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.snr.visualize_qcdata">[docs]</a><span class="k">def</span> <span class="nf">visualize_qcdata</span><span class="p">(</span>
+    <span class="n">d</span><span class="p">,</span>
+    <span class="n">component</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">qc_subdoc_key</span><span class="o">=</span><span class="s2">&quot;Parrival&quot;</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates a set of plots to visualize qc results computed from</span>
+<span class="sd">    spectral estimates.  Requires the input datum d to have</span>
+<span class="sd">    the spectra stored in metadata as pickled serialization of</span>
+<span class="sd">    spectra used for the estimators.  That requires the data to</span>
+<span class="sd">    have been run with the option &quot;save_spectra=True&quot; in on</span>
+<span class="sd">    of the QC function that use FD_snr_estimator.  The function</span>
+<span class="sd">    with throw a MsPASSError exception if that metadata is missing.</span>
+
+<span class="sd">    This function generates graphics and must not be used in</span>
+<span class="sd">    a large data processing job.   It is for exploratory work only</span>
+<span class="sd">    for use on a small subset of data.   Note &quot;exploratory&quot; also</span>
+<span class="sd">    implies it is not as robust as a processing function and</span>
+<span class="sd">    may fail in ways that require debugging.</span>
+
+<span class="sd">    :param d:  Datum to display</span>
+<span class="sd">    :type d:  :py:class:`mspasspy.ccore.seismic.TimeSeries` or</span>
+<span class="sd">      :py:class:`mapsspy.ccore.seismic.Seismogram`.</span>
+<span class="sd">    :param component:  component to display if input is a</span>
+<span class="sd">       `Seismogram` object.  Ignore if input is a `TimeSeries`.</span>
+<span class="sd">    :type component:  integer</span>
+<span class="sd">    :param qc_subdoc_key:  key used to fetch the subdocument</span>
+<span class="sd">       from d normally used to store the output from</span>
+<span class="sd">       `broadband_snr_QC`.  If set to None will attempt</span>
+<span class="sd">       to fetch required attributes from Metdata container</span>
+<span class="sd">       of d.</span>
+<span class="sd">    :type qc_subdoc_key:  string or None.  Default &quot;Parrival&quot;</span>
+<span class="sd">       is default of `broadband_arrival_QC`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">pts2box</span><span class="p">(</span><span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">,</span> <span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Small internal to convert range xmin to xmax and</span>
+<span class="sd">        same for y (ymin to yamx) to a list of points that</span>
+<span class="sd">        can be passed to plot to produce a box with that range.</span>
+<span class="sd">        returns a tuple with 0 the x values and 1 the y values</span>
+<span class="sd">        that define the box.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">,</span> <span class="n">xmax</span><span class="p">,</span> <span class="n">xmin</span><span class="p">,</span> <span class="n">xmin</span><span class="p">]</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="p">[</span><span class="n">ymin</span><span class="p">,</span> <span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span><span class="p">,</span> <span class="n">ymax</span><span class="p">,</span> <span class="n">ymin</span><span class="p">]</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">])</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">):</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">_ExtractComponent</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">component</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">):</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;arg0 value must be a TimeSeries object</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Actual type=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">d</span><span class="p">))</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">qc_subdoc_key</span><span class="p">:</span>
+        <span class="n">doc</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="n">qc_subdoc_key</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">doc</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s2">&quot;signal_spectrum&quot;</span> <span class="ow">in</span> <span class="n">doc</span> <span class="ow">and</span> <span class="s2">&quot;noise_spectrum&quot;</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
+        <span class="n">pdata</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;signal_spectrum&quot;</span><span class="p">]</span>
+        <span class="n">S</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">pdata</span><span class="p">)</span>
+        <span class="n">pdata</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;noise_spectrum&quot;</span><span class="p">]</span>
+        <span class="n">N</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">pdata</span><span class="p">)</span>
+        <span class="k">del</span> <span class="n">pdata</span>
+        <span class="c1"># If we get here we can assume these Metadata values have been</span>
+        <span class="n">swin</span> <span class="o">=</span> <span class="n">TimeWindow</span><span class="p">(</span>
+            <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;signal_window_start_time&quot;</span><span class="p">],</span> <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;signal_window_end_time&quot;</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="n">nwin</span> <span class="o">=</span> <span class="n">TimeWindow</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="s2">&quot;noise_window_start_time&quot;</span><span class="p">],</span> <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;noise_window_end_time&quot;</span><span class="p">])</span>
+        <span class="n">f_low</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;low_f_band_edge&quot;</span><span class="p">]</span>
+        <span class="n">f_high</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;high_f_band_edge&quot;</span><span class="p">]</span>
+        <span class="n">ymax</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">S</span><span class="o">.</span><span class="n">spectrum</span><span class="p">)</span>
+        <span class="n">ymin</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">spectrum</span><span class="p">)</span>
+        <span class="c1"># this draws a box around band estimate</span>
+        <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">pts2box</span><span class="p">(</span><span class="n">f_low</span><span class="p">,</span> <span class="n">f_high</span><span class="p">,</span> <span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span><span class="p">)</span>
+        <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s2">&quot;Spectrum estimates&quot;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">S</span><span class="o">.</span><span class="n">frequencies</span><span class="p">(),</span> <span class="n">S</span><span class="o">.</span><span class="n">spectrum</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="n">N</span><span class="o">.</span><span class="n">frequencies</span><span class="p">(),</span> <span class="n">N</span><span class="o">.</span><span class="n">spectrum</span><span class="p">,</span> <span class="s2">&quot;:&quot;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+        <span class="k">if</span> <span class="s2">&quot;filter_type&quot;</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
+            <span class="n">filtered_data</span> <span class="o">=</span> <span class="n">filter_by_snr_bandwidth</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">subdoc_key</span><span class="o">=</span><span class="n">qc_subdoc_key</span><span class="p">)</span>
+            <span class="n">fig2</span><span class="p">,</span> <span class="n">ax2</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+            <span class="n">fig2</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s2">&quot;Time Series Data&quot;</span><span class="p">)</span>
+            <span class="n">ax2</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">time_axis</span><span class="p">(),</span> <span class="n">d</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+            <span class="n">ymin</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+            <span class="n">ymax</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+            <span class="n">xn</span><span class="p">,</span> <span class="n">yn</span> <span class="o">=</span> <span class="n">pts2box</span><span class="p">(</span><span class="n">nwin</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="n">nwin</span><span class="o">.</span><span class="n">end</span><span class="p">,</span> <span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span><span class="p">)</span>
+            <span class="n">xs</span><span class="p">,</span> <span class="n">ys</span> <span class="o">=</span> <span class="n">pts2box</span><span class="p">(</span><span class="n">swin</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="n">swin</span><span class="o">.</span><span class="n">end</span><span class="p">,</span> <span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span><span class="p">)</span>
+            <span class="n">ax2</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xn</span><span class="p">,</span> <span class="n">yn</span><span class="p">)</span>
+            <span class="n">ax2</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">ys</span><span class="p">)</span>
+            <span class="n">ax2</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Input data&quot;</span><span class="p">)</span>
+            <span class="n">ax2</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">filtered_data</span><span class="o">.</span><span class="n">time_axis</span><span class="p">(),</span> <span class="n">filtered_data</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+            <span class="n">ax2</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xn</span><span class="p">,</span> <span class="n">yn</span><span class="p">)</span>
+            <span class="n">ax2</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">ys</span><span class="p">)</span>
+            <span class="n">ax2</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Filtered to bandwidth estimate&quot;</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="s2">&quot;This datum was not run with optional metrics to define filtered data&quot;</span>
+            <span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Cannot make the time series data showing oiginal and filtered data&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;Missing required metadata with keys signal_spectrum and noise_spectrum</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+        <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;You probably need to run the data through broadband_snr_QC with save_spectra set True&quot;</span>
+        <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="s2">&quot;visuallize_qcdata&quot;</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span></div>
 </pre></div>
 
            </div>

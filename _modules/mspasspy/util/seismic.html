@@ -150,6 +150,7 @@
 <span class="kn">from</span> <span class="nn">mspasspy.ccore.algorithms.basic</span> <span class="kn">import</span> <span class="n">TimeWindow</span>
 <span class="kn">from</span> <span class="nn">bson</span> <span class="kn">import</span> <span class="n">json_util</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 
 
 <div class="viewcode-block" id="print_metadata"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.seismic.print_metadata">[docs]</a><span class="k">def</span> <span class="nf">print_metadata</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
@@ -351,6 +352,65 @@
         <span class="n">etime</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">etvector</span><span class="p">)</span>
     <span class="c1"># Intentionally not using else to allow an easier extension</span>
     <span class="k">return</span> <span class="n">TimeWindow</span><span class="p">(</span><span class="n">stime</span><span class="p">,</span> <span class="n">etime</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="sort_ensemble"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.seismic.sort_ensemble">[docs]</a><span class="k">def</span> <span class="nf">sort_ensemble</span><span class="p">(</span><span class="n">ensemble</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">nullvalue</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">drop_dead</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Sorts members of an ensemble by a single Metadata key value.</span>
+
+<span class="sd">    For graphical QC one often needs to sort an ensemble by a metadata</span>
+<span class="sd">    attribute to appraise how the attribute relates to a graphical</span>
+<span class="sd">    display of that data.   This function does that with a memory</span>
+<span class="sd">    intensive algorithm the makes a copy of the input that is returned.</span>
+
+<span class="sd">    :param ensemble:  input to be sorted</span>
+<span class="sd">    :type ensemble: `TimeSeriesEnsemble` or `SeismogramEnsemble`</span>
+<span class="sd">    :param key: key of Metadata attribute whose value is to be used for sorting</span>
+<span class="sd">    :type key: string</span>
+<span class="sd">    :param nullvaue:   value assigned for sort for any ensemble member for</span>
+<span class="sd">        which a value is not defined for the sort key.</span>
+<span class="sd">    :type nullvalue:  should match expected type of values associate with key.</span>
+<span class="sd">        (default is a float 0.0)</span>
+<span class="sd">    :param ascending:  boolean defining direction of sort.  When True</span>
+<span class="sd">        sort is in ascending order.  False returns data sorted in descending order.</span>
+<span class="sd">    :param drop_dead:  when True (default) any ensemble member marked dead will</span>
+<span class="sd">        be not appear in the output.  When False dead data will get an implicit</span>
+<span class="sd">        value defined by &quot;nullvalue&quot;.   Where the dead appear will depend upon</span>
+<span class="sd">        what that value is relative to the valid values.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">alg</span> <span class="o">=</span> <span class="s2">&quot;sort_ensemble&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ensemble</span><span class="p">,</span> <span class="p">(</span><span class="n">TimeSeriesEnsemble</span><span class="p">,</span> <span class="n">SeismogramEnsemble</span><span class="p">)):</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;arg0 must be a TimeSeriesEnsemble or SeismogramEnsemble object</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Actual type=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">ensemble</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="n">alg</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Fatal</span><span class="p">)</span>
+    <span class="n">vallist</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+    <span class="n">indexlist</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ensemble</span><span class="o">.</span><span class="n">member</span><span class="p">)):</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">ensemble</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">live</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
+                <span class="n">vallist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">vallist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nullvalue</span><span class="p">)</span>
+            <span class="n">indexlist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">drop_dead</span><span class="p">:</span>
+            <span class="n">vallist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nullvalue</span><span class="p">)</span>
+            <span class="n">indexlist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+    <span class="n">dfdict</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">vallist</span><span class="p">,</span> <span class="s2">&quot;member_number&quot;</span><span class="p">:</span> <span class="n">indexlist</span><span class="p">}</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">dfdict</span><span class="p">)</span>
+    <span class="k">del</span> <span class="n">dfdict</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="n">ascending</span><span class="p">)</span>
+    <span class="n">N</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ensemble</span><span class="p">,</span> <span class="n">TimeSeriesEnsemble</span><span class="p">):</span>
+        <span class="n">ensout</span> <span class="o">=</span> <span class="n">TimeSeriesEnsemble</span><span class="p">(</span><span class="n">Metadata</span><span class="p">(</span><span class="n">ensemble</span><span class="p">),</span> <span class="n">N</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">ensout</span> <span class="o">=</span> <span class="n">SeismogramEnsemble</span><span class="p">(</span><span class="n">Metadata</span><span class="p">(</span><span class="n">ensemble</span><span class="p">),</span> <span class="n">N</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;member_number&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+        <span class="n">ensout</span><span class="o">.</span><span class="n">member</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ensemble</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">N</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">ensout</span><span class="o">.</span><span class="n">set_live</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">ensout</span></div>
 </pre></div>
 
            </div>

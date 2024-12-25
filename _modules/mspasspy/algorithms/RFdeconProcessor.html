@@ -146,7 +146,11 @@
 <span class="sd">This file contains a class definition for a wrapper for</span>
 <span class="sd">the suite of scalar deconvolution methods supported by mspass.</span>
 <span class="sd">It demonstrates the concept of a processing object created</span>
-<span class="sd">by wrapping C code.</span>
+<span class="sd">by wrapping C code.  It also contains a top-level function</span>
+<span class="sd">that is a pythonic interface that meshes with MsPASS schedulers</span>
+<span class="sd">for parallel processing called `RFdecon`.   `RFdecon` is a</span>
+<span class="sd">wrapper for all single-station methods.   It cannot be used for</span>
+<span class="sd">array methods.</span>
 
 <span class="sd">Created on Fri Jul 31 06:24:10 2020</span>
 
@@ -154,7 +158,7 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
-<span class="kn">from</span> <span class="nn">mspasspy.ccore.seismic</span> <span class="kn">import</span> <span class="n">DoubleVector</span>
+<span class="kn">from</span> <span class="nn">mspasspy.ccore.seismic</span> <span class="kn">import</span> <span class="n">DoubleVector</span><span class="p">,</span> <span class="n">Seismogram</span>
 <span class="kn">from</span> <span class="nn">mspasspy.ccore.utility</span> <span class="kn">import</span> <span class="n">AntelopePf</span><span class="p">,</span> <span class="n">Metadata</span><span class="p">,</span> <span class="n">MsPASSError</span><span class="p">,</span> <span class="n">ErrorSeverity</span>
 <span class="kn">from</span> <span class="nn">mspasspy.util.converter</span> <span class="kn">import</span> <span class="n">Metadata2dict</span>
 <span class="kn">from</span> <span class="nn">mspasspy.algorithms.window</span> <span class="kn">import</span> <span class="n">WindowData</span>
@@ -181,40 +185,50 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="n">repr_str</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{type}</span><span class="s2">(alg=&#39;</span><span class="si">{alg}</span><span class="s2">&#39;, pf=&#39;</span><span class="si">{pf}</span><span class="s2">&#39;)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-            <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">),</span> <span class="n">alg</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span><span class="p">,</span> <span class="n">pf</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pf</span>
+        <span class="n">repr_str</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{type}</span><span class="s2">(alg=&#39;</span><span class="si">{alg}</span><span class="s2">&#39;, md=&#39;</span><span class="si">{md}</span><span class="s2">&#39;)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">),</span> <span class="n">alg</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span><span class="p">,</span> <span class="n">md</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">md</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">repr_str</span>
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="n">md_str</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">Metadata2dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">md</span><span class="p">))</span>
-        <span class="n">processor_str</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{type}</span><span class="s2">(alg=&#39;</span><span class="si">{alg}</span><span class="s2">&#39;, pf=&#39;</span><span class="si">{pf}</span><span class="s2">&#39;, md=</span><span class="si">{md}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-            <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">),</span> <span class="n">alg</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span><span class="p">,</span> <span class="n">pf</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pf</span><span class="p">,</span> <span class="n">md</span><span class="o">=</span><span class="n">md_str</span>
+        <span class="n">processor_str</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{type}</span><span class="s2">(alg=&#39;</span><span class="si">{alg}</span><span class="s2">&#39;, md=&#39;</span><span class="si">{md}</span><span class="s2">&#39;)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">),</span> <span class="n">alg</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span><span class="p">,</span> <span class="n">md</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">md</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">processor_str</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alg</span><span class="o">=</span><span class="s2">&quot;LeastSquares&quot;</span><span class="p">,</span> <span class="n">pf</span><span class="o">=</span><span class="s2">&quot;RFdeconProcessor.pf&quot;</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span> <span class="o">=</span> <span class="n">alg</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">pf</span> <span class="o">=</span> <span class="n">pf</span>
+        <span class="c1"># use a copy in what is more or less a switch-case block</span>
+        <span class="c1"># to be robust - I don&#39;t think any of the constructors below</span>
+        <span class="c1"># alter pfhandle but the cost is tiny for this stability</span>
         <span class="n">pfhandle</span> <span class="o">=</span> <span class="n">AntelopePf</span><span class="p">(</span><span class="n">pf</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span> <span class="o">==</span> <span class="s2">&quot;LeastSquares&quot;</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">md</span> <span class="o">=</span> <span class="n">pfhandle</span><span class="o">.</span><span class="n">get_branch</span><span class="p">(</span><span class="s2">&quot;LeastSquare&quot;</span><span class="p">)</span>
+            <span class="c1"># In this and elif blocks below we convert</span>
+            <span class="c1"># return of get_branch to a Metadata container</span>
+            <span class="c1"># that is necessary because get_branch retuns the</span>
+            <span class="c1"># AntelopePf subclass and we want this to be a clean</span>
+            <span class="c1"># Metdata object.   Further, at present a pf will not</span>
+            <span class="c1"># serialize</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">md</span> <span class="o">=</span> <span class="n">Metadata</span><span class="p">(</span><span class="n">pfhandle</span><span class="o">.</span><span class="n">get_branch</span><span class="p">(</span><span class="s2">&quot;LeastSquare&quot;</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">processor</span> <span class="o">=</span> <span class="n">LeastSquareDecon</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">md</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__uses_noise</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="k">elif</span> <span class="n">alg</span> <span class="o">==</span> <span class="s2">&quot;WaterLevel&quot;</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">md</span> <span class="o">=</span> <span class="n">pfhandle</span><span class="o">.</span><span class="n">get_branch</span><span class="p">(</span><span class="s2">&quot;WaterLevel&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">md</span> <span class="o">=</span> <span class="n">Metadata</span><span class="p">(</span><span class="n">pfhandle</span><span class="o">.</span><span class="n">get_branch</span><span class="p">(</span><span class="s2">&quot;WaterLevel&quot;</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">processor</span> <span class="o">=</span> <span class="n">WaterLevelDecon</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">md</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__uses_noise</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="k">elif</span> <span class="n">alg</span> <span class="o">==</span> <span class="s2">&quot;MultiTaperXcor&quot;</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">md</span> <span class="o">=</span> <span class="n">pfhandle</span><span class="o">.</span><span class="n">get_branch</span><span class="p">(</span><span class="s2">&quot;MultiTaperXcor&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">md</span> <span class="o">=</span> <span class="n">Metadata</span><span class="p">(</span><span class="n">pfhandle</span><span class="o">.</span><span class="n">get_branch</span><span class="p">(</span><span class="s2">&quot;MultiTaperXcor&quot;</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">processor</span> <span class="o">=</span> <span class="n">MultiTaperXcorDecon</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">md</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__uses_noise</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">elif</span> <span class="n">alg</span> <span class="o">==</span> <span class="s2">&quot;MultiTaperSpecDiv&quot;</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">md</span> <span class="o">=</span> <span class="n">pfhandle</span><span class="o">.</span><span class="n">get_branch</span><span class="p">(</span><span class="s2">&quot;MultiTaperSpecDiv&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">md</span> <span class="o">=</span> <span class="n">Metadata</span><span class="p">(</span><span class="n">pfhandle</span><span class="o">.</span><span class="n">get_branch</span><span class="p">(</span><span class="s2">&quot;MultiTaperSpecDiv&quot;</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">processor</span> <span class="o">=</span> <span class="n">MultiTaperSpecDivDecon</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">md</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__uses_noise</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">elif</span> <span class="n">alg</span> <span class="o">==</span> <span class="s2">&quot;GeneralizedIterative&quot;</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Generalized Iterative method not yet supported&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Illegal value for alg=&quot;</span> <span class="o">+</span> <span class="n">alg</span><span class="p">)</span>
-        <span class="c1"># below is needed because AntelopePf cannot be serialized.</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">md</span> <span class="o">=</span> <span class="n">Metadata</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">md</span><span class="p">)</span>
 
 <div class="viewcode-block" id="RFdeconProcessor.loaddata"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.loaddata">[docs]</a>    <span class="k">def</span> <span class="nf">loaddata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;Seismogram&quot;</span><span class="p">,</span> <span class="n">component</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -323,9 +337,8 @@
 <div class="viewcode-block" id="RFdeconProcessor.loadnoise"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.loadnoise">[docs]</a>    <span class="k">def</span> <span class="nf">loadnoise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;Seismogram&quot;</span><span class="p">,</span> <span class="n">component</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="c1"># First basic sanity checks</span>
         <span class="c1"># Return immediately for methods that ignore noise.</span>
-        <span class="c1"># Note we do this silenetly assuming the function wrapper below</span>
-        <span class="c1"># will post an error to elog for the output to handle this nonfatal error</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span> <span class="o">==</span> <span class="s2">&quot;LeastSquares&quot;</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span> <span class="o">==</span> <span class="s2">&quot;WaterLevel&quot;</span><span class="p">:</span>
+        <span class="c1"># Note we do this silently assuming the function wrapper below</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__uses_noise</span><span class="p">:</span>
             <span class="k">return</span>
         <span class="k">if</span> <span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;raw_vector&quot;</span> <span class="ow">and</span> <span class="n">window</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
@@ -372,22 +385,14 @@
 
 <span class="sd">        :return: vector of data that are the RF estimate computed from previously loaded data.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span> <span class="o">==</span> <span class="s2">&quot;LeastSquares&quot;</span><span class="p">:</span>
-            <span class="n">processor</span> <span class="o">=</span> <span class="n">LeastSquareDecon</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">md</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span> <span class="o">==</span> <span class="s2">&quot;WaterLevel&quot;</span><span class="p">:</span>
-            <span class="n">processor</span> <span class="o">=</span> <span class="n">WaterLevelDecon</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">md</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span> <span class="o">==</span> <span class="s2">&quot;MultiTaperXcor&quot;</span><span class="p">:</span>
-            <span class="n">processor</span> <span class="o">=</span> <span class="n">MultiTaperXcorDecon</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">md</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span> <span class="o">==</span> <span class="s2">&quot;MultiTaperSpecDiv&quot;</span><span class="p">:</span>
-            <span class="n">processor</span> <span class="o">=</span> <span class="n">MultiTaperSpecDivDecon</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">md</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;dvector&quot;</span><span class="p">):</span>
-            <span class="n">processor</span><span class="o">.</span><span class="n">loaddata</span><span class="p">(</span><span class="n">DoubleVector</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dvector</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">processor</span><span class="o">.</span><span class="n">loaddata</span><span class="p">(</span><span class="n">DoubleVector</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dvector</span><span class="p">))</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;wvector&quot;</span><span class="p">):</span>
-            <span class="n">processor</span><span class="o">.</span><span class="n">loadwavelet</span><span class="p">(</span><span class="n">DoubleVector</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wvector</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">processor</span><span class="o">.</span><span class="n">loadwavelet</span><span class="p">(</span><span class="n">DoubleVector</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wvector</span><span class="p">))</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__uses_noise</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;nvector&quot;</span><span class="p">):</span>
-            <span class="n">processor</span><span class="o">.</span><span class="n">loadnoise</span><span class="p">(</span><span class="n">DoubleVector</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nvector</span><span class="p">))</span>
-        <span class="n">processor</span><span class="o">.</span><span class="n">process</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">processor</span><span class="o">.</span><span class="n">getresult</span><span class="p">()</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">processor</span><span class="o">.</span><span class="n">loadnoise</span><span class="p">(</span><span class="n">DoubleVector</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nvector</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">processor</span><span class="o">.</span><span class="n">process</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">processor</span><span class="o">.</span><span class="n">getresult</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="RFdeconProcessor.actual_output"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.actual_output">[docs]</a>    <span class="k">def</span> <span class="nf">actual_output</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -402,21 +407,14 @@
 <span class="sd">        centered (i.e. t0 is rounded n/2 where n is the length of the vector</span>
 <span class="sd">                  returned).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span> <span class="o">==</span> <span class="s2">&quot;LeastSquares&quot;</span><span class="p">:</span>
-            <span class="n">processor</span> <span class="o">=</span> <span class="n">LeastSquareDecon</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">md</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span> <span class="o">==</span> <span class="s2">&quot;WaterLevel&quot;</span><span class="p">:</span>
-            <span class="n">processor</span> <span class="o">=</span> <span class="n">WaterLevelDecon</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">md</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span> <span class="o">==</span> <span class="s2">&quot;MultiTaperXcor&quot;</span><span class="p">:</span>
-            <span class="n">processor</span> <span class="o">=</span> <span class="n">MultiTaperXcorDecon</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">md</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span> <span class="o">==</span> <span class="s2">&quot;MultiTaperSpecDiv&quot;</span><span class="p">:</span>
-            <span class="n">processor</span> <span class="o">=</span> <span class="n">MultiTaperSpecDivDecon</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">md</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;dvector&quot;</span><span class="p">):</span>
-            <span class="n">processor</span><span class="o">.</span><span class="n">loaddata</span><span class="p">(</span><span class="n">DoubleVector</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dvector</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">processor</span><span class="o">.</span><span class="n">loaddata</span><span class="p">(</span><span class="n">DoubleVector</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dvector</span><span class="p">))</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;wvector&quot;</span><span class="p">):</span>
-            <span class="n">processor</span><span class="o">.</span><span class="n">loadwavelet</span><span class="p">(</span><span class="n">DoubleVector</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wvector</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">processor</span><span class="o">.</span><span class="n">loadwavelet</span><span class="p">(</span><span class="n">DoubleVector</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wvector</span><span class="p">))</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__uses_noise</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;nvector&quot;</span><span class="p">):</span>
-            <span class="n">processor</span><span class="o">.</span><span class="n">loadnoise</span><span class="p">(</span><span class="n">DoubleVector</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nvector</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">processor</span><span class="o">.</span><span class="n">actual_output</span><span class="p">()</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">processor</span><span class="o">.</span><span class="n">loadnoise</span><span class="p">(</span><span class="n">DoubleVector</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nvector</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">processor</span><span class="o">.</span><span class="n">process</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">processor</span><span class="o">.</span><span class="n">actual_output</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="RFdeconProcessor.ideal_output"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.ideal_output">[docs]</a>    <span class="k">def</span> <span class="nf">ideal_output</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -431,21 +429,14 @@
 <span class="sd">        is a helpful metric to display the stability and accuracy of the</span>
 <span class="sd">        inverse.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span> <span class="o">==</span> <span class="s2">&quot;LeastSquares&quot;</span><span class="p">:</span>
-            <span class="n">processor</span> <span class="o">=</span> <span class="n">LeastSquareDecon</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">md</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span> <span class="o">==</span> <span class="s2">&quot;WaterLevel&quot;</span><span class="p">:</span>
-            <span class="n">processor</span> <span class="o">=</span> <span class="n">WaterLevelDecon</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">md</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span> <span class="o">==</span> <span class="s2">&quot;MultiTaperXcor&quot;</span><span class="p">:</span>
-            <span class="n">processor</span> <span class="o">=</span> <span class="n">MultiTaperXcorDecon</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">md</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span> <span class="o">==</span> <span class="s2">&quot;MultiTaperSpecDiv&quot;</span><span class="p">:</span>
-            <span class="n">processor</span> <span class="o">=</span> <span class="n">MultiTaperSpecDivDecon</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">md</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;dvector&quot;</span><span class="p">):</span>
-            <span class="n">processor</span><span class="o">.</span><span class="n">loaddata</span><span class="p">(</span><span class="n">DoubleVector</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dvector</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">processor</span><span class="o">.</span><span class="n">loaddata</span><span class="p">(</span><span class="n">DoubleVector</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dvector</span><span class="p">))</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;wvector&quot;</span><span class="p">):</span>
-            <span class="n">processor</span><span class="o">.</span><span class="n">loadwavelet</span><span class="p">(</span><span class="n">DoubleVector</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wvector</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">processor</span><span class="o">.</span><span class="n">loadwavelet</span><span class="p">(</span><span class="n">DoubleVector</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wvector</span><span class="p">))</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__uses_noise</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;nvector&quot;</span><span class="p">):</span>
-            <span class="n">processor</span><span class="o">.</span><span class="n">loadnoise</span><span class="p">(</span><span class="n">DoubleVector</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nvector</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">processor</span><span class="o">.</span><span class="n">ideal_output</span><span class="p">()</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">processor</span><span class="o">.</span><span class="n">loadnoise</span><span class="p">(</span><span class="n">DoubleVector</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nvector</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">processor</span><span class="o">.</span><span class="n">process</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">processor</span><span class="o">.</span><span class="n">ideal_output</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="RFdeconProcessor.inverse_filter"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.inverse_filter">[docs]</a>    <span class="k">def</span> <span class="nf">inverse_filter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -460,59 +451,49 @@
 
 <span class="sd">        The result is returned as  TimeSeries object.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span> <span class="o">==</span> <span class="s2">&quot;LeastSquares&quot;</span><span class="p">:</span>
-            <span class="n">processor</span> <span class="o">=</span> <span class="n">LeastSquareDecon</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">md</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span> <span class="o">==</span> <span class="s2">&quot;WaterLevel&quot;</span><span class="p">:</span>
-            <span class="n">processor</span> <span class="o">=</span> <span class="n">WaterLevelDecon</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">md</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span> <span class="o">==</span> <span class="s2">&quot;MultiTaperXcor&quot;</span><span class="p">:</span>
-            <span class="n">processor</span> <span class="o">=</span> <span class="n">MultiTaperXcorDecon</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">md</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span> <span class="o">==</span> <span class="s2">&quot;MultiTaperSpecDiv&quot;</span><span class="p">:</span>
-            <span class="n">processor</span> <span class="o">=</span> <span class="n">MultiTaperSpecDivDecon</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">md</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;dvector&quot;</span><span class="p">):</span>
-            <span class="n">processor</span><span class="o">.</span><span class="n">loaddata</span><span class="p">(</span><span class="n">DoubleVector</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dvector</span><span class="p">))</span>
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;wvector&quot;</span><span class="p">):</span>
-            <span class="n">processor</span><span class="o">.</span><span class="n">loadwavelet</span><span class="p">(</span><span class="n">DoubleVector</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wvector</span><span class="p">))</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__uses_noise</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;nvector&quot;</span><span class="p">):</span>
-            <span class="n">processor</span><span class="o">.</span><span class="n">loadnoise</span><span class="p">(</span><span class="n">DoubleVector</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nvector</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">processor</span><span class="o">.</span><span class="n">inverse_filter</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="RFdeconProcessor.QCMetrics"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.QCMetrics">[docs]</a>    <span class="k">def</span> <span class="nf">QCMetrics</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;dvector&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">processor</span><span class="o">.</span><span class="n">loaddata</span><span class="p">(</span><span class="n">DoubleVector</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dvector</span><span class="p">))</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;wvector&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">processor</span><span class="o">.</span><span class="n">loadwavelet</span><span class="p">(</span><span class="n">DoubleVector</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wvector</span><span class="p">))</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__uses_noise</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;nvector&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">processor</span><span class="o">.</span><span class="n">loadnoise</span><span class="p">(</span><span class="n">DoubleVector</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nvector</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">processor</span><span class="o">.</span><span class="n">process</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">processor</span><span class="o">.</span><span class="n">inverse_filter</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="RFdeconProcessor.QCMetrics"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.QCMetrics">[docs]</a>    <span class="k">def</span> <span class="nf">QCMetrics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prediction_error_key</span><span class="o">=</span><span class="s2">&quot;prediction_error&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        All decon algorithms compute a set of algorithm dependent quality</span>
-<span class="sd">        control metrics.  This method returns the metrics as a set of fixed</span>
-<span class="sd">        name:value pairs in a mspass.Metadata object.   The details are</span>
-<span class="sd">        algorithm dependent.  See related documentation for metrics computed</span>
-<span class="sd">        by different algorithms.</span>
+<span class="sd">        control metrics.  The return is a Metadata container.</span>
+<span class="sd">        All this wrapper really does is translate that return into</span>
+<span class="sd">        a python dictionary that can be used as the base of a subdocument</span>
+<span class="sd">        posting to outputs.  This method MUST ONLY BE CALLED after</span>
+<span class="sd">        calling the process method of the C++ engine.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span> <span class="o">==</span> <span class="s2">&quot;LeastSquares&quot;</span><span class="p">:</span>
-            <span class="n">processor</span> <span class="o">=</span> <span class="n">LeastSquareDecon</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">md</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span> <span class="o">==</span> <span class="s2">&quot;WaterLevel&quot;</span><span class="p">:</span>
-            <span class="n">processor</span> <span class="o">=</span> <span class="n">WaterLevelDecon</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">md</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span> <span class="o">==</span> <span class="s2">&quot;MultiTaperXcor&quot;</span><span class="p">:</span>
-            <span class="n">processor</span> <span class="o">=</span> <span class="n">MultiTaperXcorDecon</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">md</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span> <span class="o">==</span> <span class="s2">&quot;MultiTaperSpecDiv&quot;</span><span class="p">:</span>
-            <span class="n">processor</span> <span class="o">=</span> <span class="n">MultiTaperSpecDivDecon</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">md</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;dvector&quot;</span><span class="p">):</span>
-            <span class="n">processor</span><span class="o">.</span><span class="n">loaddata</span><span class="p">(</span><span class="n">DoubleVector</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dvector</span><span class="p">))</span>
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;wvector&quot;</span><span class="p">):</span>
-            <span class="n">processor</span><span class="o">.</span><span class="n">loadwavelet</span><span class="p">(</span><span class="n">DoubleVector</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wvector</span><span class="p">))</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__uses_noise</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;nvector&quot;</span><span class="p">):</span>
-            <span class="n">processor</span><span class="o">.</span><span class="n">loadnoise</span><span class="p">(</span><span class="n">DoubleVector</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nvector</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">processor</span><span class="o">.</span><span class="n">QCMetrics</span><span class="p">()</span></div>
+        <span class="c1"># the base of what is returned is an echo of the input parameter set</span>
+        <span class="n">qcmd</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">md</span><span class="p">)</span>
+        <span class="c1"># merge in an output of the implementations QCMetrics method</span>
+        <span class="n">qcmeth_output</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">processor</span><span class="o">.</span><span class="n">QCMetrics</span><span class="p">())</span>
+        <span class="n">qcmd</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">qcmeth_output</span><span class="p">)</span>
+        <span class="c1"># always compute the prediction error</span>
+        <span class="n">perr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prediction_error</span><span class="p">()</span>
+        <span class="n">qcmd</span><span class="p">[</span><span class="n">prediction_error_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">perr</span>
+        <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">qcmd</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="RFdeconProcessor.change_parameters"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.change_parameters">[docs]</a>    <span class="k">def</span> <span class="nf">change_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">md</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Use this method to change the internal parameter setting of the</span>
-<span class="sd">        processor.  It can be used, for example, to switch from the damped</span>
-<span class="sd">        least square method to the water level method.  Note the input</span>
-<span class="sd">        must be a complete definition for a parameter set defining a</span>
-<span class="sd">        particular algorithm.  i.e. this is not an update method but</span>
-<span class="sd">        t reinitializes the processor.</span>
+<span class="sd">        processor.  It can only change the parameters for a particular</span>
+<span class="sd">        algorithm.   A new instance of this class needs to be created if</span>
+<span class="sd">        you need to switch to a different algorithm.   It does little</span>
+<span class="sd">        more than call the read_metadata of the already loaded processor.</span>
+<span class="sd">        All the scalar decon methods implement that method.</span>
 
 <span class="sd">        :param md: is a mspass.Metadata object containing required parameters</span>
 <span class="sd">        for the alternative algorithm.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">md</span> <span class="o">=</span> <span class="n">Metadata</span><span class="p">(</span><span class="n">md</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">md</span> <span class="o">=</span> <span class="n">Metadata</span><span class="p">(</span><span class="n">md</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">processor</span><span class="o">.</span><span class="n">read_metadata</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">md</span><span class="p">)</span></div>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">uses_noise</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -531,18 +512,32 @@
             <span class="n">twe</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">md</span><span class="o">.</span><span class="n">get_double</span><span class="p">(</span><span class="s2">&quot;noise_window_end&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">TimeWindow</span><span class="p">(</span><span class="n">tws</span><span class="p">,</span> <span class="n">twe</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">TimeWindow</span>  <span class="c1"># always initialize even if not used</span></div>
+            <span class="k">return</span> <span class="n">TimeWindow</span>  <span class="c1"># always initialize even if not used</span>
+
+    <span class="k">def</span> <span class="nf">_prediction_error</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Small internal function used to compute prediction error of</span>
+<span class="sd">        deconvolution operator defined as norm(ao-io)/norm(io) where</span>
+<span class="sd">        norm is L2.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ao</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">actual_output</span><span class="p">()</span>
+        <span class="n">io</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ideal_output</span><span class="p">()</span>
+        <span class="c1"># with internal use can assume ao and io are the same length</span>
+        <span class="n">err</span> <span class="o">=</span> <span class="n">ao</span> <span class="o">-</span> <span class="n">io</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">err</span><span class="o">.</span><span class="n">data</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">io</span><span class="o">.</span><span class="n">data</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="RFdecon"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.RFdeconProcessor.RFdecon">[docs]</a><span class="nd">@mspass_func_wrapper</span>
 <span class="k">def</span> <span class="nf">RFdecon</span><span class="p">(</span>
     <span class="n">d</span><span class="p">,</span>
+    <span class="n">engine</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">alg</span><span class="o">=</span><span class="s2">&quot;LeastSquares&quot;</span><span class="p">,</span>
     <span class="n">pf</span><span class="o">=</span><span class="s2">&quot;RFdeconProcessor.pf&quot;</span><span class="p">,</span>
     <span class="n">wavelet</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">noisedata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">wcomp</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
     <span class="n">ncomp</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">QCdocument_key</span><span class="o">=</span><span class="s2">&quot;RFdecon_properties&quot;</span><span class="p">,</span>
     <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">alg_name</span><span class="o">=</span><span class="s2">&quot;RFdecon&quot;</span><span class="p">,</span>
     <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -582,35 +577,64 @@
 <span class="sd">    normally set a unique id for the algid argument.</span>
 
 <span class="sd">    :param d:  Seismogram input data.  See notes above about</span>
-<span class="sd">    time span of these data.</span>
+<span class="sd">      time span of these data.</span>
+<span class="sd">    :type d:  Must be a `Seismogram` object or the function will throw</span>
+<span class="sd">      a TypeError exceptionl</span>
+<span class="sd">    :param engine:   optional instance of a RFdeconProcessor</span>
+<span class="sd">      object.   By default the function instantiates an instance of</span>
+<span class="sd">      a processor for each call to the function.   For algorithms</span>
+<span class="sd">      like the multitaper based algorithms with a high initialization</span>
+<span class="sd">      cost performance will improve by sending an instance to the</span>
+<span class="sd">      function via this argument.</span>
+<span class="sd">    :type engine:  None or an instance of `RFdeconProcessor`.</span>
+<span class="sd">      When None (default) an instance of an `RFdeconProcessor` is</span>
+<span class="sd">      created on entry based on the keyword defined by the `alg`</span>
+<span class="sd">      argument.   The algorithm built into the instance of</span>
+<span class="sd">      `RFdeconProcessor` is used if engine is not null.</span>
 <span class="sd">    :param alg: The algorithm to be applied, used for initializing</span>
-<span class="sd">     a RFdeconProcessor object</span>
+<span class="sd">       a RFdeconProcessor object.  Ignored if `engine` is used.</span>
 <span class="sd">    :param pf: The pf file to be parsed, used for inititalizing a</span>
-<span class="sd">     RFdeconProcessor</span>
+<span class="sd">       RFdeconProcessor.  Ignored if `engine` is used.</span>
+<span class="sd">    :type pf:  string defining an absolute path for the file name</span>
+<span class="sd">       or a path relative to a directory defined by PFPATH.</span>
 <span class="sd">    :param wavelet:   vector of doubles (numpy array or the</span>
-<span class="sd">     std::vector container internal to TimeSeries object) defining</span>
-<span class="sd">     the wavelet to use to compute deconvolution operator.</span>
-<span class="sd">     Default is None which assumes processor was set up to use</span>
-<span class="sd">     a component of d as the wavelet estimate.</span>
+<span class="sd">       std::vector container internal to TimeSeries object) defining</span>
+<span class="sd">       the wavelet to use to compute deconvolution operator.</span>
+<span class="sd">       Default is None which assumes processor was set up to use</span>
+<span class="sd">       a component of d as the wavelet estimate.</span>
+<span class="sd">    :type wavelet:  None or an iterable vector container</span>
+<span class="sd">       (in MsPASS that means a python array, a numpy array, or a DoubleVector)</span>
 <span class="sd">    :param noisedata:  vector of doubles (numpy array or the</span>
-<span class="sd">     std::vector container internal to TimeSeries object) defining</span>
-<span class="sd">     noise data to use for computing regularization.  Not all RF</span>
-<span class="sd">     estimation algorithms use noise estimators so this parameter</span>
-<span class="sd">     is optional.   It can also be extracted from d depending on</span>
-<span class="sd">     parameter file options.</span>
+<span class="sd">       std::vector container internal to TimeSeries object) defining</span>
+<span class="sd">       noise data to use for computing regularization.  Not all RF</span>
+<span class="sd">       estimation algorithms use noise estimators so this parameter</span>
+<span class="sd">       is optional.   It can also be extracted from d depending on</span>
+<span class="sd">       parameter file options.</span>
+<span class="sd">    :type noisedata:  None or an iterable vector container</span>
+<span class="sd">       (in MsPASS that means a python array, a numpy array, or a DoubleVector)</span>
 <span class="sd">    :param wcomp:  When defined from Seismogram d the wavelet</span>
-<span class="sd">     estimate in conventional RFs is one of the components that</span>
-<span class="sd">     are most P wave dominated. That is always one of three</span>
-<span class="sd">     things:  Z, L of LQT, or the L component from the output of</span>
-<span class="sd">     Kennett&#39;s free surface transformation operator.  The</span>
-<span class="sd">     default is 2, which for ccore.Seismogram is always one of</span>
-<span class="sd">     the above.   This parameter would be changed only if the</span>
-<span class="sd">     data has undergone some novel transformation not yet invented</span>
-<span class="sd">     and the best wavelet estimate was on in 2 (3 with FORTRAN</span>
-<span class="sd">     and matlab numbering).</span>
+<span class="sd">       estimate in conventional RFs is one of the components that</span>
+<span class="sd">       are most P wave dominated. That is always one of three</span>
+<span class="sd">       things:  Z, L of LQT, or the L component from the output of</span>
+<span class="sd">       Kennett&#39;s free surface transformation operator.  The</span>
+<span class="sd">       default is 2, which for ccore.Seismogram is always one of</span>
+<span class="sd">       the above.   This parameter would be changed only if the</span>
+<span class="sd">       data has undergone some novel transformation not yet invented</span>
+<span class="sd">       and the best wavelet estimate was on in 2 (3 with FORTRAN</span>
+<span class="sd">       and matlab numbering).</span>
+<span class="sd">     :type wcomp:  int (must 0, 1, or 2)</span>
 <span class="sd">     :param ncomp: component number to use to compute noise.  This is used</span>
-<span class="sd">     only if the algorithm in processor requires a noise estimate.</span>
-<span class="sd">     Normally it should be the same as wcomp and is by default (2).</span>
+<span class="sd">       only if the algorithm in processor requires a noise estimate.</span>
+<span class="sd">       Normally it should be the same as wcomp and is by default (2).</span>
+<span class="sd">     :type ncomp:  int (must be 0, 1, or 2)</span>
+<span class="sd">     :param QCdocument_key:   A summary of the parameters defining the</span>
+<span class="sd">        deconvolution operator (really a dump of the pf content used for</span>
+<span class="sd">        creating the engine) and computed QC attributes are posted to a</span>
+<span class="sd">        python dictionary.   That content is posted to the outputs</span>
+<span class="sd">        Metadata container with the key defined by this argument.</span>
+<span class="sd">        In MongoDB lingo that means when saved to the database the</span>
+<span class="sd">        dictionary content associated with this key becomes a &quot;subdocument&quot;.</span>
+<span class="sd">     :type QCdocument_key:  string (default is &quot;RFdecon_properties&quot;)</span>
 <span class="sd">     :param object_history: boolean to enable or disable saving object</span>
 <span class="sd">           level history.  Default is False.  Note this functionality is</span>
 <span class="sd">           implemented via the mspass_func_wrapper decorator.</span>
@@ -625,18 +649,40 @@
 <span class="sd">           When true nothing is calculated and the original data are returned.</span>
 <span class="sd">           Note this functionality is implemented via the mspass_func_wrapper decorator.</span>
 
-<span class="sd">    :return:  Seismogram object containing the RF estimates.</span>
-<span class="sd">     The orientations are always the same as the input.</span>
+<span class="sd">    :return:  Normally returns Seismogram object containing the RF estimates.</span>
+<span class="sd">     The orientations are always the same as the input.  If `return-wavelets` is set</span>
+<span class="sd">     True returns a tuple with three components:  0 - `Seismogram` returned as with</span>
+<span class="sd">     default, 1 - ideal output wavelet `TimeSeries`, 2 - actual output wavelet</span>
+<span class="sd">     stored as a `TimeSeries` object.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">processor</span> <span class="o">=</span> <span class="n">RFdeconProcessor</span><span class="p">(</span><span class="n">alg</span><span class="p">,</span> <span class="n">pf</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">):</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;RFdecon:  arg0 is of type=</span><span class="si">{}</span><span class="s2">.  Must be a Seismogram object&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">d</span><span class="p">))</span>
+        <span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
+        <span class="k">return</span> <span class="n">d</span>
+    <span class="k">if</span> <span class="n">engine</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">engine</span><span class="p">,</span> <span class="n">RFdeconProcessor</span><span class="p">):</span>
+            <span class="n">processor</span> <span class="o">=</span> <span class="n">engine</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s2">&quot;RFdecon:   illegal type for define by engine argment = </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="nb">type</span><span class="p">(</span><span class="n">engine</span><span class="p">)</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;If defined must be an instance of RFdeconProcessor&quot;</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">processor</span> <span class="o">=</span> <span class="n">RFdeconProcessor</span><span class="p">(</span><span class="n">alg</span><span class="p">,</span> <span class="n">pf</span><span class="p">)</span>
 
     <span class="k">try</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">wavelet</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">processor</span><span class="o">.</span><span class="n">loadwavelet</span><span class="p">(</span><span class="n">wavelet</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;raw_vector&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># processor.loadwavelet(d,dtype=&#39;Seismogram&#39;,window=True,component=wcomp)</span>
-            <span class="n">processor</span><span class="o">.</span><span class="n">loadwavelet</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">processor</span><span class="o">.</span><span class="n">loadwavelet</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">component</span><span class="o">=</span><span class="n">wcomp</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">processor</span><span class="o">.</span><span class="n">uses_noise</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">noisedata</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">processor</span><span class="o">.</span><span class="n">loadnoise</span><span class="p">(</span><span class="n">noisedata</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;raw_vector&quot;</span><span class="p">)</span>
@@ -690,6 +736,10 @@
             <span class="s2">&quot;RFdecon&quot;</span><span class="p">,</span> <span class="s2">&quot;Unexpected exception caught&quot;</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span>
         <span class="p">)</span>
     <span class="k">finally</span><span class="p">:</span>
+        <span class="c1"># assume this method creates the dictionary we use as base for the</span>
+        <span class="c1"># QC subdocument.  Note that always includes the prediction error</span>
+        <span class="n">subdoc</span> <span class="o">=</span> <span class="n">processor</span><span class="o">.</span><span class="n">QCMetrics</span><span class="p">()</span>
+        <span class="n">result</span><span class="p">[</span><span class="n">QCdocument_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">subdoc</span>
         <span class="k">return</span> <span class="n">result</span></div>
 </pre></div>
 

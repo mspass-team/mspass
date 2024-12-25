@@ -677,10 +677,33 @@
             <span class="c1"># than using python loops</span>
             <span class="n">istart</span> <span class="o">=</span> <span class="n">dpadded</span><span class="o">.</span><span class="n">sample_number</span><span class="p">(</span><span class="n">dcut</span><span class="o">.</span><span class="n">t0</span><span class="p">)</span>
             <span class="n">iend</span> <span class="o">=</span> <span class="n">dpadded</span><span class="o">.</span><span class="n">sample_number</span><span class="p">(</span><span class="n">dcut</span><span class="o">.</span><span class="n">endtime</span><span class="p">())</span> <span class="o">+</span> <span class="mi">1</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">):</span>
-                <span class="n">dpadded</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">istart</span><span class="p">:</span><span class="n">iend</span><span class="p">]</span> <span class="o">=</span> <span class="n">dcut</span><span class="o">.</span><span class="n">data</span>
+            <span class="c1"># subsample rounding can cause iend to be one sample to large.</span>
+            <span class="c1"># this would be easier to handle with a python loop but it</span>
+            <span class="c1"># would be much slower</span>
+            <span class="k">if</span> <span class="n">iend</span> <span class="o">&gt;</span> <span class="n">dpadded</span><span class="o">.</span><span class="n">npts</span><span class="p">:</span>
+                <span class="n">di</span> <span class="o">=</span> <span class="n">iend</span> <span class="o">-</span> <span class="n">dpadded</span><span class="o">.</span><span class="n">npts</span>
+                <span class="k">if</span> <span class="n">di</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">iend</span> <span class="o">=</span> <span class="n">dpadded</span><span class="o">.</span><span class="n">npts</span>
+                    <span class="n">icend</span> <span class="o">=</span> <span class="n">dcut</span><span class="o">.</span><span class="n">npts</span> <span class="o">-</span> <span class="mi">1</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">):</span>
+                        <span class="n">dpadded</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">istart</span><span class="p">:</span><span class="n">iend</span><span class="p">]</span> <span class="o">=</span> <span class="n">dcut</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">icend</span><span class="p">]</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">dpadded</span><span class="o">.</span><span class="n">data</span><span class="p">[:,</span> <span class="n">istart</span><span class="p">:</span><span class="n">iend</span><span class="p">]</span> <span class="o">=</span> <span class="n">dcut</span><span class="o">.</span><span class="n">data</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">:</span><span class="n">icend</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;Unexpected return from C++ WindowData function in pad option section</span><span class="se">\n</span><span class="s2">&quot;</span>
+                    <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Computed sample number for padded sample number start=</span><span class="si">{}</span><span class="s2"> and end=</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">istart</span><span class="p">,</span> <span class="n">iend</span>
+                    <span class="p">)</span>
+                    <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Allowed index range = 0 to </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dpadded</span><span class="o">.</span><span class="n">npts</span><span class="p">)</span>
+                    <span class="n">message</span> <span class="o">+=</span> <span class="p">(</span>
+                        <span class="s2">&quot;This should not happen and is a bug that should be reported&quot;</span>
+                    <span class="p">)</span>
+                    <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="n">alg</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Fatal</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">dpadded</span><span class="o">.</span><span class="n">data</span><span class="p">[:,</span> <span class="n">istart</span><span class="p">:</span><span class="n">iend</span><span class="p">]</span> <span class="o">=</span> <span class="n">dcut</span><span class="o">.</span><span class="n">data</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">):</span>
+                    <span class="n">dpadded</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">istart</span><span class="p">:</span><span class="n">iend</span><span class="p">]</span> <span class="o">=</span> <span class="n">dcut</span><span class="o">.</span><span class="n">data</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">dpadded</span><span class="o">.</span><span class="n">data</span><span class="p">[:,</span> <span class="n">istart</span><span class="p">:</span><span class="n">iend</span><span class="p">]</span> <span class="o">=</span> <span class="n">dcut</span><span class="o">.</span><span class="n">data</span>
             <span class="k">return</span> <span class="n">dpadded</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">dcut</span>

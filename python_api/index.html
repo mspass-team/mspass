@@ -164,11 +164,18 @@
 <li class="toctree-l2"><a class="reference internal" href="mspasspy.algorithms.html#module-mspasspy.algorithms.MCXcorStacking">MCXcorStacking</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="mspasspy.algorithms.html#mspasspy.algorithms.MCXcorStacking.MCXcorPrepP"><code class="docutils literal notranslate"><span class="pre">MCXcorPrepP()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="mspasspy.algorithms.html#mspasspy.algorithms.MCXcorStacking.align_and_stack"><code class="docutils literal notranslate"><span class="pre">align_and_stack()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspasspy.algorithms.html#mspasspy.algorithms.MCXcorStacking.amplitude_relative_to_beam"><code class="docutils literal notranslate"><span class="pre">amplitude_relative_to_beam()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="mspasspy.algorithms.html#mspasspy.algorithms.MCXcorStacking.beam_align"><code class="docutils literal notranslate"><span class="pre">beam_align()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspasspy.algorithms.html#mspasspy.algorithms.MCXcorStacking.beam_coherence"><code class="docutils literal notranslate"><span class="pre">beam_coherence()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspasspy.algorithms.html#mspasspy.algorithms.MCXcorStacking.beam_correlation"><code class="docutils literal notranslate"><span class="pre">beam_correlation()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="mspasspy.algorithms.html#mspasspy.algorithms.MCXcorStacking.dbxcor_weights"><code class="docutils literal notranslate"><span class="pre">dbxcor_weights()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspasspy.algorithms.html#mspasspy.algorithms.MCXcorStacking.demean_residuals"><code class="docutils literal notranslate"><span class="pre">demean_residuals()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="mspasspy.algorithms.html#mspasspy.algorithms.MCXcorStacking.estimate_ensemble_bandwidth"><code class="docutils literal notranslate"><span class="pre">estimate_ensemble_bandwidth()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="mspasspy.algorithms.html#mspasspy.algorithms.MCXcorStacking.extract_initial_beam_estimate"><code class="docutils literal notranslate"><span class="pre">extract_initial_beam_estimate()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspasspy.algorithms.html#mspasspy.algorithms.MCXcorStacking.phase_time"><code class="docutils literal notranslate"><span class="pre">phase_time()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspasspy.algorithms.html#mspasspy.algorithms.MCXcorStacking.post_MCXcor_metrics"><code class="docutils literal notranslate"><span class="pre">post_MCXcor_metrics()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="mspasspy.algorithms.html#mspasspy.algorithms.MCXcorStacking.regularize_ensemble"><code class="docutils literal notranslate"><span class="pre">regularize_ensemble()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspasspy.algorithms.html#mspasspy.algorithms.MCXcorStacking.remove_incident_wavefield"><code class="docutils literal notranslate"><span class="pre">remove_incident_wavefield()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="mspasspy.algorithms.html#mspasspy.algorithms.MCXcorStacking.robust_stack"><code class="docutils literal notranslate"><span class="pre">robust_stack()</span></code></a></li>
 </ul>
 </li>
@@ -404,11 +411,14 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="mspasspy.algorithms.html#module-mspasspy.algorithms.snr">snr</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="mspasspy.algorithms.html#mspasspy.algorithms.snr.EstimateBandwidth"><code class="docutils literal notranslate"><span class="pre">EstimateBandwidth()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="mspasspy.algorithms.html#mspasspy.algorithms.snr.FD_snr_estimator"><code class="docutils literal notranslate"><span class="pre">FD_snr_estimator()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="mspasspy.algorithms.html#mspasspy.algorithms.snr.arrival_snr"><code class="docutils literal notranslate"><span class="pre">arrival_snr()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="mspasspy.algorithms.html#mspasspy.algorithms.snr.broadband_snr_QC"><code class="docutils literal notranslate"><span class="pre">broadband_snr_QC()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspasspy.algorithms.html#mspasspy.algorithms.snr.filter_by_snr_bandwidth"><code class="docutils literal notranslate"><span class="pre">filter_by_snr_bandwidth()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="mspasspy.algorithms.html#mspasspy.algorithms.snr.save_snr_arrival"><code class="docutils literal notranslate"><span class="pre">save_snr_arrival()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="mspasspy.algorithms.html#mspasspy.algorithms.snr.snr"><code class="docutils literal notranslate"><span class="pre">snr()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspasspy.algorithms.html#mspasspy.algorithms.snr.visualize_qcdata"><code class="docutils literal notranslate"><span class="pre">visualize_qcdata()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="mspasspy.algorithms.html#module-mspasspy.algorithms.window">window</a><ul>
@@ -831,21 +841,17 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="mspasspy.ccore.html#module-mspasspy.ccore.algorithms.deconvolution">deconvolution</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.CNR3CDecon"><code class="docutils literal notranslate"><span class="pre">CNR3CDecon</span></code></a><ul>
-<li class="toctree-l5"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.CNR3CDecon.QCMetrics"><code class="docutils literal notranslate"><span class="pre">CNR3CDecon.QCMetrics()</span></code></a></li>
-<li class="toctree-l5"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.CNR3CDecon.actual_output"><code class="docutils literal notranslate"><span class="pre">CNR3CDecon.actual_output()</span></code></a></li>
-<li class="toctree-l5"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.CNR3CDecon.change_parameters"><code class="docutils literal notranslate"><span class="pre">CNR3CDecon.change_parameters()</span></code></a></li>
-<li class="toctree-l5"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.CNR3CDecon.data_noise_spectrum"><code class="docutils literal notranslate"><span class="pre">CNR3CDecon.data_noise_spectrum()</span></code></a></li>
-<li class="toctree-l5"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.CNR3CDecon.data_spectrum"><code class="docutils literal notranslate"><span class="pre">CNR3CDecon.data_spectrum()</span></code></a></li>
-<li class="toctree-l5"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.CNR3CDecon.ideal_output"><code class="docutils literal notranslate"><span class="pre">CNR3CDecon.ideal_output()</span></code></a></li>
-<li class="toctree-l5"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.CNR3CDecon.inverse_wavelet"><code class="docutils literal notranslate"><span class="pre">CNR3CDecon.inverse_wavelet()</span></code></a></li>
-<li class="toctree-l5"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.CNR3CDecon.loaddata"><code class="docutils literal notranslate"><span class="pre">CNR3CDecon.loaddata()</span></code></a></li>
-<li class="toctree-l5"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.CNR3CDecon.loadnoise_data"><code class="docutils literal notranslate"><span class="pre">CNR3CDecon.loadnoise_data()</span></code></a></li>
-<li class="toctree-l5"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.CNR3CDecon.loadnoise_wavelet"><code class="docutils literal notranslate"><span class="pre">CNR3CDecon.loadnoise_wavelet()</span></code></a></li>
-<li class="toctree-l5"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.CNR3CDecon.loadwavelet"><code class="docutils literal notranslate"><span class="pre">CNR3CDecon.loadwavelet()</span></code></a></li>
-<li class="toctree-l5"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.CNR3CDecon.process"><code class="docutils literal notranslate"><span class="pre">CNR3CDecon.process()</span></code></a></li>
-<li class="toctree-l5"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.CNR3CDecon.wavelet_noise_spectrum"><code class="docutils literal notranslate"><span class="pre">CNR3CDecon.wavelet_noise_spectrum()</span></code></a></li>
-<li class="toctree-l5"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.CNR3CDecon.wavelet_spectrum"><code class="docutils literal notranslate"><span class="pre">CNR3CDecon.wavelet_spectrum()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.CNRDeconEngine"><code class="docutils literal notranslate"><span class="pre">CNRDeconEngine</span></code></a><ul>
+<li class="toctree-l5"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.CNRDeconEngine.QCMetrics"><code class="docutils literal notranslate"><span class="pre">CNRDeconEngine.QCMetrics()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.CNRDeconEngine.actual_output"><code class="docutils literal notranslate"><span class="pre">CNRDeconEngine.actual_output()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.CNRDeconEngine.compute_noise_spectrum"><code class="docutils literal notranslate"><span class="pre">CNRDeconEngine.compute_noise_spectrum()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.CNRDeconEngine.compute_noise_spectrum_3C"><code class="docutils literal notranslate"><span class="pre">CNRDeconEngine.compute_noise_spectrum_3C()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.CNRDeconEngine.get_operator_dt"><code class="docutils literal notranslate"><span class="pre">CNRDeconEngine.get_operator_dt()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.CNRDeconEngine.ideal_output"><code class="docutils literal notranslate"><span class="pre">CNRDeconEngine.ideal_output()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.CNRDeconEngine.initialize_inverse_operator"><code class="docutils literal notranslate"><span class="pre">CNRDeconEngine.initialize_inverse_operator()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.CNRDeconEngine.initialize_inverse_operator_TS"><code class="docutils literal notranslate"><span class="pre">CNRDeconEngine.initialize_inverse_operator_TS()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.CNRDeconEngine.inverse_wavelet"><code class="docutils literal notranslate"><span class="pre">CNRDeconEngine.inverse_wavelet()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.CNRDeconEngine.process"><code class="docutils literal notranslate"><span class="pre">CNRDeconEngine.process()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.DoubleVector"><code class="docutils literal notranslate"><span class="pre">DoubleVector</span></code></a><ul>
@@ -916,6 +922,7 @@
 <li class="toctree-l5"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.ScalarDecon.actual_output"><code class="docutils literal notranslate"><span class="pre">ScalarDecon.actual_output()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.ScalarDecon.change_parameter"><code class="docutils literal notranslate"><span class="pre">ScalarDecon.change_parameter()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.ScalarDecon.change_shaping_wavelet"><code class="docutils literal notranslate"><span class="pre">ScalarDecon.change_shaping_wavelet()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.ScalarDecon.get_shaping_wavelet"><code class="docutils literal notranslate"><span class="pre">ScalarDecon.get_shaping_wavelet()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.ScalarDecon.getresult"><code class="docutils literal notranslate"><span class="pre">ScalarDecon.getresult()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.ScalarDecon.ideal_output"><code class="docutils literal notranslate"><span class="pre">ScalarDecon.ideal_output()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.ScalarDecon.inverse_wavelet"><code class="docutils literal notranslate"><span class="pre">ScalarDecon.inverse_wavelet()</span></code></a></li>
@@ -1331,6 +1338,7 @@
 <li class="toctree-l3"><a class="reference internal" href="mspasspy.util.html#mspasspy.util.seismic.number_live"><code class="docutils literal notranslate"><span class="pre">number_live()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="mspasspy.util.html#mspasspy.util.seismic.print_metadata"><code class="docutils literal notranslate"><span class="pre">print_metadata()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="mspasspy.util.html#mspasspy.util.seismic.regularize_sampling"><code class="docutils literal notranslate"><span class="pre">regularize_sampling()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspasspy.util.html#mspasspy.util.seismic.sort_ensemble"><code class="docutils literal notranslate"><span class="pre">sort_ensemble()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="mspasspy.util.html#module-mspasspy.util.seispp">seispp</a><ul>

@@ -85,61 +85,82 @@ $(function() {
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="preprocessor">#include &lt;string&gt;</span></div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="preprocessor">#include &lt;gsl/gsl_errno.h&gt;</span></div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="preprocessor">#include &lt;gsl/gsl_fft_complex.h&gt;</span></div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor">#include &quot;mspass/utility/Metadata.h&quot;</span></div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#include &quot;mspass/seismic/CoreTimeSeries.h&quot;</span></div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#include &quot;mspass/algorithms/TimeWindow.h&quot;</span></div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &quot;mspass/algorithms/deconvolution/ComplexArray.h&quot;</span></div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="keyword">namespace </span>mspass::algorithms::deconvolution{</div>
-<div class="line"><a name="l00018"></a><span class="lineno"><a class="line" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html">   18</a></span>&#160;<span class="keyword">class </span><a class="code" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html">FFTDeconOperator</a></div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;{</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;    <a class="code" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html">FFTDeconOperator</a>();</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;    <a class="code" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html">FFTDeconOperator</a>(<span class="keyword">const</span> <a class="code" href="classmspass_1_1utility_1_1_metadata.html">mspass::utility::Metadata</a>&amp; md);</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    <a class="code" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html">FFTDeconOperator</a>(<span class="keyword">const</span> <a class="code" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html">FFTDeconOperator</a>&amp; parent);</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;    ~<a class="code" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html">FFTDeconOperator</a>();</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;    <a class="code" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html">FFTDeconOperator</a>&amp; operator=(<span class="keyword">const</span> <a class="code" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html">FFTDeconOperator</a>&amp; parent);</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    <span class="keywordtype">void</span> changeparameter(<span class="keyword">const</span> <a class="code" href="classmspass_1_1utility_1_1_metadata.html">mspass::utility::Metadata</a>&amp; md);</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    <span class="keywordtype">void</span> change_size(<span class="keyword">const</span> <span class="keywordtype">int</span> nfft_new);</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    <span class="keywordtype">void</span> change_shift(<span class="keyword">const</span> <span class="keywordtype">int</span> shift) {</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;        sample_shift=shift;</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    };</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    <span class="keywordtype">int</span> get_size(){<span class="keywordflow">return</span> nfft;};</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    <span class="keywordtype">int</span> get_shift(){<span class="keywordflow">return</span> sample_shift;};</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    <span class="keywordtype">int</span> operator_size() {</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(nfft);</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    };</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    <span class="keywordtype">int</span> operator_shift() {</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;        <span class="keywordflow">return</span> sample_shift;</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    };</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    <span class="keywordtype">double</span> df(<span class="keyword">const</span> <span class="keywordtype">double</span> dt){</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;        <span class="keywordtype">double</span> period;</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;        period=<span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(nfft)*dt;</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;        <span class="keywordflow">return</span> 1.0/period;</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    };</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    <a class="code" href="classmspass_1_1seismic_1_1_core_time_series.html">mspass::seismic::CoreTimeSeries</a> <a class="code" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a3473dc7f359332dbf5a685efe30a684b">FourierInverse</a>(<span class="keyword">const</span> <a class="code" href="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array.html">ComplexArray</a>&amp; winv, <span class="keyword">const</span> <a class="code" href="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array.html">ComplexArray</a>&amp; sw,</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    <span class="keyword">const</span> <span class="keywordtype">double</span> dt, <span class="keyword">const</span> <span class="keywordtype">double</span> t0parent);</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160; </div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;<span class="keyword">protected</span>:</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    <span class="keywordtype">int</span> nfft;</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    <span class="keywordtype">int</span> sample_shift;</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    gsl_fft_complex_wavetable *wavetable;</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    gsl_fft_complex_workspace *workspace;</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;    <a class="code" href="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array.html">ComplexArray</a> winv;</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;};</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160; </div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;<span class="comment">/* This helper is best referenced here */</span></div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160; </div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;std::vector&lt;double&gt;  circular_shift(<span class="keyword">const</span> std::vector&lt;double&gt;&amp; d,<span class="keyword">const</span> <span class="keywordtype">int</span> i0);</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;<span class="keywordtype">int</span> ComputeFFTLength(<span class="keyword">const</span> <a class="code" href="classmspass_1_1algorithms_1_1_time_window.html">mspass::algorithms::TimeWindow</a> w, <span class="keyword">const</span> <span class="keywordtype">double</span> dt);</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;<span class="keywordtype">int</span> ComputeFFTLength(<span class="keyword">const</span> <a class="code" href="classmspass_1_1utility_1_1_metadata.html">mspass::utility::Metadata</a>&amp; md);</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;<span class="keyword">extern</span> <span class="stringliteral">&quot;C&quot;</span> {</div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;    <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> nextPowerOf2(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> n);</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;}</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;}</div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor">#include &lt;boost/archive/text_iarchive.hpp&gt;</span></div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#include &lt;boost/archive/text_oarchive.hpp&gt;</span></div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#include &quot;mspass/utility/Metadata.h&quot;</span></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &quot;mspass/seismic/CoreTimeSeries.h&quot;</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &quot;mspass/algorithms/TimeWindow.h&quot;</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &quot;mspass/algorithms/deconvolution/ComplexArray.h&quot;</span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="keyword">namespace </span>mspass::algorithms::deconvolution{</div>
+<div class="line"><a name="l00020"></a><span class="lineno"><a class="line" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html">   20</a></span>&#160;<span class="keyword">class </span><a class="code" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html">FFTDeconOperator</a></div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;{</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    <a class="code" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html">FFTDeconOperator</a>();</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;    <a class="code" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html">FFTDeconOperator</a>(<span class="keyword">const</span> <a class="code" href="classmspass_1_1utility_1_1_metadata.html">mspass::utility::Metadata</a>&amp; md);</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;    <a class="code" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html">FFTDeconOperator</a>(<span class="keyword">const</span> <a class="code" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html">FFTDeconOperator</a>&amp; parent);</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    ~<a class="code" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html">FFTDeconOperator</a>();</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    <a class="code" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html">FFTDeconOperator</a>&amp; operator=(<span class="keyword">const</span> <a class="code" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html">FFTDeconOperator</a>&amp; parent);</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    <span class="keywordtype">void</span> changeparameter(<span class="keyword">const</span> <a class="code" href="classmspass_1_1utility_1_1_metadata.html">mspass::utility::Metadata</a>&amp; md);</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    <span class="keywordtype">void</span> change_size(<span class="keyword">const</span> <span class="keywordtype">int</span> nfft_new);</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    <span class="keywordtype">void</span> change_shift(<span class="keyword">const</span> <span class="keywordtype">int</span> shift) {</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;        sample_shift=shift;</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    };</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    <span class="keywordtype">int</span> get_size(){<span class="keywordflow">return</span> nfft;};</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    <span class="keywordtype">int</span> get_shift(){<span class="keywordflow">return</span> sample_shift;};</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    <span class="keywordtype">int</span> operator_size() {</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(nfft);</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    };</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    <span class="keywordtype">int</span> operator_shift() {</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;        <span class="keywordflow">return</span> sample_shift;</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    };</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    <span class="keywordtype">double</span> df(<span class="keyword">const</span> <span class="keywordtype">double</span> dt){</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;        <span class="keywordtype">double</span> period;</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;        period=<span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(nfft)*dt;</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;        <span class="keywordflow">return</span> 1.0/period;</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    };</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    <a class="code" href="classmspass_1_1seismic_1_1_core_time_series.html">mspass::seismic::CoreTimeSeries</a> <a class="code" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a3473dc7f359332dbf5a685efe30a684b">FourierInverse</a>(<span class="keyword">const</span> <a class="code" href="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array.html">ComplexArray</a>&amp; winv, <span class="keyword">const</span> <a class="code" href="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array.html">ComplexArray</a>&amp; sw,</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    <span class="keyword">const</span> <span class="keywordtype">double</span> dt, <span class="keyword">const</span> <span class="keywordtype">double</span> t0parent);</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160; </div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;<span class="keyword">protected</span>:</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    <span class="keywordtype">int</span> nfft;</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    <span class="keywordtype">int</span> sample_shift;</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;    gsl_fft_complex_wavetable *wavetable;</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    gsl_fft_complex_workspace *workspace;</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;    <a class="code" href="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array.html">ComplexArray</a> winv;</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    <span class="keyword">friend</span> boost::serialization::access;</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    <span class="keyword">template</span>&lt;<span class="keyword">class</span> Archive&gt;</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    <span class="keywordtype">void</span> save(Archive&amp; ar, <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> version)<span class="keyword"> const</span></div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;<span class="keyword">    </span>{</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;        ar &amp; nfft;</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;        ar &amp; sample_shift;</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;        ar &amp; winv;</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    }</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;    <span class="keyword">template</span>&lt;<span class="keyword">class</span> Archive&gt;</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    <span class="keywordtype">void</span> load(Archive &amp;ar, <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> version)</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    {</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;      ar &amp; this-&gt;nfft;</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;      ar &amp; this-&gt;sample_shift;</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;      ar &amp; winv;</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;      this-&gt;wavetable = gsl_fft_complex_wavetable_alloc (this-&gt;nfft);</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;      this-&gt;workspace = gsl_fft_complex_workspace_alloc (this-&gt;nfft);</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;    }</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;    BOOST_SERIALIZATION_SPLIT_MEMBER()</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;};</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160; </div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;<span class="comment">/* This helper is best referenced here */</span></div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160; </div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;std::vector&lt;double&gt;  circular_shift(<span class="keyword">const</span> std::vector&lt;double&gt;&amp; d,<span class="keyword">const</span> <span class="keywordtype">int</span> i0);</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;<span class="keywordtype">int</span> ComputeFFTLength(<span class="keyword">const</span> <a class="code" href="classmspass_1_1algorithms_1_1_time_window.html">mspass::algorithms::TimeWindow</a> w, <span class="keyword">const</span> <span class="keywordtype">double</span> dt);</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;<span class="keywordtype">int</span> ComputeFFTLength(<span class="keyword">const</span> <a class="code" href="classmspass_1_1utility_1_1_metadata.html">mspass::utility::Metadata</a>&amp; md);</div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;<span class="keyword">extern</span> <span class="stringliteral">&quot;C&quot;</span> {</div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;    <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> nextPowerOf2(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> n);</div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;}</div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;}</div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;<span class="preprocessor">#endif</span></div>
 <div class="ttc" id="aclassmspass_1_1algorithms_1_1_time_window_html"><div class="ttname"><a href="classmspass_1_1algorithms_1_1_time_window.html">mspass::algorithms::TimeWindow</a></div><div class="ttdoc">Defines a time window.</div><div class="ttdef"><b>Definition:</b> TimeWindow.h:14</div></div>
-<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_html"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array.html">mspass::algorithms::deconvolution::ComplexArray</a></div><div class="ttdef"><b>Definition:</b> ComplexArray.h:29</div></div>
-<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_html"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html">mspass::algorithms::deconvolution::FFTDeconOperator</a></div><div class="ttdoc">Object to hold components needed in all fft based decon algorithms.</div><div class="ttdef"><b>Definition:</b> FFTDeconOperator.h:19</div></div>
+<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_html"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array.html">mspass::algorithms::deconvolution::ComplexArray</a></div><div class="ttdef"><b>Definition:</b> ComplexArray.h:40</div></div>
+<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_html"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html">mspass::algorithms::deconvolution::FFTDeconOperator</a></div><div class="ttdoc">Object to hold components needed in all fft based decon algorithms.</div><div class="ttdef"><b>Definition:</b> FFTDeconOperator.h:21</div></div>
 <div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_html_a3473dc7f359332dbf5a685efe30a684b"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a3473dc7f359332dbf5a685efe30a684b">mspass::algorithms::deconvolution::FFTDeconOperator::FourierInverse</a></div><div class="ttdeci">mspass::seismic::CoreTimeSeries FourierInverse(const ComplexArray &amp;winv, const ComplexArray &amp;sw, const double dt, const double t0parent)</div><div class="ttdoc">Return inverse wavelet for Fourier methods.</div><div class="ttdef"><b>Definition:</b> FFTDeconOperator.cc:119</div></div>
 <div class="ttc" id="aclassmspass_1_1seismic_1_1_core_time_series_html"><div class="ttname"><a href="classmspass_1_1seismic_1_1_core_time_series.html">mspass::seismic::CoreTimeSeries</a></div><div class="ttdoc">Scalar time series data object.</div><div class="ttdef"><b>Definition:</b> CoreTimeSeries.h:18</div></div>
 <div class="ttc" id="aclassmspass_1_1utility_1_1_metadata_html"><div class="ttname"><a href="classmspass_1_1utility_1_1_metadata.html">mspass::utility::Metadata</a></div><div class="ttdef"><b>Definition:</b> Metadata.h:76</div></div>

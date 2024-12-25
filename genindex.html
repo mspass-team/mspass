@@ -179,7 +179,7 @@
       <li><a href="python_api/mspasspy.algorithms.html#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.actual_output">actual_output() (mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor method)</a>
 
       <ul>
-        <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.CNR3CDecon.actual_output">(mspasspy.ccore.algorithms.deconvolution.CNR3CDecon method)</a>
+        <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.CNRDeconEngine.actual_output">(mspasspy.ccore.algorithms.deconvolution.CNRDeconEngine method)</a>
 </li>
         <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.LeastSquareDecon.actual_output">(mspasspy.ccore.algorithms.deconvolution.LeastSquareDecon method)</a>
 </li>
@@ -243,6 +243,8 @@
       <li><a href="python_api/mspasspy.algorithms.html#mspasspy.algorithms.MCXcorStacking.align_and_stack">align_and_stack() (in module mspasspy.algorithms.MCXcorStacking)</a>
 </li>
       <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.PowerSpectrum.amplitude">amplitude() (mspasspy.ccore.seismic.PowerSpectrum method)</a>
+</li>
+      <li><a href="python_api/mspasspy.algorithms.html#mspasspy.algorithms.MCXcorStacking.amplitude_relative_to_beam">amplitude_relative_to_beam() (in module mspasspy.algorithms.MCXcorStacking)</a>
 </li>
       <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.utility.AntelopePf">AntelopePf (class in mspasspy.ccore.utility)</a>
 </li>
@@ -370,11 +372,15 @@
 </li>
       <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.basic.BasicTaper">BasicTaper (class in mspasspy.ccore.algorithms.basic)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.SlownessVector.baz">baz() (mspasspy.ccore.seismic.SlownessVector method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="python_api/mspasspy.algorithms.html#mspasspy.algorithms.MCXcorStacking.beam_align">beam_align() (in module mspasspy.algorithms.MCXcorStacking)</a>
+</li>
+      <li><a href="python_api/mspasspy.algorithms.html#mspasspy.algorithms.MCXcorStacking.beam_coherence">beam_coherence() (in module mspasspy.algorithms.MCXcorStacking)</a>
+</li>
+      <li><a href="python_api/mspasspy.algorithms.html#mspasspy.algorithms.MCXcorStacking.beam_correlation">beam_correlation() (in module mspasspy.algorithms.MCXcorStacking)</a>
 </li>
       <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.utility.MDtype.Boolean">Boolean (mspasspy.ccore.utility.MDtype attribute)</a>
 </li>
@@ -417,11 +423,7 @@
       <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.ScalarDecon.change_parameter">change_parameter() (mspasspy.ccore.algorithms.deconvolution.ScalarDecon method)</a>
 </li>
       <li><a href="python_api/mspasspy.algorithms.html#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.change_parameters">change_parameters() (mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor method)</a>
-
-      <ul>
-        <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.CNR3CDecon.change_parameters">(mspasspy.ccore.algorithms.deconvolution.CNR3CDecon method)</a>
 </li>
-      </ul></li>
       <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.ScalarDecon.change_shaping_wavelet">change_shaping_wavelet() (mspasspy.ccore.algorithms.deconvolution.ScalarDecon method)</a>
 </li>
       <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.FFTDeconOperator.change_shift">change_shift() (mspasspy.ccore.algorithms.deconvolution.FFTDeconOperator method)</a>
@@ -558,7 +560,7 @@
 </li>
       <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.amplitudes.ScalingMethod.ClipPerc">ClipPerc (mspasspy.ccore.algorithms.amplitudes.ScalingMethod attribute)</a>
 </li>
-      <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.CNR3CDecon">CNR3CDecon (class in mspasspy.ccore.algorithms.deconvolution)</a>
+      <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.CNRDeconEngine">CNRDeconEngine (class in mspasspy.ccore.algorithms.deconvolution)</a>
 </li>
       <li><a href="python_api/mspasspy.util.html#mspasspy.util.Janitor.Janitor.collect_trash">collect_trash() (mspasspy.util.Janitor.Janitor method)</a>
 </li>
@@ -571,6 +573,10 @@
       <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.utility.dmatrix.columns">columns() (mspasspy.ccore.utility.dmatrix method)</a>
 </li>
       <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.utility.ErrorSeverity.Complaint">Complaint (mspasspy.ccore.utility.ErrorSeverity attribute)</a>
+</li>
+      <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.CNRDeconEngine.compute_noise_spectrum">compute_noise_spectrum() (mspasspy.ccore.algorithms.deconvolution.CNRDeconEngine method)</a>
+</li>
+      <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.CNRDeconEngine.compute_noise_spectrum_3C">compute_noise_spectrum_3C() (mspasspy.ccore.algorithms.deconvolution.CNRDeconEngine method)</a>
 </li>
       <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.utility.MetadataDefinitions.concept">concept() (mspasspy.ccore.utility.MetadataDefinitions method)</a>
 
@@ -620,10 +626,6 @@
 <h2 id="D">D</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.CNR3CDecon.data_noise_spectrum">data_noise_spectrum() (mspasspy.ccore.algorithms.deconvolution.CNR3CDecon method)</a>
-</li>
-      <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.CNR3CDecon.data_spectrum">data_spectrum() (mspasspy.ccore.algorithms.deconvolution.CNR3CDecon method)</a>
-</li>
       <li><a href="python_api/mspasspy.db.html#mspasspy.db.schema.DBSchemaDefinition.data_type">data_type() (mspasspy.db.schema.DBSchemaDefinition method)</a>
 </li>
       <li><a href="python_api/mspasspy.db.html#mspasspy.db.database.Database">Database (class in mspasspy.db.database)</a>
@@ -664,15 +666,17 @@
       </ul></li>
       <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.utility.ErrorSeverity.Debug">Debug (mspasspy.ccore.utility.ErrorSeverity attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="python_api/mspasspy.algorithms.html#mspasspy.algorithms.resample.BasicResampler.dec_factor">dec_factor() (mspasspy.algorithms.resample.BasicResampler method)</a>
 </li>
       <li><a href="python_api/mspasspy.db.html#mspasspy.db.schema.DatabaseSchema.default">default() (mspasspy.db.schema.DatabaseSchema method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="python_api/mspasspy.db.html#mspasspy.db.schema.DatabaseSchema.default_name">default_name() (mspasspy.db.schema.DatabaseSchema method)</a>
 </li>
       <li><a href="python_api/mspasspy.db.html#mspasspy.db.database.Database.delete_data">delete_data() (mspasspy.db.database.Database method)</a>
+</li>
+      <li><a href="python_api/mspasspy.algorithms.html#mspasspy.algorithms.MCXcorStacking.demean_residuals">demean_residuals() (in module mspasspy.algorithms.MCXcorStacking)</a>
 </li>
       <li><a href="python_api/mspasspy.algorithms.html#mspasspy.algorithms.signals.detrend">detrend() (in module mspasspy.algorithms.signals)</a>
 </li>
@@ -752,10 +756,10 @@
 </li>
       <li><a href="python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.erase_metadata">erase_metadata() (in module mspasspy.algorithms.edit)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.seed.ensembles.erase_seed_metadata">erase_seed_metadata() (in module mspasspy.preprocessing.seed.ensembles)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.utility.error_says_data_bad">error_says_data_bad() (in module mspasspy.ccore.utility)</a>
 </li>
       <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.utility.error_severity">error_severity() (in module mspasspy.ccore.utility)</a>
@@ -768,8 +772,12 @@
 </li>
       <li><a href="python_api/mspasspy.algorithms.html#mspasspy.algorithms.MCXcorStacking.estimate_ensemble_bandwidth">estimate_ensemble_bandwidth() (in module mspasspy.algorithms.MCXcorStacking)</a>
 </li>
-      <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.amplitudes.EstimateBandwidth">EstimateBandwidth() (in module mspasspy.ccore.algorithms.amplitudes)</a>
+      <li><a href="python_api/mspasspy.algorithms.html#mspasspy.algorithms.snr.EstimateBandwidth">EstimateBandwidth() (in module mspasspy.algorithms.snr)</a>
+
+      <ul>
+        <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.amplitudes.EstimateBandwidth">(in module mspasspy.ccore.algorithms.amplitudes)</a>
 </li>
+      </ul></li>
       <li><a href="python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Executioner">Executioner (class in mspasspy.algorithms.edit)</a>
 </li>
       <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.DoubleVector.extend">extend() (mspasspy.ccore.algorithms.deconvolution.DoubleVector method)</a>
@@ -804,6 +812,8 @@
 </li>
       <li><a href="python_api/mspasspy.algorithms.html#mspasspy.algorithms.signals.filter">filter() (in module mspasspy.algorithms.signals)</a>
 </li>
+      <li><a href="python_api/mspasspy.algorithms.html#mspasspy.algorithms.snr.filter_by_snr_bandwidth">filter_by_snr_bandwidth() (in module mspasspy.algorithms.snr)</a>
+</li>
       <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.basic.Butterworth.filter_type">filter_type() (mspasspy.ccore.algorithms.basic.Butterworth method)</a>
 </li>
       <li><a href="python_api/mspasspy.db.html#mspasspy.db.normalize.BasicMatcher.find">find() (mspasspy.db.normalize.BasicMatcher method)</a>
@@ -820,10 +830,10 @@
 </li>
       <li><a href="python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.dbarrival.find_duplicate_sta">find_duplicate_sta() (in module mspasspy.preprocessing.css30.dbarrival)</a>
 </li>
-      <li><a href="python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.dbarrival.find_null_net_stations">find_null_net_stations() (in module mspasspy.preprocessing.css30.dbarrival)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.dbarrival.find_null_net_stations">find_null_net_stations() (in module mspasspy.preprocessing.css30.dbarrival)</a>
+</li>
       <li><a href="python_api/mspasspy.db.html#mspasspy.db.normalize.BasicMatcher.find_one">find_one() (mspasspy.db.normalize.BasicMatcher method)</a>
 
       <ul>
@@ -918,14 +928,16 @@
 </li>
       <li><a href="python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.datascope.DatascopeDatabase.get_nulls">get_nulls() (mspasspy.preprocessing.css30.datascope.DatascopeDatabase method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.MultiTaperSpecDivDecon.get_number_tapers">get_number_tapers() (mspasspy.ccore.algorithms.deconvolution.MultiTaperSpecDivDecon method)</a>
 
       <ul>
         <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.MultiTaperXcorDecon.get_number_tapers">(mspasspy.ccore.algorithms.deconvolution.MultiTaperXcorDecon method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.CNRDeconEngine.get_operator_dt">get_operator_dt() (mspasspy.ccore.algorithms.deconvolution.CNRDeconEngine method)</a>
+</li>
       <li><a href="python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.datascope.DatascopeDatabase.get_primary_keys">get_primary_keys() (mspasspy.preprocessing.css30.datascope.DatascopeDatabase method)</a>
 </li>
       <li><a href="python_api/mspasspy.db.html#mspasspy.db.database.Database.get_response">get_response() (mspasspy.db.database.Database method)</a>
@@ -935,6 +947,8 @@
       <li><a href="python_api/mspasspy.db.html#mspasspy.db.database.Database.get_seed_channel">get_seed_channel() (mspasspy.db.database.Database method)</a>
 </li>
       <li><a href="python_api/mspasspy.db.html#mspasspy.db.database.Database.get_seed_site">get_seed_site() (mspasspy.db.database.Database method)</a>
+</li>
+      <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.ScalarDecon.get_shaping_wavelet">get_shaping_wavelet() (mspasspy.ccore.algorithms.deconvolution.ScalarDecon method)</a>
 </li>
       <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.FFTDeconOperator.get_shift">get_shift() (mspasspy.ccore.algorithms.deconvolution.FFTDeconOperator method)</a>
 </li>
@@ -1025,7 +1039,7 @@
       <li><a href="python_api/mspasspy.algorithms.html#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.ideal_output">ideal_output() (mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor method)</a>
 
       <ul>
-        <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.CNR3CDecon.ideal_output">(mspasspy.ccore.algorithms.deconvolution.CNR3CDecon method)</a>
+        <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.CNRDeconEngine.ideal_output">(mspasspy.ccore.algorithms.deconvolution.CNRDeconEngine method)</a>
 </li>
         <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.ScalarDecon.ideal_output">(mspasspy.ccore.algorithms.deconvolution.ScalarDecon method)</a>
 </li>
@@ -1052,6 +1066,10 @@
 </li>
       <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.utility.ErrorSeverity.Informational">Informational (mspasspy.ccore.utility.ErrorSeverity attribute)</a>
 </li>
+      <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.CNRDeconEngine.initialize_inverse_operator">initialize_inverse_operator() (mspasspy.ccore.algorithms.deconvolution.CNRDeconEngine method)</a>
+</li>
+      <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.CNRDeconEngine.initialize_inverse_operator_TS">initialize_inverse_operator_TS() (mspasspy.ccore.algorithms.deconvolution.CNRDeconEngine method)</a>
+</li>
       <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.utility.ProcessingHistory.inputs">inputs() (mspasspy.ccore.utility.ProcessingHistory method)</a>
 </li>
       <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.DoubleVector.insert">insert() (mspasspy.ccore.algorithms.deconvolution.DoubleVector method)</a>
@@ -1074,10 +1092,10 @@
 </li>
       <li><a href="python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.IntegerDivide2">IntegerDivide2 (class in mspasspy.algorithms.edit)</a>
 </li>
-      <li><a href="python_api/mspasspy.algorithms.html#mspasspy.algorithms.signals.interpolate">interpolate() (in module mspasspy.algorithms.signals)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="python_api/mspasspy.algorithms.html#mspasspy.algorithms.signals.interpolate">interpolate() (in module mspasspy.algorithms.signals)</a>
+</li>
       <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.utility.ErrorSeverity.Invalid">Invalid (mspasspy.ccore.utility.ErrorSeverity attribute)</a>
 
       <ul>
@@ -1086,7 +1104,7 @@
       </ul></li>
       <li><a href="python_api/mspasspy.algorithms.html#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.inverse_filter">inverse_filter() (mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor method)</a>
 </li>
-      <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.CNR3CDecon.inverse_wavelet">inverse_wavelet() (mspasspy.ccore.algorithms.deconvolution.CNR3CDecon method)</a>
+      <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.CNRDeconEngine.inverse_wavelet">inverse_wavelet() (mspasspy.ccore.algorithms.deconvolution.CNRDeconEngine method)</a>
 
       <ul>
         <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.LeastSquareDecon.inverse_wavelet">(mspasspy.ccore.algorithms.deconvolution.LeastSquareDecon method)</a>
@@ -1256,12 +1274,12 @@
       </ul></li>
       <li><a href="python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.seed.ensembles.load_hypocenter_data_by_time">load_hypocenter_data_by_time() (in module mspasspy.preprocessing.seed.ensembles)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.seed.ensembles.load_one_ensemble">load_one_ensemble() (in module mspasspy.preprocessing.seed.ensembles)</a>
 </li>
       <li><a href="python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.seed.ensembles.load_site_data">load_site_data() (in module mspasspy.preprocessing.seed.ensembles)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="python_api/mspasspy.db.html#mspasspy.db.database.Database.load_site_metadata">load_site_metadata() (mspasspy.db.database.Database method)</a>
 </li>
       <li><a href="python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.seed.ensembles.load_source_data_by_id">load_source_data_by_id() (in module mspasspy.preprocessing.seed.ensembles)</a>
@@ -1271,8 +1289,6 @@
       <li><a href="python_api/mspasspy.algorithms.html#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.loaddata">loaddata() (mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor method)</a>
 
       <ul>
-        <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.CNR3CDecon.loaddata">(mspasspy.ccore.algorithms.deconvolution.CNR3CDecon method)</a>
-</li>
         <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.ScalarDecon.loaddata">(mspasspy.ccore.algorithms.deconvolution.ScalarDecon method)</a>
 </li>
       </ul></li>
@@ -1284,15 +1300,9 @@
         <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.MultiTaperXcorDecon.loadnoise">(mspasspy.ccore.algorithms.deconvolution.MultiTaperXcorDecon method)</a>
 </li>
       </ul></li>
-      <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.CNR3CDecon.loadnoise_data">loadnoise_data() (mspasspy.ccore.algorithms.deconvolution.CNR3CDecon method)</a>
-</li>
-      <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.CNR3CDecon.loadnoise_wavelet">loadnoise_wavelet() (mspasspy.ccore.algorithms.deconvolution.CNR3CDecon method)</a>
-</li>
       <li><a href="python_api/mspasspy.algorithms.html#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.loadwavelet">loadwavelet() (mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor method)</a>
 
       <ul>
-        <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.CNR3CDecon.loadwavelet">(mspasspy.ccore.algorithms.deconvolution.CNR3CDecon method)</a>
-</li>
         <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.ScalarDecon.loadwavelet">(mspasspy.ccore.algorithms.deconvolution.ScalarDecon method)</a>
 </li>
       </ul></li>
@@ -1980,6 +1990,8 @@
 </li>
       <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.utility.pfread">pfread() (in module mspasspy.ccore.utility)</a>
 </li>
+      <li><a href="python_api/mspasspy.algorithms.html#mspasspy.algorithms.MCXcorStacking.phase_time">phase_time() (in module mspasspy.algorithms.MCXcorStacking)</a>
+</li>
       <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.utility.SphericalCoordinate.phi">phi (mspasspy.ccore.utility.SphericalCoordinate property)</a>
 </li>
       <li><a href="python_api/mspasspy.graphics.html#mspasspy.graphics.SectionPlotter.plot">plot() (mspasspy.graphics.SectionPlotter method)</a>
@@ -2006,13 +2018,15 @@
 </li>
       <li><a href="python_api/mspasspy.io.html#mspasspy.io.distributed.post_error_log">post_error_log() (in module mspasspy.io.distributed)</a>
 </li>
+      <li><a href="python_api/mspasspy.algorithms.html#mspasspy.algorithms.MCXcorStacking.post_MCXcor_metrics">post_MCXcor_metrics() (in module mspasspy.algorithms.MCXcorStacking)</a>
+</li>
       <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.PowerSpectrum.power">power() (mspasspy.ccore.seismic.PowerSpectrum method)</a>
 </li>
       <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.PowerSpectrum">PowerSpectrum (class in mspasspy.ccore.seismic)</a>
 </li>
       <li><a href="python_api/mspasspy.util.html#mspasspy.util.seismic.print_metadata">print_metadata() (in module mspasspy.util.seismic)</a>
 </li>
-      <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.CNR3CDecon.process">process() (mspasspy.ccore.algorithms.deconvolution.CNR3CDecon method)</a>
+      <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.CNRDeconEngine.process">process() (mspasspy.ccore.algorithms.deconvolution.CNRDeconEngine method)</a>
 
       <ul>
         <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.LeastSquareDecon.process">(mspasspy.ccore.algorithms.deconvolution.LeastSquareDecon method)</a>
@@ -2057,7 +2071,7 @@
       <li><a href="python_api/mspasspy.algorithms.html#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.QCMetrics">QCMetrics() (mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor method)</a>
 
       <ul>
-        <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.CNR3CDecon.QCMetrics">(mspasspy.ccore.algorithms.deconvolution.CNR3CDecon method)</a>
+        <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.CNRDeconEngine.QCMetrics">(mspasspy.ccore.algorithms.deconvolution.CNRDeconEngine method)</a>
 </li>
         <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.LeastSquareDecon.QCMetrics">(mspasspy.ccore.algorithms.deconvolution.LeastSquareDecon method)</a>
 </li>
@@ -2132,10 +2146,10 @@
 </li>
       <li><a href="python_api/mspasspy.util.html#mspasspy.util.seismic.regularize_sampling">regularize_sampling() (in module mspasspy.util.seismic)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.TimeReferenceType.Relative">Relative (mspasspy.ccore.seismic.TimeReferenceType attribute)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.DoubleVector.remove">remove() (mspasspy.ccore.algorithms.deconvolution.DoubleVector method)</a>
 
       <ul>
@@ -2143,6 +2157,8 @@
 </li>
       </ul></li>
       <li><a href="python_api/mspasspy.db.html#mspasspy.db.schema.SchemaDefinitionBase.remove_alias">remove_alias() (mspasspy.db.schema.SchemaDefinitionBase method)</a>
+</li>
+      <li><a href="python_api/mspasspy.algorithms.html#mspasspy.algorithms.MCXcorStacking.remove_incident_wavefield">remove_incident_wavefield() (in module mspasspy.algorithms.MCXcorStacking)</a>
 </li>
       <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.basic.repair_overlaps">repair_overlaps() (in module mspasspy.ccore.algorithms.basic)</a>
 </li>
@@ -2282,10 +2298,10 @@
         <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeriesEnsemble.set_live">(mspasspy.ccore.seismic.TimeSeriesEnsemble method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="python_api/mspasspy.db.html#mspasspy.db.database.Database.set_metadata_schema">set_metadata_schema() (mspasspy.db.database.Database method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.dbarrival.set_netcode_from_site">set_netcode_from_site() (in module mspasspy.preprocessing.css30.dbarrival)</a>
 </li>
       <li><a href="python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.dbarrival.set_netcode_snetsta">set_netcode_snetsta() (in module mspasspy.preprocessing.css30.dbarrival)</a>
@@ -2333,6 +2349,8 @@
       <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.SlownessVector">SlownessVector (class in mspasspy.ccore.seismic)</a>
 </li>
       <li><a href="python_api/mspasspy.algorithms.html#mspasspy.algorithms.snr.snr">snr() (in module mspasspy.algorithms.snr)</a>
+</li>
+      <li><a href="python_api/mspasspy.util.html#mspasspy.util.seismic.sort_ensemble">sort_ensemble() (in module mspasspy.util.seismic)</a>
 </li>
       <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.PowerSpectrum.spectrum">spectrum (mspasspy.ccore.seismic.PowerSpectrum property)</a>
 </li>
@@ -2576,6 +2594,8 @@
 </li>
       <li><a href="python_api/mspasspy.db.html#mspasspy.db.database.Database.verify">verify() (mspasspy.db.database.Database method)</a>
 </li>
+      <li><a href="python_api/mspasspy.algorithms.html#mspasspy.algorithms.snr.visualize_qcdata">visualize_qcdata() (in module mspasspy.algorithms.snr)</a>
+</li>
       <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.utility.ProcessingStatus.VOLATILE">VOLATILE (mspasspy.ccore.utility.ProcessingStatus attribute)</a>
 </li>
   </ul></td>
@@ -2586,20 +2606,16 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.WaterLevelDecon">WaterLevelDecon (class in mspasspy.ccore.algorithms.deconvolution)</a>
 </li>
-      <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.CNR3CDecon.wavelet_noise_spectrum">wavelet_noise_spectrum() (mspasspy.ccore.algorithms.deconvolution.CNR3CDecon method)</a>
-</li>
-      <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.CNR3CDecon.wavelet_spectrum">wavelet_spectrum() (mspasspy.ccore.algorithms.deconvolution.CNR3CDecon method)</a>
-</li>
       <li><a href="python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.datascope.DatascopeDatabase.wfdisc2doclist">wfdisc2doclist() (mspasspy.preprocessing.css30.datascope.DatascopeDatabase method)</a>
 </li>
       <li><a href="python_api/mspasspy.algorithms.html#mspasspy.algorithms.window.WindowData">WindowData() (in module mspasspy.algorithms.window)</a>
 </li>
       <li><a href="python_api/mspasspy.algorithms.html#mspasspy.algorithms.window.WindowData_autopad">WindowData_autopad() (in module mspasspy.algorithms.window)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="python_api/mspasspy.algorithms.html#mspasspy.algorithms.window.WindowDataAtomic">WindowDataAtomic() (in module mspasspy.algorithms.window)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.utility.ErrorLogger.worst_errors">worst_errors() (mspasspy.ccore.utility.ErrorLogger method)</a>
 </li>
       <li><a href="python_api/mspasspy.io.html#mspasspy.io.distributed.write_distributed_data">write_distributed_data() (in module mspasspy.io.distributed)</a>

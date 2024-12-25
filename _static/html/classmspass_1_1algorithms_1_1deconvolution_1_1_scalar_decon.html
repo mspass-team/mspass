@@ -136,10 +136,13 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>changeparameter</b> (
 <tr class="separator:a8cf90914fa1571e88978b0b810fad805"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a94a28202041cf426f01ef1e10032c744"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#a94a28202041cf426f01ef1e10032c744">change_shaping_wavelet</a> (const <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html">ShapingWavelet</a> &amp;nsw)</td></tr>
 <tr class="separator:a94a28202041cf426f01ef1e10032c744"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a051ad1d54899f0d64beb0249220c3405"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html">ShapingWavelet</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#a051ad1d54899f0d64beb0249220c3405">get_shaping_wavelet</a> () const</td></tr>
+<tr class="separator:a051ad1d54899f0d64beb0249220c3405"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a889e54f83b86f0bb0087ba3da18db14e"><td class="memItemLeft" align="right" valign="top"><a id="a889e54f83b86f0bb0087ba3da18db14e"></a>
 <a class="el" href="classmspass_1_1seismic_1_1_core_time_series.html">mspass::seismic::CoreTimeSeries</a>&#160;</td><td class="memItemRight" valign="bottom"><b>ideal_output</b> ()</td></tr>
 <tr class="separator:a889e54f83b86f0bb0087ba3da18db14e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a84f320ad48e8bfc9c292f8dde33c0593"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classmspass_1_1seismic_1_1_core_time_series.html">mspass::seismic::CoreTimeSeries</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#a84f320ad48e8bfc9c292f8dde33c0593">actual_output</a> ()=0</td></tr>
+<tr class="memdesc:a84f320ad48e8bfc9c292f8dde33c0593"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the actual output of the deconvolution operator.  <a href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#a84f320ad48e8bfc9c292f8dde33c0593">More...</a><br /></td></tr>
 <tr class="separator:a84f320ad48e8bfc9c292f8dde33c0593"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a078d038467a3be52d1e91e0d080d503e"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classmspass_1_1seismic_1_1_core_time_series.html">mspass::seismic::CoreTimeSeries</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#a078d038467a3be52d1e91e0d080d503e">inverse_wavelet</a> ()=0</td></tr>
 <tr class="memdesc:a078d038467a3be52d1e91e0d080d503e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a FIR represention of the inverse filter.  <a href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#a078d038467a3be52d1e91e0d080d503e">More...</a><br /></td></tr>
@@ -193,7 +196,8 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
   </tr>
 </table>
 </div><div class="memdoc">
-<p>\brif Return the actual output of the deconvolution operator.</p>
+
+<p>Return the actual output of the deconvolution operator. </p>
 <p>The actual output is defined as w^-1*w and is compable to resolution kernels in linear inverse theory. Although not required we would normally expect this function to be peaked at 0. Offsets from 0 would imply a bias. </p>
 
 <p>Implemented in <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_water_level_decon.html#a4eca007bc2d8ab0236e9deebeb1a1f8c">mspass::algorithms::deconvolution::WaterLevelDecon</a>, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_xcor_decon.html#a9eb03c46506f2a8960a16d74d3068a5e">mspass::algorithms::deconvolution::MultiTaperXcorDecon</a>, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_spec_div_decon.html#a435c55ed82fb753b3a6d6874c90e7a59">mspass::algorithms::deconvolution::MultiTaperSpecDivDecon</a>, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_least_square_decon.html#ab455f00f32185381de65f1e399d185ea">mspass::algorithms::deconvolution::LeastSquareDecon</a>, and <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon.html#a42ff385ce109add3972d5a8f6186878e">mspass::algorithms::deconvolution::GeneralIterDecon</a>.</p>
@@ -220,6 +224,35 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
 <div class="fragment"><div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;{</div>
 <div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    shapingwavelet=nsw;</div>
 <div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a051ad1d54899f0d64beb0249220c3405"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a051ad1d54899f0d64beb0249220c3405">&#9670;&nbsp;</a></span>get_shaping_wavelet()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html">ShapingWavelet</a> mspass::algorithms::deconvolution::ScalarDecon::get_shaping_wavelet </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>getter for <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html" title="Frequency domain shaping wavelet.">ShapingWavelet</a> stored with the operator. </p>
+<div class="fragment"><div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    {</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;        <span class="keywordflow">return</span> this-&gt;shapingwavelet;</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    };</div>
 </div><!-- fragment -->
 </div>
 </div>

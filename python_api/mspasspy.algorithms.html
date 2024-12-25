@@ -116,11 +116,18 @@
 <li class="toctree-l3"><a class="reference internal" href="#module-mspasspy.algorithms.MCXcorStacking">MCXcorStacking</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.MCXcorStacking.MCXcorPrepP"><code class="docutils literal notranslate"><span class="pre">MCXcorPrepP()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.MCXcorStacking.align_and_stack"><code class="docutils literal notranslate"><span class="pre">align_and_stack()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.MCXcorStacking.amplitude_relative_to_beam"><code class="docutils literal notranslate"><span class="pre">amplitude_relative_to_beam()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.MCXcorStacking.beam_align"><code class="docutils literal notranslate"><span class="pre">beam_align()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.MCXcorStacking.beam_coherence"><code class="docutils literal notranslate"><span class="pre">beam_coherence()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.MCXcorStacking.beam_correlation"><code class="docutils literal notranslate"><span class="pre">beam_correlation()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.MCXcorStacking.dbxcor_weights"><code class="docutils literal notranslate"><span class="pre">dbxcor_weights()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.MCXcorStacking.demean_residuals"><code class="docutils literal notranslate"><span class="pre">demean_residuals()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.MCXcorStacking.estimate_ensemble_bandwidth"><code class="docutils literal notranslate"><span class="pre">estimate_ensemble_bandwidth()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.MCXcorStacking.extract_initial_beam_estimate"><code class="docutils literal notranslate"><span class="pre">extract_initial_beam_estimate()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.MCXcorStacking.phase_time"><code class="docutils literal notranslate"><span class="pre">phase_time()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.MCXcorStacking.post_MCXcor_metrics"><code class="docutils literal notranslate"><span class="pre">post_MCXcor_metrics()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.MCXcorStacking.regularize_ensemble"><code class="docutils literal notranslate"><span class="pre">regularize_ensemble()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.MCXcorStacking.remove_incident_wavefield"><code class="docutils literal notranslate"><span class="pre">remove_incident_wavefield()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.MCXcorStacking.robust_stack"><code class="docutils literal notranslate"><span class="pre">robust_stack()</span></code></a></li>
 </ul>
 </li>
@@ -206,11 +213,14 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#module-mspasspy.algorithms.snr">snr</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.snr.EstimateBandwidth"><code class="docutils literal notranslate"><span class="pre">EstimateBandwidth()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.snr.FD_snr_estimator"><code class="docutils literal notranslate"><span class="pre">FD_snr_estimator()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.snr.arrival_snr"><code class="docutils literal notranslate"><span class="pre">arrival_snr()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.snr.broadband_snr_QC"><code class="docutils literal notranslate"><span class="pre">broadband_snr_QC()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.snr.filter_by_snr_bandwidth"><code class="docutils literal notranslate"><span class="pre">filter_by_snr_bandwidth()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.snr.save_snr_arrival"><code class="docutils literal notranslate"><span class="pre">save_snr_arrival()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.snr.snr"><code class="docutils literal notranslate"><span class="pre">snr()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.snr.visualize_qcdata"><code class="docutils literal notranslate"><span class="pre">visualize_qcdata()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#module-mspasspy.algorithms.window">window</a><ul>
@@ -455,7 +465,7 @@ have an arrival before this relative time.
 
 <dl class="py function">
 <dt class="sig sig-object py" id="mspasspy.algorithms.MCXcorStacking.align_and_stack">
-<span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.MCXcorStacking.</span></span><span class="sig-name descname"><span class="pre">align_and_stack</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ensemble</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beam</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">correlation_window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">correlation_window_keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['correlation_window_start',</span> <span class="pre">'correlation_window_end']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_beam</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">robust_stack_window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">robust_stack_window_keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['robust_window_start',</span> <span class="pre">'robust_window_end']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">robust_stack_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'dbxcor'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_stack_window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">robust_weight_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'robust_stack_weight'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_shift_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'arrival_time_correction'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_shift_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">abort_irregular_sampling</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">convergence</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">residual_norm_floor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="reference internal" href="../_modules/mspasspy/algorithms/MCXcorStacking.html#align_and_stack"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.MCXcorStacking.align_and_stack" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.MCXcorStacking.</span></span><span class="sig-name descname"><span class="pre">align_and_stack</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ensemble</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beam</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">correlation_window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">correlation_window_keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['correlation_window_start',</span> <span class="pre">'correlation_window_end']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_beam</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">robust_stack_window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">robust_stack_window_keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['robust_window_start',</span> <span class="pre">'robust_window_end']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">robust_stack_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'dbxcor'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_median_initial_stack</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_stack_window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">robust_weight_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'robust_stack_weight'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_shift_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'arrival_time_correction'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_shift_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">abort_irregular_sampling</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">convergence</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">residual_norm_floor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">demean_residuals</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="reference internal" href="../_modules/mspasspy/algorithms/MCXcorStacking.html#align_and_stack"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.MCXcorStacking.align_and_stack" title="Permalink to this definition"></a></dt>
 <dd><p>This function uses an initial estimate of the array stack passed as
 the <cite>beam</cite> argument as a seed to a robust algorithm that will
 align all the data in the input ensemble by cross-correlation with
@@ -529,7 +539,7 @@ algorithm can cleanly handle ensembles with a mix of high
 signal-to-noise data with pure junk and produce a clean
 stack that is defined.   Note recent experience has shown
 that with large, consistent ensembles the dbxcor robust
-estimate tends to converge to the focus on the signal closest
+estimate tends to converge to the focus on the signal closestbeam_correlation
 to the median stack.  The reason is that the median stack
 is always used as the initial estimator.   Hence, it can
 be thought of as a median stack that uses the full data
@@ -604,84 +614,82 @@ Metadata container a complaint is logged to the outputs.  An
 endtime inconsistency is treated the same way.  i.e. it is treated as
 a problem if the average ensemble endtime - the correlation window
 endtime is less than the <cite>time_shift_limit</cite>.</p>
+<p>A related issue is that arrival times estimated by this algorithm
+will be biased by the model mismatch with whatever signal was used
+as the initial beam estimae.  In dbxcor that was handled by forcing
+the user to manually pick the first arrival of the computed stack.
+That could be done if desired but would require you to devise a scheme
+to do that picking.   The default here is handled by the boolean
+parameter demean_residuals.  When True (the default) the vector
+of computed time shifts is corrected by the mean value of the group.
+Note that is common practice in regional tomography inversion anyway.
+For reasonable sized ensembles it will tend to yield data that when
+aligned by arrival time are all close to 0 relative time.</p>
 <p>Note the output stack normally spans a different time range than
 either the correlation or robust windows.   That property is defined
 by the <cite>output_stack_window</cite> argument.  See below for details.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>ensemble</strong> – ensemble of data to be aligned and stacked.</p>
-</dd>
-</dl>
-<p>This function requires all data to be on a relative time base.
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ensemble</strong> (<cite>TimeSeriesEnsemble</cite> with some fairly rigid requirements.
+(see above)) – ensemble of data to be aligned and stacked.
+This function requires all data to be on a relative time base.
 It will throw a MsPASSError exception if any live datum has a UTC time base.
 The assumption is all data have a time span that have the correlation
 and robust windows inside the data time range.   Both windows are
 carved from the inputs using the WindowData function which will kill
-any members that do not satisfy this requirement.
-:type ensemble:  <cite>TimeSeriesEnsemble</cite> with some fairly rigid requirements.
-(see above)
-:param beam:  Estimate of stack (may be just one representative member)
-used as the seed for initial alignment and stacking.
-:type beam:  <cite>TimeSeries</cite>.  Must have a length consistent with window
-parameters.
-:param correlation_window: Used to specify the time window for
+any members that do not satisfy this requirement.</p></li>
+<li><p><strong>beam</strong> (<cite>TimeSeries</cite>.  Must have a length consistent with window
+parameters.) – Estimate of stack (may be just one representative member)
+used as the seed for initial alignment and stacking.</p></li>
+<li><p><strong>correlation_window</strong> (<cite>TimeWindow</cite> to define explicitly.  If None
+(default) uses the recipe driven by <cite>correlation_window_keys</cite> (see above)) – Used to specify the time window for
 computing cross-correlations with the beam signal.   Closely linked to
-<cite>correlation_window_keys</cite> as described above.
-:type correlation_window:  <cite>TimeWindow</cite> to define explicitly.  If None
-(default) uses the recipe driven by <cite>correlation_window_keys</cite> (see above)
-:param correlation_window_keys:   optional pair of Metadata keys used to
+<cite>correlation_window_keys</cite> as described above.</p></li>
+<li><p><strong>correlation_window_keys</strong> – optional pair of Metadata keys used to
 extract cross-correlation window attributes from beam Metadata container.
 If defined component 0 is taken as the key for the start time of the window and
-component 1 the key for the end time.
-:type correlation_window_key:  iterable list containing two strings.
-Default is None which is taken to mean the span of the beam signal defines
-the cross-correlation window.
-:param window_beam:  if True the parsed cross-correlation window attributes
+component 1 the key for the end time.</p></li>
+<li><p><strong>window_beam</strong> – if True (default) the parsed cross-correlation window attributes
 are applied to the beam signal as well as the data before starting
-processing.   Default is False which means the beam signal is used
-directly in all cross-correlations.
-:param robust_stack_window: Provide an explicity <cite>TimeWindow</cite> used for
+processing.   If False the beam signal is used directly in all cross-correlations.
+Set False only if you can be sure secondary phases are not present in the
+unwindowed input.</p></li>
+<li><p><strong>robust_stack_window</strong> (If defined must be a <cite>TimeWindow</cite> object.
+If a None type (default) use the logic defined above to set this time window.) – Provide an explicity <cite>TimeWindow</cite> used for
 extracting the robust window for this algorithm.   Interacts with the
-robust_stack_window_keys argument as described above.
-:type robust_stack_window:  If defined must be a <cite>TimeWindow</cite> object.
-If a None type (default) use the logic defined above to set this time window.
-:param robust_stack_window_keys: specifies a pair of strings to be used
+robust_stack_window_keys argument as described above.</p></li>
+<li><p><strong>robust_stack_window_keys</strong> (<em>iterable list</em><em> of </em><em>two strings</em>) – specifies a pair of strings to be used
 as keys to extract the strart time (component 0) and end time (component 1)
-of the robust time window to use from the beam <cite>TimeSeries.
-:type robust_stack_window_keys: iterable list of two strings
-:param output_stack_window:  optional `TimeWindow</cite> to apply to the
+of the robust time window to use from the beam <a href="#id7"><span class="problematic" id="id8">`</span></a>TimeSeries.</p></li>
+<li><p><strong>output_stack_window</strong> (<cite>TimeWindow</cite> object.  If None (default) the range
+is derived from the ensemble member time ranges.) – optional <cite>TimeWindow</cite> to apply to the
 computed robust stack output.   Default returns a stack spanning the
-inner range of all live members of the ensemble.
-:type output_stack_window:  <cite>TimeWindow</cite> object.  If None (default) the range
-is derived from the ensemble member time ranges.
-:param robust_weight_key:  The robust weight used for each member to
+inner range of all live members of the ensemble.</p></li>
+<li><p><strong>robust_weight_key</strong> (<em>string</em>) – The robust weight used for each member to
 compute the robust stack output is posted to the Metadata container of
-each live member with this key.
-:type robust_weight_key:  string
-:param robust_stack_method:   keyword defining the method textract_input_beam_estimateo use for
+each live member with this key.</p></li>
+<li><p><strong>robust_stack_method</strong> (<em>string  - must be one</em><em> of </em><em>options listed above.</em>) – keyword defining the method textract_input_beam_estimateo use for
 computing the robust stack.  Currently accepted value are:
-“dbxcor” (default) and “median”.
-:type robust_stack_method:  string  - must be one of options listed above.
-:param time_shift_key:  the time shift applied relative to the starting
+“dbxcor” (default) and “median”.</p></li>
+<li><p><strong>use_median_initial_stack</strong> – If True (default) use the median stack as the initial
+estimate of the stack in the first iterative pass.  When False the signal in the
+<cite>TimeSeries</cite> passed via the “beam” argument is used for the initial estimate.</p></li>
+<li><p><strong>time_shift_key</strong> (<em>string</em><em>  (</em><em>default &quot;arrival_time_correction&quot;</em><em>)</em>) – the time shift applied relative to the starting
 point is posted to each live member with this key.  It is
 IMPORTANT to realize this is the time for this pass.  If thisextract_input_beam_estimatefunctions
 is applied more than once and you reuse this key the shift from the
 previous run will be overwritten.  If you need to accumulate shifts
-it needs to be handled outside this function.
-:type time_shift_key:  string  (default “arrival_time_correction”)
-:param convergence:   fractional change in robust stack estimates in
+it needs to be handled outside this function.</p></li>
+<li><p><strong>convergence</strong> (<em>real number</em><em> (</em><em>default 0.001</em><em>)</em>) – fractional change in robust stack estimates in
 iterative loop to define convergence.  This should not be changed
-unless you deeply understand the algorithm.
-:type convergence:  real number (default 0.001)</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>time_shift_limit</strong> – </p></li>
-<li><p><strong>abort_irregular_sampling</strong> – boolean that controls error</p></li>
-</ul>
-</dd>
-</dl>
-<p>handling of data with irregular sample rates.  This function uses
+unless you deeply understand the algorithm.</p></li>
+<li><p><strong>time_shift_limit</strong> (<em>float</em>) – when time shifting data with the cross
+correlation algorithm any estimated time shift larger than
+this value will be truncated to this value with the sign
+of th shift preserved.</p></li>
+<li><p><strong>abort_irregular_sampling</strong> (<em>boolean</em>) – boolean that controls error
+handling of data with irregular sample rates.  This function uses
 a generous test for sample rate mismatch.  A mismatch is
 detected only if the computed time skew over the time span of
 the input beam signal is more than 1/2 of the beam sample interval
@@ -690,27 +698,62 @@ abort with a ValueError exception if any ensemble member fails the
 sample interval test.  If False (the default) offending ensemble
 members are killed and a message is posted.  Note the actual
 ensemble is modified so the return may have fewer data live
-than the input when this mode is enabled.
-:type abort_irregular_sampling:  boolean
-:param residual_norm_floor: floor on residuals used to compute dbxcor weight
-function.  See docstring for <cite>dbxcor_weights</cite> for details.
-:type residual_norm_floor:   float (default 0.01)</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>tuple with 0 containing the original ensemble but time</p>
+than the input when this mode is enabled.</p></li>
+<li><p><strong>residual_norm_floor</strong> (<em>float</em><em> (</em><em>default 0.01</em><em>)</em>) – floor on residuals used to compute dbxcor weight
+function.  See docstring for <cite>dbxcor_weights</cite> for details.</p></li>
+<li><p><strong>demean_residuals</strong> – boolean controlling if the computed shifts
+are corrected with a demean operation.   Default is True which
+means the set of all time shifts computed by this function will
+have zero mean.</p></li>
+</ul>
 </dd>
-</dl>
-<p>shifted by cross-correlation.   Failed/discarded signals for the
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>tuple with 0 containing the original ensemble but time
+shifted by cross-correlation.   Failed/discarded signals for the
 stack are not killed but should be detected by not having the
 time shift Metadata value set.   component 1 is the computed
 stack windowed to the range defined by <cite>stack_time_window</cite>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.algorithms.MCXcorStacking.amplitude_relative_to_beam">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.MCXcorStacking.</span></span><span class="sig-name descname"><span class="pre">amplitude_relative_to_beam</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beam</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize_beam</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/MCXcorStacking.html#amplitude_relative_to_beam"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.MCXcorStacking.amplitude_relative_to_beam" title="Permalink to this definition"></a></dt>
+<dd><p>Compute and return amplitude relative to the stack (beam).</p>
+<p>dbxcor computed a useful metric of amplitude relative to the beam
+(stack) as <cite>(d dot beam)/N</cite> where “dot” means vector dot product with
+between the sample vectbeam_coherence(d,beam,window=None,filter=True)ors of b and beam and N is vector size.   The formula
+requires the beam to be normalized so its L2 norm is 1.  By default it assumes
+that but that can be overriden with the normalize_beam argument.
+Default assumes d and beam cover the same time span.  If they aren’t
+the minimum overlap of the two signals is used.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>d</strong> (<cite>TimeSeries</cite> assumed - will throw an exception if it isn’t) – datum for which the relative amplitude is to be computed.</p></li>
+<li><p><strong>beam</strong> (<cite>TimeSeries</cite> assumed  - will throw an exception if it isn’t) – stack with which it is to be compared.</p></li>
+<li><p><strong>normalize_beam</strong> (<em>boolean</em>) – If True (default) the windowed beam vector
+will be normalized to be a unit vector (i.e. L2 norm of 1.0) for
+the calculation.  If False that will not be done and the vector
+in beam will be used directly.   Use False ONLY if windowing is off
+and beam is already normalized.   A minor efficiency gain is possible
+if beam is already normalized.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>float value of amplitude.  A negative number indicates an error.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="mspasspy.algorithms.MCXcorStacking.beam_align">
-<span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.MCXcorStacking.</span></span><span class="sig-name descname"><span class="pre">beam_align</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ensemble</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beam</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_shift_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/MCXcorStacking.html#beam_align"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.MCXcorStacking.beam_align" title="Permalink to this definition"></a></dt>
-<dd><p>Aligns ensemble members using signal defined by beam (arg1) argument.
-Computes cross correlation between each ensemble member and the beam.
+<span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.MCXcorStacking.</span></span><span class="sig-name descname"><span class="pre">beam_align</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ensemble</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beam</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_shift_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/MCXcorStacking.html#beam_align"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.MCXcorStacking.beam_align" title="Permalink to this definition"></a></dt>
+<dd><p>Aligns ensemble members using signal defined by beam (arg1) argument.</p>
+<p>Computes cross correlation between each ensemble member and the beam.
+An optional window can be specified that is applied to each ensemble
+member before computing the cross correlation function.
 All live ensemble members are shifted to align with time base of the
 beam.   Note that can be a huge shift if the beam is relative and
 the ensemble members are absolute time.  It should work in that context
@@ -719,39 +762,72 @@ teleseismic phase alignment where the expectation is all the ensemble
 members and the beam are in relative time with 0 defined by some
 estimate of the phase arrival time.   Will correctly handle irregular
 window sizes between ensemble members and beam signal.</p>
+<p>It is important to recognize that if the window option is used
+it is applied only internally.   In that situation the output
+will be time shifted but the number of samples of each member
+will be the same.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>ensemble</strong> – ensemble of data to be correlated with</p>
-</dd>
-</dl>
-<p>beam data.
-:type ensemble:  assume to be a TimeSeriesEnsemble
-:param beam:  common signal to correlate with ensemble members.
-:type beam:  assumed to be a TimeSeries object
-:param time_shift_limit:  ceiling on allowed time shift for
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ensemble</strong> (<em>assumed to be a TimeSeriesEnsemble</em>) – ensemble of data to be correlated with
+beam data.</p></li>
+<li><p><strong>beam</strong> (<em>assumed to be a TimeSeries object</em>) – common signal to correlate with ensemble members.</p></li>
+<li><p><strong>window</strong> (<a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.basic.TimeWindow" title="mspasspy.ccore.algorithms.basic.TimeWindow"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.algorithms.basic.TimeWindow</span></code></a>) – optional window to apply to ensemble members
+before computing cross correlation.</p></li>
+<li><p><strong>time_shift_limit</strong> (<em>float</em><em> (</em><em>may abort if you use an int
+because the value can to sent to a C++ method that it type
+sensitive</em><em>)</em>) – ceiling on allowed time shift for
 ensemble members.   Any computed shift with absolute value
 larger than this value will be reset to this value with the
 sign of the shift preserved.   (i.e. a negative lag will
 be set to the negative of this number).  The default is 10.0
 which is large for most data more or less making this an optional
-parameter.
-:type time_shift_limit: float (may abort if you use an int
-because the value can to sent to a C++ method that it type
-sensitive)
-:return:   copy of ensemble with the members time shifted to align with
-the time base of beam.</p>
+parameter.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>copy of ensemble with the members time shifted to align with
+the time base of beam.   Note if a window is defined it is not
+applied to the ensemble members.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.algorithms.MCXcorStacking.beam_coherence">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.MCXcorStacking.</span></span><span class="sig-name descname"><span class="pre">beam_coherence</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beam</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../_modules/mspasspy/algorithms/MCXcorStacking.html#beam_coherence"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.MCXcorStacking.beam_coherence" title="Permalink to this definition"></a></dt>
+<dd><p>Compute time-domain coherence of a datum relative to the stack.</p>
+<p>Time domain coherence is a measure of misfit between a signal and a
+a reference signal (normally a stack).   The formula is
+1.0 - norm(residual)/norm(beam) where residual=d-beam.</p>
+<p>This function has an optional window parameter that computes the
+coherence with a specified time window.  By default the entire
+d and beam signals are used.   The default is done cautiously by
+using windowing to the mininum overlap of the two signals (if they differ)</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.algorithms.MCXcorStacking.beam_correlation">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.MCXcorStacking.</span></span><span class="sig-name descname"><span class="pre">beam_correlation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beam</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aligned</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../_modules/mspasspy/algorithms/MCXcorStacking.html#beam_correlation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.MCXcorStacking.beam_correlation" title="Permalink to this definition"></a></dt>
+<dd><p>Computes normalized peak cross-correlation value a datum with an array stack.</p>
+<p>Cross-correlation is a heavily used concept in seismology.   This function
+is a specialized version designed to compute a peak cross correlation
+value between a datum and an array stack.  The normal use is to call this
+function in a loop and post the results to each live member of the
+ensemble used to compute the beam.   Note it is assumed beam and d
+are filtered in the same passband.   Windowing is bombproof</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="mspasspy.algorithms.MCXcorStacking.dbxcor_weights">
-<span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.MCXcorStacking.</span></span><span class="sig-name descname"><span class="pre">dbxcor_weights</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ensemble</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stack</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">residual_norm_floor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/MCXcorStacking.html#dbxcor_weights"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.MCXcorStacking.dbxcor_weights" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.MCXcorStacking.</span></span><span class="sig-name descname"><span class="pre">dbxcor_weights</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ensemble</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stack</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">residual_norm_floor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/MCXcorStacking.html#dbxcor_weights"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.MCXcorStacking.dbxcor_weights" title="Permalink to this definition"></a></dt>
 <dd><p>Computes the robust weights used originally in dbxcor for each
 member of ensemble.   Result is returned in a parallel numpy
 array (i.e. return[i] is computed weight for ensemble.member[i])</p>
 <p>This function is made for speed and has no safeties.  It assumes
 all the members of ensemble are the same and it is the same length
 as stack.  It will throw an exception if that is violated so callers
-should guarantee that happens.</p>
+should guarantee that does not happen.</p>
 <p>This function adds a feature not found in the original Pavlis and Vernon(2011)
 paper via the <cite>residual_norm_floor</cite> argument.   Experience with this algorithm
 showed it tends to converge to a state with very high weights on one or two
@@ -761,9 +837,16 @@ has the undesirable effect of causing a strong initial value dependence
 and suboptimal noise reduction.  This argument handles that by not allowing
 the L2 norm of the residual to fall below a floor computed from the
 ratio ||r||/||d||.   i.e. if ||r|| &lt; residual_norm_floor*||d|| it is
-set to the value passed as <cite>residual_norm_floor</cite>.</p>
+set to the value passed as <cite>residual_norm_floor</cite>.  Note that setting
+this to 1.0 effectively turns off the residual norm term in the
+weight equation which I now recognize is the cross-correlation of the
+beam and datum at zero lag.  That is true, however, only if the
+ensemble members are all time aligned perfectly.</p>
 <p>Returns a numpy vector of weights.  Any dead data will have a weight of
--1.0 (test for negative is sufficient).</p>
+-1.0 (test for negative is sufficient).  In addition the function has a
+safety to handle receiving a vector of all zeros.  If the function detects
+all 0s for a datum marked live it will silently return a weight of 0
+for that datum.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>ensemble</strong> – <cite>TimeSeriesEnsemble</cite> of data from which weights are to</p>
@@ -777,11 +860,88 @@ will depend on what ensemble actually is.
 The method returns robust weights relative to the vector of data in
 this object.
 :type stack:  <cite>TimeSeries</cite>.
-:param residual_norm_floor:   floor in the ratio norm2(r)/norm2(d)
-used as described above.
+:param residual_norm_floor:  nondimensional floor in the ratio norm2(r)/norm2(d)
+used as described above.  Default is 0.1 which is reasonable for high snr
+signals.   Data with irregular quality can profit from smaller values of this parameter.
 :type residual_norm_floor:  float
 :return: numpy vector of weights parallel with ensemble.member.  Dead
 members will have a negative weight in this vector.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.algorithms.MCXcorStacking.demean_residuals">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.MCXcorStacking.</span></span><span class="sig-name descname"><span class="pre">demean_residuals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ensemble</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">measured_time_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Ptime_xcor'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_time_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Ptime'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">residual_time_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Presidual'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">corrected_measured_time_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Pmeasured'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">center_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'median'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">center_estimate_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Presidual_bias'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kill_on_failure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/MCXcorStacking.html#demean_residuals"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.MCXcorStacking.demean_residuals" title="Permalink to this definition"></a></dt>
+<dd><p>Residuals measured by any method are always subject to a bias
+from Earth structure and earthquake location errors.   With the
+MsPASS multichannel xcor algorithm there is an additional bias
+inherited from the choice of the initial beam estimate that can
+produce an even larger bias.   This algorithm id designed to
+process an ensemble to remove and estimate of center from the
+residuals stored in the Metadata containers of the ensemble members.</p>
+<p>The arguments can be used to change the keys used to access
+attributes needed to compute the residual and store the result.
+The formula is trivial an with kwarg symbols is:</p>
+<blockquote>
+<div><p>residual_time_key = measured_time_key - model_time_key - bias</p>
+</div></blockquote>
+<p>where bias is the estimate of center computed from the vector
+of (uncorrected) residual extracted from the ensemble members.
+Each member of the ensemble where the measured and model times
+are defined will have a value set for the residual_time_key in
+the output.  The actual estimate of bias will be posted to the
+output in the ensemble’s Mewtadata container with the key
+defined by the argument “center_estimate_key”.</p>
+<p>Note the corrected (by estimate of center that is) measured
+phase arrival time will be stored in each member with the key
+defined by the “corrected_measured_time_key” argument.  By default
+that is a different key than measured_time_key but some many want
+to make measured_time_key==corrected_measured_time_key to reduce
+complexity.  That is allowed but is a choice not a requirement.
+Again, default will make a new entry for the corrected value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ensemble</strong> (<a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeriesEnsemble" title="mspasspy.ccore.seismic.TimeSeriesEnsemble"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.TimeSeriesEnsemble</span></code></a>
+or <a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.SeismogramEnsemble" title="mspasspy.ccore.seismic.SeismogramEnsemble"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.SeismogramEnsemble</span></code></a>.  The function
+will throw a ValueError exception if this require arg is any other
+type.) – ensemble object to be processed.   Assumes
+the members have defined values for the keys defined by
+the “measured_time_key” and “model_time_key”.</p></li>
+<li><p><strong>measured_time_key</strong> (<em>string</em><em> (</em><em>default &quot;Ptime_xcor&quot;</em><em>)</em>) – key to use to fetch the measured arrival
+time of interest from member Metadata containers.</p></li>
+<li><p><strong>model_time_key</strong> (<em>string</em><em> (</em><em>default &quot;Ptime&quot;</em><em>)</em>) – key to use to fetch the arrival time computed
+from an earth model and location estimate.  Each member is assumed
+to have this value defined.</p></li>
+<li><p><strong>residual_time_key</strong> (<em>string</em><em> (</em><em>default &quot;Presidual&quot;</em><em>)</em>) – key use to store the output demeaned
+residual.   Be warned that this will overwrite a previously stored value
+if the key was previously defined for something else.  That can,
+however, be a useful feature if the same data are reprocessed.</p></li>
+<li><p><strong>corrected_mesured_time_key</strong> – key to use to save the bias
+corrected measured time estimate.   This value is just the
+input measured time value minus the computed bias.</p></li>
+<li><p><strong>center_method</strong> (<em>string</em><em> (</em><em>default &quot;median&quot;</em><em>)</em>) – method of center method to use to compute
+bias correction from vector of residuals.  Valid values are: “median”
+to use the median and “mean” (“average” is also accepted an is treated as “mean”)
+to use the average/mean value operator.</p></li>
+<li><p><strong>center_estimate_key</strong> (<em>string</em><em> (</em><em>default &quot;Presidual_bias&quot;</em><em>)</em>) – key to use to post the estimated center of
+the vector of residuals.  Note that value is posted to the ensemble’s
+Metadata container, not the members.  Be warned, however, that
+currentlyh when ensemble data are saved this value will be posted to
+all members before saving. Be sure this name does not overwrite
+some other desired member Metdata when that happens.</p></li>
+<li><p><strong>kill_on_failure</strong> – boolean controlling what the function does
+to the output ensemble if the algorithm totally fails.  “totally fails”
+in this case means it the number of residuals it could compute was
+less than or equal 1.  If set True the output will be killed.
+When False it will be returned with no values set for the
+keys defined by “residual_time_key” and “center_estimate_key”.
+Default is False.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>edited copy of input ensemble altering only Metadata containers</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
@@ -870,6 +1030,75 @@ is returned if the algorithm failed.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.algorithms.MCXcorStacking.phase_time">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.MCXcorStacking.</span></span><span class="sig-name descname"><span class="pre">phase_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phase_time_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Ptime'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_shift_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'arrival_time_correction'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../_modules/mspasspy/algorithms/MCXcorStacking.html#phase_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.MCXcorStacking.phase_time" title="Permalink to this definition"></a></dt>
+<dd><p>Small generic function to return a UTC arrival time combining an initial arrival
+time estimate (normally a model based time) defined by the “phase_time_key”
+metadata value extracted from d and the time shift computed by align_and_stack
+(or any other algorithm that computes relative time shifts) and set with the
+Metadata key defined by the “time_shift_key” argment.  The defaults work for
+P phase times computed by <cite>MCXcorPrepP</cite> and shifts computed by
+<cite>align_and_stack</cite>.   The computation here is trivial (just a difference) but
+the fluff is all the safeties in handling missing values.  Returns -1.0
+if any of the requried keys are missing.  Returns -2.0 if d is not defined
+as UTC.  That is basically a reminder this function only makes sense for
+data with a UTC time standard.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.algorithms.MCXcorStacking.post_MCXcor_metrics">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.MCXcorStacking.</span></span><span class="sig-name descname"><span class="pre">post_MCXcor_metrics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beam</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metrics</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'amplitude':</span> <span class="pre">'beam_relative_amplitude',</span> <span class="pre">'arrival_time':</span> <span class="pre">'Ptime_xcor',</span> <span class="pre">'coherence':</span> <span class="pre">'beam_coherence',</span> <span class="pre">'cross_correlation':</span> <span class="pre">'beam_correlation'}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phase_time_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Ptime'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_shift_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'arrival_time_correction'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><span class="pre">TimeSeries</span></a></span></span><a class="reference internal" href="../_modules/mspasspy/algorithms/MCXcorStacking.html#post_MCXcor_metrics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.MCXcorStacking.post_MCXcor_metrics" title="Permalink to this definition"></a></dt>
+<dd><p>Computes and posts a set of standard QC metrics for result of multichannel cross-correlation
+algorithm.</p>
+<p>This function should be thought of as a post-processing function to standardize a set of
+useful calculations from the output of the multichannel cross-correlation algorithm.
+The default is set up for post processing teleseismic P wave data but with changes to the
+arguments it should be possible to use it for any teleseismic body wave phase.</p>
+<p>What is computed is controlled by the input parameter “metrics”.   “metrics” is
+expected to be a dictionary with the keys defining the concept of what is to be
+computed and posted and a “value” being the actual key to use for posting the
+computed value.  Defaults for “metrics” are as follows the dictionary key
+in quotes at the start of each paragraph:</p>
+<ul class="simple">
+<li><p>“arrival_time”  - compute arrival time from posted initial time estimate and
+correlation time shift computed by <cite>align_and_stack</cite>.  Uses the “phase_time_key”
+and “time_shift_key” to fetch required values.  Default works for Pwave
+data processed with <cite>align_and_stack</cite>.  Changes needed for other phases.</p></li>
+<li><p>“cross_correlation” - compute cross correlation with respect to beam</p></li>
+<li><p>“coherence” - compute time domain coherence with respect to beam</p></li>
+<li><p>“amplitude” - compute amplitude of d relative to the beam.</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>d</strong> (<cite>TimeSeries</cite>) – datum to be processed</p></li>
+<li><p><strong>beam</strong> (<cite>TimeSeries</cite>) – array stack (beam) output of <cite>align_and_stack</cite></p></li>
+<li><p><strong>metrics</strong> (<em>python dictionary with one</em><em> or </em><em>more</em><em> of </em><em>the keys defined above.</em>) – defines what metrics should be computed ans posted
+(see above for options)</p></li>
+<li><p><strong>window</strong> (<cite>TimeWindow</cite> or None (default)) – optional time window to use for computing specified metric(s).
+Windowing is normally applied for cross-correlation, coherence, and amplitude
+calculations (it is ignored for the time computation).  If it is not
+defined behavior depends on the algorithm as the object is passed directly
+to functions used to compute correlation, coherence, and amplitude metrics.</p></li>
+<li><p><strong>phase_time_key</strong> (string (default “Ptime” which is default expectation used
+in <cite>align_and_stack</cite>)) – key used to fetch the initial phase time used for
+initial alignment for <cite>align_and_stack</cite> input.   The assumption is the
+content is defined in d and when fetch is an epoch time defining the
+initial time shift for the given phase.  Note it could be either a measured
+or model-based arrival time.</p></li>
+<li><p><strong>time_shift_key</strong> (string (default “arrival_time_correction” is the key
+used to post the cross-correlation shifts in <cite>align_and_stack</cite>)) – key used to store the relative time shifts computed
+by <cite>align_and_stack</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>copy of d <cite>TimeSeries</cite> with the requested metrics posted to the
+Metadata container of the output.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="mspasspy.algorithms.MCXcorStacking.regularize_ensemble">
 <span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.MCXcorStacking.</span></span><span class="sig-name descname"><span class="pre">regularize_ensemble</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ensemble</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">starttime</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">endtime</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pad_fraction_cutoff</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeriesEnsemble" title="mspasspy.ccore.seismic.TimeSeriesEnsemble"><span class="pre">TimeSeriesEnsemble</span></a></span></span><a class="reference internal" href="../_modules/mspasspy/algorithms/MCXcorStacking.html#regularize_ensemble"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.MCXcorStacking.regularize_ensemble" title="Permalink to this definition"></a></dt>
 <dd><p>Secondary function to regularize an ensemble for input to robust
@@ -879,8 +1108,55 @@ range startime:endtime.  Silently drops dead data.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.algorithms.MCXcorStacking.remove_incident_wavefield">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.MCXcorStacking.</span></span><span class="sig-name descname"><span class="pre">remove_incident_wavefield</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beam</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/MCXcorStacking.html#remove_incident_wavefield"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.MCXcorStacking.remove_incident_wavefield" title="Permalink to this definition"></a></dt>
+<dd><p>Remove incident wavefield for teleseismic P wave data using a beam estimate.</p>
+<p>In imaging of S to P conversion with teleseimic P wave data a critical step
+is removing the incident wavefield.   The theoretical reason is described in
+multiple publications on S to P imaging theory.  This function implements
+a novel method using the output of <cite>align_and_stack</cite> to remove the
+incident wavefield.   The approach make sense ONLY IF d is a member of the
+ensemble used to compute beam and is the longitudinal component estimate
+for a P phase.  The best choice for that is the free surface transformation
+operator but in could be used for LQT or even the very crude RTZ
+transformation.</p>
+<p>The actual operation is very simple:  the overlaping section of beam
+and d is determined.  The algorthm then computes a scaling factor for
+beam as the dot product of beam and d in the common time range.
+That number is used to scale the beam which is then subtracted
+(in the overlapping time range) from d.  There are several key
+assumptions this algorithm makes about the input that should be
+kept in mind before using it:</p>
+<ol class="arabic simple">
+<li><p>d is implicitly expected to span a longer or a least
+equal span to the beam time range.</p></li>
+<li><p>beam should always be tapered to prevent an offset at the
+front and end when it is subtracted from d.</p></li>
+<li><p>beam should be normalized so it L2 norm is 1.0.  Note that
+should be the taper beam not the beam cut with WindowData.
+That is not computed in this function for efficiency as normal
+use would apply the same beam estimate to all live ensemble
+members.</p></li>
+<li><p>Because this is assumed to be used at deep in a processing
+chain it has no safties.   d and beam and assumped to
+be TimeSeries objects.  The only safety is that if d or
+beam are marked dead it does nothing but return d.</p></li>
+</ol>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>d</strong> (<cite>TimeSeries</cite>) – datum from which beam is to be subtracted
+(Assumed to have a time span containing the time span of beam)</p></li>
+<li><p><strong>beam</strong> – windowed and tapered output stack from
+<cite>align_and_stack</cite>.  Assumed to have L2 norm of 1.0.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="mspasspy.algorithms.MCXcorStacking.robust_stack">
-<span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.MCXcorStacking.</span></span><span class="sig-name descname"><span class="pre">robust_stack</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ensemble</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'dbxcor'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stack0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stack_md</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timespan_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'ensemble_inner'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pad_fraction_cutoff</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">residual_norm_floor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><span class="pre">TimeSeries</span></a></span></span><a class="reference internal" href="../_modules/mspasspy/algorithms/MCXcorStacking.html#robust_stack"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.MCXcorStacking.robust_stack" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.MCXcorStacking.</span></span><span class="sig-name descname"><span class="pre">robust_stack</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ensemble</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'dbxcor'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stack0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stack_md</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timespan_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'ensemble_inner'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pad_fraction_cutoff</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">residual_norm_floor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="reference internal" href="../_modules/mspasspy/algorithms/MCXcorStacking.html#robust_stack"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.MCXcorStacking.robust_stack" title="Permalink to this definition"></a></dt>
 <dd><p>Generic function for robust stacking live members of a <cite>TimeSeriesEnsemble</cite>.
 An optional initial stack estimate can be used via tha stack0 argument.
 The function currently supports two methods:  “median” for a median
@@ -928,49 +1204,54 @@ that datum will be ignored.   Otherwise if there are undefined
 values they will be zero padded.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>ensemble</strong> – input data to be stacked.   Should all be in</p>
-</dd>
-</dl>
-<p>relative time with all members having the same relative time span.
-:type ensemble:  TimeSeriesEnsemble
-:param method: Defines a name string of the method to be used to
-compute the stack.
-:type method:  string.  Currently must be one of two values or the
-function will abort:   “median” or “dbxcor”.  As the names imply
-“median” will cause the function to return the median of the sample
-vectors while “dbxcor” applies the dbxcor method.
-:param stack0:  optional initial estimate for stack.  Estimators
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ensemble</strong> (<a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeriesEnsemble" title="mspasspy.ccore.seismic.TimeSeriesEnsemble"><em>TimeSeriesEnsemble</em></a>) – input data to be stacked.   Should all be in
+relative time with all members having the same relative time span.</p></li>
+<li><p><strong>method</strong> (<em>string.  Currently must be one</em><em> of </em><em>two values</em><em> or </em><em>the
+function will abort:   &quot;median&quot;</em><em> or </em><em>&quot;dbxcor&quot;.  As the names imply
+&quot;median&quot; will cause the function to return the median</em><em> of </em><em>the sample
+vectors while &quot;dbxcor&quot; applies the dbxcor method.</em>) – Defines a name string of the method to be used to
+compute the stack.</p></li>
+<li><p><strong>stack0</strong> (<em>TimeSeries.   Note the time span</em><em> of </em><em>this optional input
+must be the same</em><em> or </em><em>wider than the ensemble member range defined by
+the</em><em> (</em><em>internal to this module</em><em>) </em><em>validate_ensemble function</em><em> or </em><em>the
+return will be return as a copy</em><em> of </em><em>this TimeSeries marked dead.
+Default for this argument is None which means the median will be
+used for the initial stack for dbxcor</em>) – optional initial estimate for stack.  Estimators
 other than median I know of use a loss function for downweighting
 members of the stack that do not match the stack as defined by
 some misfit metric.   This argument can be used to input an optional
 starting estimate of the stack for the dbxcor method.  By default it
 uses the median as the starting point, but this can be used to
 input something else.   Note the function will silently ignore this
-argument if method == “median”.
-:type stack0:  TimeSeries.   Note the time span of this optional input
-must be the same or wider than the ensemble member range defined by
-the (internal to this module) validate_ensemble function or the
-return will be return as a copy of this TimeSeries marked dead.
-Default for this argument is None which means the median will be
-used for the initial stack for dbxcor
-:param stack_md:   optional Metadata container to define the
-content of the stack output.  By default the output will have only
-Metadata that duplicate required internal attributes (e.g. t0 and npts).
-An exception is if stack0 is used the Metadata of that container will
-be copied and this argument will be ignored.
-:type stack_md:  Metadata container or None.  If stack0 is defined
+argument if method == “median”.</p></li>
+<li><p><strong>stack_md</strong> (<em>Metadata container</em><em> or </em><em>None.  If stack0 is defined
 this argument is ignored.   Otherwise it should be used to add
 whatever Metadata is required to provide a tag that can be used to
 identify the output.  If not specified the stack Metadata
-will be only those produce from default construction of a
-TimeSeries.  That is almost never what you want.   Reiterate,
-however, that if stack0 is defined the output stack will be a
-clone of stack0 with possible modifications of time and data
-range attributes and anything the stack algorithm posts.
-:param residual_norm_floor: floor on residuals used to compute dbxcor weight
+will be only those produce from default construction</em><em> of </em><em>a
+TimeSeries.  That is almost never what you want.   Reiterate</em><em>,
+</em><em>however</em><em>, </em><em>that if stack0 is defined the output stack will be a
+clone</em><em> of </em><em>stack0 with possible modifications</em><em> of </em><em>time and data
+range attributes and anything the stack algorithm posts.</em>) – optional Metadata container to define the
+content of the stack output.  By default the output will have only
+Metadata that duplicate required internal attributes (e.g. t0 and npts).
+An exception is if stack0 is used the Metadata of that container will
+be copied and this argument will be ignored.</p></li>
+<li><p><strong>residual_norm_floor</strong> (<em>float</em><em> (</em><em>default 0.01</em><em>)</em>) – floor on residuals used to compute dbxcor weight
 function.  See docstring for <cite>dbxcor_weights</cite> for details.  Ignored
-unless method is “dbxcor”
-:type residual_norm_floor:   float (default 0.01)</p>
+unless method is “dbxcor”</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>tuple containing the requested stack as component 0.  The
+stack is returned as a <cite>TimeSeries</cite>  with optional Metadata copied
+from the (optional) stack_md argument.   Component 1 is defined only
+for the dbxcor method in which case it a numpy array containing th e
+robust weights returned by the dbxcor algorithm.  If the method is
+set to “median” component 1 will be returned as a None type.</p>
+</dd>
+</dl>
 </dd></dl>
 
 </section>
@@ -1056,12 +1337,16 @@ same name.</p>
 <p>This file contains a class definition for a wrapper for
 the suite of scalar deconvolution methods supported by mspass.
 It demonstrates the concept of a processing object created
-by wrapping C code.</p>
+by wrapping C code.  It also contains a top-level function
+that is a pythonic interface that meshes with MsPASS schedulers
+for parallel processing called <cite>RFdecon</cite>.   <cite>RFdecon</cite> is a
+wrapper for all single-station methods.   It cannot be used for
+array methods.</p>
 <p>Created on Fri Jul 31 06:24:10 2020</p>
 <p>&#64;author: Gary Pavlis</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="mspasspy.algorithms.RFdeconProcessor.RFdecon">
-<span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.RFdeconProcessor.</span></span><span class="sig-name descname"><span class="pre">RFdecon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'LeastSquares'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pf</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'RFdeconProcessor.pf'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wavelet</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noisedata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wcomp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncomp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'RFdecon'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dryrun</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/RFdeconProcessor.html#RFdecon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.RFdeconProcessor.RFdecon" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.RFdeconProcessor.</span></span><span class="sig-name descname"><span class="pre">RFdecon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">engine</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'LeastSquares'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pf</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'RFdeconProcessor.pf'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wavelet</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noisedata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wcomp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncomp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">QCdocument_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'RFdecon_properties'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'RFdecon'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dryrun</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/RFdeconProcessor.html#RFdecon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.RFdeconProcessor.RFdecon" title="Permalink to this definition"></a></dt>
 <dd><p>Use this function to compute conventional receiver functions
 from a single three component seismogram. In this function,
 an instance of wrapper class RFdeconProcessor will be built and
@@ -1092,32 +1377,40 @@ setting the save_history argument to True.   When enable one should
 normally set a unique id for the algid argument.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>d</strong> – Seismogram input data.  See notes above about</p>
-</dd>
-</dl>
-<p>time span of these data.
-:param alg: The algorithm to be applied, used for initializing</p>
-<blockquote>
-<div><p>a RFdeconProcessor object</p>
-</div></blockquote>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pf</strong> – The pf file to be parsed, used for inititalizing a
-RFdeconProcessor</p></li>
-<li><p><strong>wavelet</strong> – vector of doubles (numpy array or the
+<li><p><strong>d</strong> (Must be a <cite>Seismogram</cite> object or the function will throw
+a TypeError exceptionl) – Seismogram input data.  See notes above about
+time span of these data.</p></li>
+<li><p><strong>engine</strong> (None or an instance of <cite>RFdeconProcessor</cite>.
+When None (default) an instance of an <cite>RFdeconProcessor</cite> is
+created on entry based on the keyword defined by the <cite>alg</cite>
+argument.   The algorithm built into the instance of
+<cite>RFdeconProcessor</cite> is used if engine is not null.) – optional instance of a RFdeconProcessor
+object.   By default the function instantiates an instance of
+a processor for each call to the function.   For algorithms
+like the multitaper based algorithms with a high initialization
+cost performance will improve by sending an instance to the
+function via this argument.</p></li>
+<li><p><strong>alg</strong> – The algorithm to be applied, used for initializing
+a RFdeconProcessor object.  Ignored if <cite>engine</cite> is used.</p></li>
+<li><p><strong>pf</strong> (<em>string defining an absolute path for the file name</em><em>
+or </em><em>a path relative to a directory defined by PFPATH.</em>) – The pf file to be parsed, used for inititalizing a
+RFdeconProcessor.  Ignored if <cite>engine</cite> is used.</p></li>
+<li><p><strong>wavelet</strong> (<em>None</em><em> or </em><em>an iterable vector container</em><em>
+(</em><em>in MsPASS that means a python array</em><em>, </em><em>a numpy array</em><em>, or </em><em>a DoubleVector</em><em>)</em>) – vector of doubles (numpy array or the
 std::vector container internal to TimeSeries object) defining
 the wavelet to use to compute deconvolution operator.
 Default is None which assumes processor was set up to use
 a component of d as the wavelet estimate.</p></li>
-<li><p><strong>noisedata</strong> – vector of doubles (numpy array or the
+<li><p><strong>noisedata</strong> (<em>None</em><em> or </em><em>an iterable vector container</em><em>
+(</em><em>in MsPASS that means a python array</em><em>, </em><em>a numpy array</em><em>, or </em><em>a DoubleVector</em><em>)</em>) – vector of doubles (numpy array or the
 std::vector container internal to TimeSeries object) defining
 noise data to use for computing regularization.  Not all RF
 estimation algorithms use noise estimators so this parameter
 is optional.   It can also be extracted from d depending on
 parameter file options.</p></li>
-<li><p><strong>wcomp</strong> – <p>When defined from Seismogram d the wavelet
-estimate in conventional RFs is one of the components that
+<li><p><strong>wcomp</strong> – <dl class="simple">
+<dt>When defined from Seismogram d the wavelet</dt><dd><p>estimate in conventional RFs is one of the components that
 are most P wave dominated. That is always one of three
 things:  Z, L of LQT, or the L component from the output of
 Kennett’s free surface transformation operator.  The
@@ -1125,16 +1418,38 @@ default is 2, which for ccore.Seismogram is always one of
 the above.   This parameter would be changed only if the
 data has undergone some novel transformation not yet invented
 and the best wavelet estimate was on in 2 (3 with FORTRAN
-and matlab numbering).
-:param ncomp: component number to use to compute noise.  This is used
-only if the algorithm in processor requires a noise estimate.
-Normally it should be the same as wcomp and is by default (2).
-:param object_history: boolean to enable or disable saving object</p>
-<blockquote>
-<div><p>level history.  Default is False.  Note this functionality is
-implemented via the mspass_func_wrapper decorator.</p>
-</div></blockquote>
+and matlab numbering).</p>
+</dd>
+</dl>
 <dl class="field-list simple">
+<dt class="field-odd">type wcomp<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int (must 0, 1, or 2)</p>
+</dd>
+<dt class="field-even">param ncomp<span class="colon">:</span></dt>
+<dd class="field-even"><p>component number to use to compute noise.  This is used
+only if the algorithm in processor requires a noise estimate.
+Normally it should be the same as wcomp and is by default (2).</p>
+</dd>
+<dt class="field-odd">type ncomp<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int (must be 0, 1, or 2)</p>
+</dd>
+<dt class="field-even">param QCdocument_key<span class="colon">:</span></dt>
+<dd class="field-even"><p>A summary of the parameters defining the
+deconvolution operator (really a dump of the pf content used for
+creating the engine) and computed QC attributes are posted to a
+python dictionary.   That content is posted to the outputs
+Metadata container with the key defined by this argument.
+In MongoDB lingo that means when saved to the database the
+dictionary content associated with this key becomes a “subdocument”.</p>
+</dd>
+<dt class="field-odd">type QCdocument_key<span class="colon">:</span></dt>
+<dd class="field-odd"><p>string (default is “RFdecon_properties”)</p>
+</dd>
+<dt class="field-even">param object_history<span class="colon">:</span></dt>
+<dd class="field-even"><p>boolean to enable or disable saving object
+level history.  Default is False.  Note this functionality is
+implemented via the mspass_func_wrapper decorator.</p>
+</dd>
 <dt class="field-odd">param alg_name<span class="colon">:</span></dt>
 <dd class="field-odd"><p>When history is enabled this is the algorithm name
 assigned to the stamp for applying this algorithm.
@@ -1156,8 +1471,11 @@ Note this functionality is implemented via the mspass_func_wrapper decorator.</p
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Seismogram object containing the RF estimates.
-The orientations are always the same as the input.</p>
+<dd class="field-even"><p>Normally returns Seismogram object containing the RF estimates.
+The orientations are always the same as the input.  If <cite>return-wavelets</cite> is set
+True returns a tuple with three components:  0 - <cite>Seismogram</cite> returned as with
+default, 1 - ideal output wavelet <cite>TimeSeries</cite>, 2 - actual output wavelet
+stored as a <cite>TimeSeries</cite> object.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1176,12 +1494,13 @@ processor object will be passed as an argument to the RFdecon
 function that should appear as a function in a spark map call.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.QCMetrics">
-<span class="sig-name descname"><span class="pre">QCMetrics</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/RFdeconProcessor.html#RFdeconProcessor.QCMetrics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.QCMetrics" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">QCMetrics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prediction_error_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'prediction_error'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../_modules/mspasspy/algorithms/RFdeconProcessor.html#RFdeconProcessor.QCMetrics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.QCMetrics" title="Permalink to this definition"></a></dt>
 <dd><p>All decon algorithms compute a set of algorithm dependent quality
-control metrics.  This method returns the metrics as a set of fixed
-name:value pairs in a mspass.Metadata object.   The details are
-algorithm dependent.  See related documentation for metrics computed
-by different algorithms.</p>
+control metrics.  The return is a Metadata container.
+All this wrapper really does is translate that return into
+a python dictionary that can be used as the base of a subdocument
+posting to outputs.  This method MUST ONLY BE CALLED after
+calling the process method of the C++ engine.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1219,11 +1538,11 @@ centered (i.e. t0 is rounded n/2 where n is the length of the vector</p>
 <dt class="sig sig-object py" id="mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.change_parameters">
 <span class="sig-name descname"><span class="pre">change_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/RFdeconProcessor.html#RFdeconProcessor.change_parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.change_parameters" title="Permalink to this definition"></a></dt>
 <dd><p>Use this method to change the internal parameter setting of the
-processor.  It can be used, for example, to switch from the damped
-least square method to the water level method.  Note the input
-must be a complete definition for a parameter set defining a
-particular algorithm.  i.e. this is not an update method but
-t reinitializes the processor.</p>
+processor.  It can only change the parameters for a particular
+algorithm.   A new instance of this class needs to be created if
+you need to switch to a different algorithm.   It does little
+more than call the read_metadata of the already loaded processor.
+All the scalar decon methods implement that method.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>md</strong> – is a mspass.Metadata object containing required parameters</p>
@@ -3112,7 +3431,7 @@ of testing for validity of the operation.</p>
 <dt class="sig sig-object py" id="mspasspy.algorithms.edit.Multiply">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.edit.</span></span><span class="sig-name descname"><span class="pre">Multiply</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value_to_multiply</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/edit.html#Multiply"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.edit.Multiply" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#mspasspy.algorithms.edit.MetadataOperator" title="mspasspy.algorithms.edit.MetadataOperator"><code class="xref py py-class docutils literal notranslate"><span class="pre">MetadataOperator</span></code></a></p>
-<p>Used to implement <a href="#id7"><span class="problematic" id="id8">*</span></a>= operator on a specified Metadata key.
+<p>Used to implement <a href="#id9"><span class="problematic" id="id10">*</span></a>= operator on a specified Metadata key.
 Example:  to multiple metadata in, d, with key=’Pamp’ by 2.5
 you could use this</p>
 <blockquote>
@@ -3926,29 +4245,118 @@ by the parameters sampling_rate, starttime and npts.</p></li>
 <section id="module-mspasspy.algorithms.snr">
 <span id="snr"></span><h2>snr<a class="headerlink" href="#module-mspasspy.algorithms.snr" title="Permalink to this heading"></a></h2>
 <dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.algorithms.snr.EstimateBandwidth">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.snr.</span></span><span class="sig-name descname"><span class="pre">EstimateBandwidth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">S</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">N</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snr_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">df_smoother</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f_max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.amplitudes.BandwidthData" title="mspasspy.ccore.algorithms.amplitudes.BandwidthData"><span class="pre">BandwidthData</span></a></span></span><a class="reference internal" href="../_modules/mspasspy/algorithms/snr.html#EstimateBandwidth"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.snr.EstimateBandwidth" title="Permalink to this definition"></a></dt>
+<dd><p>Estimates a set of signal bandwidth estimates returned in the the
+class <cite>BandwidthData</cite>.  The algorithm is most appropriate for body
+waves recorded at teleseimic distances from earthquake sources.
+The reason is that the algorithm is most appropriate for signal
+and noise spectra typical of that type of data.  In particular,
+broadband noise is very colored by the microseisms.   Large enough
+signals can exceed the microseism peak but smaller events will not.
+The smallest events typically are only visible in the traditional
+short-period band.   The most difficult are the ones that have
+signals in both the short and long period band but have high
+noise levels in the microseism band making a single bandwidth
+the wrong model.  This function handles that by only returning the
+band data for the section near the search start defined by the
+“f0” argument.</p>
+<p>The algorithm works by searching from a starting frequency defined
+by the “f0” argument.  The basic idea is it hunts up and down the
+frequency axis until it detects the band edge.   The “band edge”
+detection is defined as the point where the signal-to-noise ratio
+first falls below the value defined by the “snr_threshold” argument.
+The algorithm has two variants of note:
+1.  If no point in the snr curve exceeds the valued defined by</p>
+<blockquote>
+<div><p>“snr_threshold” the function returns immediately with all
+attributes of the <cite>BandwidthData</cite> object set to 0.</p>
+</div></blockquote>
+<ol class="arabic simple" start="2">
+<li><p>If the snr value at f0 does not exceed the threshold it searches down
+until it finds a value exceeding the threshold.  In that situation
+it marks the first point found as the high frequency band
+edge and continues hunt backward to attempt to define
+the low frequency band edge.</p></li>
+</ol>
+<p>The “df_smoother” argument can be used to smooth the internally
+generated signal-to-noise ratio vector.   It is particularly useful
+for data with noise containing spectral lines that can create
+incorrect bandwidth data.  It is rarely necessary if the
+power spectra are computed with the multitaper method as that
+method produces spectra that are inherently smooth at a specified
+scale.  In that case if smoothing is desired we recommend the
+smoothing width be of the form k*tbp*df where tbp is the time
+bandwidth product, df is the Rayleigh bin size, and k is some
+small multipler (note multitaper spectra a inherently smoothed
+by 2*tbp*df).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>S</strong> (<a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.PowerSpectrum" title="mspasspy.ccore.seismic.PowerSpectrum"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.PowerSpectrum</span></code></a>) – power spectrum computed from signal time window.</p></li>
+<li><p><strong>N</strong> (<a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.PowerSpectrum" title="mspasspy.ccore.seismic.PowerSpectrum"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.PowerSpectrum</span></code></a>) – power spectrum computed from noise time window
+(Note S and N do not need to be on the same frequency
+grid but the signal grid is used to compute the signal to
+noise ratio curve)</p></li>
+<li><p><strong>snr_threshold</strong> (<em>float</em><em> (</em><em>default 1.5</em><em>)
+</em><em>grid but the signal grid is used to compute the signal to
+spectrum within the range defined by this parameter.
+i.e. the number</em><em> of </em><em>points in the smoother is
+round</em><em>(</em><em>df_smoother/S.df</em><em>(</em><em>)</em><em>)</em>) – value of snr used to define the
+band edges.   As noted above the algorithm searches from
+the value f0 for the first points above and below that
+frequency where the snr curve has a value less than or
+equal to this value.</p></li>
+<li><p><strong>f0</strong> (<em>float</em><em> (</em><em>default 1.0</em><em>)</em>) – frequency to start searching up and down
+the frequency axis.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p>Returns an instance of the <cite>BandwidthData</cite> class.
+<cite>BandwidthData</cite> has the following attributes that are
+set by this function:</p>
+<ul class="simple">
+<li><p>”low_edge_f” low frequency corner of estimated bandwidth</p></li>
+<li><p>”low_edge_snr” snr at low corner</p></li>
+<li><p>”high_edge_f” high frequency corner of estimated bandwidth</p></li>
+<li><p>”high_edge_snr” snr at high corner</p></li>
+<li><p>”f_range” total frequency range of estimate (range of S)</p></li>
+</ul>
+<p>Note the low edge can be zero which must be handled
+carefully if the output is used for designing a filter.
+Further all values will be 0 if no points in the snr curve
+exceed the defined threshold.</p>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="mspasspy.algorithms.snr.FD_snr_estimator">
-<span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.snr.</span></span><span class="sig-name descname"><span class="pre">FD_snr_estimator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise_window=&lt;mspasspy.ccore.algorithms.basic.TimeWindow</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise_spectrum_engine=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal_window=&lt;mspasspy.ccore.algorithms.basic.TimeWindow</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal_spectrum_engine=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">band_cutoff_snr=2.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal_detection_minimum_bandwidth=6.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tbp=4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ntapers=6</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">high_frequency_search_start=2.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fix_high_edge=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">poles=3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">perc=95.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optional_metrics=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_spectra=False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/snr.html#FD_snr_estimator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.snr.FD_snr_estimator" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.snr.</span></span><span class="sig-name descname"><span class="pre">FD_snr_estimator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise_window=&lt;mspasspy.ccore.algorithms.basic.TimeWindow</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise_spectrum_engine=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal_window=&lt;mspasspy.ccore.algorithms.basic.TimeWindow</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal_spectrum_engine=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">band_cutoff_snr=1.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal_detection_minimum_bandwidth=6.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f_low_zero_test=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tbp=4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ntapers=6</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f0=1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">poles=3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">perc=95.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optional_metrics=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_spectra=False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="reference internal" href="../_modules/mspasspy/algorithms/snr.html#FD_snr_estimator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.snr.FD_snr_estimator" title="Permalink to this definition"></a></dt>
 <dd><p>Estimates one or more amplitude metrics of signal-to-noise from a TimeSeries object.
-An implicit assumption is that the analysis is centered on a timeable “phase”
-like P, PP, etc.</p>
-<p>This is a python function that can be used to compute one or several
-signal-to-noise ratio estimates based on an estimated bandwidth using
-the C++ function EstimateBandwidth.  The function has a fair number of
-options, but the core metrics computed are the bandwidth estimates
-computed by that function.  It uses a fairly simple search algorithm
-that functions well for most earthquake sources.  For the low end the
-algorithm searches from the first frequency indistinguishable from DC to
-find the lowest frequency for which the snr exceeds a threshold specified
-by the input parameter ‘band_cutoff_snr’.   It does a similar search
-from the high end from a point 80% of Nyquist - a good choice for all
-modern digital data that use FIR antialias filters.   Both searches are
-not just defined with just the first frequency to satisfy the snr
-threshold criteria.  Only when a group of frequencies more than 2 times
-the time-bandwidth product exceed the threshold is the band edge
-defined.   The actual band edge is then defined as the first frequency
-exceeding the threshold.  That more elaborate algorithm was used to
-prevent pure lines in either the signal or noise spectrum from
-corrupting the estimates.</p>
+Results are returned as a set of key-value pairs in a python dict.</p>
+<p>FD_snr_estimator first estimates bandwidth with the function in this
+module called <cite>EstimateBandwidth</cite>.  See the docstring of that function
+for how the bandwidth is estimated.  The metrics this function
+computes all depend upon that bandwidth estimate.  The default return
+of this function is the return of <cite>EstimateBandwidth</cite> translated to
+keyp-value pairs.   Those are:</p>
+<blockquote>
+<div><p><em>low_f_band_edge</em> - lowest frequency exceeding threshold
+<em>high_f_band_edge</em> - highest frequency exeeding threshold
+<em>high_f_band_edge_snr</em> and <em>low_f_band_edge_snr</em> are the snr values</p>
+<blockquote>
+<div><p>at the band edges</p>
+</div></blockquote>
+<dl class="simple">
+<dt><em>spectrum_frequency_range</em> - total frequency band for estimate</dt><dd><p>(really just 0 to Nyquist).</p>
+</dd>
+<dt><em>bandwidth</em> - bandwidth of estimate in dB.</dt><dd><p>i.e. 20*log10(high_f_band_edge/low_f_band_edge)</p>
+</dd>
+</dl>
+<p><em>bandwidth_fraction</em> - bandwidth/spectrum_frequency_range</p>
+</div></blockquote>
 <p>A set of optional metrics can be computed.  All optional metrics use
 the bandwidth estimates in one way or another.   Optional metrics are
 defined by the following keywords passed through a list (actually
@@ -3963,8 +4371,21 @@ with following dict keys:   ‘snr_band_maximum’,’snr_band_minimum’,
 All of these optional metrics first copy the data_object and then
 filter the copy with a Butterworth bandpass filter with the number of
 poles specified by the npoles argument and corners at the estimated
-band edge by the EstimateBandwidth function.   The metrics computed
-are time domain snr estimates computed with he filtered data.  They are
+band edge by the EstimateBandwidth function.  The algorithm automatically
+handles the case of a zero low frequency edge.   That is, with large events
+the low band edge can be computed as 0 frequency.   More commonly the band edge
+is computed as one or two rayleigh bins above 0.  A bandpass filtered applied
+with a corner too close to 0 can produced distorted (or null) results.
+To prevent that the default behavior is to revert to a low pass filter
+versus a bandpass filter when the estimated value of low_f_band_edge is small.
+By default “small” is defined as &lt;= 2.0*tbp*df, where tbp is the
+time bandwidth product for the multitaper spectral estimates (in optional
+argument) and df is the frequency sampling interval of the spectrum computed from
+the data in <cite>signal_window</cite>.  You can use a different recipe by passing
+a value for the optional parameter “f_low_zero_test” which will replace
+the computed value using the formula above for switching to a lowpass filter.
+The optional metrics are time domain estimates computed from
+the bandpass (lowpass) filtered data.  They are
 actually computed from functions in this same module that can be
 used independently and have their own docstring description. The
 functions called have the following names in order of the keyword
@@ -3982,37 +4403,36 @@ save_spectra true as those are power spectra.</p>
 <li><p><strong>data_object</strong> – TimeSeries object to be processed. For Seismogram
 objects the assumption is algorithm would be used for a single
 component (e.g longitudinal or vertical for a P phase)</p></li>
-<li><p><strong>noise_window</strong> – defines the time window to use for computing the
+<li><p><strong>noise_window</strong> (<a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.basic.TimeWindow" title="mspasspy.ccore.algorithms.basic.TimeWindow"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.algorithms.basic.TimeWindow</span></code></a>
+default -130 to -5 s.) – defines the time window to use for computing the
 spectrum considered noise. The time span can be either relative or
 UTC (absolute) time but we do not check for consistency.  This low
 level function assumes they are consistent.  If not, the calculations
 are nearly guaranteed to fail.  Type must be mspasspy.ccore.TimeWindow.</p></li>
-<li><p><strong>signal_window</strong> – defines the time window to use that defines what
+<li><p><strong>signal_window</strong> (<a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.basic.TimeWindow" title="mspasspy.ccore.algorithms.basic.TimeWindow"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.algorithms.basic.TimeWindow</span></code></a>
+default -5 to 120 s) – defines the time window to use that defines what
 you consider “the signal”.  The time span can be either relative or
 UTC (absolute) time but we do not check for consistency.  This low
 level function assumes they are consistent.  If not, the calculations
 are nearly guaranteed to fail.  Type must be mspasspy.ccore.TimeWindow.</p></li>
-<li><p><strong>noise_spectrum_engine</strong> – is expected to either by a None type
-or an instance of a ccore object called an MTPowerSpectralEngine.
-When None an instance of MTPowerSpectralEngine is computed for
-each call to this function.   That is a convenience for small
-jobs or when called with data from mixed sample rates and/or variable
-length time windows.   It is very inefficient to use the default
-approach for processing large data sets and really for any use in a
-map operation with dask or spark.  Normal use should be for the user to
-predefine an MtPowerSpectralEngine from the expected window size
-for a given data sample rate and include it in the function call.</p></li>
+<li><p><strong>signal_spectrum_engine</strong> (None (default) or an instance of
+<a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.MTPowerSpectrumEngine" title="mspasspy.ccore.algorithms.deconvolution.MTPowerSpectrumEngine"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.algorithms.deconvolution.MTPowerSpectrumEngine</span></code></a>) – is the comparable MTPowerSpectralEngine
+to use to compute the signal power spectrum.   Default is None with the
+same caveat as above for the noise_spectrum_engine.</p></li>
+<li><p><strong>band_cutoff_snr</strong> (<em>float</em>) – defines the signal-to-noise ratio floor
+used in the search for band edges.  See description of the algorithm
+above and in the user’s manual.  Default is 1.5</p></li>
 <li><p><strong>signal_spectrum_engine</strong> – is the comparable MTPowerSpectralEngine
 to use to compute the signal power spectrum.   Default is None with the
 same caveat as above for the noise_spectrum_engine.</p></li>
 <li><p><strong>band_cutoff_snr</strong> – defines the signal-to-noise ratio floor
 used in the search for band edges.  See description of the algorithm
 above and in the user’s manual.  Default is 2.0</p></li>
-<li><p><strong>signal_detection_minimum_bandwidth</strong> – As noted above this
+<li><p><strong>signal_detection_minimum_bandwidth</strong> (<em>float</em><em> (</em><em>default 6.0 dB</em><em>)</em>) – As noted above this
 algorithm first tries to estimate the bandwidth of data where the
 signal level exceeds the noise level defined by the parameter
 band_cutoff_snr.  It then computes the bandwidth of the data in
-dB computed as log10(f_high/f_low).  For almost any application
+dB computed as 20*log10(f_high/f_low).  For almost any application
 if the working bandwidth falls below some threshold the data is
 junk to all intends and purpose.  A factor more relevant to this
 algorithm is that the “optional parameters”  will all be meaningless
@@ -4025,51 +4445,31 @@ short-period band) which allows optional metrics to be computed
 but may be too small for some applications.  If your application
 requires higher snr and wider bandwidth adjust this parameter
 and/or band_cutoff_snr.</p></li>
-<li><p><strong>tbp</strong> – time-bandwidth product to use for computing the set of
+<li><p><strong>f_low_zero_test</strong> (<em>float</em><em> (</em><em>default is None which causes the test to
+revert to 2.0*tbp*df</em><em> (</em><em>see above</em><em>)</em><em>.</em>) – optional lower bound on frequency to use for
+test to disable the low frequency corner.   (see above)</p></li>
+<li><p><strong>tbp</strong> (<em>float</em><em> (</em><em>default 4.0</em><em>)</em>) – time-bandwidth product to use for computing the set of
 Slepian functions used for the multitaper estimator.  This parameter is
 used only if the noise_spectrum_engine or signal_spectrum_engine
-arguments are set as None.  The default is 4.0</p></li>
-<li><p><strong>ntapers</strong> – is the number of Slepian functions (tapers) to compute
+arguments are set as None.</p></li>
+<li><p><strong>ntapers</strong> (<em>integer</em><em> (</em><em>default 6</em><em>)</em>) – is the number of Slepian functions (tapers) to compute
 for the multitaper estimators. Like tbp it is referenced only if
 noise_spectrum_engine or signal_spectrum_engine are set to None.
 Note the function will throw an exception if the ntaper parameter is
-not consistent with the time-bandwidth product.  That is, the
-maximum number of tapers is round(2*tbp-1).   Default is 6 which is
-consistent with default tbp=4.0 where the maximum recommended is 8</p></li>
-<li><p><strong>high_frequency_search_start</strong> – Used to specify the upper frequency
-used to start the search for the upper end of the bandwidth by
-the function EstimateBandwidth.  Default is 2.0 which reasonable for
-teleseismic P wave data.  Should be change for usage other than
-analysis of teleseimic P phases or you the bandwidth may be
-grossly underestimated.</p></li>
-<li><p><strong>fix_high_edge</strong> – boolean controlling upper search behavior.
-When set True the search from the upper frequency limit is disabled
-and the upper band limit edge is set as the value passed as
-high_frequency_search_start.  False enables the search.
-True is most useful for teleseismic body waves as many stations have
-a series of closely enough spaced lines (presumably from electronic
-sources) that set the high edge incorrectly.   False would be
-more appropriate for most local and regional earthquake data.
-The default is True.</p></li>
-<li><p><strong>npoles</strong> – defines number of poles to us for the Butterworth
-bandpass applied for the “filtered” metrics (see above).  Default is 3.</p></li>
-<li><p><strong>perc</strong> – used only if ‘filtered_perc’ is in the optional metrics list.
+not consistent with the time-bandwidth product.</p></li>
+<li><p><strong>f0</strong> (<em>float</em><em> (</em><em>default 1.0</em><em>)</em>) – frequency to use to start search for bandwidth up and down
+the frequency axis (see above).</p></li>
+<li><p><strong>npoles</strong> (<em>integer</em><em> (</em><em>default 3</em><em>)</em>) – defines number of poles to us for the Butterworth
+bandpass or lowpass applied for the “filtered” metrics (see above).  Default is 3.</p></li>
+<li><p><strong>perc</strong> (<em>float</em><em> (</em><em>default 95.0</em><em>)</em>) – used only if ‘filtered_perc’ is in the optional metrics list.
 Specifies the perc parameter as used in seismic unix.  Uses the percentage
 point specified of the sorted abs of all amplitudes.  (Not perc=50.0 is
 identical to MAD)  Default is 95.0 which is 2 sigma for Gaussian noise.</p></li>
-<li><p><strong>optional_metrics</strong> – is an iterable container containing one or more
-of the optional snr metrics discussed above.</p></li>
-<li><p><strong>store_as_subdocument</strong> – This parameter is included for
-flexibility but should not normally be changed by the user.  As noted
-earlier the outputs of this function are best abstracted as Metadata.
-When this parameter is False the Metadata members are all posted with
-directly to data_object’s Metadata container.  If set True the
-internally generated python dict is copied and stored with a key
-defined through the subdocument_key argument.  See use below in
-function arrival_snr.</p></li>
-<li><p><strong>subdocument_key</strong> – key for storing results as a subdocument.
-This parameter is ignored unless store_as_subdocument is True.
-Default is “snr_data”</p></li>
+<li><p><strong>optional_metrics</strong> (<em>should be a list</em><em> of </em><em>strings matching the set</em><em> of
+</em><em>required keywords.  Default is None which means none</em><em> of </em><em>the optional
+metrics will be computed.</em>) – is an iterable container containing one or more
+of the optional snr metrics discussed above. Typos in names will create
+log messages but will not cause the function to abort.</p></li>
 <li><p><strong>save_spectra</strong> – If set True (default is False) the function
 will pickle the computed noise and signal spectra and save the
 strings created along with a set of related metadata defining the
@@ -4079,7 +4479,7 @@ for spot checking, discovery of why an snr metric has unexpected
 results using graphics, or a research topic where the spectra would
 be of interest.  It is a very bad idea to turn this option on if
 you are processing a large quantity of data and saving the results
-to MongoDB as it will bloat the arrival collection.  Consider a
+to MongoDB as it may bloat the database.  Consider a
 different strategy if that essential for your work.</p></li>
 </ul>
 </dd>
@@ -4100,7 +4500,7 @@ parameter signal_detection_minimum_bandwidth.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="mspasspy.algorithms.snr.arrival_snr">
-<span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.snr.</span></span><span class="sig-name descname"><span class="pre">arrival_snr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">data_object,</span> <span class="pre">noise_window=&lt;mspasspy.ccore.algorithms.basic.TimeWindow</span> <span class="pre">object&gt;,</span> <span class="pre">noise_spectrum_engine=None,</span> <span class="pre">signal_window=&lt;mspasspy.ccore.algorithms.basic.TimeWindow</span> <span class="pre">object&gt;,</span> <span class="pre">signal_spectrum_engine=None,</span> <span class="pre">band_cutoff_snr=2.0,</span> <span class="pre">signal_detection_minimum_bandwidth=6.0,</span> <span class="pre">tbp=4.0,</span> <span class="pre">ntapers=6,</span> <span class="pre">high_frequency_search_start=2.0,</span> <span class="pre">fix_high_edge=True,</span> <span class="pre">poles=3,</span> <span class="pre">perc=95.0,</span> <span class="pre">save_spectra=False,</span> <span class="pre">phase_name='P',</span> <span class="pre">arrival_time_key='Ptime',</span> <span class="pre">metadata_output_key='Parrival',</span> <span class="pre">kill_null_signals=True,</span> <span class="pre">optional_metrics=['snr_stats',</span> <span class="pre">'filtered_envelope',</span> <span class="pre">'filtered_L2',</span> <span class="pre">'filtered_Linf',</span> <span class="pre">'filtered_MAD',</span> <span class="pre">'filtered_perc']</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/snr.html#arrival_snr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.snr.arrival_snr" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.snr.</span></span><span class="sig-name descname"><span class="pre">arrival_snr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">data_object,</span> <span class="pre">noise_window=&lt;mspasspy.ccore.algorithms.basic.TimeWindow</span> <span class="pre">object&gt;,</span> <span class="pre">noise_spectrum_engine=None,</span> <span class="pre">signal_window=&lt;mspasspy.ccore.algorithms.basic.TimeWindow</span> <span class="pre">object&gt;,</span> <span class="pre">signal_spectrum_engine=None,</span> <span class="pre">band_cutoff_snr=2.0,</span> <span class="pre">signal_detection_minimum_bandwidth=6.0,</span> <span class="pre">tbp=4.0,</span> <span class="pre">ntapers=6,</span> <span class="pre">f_low_zero_test=None,</span> <span class="pre">f0=1.0,</span> <span class="pre">poles=3,</span> <span class="pre">perc=95.0,</span> <span class="pre">save_spectra=False,</span> <span class="pre">phase_name='P',</span> <span class="pre">arrival_time_key='Ptime',</span> <span class="pre">metadata_output_key='Parrival',</span> <span class="pre">kill_null_signals=True,</span> <span class="pre">optional_metrics=['snr_stats',</span> <span class="pre">'filtered_envelope',</span> <span class="pre">'filtered_L2',</span> <span class="pre">'filtered_Linf',</span> <span class="pre">'filtered_MAD',</span> <span class="pre">'filtered_perc']</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/snr.html#arrival_snr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.snr.arrival_snr" title="Permalink to this definition"></a></dt>
 <dd><p>Specialization of FD_snr_estimator.   A common situation where snr
 data is a critical thing to estimate is data windowed around a given
 seismic phase.   FD_snr_estimator is a bit more generic.  This function
@@ -4140,51 +4540,42 @@ docstring for FD_snr_estimator.  The user is referred there to
 see the usage.   The following are added for this specialization:</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>phase_name</strong> – Name tag for the seismic phase being analyzed.</p>
-</dd>
-</dl>
-<p>This string is saved to the output subdocument with the key “phase”.
-The default is “P”</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
+<li><p><strong>phase_name</strong> – Name tag for the seismic phase being analyzed.
+This string is saved to the output subdocument with the key “phase”.
+The default is “P”</p></li>
 <li><p><strong>arrival_time_key</strong> – key (string) used to fetch an arrival time
 if the data are in UTC and the time window received does not overlap
 the data range (see above)</p></li>
-<li><p><strong>kill_null_signals</strong> – boolean controlling how null snr estimator</p></li>
-</ul>
-</dd>
-</dl>
-<p>returns are handled.  When True (default) if FD_snr_estimator returns a null
+<li><p><strong>kill_null_signals</strong> – boolean controlling how null snr estimator
+returns are handled.  When True (default) if FD_snr_estimator returns a null
 result (no apparent signal) that input datum is killed before being
 returned.  In that situation no snr metrics will be in the output because
 null means FD_snr_estimator couldn’t detect a signal and the algorithm
 failed.   When False the datum is returned silently but
 will have no snr data defined in a dict stored with the key
-metadata_output_key (i.e. that attribute will be undefined in output)</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>metadata_output_key</strong> – is a string used as a key under which the</p>
-</dd>
-</dl>
-<p>subdocument (python dict) created internally is stored.  Default is
+metadata_output_key (i.e. that attribute will be undefined in output)</p></li>
+<li><p><strong>metadata_output_key</strong> – <p>is a string used as a key under which the
+subdocument (python dict) created internally is stored.  Default is
 “Parrival”.   The idea is if multiple phases are being analyzed
 each phase should have a different key set by this argument
 (e.g. if PP were also being analyzed in the same workflow you</p>
 <blockquote>
 <div><p>might use a key like “PParrival”).</p>
 </div></blockquote>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>a copy of data_object with the the results stored under</p>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>a copy of data_object with the the results stored under
+the key defined by the metadata_output_key argument.</p>
 </dd>
 </dl>
-<p>the key defined by the metadata_output_key argument.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="mspasspy.algorithms.snr.broadband_snr_QC">
-<span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.snr.</span></span><span class="sig-name descname"><span class="pre">broadband_snr_QC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">data_object,</span> <span class="pre">component=2,</span> <span class="pre">noise_window=&lt;mspasspy.ccore.algorithms.basic.TimeWindow</span> <span class="pre">object&gt;,</span> <span class="pre">noise_spectrum_engine=None,</span> <span class="pre">signal_window=&lt;mspasspy.ccore.algorithms.basic.TimeWindow</span> <span class="pre">object&gt;,</span> <span class="pre">signal_spectrum_engine=None,</span> <span class="pre">band_cutoff_snr=2.0,</span> <span class="pre">signal_detection_minimum_bandwidth=6.0,</span> <span class="pre">tbp=4.0,</span> <span class="pre">ntapers=6,</span> <span class="pre">high_frequency_search_start=2.0,</span> <span class="pre">fix_high_edge=True,</span> <span class="pre">kill_null_signals=False,</span> <span class="pre">poles=3,</span> <span class="pre">perc=95.0,</span> <span class="pre">phase_name='P',</span> <span class="pre">metadata_output_key='Parrival',</span> <span class="pre">optional_metrics=['snr_stats',</span> <span class="pre">'filtered_envelope',</span> <span class="pre">'filtered_L2',</span> <span class="pre">'filtered_Linf',</span> <span class="pre">'filtered_MAD',</span> <span class="pre">'filtered_perc'],</span> <span class="pre">save_spectra=False,</span> <span class="pre">use_measured_arrival_time=False,</span> <span class="pre">measured_arrival_time_key='Ptime',</span> <span class="pre">taup_model=None,</span> <span class="pre">source_collection='source',</span> <span class="pre">receiver_collection=None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/snr.html#broadband_snr_QC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.snr.broadband_snr_QC" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.snr.</span></span><span class="sig-name descname"><span class="pre">broadband_snr_QC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">data_object,</span> <span class="pre">component=2,</span> <span class="pre">noise_window=&lt;mspasspy.ccore.algorithms.basic.TimeWindow</span> <span class="pre">object&gt;,</span> <span class="pre">noise_spectrum_engine=None,</span> <span class="pre">signal_window=&lt;mspasspy.ccore.algorithms.basic.TimeWindow</span> <span class="pre">object&gt;,</span> <span class="pre">signal_spectrum_engine=None,</span> <span class="pre">band_cutoff_snr=1.5,</span> <span class="pre">signal_detection_minimum_bandwidth=6.0,</span> <span class="pre">f_low_zero_test=None,</span> <span class="pre">tbp=4.0,</span> <span class="pre">ntapers=6,</span> <span class="pre">f0=1.0,</span> <span class="pre">kill_null_signals=True,</span> <span class="pre">poles=3,</span> <span class="pre">perc=95.0,</span> <span class="pre">phase_name='P',</span> <span class="pre">metadata_output_key='Parrival',</span> <span class="pre">optional_metrics=['snr_stats',</span> <span class="pre">'filtered_envelope',</span> <span class="pre">'filtered_L2',</span> <span class="pre">'filtered_Linf',</span> <span class="pre">'filtered_MAD',</span> <span class="pre">'filtered_perc'],</span> <span class="pre">save_spectra=False,</span> <span class="pre">use_measured_arrival_time=False,</span> <span class="pre">measured_arrival_time_key='Ptime',</span> <span class="pre">taup_model=None,</span> <span class="pre">source_collection='source',</span> <span class="pre">receiver_collection=None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/snr.html#broadband_snr_QC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.snr.broadband_snr_QC" title="Permalink to this definition"></a></dt>
 <dd><p>Compute a series of metrics that can be used for quality control
 filtering of seismic phase data.</p>
 <p>This function is intended as a workhorse to be used for low-level,
@@ -4213,7 +4604,7 @@ useful for test runs on a more limited data set to sort out
 values of the computed metrics that are appropriate for a secondary
 winnowing of the your data.   See User’s Manual for more on
 this concept.</p>
-<p>The input of arg 0 (data_object) can be either a TimeSeries or
+<p>The input of arg0 (data_object) can be either a TimeSeries or
 a Seismogram object.  If a Seismogram object is passed the “component”
 argument is used to extract the specified single channel from the Seismogram
 object and that component is used for processing.  That is necessary
@@ -4232,52 +4623,27 @@ the data type to set that naming.  i.e. if the input is TimeSeries
 it tries to fetch the latitude data as channel_lat while if it the input
 is a Seismogram it tries to fetch site_lat.   That is true of all coordinate
 data loaded by normalization from a source and receiver collection.</p>
-<p>The following args are passed directly to the function FD_snr_estimator:
-noise_window, noise_spectrum_engine, signal_window, signal_spectrum_engine,
-band_cutoff_snr, signal_detection_minimum_bandwidth, tbp, ntapers,
-high_frequency_search_start, fix_high_edge, npoles, perc, optional_metrics,
-and save_spectrum.  Below we only describe arguments added by this
-function:</p>
-<p>data_object,
-phase_name=”P”,
-metadata_output_key=”Parrival”,
-use_measured_arrival_time=False,
-measured_arrival_time_key=”Ptime”,
-taup_model=None,
-component=2,
-source_collection=”source”,
-receiver_collection=None,</p>
+<p>Most of the arguments to this function are passed directly to
+<cite>FD_snr_estimator</cite>.   See the docstring of that function for reference.
+The following are additional parameters specific to this function:</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>data_object</strong> – An atomic MsPASS data object to which the</p>
-</dd>
-</dl>
-<p>algorithms requested should be applied.   Currently that means a
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data_object</strong> – An atomic MsPASS data object to which the
+algorithms requested should be applied.   Currently that means a
 TimeSeries or Seismogram object.   Any other input will result
 in a TypeError exception.  As noted above for Seismogram input the
 component argument defines which data component is to be used for the
-snr computations.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>component</strong> – integer (0, 1, or 2) defining which component of a</p>
-</dd>
-</dl>
-<p>Seismogram object to use to compute the requested snr metrics.   This
-parameter is ignored if the input is a TimeSeries.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>metadata_output_key</strong> – string defining the key where the results</p>
-</dd>
-</dl>
-<p>are to be posted to the returned data_object.   The results are always
+snr computations.</p></li>
+<li><p><strong>component</strong> – integer (0, 1, or 2) defining which component of a
+Seismogram object to use to compute the requested snr metrics.   This
+parameter is ignored if the input is a TimeSeries.</p></li>
+<li><p><strong>metadata_output_key</strong> – string defining the key where the results
+are to be posted to the returned data_object.   The results are always
 posted to a python dictionary and then posted to the returned
-data_object with this key.   Default is “Parrival”</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>use_measured_arrival_time</strong> – boolean defining the method used to</p>
-</dd>
-</dl>
-<p>define the time reference for windowing used for snr calculations.
+data_object with this key.   Default is “Parrival”</p></li>
+<li><p><strong>use_measured_arrival_time</strong> – boolean defining the method used to
+define the time reference for windowing used for snr calculations.
 When True the function will attempt to fetch a phase arrival time with
 the key defined by the “measured_arrival_time_key” argument.  In that
 mode if the fetch fails the data_object will be killed and an error
@@ -4286,51 +4652,88 @@ expectation is if you want to use measured arrival times you don’t
 want data where there are no picks.   The default is True to make
 the defaults consistent.  The reason is that the tau-p calculator
 handle is passed to the function when using model-based travel times.
-There is no way to default that so it defaults to None.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>measured_arrival_time_key</strong> – is the key used to fetch a</p>
-</dd>
-</dl>
-<p>measured arrival time.   This parameter is ignored if use_measured_arrival_time
-is False.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>taup_model</strong> – when use_measured_arrival_time is False this argument</p>
-</dd>
-</dl>
-<p>is required.  It defaults as None because there is no way the author
+There is no way to default that so it defaults to None.</p></li>
+<li><p><strong>measured_arrival_time_key</strong> – is the key used to fetch a
+measured arrival time.   This parameter is ignored if use_measured_arrival_time
+is False.</p></li>
+<li><p><strong>taup_model</strong> – when use_measured_arrival_time is False this argument
+is required.  It defaults as None because there is no way the author
 knows to initialize it to anything valid.  If set it MUST be an instance
-of the obspy class TauPyModel (<a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.taup.tau.TauPyModel.html#obspy.taup.tau.TauPyModel">https://docs.obspy.org/packages/autogen/obspy.taup.tau.TauPyModel.html#obspy.taup.tau.TauPyModel</a>)
+of the obspy class TauPyModel
+(<a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.taup.tau.TauPyModel.html#obspy.taup.tau.TauPyModel">https://docs.obspy.org/packages/autogen/obspy.taup.tau.TauPyModel.html#obspy.taup.tau.TauPyModel</a>)
 Mistakes in use of this argument can cause a MsPASSError exception to
 be thrown (not logged thrown as a fatal error) in one of two ways:
 (1)  If use_measured_arrival_time is False this argument must be defined,
-and (2) if it is defined it MUST be an instance of TauPyModel.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>source_collection</strong> – normalization collection for source data.</p>
-</dd>
-</dl>
-<p>The default is the MsPASS name “source” which means the function will
+and (2) if it is defined it MUST be an instance of TauPyModel.</p></li>
+<li><p><strong>source_collection</strong> – normalization collection for source data.
+The default is the MsPASS name “source” which means the function will
 try to load the source hypocenter coordinates (when required) as
 source_lat, source_lon, source_depth, and source_time from the input
 data_object.  The id of that document is posted to the output dictionary
-stored under metadata_output_key.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>receiver_collection</strong> – when set this name will override the</p>
-</dd>
-</dl>
-<p>automatic setting of the expected normalization collection naming
+stored under metadata_output_key.</p></li>
+<li><p><strong>receiver_collection</strong> – when set this name will override the
+automatic setting of the expected normalization collection naming
 for receiver functions (see above).  The default is None which causes
 the automatic switching to be involked.  If it is any other string
-the automatic naming will be overridden.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>the data_object modified by insertion of the snr QC data</p>
+the automatic naming will be overridden.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the data_object modified by insertion of the snr QC data
+in the object’s Metadata under the key defined by metadata_output_key.</p>
 </dd>
 </dl>
-<p>in the object’s Metadata under the key defined by metadata_output_key.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.algorithms.snr.filter_by_snr_bandwidth">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.snr.</span></span><span class="sig-name descname"><span class="pre">filter_by_snr_bandwidth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qcdoc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subdoc_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Parrival'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bandpass_low_f_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.02</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">npoles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/snr.html#filter_by_snr_bandwidth"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.snr.filter_by_snr_bandwidth" title="Permalink to this definition"></a></dt>
+<dd><p>Filter function to automatically handle data processed with arrival_snr
+or broadband_snr_QC.</p>
+<p>The two MsPASS functions <cite>arrival_snr</cite> and <cite>broadband_snr_QC</cite> are
+front ends to a lower level function called <cite>FD_broadband_snr</cite>.
+That function is designed to estimate the bandwidth of a signal
+and compute a suite of snr metrics that can be used to winnow
+data for further processing.   One often wants to then filter the
+data so processed into the frequency band the algorithm determines.
+This function does that automaticallty for any atomic datum
+previously processed with <cite>arrival_snr</cite> or <cite>broadband_snr_QC</cite>.</p>
+<p>An important complication this function handles is that for large
+earthquakes the low frequency band edge can be 0 or close
+(meaning within a few Rayleigh bins) of 0.   In that situation
+a bandpass filter with the corner near 0 is unstable and the
+filter operator would fail if you tried to use that corner.
+This function handles that all automatically if you use the
+defaults for <cite>arrival_snr</cite> or <cite>broadband_snr_QC</cite>.  If you
+change any of the defaults you may need to change one of the kwargs
+for this function.   See descriptions below for guidance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>d</strong> (<a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.TimeSeries</span></code></a> or
+<a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.Seismogram</span></code></a>) – atomic MsPASS data object to be filtered.</p></li>
+<li><p><strong>qcdoc</strong> – use attributes stored in a dictionary.
+Use this approach if you want to impose attributes externally.
+If defined the contents of this dictionary will be used.  If it
+isn’t define the function will use subdoc_key to try to fetch
+the same data. Using a dictionary passed via this argument
+is a way to filter an ensemble in a common band for all members.</p></li>
+<li><p><strong>subdoc_key</strong> (<em>string</em><em> (</em><em>default &quot;Parrival&quot;</em><em>)</em>) – subdocument Metadata key to use to fetch data posted
+by <cite>arrival_snr</cite> or <cite>broadband_snr_QC</cite>.  Both by default post the
+computed attributes to a subdocument (python dictionary) that can
+be fetched from the Metadata of d with a particular key.  This
+argument is the key that should be used to fetch that data.  The
+default is the default for <cite>arrival_snr</cite> and <cite>broadband_snr_QC</cite>.
+Note if no data is found for this key the function attempts to
+extract the required attributes from the top level of the
+Metadata container of d.  If that fails the function will kill
+the datum and post an elog message.</p></li>
+<li><p><strong>bandpass_low_f_limit</strong> (<em>float</em><em> (</em><em>default 0.02 = 1/50 s</em><em>)</em>) – </p></li>
+<li><p><strong>npoles</strong> (<em>integer</em><em> (</em><em>default 4</em><em>)</em>) – number of poles to use for Butterworth filter function
+if not defined in the datum’s Metadata.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
@@ -4380,86 +4783,54 @@ one of the wf collections).</p></li>
 </div></blockquote>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>db</strong> – MongoDB database handle to use for transactions that</p>
-</dd>
-</dl>
-<p>are the focus of this algorithm.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>doc_to_save</strong> – python dictionary containing data to be saved.</p>
-</dd>
-</dl>
-<p>Where and now this is saved is controlled by save_collection,
-use_update, and subdocument_key as described above.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>wfid</strong> – waveform document id of the parent datum.   It is</p>
-</dd>
-</dl>
-<p>assumed to be an ObjectId of linking the data in doc_to_save to
-the parent.   It is ALWAYS saved in the output with the key “wfid”.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>wf_collection</strong> – string defining the collection from which the</p>
-</dd>
-</dl>
-<p>datum from which the data stored in doc_to_save are associated.   wfid
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>db</strong> – MongoDB database handle to use for transactions that
+are the focus of this algorithm.</p></li>
+<li><p><strong>doc_to_save</strong> – python dictionary containing data to be saved.
+Where and now this is saved is controlled by save_collection,
+use_update, and subdocument_key as described above.</p></li>
+<li><p><strong>wfid</strong> – waveform document id of the parent datum.   It is
+assumed to be an ObjectId of linking the data in doc_to_save to
+the parent.   It is ALWAYS saved in the output with the key “wfid”.</p></li>
+<li><p><strong>wf_collection</strong> – string defining the collection from which the
+datum from which the data stored in doc_to_save are associated.   wfid
 is assumed define a valid document in wf_collection.   Default is
-“wf_Seismogram”.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>save_collection</strong> – string defining the collection name to which</p>
-</dd>
-</dl>
-<p>doc_to_save should be pushed.   See above for how this name interacts
-with other parameters.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>subdocument_key</strong> – Optional key for saving doc_to_save as a</p>
-</dd>
-</dl>
-<p>a subdocument in the save_collection.   Default is None which means
+“wf_Seismogram”.</p></li>
+<li><p><strong>save_collection</strong> – string defining the collection name to which
+doc_to_save should be pushed.   See above for how this name interacts
+with other parameters.</p></li>
+<li><p><strong>subdocument_key</strong> – Optional key for saving doc_to_save as a
+a subdocument in the save_collection.   Default is None which means
 the contents of doc_to_save will be saved (or update) as is.
 For saves to (default) arrival collection this parameter should
 normally be left None, but is allowed.   If save_collection is the
 parent waveform collection setting this to some sensible key is
 recommended to avoid possible name collisions with waveform
 Metadata key-value pairs.    Default is None which means no
-subdocuments are created.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>use_update</strong> – boolean controlling whether or not to use</p>
-</dd>
-</dl>
-<p>updates or inserts for the contents of doc_to_save.  See above for
+subdocuments are created.</p></li>
+<li><p><strong>use_update</strong> – boolean controlling whether or not to use
+updates or inserts for the contents of doc_to_save.  See above for
 a description of how this interacts with other arguments to this
-function.  Default is False.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>update_id</strong> – ObjectId of target document when running in update</p>
-</dd>
-</dl>
-<p>mode.  When save_collection is the same as wf_collection this parameter
+function.  Default is False.</p></li>
+<li><p><strong>update_id</strong> – ObjectId of target document when running in update
+mode.  When save_collection is the same as wf_collection this parameter
 is ignored and the required id passed as wfid will be used for the
 update key matching.   Also ignored with the default behavior if
 inserting doc_to_save as a new document.  Required only if running
 with a different collection and updating is desired.  The type example
 noted above would be updates to existing arrival informations
-created from a css3.0 database.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>validate_wfid</strong> – When set True the id defined by the</p>
-</dd>
-</dl>
-<p>required argument wfid will be validated by querying wf_collection.
+created from a css3.0 database.</p></li>
+<li><p><strong>validate_wfid</strong> – When set True the id defined by the
+required argument wfid will be validated by querying wf_collection.
 In this mode if wfid is not found the function will silently return None.
-Callers using this mode should handle that condition.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>ObjectId of saved record.  None if something went wrong</p>
+Callers using this mode should handle that condition.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>ObjectId of saved record.  None if something went wrong
+and nothing was saved.</p>
 </dd>
 </dl>
-<p>and nothing was saved.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -4537,6 +4908,39 @@ each call to this function may need its own time window.</p></li>
 <dd class="field-even"><p>estimated signal-to-noise ratio as a single float.  Note the
 special returns noted above for any situation where the noise window
 amplitude is 0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.algorithms.snr.visualize_qcdata">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.snr.</span></span><span class="sig-name descname"><span class="pre">visualize_qcdata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">component</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qc_subdoc_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Parrival'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/snr.html#visualize_qcdata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.snr.visualize_qcdata" title="Permalink to this definition"></a></dt>
+<dd><p>Creates a set of plots to visualize qc results computed from
+spectral estimates.  Requires the input datum d to have
+the spectra stored in metadata as pickled serialization of
+spectra used for the estimators.  That requires the data to
+have been run with the option “save_spectra=True” in on
+of the QC function that use FD_snr_estimator.  The function
+with throw a MsPASSError exception if that metadata is missing.</p>
+<p>This function generates graphics and must not be used in
+a large data processing job.   It is for exploratory work only
+for use on a small subset of data.   Note “exploratory” also
+implies it is not as robust as a processing function and
+may fail in ways that require debugging.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>d</strong> (<a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.TimeSeries</span></code></a> or
+<code class="xref py py-class docutils literal notranslate"><span class="pre">mapsspy.ccore.seismic.Seismogram</span></code>.) – Datum to display</p></li>
+<li><p><strong>component</strong> (<em>integer</em>) – component to display if input is a
+<cite>Seismogram</cite> object.  Ignore if input is a <cite>TimeSeries</cite>.</p></li>
+<li><p><strong>qc_subdoc_key</strong> (string or None.  Default “Parrival”
+is default of <cite>broadband_arrival_QC</cite>.) – key used to fetch the subdocument
+from d normally used to store the output from
+<cite>broadband_snr_QC</cite>.  If set to None will attempt
+to fetch required attributes from Metdata container
+of d.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>

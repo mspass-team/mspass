@@ -13,17 +13,17 @@
       <node id="11">
         <label>list</label>
       </node>
-      <node id="26">
+      <node id="28">
         <label>mspass/seismic/BasicTimeSeries.h</label>
         <link refid="_basic_time_series_8h_source"/>
         <childnode refid="9" relation="include">
         </childnode>
-        <childnode refid="27" relation="include">
+        <childnode refid="25" relation="include">
         </childnode>
-        <childnode refid="28" relation="include">
+        <childnode refid="26" relation="include">
         </childnode>
       </node>
-      <node id="52">
+      <node id="53">
         <label>mspass/seismic/BasicSpectrum.h</label>
         <link refid="_basic_spectrum_8h_source"/>
         <childnode refid="8" relation="include">
@@ -36,48 +36,54 @@
       <node id="24">
         <label>gsl/gsl_fft_complex.h</label>
       </node>
-      <node id="37">
+      <node id="39">
         <label>boost/serialization/map.hpp</label>
       </node>
-      <node id="48">
+      <node id="34">
         <label>boost/serialization/vector.hpp</label>
       </node>
-      <node id="27">
+      <node id="25">
         <label>boost/archive/text_iarchive.hpp</label>
       </node>
-      <node id="43">
+      <node id="45">
         <label>mspass/utility/ErrorLogger.h</label>
         <link refid="_error_logger_8h_source"/>
-        <childnode refid="44" relation="include">
+        <childnode refid="46" relation="include">
         </childnode>
         <childnode refid="11" relation="include">
         </childnode>
-        <childnode refid="45" relation="include">
+        <childnode refid="47" relation="include">
         </childnode>
-        <childnode refid="27" relation="include">
+        <childnode refid="25" relation="include">
         </childnode>
-        <childnode refid="28" relation="include">
+        <childnode refid="26" relation="include">
         </childnode>
-        <childnode refid="38" relation="include">
+        <childnode refid="40" relation="include">
         </childnode>
-        <childnode refid="46" relation="include">
+        <childnode refid="48" relation="include">
         </childnode>
         <childnode refid="4" relation="include">
         </childnode>
-        <childnode refid="43" relation="include">
+        <childnode refid="45" relation="include">
         </childnode>
       </node>
-      <node id="32">
+      <node id="33">
         <label>mspass/algorithms/deconvolution/ShapingWavelet.h</label>
         <link refid="_shaping_wavelet_8h_source"/>
         <childnode refid="13" relation="include">
         </childnode>
         <childnode refid="30" relation="include">
         </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
         <childnode refid="25" relation="include">
         </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="34" relation="include">
+        </childnode>
       </node>
-      <node id="50">
+      <node id="51">
         <label>boost/archive/binary_iarchive.hpp</label>
       </node>
       <node id="4">
@@ -88,10 +94,10 @@
         <childnode refid="6" relation="include">
         </childnode>
       </node>
-      <node id="41">
+      <node id="43">
         <label>boost/uuid/uuid_io.hpp</label>
       </node>
-      <node id="47">
+      <node id="49">
         <label>mspass/utility/dmatrix.h</label>
         <link refid="dmatrix_8h_source"/>
         <childnode refid="12" relation="include">
@@ -102,11 +108,11 @@
         </childnode>
         <childnode refid="8" relation="include">
         </childnode>
-        <childnode refid="48" relation="include">
-        </childnode>
-        <childnode refid="49" relation="include">
+        <childnode refid="34" relation="include">
         </childnode>
         <childnode refid="50" relation="include">
+        </childnode>
+        <childnode refid="51" relation="include">
         </childnode>
         <childnode refid="4" relation="include">
         </childnode>
@@ -122,14 +128,14 @@
         </childnode>
         <childnode refid="7" relation="include">
         </childnode>
-        <childnode refid="35" relation="include">
+        <childnode refid="37" relation="include">
         </childnode>
-        <childnode refid="54" relation="include">
+        <childnode refid="55" relation="include">
         </childnode>
-        <childnode refid="61" relation="include">
+        <childnode refid="62" relation="include">
         </childnode>
       </node>
-      <node id="36">
+      <node id="38">
         <label>mspass/utility/ProcessingHistory.h</label>
         <link refid="_processing_history_8h_source"/>
         <childnode refid="12" relation="include">
@@ -140,10 +146,6 @@
         </childnode>
         <childnode refid="15" relation="include">
         </childnode>
-        <childnode refid="37" relation="include">
-        </childnode>
-        <childnode refid="38" relation="include">
-        </childnode>
         <childnode refid="39" relation="include">
         </childnode>
         <childnode refid="40" relation="include">
@@ -152,22 +154,26 @@
         </childnode>
         <childnode refid="42" relation="include">
         </childnode>
-        <childnode refid="27" relation="include">
-        </childnode>
-        <childnode refid="28" relation="include">
-        </childnode>
         <childnode refid="43" relation="include">
+        </childnode>
+        <childnode refid="44" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="45" relation="include">
         </childnode>
       </node>
       <node id="12">
         <label>string</label>
       </node>
-      <node id="25">
+      <node id="27">
         <label>mspass/seismic/CoreTimeSeries.h</label>
         <link refid="_core_time_series_8h_source"/>
         <childnode refid="8" relation="include">
         </childnode>
-        <childnode refid="26" relation="include">
+        <childnode refid="28" relation="include">
         </childnode>
         <childnode refid="13" relation="include">
         </childnode>
@@ -175,26 +181,26 @@
       <node id="15">
         <label>map</label>
       </node>
-      <node id="64">
+      <node id="65">
         <label>mspass/algorithms/Taper.h</label>
         <link refid="_taper_8h_source"/>
         <childnode refid="8" relation="include">
         </childnode>
-        <childnode refid="34" relation="include">
+        <childnode refid="36" relation="include">
         </childnode>
-        <childnode refid="28" relation="include">
+        <childnode refid="26" relation="include">
         </childnode>
-        <childnode refid="27" relation="include">
-        </childnode>
-        <childnode refid="65" relation="include">
-        </childnode>
-        <childnode refid="48" relation="include">
+        <childnode refid="25" relation="include">
         </childnode>
         <childnode refid="66" relation="include">
         </childnode>
-        <childnode refid="35" relation="include">
+        <childnode refid="34" relation="include">
         </childnode>
-        <childnode refid="54" relation="include">
+        <childnode refid="32" relation="include">
+        </childnode>
+        <childnode refid="37" relation="include">
+        </childnode>
+        <childnode refid="55" relation="include">
         </childnode>
       </node>
       <node id="6">
@@ -203,47 +209,47 @@
       <node id="17">
         <label>fstream</label>
       </node>
-      <node id="57">
+      <node id="58">
         <label>mspass/seismic/SlownessVector.h</label>
         <link refid="_slowness_vector_8h_source"/>
         <childnode refid="12" relation="include">
         </childnode>
-        <childnode refid="27" relation="include">
+        <childnode refid="25" relation="include">
         </childnode>
-        <childnode refid="28" relation="include">
+        <childnode refid="26" relation="include">
         </childnode>
       </node>
-      <node id="65">
+      <node id="66">
         <label>boost/serialization/base_object.hpp</label>
       </node>
       <node id="29">
         <label>mspass/algorithms/TimeWindow.h</label>
         <link refid="_time_window_8h_source"/>
       </node>
-      <node id="61">
+      <node id="62">
         <label>mspass/algorithms/algorithms.h</label>
         <link refid="algorithms_8h_source"/>
         <childnode refid="29" relation="include">
         </childnode>
-        <childnode refid="54" relation="include">
+        <childnode refid="55" relation="include">
         </childnode>
-        <childnode refid="35" relation="include">
+        <childnode refid="37" relation="include">
         </childnode>
-        <childnode refid="58" relation="include">
+        <childnode refid="59" relation="include">
         </childnode>
-        <childnode refid="62" relation="include">
+        <childnode refid="63" relation="include">
         </childnode>
       </node>
-      <node id="49">
+      <node id="50">
         <label>boost/archive/binary_oarchive.hpp</label>
       </node>
       <node id="19">
         <label>boost/any.hpp</label>
       </node>
-      <node id="28">
+      <node id="26">
         <label>boost/archive/text_oarchive.hpp</label>
       </node>
-      <node id="56">
+      <node id="57">
         <label>mspass/utility/SphericalCoordinate.h</label>
         <link refid="_spherical_coordinate_8h_source"/>
       </node>
@@ -253,41 +259,41 @@
         <childnode refid="12" relation="include">
         </childnode>
       </node>
-      <node id="53">
+      <node id="54">
         <label>mspass/algorithms/amplitudes.h</label>
         <link refid="amplitudes_8h_source"/>
         <childnode refid="18" relation="include">
         </childnode>
         <childnode refid="4" relation="include">
         </childnode>
-        <childnode refid="35" relation="include">
+        <childnode refid="37" relation="include">
         </childnode>
-        <childnode refid="54" relation="include">
+        <childnode refid="55" relation="include">
         </childnode>
-        <childnode refid="58" relation="include">
+        <childnode refid="59" relation="include">
         </childnode>
-        <childnode refid="51" relation="include">
+        <childnode refid="52" relation="include">
         </childnode>
-        <childnode refid="60" relation="include">
+        <childnode refid="61" relation="include">
         </childnode>
         <childnode refid="13" relation="include">
         </childnode>
         <childnode refid="29" relation="include">
         </childnode>
-        <childnode refid="61" relation="include">
+        <childnode refid="62" relation="include">
         </childnode>
       </node>
-      <node id="35">
+      <node id="37">
         <label>mspass/seismic/TimeSeries.h</label>
         <link refid="_time_series_8h_source"/>
-        <childnode refid="25" relation="include">
+        <childnode refid="27" relation="include">
         </childnode>
-        <childnode refid="36" relation="include">
+        <childnode refid="38" relation="include">
         </childnode>
-        <childnode refid="43" relation="include">
+        <childnode refid="45" relation="include">
         </childnode>
       </node>
-      <node id="60">
+      <node id="61">
         <label>mspass/utility/VectorStatistics.h</label>
         <link refid="_vector_statistics_8h_source"/>
         <childnode refid="8" relation="include">
@@ -303,21 +309,21 @@
       <node id="14">
         <label>typeinfo</label>
       </node>
-      <node id="44">
+      <node id="46">
         <label>unistd.h</label>
       </node>
-      <node id="62">
+      <node id="63">
         <label>mspass/seismic/TimeSeriesWGaps.h</label>
         <link refid="_time_series_w_gaps_8h_source"/>
-        <childnode refid="35" relation="include">
+        <childnode refid="37" relation="include">
         </childnode>
-        <childnode refid="63" relation="include">
+        <childnode refid="64" relation="include">
         </childnode>
       </node>
       <node id="8">
         <label>vector</label>
       </node>
-      <node id="40">
+      <node id="42">
         <label>boost/uuid/uuid_generators.hpp</label>
       </node>
       <node id="18">
@@ -326,39 +332,39 @@
       <node id="20">
         <label>pybind11/pybind11.h</label>
       </node>
-      <node id="55">
+      <node id="56">
         <label>mspass/seismic/CoreSeismogram.h</label>
         <link refid="_core_seismogram_8h_source"/>
-        <childnode refid="34" relation="include">
+        <childnode refid="36" relation="include">
         </childnode>
         <childnode refid="8" relation="include">
         </childnode>
         <childnode refid="13" relation="include">
         </childnode>
-        <childnode refid="47" relation="include">
+        <childnode refid="49" relation="include">
         </childnode>
-        <childnode refid="26" relation="include">
+        <childnode refid="28" relation="include">
         </childnode>
-        <childnode refid="25" relation="include">
-        </childnode>
-        <childnode refid="56" relation="include">
+        <childnode refid="27" relation="include">
         </childnode>
         <childnode refid="57" relation="include">
+        </childnode>
+        <childnode refid="58" relation="include">
         </childnode>
       </node>
       <node id="9">
         <label>math.h</label>
       </node>
-      <node id="58">
+      <node id="59">
         <label>mspass/seismic/Ensemble.h</label>
         <link refid="_ensemble_8h_source"/>
         <childnode refid="8" relation="include">
         </childnode>
-        <childnode refid="35" relation="include">
+        <childnode refid="37" relation="include">
         </childnode>
-        <childnode refid="54" relation="include">
+        <childnode refid="55" relation="include">
         </childnode>
-        <childnode refid="59" relation="include">
+        <childnode refid="60" relation="include">
         </childnode>
       </node>
       <node id="5">
@@ -377,17 +383,23 @@
         </childnode>
         <childnode refid="24" relation="include">
         </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="32" relation="include">
+        </childnode>
       </node>
-      <node id="66">
+      <node id="32">
         <label>boost/serialization/shared_ptr.hpp</label>
       </node>
-      <node id="42">
+      <node id="44">
         <label>boost/uuid/uuid_serialize.hpp</label>
       </node>
-      <node id="46">
+      <node id="48">
         <label>boost/serialization/list.hpp</label>
       </node>
-      <node id="59">
+      <node id="60">
         <label>mspass/utility/memory_constants.h</label>
         <link refid="memory__constants_8h_source"/>
       </node>
@@ -401,19 +413,19 @@
         <childnode refid="13" relation="include">
         </childnode>
       </node>
-      <node id="39">
+      <node id="41">
         <label>boost/uuid/uuid.hpp</label>
       </node>
       <node id="16">
         <label>set</label>
       </node>
-      <node id="38">
+      <node id="40">
         <label>boost/serialization/serialization.hpp</label>
       </node>
       <node id="31">
         <label>complex</label>
       </node>
-      <node id="63">
+      <node id="64">
         <label>mspass/seismic/DataGap.h</label>
         <link refid="_data_gap_8h_source"/>
         <childnode refid="16" relation="include">
@@ -437,27 +449,27 @@
         </childnode>
         <childnode refid="22" relation="include">
         </childnode>
-        <childnode refid="32" relation="include">
-        </childnode>
         <childnode refid="33" relation="include">
-        </childnode>
-        <childnode refid="53" relation="include">
-        </childnode>
-        <childnode refid="64" relation="include">
-        </childnode>
-        <childnode refid="29" relation="include">
-        </childnode>
-        <childnode refid="51" relation="include">
         </childnode>
         <childnode refid="35" relation="include">
         </childnode>
         <childnode refid="54" relation="include">
         </childnode>
+        <childnode refid="65" relation="include">
+        </childnode>
+        <childnode refid="29" relation="include">
+        </childnode>
+        <childnode refid="52" relation="include">
+        </childnode>
+        <childnode refid="37" relation="include">
+        </childnode>
+        <childnode refid="55" relation="include">
+        </childnode>
       </node>
-      <node id="33">
+      <node id="35">
         <label>mspass/algorithms/deconvolution/MTPowerSpectrumEngine.h</label>
         <link refid="_m_t_power_spectrum_engine_8h_source"/>
-        <childnode refid="34" relation="include">
+        <childnode refid="36" relation="include">
         </childnode>
         <childnode refid="8" relation="include">
         </childnode>
@@ -465,24 +477,28 @@
         </childnode>
         <childnode refid="24" relation="include">
         </childnode>
-        <childnode refid="35" relation="include">
+        <childnode refid="25" relation="include">
         </childnode>
-        <childnode refid="47" relation="include">
+        <childnode refid="26" relation="include">
         </childnode>
-        <childnode refid="51" relation="include">
+        <childnode refid="37" relation="include">
+        </childnode>
+        <childnode refid="49" relation="include">
+        </childnode>
+        <childnode refid="52" relation="include">
         </childnode>
       </node>
-      <node id="54">
+      <node id="55">
         <label>mspass/seismic/Seismogram.h</label>
         <link refid="_seismogram_8h_source"/>
-        <childnode refid="55" relation="include">
+        <childnode refid="56" relation="include">
         </childnode>
-        <childnode refid="36" relation="include">
+        <childnode refid="38" relation="include">
         </childnode>
-        <childnode refid="43" relation="include">
+        <childnode refid="45" relation="include">
         </childnode>
       </node>
-      <node id="51">
+      <node id="52">
         <label>mspass/seismic/PowerSpectrum.h</label>
         <link refid="_power_spectrum_8h_source"/>
         <childnode refid="8" relation="include">
@@ -491,15 +507,15 @@
         </childnode>
         <childnode refid="4" relation="include">
         </childnode>
-        <childnode refid="43" relation="include">
+        <childnode refid="45" relation="include">
         </childnode>
-        <childnode refid="52" relation="include">
+        <childnode refid="53" relation="include">
         </childnode>
       </node>
-      <node id="45">
+      <node id="47">
         <label>boost/archive/basic_archive.hpp</label>
       </node>
-      <node id="34">
+      <node id="36">
         <label>memory</label>
       </node>
       <node id="23">
@@ -514,9 +530,13 @@
         </childnode>
         <childnode refid="24" relation="include">
         </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
         <childnode refid="13" relation="include">
         </childnode>
-        <childnode refid="25" relation="include">
+        <childnode refid="27" relation="include">
         </childnode>
         <childnode refid="29" relation="include">
         </childnode>
@@ -699,7 +719,7 @@
 <codeline lineno="112"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>FFTDeconOperator::change_size(nfftneeded);</highlight></codeline>
 <codeline lineno="113"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1utility_1_1_antelope_pf" kindref="compound">AntelopePf</ref><sp/>pfcopy(pf);</highlight></codeline>
 <codeline lineno="114"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>pfcopy.put(</highlight><highlight class="stringliteral">&quot;operator_nfft&quot;</highlight><highlight class="normal">,nfftneeded);</highlight></codeline>
-<codeline lineno="115"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>this-&gt;shapingwavelet=ShapingWavelet(pfcopy);</highlight></codeline>
+<codeline lineno="115"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>this-&gt;shapingwavelet=<ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet" kindref="compound">ShapingWavelet</ref>(pfcopy);</highlight></codeline>
 <codeline lineno="116"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="117"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>ShapingWavelet<sp/>has<sp/>more<sp/>options<sp/>than<sp/>can<sp/>be<sp/>accepted<sp/>in<sp/>this<sp/>algorithm</highlight></codeline>
 <codeline lineno="118"><highlight class="comment"><sp/><sp/><sp/><sp/>so<sp/>this<sp/>test<sp/>is<sp/>needed<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
@@ -718,14 +738,14 @@
 <codeline lineno="131"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>noise_winlength=round((te-ts)/operator_dt)+1;</highlight></codeline>
 <codeline lineno="132"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>tbp=pf.<ref refid="classmspass_1_1utility_1_1_metadata_1ad69a5786d997104df560775f4f688b02" kindref="member">get_double</ref>(</highlight><highlight class="stringliteral">&quot;time_bandwidth_product&quot;</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="133"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/>ntapers=pf.<ref refid="classmspass_1_1utility_1_1_metadata_1a7ace0c05ebb00b3c383cb8cccd225504" kindref="member">get_long</ref>(</highlight><highlight class="stringliteral">&quot;number_tapers&quot;</highlight><highlight class="normal">);</highlight></codeline>
-<codeline lineno="134"><highlight class="normal"><sp/><sp/><sp/><sp/>this-&gt;dnoise_engine=MTPowerSpectrumEngine(noise_winlength,tbp,ntapers);</highlight></codeline>
+<codeline lineno="134"><highlight class="normal"><sp/><sp/><sp/><sp/>this-&gt;dnoise_engine=<ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine" kindref="compound">MTPowerSpectrumEngine</ref>(noise_winlength,tbp,ntapers);</highlight></codeline>
 <codeline lineno="135"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>Default<sp/>wavelet<sp/>noise<sp/>window<sp/>to<sp/>data<sp/>window<sp/>length<sp/>-<sp/>adjusted<sp/>dynamically</highlight></codeline>
 <codeline lineno="136"><highlight class="comment"><sp/><sp/><sp/><sp/>if<sp/>changed*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="137"><highlight class="normal"><sp/><sp/><sp/><sp/>this-&gt;wnoise_engine=MTPowerSpectrumEngine(noise_winlength,tbp,ntapers);</highlight></codeline>
+<codeline lineno="137"><highlight class="normal"><sp/><sp/><sp/><sp/>this-&gt;wnoise_engine=<ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine" kindref="compound">MTPowerSpectrumEngine</ref>(noise_winlength,tbp,ntapers);</highlight></codeline>
 <codeline lineno="138"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>Set<sp/>initial<sp/>signal<sp/>and<sp/>wavelet<sp/>engine<sp/>spectrum<sp/>estimators<sp/>to<sp/>length<sp/>defined</highlight></codeline>
 <codeline lineno="139"><highlight class="comment"><sp/><sp/><sp/><sp/>by<sp/>data<sp/>window<sp/>above<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="140"><highlight class="normal"><sp/><sp/><sp/><sp/>this-&gt;signalengine=MTPowerSpectrumEngine(this-&gt;winlength,tbp,ntapers);</highlight></codeline>
-<codeline lineno="141"><highlight class="normal"><sp/><sp/><sp/><sp/>this-&gt;waveletengine=MTPowerSpectrumEngine(this-&gt;winlength,tbp,ntapers);</highlight></codeline>
+<codeline lineno="140"><highlight class="normal"><sp/><sp/><sp/><sp/>this-&gt;signalengine=<ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine" kindref="compound">MTPowerSpectrumEngine</ref>(this-&gt;winlength,tbp,ntapers);</highlight></codeline>
+<codeline lineno="141"><highlight class="normal"><sp/><sp/><sp/><sp/>this-&gt;waveletengine=<ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine" kindref="compound">MTPowerSpectrumEngine</ref>(this-&gt;winlength,tbp,ntapers);</highlight></codeline>
 <codeline lineno="142"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>sval;</highlight></codeline>
 <codeline lineno="143"><highlight class="normal"><sp/><sp/><sp/><sp/>sval=pf.<ref refid="classmspass_1_1utility_1_1_metadata_1aa56da98a52f03babd67bf9fb55c40f3a" kindref="member">get_string</ref>(</highlight><highlight class="stringliteral">&quot;taper_type&quot;</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="144"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>New<sp/>parameter<sp/>added<sp/>for<sp/>dynamic<sp/>bandwidth<sp/>adjustment<sp/>feature<sp/>implemented</highlight></codeline>
@@ -1250,7 +1270,7 @@
 <codeline lineno="663"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*d0=</highlight><highlight class="keyword">new</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal">[FFTDeconOperator::nfft];</highlight></codeline>
 <codeline lineno="664"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal">(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>k=0;k&lt;FFTDeconOperator::nfft;++k)<sp/>d0[k]=0.0;</highlight></codeline>
 <codeline lineno="665"><highlight class="normal"><sp/><sp/><sp/><sp/>d0[0]=1.0;</highlight></codeline>
-<codeline lineno="666"><highlight class="normal"><sp/><sp/><sp/><sp/>ComplexArray<sp/>delta0(FFTDeconOperator::nfft,d0);</highlight></codeline>
+<codeline lineno="666"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array" kindref="compound">ComplexArray</ref><sp/>delta0(FFTDeconOperator::nfft,d0);</highlight></codeline>
 <codeline lineno="667"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">delete</highlight><highlight class="normal"><sp/>[]<sp/>d0;</highlight></codeline>
 <codeline lineno="668"><highlight class="normal"><sp/><sp/><sp/><sp/>gsl_fft_complex_forward(delta0.ptr(),1,FFTDeconOperator::nfft,wavetable,workspace);</highlight></codeline>
 <codeline lineno="669"><highlight class="normal"><sp/><sp/><sp/><sp/>winv=delta0/cwvec;</highlight></codeline>
@@ -1262,12 +1282,12 @@
 <codeline lineno="675"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">try</highlight><highlight class="normal">{</highlight></codeline>
 <codeline lineno="676"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(taper_data)<sp/>wavelet_taper-&gt;apply(this-&gt;wavelet);</highlight></codeline>
 <codeline lineno="677"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>Assume<sp/>if<sp/>we<sp/>got<sp/>here<sp/>wavelet.npts()<sp/>==<sp/>nfft*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="678"><highlight class="normal"><sp/><sp/><sp/><sp/>ComplexArray<sp/>b_fft(this-&gt;wavelet.<ref refid="classmspass_1_1seismic_1_1_basic_time_series_1a347b349bb4e1f0e65978dfcd45ae3472" kindref="member">npts</ref>(),&amp;(this-&gt;wavelet.s[0]));</highlight></codeline>
+<codeline lineno="678"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array" kindref="compound">ComplexArray</ref><sp/>b_fft(this-&gt;wavelet.<ref refid="classmspass_1_1seismic_1_1_basic_time_series_1a347b349bb4e1f0e65978dfcd45ae3472" kindref="member">npts</ref>(),&amp;(this-&gt;wavelet.s[0]));</highlight></codeline>
 <codeline lineno="679"><highlight class="normal"><sp/><sp/><sp/><sp/>gsl_fft_complex_forward(b_fft.ptr(),1,FFTDeconOperator::nfft,</highlight></codeline>
 <codeline lineno="680"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>wavetable,workspace);</highlight></codeline>
-<codeline lineno="681"><highlight class="normal"><sp/><sp/><sp/><sp/>ComplexArray<sp/>conj_b_fft(b_fft);</highlight></codeline>
+<codeline lineno="681"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array" kindref="compound">ComplexArray</ref><sp/>conj_b_fft(b_fft);</highlight></codeline>
 <codeline lineno="682"><highlight class="normal"><sp/><sp/><sp/><sp/>conj_b_fft.conj();</highlight></codeline>
-<codeline lineno="683"><highlight class="normal"><sp/><sp/><sp/><sp/>ComplexArray<sp/>denom(conj_b_fft*b_fft);</highlight></codeline>
+<codeline lineno="683"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array" kindref="compound">ComplexArray</ref><sp/>denom(conj_b_fft*b_fft);</highlight></codeline>
 <codeline lineno="684"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>Compute<sp/>scaling<sp/>constants<sp/>for<sp/>noise<sp/>based<sp/>on<sp/>noise_floor<sp/>and<sp/>the</highlight></codeline>
 <codeline lineno="685"><highlight class="comment"><sp/><sp/><sp/><sp/>noise<sp/>spectrum<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="686"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>df,fNy;</highlight></codeline>
@@ -1442,7 +1462,7 @@
 <codeline lineno="855"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal">(j=ntocopy;j&lt;FFTDeconOperator::nfft;++j)</highlight></codeline>
 <codeline lineno="856"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>wvec.push_back(0.0);</highlight></codeline>
 <codeline lineno="857"><highlight class="normal"></highlight></codeline>
-<codeline lineno="858"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ComplexArray<sp/>numerator(FFTDeconOperator::nfft,&amp;(wvec[0]));</highlight></codeline>
+<codeline lineno="858"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array" kindref="compound">ComplexArray</ref><sp/>numerator(FFTDeconOperator::nfft,&amp;(wvec[0]));</highlight></codeline>
 <codeline lineno="859"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//Debug</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="860"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//cout<sp/>&lt;&lt;<sp/>&quot;numerator<sp/>data<sp/>after<sp/>taper<sp/>for<sp/>component=&quot;&lt;&lt;k&lt;&lt;endl;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="861"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//for(j=0;j&lt;FFTDeconOperator::nfft;++j)cout&lt;&lt;real(numerator[j])&lt;&lt;endl;</highlight><highlight class="normal"></highlight></codeline>
@@ -1473,7 +1493,7 @@
 <codeline lineno="886"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>signal_bandwidth_fraction[k]=</highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keywordtype">double</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(nhighsnr)</highlight></codeline>
 <codeline lineno="887"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>/<sp/></highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keywordtype">double</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(FFTDeconOperator::nfft/2);</highlight></codeline>
 <codeline lineno="888"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>peak_snr[k]=snrmax;</highlight></codeline>
-<codeline lineno="889"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ComplexArray<sp/>rftmp=numerator*winv;</highlight></codeline>
+<codeline lineno="889"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array" kindref="compound">ComplexArray</ref><sp/>rftmp=numerator*winv;</highlight></codeline>
 <codeline lineno="890"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>rftmp=(*shapingwavelet.<ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet_1aaec6f802d7aba4a36484ba50c9f9c9bf" kindref="member">wavelet</ref>())*rftmp;</highlight></codeline>
 <codeline lineno="891"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>gsl_fft_complex_inverse(rftmp.ptr(),<sp/>1,<sp/>FFTDeconOperator::nfft,</highlight></codeline>
 <codeline lineno="892"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>wavetable,<sp/>workspace);</highlight></codeline>
@@ -1587,7 +1607,7 @@
 <codeline lineno="1000"><highlight class="normal"><sp/><sp/>}</highlight><highlight class="keywordflow">else</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(wtype==</highlight><highlight class="stringliteral">&quot;ricker&quot;</highlight><highlight class="normal">)</highlight></codeline>
 <codeline lineno="1001"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
 <codeline lineno="1002"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>favg=(bwd.<ref refid="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data_1aa5e75df4c544e03a44cb3efc1077bc39" kindref="member">high_edge_f</ref>-bwd.<ref refid="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data_1a0f125fbec3cba28118e541d4f040501f" kindref="member">low_edge_f</ref>)/2.0;</highlight></codeline>
-<codeline lineno="1003"><highlight class="normal"><sp/><sp/><sp/><sp/>shapingwavelet=ShapingWavelet(favg,operator_dt,FFTDeconOperator::nfft);</highlight></codeline>
+<codeline lineno="1003"><highlight class="normal"><sp/><sp/><sp/><sp/>shapingwavelet=<ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet" kindref="compound">ShapingWavelet</ref>(favg,operator_dt,FFTDeconOperator::nfft);</highlight></codeline>
 <codeline lineno="1004"><highlight class="normal"><sp/><sp/>}</highlight><highlight class="keywordflow">else</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="1005"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
 <codeline lineno="1006"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>this<sp/>really<sp/>shouldn&apos;t<sp/>happen<sp/>but<sp/>trap<sp/>it<sp/>anyway<sp/>for<sp/>completeness.</highlight></codeline>
@@ -1605,7 +1625,7 @@
 <codeline lineno="1018"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">TimeSeries</ref><sp/>tswork;</highlight></codeline>
 <codeline lineno="1019"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(d.<ref refid="classmspass_1_1seismic_1_1_basic_time_series_1a347b349bb4e1f0e65978dfcd45ae3472" kindref="member">npts</ref>()!=dnoise_engine.<ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a114db709279ea8ab275ba69fbdcbec13" kindref="member">taper_length</ref>())</highlight></codeline>
 <codeline lineno="1020"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
-<codeline lineno="1021"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>dnoise_engine=MTPowerSpectrumEngine(d.<ref refid="classmspass_1_1seismic_1_1_basic_time_series_1a347b349bb4e1f0e65978dfcd45ae3472" kindref="member">npts</ref>(),</highlight></codeline>
+<codeline lineno="1021"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>dnoise_engine=<ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine" kindref="compound">MTPowerSpectrumEngine</ref>(d.<ref refid="classmspass_1_1seismic_1_1_basic_time_series_1a347b349bb4e1f0e65978dfcd45ae3472" kindref="member">npts</ref>(),</highlight></codeline>
 <codeline lineno="1022"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>dnoise_engine.<ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1accf94d6d1dff859884d9c0aa1719994a" kindref="member">time_bandwidth_product</ref>(),dnoise_engine.<ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a10d4b650fdedd815652c1e4e86a0e715" kindref="member">number_tapers</ref>());</highlight></codeline>
 <codeline lineno="1023"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="1024"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal">(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>k=0;k&lt;3;++k)</highlight></codeline>
