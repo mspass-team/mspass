@@ -10,6 +10,11 @@ if (NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
 endif ()
 message (STATUS "CMAKE_BUILD_TYPE = ${CMAKE_BUILD_TYPE}")
 
+
+# Necessary for MacOS running 14.x OS with Xcode command tools 
+# Commented out by default
+#set(CMAKE_OSX_SYSROOT "/Library/Developer/CommandLineTools/SDKs/MacOSX14.5.sdk")
+
 set (CMAKE_CXX_STANDARD 17)
 set (CMAKE_CXX_FLAGS_DEBUG "-Wall  -Wno-sign-compare -O0 -g")
 set (CMAKE_CXX_FLAGS_RELEASE "-Wall -O3")
@@ -24,8 +29,8 @@ if (CMAKE_BUILD_TYPE STREQUAL "Debug")
   set(CMAKE_CXX_OUTPUT_EXTENSION_REPLACE ON)
   message (STATUS "Enabled Coverage")
 endif ()
-
 find_package (yaml-cpp 0.5.0)
+#find_package (yaml-cpp 0.7.0)
 if (NOT YAML_CPP_INCLUDE_DIR)
   message (STATUS "Building yaml-cpp")
   include (cmake/yaml-cpp.cmake)
@@ -41,7 +46,7 @@ endif ()
 message (STATUS "YAML_CPP_LIBRARIES   = ${YAML_CPP_LIBRARIES}")
 message (STATUS "YAML_CPP_INCLUDE_DIR = ${YAML_CPP_INCLUDE_DIR}")
 
-find_package (Boost 1.64.0 COMPONENTS serialization)
+find_package (Boost 1.86.0 COMPONENTS serialization)
 if (NOT Boost_FOUND)
   message (STATUS "Building Boost")
   include (cmake/boost.cmake)

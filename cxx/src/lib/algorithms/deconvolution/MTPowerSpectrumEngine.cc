@@ -42,10 +42,7 @@ MTPowerSpectrumEngine::MTPowerSpectrumEngine(const int winsize,
   }
   else
       nfft = nfftin;
-  /* The call to set_df as implemented makes the initializations below unnecessary
-  deltaf=1.0;
   operator_dt=dtin;
-  */
   this->set_df(dtin);
   int nseq=static_cast<int>(2.0*tbp);
   if(ntapers>nseq)
@@ -148,6 +145,7 @@ PowerSpectrum MTPowerSpectrumEngine::apply(const TimeSeries& d)
          << "Cannot proceed.  Returning a null result";
       result.elog.log_error("MTPowerSpectrumEngine::apply",
             ss.str(), ErrorSeverity::Invalid);
+      result.kill();
       return result;
     }
 

@@ -4,6 +4,7 @@
 #include "mspass/utility/MsPASSError.h"
 #include "mspass/utility/utility.h"
 #include "mspass/seismic/CoreTimeSeries.h"
+#include "mspass/algorithms/amplitudes.h"
 #include "mspass/algorithms/deconvolution/MultiTaperXcorDecon.h"
 #include "mspass/algorithms/deconvolution/dpss.h"
 #include "mspass/algorithms/deconvolution/common_multitaper.h"
@@ -12,6 +13,7 @@ namespace mspass::algorithms::deconvolution
 using namespace std;
 using namespace mspass::seismic;
 using namespace mspass::utility;
+using mspass::algorithms::amplitudes::normalize;
 
 MultiTaperXcorDecon::MultiTaperXcorDecon(const Metadata &md)
     : FFTDeconOperator(md)
@@ -366,19 +368,11 @@ CoreTimeSeries MultiTaperXcorDecon::actual_output()
         We handle the time through the CoreTimeSeries object. */
         int i0=nfft/2;
         ao=circular_shift(ao,i0);
+        ao = normalize<double>(ao);
         CoreTimeSeries result(nfft);
         /* Getting dt from here is unquestionably a flaw in the api, but will
         retain for now.   Perhaps should a copy of dt in the ScalarDecon object. */
         double dt=this->shapingwavelet.sample_interval();
-        /* t0 is time of sample zero - hence normally negative*/
-        /* Old API
-        result.t0=dt*(-(double)i0);
-        result.dt=dt;
-        result.live=true;
-        result.tref=TimeReferenceType::Relative;
-        result.ns=nfft;
-        */
-
         result.set_t0(dt*(-(double)i0));
         result.set_dt(dt);
         result.set_live();
@@ -412,11 +406,11 @@ CoreTimeSeries MultiTaperXcorDecon::inverse_wavelet()
 
 Metadata MultiTaperXcorDecon::QCMetrics()
 {
-    try {
-        throw MsPASSError("MultiTaperXcorDecon::QCMetrics method not yet implemented",
-         ErrorSeverity::Invalid);
-    } catch(...) {
-        throw;
-    };
+  /* Return only an empty Metadata container.  Done as it is
+  easier to maintain the code letting python do this work.
+  This also anticipates new metrics being added which would be
+  easier in python.*/
+  Metadata md;
+  return md;
 }
 } //End namespace

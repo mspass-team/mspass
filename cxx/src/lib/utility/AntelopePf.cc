@@ -357,6 +357,7 @@ AntelopePf::AntelopePf(string pfbase)
         }
         list<string>::iterator pfptr;
         int nread;
+
         for(nread=0,pfptr=pffiles.begin(); pfptr!=pffiles.end(); ++pfptr)
         {
             // Skip pf files that do not exist

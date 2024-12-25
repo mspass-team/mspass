@@ -12,7 +12,7 @@ from mspasspy.util.converter import AntelopePf2dict
 
 def build_helper():
     #   A helper function to build a GTree instance for test.
-    pfPath = "./data/pf/RFdeconProcessor.pf"
+    pfPath = "./data/pf/GTreeTest.pf"
     pf = AntelopePf(pfPath)
     pf_dict = AntelopePf2dict(pf)
     parameter_dict = collections.OrderedDict()
@@ -28,7 +28,7 @@ def leaf_helper():
 
 
 def branch_helper():
-    pfPath = "./data/pf/RFdeconProcessor.pf"
+    pfPath = "./data/pf/GTreeTest.pf"
     pf = AntelopePf(pfPath)
     pf_dict = collections.OrderedDict(AntelopePf2dict(pf))
     return ("pf", pf_dict)

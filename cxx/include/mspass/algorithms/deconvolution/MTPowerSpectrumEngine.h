@@ -5,6 +5,8 @@
 #include <vector>
 #include <gsl/gsl_errno.h>
 #include <gsl/gsl_fft_complex.h>
+#include <boost/archive/text_iarchive.hpp>
+#include <boost/archive/text_oarchive.hpp>
 #include "mspass/seismic/TimeSeries.h"
 #include "mspass/utility/dmatrix.h"
 #include "mspass/seismic/PowerSpectrum.h"
@@ -162,6 +164,32 @@ private:
   double deltaf;
   gsl_fft_complex_wavetable *wavetable;
   gsl_fft_complex_workspace *workspace;
+  friend boost::serialization::access;
+  template<class Archive>
+  void save(Archive& ar, const unsigned int version) const
+  {
+      ar & taperlen;
+      ar & ntapers;
+      ar & nfft;
+      ar & tbp;
+      ar & operator_dt;
+      ar & tapers;
+      ar & deltaf;
+  }
+  template<class Archive>
+  void load(Archive &ar, const unsigned int version)
+  {
+    ar & taperlen;
+    ar & ntapers;
+    ar & nfft;
+    ar & tbp;
+    ar & operator_dt;
+    ar & tapers;
+    ar & deltaf;
+    this->wavetable = gsl_fft_complex_wavetable_alloc (this->nfft);
+    this->workspace = gsl_fft_complex_workspace_alloc (this->nfft);
+  }
+  BOOST_SERIALIZATION_SPLIT_MEMBER()
 };
 } //namespace ed
 #endif

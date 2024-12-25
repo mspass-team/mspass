@@ -89,6 +89,11 @@ of this data object.
 	{
 		return t0shift_is_valid;
 	};
+/*! Return the current value of the t0shift attribute - argument to restore to UTC */
+  double get_t0shift() const
+  {
+    return this->t0shift;
+  };
 /*! Return the reference time.
 
   We distinguish relative and UTC time by a time shift constant
@@ -184,6 +189,17 @@ variable and alters t0 by tshift.
 	/*! Return time of first data sample.  An epoch time or relative time depending
 	on TimeReferenceType private variable tref*/
   double t0()const {return this->mt0;};
+  /*! Return a vector with the time of each sample. 
+
+  There are times when it is desirable to have a parallel vector to sample 
+  data that contains the actual times of each sample rather than using the 
+  implicit time t0+n*dt.  A case in point is graphics where time is 
+  the x axis in a standard plot.  This function returns 
+  an nsamp length std::vector of the time values of each sample.   
+  Note this is a base class method that makes sense only in subclasses 
+  that have data in a sample vector. 
+  */
+  std::vector<double> time_axis() const;
 	/*! \brief Set the sample interval.
 
 	This is a simple setter for the sample interval attribute.  It is virtual

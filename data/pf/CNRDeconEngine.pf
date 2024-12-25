@@ -1,0 +1,52 @@
+# pf for testing new CNRDeconEngine implementation
+# values are not necessarily reasonable.
+# 
+# these are required by FFTDeconOperator
+#
+target_sample_interval 0.05
+operator_nfft 1024
+deconvolution_data_window_start -5.0
+deconvolution_data_window_end 30.0
+#
+# parameters for CNRDeconEngine
+#
+algorithm colored_noise_damping
+damping_factor 0.1
+noise_floor 0.01
+snr_regularization_floor 2.0
+snr_data_bandwidth_floor 1.5
+noise_window_start -105.0
+noise_window_end -5.0
+time_bandwidth_product 2.5
+number_tapers 4
+taper_type cosine
+# This will implicitly set taper_data True
+CosineTaper &Arr{
+    wavelet_taper &Arr{
+        front0 -10.0
+        front1 -1.0
+        tail0 200.0
+        tail1 190.0
+    }
+    data_taper &Arr{
+        front0 -10.0
+        front1 -1.0
+        tail0 200.0
+        tail1 190.0
+    }
+    data_taper &Arr{
+    }
+}
+
+# 
+# these are required to generate the ShapingWavelet object 
+# that is an attribute of the operator 
+#
+shaping_wavelet_dt  0.05
+shaping_wavelet_type butterworth
+npoles_lo 3
+npoles_hi 3
+# these are only initial values - they are adjusted dynamically
+# in this algorithm
+f3db_lo 0.02
+f3db_hi 1.5

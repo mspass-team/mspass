@@ -1,6 +1,9 @@
 #ifndef __SIMPLE_LEAST_SQUARE_DECON_H__
 #define __SIMPLE_LEAST_SQUARE_DECON_H__
 #include <vector>
+#include <boost/archive/text_iarchive.hpp>
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/serialization/base_object.hpp>
 #include "mspass/utility/Metadata.h"
 #include "mspass/algorithms/deconvolution/ScalarDecon.h"
 #include "mspass/algorithms/deconvolution/FFTDeconOperator.h"
@@ -10,6 +13,10 @@ namespace mspass::algorithms::deconvolution{
 class LeastSquareDecon: public FFTDeconOperator, public ScalarDecon
 {
 public:
+    LeastSquareDecon() : FFTDeconOperator(),ScalarDecon()
+    {
+      damp=1.0;
+    };
     LeastSquareDecon(const LeastSquareDecon &parent);
     LeastSquareDecon(const mspass::utility::Metadata &md);
     LeastSquareDecon(const mspass::utility::Metadata &md,const std::vector<double> &wavelet,
@@ -64,6 +71,14 @@ private:
     int read_metadata(const mspass::utility::Metadata &md);
     int apply();
     double damp;
+    friend boost::serialization::access;
+    template<class Archive>
+    void serialize(Archive &ar, const unsigned int version)
+    {
+        ar & boost::serialization::base_object<FFTDeconOperator>(*this);
+        ar & boost::serialization::base_object<ScalarDecon>(*this);
+        ar & damp;
+    }
 };
 }
 #endif

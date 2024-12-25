@@ -264,6 +264,7 @@ PYBIND11_MODULE(seismic, m) {
     .def("rtoa",&BasicTimeSeries::rtoa,"Restore relative time to absolute if possible")
     .def("ator",&BasicTimeSeries::ator,"Switch time standard from absolute (UTC) to a relative time scale")
     .def("shift",&BasicTimeSeries::shift,"Shift time reference by a specified number of seconds")
+    .def("get_t0shift",&BasicTimeSeries::get_t0shift,"Get the t0shift attribute used for relative time reference")
     .def("time_reference",&BasicTimeSeries::time_reference,"Return time standard")
     .def("shifted",&BasicTimeSeries::shifted,"Return true if data are UTC standard with a time shift applied")
     .def("force_t0_shift",&BasicTimeSeries::force_t0_shift,"Force a time shift value to make data shifted UTC in relative time")
@@ -277,6 +278,7 @@ PYBIND11_MODULE(seismic, m) {
     .def("time_is_relative",&BasicTimeSeries::time_is_relative,"Return true if t0 is not UTC=some relative time standard like shot time")
     .def("npts",&BasicTimeSeries::npts,"Return the number of time samples in this object")
     .def("t0",&BasicTimeSeries::t0,"Return the time of the first sample of data in this time series")
+    .def("time_axis",&BasicTimeSeries::time_axis,"Return a DoubleVector with time of each sample - use for x axis in plots")
     /*Useful alias for t0 method*/
     .def("starttime",[](const BasicTimeSeries &self){return self.t0();})
     .def("set_dt",&BasicTimeSeries::set_dt,"Set the data time sample interval")
