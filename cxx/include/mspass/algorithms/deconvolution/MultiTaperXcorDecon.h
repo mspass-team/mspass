@@ -98,10 +98,7 @@ public:
         return nw;
     };
 private:
-    /*! Private method called by constructors to load parameters.   */
-    int read_metadata(const mspass::utility::Metadata &md,bool refresh);
-    /* Returns a tapered data in container of ComplexArray objects*/
-    std::vector<ComplexArray> taper_data(const std::vector<double>& signal);
+    /* noise data vector */
     std::vector<double> noise;
     double nw,damp;
     int nseq;  // number of tapers
@@ -112,20 +109,23 @@ private:
      * This is a feature added for the GID method that adds
      * an inefficiency for straight application */
     ComplexArray ao_fft;
+    /*! Private method called by constructors to load parameters.   */
+    int read_metadata(const mspass::utility::Metadata &md,bool refresh);
+    /* Returns a tapered data in container of ComplexArray objects*/
+    std::vector<ComplexArray> taper_data(const std::vector<double>& signal);
     int apply();
     friend boost::serialization::access;
     template<class Archive>
     void serialize(Archive &ar, const unsigned int version)
     {
-        ar & boost::serialization::base_object<FFTDeconOperator>(*this);
         ar & boost::serialization::base_object<ScalarDecon>(*this);
+        ar & boost::serialization::base_object<FFTDeconOperator>(*this);
         ar & noise;
         ar & nw;
         ar & damp;
         ar & nseq;
         ar & taperlen;
         ar & tapers;
-        ar & winv;
         ar & ao_fft;
     }
 };
