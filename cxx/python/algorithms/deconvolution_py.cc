@@ -7,6 +7,8 @@
 
 #include <boost/archive/text_oarchive.hpp>
 
+#include <mspass/algorithms/deconvolution/ComplexArray.h>
+#include <mspass/algorithms/deconvolution/ShapingWavelet.h>
 #include <mspass/algorithms/deconvolution/WaterLevelDecon.h>
 #include <mspass/algorithms/deconvolution/LeastSquareDecon.h>
 #include <mspass/algorithms/deconvolution/MultiTaperXcorDecon.h>
@@ -93,6 +95,35 @@ PYBIND11_MODULE(deconvolution, m) {
 
   /* Need this to support returns of std::vector in children of ScalarDecon*/
   py::bind_vector<std::vector<double>>(m, "DoubleVector");
+  /* All the frequency domain operators use this class internally. 
+   * Useful still to have bindings to the underlying class. */
+  py::class_<ComplexArray>(m,"ComplexArray","Complex valued Fortran style array implementation used in MsPASS Decon opertors")
+    //.def(py::init<std::vector<Complex64&>())
+    .def(py::init<int,double *>())
+    .def(py::init<const ComplexArray&>())
+    .def("conj",&ComplexArray::conj,"Convert array elements to complex conjugates")
+    .def("abs",&ComplexArray::abs,"Return DoubleVector of complex magnitudes")
+    .def("rms",&ComplexArray::rms,"Return rms of array content")
+    .def("norm2",&ComplexArray::norm2,"Return L2 norm of array content")
+    .def("phase",&ComplexArray::phase,"Return DoubleVector of phase of components")
+    .def("size",&ComplexArray::size,"Return number of components in the array")
+    ;
+  /* All frequency domain methods uses this class internally as well. 
+   * It actually contains a ComplexArray.   Useful to have these bindings 
+   * for testing and inspection of the result of a get_shaping_wavelet method.
+   * */
+  py::class_<ShapingWavelet>(m,"ShapingWavelet","Shaping wavelet object used in MsPASS decon frequency domain decon operators")
+    .def(py::init<const Metadata&,int>())
+    .def(py::init<int,double,int,double,double,int>())
+    .def(py::init<double,double,int>())
+    .def("impulse_response",&ShapingWavelet::impulse_response,"Return the impulse response of the wavelet in a CoreTimeSeries container")
+    .def("df",&ShapingWavelet::freq_bin_size,"Return frequency bin size (Hz)")
+    .def("dt",&ShapingWavelet::sample_interval,"Return sample interval of wavelet in the time domain")
+    .def("type",&ShapingWavelet::type,"Return the string description of the type of signal this wavelet defines")
+    .def("size",&ShapingWavelet::size,"Size of the complex array defining the wavelet internally")
+    ;
+
+
 
   /* this is a set of deconvolution related classes*/
   py::class_<ScalarDecon,PyScalarDecon>(m,"ScalarDecon","Base class for scalar TimeSeries data")
@@ -158,6 +189,8 @@ PYBIND11_MODULE(deconvolution, m) {
         boost::archive::text_iarchive artm(sstm);
         LeastSquareDecon lsd;
         artm >> lsd;
+        ShapingWavelet sw=lsd.get_shaping_wavelet();
+        ComplexArray w(*sw.wavelet());
         return lsd;
       }
     ))

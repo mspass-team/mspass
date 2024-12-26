@@ -13,11 +13,11 @@
 #include "mspass/algorithms/deconvolution/ShapingWavelet.h"
 #include "mspass/seismic/CoreTimeSeries.h"
 namespace mspass::algorithms::deconvolution{
-class MultiTaperSpecDivDecon: public ScalarDecon, public FFTDeconOperator
+class MultiTaperSpecDivDecon: public FFTDeconOperator, public ScalarDecon
 {
 public:
     /*! Default constructor.   Do not use - only for declarations */
-    MultiTaperSpecDivDecon() : ScalarDecon(),FFTDeconOperator(){};
+    MultiTaperSpecDivDecon() : FFTDeconOperator(),ScalarDecon(){};
     MultiTaperSpecDivDecon(const mspass::utility::Metadata &md,const std::vector<double> &noise,
                           const std::vector<double> &wavelet,const std::vector<double> &data);
     MultiTaperSpecDivDecon(const mspass::utility::Metadata &md);
@@ -105,17 +105,16 @@ public:
         return nw;
     };
 private:
-    /*! Private method called by constructors to load parameters.   */
-    int read_metadata(const mspass::utility::Metadata &md,bool refresh);
-    /* Returns a tapered data in container of ComplexArray objects*/
-    std::vector<ComplexArray> taper_data(const std::vector<double>& signal);
     std::vector<double> noise;
     double nw,damp;
     int nseq;  // number of tapers
     unsigned int taperlen;
     mspass::utility::dmatrix tapers;
-    /* inverse wavelet in the frequency domain */
-    std::vector<ComplexArray> winv;
+    /* With this algorithm we have to keep frequeny domain 
+     * representations of the inverse for each taper.  The 
+     * xcor version of this alorithm doesn't need that because 
+     * the averaging is different. */
+    std::vector<ComplexArray> winv_taper;
     /* We also cache the actual output fft because the cost is
      * small compared to need to recompute it when requested.
      * This is a feature added for the GID method that adds
@@ -125,20 +124,25 @@ private:
     are averaged to produce final result, but we keep them for the
     option of bootstrap errors. */
     std::vector<ComplexArray> rfestimates;
+    /* Private methods */
+    /* Returns a tapered data in container of ComplexArray objects*/
+    std::vector<ComplexArray> taper_data(const std::vector<double>& signal);
+    /*! Private method called by constructors to load parameters.   */
+    int read_metadata(const mspass::utility::Metadata &md,bool refresh);
     int apply();
     friend boost::serialization::access;
     template<class Archive>
     void serialize(Archive &ar, const unsigned int version)
     {
-        ar & boost::serialization::base_object<FFTDeconOperator>(*this);
         ar & boost::serialization::base_object<ScalarDecon>(*this);
+        ar & boost::serialization::base_object<FFTDeconOperator>(*this);
         ar & noise;
         ar & nw;
         ar & damp;
         ar & nseq;
         ar & taperlen;
         ar & tapers;
-        ar & winv;
+        ar & winv_taper;
         ar & ao_fft;
         ar & rfestimates;
     }

@@ -18,7 +18,7 @@ using namespace mspass::utility;
 using mspass::algorithms::amplitudes::normalize;
 
 MultiTaperSpecDivDecon::MultiTaperSpecDivDecon(const Metadata &md)
-    : ScalarDecon(md), FFTDeconOperator(md)
+    : FFTDeconOperator(md), ScalarDecon(md)
 {
 
     try {
@@ -34,17 +34,18 @@ MultiTaperSpecDivDecon::MultiTaperSpecDivDecon(const Metadata &md)
 }
 
 MultiTaperSpecDivDecon::MultiTaperSpecDivDecon(const MultiTaperSpecDivDecon &parent)
-    : ScalarDecon(parent), FFTDeconOperator(parent), tapers(parent.tapers)
+    : FFTDeconOperator(parent), 
+        ScalarDecon(parent), 
+          tapers(parent.tapers),
+            noise(parent.noise),
+              ao_fft(parent.ao_fft),
+                rfestimates(parent.rfestimates),
+                  winv_taper(parent.winv_taper)
 {
-    /* wavelet and data vectors are copied in ScalarDecon copy constructor.
-    This method needs a noise vector so we have explicitly copy it here. */
-    noise=parent.noise;
-    /* ditto for shaping wavelet vector */
-    shapingwavelet=parent.shapingwavelet;
-    /* multitaper parameters to copy */
     nw=parent.nw;
-    taperlen=parent.taperlen;
+    nseq=parent.nseq;
     damp=parent.damp;
+    taperlen=parent.taperlen;
 }
 int MultiTaperSpecDivDecon::read_metadata(const Metadata &md,bool refresh)
 {
@@ -307,7 +308,7 @@ void MultiTaperSpecDivDecon::process()
     }
     /* Probably should save these in private area for this estimator*/
     //vector<ComplexArray> rfestimates;
-    /* Must clear this and winv containers or they accumulate */
+    /* Must clear rfestimate and winv_taper containers or they accumulate */
     rfestimates.clear();
     for(i=0;i<nseq;++i)
     {
@@ -319,8 +320,7 @@ void MultiTaperSpecDivDecon::process()
     For consistency with related methods we'll store the frequency domain
     values, BUT these now become essentially a matrix - actually stored
     as a vector of vectors */
-    //ComplexArray winv;
-    winv.clear();
+    winv_taper.clear();
     ao_fft.clear();
     double *d0=new double[nfft];
     for(int k=0;k<nfft;++k) d0[k]=0.0;
@@ -332,7 +332,7 @@ void MultiTaperSpecDivDecon::process()
     {
       ComplexArray work(delta0);
       work=work/denominator[i];
-      winv.push_back(work);
+      winv_taper.push_back(work);
     }
     for(i=0; i<nseq; ++i)
     {
@@ -422,7 +422,7 @@ CoreTimeSeries MultiTaperSpecDivDecon::inverse_wavelet(const double t0parent)
      CoreTimeSeries result(this->nfft);
      for(int i=0;i<nseq;++i)
      {
-       CoreTimeSeries work(this->FFTDeconOperator::FourierInverse(this->winv[i],
+       CoreTimeSeries work(this->FFTDeconOperator::FourierInverse(this->winv_taper[i],
                   *shapingwavelet.wavelet(),dt,t0parent));
        if(i==0)
 	   result=work;
@@ -453,7 +453,7 @@ std::vector<CoreTimeSeries> MultiTaperSpecDivDecon::all_inverse_wavelets
         for(int i=0;i<nseq;++i)
         {
             CoreTimeSeries work(this->FFTDeconOperator::FourierInverse
-               (this->winv[i],*shapingwavelet.wavelet(),dt,t0parent));
+               (this->winv_taper[i],*shapingwavelet.wavelet(),dt,t0parent));
             all.push_back(work);
         }
         return all;
