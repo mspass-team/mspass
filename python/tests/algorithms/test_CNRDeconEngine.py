@@ -291,19 +291,22 @@ def test_CNRRFDecon():
     verify_decon_output(d_decon, engine, rfwavelet)
     # verify pickle of engine works -important for parallel processng
     # as dask and spark will pickle engine in map/reduce operators
-    # disable temporarily - all decon engine pickle operators are
-    # failing from a serialization bug with ShapingWavelet I cannot
-    # figure out.
-    # d = Seismogram(d0wn)
-    # rfwavelet - TimeSeries(rfwavelet0)
-    # engine_cpy = pickle.loads(pickle.dumps(engine))
-    # d_decon,aout,iout = CNRRFDecon(d,
-    #                               engine_cpy,
-    #                               signal_window=sw,
-    #                               noise_window=nw,
-    #                               return_wavelet=True,
-    #                               use_3C_noise=True,
-    #                               )
+    d = Seismogram(d0wn)
+    rfwavelet - TimeSeries(rfwavelet0)
+    engine_cpy = pickle.loads(pickle.dumps(engine))
+    d_decon2,aout,iout = CNRRFDecon(d,
+                                   engine_cpy,
+                                   signal_window=sw,
+                                   noise_window=nw,
+                                   return_wavelet=True,
+                                   use_3C_noise=True,
+                                   )
+    assert d_decon2.live
+    assert aout.live
+    assert iout.live
+    assert d_decon2.npts==d_decon.npts
+    assert np.isclose(d_decon.data,d_decon2.data).all()
+    
     # verify_decon_output(d_decon, engine, rfwavelet)
     # repeat with 1c noise estimate option and return wavelet off
     d = Seismogram(d0wn)
