@@ -23,7 +23,10 @@ ScalarDecon::ScalarDecon(const vector<double>& d, const vector<double>& w)
     result.reserve(data.size());
 }
 ScalarDecon::ScalarDecon(const ScalarDecon& parent)
-    : data(parent.data),wavelet(parent.wavelet),result(parent.result)
+    : data(parent.data),
+      wavelet(parent.wavelet),
+       result(parent.result),
+         shapingwavelet(parent.shapingwavelet)
 {
 }
 ScalarDecon& ScalarDecon::operator=(const ScalarDecon& parent)
