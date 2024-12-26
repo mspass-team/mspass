@@ -99,9 +99,7 @@ def test_RFdecon():
     independently here.
     """
     # needed to find pf file in engine constructor
-    # DEBUG
-    os.environ['PFPATH']='/geode2/home/u070/pavlis/Quartz/src/mspass/data/pf'
-    #os.environ["PFPATH"] = "./data/pf"
+    os.environ["PFPATH"] = "./data/pf"
     # note this definition of 3000 samples at 20 sps and setting t0 to
     # -35 s must be consistent with data window parameters in the
     # RFdeconProcessor.pf file stored data/pf.
@@ -110,7 +108,7 @@ def test_RFdecon():
     # this is a list of algorithms supported by the RFdecon function
     # They can be enabled by a parameter on the function or by
     # passing an instance of the engine.  Ww test both below
-    alglist = ["LeastSquares", "WaterLevel", "MultiTaperSpecDiv","MultiTaperXcor"]
+    alglist = ["LeastSquares", "WaterLevel", "MultiTaperSpecDiv", "MultiTaperXcor"]
     # first test case with where the operator is instantiated on each call
     # to RFdecon
     for alg in alglist:
@@ -133,8 +131,8 @@ def test_RFdecon():
         print_metadata(d_decon)
         d = Seismogram(seis0)
         engine2 = pickle.loads(pickle.dumps(deconengine))
-        d_decon2 = RFdecon(d,alg=alg,engine=engine2)
-        #d_decon2 = RFdecon(d, alg=alg, engine=deconengine)
+        d_decon2 = RFdecon(d, alg=alg, engine=engine2)
+        # d_decon2 = RFdecon(d, alg=alg, engine=deconengine)
         assert d_decon2.live
         assert np.isclose(d_decon.data, d_decon2.data).all()
     # test variant of passing prewindowed data instead of v
