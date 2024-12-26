@@ -98,7 +98,6 @@ ComplexArray::ComplexArray(vector<double> mag,vector<double> phase)
     }
     else
     {
-        cout<<"Length of magnitude vector and phase vector doesn't match"<<endl;
         throw MsPASSError("ComplexArray::ComplexArray(vector<double> mag,vector<double> phase): Length of magnitude vector and phase vector do not match",
               ErrorSeverity::Invalid);
     }
