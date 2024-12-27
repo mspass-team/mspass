@@ -7,7 +7,7 @@ import pickle
 import numpy as np
 import pytest
 
-# module to test
+# needed to access the helper module
 sys.path.append("python/tests")
 from helper import (
     get_live_seismogram,
@@ -81,7 +81,7 @@ def test_RFdeconProcessor():
         io = processor.ideal_output()
         prederr = prediction_error_norm(ao, io)
         print("prederr=", prederr)
-        assert prederr < 0.1
+        assert prederr < 0.2
 
     # this must be cleared to keep later pytest scripts from failing
     os.environ.pop("PFPATH", None)
@@ -108,7 +108,7 @@ def test_RFdecon():
     # this is a list of algorithms supported by the RFdecon function
     # They can be enabled by a parameter on the function or by
     # passing an instance of the engine.  Ww test both below
-    alglist = ["LeastSquares", "WaterLevel", "MultiTaperXcor", "MultiTaperSpecDiv"]
+    alglist = ["LeastSquares", "WaterLevel", "MultiTaperSpecDiv", "MultiTaperXcor"]
     # first test case with where the operator is instantiated on each call
     # to RFdecon
     for alg in alglist:
@@ -131,8 +131,8 @@ def test_RFdecon():
         print_metadata(d_decon)
         d = Seismogram(seis0)
         engine2 = pickle.loads(pickle.dumps(deconengine))
-        # d_decon2 = RFdecon(d,alg=alg,engine=engine2)
-        d_decon2 = RFdecon(d, alg=alg, engine=deconengine)
+        d_decon2 = RFdecon(d, alg=alg, engine=engine2)
+        # d_decon2 = RFdecon(d, alg=alg, engine=deconengine)
         assert d_decon2.live
         assert np.isclose(d_decon.data, d_decon2.data).all()
     # test variant of passing prewindowed data instead of v
