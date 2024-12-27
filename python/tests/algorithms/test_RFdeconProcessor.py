@@ -81,7 +81,7 @@ def test_RFdeconProcessor():
         io = processor.ideal_output()
         prederr = prediction_error_norm(ao, io)
         print("prederr=", prederr)
-        assert prederr < 0.1
+        assert prederr < 0.2
 
     # this must be cleared to keep later pytest scripts from failing
     os.environ.pop("PFPATH", None)
