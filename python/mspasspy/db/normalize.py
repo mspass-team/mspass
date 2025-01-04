@@ -317,7 +317,7 @@ class DatabaseMatcher(BasicMatcher):
         is there is no place to put it and something else has gone really
         wrong.
         """
-        if not _input_is_valid(mspass_object):
+        if not isinstance(Metadata):
             elog = PyErrorLogger()
             message = "received invalid data.  Arg0 must be a valid MsPASS data object"
             elog.log_error(message, ErrorSeverity.Invalid)
@@ -633,7 +633,7 @@ class DictionaryCacheMatcher(BasicMatcher):
                 containing attributes_to_load and load_if_defined
                 (if appropriate) in each component.
         """
-        if not _input_is_valid(mspass_object):
+        if not isinstance(Metadata):
             elog = PyErrorLogger()
             elog.log_error(
                 "Received datum that was not a valid MsPASS data object",
@@ -911,7 +911,7 @@ class DataFrameCacheMatcher(BasicMatcher):
         null load_if_defined into one Metadata container for each
         row of the returned DataFrame.
         """
-        if not _input_is_valid(mspass_object):
+        if not isinstance(Metadata):
             elog = PyErrorLogger(
                 "DataFrameCacheMatcher.find",
                 "Received datum that was not a valid MsPASS data object",
@@ -2423,7 +2423,7 @@ class OriginTimeDBMatcher(DatabaseMatcher):
         # badly, but  it makes the code more stable - otherwise
         # a parallel job could, for example, abort if one of the
         # components in a bag/rdd got set to None
-        if not _input_is_valid(mspass_object):
+        if not isinstance(Metadata):
             return None
         if mspass_object.dead():
             return None
@@ -2599,8 +2599,9 @@ class OriginTimeMatcher(DataFrameCacheMatcher):
             self.source_time_key = source_time_key
 
     def subset(self, mspass_object) -> pd.DataFrame:
-        """ """
-        if not _input_is_valid(mspass_object):
+        """ 
+        """
+        if not isinstance(Metadata):
             return pd.DataFrame()
         if mspass_object.dead():
             return pd.DataFrame()
@@ -2932,7 +2933,7 @@ class ArrivalMatcher(DataFrameCacheMatcher):
         DataFramematcher
         """
 
-        if _input_is_valid(mspass_object):
+        if isinstance(Metadata):
             if mspass_object.live:
                 if _input_is_atomic(mspass_object):
                     stime = mspass_object.t0
@@ -3045,17 +3046,17 @@ def bulk_normalize(
     channel_id, site_id, and source_id.
 
     :param db: should be a MsPASS database handle containing the wf_col
-    and the collections defined by the matcher_list list.
+      and the collections defined by the matcher_list list.
     :param wf_col: The collection that need to be normalized, default is
-    wf_miniseed
+      wf_miniseed
     :param blockssize:   To speed up updates this function uses the
-    bulk writer/updater methods of MongoDB that can be orders of
-    magnitude faster than one-at-a-time updates. A user should not normally
-    need to alter this parameter.
+      bulk writer/updater methods of MongoDB that can be orders of
+      magnitude faster than one-at-a-time updates. A user should not normally
+      need to alter this parameter.
     :param wfquery: is an optional query to apply to wf_col.  The output of this
-    query defines the list of documents that the algorithm will attempt
-    to normalize as described above.  The default (None) will process the entire
-    collection (query set to an emtpy dict).
+      query defines the list of documents that the algorithm will attempt
+      to normalize as described above.  The default (None) will process the entire
+      collection (query set to an emtpy dict).
     :param matcher_list: a list of instances of one or more subclasses of BasicMather.
       In addition to the required classes all instances passed to through
       this interface must contain two required attributes:  (1) collection
@@ -3068,11 +3069,10 @@ def bulk_normalize(
       a mspass data object.  find_one is the core method for inline normalization)
 
 
-
     :return: a list with a length of len(matcher_list)+1.  0 is the number of documents
-    processed in the collection (output of query), The rest are the numbers of
-    success normalizations for the corresponding NMF instances, they are mapped
-    one on one (matcher_list[x] -> ret[x+1]).
+      processed in the collection (output of query), The rest are the numbers of
+      success normalizations for the corresponding NMF instances, they are mapped
+      one on one (matcher_list[x] -> ret[x+1]).
     """
 
     if wfquery is None:
@@ -3327,21 +3327,6 @@ def _get_with_readonly_recovery(d, key):
             return d[testkey]
         else:
             return None
-
-
-def _input_is_valid(d):
-    """
-    This internal function standardizes the test to certify the
-    input datum, d, is or is not a valid MsPASS data object.   Putting it
-    in one place makes extending the code base for other data types much
-    easier.  It uses an isinstance tests of d to standardize the test that
-    the input is valid data.  It returns True if d is one a valid data
-    object known to mspass.  Returns false it not.  Caller must decide
-    what to do if the function returns false.
-    """
-    return isinstance(
-        d, (TimeSeries, Seismogram, TimeSeriesEnsemble, SeismogramEnsemble)
-    )
 
 
 def _input_is_atomic(d):
