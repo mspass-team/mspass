@@ -26,8 +26,8 @@ type_ddd = dask.dataframe.core.DataFrame
 
 class BasicMatcher(ABC):
     """
-    Base class defining the api for a generic matching capability for
-    MongoDB normalization.   The base class is a skeleton that
+    This base class defines the api for a generic matching capability for
+    MongoDB normalization.   The base class is a mostly a skeleton that
     defines on required abstract methods and initializes a set of
     universal attributes all matchers need.  It cannot be instatiated directly.
 
@@ -221,6 +221,54 @@ class BasicMatcher(ABC):
 
         """
         pass
+    def find_doc(self,doc)->Metadata:
+        """
+        find a unique match using a python dictionary as input.
+        
+        The bulk_normalize function  requires an implementation of a 
+        method with this name. It is conceptually similar to find_one 
+        but it uses a python dictionary (the doc argument) as input 
+        instead of a mspass seismic data object.  It also returns only 
+        a Metadata container on success or None if it fails to find 
+        a match. 
+        
+        This method is little more than a thin wrapper around 
+        an implementation of the find_one method. It checkes 
+        the elog for entries marked Invalid and if 
+        so returns None.  Otherwise it converts the Metdata container 
+        to a python dictionary it return.  It is part of the 
+        base class because it depends only on the near equivalence of
+        a python dictionary and the MsPASS Metadata containers.  
+        
+        When find_one returns a ErrorLogger object the contents are 
+        inspected.   Errors less severe than "Invalid" are ignored 
+        and dropped.   If the log contains a message tagged "Invalid"
+        this function will silently return None.   That could be 
+        problematic as it is indistinguishable from the return when 
+        there is no match, but is useful to simply the api.  If an 
+        entry is tagged "Fatal" a MsPASSError exception will be 
+        thrown with the message posted to the MsPASSError container.
+        
+        Subclasses may wish to override this method if the approach 
+        used here is inappropriate.   i.e. if this were C++ this 
+        method would be declared virtual.
+        """
+        md2test = Metadata(doc)
+        [md,elog] = self.find_one(md2test)
+        if elog:
+            elist = elog.worst_errors()
+            # Return no success if Invalid
+            worst=elist[0].badness
+            if worst == ErrorSeverity.Invalid:
+                return None
+            elif worst==ErrorSeverity.Fatal:
+                message="find_doc method failed.   Messages posted:\n"
+                for e in elist:
+                    message += e.message + "\n"
+                raise MsPASSError(message,ErrorSeverity.Fatal)
+                
+        return dict(md)
+
 
 
 class DatabaseMatcher(BasicMatcher):
@@ -317,12 +365,13 @@ class DatabaseMatcher(BasicMatcher):
         is there is no place to put it and something else has gone really
         wrong.
         """
-        if not isinstance(Metadata):
+        if not isinstance(mspass_object,Metadata):
             elog = PyErrorLogger()
             message = "received invalid data.  Arg0 must be a valid MsPASS data object"
             elog.log_error(message, ErrorSeverity.Invalid)
-        if mspass_object.dead():
-            return [None, None]
+        if hasattr(mspass_object,"dead"):
+            if mspass_object.dead():
+                return [None, None]
         query = self.query_generator(mspass_object)
         if query is None:
             elog = PyErrorLogger()
@@ -633,15 +682,16 @@ class DictionaryCacheMatcher(BasicMatcher):
                 containing attributes_to_load and load_if_defined
                 (if appropriate) in each component.
         """
-        if not isinstance(Metadata):
+        if not isinstance(mspass_object,Metadata):
             elog = PyErrorLogger()
             elog.log_error(
                 "Received datum that was not a valid MsPASS data object",
                 ErrorSeverity.Invalid,
             )
             return [None, elog]
-        if mspass_object.dead():
-            return [None, None]
+        if hasattr(mspass_object,"dead"):
+            if mspass_object.dead():
+                return [None, None]
         thisid = self.cache_id(mspass_object)
         # this should perhaps generate two different messages as the
         # they imply slightly different things - the current message
@@ -740,6 +790,7 @@ class DictionaryCacheMatcher(BasicMatcher):
         This function does the same thing as _db_load_normalization_cache, the
         only difference is that this current function takes one argument, which
         is a dataframe.
+        
         :param df: a pandas/dask dataframe where we load data from
         """
         query_result = df
@@ -911,7 +962,7 @@ class DataFrameCacheMatcher(BasicMatcher):
         null load_if_defined into one Metadata container for each
         row of the returned DataFrame.
         """
-        if not isinstance(Metadata):
+        if not isinstance(mspass_object,Metadata):
             elog = PyErrorLogger(
                 "DataFrameCacheMatcher.find",
                 "Received datum that was not a valid MsPASS data object",
@@ -1005,7 +1056,7 @@ class DataFrameCacheMatcher(BasicMatcher):
                     "DataFrameCacheMatcher.find_one:  found {n} matches when require_unique_match was set true".format(
                         n=len(mdlist)
                     ),
-                    ErrorSeverity.Fatal,
+                    ErrorSeverity.Invalid,
                 )
             if findreturn[1] is None:
                 elog = PyErrorLogger()
@@ -1018,7 +1069,11 @@ class DataFrameCacheMatcher(BasicMatcher):
             elog.log_error(error_message, ErrorSeverity.Complaint)
             return [mdlist[0], elog]
         else:
-            # only land here if mdlist is something for which len returns 0
+            # This is a safety purely for code maintenance.
+            # currently find either returns None or a list with data in it
+            # we enter this safety ONLY if find returns a zero length list
+            # we raise an exception if that happens because it is 
+            # not expeted.  
             raise MsPASSError(
                 "DataFrameCacheMatchter.find_one:   find returned an empty list.  Can only happen if custom matcher has overridden find.  Find should return None if the match fails",
                 ErrorSeverity.Fatal,
@@ -1892,7 +1947,7 @@ class MiniseedMatcher(DictionaryCacheMatcher):
 
     def find_doc(self, doc, wfdoc_starttime_key="starttime"):
         """
-        Optional function to support application to bulk_normalize to
+        Function to support application to bulk_normalize to
         set channel_id or site_id.  Acts like find_one but without support
         for readonly recovery.   The bigger difference is that this
         method accepts a python dict retrieved in a cursor loop for
@@ -1901,6 +1956,9 @@ class MiniseedMatcher(DictionaryCacheMatcher):
         find_one above where a linear search is used to handle the time
         interval matching.  Here, however, the time field is extracted
         from doc with the key defined by starttime.
+        
+        This method overrides the generic version in BasicMatcher due 
+        to some special peculiarities of miniseed.  
 
         :param doc:  document (pretty much assumed to be from wf_miniseed)
           to be matched with channel or site.
@@ -2142,8 +2200,9 @@ class EqualityMatcher(DataFrameCacheMatcher):
            two other situations can cause the return to have no data:
                (1) dead input, and (2) match keys missing from mspass_object.
         """
-        if mspass_object.dead():
-            return pd.DateFrame()
+        if hasattr(mspass_object,"dead"):
+            if mspass_object.dead():
+                return pd.DataFrame()
         # I don't think this can cause a memory problem as in python
         # this make dfret a temporary alias for self.cache
         # In the loop it is replaced by subset dataframes
@@ -2423,10 +2482,11 @@ class OriginTimeDBMatcher(DatabaseMatcher):
         # badly, but  it makes the code more stable - otherwise
         # a parallel job could, for example, abort if one of the
         # components in a bag/rdd got set to None
-        if not isinstance(Metadata):
+        if not isinstance(mspass_object,Metadata):
             return None
-        if mspass_object.dead():
-            return None
+        if hasattr(mspass_object,"dead"):
+            if mspass_object.dead():
+                return None
 
         if self.data_time_key is None:
             # this maybe should have a test to assure UTC time standard
@@ -2600,11 +2660,20 @@ class OriginTimeMatcher(DataFrameCacheMatcher):
 
     def subset(self, mspass_object) -> pd.DataFrame:
         """ 
+        Implementation of subset method requried by inheritance from 
+        DataframeCacheMatcher.   Returns a subset of the cache 
+        Dataframe with source origin times matching the definition 
+        of this object.  i.e. a time interval relative to the 
+        start time defined by mspass_object.   Note that if a key is 
+        given the time will be extrated from the Metadata container of 
+        mspass_object.  If no key is defined (self.data_time_key == None)
+        the t0 attribute of mspass_object will be used.   
         """
-        if not isinstance(Metadata):
+        if not isinstance(mspass_object,Metadata):
             return pd.DataFrame()
-        if mspass_object.dead():
-            return pd.DataFrame()
+        if hasattr(mspass_object,"dead"):
+            if mspass_object.dead():
+                return pd.DataFrame()
 
         if self.data_time_key is None:
             # this maybe should have a test to assure UTC time standard
@@ -2631,6 +2700,205 @@ class OriginTimeMatcher(DataFrameCacheMatcher):
         dfret = self.cache.query(dfquery)
 
         return dfret
+    def find_one(self, mspass_object) -> tuple:
+        """
+        Override of find_one method of DataframeMatcher.  The override is 
+        necessary to handle the ambiguity of a timer interval match for 
+        source origin times.   That is, there is a finite probability 
+        that tow earthquakes can occur with the interval of this matcher 
+        defined by the time projected from the waveform start time 
+        (starttime - self.t0offset) + or - self.tolerance.   When 
+        multiple matches are found this method handles that ambiguity by 
+        finding the source where the origin time is closest to the 
+        waveform start time corrected by self.t0offset. 
+        
+        Note this method normally expects input to be an atomic 
+        seismic object.  It also, however, accepts any object that 
+        is a subclass of Metadata.   The most important example of that 
+        is `TimeSeriesEnsemble` and `SeismogramEnsemble` objects. 
+        For that to work, however, you MUST define a key to use to 
+        fetch a reference time in the constructor to this object
+        via the `data_time_key` argument.  If you then load the 
+        appropriate reference time in the ensemble's Metadata container
+        you can normalize a common source gather's ensemble container 
+        with a workflow.   Here is a code fragment illustrating the idea:
+             
+        ```
+        source_matcher = OriginTimeMatcher(db,data_time_key="origin_time")
+        e = db.read_data(cursor, ... read args...)  # read ensemle e
+        # assume we got ths time (otime)vsome other way above
+        e['origin_time'] = otime
+        e = normalize(e,source_matcher)
+        ```
+        If the match suceeds the attributes defined in te Dataframe 
+        cache will be loaded into the Metadata contaienr of e.   
+        That is the defiition of a common source gather.         
+        
+        :param mspass_object:  atomic seismic data object to be matched.
+           The match is normally made against the datum's t0 value so 
+           there is an implict assumption the datum is a UTC epoch time.  
+           If a data set is passed through this operator and the data 
+           are relative time all will fail.   The function intentionaly 
+           avoids that test for efficiency.   A plain Metadata container 
+           can be passed through mspass_object if and only if it 
+           contains a value associated with the key defined by the 
+           starttime_key attibute.  
+        
+        :return: a tuple consistent with the BasicMatcher API definition. 
+          (i.e. pair [Metadata,ErrorLogger])
+        """
+        findreturn = self.find(mspass_object)
+        mdlist = findreturn[0]
+        if mdlist is None:
+            return findreturn
+        elif len(mdlist) == 1:
+            component_to_use = 0
+        elif len(mdlist) > 1:
+            N_matches = len(mdlist)
+            # find component of list with the minimum projected time offset
+            dt=np.zeros(N_matches)
+            i=0
+            for md in mdlist:
+                dt[i] = md[self.source_time_key]
+                i += 1
+            # always use t0
+            # this logic, however, allows mspass_object to be a
+            # plain Metadata container.  
+            # intentinally let this throw an exception for Metadata if the 
+            # required key is missing
+            if hasattr(mspass_object,"t0"):
+                test_time = mspass_object.t0
+            else:
+                test_time = mspass_object[self.data_time_key]
+            test_time += self.t0offset
+            dt -= test_time
+            dt = np.abs(dt)
+            component_to_use = np.argmin(dt)
+        return [mdlist[component_to_use],findreturn[1]]
+
+
+    def find_doc(self,doc,starttime_key="starttime")->dict:
+        """
+        Override of the find_doc method of BasicMatcher.   This method 
+        acts lke find_one but the inputs and outputs are different.   
+        The input to this method is a python dictionary that is 
+        expected to normally be a MongoDB document.   The output is 
+        also a python dictionary without (normally) a reduced set of 
+        attributes defined by self.attributes_to_load and 
+        self.load_if_defined.  We need to override the base class 
+        version of ths method because the base class version by 
+        default requires an atomic seismic data object 
+        (TimeSEries or Seismogram).  The algorithm used is a variant of 
+        that in the subset method of this class. 
+        
+        This method also differs from find_one it that it has no 
+        mechanism to log errors.   find_one returns a Metadata container 
+        and an ErrorLogger container used to post messages.  This method 
+        will return a None if there are errors that cause it to fail.   
+        That can be ambiguous because a None return also is used to 
+        indicate failure to match anything.  The primary use of this 
+        method is normalizing an entire data set with the ObjetIds of 
+        source documnts with the `bulk_normaize` function.   In that case 
+        additional forensic work is possible with MongoDB to uncover why 
+        a given document match failed.   
+        
+        Because the interval match relative to a waveform start time can 
+        be ambiguous from global events (Although rare earthquakes can 
+        easily occur with + or - self.tolerance time) when multiple 
+        rows of the dataframe match the interval test the one returned  
+        is the one for which the time projected from the waveform 
+        start time (uses self.t0offset value) is defined as the match 
+        that is returned.
+        
+        :param doc:  wf document (i.e. a document used to construct 
+          an atomic datum) to be matched with content of this object 
+          (assued the source collection or a variant that contains 
+          source origin times).  
+        :type doc:  python dictionary
+        :param starttime_key:  key that can be used fetch the waveform 
+          segment start time that is to be used to match against 
+          origin times loaded in the object's cache.  '
+        :type starttime_key:  str (default "starttime")
+        :return:  python dictionary of the best match or None if there is 
+          no match or in nonfatal error conditions.  
+        """
+        if starttime_key in doc:
+            test_time = doc[starttime_key]
+            test_time += self.t0offset
+            # copied from subset method 
+            tmin = test_time - self.tolerance
+            tmax = test_time + self.tolerance
+            # For this matcher we dogmatically use <= equivalent in the between
+            # construct here - inclusive=True.  In this context seems appropriate
+            inclusive = '"both"'
+            dfquery = (
+                self.source_time_key
+                + ".between({tmin},{tmax},inclusive={inclusive})".format(
+                    tmin=tmin, tmax=tmax, inclusive=inclusive
+                )
+            )
+            subset_df = self.cache.query(dfquery)
+            N_matches=len(subset_df)
+            if N_matches <= 0:
+                # no match return
+                return None
+            elif N_matches>1:
+                # first find the row with source origin time most closely 
+                # matching the doc starrtime value
+                dt=np.zeros(N_matches)
+                i=0
+                for index, row in subset_df.iterrows():
+                    # this key has to exist or we wouldn't get here
+                    dt[i]= row[self.source_time_key]
+                dt -= test_time
+                dt = np.abs(dt)
+                row_index_to_use = np.argmin(dt)     
+            else:
+                row_index_to_use=0
+            row = subset_df.iloc[row_index_to_use]
+            doc_out = dict()
+            notnulltest = row.notnull()
+            for k in self.attributes_to_load:
+                if notnulltest[k]:
+                    if k in self.aliases:
+                        key = self.aliases[k]
+                    else:
+                        key = k
+                    if self.prepend_collection_name:
+                        if key == "_id":
+                            mdkey = self.collection + key
+                        else:
+                            mdkey = self.collection + "_" + key
+                    else:
+                        mdkey = key
+                    doc_out[mdkey] = row[key]
+                else:
+                    # land here if a required attribute is missing
+                    # from the dataframe cache.  find logs 
+                    # an error but all we can do here is flag 
+                    # failure returning None.   There is a rare 
+                    # possibilit of this failing with multiple 
+                    # source documents where one is bad and the other 
+                    # is not
+                    return None
+        
+                for k in self.load_if_defined:
+                    if notnulltest[k]:
+                        if k in self.aliases:
+                            key = self.aliases[k]
+                        else:
+                            key = k
+                        if self.prepend_collection_name:
+                            if key == "_id":
+                                mdkey = self.collection + key
+                            else:
+                                mdkey = self.collection + "_" + key
+                        else:
+                            mdkey = key
+                    doc_out[mdkey] = row[key]
+            return doc_out
+        else:
+            return None
 
 
 class ArrivalDBMatcher(DatabaseMatcher):
@@ -2933,7 +3201,7 @@ class ArrivalMatcher(DataFrameCacheMatcher):
         DataFramematcher
         """
 
-        if isinstance(Metadata):
+        if isinstance(mspass_object,Metadata):
             if mspass_object.live:
                 if _input_is_atomic(mspass_object):
                     stime = mspass_object.t0
@@ -3008,8 +3276,9 @@ def normalize(mspass_object, matcher, kill_on_failure=True):
     :return:  copy of mspass_object.  dead data are returned immediately.
     if kill_on_failure is true the result may be killed on return.
     """
-    if mspass_object.dead():
-        return mspass_object
+    if hasattr(mspass_object,"dead"):
+        if mspass_object.dead():
+            return mspass_object
     find_output = matcher.find_one(mspass_object)
     # api of BasicMatcher specified a pair return we handle here
     if find_output[0] is None:
