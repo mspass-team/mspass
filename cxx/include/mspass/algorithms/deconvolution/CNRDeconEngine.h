@@ -153,12 +153,7 @@ private:
   template<class Archive>
   void serialize(Archive& ar, const unsigned int version)
   {
-      /* See boost documentation for why these are needed.
-      tapers are referenced through a polymorphic shared_ptr.
-      It seems all subclasses to be used need this incantation*/
-      ar.register_type(static_cast<LinearTaper *>(NULL));
-      ar.register_type(static_cast<CosineTaper *>(NULL));
-      ar.register_type(static_cast<VectorTaper *>(NULL));
+      std::cout <<"Entered serialize function"<<std::endl;
       ar & boost::serialization::base_object<FFTDeconOperator>(*this);
       ar & algorithm;
       ar & damp;
@@ -175,7 +170,7 @@ private:
       ar & regularization_bandwidth_fraction;
       ar & peak_snr;
       ar & signal_bandwidth_fraction;
-
+      std::cout << "Exiting serialize function"<<std::endl;
   }
 };
 }  // End namespace enscapsulation
