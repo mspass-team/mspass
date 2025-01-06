@@ -271,7 +271,8 @@ def test_CNRRFDecon():
 
     d = Seismogram(d0wn)
     # use default pf file for this and all tests in this file
-    pf = pfread("./data/pf/CNRDeconEngine.pf")
+    #pf = pfread("./data/pf/CNRDeconEngine.pf")
+    pf = pfread("/geode2/home/u070/pavlis/Quartz/src/mspass/data/pf/CNRDeconEngine.pf")
     engine = CNRDeconEngine(pf)
     nw = TimeWindow(-45.0, -5.0)
     sw = TimeWindow(-5.0, 30.0)
@@ -293,7 +294,8 @@ def test_CNRRFDecon():
     # as dask and spark will pickle engine in map/reduce operators
     d = Seismogram(d0wn)
     rfwavelet - TimeSeries(rfwavelet0)
-    engine_cpy = pickle.loads(pickle.dumps(engine))
+    dumpstring = pickle.dumps(engine)
+    engine_cpy = pickle.loads(dumpstring)
     d_decon2, aout, iout = CNRRFDecon(
         d,
         engine_cpy,
@@ -582,7 +584,7 @@ def test_CNRArrayDecon_error_handlers():
     assert e_d.elog.size() > 0
 
 
-# test_CNRRFDecon()
+test_CNRRFDecon()
 # test_CNRRFDecon_error_handlers()
 # test_CNRArrayDecon()
 # test_CNRRFDecon_error_handlers()
