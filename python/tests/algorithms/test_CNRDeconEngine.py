@@ -271,8 +271,8 @@ def test_CNRRFDecon():
 
     d = Seismogram(d0wn)
     # use default pf file for this and all tests in this file
-    #pf = pfread("./data/pf/CNRDeconEngine.pf")
-    pf = pfread("/geode2/home/u070/pavlis/Quartz/src/mspass/data/pf/CNRDeconEngine.pf")
+    pf = pfread("./data/pf/CNRDeconEngine.pf")
+    #pf = pfread("/geode2/home/u070/pavlis/Quartz/src/mspass/data/pf/CNRDeconEngine.pf")
     engine = CNRDeconEngine(pf)
     nw = TimeWindow(-45.0, -5.0)
     sw = TimeWindow(-5.0, 30.0)
