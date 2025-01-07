@@ -173,8 +173,14 @@ private:
       ar & winv_t0_lag;
       std::cout<<"Serializing final block of parameters"<<std::endl;
       ar & regularization_bandwidth_fraction;
-      ar & peak_snr;
-      ar & signal_bandwidth_fraction;
+      /* These fixed length arrays caused probems - seg faults.
+       * Apparently boost doesn't handle that corectly.  There may 
+       * be a more concise way to do this but this should always work. */
+      for(auto k=0;k<3;++k)
+      {
+        ar & peak_snr[k];
+        ar & signal_bandwidth_fraction[k];
+      }
       std::cout << "Exiting serialize function"<<std::endl;
   }
 };
