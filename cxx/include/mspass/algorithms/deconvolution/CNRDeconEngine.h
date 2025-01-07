@@ -155,18 +155,23 @@ private:
   {
       std::cout <<"Entered serialize function"<<std::endl;
       ar & boost::serialization::base_object<FFTDeconOperator>(*this);
+      std::cout << "Serializing first group of simple parameters"<<std::endl;
       ar & algorithm;
       ar & damp;
       ar & noise_floor;
       ar & band_snr_floor;
       ar & operator_dt;
       ar & shaping_wavelet_number_poles;
+      std::cout << "Serializing shapingwavelet"<<std::endl;
       ar & shapingwavelet;
+      std::cout<<"Serializing power spectrum engine objects"<<std::endl;
       ar & signal_engine;
       ar & noise_engine;
       ar & snr_regularization_floor;
+      std::cout << "Serializin winv vector"<<std::endl;
       ar & winv;
       ar & winv_t0_lag;
+      std::cout<<"Serializing final block of parameters"<<std::endl;
       ar & regularization_bandwidth_fraction;
       ar & peak_snr;
       ar & signal_bandwidth_fraction;
