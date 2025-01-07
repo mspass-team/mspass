@@ -7,7 +7,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Normalization &mdash; MsPASS 0.0.1 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
 
@@ -339,8 +339,8 @@ How to actually accomplish that is best understood by consulting the examples
 below.</p>
 <p>Here is an example of running <code class="code docutils literal notranslate"><span class="pre">normalize_mseed</span></code> as a precursor to
 reading and normalizing miniseed data:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mspasspy.client</span> <span class="kn">import</span> <span class="n">Client</span>
-<span class="kn">from</span> <span class="nn">mspasspy.database.normalize</span> <span class="kn">import</span> <span class="n">normalize_mseed</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">Client</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.database.normalize</span><span class="w"> </span><span class="kn">import</span> <span class="n">normalize_mseed</span>
 <span class="n">dbclient</span> <span class="o">=</span> <span class="n">Client</span><span class="p">()</span>
 <span class="n">db</span> <span class="o">=</span> <span class="n">dbclient</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="s2">&quot;mydatabase&quot;</span><span class="p">)</span>
 <span class="n">retcodes</span> <span class="o">=</span> <span class="n">normalize_mseed</span><span class="p">(</span><span class="n">db</span><span class="p">)</span>
@@ -353,8 +353,8 @@ reading and normalizing miniseed data:</p>
 <h3>Examples of normalization while reading<a class="headerlink" href="#examples-of-normalization-while-reading" title="Permalink to this heading"></a></h3>
 <p>This is an example serial job that would use the result
 from running <code class="code docutils literal notranslate"><span class="pre">normalize_mseed</span></code> in the example above:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mspasspy.client</span> <span class="kn">import</span> <span class="n">Client</span>
-<span class="kn">from</span> <span class="nn">mspasspy.database.normalize</span> <span class="kn">import</span> <span class="n">MiniseedMatcher</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">Client</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.database.normalize</span><span class="w"> </span><span class="kn">import</span> <span class="n">MiniseedMatcher</span>
 <span class="n">dbclient</span> <span class="o">=</span> <span class="n">Client</span><span class="p">()</span>
 <span class="n">db</span> <span class="o">=</span> <span class="n">dbclient</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="s2">&quot;mydatabase&quot;</span><span class="p">)</span>
 <span class="c1"># channel is the default collection for this class</span>
@@ -375,9 +375,9 @@ normalize with the channel collection.   A parallel version of the
 example above requires use of the function
 <code class="xref py py-func docutils literal notranslate"><span class="pre">read_distributed_data</span></code>.
 The following does the same operation as above in parallel with dask</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mspasspy.client</span> <span class="kn">import</span> <span class="n">Client</span>
-<span class="kn">from</span> <span class="nn">mspasspy.db.database</span> <span class="kn">import</span> <span class="n">read_distributed_data</span>
-<span class="kn">from</span> <span class="nn">mspasspy.database.normalize</span> <span class="kn">import</span> <span class="n">MiniseedMatcher</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">Client</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.db.database</span><span class="w"> </span><span class="kn">import</span> <span class="n">read_distributed_data</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.database.normalize</span><span class="w"> </span><span class="kn">import</span> <span class="n">MiniseedMatcher</span>
 
 <span class="n">dbclient</span> <span class="o">=</span> <span class="n">Client</span><span class="p">()</span>
 <span class="n">db</span> <span class="o">=</span> <span class="n">dbclient</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="s2">&quot;mydatabase&quot;</span><span class="p">)</span>
@@ -397,8 +397,8 @@ The following does the same operation as above in parallel with dask</p>
 serial job that reads ensembles and normalizes the ensemble with data from
 the source and channel collections.  It assumes source_id was defined
 previously.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mspasspy.client</span> <span class="kn">import</span> <span class="n">Client</span>
-<span class="kn">from</span> <span class="nn">mspasspy.db.normalize</span> <span class="kn">import</span> <span class="n">MiniseedMatcher</span><span class="p">,</span> <span class="n">ObjectIdMatcher</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">Client</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.db.normalize</span><span class="w"> </span><span class="kn">import</span> <span class="n">MiniseedMatcher</span><span class="p">,</span> <span class="n">ObjectIdMatcher</span>
 <span class="n">dbclient</span> <span class="o">=</span> <span class="n">Client</span><span class="p">()</span>
 <span class="n">db</span> <span class="o">=</span> <span class="n">dbclient</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="s2">&quot;mydatabase&quot;</span><span class="p">)</span>
 <span class="n">channel_matcher</span> <span class="o">=</span> <span class="n">MiniseedMatcher</span><span class="p">(</span><span class="n">db</span><span class="p">)</span>
@@ -441,8 +441,8 @@ this is done by rewriting the examples above doing normalization during
 read with the equivalent algorithm for normalization as a separate
 step within the workflow.</p>
 <p>First, the serial example:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mspasspy.client</span> <span class="kn">import</span> <span class="n">Client</span>
-<span class="kn">from</span> <span class="nn">mspasspy.database.normalize</span> <span class="kn">import</span> <span class="n">MiniseedMatcher</span><span class="p">,</span><span class="n">normalize</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">Client</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.database.normalize</span><span class="w"> </span><span class="kn">import</span> <span class="n">MiniseedMatcher</span><span class="p">,</span><span class="n">normalize</span>
 <span class="n">dbclient</span> <span class="o">=</span> <span class="n">Client</span><span class="p">()</span>
 <span class="n">db</span> <span class="o">=</span> <span class="n">dbclient</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="s2">&quot;mydatabase&quot;</span><span class="p">)</span>
 <span class="c1"># channel is the default collection for this class</span>
@@ -457,9 +457,9 @@ step within the workflow.</p>
 </pre></div>
 </div>
 <p>Next, the parallel version of the job immediately above:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mspasspy.client</span> <span class="kn">import</span> <span class="n">Client</span>
-<span class="kn">from</span> <span class="nn">mspasspy.db.database</span> <span class="kn">import</span> <span class="n">read_distributed_data</span>
-<span class="kn">from</span> <span class="nn">mspasspy.database.normalize</span> <span class="kn">import</span> <span class="n">MiniseedMatcher</span><span class="p">,</span><span class="n">normalize</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">Client</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.db.database</span><span class="w"> </span><span class="kn">import</span> <span class="n">read_distributed_data</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.database.normalize</span><span class="w"> </span><span class="kn">import</span> <span class="n">MiniseedMatcher</span><span class="p">,</span><span class="n">normalize</span>
 
 <span class="n">dbclient</span> <span class="o">=</span> <span class="n">Client</span><span class="p">()</span>
 <span class="n">db</span> <span class="o">=</span> <span class="n">dbclient</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="s2">&quot;mydatabase&quot;</span><span class="p">)</span>
@@ -474,8 +474,8 @@ step within the workflow.</p>
 </pre></div>
 </div>
 <p>Finally, the example for reading ensembles:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mspasspy.client</span> <span class="kn">import</span> <span class="n">Client</span>
-<span class="kn">from</span> <span class="nn">mspasspy.db.normalize</span> <span class="kn">import</span> <span class="n">MiniseedMatcher</span><span class="p">,</span> <span class="n">ObjectIdMatcher</span><span class="p">,</span> <span class="n">normalize</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">Client</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.db.normalize</span><span class="w"> </span><span class="kn">import</span> <span class="n">MiniseedMatcher</span><span class="p">,</span> <span class="n">ObjectIdMatcher</span><span class="p">,</span> <span class="n">normalize</span>
 <span class="n">dbclient</span> <span class="o">=</span> <span class="n">Client</span><span class="p">()</span>
 <span class="n">db</span> <span class="o">=</span> <span class="n">dbclient</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="s2">&quot;mydatabase&quot;</span><span class="p">)</span>
 <span class="n">channel_matcher</span> <span class="o">=</span> <span class="n">MiniseedMatcher</span><span class="p">(</span><span class="n">db</span><span class="p">)</span>
@@ -733,9 +733,9 @@ process of loading normalizing data into a dataset through a single,
 generic function called <a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.normalize.normalize" title="mspasspy.db.normalize.normalize"><code class="xref py py-func docutils literal notranslate"><span class="pre">normalize</span></code></a>.
 That function was designed exclusively for use in map operations.  The
 idea is most clearly seen by a simple example.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mspasspy.client</span> <span class="kn">import</span> <span class="n">Client</span>
-<span class="kn">from</span> <span class="nn">mspasspy.db.normalize</span> <span class="kn">import</span> <span class="n">ObjectIdMatcher</span><span class="p">,</span><span class="n">normalize</span>
-<span class="kn">from</span> <span class="nn">mspasspy.db.database</span> <span class="kn">import</span> <span class="n">read_distributed_data</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">Client</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.db.normalize</span><span class="w"> </span><span class="kn">import</span> <span class="n">ObjectIdMatcher</span><span class="p">,</span><span class="n">normalize</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.db.database</span><span class="w"> </span><span class="kn">import</span> <span class="n">read_distributed_data</span>
 <span class="n">dbclient</span> <span class="o">=</span> <span class="n">Client</span><span class="p">()</span>
 <span class="n">db</span> <span class="o">=</span> <span class="n">dbclient</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="s2">&quot;mydatabase&quot;</span><span class="p">)</span>
 <span class="c1"># Here limit attributes to be loaded to coordinates</span>
@@ -793,9 +793,9 @@ step.  That is, we “construct” two concrete matchers we assign the symbols
 <code class="code docutils literal notranslate"><span class="pre">channel_matcher</span></code> and <code class="code docutils literal notranslate"><span class="pre">site_matcher</span></code>.
 As above these matches are passed as an argument to the <code class="code docutils literal notranslate"><span class="pre">normalize</span></code>
 function in a map operator.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mspasspy.client</span> <span class="kn">import</span> <span class="n">Client</span>
-<span class="kn">from</span> <span class="nn">mspasspy.db.normalize</span> <span class="kn">import</span> <span class="n">MiniseedMatcher</span>
-<span class="kn">from</span> <span class="nn">mspasspy.db.database</span> <span class="kn">import</span> <span class="n">read_distributed_data</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">Client</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.db.normalize</span><span class="w"> </span><span class="kn">import</span> <span class="n">MiniseedMatcher</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.db.database</span><span class="w"> </span><span class="kn">import</span> <span class="n">read_distributed_data</span>
 <span class="n">dbclient</span> <span class="o">=</span> <span class="n">Client</span><span class="p">()</span>
 <span class="n">db</span> <span class="o">=</span> <span class="n">dbclient</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="s2">&quot;mydatabase&quot;</span><span class="p">)</span>
 <span class="c1"># Here limit attributes to be loaded to coordinates and orientations</span>
@@ -830,9 +830,9 @@ If it is no defined it will be silently ignored and left undefined.  Note
 that is in contrast to keys listed in “attributes_to_load” that are treated
 as required.  As noted above if any of the attributes_to_load keys are
 missing a datum will, by default, be killed.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mspasspy.client</span> <span class="kn">import</span> <span class="n">Client</span>
-<span class="kn">from</span> <span class="nn">mspasspy.db.normalize</span> <span class="kn">import</span> <span class="n">OriginTimeMatcher</span>
-<span class="kn">from</span> <span class="nn">mspasspy.db.database</span> <span class="kn">import</span> <span class="n">read_distributed_data</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">Client</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.db.normalize</span><span class="w"> </span><span class="kn">import</span> <span class="n">OriginTimeMatcher</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.db.database</span><span class="w"> </span><span class="kn">import</span> <span class="n">read_distributed_data</span>
 <span class="n">dbclient</span> <span class="o">=</span> <span class="n">Client</span><span class="p">()</span>
 <span class="n">db</span> <span class="o">=</span> <span class="n">dbclient</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="s2">&quot;mydatabase&quot;</span><span class="p">)</span>
 <span class="c1"># Here limit attributes to be loaded to source coordinates</span>
@@ -868,11 +868,11 @@ Finally note that this example is a hybrid of database normalization and
 in-line normalization.  The example assumes that the user has previously
 run a function like <code class="code docutils literal notranslate"><span class="pre">bulk_normalize</span></code> to set the cross-referencing
 id for the source collection <code class="code docutils literal notranslate"><span class="pre">source_id</span></code>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mspasspy.client</span> <span class="kn">import</span> <span class="n">Client</span>
-<span class="kn">from</span> <span class="nn">mspasspy.db.normalize</span> <span class="kn">import</span> <span class="n">ObjectIdMatcher</span><span class="p">,</span><span class="n">MiniseedMatcher</span>
-<span class="kn">from</span> <span class="nn">mspasspy.io.distributed</span> <span class="kn">import</span> <span class="n">read_distributed_data</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">Client</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.db.normalize</span><span class="w"> </span><span class="kn">import</span> <span class="n">ObjectIdMatcher</span><span class="p">,</span><span class="n">MiniseedMatcher</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.io.distributed</span><span class="w"> </span><span class="kn">import</span> <span class="n">read_distributed_data</span>
 
-<span class="k">def</span> <span class="nf">srcidlist2querylist</span><span class="p">(</span><span class="n">srcidlist</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">srcidlist2querylist</span><span class="p">(</span><span class="n">srcidlist</span><span class="p">):</span>
 <span class="w">  </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">  Small function used to build query list from a list of source ids.</span>
 <span class="sd">  Uses a new feature of read_distribute_data from version 2 forward</span>
@@ -955,8 +955,8 @@ to modify.  You might, however, still find the following useful to understand th
 concepts behind our design.</p>
 <p>The syntax for inheritance is a standard python construct best illustrated
 here by a simple example:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mspasspy.db.normalize</span> <span class="kn">import</span> <span class="n">DataFrameCacheMatcher</span>
-<span class="k">class</span> <span class="nc">MyCustomMatcher</span><span class="p">(</span><span class="n">DataFrameCacheMatcher</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.db.normalize</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataFrameCacheMatcher</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MyCustomMatcher</span><span class="p">(</span><span class="n">DataFrameCacheMatcher</span><span class="p">):</span>
   <span class="c1"># class implementation code</span>
 </pre></div>
 </div>
@@ -965,8 +965,8 @@ want to use the superclass constructor to simplify the setup.
 Here is an example of the how the class <code class="code docutils literal notranslate"><span class="pre">MyCustomMatcher</span></code> above
 could utilize the base class constructor to allow it to work
 cleanly with the base class <code class="code docutils literal notranslate"><span class="pre">find</span></code> and <code class="code docutils literal notranslate"><span class="pre">find_one</span></code> methods:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyCustomMatcher</span><span class="p">(</span><span class="n">DataFrameCacheMatcher</span><span class="p">):</span>
-  <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">MyCustomMatcher</span><span class="p">(</span><span class="n">DataFrameCacheMatcher</span><span class="p">):</span>
+  <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">db</span><span class="p">,</span>
     <span class="c1"># additional required arguments with o default would be defined here</span>
@@ -1052,8 +1052,8 @@ that stored internally with the data.</p></li>
 from the <code class="code docutils literal notranslate"><span class="pre">BasicMatcher</span></code> family is you can then utilize it in a
 map operator to load attributes from a normalizating collection within a
 workflow.  Here, for example, is a variant of example 1 using <code class="code docutils literal notranslate"><span class="pre">MyMatcher</span></code>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mspasspy.client</span> <span class="kn">import</span> <span class="n">Client</span>
-<span class="kn">from</span> <span class="nn">mspasspy.db.database</span> <span class="kn">import</span> <span class="n">read_distributed_data</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">Client</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.db.database</span><span class="w"> </span><span class="kn">import</span> <span class="n">read_distributed_data</span>
 <span class="c1"># import for MyMatcher would appear here</span>
 <span class="n">dbclient</span> <span class="o">=</span> <span class="n">Client</span><span class="p">()</span>
 <span class="n">db</span> <span class="o">=</span> <span class="n">dbclient</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="s2">&quot;mydatabase&quot;</span><span class="p">)</span>

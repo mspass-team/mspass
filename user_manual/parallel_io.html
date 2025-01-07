@@ -7,7 +7,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Parallel IO in MsPASS &mdash; MsPASS 0.0.1 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
 
@@ -717,7 +717,7 @@ Metadata container.   In either case, the recommended way to set the
 <cite>dir</cite> and <cite>dfile</cite> arguments is with a custom function passed through a
 map operator.  Perhaps the easiest way to see this is to give an
 example that is a variant of that above:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">set_names</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">set_names</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
 <span class="w">  </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">  Examples setting dir and dfile from Metadata attributes assumed</span>
 <span class="sd">  to have been set earlier.  Example sets a constant dir value</span>
@@ -801,7 +801,7 @@ station codes should be defined for each datum.</p></li>
 <li><p>I use the pyspark variant which requires the SparkContext constructs
 see in this example.</p></li>
 </ol>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">set_dir_dfile</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">set_dir_dfile</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
 <span class="w">  </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">  Function used to set dir and dfile for example 2.</span>
 
@@ -841,7 +841,7 @@ see in this example.</p></li>
   <span class="k">return</span> <span class="n">d</span>
 
 <span class="c1"># these are needed to enable spark instead of dask defaults</span>
-<span class="kn">import</span> <span class="nn">pyspark</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pyspark</span>
 <span class="n">sc</span> <span class="o">=</span> <span class="n">pyspark</span><span class="o">.</span><span class="n">SparkContext</span><span class="p">(</span><span class="s1">&#39;local&#39;</span><span class="p">,</span><span class="s1">&#39;example2&#39;</span><span class="p">)</span>
 <span class="c1"># Assume other imports and definition of db is above</span>
 <span class="n">data</span> <span class="o">=</span> <span class="n">read_distributed_data</span><span class="p">(</span><span class="n">db</span><span class="p">,</span>
@@ -914,7 +914,7 @@ We set <cite>dir</cite> and <cite>dfile</cite> in the ensemble’s Metadata cont
 that the writer takes as a signal to write all ensemble data in
 the same file defined by the ensemble <cite>dir</cite> and <cite>dfile</cite>.</p></li>
 </ol>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">set_dir_dfile</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">set_dir_dfile</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
 <span class="w">  </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">  Function used to set dir and dfile for example 3.</span>
 

@@ -7,7 +7,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Using MongoDB with MsPASS &mdash; MsPASS 0.0.1 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
 
@@ -304,7 +304,7 @@ MongoDB calls a “document” AND pymongo uses dict containers as the base of
 its query language.   Two simple examples from the related tutorial notebook
 illustrate this.</p>
 <p><em>Document output example:</em></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">bson</span> <span class="kn">import</span> <span class="n">json_util</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bson</span><span class="w"> </span><span class="kn">import</span> <span class="n">json_util</span>
 <span class="n">doc</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_minised</span><span class="o">.</span><span class="n">find_one</span><span class="p">()</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">json_util</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span><span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
 </pre></div>
@@ -368,8 +368,8 @@ be used with MsPASS is to import CSS3.0 tables.   With Antelope
 files that can be done with the <cite>read_fsf</cite> function in pandas.  The
 following illustrates an alternative way to create a <cite>site</cite> collection
 from an Antelope <cite>site</cite> table.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span>
-<span class="kn">from</span> <span class="nn">obspy</span> <span class="kn">import</span> <span class="n">UTCDateTime</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">obspy</span><span class="w"> </span><span class="kn">import</span> <span class="n">UTCDateTime</span>
 <span class="n">keys</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;sta&#39;</span><span class="p">,</span><span class="s1">&#39;ondate&#39;</span><span class="p">,</span><span class="s1">&#39;offdate&#39;</span><span class="p">,</span><span class="s1">&#39;lat&#39;</span><span class="p">,</span><span class="s1">&#39;lon&#39;</span><span class="p">,</span><span class="s1">&#39;elev&#39;</span><span class="p">,</span><span class="s1">&#39;statype&#39;</span><span class="p">,</span><span class="s1">&#39;refsta&#39;</span><span class="p">,</span><span class="s1">&#39;dnorth&#39;</span><span class="p">,</span><span class="s1">&#39;deast&#39;</span><span class="p">,</span><span class="s1">&#39;lddate&#39;</span><span class="p">]</span>
 <span class="n">widths</span> <span class="o">=</span> <span class="p">[</span><span class="mi">6</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">50</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">17</span><span class="p">]</span>  <span class="c1"># need the antelope schema file to get these</span>
 <span class="n">df</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">read_fwf</span><span class="p">(</span><span class="s1">&#39;demo.site&#39;</span><span class="p">,</span><span class="n">names</span><span class="o">=</span><span class="n">keys</span><span class="p">,</span><span class="n">widths</span><span class="o">=</span><span class="n">widths</span><span class="p">)</span>
@@ -561,7 +561,7 @@ Both are equality tests for the attribute with
 the key “sta” matching a particular, unique name “AAK”.</p>
 <p>A similar inequality test for waveforms having <cite>starttime</cite> values
 after a particular date is the following:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">obspy</span> <span class="kn">import</span> <span class="n">UTCDateTime</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">obspy</span><span class="w"> </span><span class="kn">import</span> <span class="n">UTCDateTime</span>
 <span class="n">t_cutoff</span> <span class="o">=</span> <span class="n">UTCDateTime</span><span class="p">(</span><span class="s1">&#39;2012-07-28T00:00:00.00&#39;</span><span class="p">)</span>
 <span class="c1"># query here needs to convert to a unix epoch time (timestamp method)</span>
 <span class="c1"># for numerical comparison to work</span>
@@ -642,7 +642,7 @@ with a particular time window.</p>
 request.  In particular, this example reads a month of “LHZ”
 channel data for station “PFO” and loads the results into a
 <cite>TimeSeriesEnsemble</cite>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">obspy</span> <span class="kn">import</span> <span class="n">UTCDateTime</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">obspy</span><span class="w"> </span><span class="kn">import</span> <span class="n">UTCDateTime</span>
 <span class="c1"># Example to select the month of June of 2012</span>
 <span class="n">tsutc</span> <span class="o">=</span> <span class="n">UTCDateTime</span><span class="p">(</span><span class="s1">&#39;2012-06-01T00:00:00.0&#39;</span><span class="p">)</span>
 <span class="n">teutc</span> <span class="o">=</span> <span class="n">UTCDateTime</span><span class="p">(</span><span class="s1">&#39;2012-07-01T00:00:00.0&#39;</span><span class="p">)</span>
@@ -983,7 +983,7 @@ structure of one or more documents created by running something like the
 MsPASS <cite>index_mseed_file</cite> method of <cite>Database</cite>.   Something like the
 following can be useful to use in a python notebook run interactively
 to work out data problems:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">bson</span> <span class="kn">import</span> <span class="n">json_util</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bson</span><span class="w"> </span><span class="kn">import</span> <span class="n">json_util</span>
 <span class="n">doc</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_miniseed</span><span class="o">.</span><span class="n">find_one</span><span class="p">()</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">json_util</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span><span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
 </pre></div>
@@ -997,7 +997,7 @@ creating such a report.  Here is an example that creates a report of all
 stations listed in the site collection with coordinates and the time
 range of recording.  It is a variant of a code block in our
 <a class="reference external" href="https://github.com/mspass-team/mspass_tutorial/tree/master/notebooks">mongodb_tutorial</a></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span>
 <span class="n">cursor</span><span class="o">=</span><span class="n">db</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">find</span><span class="p">({})</span>
 <span class="n">doclist</span><span class="o">=</span><span class="p">[]</span>
 <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">cursor</span><span class="p">:</span>

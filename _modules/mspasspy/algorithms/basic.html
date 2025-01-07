@@ -6,7 +6,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>mspasspy.algorithms.basic &mdash; MsPASS 0.0.1 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
 
@@ -140,24 +140,24 @@
            <div itemprop="articleBody">
              
   <h1>Source code for mspasspy.algorithms.basic</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">mspasspy.util.decorators</span> <span class="kn">import</span> <span class="n">mspass_func_wrapper</span>
-<span class="kn">from</span> <span class="nn">mspasspy.ccore.algorithms.basic</span> <span class="kn">import</span> <span class="n">LinearTaper</span><span class="p">,</span> <span class="n">CosineTaper</span><span class="p">,</span> <span class="n">VectorTaper</span>
-<span class="kn">from</span> <span class="nn">mspasspy.ccore.utility</span> <span class="kn">import</span> <span class="n">MsPASSError</span><span class="p">,</span> <span class="n">ErrorSeverity</span>
-<span class="kn">from</span> <span class="nn">mspasspy.util</span> <span class="kn">import</span> <span class="n">logging_helper</span>
-<span class="kn">import</span> <span class="nn">mspasspy.ccore.algorithms.basic</span> <span class="k">as</span> <span class="nn">bsc</span>
-<span class="kn">from</span> <span class="nn">mspasspy.ccore.seismic</span> <span class="kn">import</span> <span class="p">(</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.util.decorators</span><span class="w"> </span><span class="kn">import</span> <span class="n">mspass_func_wrapper</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.ccore.algorithms.basic</span><span class="w"> </span><span class="kn">import</span> <span class="n">LinearTaper</span><span class="p">,</span> <span class="n">CosineTaper</span><span class="p">,</span> <span class="n">VectorTaper</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.ccore.utility</span><span class="w"> </span><span class="kn">import</span> <span class="n">MsPASSError</span><span class="p">,</span> <span class="n">ErrorSeverity</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">logging_helper</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">mspasspy.ccore.algorithms.basic</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">bsc</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.ccore.seismic</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">TimeSeries</span><span class="p">,</span>
     <span class="n">TimeSeriesEnsemble</span><span class="p">,</span>
     <span class="n">Seismogram</span><span class="p">,</span>
     <span class="n">SeismogramEnsemble</span><span class="p">,</span>
     <span class="n">SlownessVector</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">mspasspy.ccore.utility</span> <span class="kn">import</span> <span class="n">SphericalCoordinate</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.ccore.utility</span><span class="w"> </span><span class="kn">import</span> <span class="n">SphericalCoordinate</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
 
 <div class="viewcode-block" id="ExtractComponent"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.basic.ExtractComponent">[docs]</a><span class="nd">@mspass_func_wrapper</span>
-<span class="k">def</span> <span class="nf">ExtractComponent</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">ExtractComponent</span><span class="p">(</span>
     <span class="n">data</span><span class="p">,</span>
     <span class="n">component</span><span class="p">,</span>
     <span class="o">*</span><span class="n">args</span><span class="p">,</span>
@@ -224,7 +224,7 @@
 
 
 <div class="viewcode-block" id="ator"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.basic.ator">[docs]</a><span class="nd">@mspass_func_wrapper</span>
-<span class="k">def</span> <span class="nf">ator</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">ator</span><span class="p">(</span>
     <span class="n">data</span><span class="p">,</span>
     <span class="n">tshift</span><span class="p">,</span>
     <span class="o">*</span><span class="n">args</span><span class="p">,</span>
@@ -265,7 +265,7 @@
 
 
 <div class="viewcode-block" id="rtoa"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.basic.rtoa">[docs]</a><span class="nd">@mspass_func_wrapper</span>
-<span class="k">def</span> <span class="nf">rtoa</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">rtoa</span><span class="p">(</span>
     <span class="n">data</span><span class="p">,</span>
     <span class="o">*</span><span class="n">args</span><span class="p">,</span>
     <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -304,7 +304,7 @@
 
 
 <div class="viewcode-block" id="rotate"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.basic.rotate">[docs]</a><span class="nd">@mspass_func_wrapper</span>
-<span class="k">def</span> <span class="nf">rotate</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">rotate</span><span class="p">(</span>
     <span class="n">data</span><span class="p">,</span>
     <span class="n">rotate_param</span><span class="p">,</span>
     <span class="o">*</span><span class="n">args</span><span class="p">,</span>
@@ -350,7 +350,7 @@
 
 
 <div class="viewcode-block" id="rotate_to_standard"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.basic.rotate_to_standard">[docs]</a><span class="nd">@mspass_func_wrapper</span>
-<span class="k">def</span> <span class="nf">rotate_to_standard</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">rotate_to_standard</span><span class="p">(</span>
     <span class="n">data</span><span class="p">,</span>
     <span class="o">*</span><span class="n">args</span><span class="p">,</span>
     <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -400,7 +400,7 @@
 
 
 <div class="viewcode-block" id="free_surface_transformation"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.basic.free_surface_transformation">[docs]</a><span class="nd">@mspass_func_wrapper</span>
-<span class="k">def</span> <span class="nf">free_surface_transformation</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">free_surface_transformation</span><span class="p">(</span>
     <span class="n">data</span><span class="p">,</span>
     <span class="n">uvec</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">vp0</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -600,7 +600,7 @@
 
 
 <div class="viewcode-block" id="transform"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.basic.transform">[docs]</a><span class="nd">@mspass_func_wrapper</span>
-<span class="k">def</span> <span class="nf">transform</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">transform</span><span class="p">(</span>
     <span class="n">data</span><span class="p">,</span>
     <span class="n">matrix</span><span class="p">,</span>
     <span class="o">*</span><span class="n">args</span><span class="p">,</span>
@@ -639,7 +639,7 @@
 
 
 <div class="viewcode-block" id="transform_to_RTZ"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.basic.transform_to_RTZ">[docs]</a><span class="nd">@mspass_func_wrapper</span>
-<span class="k">def</span> <span class="nf">transform_to_RTZ</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">transform_to_RTZ</span><span class="p">(</span>
     <span class="n">data</span><span class="p">,</span>
     <span class="n">key</span><span class="o">=</span><span class="s2">&quot;seaz&quot;</span><span class="p">,</span>
     <span class="n">phi</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -765,7 +765,7 @@
 
 
 <div class="viewcode-block" id="transform_to_LQT"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.basic.transform_to_LQT">[docs]</a><span class="nd">@mspass_func_wrapper</span>
-<span class="k">def</span> <span class="nf">transform_to_LQT</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">transform_to_LQT</span><span class="p">(</span>
     <span class="n">data</span><span class="p">,</span>
     <span class="n">seaz_key</span><span class="o">=</span><span class="s2">&quot;seaz&quot;</span><span class="p">,</span>
     <span class="n">ema_key</span><span class="o">=</span><span class="s2">&quot;ema&quot;</span><span class="p">,</span>
@@ -936,7 +936,7 @@
 
 
 <div class="viewcode-block" id="linear_taper"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.basic.linear_taper">[docs]</a><span class="nd">@mspass_func_wrapper</span>
-<span class="k">def</span> <span class="nf">linear_taper</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">linear_taper</span><span class="p">(</span>
     <span class="n">data</span><span class="p">,</span>
     <span class="n">t0head</span><span class="p">,</span>
     <span class="n">t1head</span><span class="p">,</span>
@@ -986,7 +986,7 @@
 
 
 <div class="viewcode-block" id="cosine_taper"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.basic.cosine_taper">[docs]</a><span class="nd">@mspass_func_wrapper</span>
-<span class="k">def</span> <span class="nf">cosine_taper</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">cosine_taper</span><span class="p">(</span>
     <span class="n">data</span><span class="p">,</span>
     <span class="n">t0head</span><span class="p">,</span>
     <span class="n">t1head</span><span class="p">,</span>
@@ -1038,7 +1038,7 @@
 
 
 <div class="viewcode-block" id="vector_taper"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.basic.vector_taper">[docs]</a><span class="nd">@mspass_func_wrapper</span>
-<span class="k">def</span> <span class="nf">vector_taper</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">vector_taper</span><span class="p">(</span>
     <span class="n">data</span><span class="p">,</span>
     <span class="n">taper_array</span><span class="p">,</span>
     <span class="o">*</span><span class="n">args</span><span class="p">,</span>

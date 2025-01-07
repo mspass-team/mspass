@@ -7,7 +7,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Continuous Data Handling with MsPASS &mdash; MsPASS 0.0.1 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
 
@@ -343,9 +343,9 @@ This script will create a longer <a class="reference internal" href="../python_a
 for the BHZ channel of GSN station AAK.   Ranges are constant for a simple
 illustration:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># code above would define database handle db</span>
-<span class="kn">from</span> <span class="nn">mspasspy.algorithms.window</span> <span class="kn">import</span> <span class="n">merge</span>
-<span class="kn">from</span> <span class="nn">obspy</span> <span class="kn">import</span> <span class="n">UTCDateTime</span>
-<span class="kn">from</span> <span class="nn">bson</span> <span class="kn">import</span> <span class="n">json_utils</span>  <span class="c1">#TODO  verify this is right</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.algorithms.window</span><span class="w"> </span><span class="kn">import</span> <span class="n">merge</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">obspy</span><span class="w"> </span><span class="kn">import</span> <span class="n">UTCDateTime</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bson</span><span class="w"> </span><span class="kn">import</span> <span class="n">json_utils</span>  <span class="c1">#TODO  verify this is right</span>
 <span class="n">net</span> <span class="o">=</span><span class="s2">&quot;II&quot;</span>
 <span class="n">sta</span><span class="o">=</span><span class="s2">&quot;AAK&quot;</span>
 <span class="n">chan</span><span class="o">=</span><span class="s2">&quot;BHZ&quot;</span>
@@ -390,15 +390,15 @@ The example is made up, but is a prototype for building an event-based
 data set of all waveforms with P wave times packed the the
 Earthscope Array Network Facility (ANF) available online
 from Earthscope.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mspasspy.db.DBClient</span> <span class="kn">import</span> <span class="n">DBClient</span>
-<span class="kn">import</span> <span class="nn">dask.bag</span> <span class="k">as</span> <span class="nn">dbg</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.db.DBClient</span><span class="w"> </span><span class="kn">import</span> <span class="n">DBClient</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dask.bag</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dbg</span>
 <span class="n">dbclient</span><span class="o">=</span><span class="n">DBClient</span><span class="p">()</span>
 <span class="c1"># we need two database handles.  One for the continuous data (dbc)</span>
 <span class="c1"># and one to save the segments  (dbo).</span>
 <span class="n">dbc</span> <span class="o">=</span> <span class="n">dbclient</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="s2">&quot;TA2010&quot;</span><span class="p">)</span>   <span class="c1"># TA continuous data from 2010</span>
 <span class="n">dbo</span> <span class="o">=</span> <span class="n">dbclient</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="s2">&quot;Pdata2010&quot;</span><span class="p">)</span>  <span class="c1"># arrivals from ANF picks</span>
 
-<span class="k">def</span> <span class="nf">query_generator</span><span class="p">(</span><span class="n">doc</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">query_generator</span><span class="p">(</span><span class="n">doc</span><span class="p">):</span>
 <span class="w">  </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">  Generates a MongoDB query to run against wf_miniseed for waveform</span>
 <span class="sd">  segments containing any of the time interval time+stwin&lt;=t&lt;=time+etwin.</span>
@@ -426,7 +426,7 @@ from Earthscope.</p>
   <span class="p">}</span>
   <span class="k">return</span> <span class="n">query</span>
 
-<span class="k">def</span> <span class="nf">make_segments</span><span class="p">(</span><span class="n">ensemble</span><span class="p">,</span><span class="n">stwin</span><span class="p">,</span><span class="n">etwin</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">make_segments</span><span class="p">(</span><span class="n">ensemble</span><span class="p">,</span><span class="n">stwin</span><span class="p">,</span><span class="n">etwin</span><span class="p">):</span>
 <span class="w">  </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">  Function used in parallel map operator to create the main output of</span>
 <span class="sd">  this example workflow.  The input is assumed to be a time-sorted ensemble</span>
@@ -570,8 +570,8 @@ This example assumes we have a list of shot times from something like an
 onshore-offshore experiment using airguns or a set set of land shots with
 known shot times.  The script is serial, but is readily converted to
 a parallel form using standard concepts described elsewhere in this user’s manual.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mspasspy.db.DBClient</span> <span class="kn">import</span> <span class="n">DBClient</span>
-<span class="kn">import</span> <span class="nn">os</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.db.DBClient</span><span class="w"> </span><span class="kn">import</span> <span class="n">DBClient</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="n">dbclient</span><span class="o">=</span><span class="n">DBClient</span><span class="p">()</span>
 <span class="n">db</span> <span class="o">=</span> <span class="n">dbclient</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="s2">&quot;my_continuous_dataset&quot;</span><span class="p">)</span>
 <span class="n">wstime</span><span class="o">=</span><span class="mf">0.0</span>

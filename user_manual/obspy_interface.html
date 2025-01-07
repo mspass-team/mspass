@@ -7,7 +7,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Using ObsPy with MsPASS &mdash; MsPASS 0.0.1 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
 
@@ -267,7 +267,7 @@ For this reason we recommend only running ObsPy algorithms through the decorator
 That means both atomic data and Ensembles.
 This should be clearer from an example.</p>
 <p>Consider this small code fragment to apply a bandpass filter to an ObsPy <code class="code docutils literal notranslate"><span class="pre">Trace</span></code> object:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">obspy</span> <span class="kn">import</span> <span class="n">read</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">obspy</span><span class="w"> </span><span class="kn">import</span> <span class="n">read</span>
 <span class="n">d</span> <span class="o">=</span> <span class="n">read</span><span class="p">(</span><span class="s1">&#39;mydatafile&#39;</span><span class="p">)</span>
 <span class="n">d</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="s1">&#39;bandpass&#39;</span><span class="p">,</span> <span class="n">freqmin</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">freqmax</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span>
 </pre></div>
@@ -278,9 +278,9 @@ The normal application of the map and reduce operations, which are a core idea o
 Hence, a comparable algorithm in MsPASS to the above is the following:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mspass all jobs normally start with an incantation similar to</span>
 <span class="c1"># this to create a database handle which we here link to the symbol db</span>
-<span class="kn">import</span> <span class="nn">mspasspy.algorithms.signals</span> <span class="k">as</span> <span class="nn">signals</span>
-<span class="kn">from</span> <span class="nn">mspasspy.db.client</span> <span class="kn">import</span> <span class="n">Client</span>
-<span class="kn">from</span> <span class="nn">mspasspy.db.database</span> <span class="kn">import</span> <span class="n">Database</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">mspasspy.algorithms.signals</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">signals</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.db.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">Client</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.db.database</span><span class="w"> </span><span class="kn">import</span> <span class="n">Database</span>
 <span class="n">dbclient</span> <span class="o">=</span> <span class="n">Client</span><span class="p">()</span>
 <span class="n">db</span> <span class="o">=</span> <span class="n">Database</span><span class="p">(</span><span class="n">dbclient</span><span class="p">,</span> <span class="s1">&#39;mydata&#39;</span><span class="p">)</span>
 
@@ -306,7 +306,7 @@ See the <a class="reference internal" href="../python_api/mspasspy.algorithms.ht
 <p>The ObsPy decorator allow ObsPy operators to be applied in parallel.
 For example, the following is a variant of filter algorithm but this example uses the Dask scheduler to process the entire data set:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Assume db is created as above</span>
-<span class="kn">from</span> <span class="nn">mspasspy.db.database</span> <span class="kn">import</span> <span class="n">read_distributed_data</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.db.database</span><span class="w"> </span><span class="kn">import</span> <span class="n">read_distributed_data</span>
 <span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_TimeSeries</span><span class="o">.</span><span class="n">find</span><span class="p">({})</span>
 <span class="n">data</span> <span class="o">=</span> <span class="n">read_distributed_data</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">cursor</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;dask&#39;</span><span class="p">)</span>
 <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">signals</span><span class="o">.</span><span class="n">filter</span><span class="p">,</span> <span class="s2">&quot;bandpass&quot;</span><span class="p">,</span> <span class="n">freqmin</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">freqmax</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>

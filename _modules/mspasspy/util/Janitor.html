@@ -6,7 +6,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>mspasspy.util.Janitor &mdash; MsPASS 0.0.1 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
 
@@ -147,10 +147,10 @@
 
 <span class="sd">@author: pavlis</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">yaml</span>
-<span class="kn">from</span> <span class="nn">mspasspy.ccore.utility</span> <span class="kn">import</span> <span class="n">MsPASSError</span>
-<span class="kn">from</span> <span class="nn">mspasspy.ccore.seismic</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">yaml</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.ccore.utility</span><span class="w"> </span><span class="kn">import</span> <span class="n">MsPASSError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.ccore.seismic</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">TimeSeries</span><span class="p">,</span>
     <span class="n">Seismogram</span><span class="p">,</span>
     <span class="n">TimeSeriesEnsemble</span><span class="p">,</span>
@@ -159,7 +159,7 @@
 <span class="p">)</span>
 
 
-<div class="viewcode-block" id="Janitor"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.Janitor.Janitor">[docs]</a><span class="k">class</span> <span class="nc">Janitor</span><span class="p">:</span>
+<div class="viewcode-block" id="Janitor"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.Janitor.Janitor">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">Janitor</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generic handler to clean up the Metadata namespace of a MsPASS data object.</span>
 
@@ -249,7 +249,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">keepers_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">TimeSeries_keepers</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -286,12 +286,12 @@
                 <span class="s2">&quot;Janitor constructor:  Parser failed reading keepers_file=&quot;</span>
                 <span class="o">+</span> <span class="n">keepers_file</span><span class="p">,</span>
                 <span class="s2">&quot;Fatal&quot;</span><span class="p">,</span>
-            <span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
+            <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
         <span class="k">except</span> <span class="ne">EnvironmentError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
                 <span class="s2">&quot;Janitor constructor:  Cannot open keepers_file = &quot;</span> <span class="o">+</span> <span class="n">keepers_file</span><span class="p">,</span>
                 <span class="s2">&quot;Fatal&quot;</span><span class="p">,</span>
-            <span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
+            <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_parse_yaml_file</span><span class="p">(</span><span class="n">keepers_dict</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">process_ensemble_members</span> <span class="o">=</span> <span class="n">process_ensemble_members</span>
         <span class="k">if</span> <span class="n">TimeSeries_keepers</span><span class="p">:</span>
@@ -301,7 +301,7 @@
         <span class="k">if</span> <span class="n">ensemble_keepers</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">ensemle_keepers</span> <span class="o">=</span> <span class="n">ensemble_keepers</span>
 
-<div class="viewcode-block" id="Janitor.clean"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.Janitor.Janitor.clean">[docs]</a>    <span class="k">def</span> <span class="nf">clean</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">datum</span><span class="p">):</span>
+<div class="viewcode-block" id="Janitor.clean"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.Janitor.Janitor.clean">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">clean</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">datum</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Process datum to remove all Metadata with keys not defined in</span>
 <span class="sd">        this instance of Janitor.  Returns the datum with the attributes</span>
@@ -336,7 +336,7 @@
                     <span class="n">datum</span><span class="o">.</span><span class="n">erase</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">datum</span></div>
 
-<div class="viewcode-block" id="Janitor.collect_trash"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.Janitor.Janitor.collect_trash">[docs]</a>    <span class="k">def</span> <span class="nf">collect_trash</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">datum</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<div class="viewcode-block" id="Janitor.collect_trash"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.Janitor.Janitor.collect_trash">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">collect_trash</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">datum</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Processes datum by extracting attributes that this</span>
 <span class="sd">        instance of Janitor does not define as a keeper.  It then</span>
@@ -367,7 +367,7 @@
                 <span class="n">datum</span><span class="o">.</span><span class="n">erase</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">result</span></div>
 
-<div class="viewcode-block" id="Janitor.bag_trash"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.Janitor.Janitor.bag_trash">[docs]</a>    <span class="k">def</span> <span class="nf">bag_trash</span><span class="p">(</span>
+<div class="viewcode-block" id="Janitor.bag_trash"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.Janitor.Janitor.bag_trash">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">bag_trash</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">datum</span><span class="p">,</span> <span class="n">trashbag_key</span><span class="o">=</span><span class="s2">&quot;trash&quot;</span><span class="p">,</span> <span class="n">ensemble_trashbag_key</span><span class="o">=</span><span class="s2">&quot;ensemble_trash&quot;</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -419,7 +419,7 @@
             <span class="n">datum</span><span class="p">[</span><span class="n">trashbag_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">trash</span>
         <span class="k">return</span> <span class="n">datum</span></div>
 
-<div class="viewcode-block" id="Janitor.add2keepers"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.Janitor.Janitor.add2keepers">[docs]</a>    <span class="k">def</span> <span class="nf">add2keepers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">keeper_type</span><span class="o">=</span><span class="s2">&quot;atomic&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="Janitor.add2keepers"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.Janitor.Janitor.add2keepers">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">add2keepers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">keeper_type</span><span class="o">=</span><span class="s2">&quot;atomic&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Adds a new key to the namespace for a data type.</span>
 
@@ -458,7 +458,7 @@
             <span class="p">)</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">_parse_yaml_file</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_parse_yaml_file</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">keepers_dict</span><span class="p">,</span>
         <span class="n">TimeSeries_key</span><span class="o">=</span><span class="s2">&quot;TimeSeries&quot;</span><span class="p">,</span>
@@ -492,7 +492,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">ensemble_keepers</span> <span class="o">=</span> <span class="p">[]</span>
 
-    <span class="k">def</span> <span class="nf">_validate_datum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">datum</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_validate_datum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">datum</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called internally by processing methods to validate the</span>
 <span class="sd">        type of a datum input to processing methods through</span>
@@ -511,7 +511,7 @@
             <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="s2">&quot;Fatal&quot;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="MiniseedJanitor"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.Janitor.MiniseedJanitor">[docs]</a><span class="k">class</span> <span class="nc">MiniseedJanitor</span><span class="p">(</span><span class="n">Janitor</span><span class="p">):</span>
+<div class="viewcode-block" id="MiniseedJanitor"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.Janitor.MiniseedJanitor">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">MiniseedJanitor</span><span class="p">(</span><span class="n">Janitor</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convenience class for handling data read from wf_miniseed.</span>
 
@@ -527,7 +527,7 @@
 <span class="sd">    it will almost certainly delete useful attributes.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">&quot;MiniseedJanitor.yaml&quot;</span><span class="p">)</span></div>
 </pre></div>
 

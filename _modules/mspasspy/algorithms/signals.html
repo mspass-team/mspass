@@ -6,7 +6,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>mspasspy.algorithms.signals &mdash; MsPASS 0.0.1 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
 
@@ -140,13 +140,13 @@
            <div itemprop="articleBody">
              
   <h1>Source code for mspasspy.algorithms.signals</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">obspy.signal.filter</span>
-<span class="kn">import</span> <span class="nn">obspy.signal.detrend</span>
-<span class="kn">import</span> <span class="nn">obspy.signal.cross_correlation</span>
-<span class="kn">import</span> <span class="nn">obspy.signal.interpolation</span>
-<span class="kn">import</span> <span class="nn">obspy.core.utcdatetime</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">obspy.signal.filter</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">obspy.signal.detrend</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">obspy.signal.cross_correlation</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">obspy.signal.interpolation</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">obspy.core.utcdatetime</span>
 
-<span class="kn">from</span> <span class="nn">mspasspy.util.decorators</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.util.decorators</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">mspass_func_wrapper</span><span class="p">,</span>
     <span class="n">mspass_func_wrapper_multi</span><span class="p">,</span>
     <span class="n">timeseries_as_trace</span><span class="p">,</span>
@@ -155,7 +155,7 @@
     <span class="n">seismogram_ensemble_as_stream</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="kn">from</span> <span class="nn">mspasspy.util.converter</span> <span class="kn">import</span> <span class="n">Stream2Seismogram</span><span class="p">,</span> <span class="n">Stream2TimeSeriesEnsemble</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.util.converter</span><span class="w"> </span><span class="kn">import</span> <span class="n">Stream2Seismogram</span><span class="p">,</span> <span class="n">Stream2TimeSeriesEnsemble</span>
 
 
 <div class="viewcode-block" id="filter"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.signals.filter">[docs]</a><span class="nd">@mspass_func_wrapper</span>
@@ -163,7 +163,7 @@
 <span class="nd">@seismogram_as_stream</span>
 <span class="nd">@timeseries_ensemble_as_stream</span>
 <span class="nd">@seismogram_ensemble_as_stream</span>
-<span class="k">def</span> <span class="nf">filter</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">filter</span><span class="p">(</span>
     <span class="n">data</span><span class="p">,</span>
     <span class="nb">type</span><span class="p">,</span>
     <span class="o">*</span><span class="n">args</span><span class="p">,</span>
@@ -203,7 +203,7 @@
 <span class="nd">@seismogram_as_stream</span>
 <span class="nd">@timeseries_ensemble_as_stream</span>
 <span class="nd">@seismogram_ensemble_as_stream</span>
-<span class="k">def</span> <span class="nf">detrend</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">detrend</span><span class="p">(</span>
     <span class="n">data</span><span class="p">,</span>
     <span class="o">*</span><span class="n">args</span><span class="p">,</span>
     <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -242,7 +242,7 @@
 <span class="nd">@seismogram_as_stream</span>
 <span class="nd">@timeseries_ensemble_as_stream</span>
 <span class="nd">@seismogram_ensemble_as_stream</span>
-<span class="k">def</span> <span class="nf">interpolate</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">interpolate</span><span class="p">(</span>
     <span class="n">data</span><span class="p">,</span>
     <span class="n">sampling_rate</span><span class="p">,</span>
     <span class="o">*</span><span class="n">args</span><span class="p">,</span>
@@ -296,7 +296,7 @@
 
 <div class="viewcode-block" id="correlate"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.signals.correlate">[docs]</a><span class="nd">@mspass_func_wrapper_multi</span>
 <span class="nd">@timeseries_as_trace</span>
-<span class="k">def</span> <span class="nf">correlate</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">correlate</span><span class="p">(</span>
     <span class="n">a</span><span class="p">,</span>
     <span class="n">b</span><span class="p">,</span>
     <span class="n">shift</span><span class="p">,</span>
@@ -342,7 +342,7 @@
 
 <div class="viewcode-block" id="correlate_template"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.signals.correlate_template">[docs]</a><span class="nd">@mspass_func_wrapper</span>
 <span class="nd">@timeseries_as_trace</span>
-<span class="k">def</span> <span class="nf">correlate_template</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">correlate_template</span><span class="p">(</span>
     <span class="n">data</span><span class="p">,</span>
     <span class="n">template</span><span class="p">,</span>
     <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -362,7 +362,7 @@
 <div class="viewcode-block" id="correlate_stream_template"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.signals.correlate_stream_template">[docs]</a><span class="nd">@mspass_func_wrapper</span>
 <span class="nd">@timeseries_ensemble_as_stream</span>
 <span class="nd">@seismogram_as_stream</span>
-<span class="k">def</span> <span class="nf">correlate_stream_template</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">correlate_stream_template</span><span class="p">(</span>
     <span class="n">stream</span><span class="p">,</span>
     <span class="n">template</span><span class="p">,</span>
     <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -387,7 +387,7 @@
 <div class="viewcode-block" id="correlation_detector"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.signals.correlation_detector">[docs]</a><span class="nd">@mspass_func_wrapper</span>
 <span class="nd">@timeseries_ensemble_as_stream</span>
 <span class="nd">@seismogram_as_stream</span>
-<span class="k">def</span> <span class="nf">correlation_detector</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">correlation_detector</span><span class="p">(</span>
     <span class="n">stream</span><span class="p">,</span>
     <span class="n">templates</span><span class="p">,</span>
     <span class="n">heights</span><span class="p">,</span>
@@ -437,7 +437,7 @@
 <div class="viewcode-block" id="templates_max_similarity"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.signals.templates_max_similarity">[docs]</a><span class="nd">@mspass_func_wrapper</span>
 <span class="nd">@timeseries_ensemble_as_stream</span>
 <span class="nd">@seismogram_as_stream</span>
-<span class="k">def</span> <span class="nf">templates_max_similarity</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">templates_max_similarity</span><span class="p">(</span>
     <span class="n">st</span><span class="p">,</span>
     <span class="n">time</span><span class="p">,</span>
     <span class="n">streams_templates</span><span class="p">,</span>
@@ -454,7 +454,7 @@
 
 <div class="viewcode-block" id="xcorr_3c"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.signals.xcorr_3c">[docs]</a><span class="nd">@mspass_func_wrapper_multi</span>
 <span class="nd">@seismogram_as_stream</span>
-<span class="k">def</span> <span class="nf">xcorr_3c</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">xcorr_3c</span><span class="p">(</span>
     <span class="n">st1</span><span class="p">,</span>
     <span class="n">st2</span><span class="p">,</span>
     <span class="n">shift_len</span><span class="p">,</span>
@@ -475,7 +475,7 @@
 
 <div class="viewcode-block" id="xcorr_max"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.signals.xcorr_max">[docs]</a><span class="nd">@mspass_func_wrapper</span>
 <span class="nd">@timeseries_as_trace</span>
-<span class="k">def</span> <span class="nf">xcorr_max</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">xcorr_max</span><span class="p">(</span>
     <span class="n">data</span><span class="p">,</span>
     <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">alg_name</span><span class="o">=</span><span class="s2">&quot;xcor_max&quot;</span><span class="p">,</span>
@@ -488,7 +488,7 @@
 
 <div class="viewcode-block" id="xcorr_pick_correction"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.signals.xcorr_pick_correction">[docs]</a><span class="nd">@mspass_func_wrapper_multi</span>
 <span class="nd">@timeseries_as_trace</span>
-<span class="k">def</span> <span class="nf">xcorr_pick_correction</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">xcorr_pick_correction</span><span class="p">(</span>
     <span class="n">trace1</span><span class="p">,</span>
     <span class="n">trace2</span><span class="p">,</span>
     <span class="n">pick1</span><span class="p">,</span>

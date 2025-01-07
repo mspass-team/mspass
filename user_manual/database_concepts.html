@@ -7,7 +7,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Database Concepts &mdash; MsPASS 0.0.1 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
 
@@ -997,7 +997,7 @@ imports data through a two step procedure:</p>
 <ol class="arabic">
 <li><p>Run the following function on each seed file that is a bundle of
 multiple channels of data:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">dbsave_seed_ensemble_file</span><span class="p">(</span><span class="n">db</span><span class="p">,</span><span class="n">file</span><span class="p">,</span><span class="n">gather_type</span><span class="o">=</span><span class="s2">&quot;event&quot;</span><span class="p">,</span><span class="n">keys</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">dbsave_seed_ensemble_file</span><span class="p">(</span><span class="n">db</span><span class="p">,</span><span class="n">file</span><span class="p">,</span><span class="n">gather_type</span><span class="o">=</span><span class="s2">&quot;event&quot;</span><span class="p">,</span><span class="n">keys</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 </pre></div>
 </div>
 <p>where <code class="code docutils literal notranslate"><span class="pre">file</span></code> is assumed to be a miniseed file and <code class="code docutils literal notranslate"><span class="pre">db</span></code> is a <code class="code docutils literal notranslate"><span class="pre">Database</span></code>
@@ -1007,7 +1007,7 @@ a special collection called <code class="code docutils literal notranslate"><spa
 </li>
 <li><p>The same data can be loaded into memory as a MsPASS <a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeriesEnsemble" title="mspasspy.ccore.seismic.TimeSeriesEnsemble"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeriesEnsemble</span></code></a>
 object using the related function with this signature:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">load_one_ensemble</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">load_one_ensemble</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span>
            <span class="n">create_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
            <span class="n">jobname</span><span class="o">=</span><span class="s1">&#39;Default job&#39;</span><span class="p">,</span>
            <span class="n">jobid</span><span class="o">=</span><span class="s1">&#39;99999&#39;</span><span class="p">,</span>
@@ -1020,9 +1020,9 @@ object using the related function with this signature:</p>
 <p>where <code class="code docutils literal notranslate"><span class="pre">doc</span></code> is a document retrieved from the wf_miniseed collection.
 For example, the following shows how an entire dataset of miniseed files indexed
 previously with dbsave_seed_ensemble_file can be read sequentially:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mspasspy.db.client</span> <span class="kn">import</span> <span class="n">Client</span>
-<span class="kn">from</span> <span class="nn">mspasspy.db.database</span> <span class="kn">import</span> <span class="n">Database</span>
-<span class="kn">from</span> <span class="nn">mspasspy.preprocessing.seed.ensembles</span> <span class="kn">import</span> <span class="n">load_one_ensemble</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.db.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">Client</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.db.database</span><span class="w"> </span><span class="kn">import</span> <span class="n">Database</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.preprocessing.seed.ensembles</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_one_ensemble</span>
 
 
 <span class="n">dbname</span><span class="o">=</span><span class="s2">&quot;mydatabase&quot;</span>   <span class="c1"># set to the name of your MongoDB database</span>

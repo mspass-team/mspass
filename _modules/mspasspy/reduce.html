@@ -6,7 +6,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>mspasspy.reduce &mdash; MsPASS 0.0.1 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
 
@@ -141,16 +141,16 @@
              
   <h1>Source code for mspasspy.reduce</h1><div class="highlight"><pre>
 <span></span><span class="k">try</span><span class="p">:</span>
-    <span class="kn">import</span> <span class="nn">dask.bag</span> <span class="k">as</span> <span class="nn">daskbag</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">dask.bag</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">daskbag</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
     <span class="k">pass</span>
 <span class="k">try</span><span class="p">:</span>
-    <span class="kn">import</span> <span class="nn">pyspark</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">pyspark</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
     <span class="k">pass</span>
-<span class="kn">from</span> <span class="nn">mspasspy.util.decorators</span> <span class="kn">import</span> <span class="n">mspass_reduce_func_wrapper</span>
-<span class="kn">from</span> <span class="nn">mspasspy.util.converter</span> <span class="kn">import</span> <span class="n">list2Ensemble</span>
-<span class="kn">from</span> <span class="nn">mspasspy.ccore.seismic</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.util.decorators</span><span class="w"> </span><span class="kn">import</span> <span class="n">mspass_reduce_func_wrapper</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.util.converter</span><span class="w"> </span><span class="kn">import</span> <span class="n">list2Ensemble</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.ccore.seismic</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">Seismogram</span><span class="p">,</span>
     <span class="n">TimeSeries</span><span class="p">,</span>
     <span class="n">TimeSeriesEnsemble</span><span class="p">,</span>
@@ -159,7 +159,7 @@
 
 
 <div class="viewcode-block" id="stack"><a class="viewcode-back" href="../../python_api/mspasspy.reduce.html#mspasspy.reduce.stack">[docs]</a><span class="nd">@mspass_reduce_func_wrapper</span>
-<span class="k">def</span> <span class="nf">stack</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="n">data2</span><span class="p">,</span> <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">alg_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">stack</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="n">data2</span><span class="p">,</span> <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">alg_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function sums the data field of two mspasspy objects, the result will be stored in data1.</span>
 <span class="sd">    Note it is wrapped by mspass_reduce_func_wrapper, so the history and error logs can be preserved.</span>
@@ -185,7 +185,7 @@
     <span class="k">return</span> <span class="n">data1</span></div>
 
 
-<div class="viewcode-block" id="mspass_spark_foldby"><a class="viewcode-back" href="../../python_api/mspasspy.reduce.html#mspasspy.reduce.mspass_spark_foldby">[docs]</a><span class="k">def</span> <span class="nf">mspass_spark_foldby</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;site_id&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="mspass_spark_foldby"><a class="viewcode-back" href="../../python_api/mspasspy.reduce.html#mspasspy.reduce.mspass_spark_foldby">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">mspass_spark_foldby</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;site_id&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function implements a convenient foldby method for a spark RDD to generate ensembles from atomic data.</span>
 <span class="sd">    The concept is to assemble ensembles of :class:`mspasspy.ccore.seismic.TimeSeries` or</span>
@@ -219,7 +219,7 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="mspass_dask_foldby"><a class="viewcode-back" href="../../python_api/mspasspy.reduce.html#mspasspy.reduce.mspass_dask_foldby">[docs]</a><span class="k">def</span> <span class="nf">mspass_dask_foldby</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;site_id&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="mspass_dask_foldby"><a class="viewcode-back" href="../../python_api/mspasspy.reduce.html#mspasspy.reduce.mspass_dask_foldby">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">mspass_dask_foldby</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;site_id&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function implements a convenient foldby method for a dask bag to generate ensembles from atomic data.</span>
 <span class="sd">    The concept is to assemble ensembles of :class:`mspasspy.ccore.seismic.TimeSeries` or</span>

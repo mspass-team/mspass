@@ -6,7 +6,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>mspasspy.global_history.manager &mdash; MsPASS 0.0.1 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
 
@@ -140,32 +140,32 @@
            <div itemprop="articleBody">
              
   <h1>Source code for mspasspy.global_history.manager</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">yaml</span>
-<span class="kn">import</span> <span class="nn">pymongo</span>
-<span class="kn">import</span> <span class="nn">collections</span>
-<span class="kn">import</span> <span class="nn">json</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">yaml</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pymongo</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">collections</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
 
 <span class="k">try</span><span class="p">:</span>
-    <span class="kn">import</span> <span class="nn">dask.bag</span> <span class="k">as</span> <span class="nn">daskbag</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">dask.bag</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">daskbag</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
     <span class="k">pass</span>
 <span class="k">try</span><span class="p">:</span>
-    <span class="kn">import</span> <span class="nn">pyspark</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">pyspark</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
     <span class="k">pass</span>
-<span class="kn">from</span> <span class="nn">bson.objectid</span> <span class="kn">import</span> <span class="n">ObjectId</span>
-<span class="kn">from</span> <span class="nn">mspasspy.ccore.utility</span> <span class="kn">import</span> <span class="n">MsPASSError</span><span class="p">,</span> <span class="n">AntelopePf</span>
-<span class="kn">from</span> <span class="nn">mspasspy.util.converter</span> <span class="kn">import</span> <span class="n">AntelopePf2dict</span>
-<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
-<span class="kn">from</span> <span class="nn">dill.source</span> <span class="kn">import</span> <span class="n">getsource</span>
-<span class="kn">import</span> <span class="nn">functools</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bson.objectid</span><span class="w"> </span><span class="kn">import</span> <span class="n">ObjectId</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.ccore.utility</span><span class="w"> </span><span class="kn">import</span> <span class="n">MsPASSError</span><span class="p">,</span> <span class="n">AntelopePf</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.util.converter</span><span class="w"> </span><span class="kn">import</span> <span class="n">AntelopePf2dict</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dill.source</span><span class="w"> </span><span class="kn">import</span> <span class="n">getsource</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">functools</span>
 
-<span class="kn">import</span> <span class="nn">mspasspy.algorithms.signals</span> <span class="k">as</span> <span class="nn">signals</span>
-<span class="kn">from</span> <span class="nn">mspasspy.global_history.ParameterGTree</span> <span class="kn">import</span> <span class="n">ParameterGTree</span><span class="p">,</span> <span class="n">parameter_to_GTree</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">mspasspy.algorithms.signals</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">signals</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.global_history.ParameterGTree</span><span class="w"> </span><span class="kn">import</span> <span class="n">ParameterGTree</span><span class="p">,</span> <span class="n">parameter_to_GTree</span>
 
 
-<div class="viewcode-block" id="mspass_map"><a class="viewcode-back" href="../../../python_api/mspasspy.global_history.html#mspasspy.global_history.manager.mspass_map">[docs]</a><span class="k">def</span> <span class="nf">mspass_map</span><span class="p">(</span>
+<div class="viewcode-block" id="mspass_map"><a class="viewcode-back" href="../../../python_api/mspasspy.global_history.html#mspasspy.global_history.manager.mspass_map">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">mspass_map</span><span class="p">(</span>
     <span class="n">data</span><span class="p">,</span>
     <span class="n">func</span><span class="p">,</span>
     <span class="n">global_history</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -237,7 +237,7 @@
     <span class="k">return</span> <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">wf</span><span class="p">:</span> <span class="n">func</span><span class="p">(</span><span class="n">wf</span><span class="p">,</span> <span class="n">object_history</span><span class="o">=</span><span class="n">object_history</span><span class="p">),</span> <span class="n">data</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="mspass_reduce"><a class="viewcode-back" href="../../../python_api/mspasspy.global_history.html#mspasspy.global_history.manager.mspass_reduce">[docs]</a><span class="k">def</span> <span class="nf">mspass_reduce</span><span class="p">(</span>
+<div class="viewcode-block" id="mspass_reduce"><a class="viewcode-back" href="../../../python_api/mspasspy.global_history.html#mspasspy.global_history.manager.mspass_reduce">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">mspass_reduce</span><span class="p">(</span>
     <span class="n">data</span><span class="p">,</span>
     <span class="n">func</span><span class="p">,</span>
     <span class="n">global_history</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -313,7 +313,7 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="mspass_spark_map"><a class="viewcode-back" href="../../../python_api/mspasspy.global_history.html#mspasspy.global_history.manager.mspass_spark_map">[docs]</a><span class="k">def</span> <span class="nf">mspass_spark_map</span><span class="p">(</span>
+<div class="viewcode-block" id="mspass_spark_map"><a class="viewcode-back" href="../../../python_api/mspasspy.global_history.html#mspasspy.global_history.manager.mspass_spark_map">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">mspass_spark_map</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">func</span><span class="p">,</span>
     <span class="o">*</span><span class="n">args</span><span class="p">,</span>
@@ -415,7 +415,7 @@
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">wf</span><span class="p">:</span> <span class="n">func</span><span class="p">(</span><span class="n">wf</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">object_history</span><span class="o">=</span><span class="n">object_history</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="mspass_dask_map"><a class="viewcode-back" href="../../../python_api/mspasspy.global_history.html#mspasspy.global_history.manager.mspass_dask_map">[docs]</a><span class="k">def</span> <span class="nf">mspass_dask_map</span><span class="p">(</span>
+<div class="viewcode-block" id="mspass_dask_map"><a class="viewcode-back" href="../../../python_api/mspasspy.global_history.html#mspasspy.global_history.manager.mspass_dask_map">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">mspass_dask_map</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">func</span><span class="p">,</span>
     <span class="o">*</span><span class="n">args</span><span class="p">,</span>
@@ -516,7 +516,7 @@
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">object_history</span><span class="o">=</span><span class="n">object_history</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="mspass_spark_reduce"><a class="viewcode-back" href="../../../python_api/mspasspy.global_history.html#mspasspy.global_history.manager.mspass_spark_reduce">[docs]</a><span class="k">def</span> <span class="nf">mspass_spark_reduce</span><span class="p">(</span>
+<div class="viewcode-block" id="mspass_spark_reduce"><a class="viewcode-back" href="../../../python_api/mspasspy.global_history.html#mspasspy.global_history.manager.mspass_spark_reduce">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">mspass_spark_reduce</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">func</span><span class="p">,</span>
     <span class="o">*</span><span class="n">args</span><span class="p">,</span>
@@ -593,7 +593,7 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="mspass_dask_fold"><a class="viewcode-back" href="../../../python_api/mspasspy.global_history.html#mspasspy.global_history.manager.mspass_dask_fold">[docs]</a><span class="k">def</span> <span class="nf">mspass_dask_fold</span><span class="p">(</span>
+<div class="viewcode-block" id="mspass_dask_fold"><a class="viewcode-back" href="../../../python_api/mspasspy.global_history.html#mspasspy.global_history.manager.mspass_dask_fold">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">mspass_dask_fold</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">func</span><span class="p">,</span>
     <span class="o">*</span><span class="n">args</span><span class="p">,</span>
@@ -670,7 +670,7 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="GlobalHistoryManager"><a class="viewcode-back" href="../../../python_api/mspasspy.global_history.html#mspasspy.global_history.manager.GlobalHistoryManager">[docs]</a><span class="k">class</span> <span class="nc">GlobalHistoryManager</span><span class="p">:</span>
+<div class="viewcode-block" id="GlobalHistoryManager"><a class="viewcode-back" href="../../../python_api/mspasspy.global_history.html#mspasspy.global_history.manager.GlobalHistoryManager">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">GlobalHistoryManager</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A Global History Mananger handler.</span>
 
@@ -679,7 +679,7 @@
 <span class="sd">    through mspass client&#39;s methods.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">database_instance</span><span class="p">,</span> <span class="n">job_name</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">database_instance</span><span class="p">,</span> <span class="n">job_name</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">job_name</span> <span class="o">=</span> <span class="n">job_name</span>
         <span class="c1"># generate an bson UUID for this job, should be unique on the application level</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">job_id</span> <span class="o">=</span> <span class="n">ObjectId</span><span class="p">()</span>
@@ -720,7 +720,7 @@
         <span class="k">except</span> <span class="ne">NameError</span><span class="p">:</span>
             <span class="k">pass</span>
 
-<div class="viewcode-block" id="GlobalHistoryManager.logging"><a class="viewcode-back" href="../../../python_api/mspasspy.global_history.html#mspasspy.global_history.manager.GlobalHistoryManager.logging">[docs]</a>    <span class="k">def</span> <span class="nf">logging</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alg_id</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">parameters</span><span class="p">):</span>
+<div class="viewcode-block" id="GlobalHistoryManager.logging"><a class="viewcode-back" href="../../../python_api/mspasspy.global_history.html#mspasspy.global_history.manager.GlobalHistoryManager.logging">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">logging</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alg_id</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">parameters</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Save the usage of the algorithm in the map/reduce operation</span>
 
@@ -745,7 +745,7 @@
             <span class="p">}</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="GlobalHistoryManager.get_alg_id"><a class="viewcode-back" href="../../../python_api/mspasspy.global_history.html#mspasspy.global_history.manager.GlobalHistoryManager.get_alg_id">[docs]</a>    <span class="k">def</span> <span class="nf">get_alg_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">parameters</span><span class="p">):</span>
+<div class="viewcode-block" id="GlobalHistoryManager.get_alg_id"><a class="viewcode-back" href="../../../python_api/mspasspy.global_history.html#mspasspy.global_history.manager.GlobalHistoryManager.get_alg_id">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_alg_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">parameters</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Save the usage of the algorithm in the map/reduce operation</span>
 
@@ -767,7 +767,7 @@
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;alg_id&quot;</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="GlobalHistoryManager.get_alg_list"><a class="viewcode-back" href="../../../python_api/mspasspy.global_history.html#mspasspy.global_history.manager.GlobalHistoryManager.get_alg_list">[docs]</a>    <span class="k">def</span> <span class="nf">get_alg_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job_name</span><span class="p">,</span> <span class="n">job_id</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="GlobalHistoryManager.get_alg_list"><a class="viewcode-back" href="../../../python_api/mspasspy.global_history.html#mspasspy.global_history.manager.GlobalHistoryManager.get_alg_list">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_alg_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job_name</span><span class="p">,</span> <span class="n">job_id</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get a list of history records by job name(and job_id)</span>
 
@@ -785,7 +785,7 @@
             <span class="n">alg_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">alg_list</span></div>
 
-<div class="viewcode-block" id="GlobalHistoryManager.set_alg_name_and_parameters"><a class="viewcode-back" href="../../../python_api/mspasspy.global_history.html#mspasspy.global_history.manager.GlobalHistoryManager.set_alg_name_and_parameters">[docs]</a>    <span class="k">def</span> <span class="nf">set_alg_name_and_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alg_id</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">parameters</span><span class="p">):</span>
+<div class="viewcode-block" id="GlobalHistoryManager.set_alg_name_and_parameters"><a class="viewcode-back" href="../../../python_api/mspasspy.global_history.html#mspasspy.global_history.manager.GlobalHistoryManager.set_alg_name_and_parameters">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">set_alg_name_and_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alg_id</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">parameters</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set the alg_name and parameters by a user specified alg_id</span>
 

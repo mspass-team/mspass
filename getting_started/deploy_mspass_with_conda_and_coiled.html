@@ -7,7 +7,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Deploy MsPASS with Conda and Coiled &mdash; MsPASS 0.0.1 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
 
@@ -217,9 +217,9 @@ and install them on your cluster. For running things on Coiled, you could
 try <cite>coiled run your_code.py</cite> (or follow one of the examples in
 <a class="reference external" href="https://docs.coiled.io/user_guide/usage/examples.html">coiled docs</a>)!</p>
 <p>For example, to connect to MongoDB using Atlas:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pymongo.mongo_client</span> <span class="kn">import</span> <span class="n">MongoClient</span>
-<span class="kn">from</span> <span class="nn">pymongo.server_api</span> <span class="kn">import</span> <span class="n">ServerApi</span>
-<span class="kn">from</span> <span class="nn">urllib.parse</span> <span class="kn">import</span> <span class="n">quote_plus</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pymongo.mongo_client</span><span class="w"> </span><span class="kn">import</span> <span class="n">MongoClient</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pymongo.server_api</span><span class="w"> </span><span class="kn">import</span> <span class="n">ServerApi</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">urllib.parse</span><span class="w"> </span><span class="kn">import</span> <span class="n">quote_plus</span>
 <span class="n">username</span> <span class="o">=</span> <span class="s2">&quot;your username&quot;</span>
 <span class="n">password</span> <span class="o">=</span> <span class="s2">&quot;your password&quot;</span>
 
@@ -241,7 +241,7 @@ try <cite>coiled run your_code.py</cite> (or follow one of the examples in
 </div>
 <p>If the ping success, it means we successfully connect to your remote mongo database.
 Let’s build a MsPASS client and start to use MsPASS:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mspasspy.db.client</span> <span class="kn">import</span> <span class="n">DBClient</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.db.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">DBClient</span>
 <span class="n">dbclient</span><span class="o">=</span><span class="n">DBClient</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span>
 <span class="n">dbclient</span><span class="o">.</span><span class="n">list_database_names</span><span class="p">()</span> <span class="c1"># view all the databases</span>
 <span class="n">db</span> <span class="o">=</span> <span class="n">dbclient</span><span class="p">[</span><span class="s1">&#39;mspass&#39;</span><span class="p">]</span>        <span class="c1"># choose a database</span>
@@ -249,7 +249,7 @@ Let’s build a MsPASS client and start to use MsPASS:</p>
 </pre></div>
 </div>
 <p>To use Dask:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">coiled</span> <span class="kn">import</span> <span class="n">Cluster</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">coiled</span><span class="w"> </span><span class="kn">import</span> <span class="n">Cluster</span>
 
 <span class="n">cluster</span> <span class="o">=</span> <span class="n">Cluster</span><span class="p">(</span><span class="n">n_workers</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
 <span class="n">client</span> <span class="o">=</span> <span class="n">cluster</span><span class="o">.</span><span class="n">get_client</span><span class="p">()</span>
@@ -257,7 +257,7 @@ Let’s build a MsPASS client and start to use MsPASS:</p>
 </div>
 <p>Once you have a Dask cluster you can then run Python code on that cluster.
 Here is a simple code you could run:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">inc</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">inc</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">1</span>
 
 <span class="n">future</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="n">inc</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>

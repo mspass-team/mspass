@@ -7,7 +7,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Memory Management &mdash; MsPASS 0.0.1 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
 
@@ -628,7 +628,7 @@ a sketch of a simple stacking algorithm summing common source gathers
 aligned by a P wave arrival time defined in each object’s Metadata
 container with the key “Ptime”.  The data are grouped for the
 reduce(fold) operation by the Metadata key <cite>source_id</cite>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">ator_by_Ptime</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">ator_by_Ptime</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
 <span class="w">  </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">  Smaller helper function needed for alignment by Ptime key.</span>
 <span class="sd">  &quot;&quot;&quot;</span>
@@ -636,13 +636,13 @@ reduce(fold) operation by the Metadata key <cite>source_id</cite>:</p>
   <span class="c1"># was preprocessed to be clean</span>
   <span class="n">t0</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;Ptime&quot;</span><span class="p">]</span>
   <span class="k">return</span> <span class="n">d</span><span class="o">.</span><span class="n">ator</span><span class="p">(</span><span class="n">t0</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">key_func</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">key_func</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
 <span class="w">  </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">  Used in foldby to define group operation - here with source_id</span>
 <span class="sd">  &quot;&quot;&quot;</span>
   <span class="k">return</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;source_id&quot;</span><span class="p">]</span>
 
-<span class="kn">from</span> <span class="nn">mspasspy.reduce</span> <span class="kn">import</span> <span class="n">stack</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.reduce</span><span class="w"> </span><span class="kn">import</span> <span class="n">stack</span>
 <span class="c1"># Assumes data was preprocessed to be clean and saved with this tag</span>
 <span class="n">query</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;data_tag&quot;</span> <span class="p">:</span> <span class="s2">&quot;read_to_stack_data&quot;</span><span class="p">}</span>
 <span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_TimeSeries</span><span class="o">.</span><span class="n">find</span><span class="p">({})</span>
@@ -779,7 +779,7 @@ would need to pass through that process.   The following is an
 abbreviated sketch of a standard workflow for that purpose for
 data logically organized as by source:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#imports would normally be here - omitted for brevity</span>
-<span class="k">def</span> <span class="nf">make_source_id_queries</span><span class="p">(</span><span class="n">db</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">make_source_id_queries</span><span class="p">(</span><span class="n">db</span><span class="p">):</span>
 <span class="w">  </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">  Demonstrates how to generate a list of queries to use as</span>
 <span class="sd">  input for read_distributed_data to build a bag of ensembles.</span>

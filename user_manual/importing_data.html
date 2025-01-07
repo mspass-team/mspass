@@ -7,7 +7,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Importing Data &mdash; MsPASS 0.0.1 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
 
@@ -315,8 +315,8 @@ metadata from <code class="code docutils literal notranslate"><span class="pre">
 subset of the same information more appropriate for <code class="code docutils literal notranslate"><span class="pre">Seismogram</span></code>
 data.   A typical application of <code class="code docutils literal notranslate"><span class="pre">save_inventory</span></code> can be seen in the
 following code framgment extracted from our tutorials:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mspasspy.db.database</span> <span class="kn">import</span> <span class="n">Database</span>
-<span class="kn">from</span> <span class="nn">mspasspy.db.client</span> <span class="kn">import</span> <span class="n">DBClient</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.db.database</span><span class="w"> </span><span class="kn">import</span> <span class="n">Database</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.db.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">DBClient</span>
 <span class="n">dbclient</span><span class="o">=</span><span class="n">DBClient</span><span class="p">()</span>
 <span class="n">db</span><span class="o">=</span><span class="n">Database</span><span class="p">(</span><span class="n">dbclient</span><span class="p">,</span><span class="s1">&#39;getting_started&#39;</span><span class="p">)</span>
 <span class="n">inv</span><span class="o">=</span><span class="n">client</span><span class="o">.</span><span class="n">get_stations</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="s1">&#39;TA&#39;</span><span class="p">,</span><span class="n">starttime</span><span class="o">=</span><span class="n">starttime</span><span class="p">,</span><span class="n">endtime</span><span class="o">=</span><span class="n">endtime</span><span class="p">,</span>
@@ -451,9 +451,9 @@ as a pandas dataframe.</p>
 a format other than miniseed.   The following is pseudocode with a
 pythonic flavor that illustrates how this would be done for a list of data file
 to be processed:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">obspy</span> <span class="kn">import</span> <span class="n">read</span>
-<span class="kn">from</span> <span class="nn">mspasspy.db.database</span> <span class="kn">import</span> <span class="n">Database</span>
-<span class="kn">from</span> <span class="nn">mspasspy.db.client</span> <span class="kn">import</span> <span class="n">DBClient</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">obspy</span><span class="w"> </span><span class="kn">import</span> <span class="n">read</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.db.database</span><span class="w"> </span><span class="kn">import</span> <span class="n">Database</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.db.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">DBClient</span>
 <span class="n">dbclient</span><span class="o">=</span><span class="n">DBClient</span><span class="p">()</span>
 <span class="n">db</span><span class="o">=</span><span class="n">Database</span><span class="p">(</span><span class="n">dbclient</span><span class="p">,</span><span class="s1">&#39;mydatabasename&#39;</span><span class="p">)</span>
    <span class="o">...</span>

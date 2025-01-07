@@ -6,7 +6,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>mspasspy.util.logging_helper &mdash; MsPASS 0.0.1 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
 
@@ -140,14 +140,14 @@
            <div itemprop="articleBody">
              
   <h1>Source code for mspasspy.util.logging_helper</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">mspasspy.ccore.utility</span> <span class="kn">import</span> <span class="p">(</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.ccore.utility</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">MsPASSError</span><span class="p">,</span>
     <span class="n">AtomicType</span><span class="p">,</span>
     <span class="n">ErrorSeverity</span><span class="p">,</span>
     <span class="n">ProcessingStatus</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">mspasspy.ccore.seismic</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.ccore.seismic</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">Seismogram</span><span class="p">,</span>
     <span class="n">TimeSeries</span><span class="p">,</span>
     <span class="n">TimeSeriesEnsemble</span><span class="p">,</span>
@@ -155,7 +155,7 @@
 <span class="p">)</span>
 
 
-<div class="viewcode-block" id="info"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.logging_helper.info">[docs]</a><span class="k">def</span> <span class="nf">info</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">alg_id</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="info"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.logging_helper.info">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">info</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">alg_id</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This helper function is used to log operations in processing history of mspass object.</span>
 <span class="sd">    Per best practice, every operations happen on the mspass object should be logged.</span>
@@ -215,7 +215,7 @@
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Not treated as fatal but a bug fix is needed&quot;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="ensemble_error"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.logging_helper.ensemble_error">[docs]</a><span class="k">def</span> <span class="nf">ensemble_error</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">alg</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">err_severity</span><span class="o">=</span><span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">):</span>
+<div class="viewcode-block" id="ensemble_error"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.logging_helper.ensemble_error">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">ensemble_error</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">alg</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">err_severity</span><span class="o">=</span><span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is a small helper function useful for error handlers in except</span>
 <span class="sd">    blocks for ensemble objects.  If a function is called on an ensemble</span>
@@ -246,7 +246,7 @@
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Not treated as fatal but a bug fix is needed&quot;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="reduce"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.logging_helper.reduce">[docs]</a><span class="k">def</span> <span class="nf">reduce</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="n">data2</span><span class="p">,</span> <span class="n">alg_id</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">):</span>
+<div class="viewcode-block" id="reduce"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.logging_helper.reduce">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">reduce</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="n">data2</span><span class="p">,</span> <span class="n">alg_id</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function replicates the processing history of data2 onto data1, which is a common use case</span>
 <span class="sd">    in reduce stage. If data1 is dead, it will keep silent, i.e. no history will be replicated. If data2 is dead,</span>

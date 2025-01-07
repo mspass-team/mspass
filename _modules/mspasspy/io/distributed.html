@@ -6,7 +6,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>mspasspy.io.distributed &mdash; MsPASS 0.0.1 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
 
@@ -140,38 +140,38 @@
            <div itemprop="articleBody">
              
   <h1>Source code for mspasspy.io.distributed</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">import</span> <span class="nn">json</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
 
 
-<span class="kn">from</span> <span class="nn">mspasspy.db.database</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.db.database</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">Database</span><span class="p">,</span>
     <span class="n">md2doc</span><span class="p">,</span>
     <span class="n">doc2md</span><span class="p">,</span>
     <span class="n">elog2doc</span><span class="p">,</span>
     <span class="n">history2doc</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">mspasspy.db.normalize</span> <span class="kn">import</span> <span class="n">BasicMatcher</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.db.normalize</span><span class="w"> </span><span class="kn">import</span> <span class="n">BasicMatcher</span>
 
 <span class="c1"># name collision here requires this alias</span>
-<span class="kn">from</span> <span class="nn">mspasspy.db.normalize</span> <span class="kn">import</span> <span class="n">normalize</span> <span class="k">as</span> <span class="n">normalize_function</span>
-<span class="kn">from</span> <span class="nn">mspasspy.util.Undertaker</span> <span class="kn">import</span> <span class="n">Undertaker</span>
-<span class="kn">from</span> <span class="nn">mspasspy.db.client</span> <span class="kn">import</span> <span class="n">DBClient</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.db.normalize</span><span class="w"> </span><span class="kn">import</span> <span class="n">normalize</span> <span class="k">as</span> <span class="n">normalize_function</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.util.Undertaker</span><span class="w"> </span><span class="kn">import</span> <span class="n">Undertaker</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.db.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">DBClient</span>
 
 
-<span class="kn">from</span> <span class="nn">mspasspy.ccore.utility</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.ccore.utility</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">ErrorLogger</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="k">try</span><span class="p">:</span>
-    <span class="kn">import</span> <span class="nn">dask</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">dask</span>
 
     <span class="n">_mspasspy_has_dask</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
     <span class="n">_mspasspy_has_dask</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="k">try</span><span class="p">:</span>
-    <span class="kn">import</span> <span class="nn">pyspark</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">pyspark</span>
 
     <span class="n">_mspasspy_has_pyspark</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
@@ -184,7 +184,7 @@
     <span class="k">raise</span> <span class="ne">ModuleNotFoundError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="read_ensemble_parallel"><a class="viewcode-back" href="../../../python_api/mspasspy.io.html#mspasspy.io.distributed.read_ensemble_parallel">[docs]</a><span class="k">def</span> <span class="nf">read_ensemble_parallel</span><span class="p">(</span>
+<div class="viewcode-block" id="read_ensemble_parallel"><a class="viewcode-back" href="../../../python_api/mspasspy.io.html#mspasspy.io.distributed.read_ensemble_parallel">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">read_ensemble_parallel</span><span class="p">(</span>
     <span class="n">query</span><span class="p">,</span>
     <span class="n">db</span><span class="p">,</span>
     <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;wf_TimeSeries&quot;</span><span class="p">,</span>
@@ -235,7 +235,7 @@
     <span class="k">return</span> <span class="n">ensemble</span></div>
 
 
-<div class="viewcode-block" id="post2metadata"><a class="viewcode-back" href="../../../python_api/mspasspy.io.html#mspasspy.io.distributed.post2metadata">[docs]</a><span class="k">def</span> <span class="nf">post2metadata</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">doc</span><span class="p">):</span>
+<div class="viewcode-block" id="post2metadata"><a class="viewcode-back" href="../../../python_api/mspasspy.io.html#mspasspy.io.distributed.post2metadata">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">post2metadata</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">doc</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Posts content of key-value pair container doc to Metadata container</span>
 <span class="sd">    of mspass_object.  Operation only requires that doc be iterable</span>
@@ -261,7 +261,7 @@
     <span class="k">return</span> <span class="n">mspass_object</span></div>
 
 
-<div class="viewcode-block" id="read_distributed_data"><a class="viewcode-back" href="../../../python_api/mspasspy.io.html#mspasspy.io.distributed.read_distributed_data">[docs]</a><span class="k">def</span> <span class="nf">read_distributed_data</span><span class="p">(</span>
+<div class="viewcode-block" id="read_distributed_data"><a class="viewcode-back" href="../../../python_api/mspasspy.io.html#mspasspy.io.distributed.read_distributed_data">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">read_distributed_data</span><span class="p">(</span>
     <span class="n">data</span><span class="p">,</span>
     <span class="n">db</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">query</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -915,7 +915,7 @@
     <span class="k">return</span> <span class="n">plist</span></div>
 
 
-<span class="k">def</span> <span class="nf">_partitioned_save_wfdoc</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_partitioned_save_wfdoc</span><span class="p">(</span>
     <span class="n">partition_iterator</span><span class="p">,</span>
     <span class="n">db</span><span class="p">,</span>
     <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;wf_TimeSeries&quot;</span><span class="p">,</span>
@@ -1039,7 +1039,7 @@
     <span class="k">return</span> <span class="n">wfids</span>
 
 
-<div class="viewcode-block" id="pyspark_mappartition_interface"><a class="viewcode-back" href="../../../python_api/mspasspy.io.html#mspasspy.io.distributed.pyspark_mappartition_interface">[docs]</a><span class="k">class</span> <span class="nc">pyspark_mappartition_interface</span><span class="p">:</span>
+<div class="viewcode-block" id="pyspark_mappartition_interface"><a class="viewcode-back" href="../../../python_api/mspasspy.io.html#mspasspy.io.distributed.pyspark_mappartition_interface">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">pyspark_mappartition_interface</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Interface class required for pyspark mapPartition.</span>
 
@@ -1062,7 +1062,7 @@
 <span class="sd">    for that function defined by self content.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">db</span><span class="p">,</span>
         <span class="n">collection</span><span class="p">,</span>
@@ -1090,7 +1090,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">db</span> <span class="o">=</span> <span class="n">db</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">collection</span> <span class="o">=</span> <span class="n">collection</span>
 
-<div class="viewcode-block" id="pyspark_mappartition_interface.partitioned_save_wfdoc"><a class="viewcode-back" href="../../../python_api/mspasspy.io.html#mspasspy.io.distributed.pyspark_mappartition_interface.partitioned_save_wfdoc">[docs]</a>    <span class="k">def</span> <span class="nf">partitioned_save_wfdoc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iterator</span><span class="p">):</span>
+<div class="viewcode-block" id="pyspark_mappartition_interface.partitioned_save_wfdoc"><a class="viewcode-back" href="../../../python_api/mspasspy.io.html#mspasspy.io.distributed.pyspark_mappartition_interface.partitioned_save_wfdoc">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">partitioned_save_wfdoc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iterator</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Method used as a wrapper to pass on to pyspark&#39;s mapPartitions</span>
 <span class="sd">        operator.  iterator is assumed to be the iterator passed to</span>
@@ -1102,7 +1102,7 @@
         <span class="k">return</span> <span class="n">wfidlist</span></div></div>
 
 
-<div class="viewcode-block" id="post_error_log"><a class="viewcode-back" href="../../../python_api/mspasspy.io.html#mspasspy.io.distributed.post_error_log">[docs]</a><span class="k">def</span> <span class="nf">post_error_log</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">doc</span><span class="p">,</span> <span class="n">other_elog</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">elog_key</span><span class="o">=</span><span class="s2">&quot;error_log&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<div class="viewcode-block" id="post_error_log"><a class="viewcode-back" href="../../../python_api/mspasspy.io.html#mspasspy.io.distributed.post_error_log">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">post_error_log</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">doc</span><span class="p">,</span> <span class="n">other_elog</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">elog_key</span><span class="o">=</span><span class="s2">&quot;error_log&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Posts error log data as a subdocument to arg0 datum (symbol d).</span>
 
@@ -1130,7 +1130,7 @@
     <span class="k">return</span> <span class="n">doc</span></div>
 
 
-<span class="k">def</span> <span class="nf">_save_ensemble_wfdocs</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_save_ensemble_wfdocs</span><span class="p">(</span>
     <span class="n">ensemble_data</span><span class="p">,</span>
     <span class="n">db</span><span class="p">,</span>
     <span class="n">save_schema</span><span class="p">,</span>
@@ -1279,7 +1279,7 @@
     <span class="k">return</span> <span class="n">wfids</span>
 
 
-<span class="k">def</span> <span class="nf">_atomic_extract_wf_document</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_atomic_extract_wf_document</span><span class="p">(</span>
     <span class="n">d</span><span class="p">,</span>
     <span class="n">db</span><span class="p">,</span>
     <span class="n">save_schema</span><span class="p">,</span>
@@ -1379,7 +1379,7 @@
     <span class="k">return</span> <span class="n">doc</span>
 
 
-<div class="viewcode-block" id="write_distributed_data"><a class="viewcode-back" href="../../../python_api/mspasspy.io.html#mspasspy.io.distributed.write_distributed_data">[docs]</a><span class="k">def</span> <span class="nf">write_distributed_data</span><span class="p">(</span>
+<div class="viewcode-block" id="write_distributed_data"><a class="viewcode-back" href="../../../python_api/mspasspy.io.html#mspasspy.io.distributed.write_distributed_data">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">write_distributed_data</span><span class="p">(</span>
     <span class="n">data</span><span class="p">,</span>
     <span class="n">db</span><span class="p">,</span>
     <span class="n">data_are_atomic</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -1860,7 +1860,7 @@
     <span class="k">return</span> <span class="n">data</span></div>
 
 
-<div class="viewcode-block" id="read_to_dataframe"><a class="viewcode-back" href="../../../python_api/mspasspy.io.html#mspasspy.io.distributed.read_to_dataframe">[docs]</a><span class="k">def</span> <span class="nf">read_to_dataframe</span><span class="p">(</span>
+<div class="viewcode-block" id="read_to_dataframe"><a class="viewcode-back" href="../../../python_api/mspasspy.io.html#mspasspy.io.distributed.read_to_dataframe">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">read_to_dataframe</span><span class="p">(</span>
     <span class="n">db</span><span class="p">,</span>
     <span class="n">cursor</span><span class="p">,</span>
     <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;promiscuous&quot;</span><span class="p">,</span>

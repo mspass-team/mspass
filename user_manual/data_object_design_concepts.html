@@ -7,7 +7,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Data Object Design Concepts &mdash; MsPASS 0.0.1 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
 
@@ -606,7 +606,7 @@ can be used in developing a workflow with MsPASS.</div>
 name <code class="code docutils literal notranslate"><span class="pre">MetadataSchema</span></code>.  You can create an instance easily like this:</div>
 </div>
 <blockquote>
-<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mspasspy.db.schema</span> <span class="kn">import</span> <span class="n">MetadataSchema</span>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.db.schema</span><span class="w"> </span><span class="kn">import</span> <span class="n">MetadataSchema</span>
  <span class="n">schema</span><span class="o">=</span><span class="n">MetadataSchema</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -738,7 +738,7 @@ defines index 0(1) as the channel number and index 1(2) as the time
 index.  The following python code section illustrates this more
 clearly than any words:</div>
 </div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mspasspy.ccore.seismic</span> <span class="kn">import</span> <span class="n">Seismogram</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.ccore.seismic</span><span class="w"> </span><span class="kn">import</span> <span class="n">Seismogram</span>
 <span class="n">d</span> <span class="o">=</span> <span class="n">Seismogram</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>  <span class="c1"># Create an empty Seismogram with storage for 100 time steps initialized to all zeros</span>
 <span class="n">d</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">50</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>   <span class="c1"># Create a delta function at time t0+dt*50 in component 0</span>
 </pre></div>

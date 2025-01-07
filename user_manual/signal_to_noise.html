@@ -7,7 +7,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Signal to Noise Ratio Estimation &mdash; MsPASS 0.0.1 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
 
@@ -181,7 +181,7 @@ define the part of an input datum is signal and noise.   All current
 implementations are driven by a simple data object we call a <cite>TimeWindow</cite>.
 You can read the docstring but everything useful about this object
 can be gleaned from running this code fragment in the mspass container:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mspasspy.ccore.algorithms.basic</span> <span class="kn">import</span> <span class="n">TimeWindow</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.ccore.algorithms.basic</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeWindow</span>
 <span class="n">win</span> <span class="o">=</span> <span class="n">TimeWindow</span><span class="p">(</span><span class="o">-</span><span class="mf">5.0</span><span class="p">,</span><span class="mf">20.0</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Time window range:  &quot;</span><span class="p">,</span><span class="n">win</span><span class="o">.</span><span class="n">start</span><span class="p">,</span><span class="s2">&quot;&lt;=t&lt;=&quot;</span><span class="p">,</span><span class="n">win</span><span class="o">.</span><span class="n">end</span><span class="p">)</span>
 </pre></div>

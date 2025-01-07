@@ -7,7 +7,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Header (Metadata) Math &mdash; MsPASS 0.0.1 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
 
@@ -197,7 +197,7 @@ Suppose we found the <code class="docutils literal notranslate"><span class="pre
 was off by a factor or 2 because some custom algorithm had a scaling error.
 We could define an
 operator to correct this problem with the following construct:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mspasspy.algorithms.edit</span> <span class="k">as</span> <span class="nn">mde</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">mspasspy.algorithms.edit</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mde</span>
 <span class="n">myop</span> <span class="o">=</span> <span class="n">mde</span><span class="o">.</span><span class="n">Multiply</span><span class="p">(</span><span class="s2">&quot;calib&quot;</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">)</span>
 <span class="c1"># parallel example with dask - assumes data are in dask bag mydata</span>
 <span class="n">mydata</span> <span class="o">=</span> <span class="n">mydata</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">myop</span><span class="o">.</span><span class="n">apply</span><span class="p">)</span>
@@ -358,7 +358,7 @@ described above.</p>
 <p>For example, here is a code fragment to produce a calculator that will
 compute the midpoint coordinates from Metadata attributes rx,ry,sx, and sy
 and set them as cmpx, cmpy for x and y coordinates respectively:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mspasspy.algorithms.edit</span> <span class="k">as</span> <span class="nn">mde</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">mspasspy.algorithms.edit</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mde</span>
 <span class="n">xop1</span> <span class="o">=</span> <span class="n">mde</span><span class="o">.</span><span class="n">Add2</span><span class="p">(</span><span class="s2">&quot;cmpx&quot;</span><span class="p">,</span> <span class="s2">&quot;rx&quot;</span><span class="p">,</span> <span class="s2">&quot;sx&quot;</span><span class="p">)</span>
 <span class="n">xop2</span> <span class="o">=</span> <span class="n">mde</span><span class="o">.</span><span class="n">Divide</span><span class="p">(</span><span class="s2">&quot;cmpx&quot;</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">)</span>
 <span class="n">yop1</span> <span class="o">=</span> <span class="n">mde</span><span class="o">.</span><span class="n">Add2</span><span class="p">(</span><span class="s2">&quot;cmpy&quot;</span><span class="p">,</span> <span class="s2">&quot;ry&quot;</span><span class="p">,</span> <span class="s2">&quot;sy&quot;</span><span class="p">)</span>

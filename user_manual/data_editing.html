@@ -7,7 +7,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Data Editing &mdash; MsPASS 0.0.1 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
 
@@ -308,7 +308,7 @@ form, kills the datum if the test shown resolves as True.</p>
 </table>
 <p>The constructors for all simple comparison testers have this the following,
 common signature:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 </pre></div>
 </div>
 <p>where <code class="docutils literal notranslate"><span class="pre">key</span></code> is the Metadata key used to fetch the data for <code class="docutils literal notranslate"><span class="pre">x</span></code> in the
@@ -327,7 +327,7 @@ The class names are <code class="docutils literal notranslate"><span class="pre"
 <code class="docutils literal notranslate"><span class="pre">kill_if_true</span></code> methods for these each kill a datum if a key loaded in
 on construction exists or does not exist respectively.   Both
 have constructors with this signature:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 </pre></div>
 </div>
 <p>where <code class="docutils literal notranslate"><span class="pre">key</span></code> is the Metadata key that is to be tested by the kill_if_true
@@ -356,7 +356,7 @@ variables it takes to define all the possibilities or a <code class="docutils li
 instance as describd below.  As a convenience we implemented
 a single class called <cite>MetadataInterval</cite> with three boolean values defined
 in the constructor.  The constructor has this signature:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">lower_endpoint</span><span class="p">,</span> <span class="n">upper_endpoint</span><span class="p">,</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">lower_endpoint</span><span class="p">,</span> <span class="n">upper_endpoint</span><span class="p">,</span>
   <span class="n">use_lower_edge</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">use_upper_edge</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">kill_if_outside</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 </pre></div>
 </div>
@@ -431,7 +431,7 @@ Although the name is admittedly a bit tongue-in-cheek, the imagery the name
 provokes describes the function well:  a datum facing a firing squad
 is facing multiple executioner who may or may not kill you.   This class
 has a signature similar to the other Metadata-based editors:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">FiringSquad</span><span class="p">(</span><span class="n">Executioner</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">FiringSquad</span><span class="p">(</span><span class="n">Executioner</span><span class="p">):</span>
 </pre></div>
 </div>
 <p>Meaning it inherits the base class <cite>Executioner</cite> and requires a custom
@@ -441,7 +441,7 @@ A <cite>FiringSquad</cite> is simply a way to apply multiple Metadata tests
 in a single function call to the <cite>kill_if_true</cite> method.</p>
 <p>As with MetadataInterval
 the constructor is different and has this signature:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">executioner_list</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">executioner_list</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 </pre></div>
 </div>
 <p>where <code class="docutils literal notranslate"><span class="pre">executioner_list</span></code> is expected to be any iterable container made up

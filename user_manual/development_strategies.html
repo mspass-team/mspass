@@ -7,7 +7,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>How do I develop a new workflow from scratch? &mdash; MsPASS 0.0.1 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
 
@@ -293,7 +293,7 @@ notebook code need only include a simple <cite>import</cite>.   e.g. if you have
 your code saved in a file <cite>mymodule.py</cite> and you want to use a function
 in that module called <cite>myfunction</cite>, in your notebook you would just
 enter this simple, failry standard command:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mymodule</span> <span class="kn">import</span> <span class="n">myfunction</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mymodule</span><span class="w"> </span><span class="kn">import</span> <span class="n">myfunction</span>
 </pre></div>
 </div>
 <p>If <cite>mymodule</cite> is located in a different directory use the
@@ -308,7 +308,7 @@ with the following incantation:</p>
 <p>To make that module accessible with the same import command as above you
 would need to change the python search path.  For this example, you could
 use this incanation:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;/mnt&#39;</span><span class="p">)</span>
 </pre></div>
 </div>

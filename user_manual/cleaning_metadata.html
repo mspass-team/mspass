@@ -7,7 +7,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Cleaning Inconsistent Metadata &mdash; MsPASS 0.0.1 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
 
@@ -250,9 +250,9 @@ object with zeros in the data array and minimal Metadata.
 The script adds an undefined Metadata value of the “foo-bar”
 construct used in many tutorials.   The assert statements
 verify that the <code class="code docutils literal notranslate"><span class="pre">clean</span></code> method clears the debris:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mspasspy.util.Janitor</span> <span class="kn">import</span> <span class="n">Janitor</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.util.Janitor</span><span class="w"> </span><span class="kn">import</span> <span class="n">Janitor</span>
 <span class="c1"># this will resolve only when run with pytest</span>
-<span class="kn">from</span> <span class="nn">helper</span> <span class="kn">import</span> <span class="n">get_live_timeseries</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">helper</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_live_timeseries</span>
 <span class="c1"># default constructor assign to the symbol cleaner</span>
 <span class="n">cleaner</span> <span class="o">=</span> <span class="n">Janitor</span><span class="p">()</span>
 <span class="n">datum</span> <span class="o">=</span> <span class="n">get_live_timeseries</span><span class="p">()</span>
@@ -272,10 +272,10 @@ the cleaner may have to take care of:  (1) the <code class="code docutils litera
 the ensemble object itself, and (2) the content of the atomic data
 that are bundled in the “ensemble”.   That is handled by the constructor
 and the difference in the usage is displayed in this example:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mspasspy.util.Janitor</span> <span class="kn">import</span> <span class="n">Janitor</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.util.Janitor</span><span class="w"> </span><span class="kn">import</span> <span class="n">Janitor</span>
 <span class="c1"># this will resolve only if run with pytest</span>
-<span class="kn">from</span> <span class="nn">helper</span> <span class="kn">import</span> <span class="n">get_live_timeseries_ensemble</span>
-<span class="kn">from</span> <span class="nn">mspasspy.ccore.seismic</span> <span class="kn">import</span> <span class="n">TimeSeriesEnsemble</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">helper</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_live_timeseries_ensemble</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.ccore.seismic</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesEnsemble</span>
 <span class="c1"># generate a junk ensemble with 3 members using helper function</span>
 <span class="n">e1</span> <span class="o">=</span> <span class="n">get_live_timeseries_ensemble</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
 <span class="c1"># add undefined key-value pair to each ensemble member</span>
@@ -323,7 +323,7 @@ only in the initialization where the default yaml file is specialized
 for reading from raw miniseed data.   This class should only be used
 immediately after reading from <em>wf_miniseed</em> records.  The following
 is a sketch of a typical algorithm:</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mspasspy.util.Janitor</span> <span class="kn">import</span> <span class="n">MiniseedJanitor</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.util.Janitor</span><span class="w"> </span><span class="kn">import</span> <span class="n">MiniseedJanitor</span>
   <span class="o">...</span> <span class="n">additional</span> <span class="n">initializations</span> <span class="o">...</span>
 
 <span class="n">janitor</span> <span class="o">=</span> <span class="n">MiniseedJanitor</span><span class="p">()</span>

@@ -6,7 +6,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>mspasspy.preprocessing.css30.datascope &mdash; MsPASS 0.0.1 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
 
@@ -195,14 +195,14 @@
 
 <span class="sd">@author: Gary L. Pavlis</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">mspasspy.ccore.utility</span> <span class="kn">import</span> <span class="n">AntelopePf</span><span class="p">,</span> <span class="n">MsPASSError</span><span class="p">,</span> <span class="n">ErrorSeverity</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.ccore.utility</span><span class="w"> </span><span class="kn">import</span> <span class="n">AntelopePf</span><span class="p">,</span> <span class="n">MsPASSError</span><span class="p">,</span> <span class="n">ErrorSeverity</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
 
-<div class="viewcode-block" id="DatascopeDatabase"><a class="viewcode-back" href="../../../../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.datascope.DatascopeDatabase">[docs]</a><span class="k">class</span> <span class="nc">DatascopeDatabase</span><span class="p">:</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dbname</span><span class="p">,</span> <span class="n">pffile</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="DatascopeDatabase"><a class="viewcode-back" href="../../../../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.datascope.DatascopeDatabase">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">DatascopeDatabase</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dbname</span><span class="p">,</span> <span class="n">pffile</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Constructor for this class.  It parses either the master</span>
 <span class="sd">        file describing the CSS3.0 schema or the (optional) alternative</span>
@@ -241,7 +241,7 @@
             <span class="n">path</span> <span class="o">=</span> <span class="n">pffile</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pf</span> <span class="o">=</span> <span class="n">AntelopePf</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
 
-<div class="viewcode-block" id="DatascopeDatabase.get_table"><a class="viewcode-back" href="../../../../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.datascope.DatascopeDatabase.get_table">[docs]</a>    <span class="k">def</span> <span class="nf">get_table</span><span class="p">(</span>
+<div class="viewcode-block" id="DatascopeDatabase.get_table"><a class="viewcode-back" href="../../../../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.datascope.DatascopeDatabase.get_table">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_table</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">table</span><span class="o">=</span><span class="s2">&quot;wfdisc&quot;</span><span class="p">,</span>
         <span class="n">attributes_to_use</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -302,7 +302,7 @@
 
         <span class="k">return</span> <span class="n">df</span></div>
 
-<div class="viewcode-block" id="DatascopeDatabase.get_primary_keys"><a class="viewcode-back" href="../../../../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.datascope.DatascopeDatabase.get_primary_keys">[docs]</a>    <span class="k">def</span> <span class="nf">get_primary_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">table</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<div class="viewcode-block" id="DatascopeDatabase.get_primary_keys"><a class="viewcode-back" href="../../../../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.datascope.DatascopeDatabase.get_primary_keys">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_primary_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">table</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a list of the primary keys defined for this table</span>
 <span class="sd">        in the parameter file used to create this handle.   These</span>
@@ -318,7 +318,7 @@
             <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">result</span></div>
 
-<div class="viewcode-block" id="DatascopeDatabase.get_nulls"><a class="viewcode-back" href="../../../../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.datascope.DatascopeDatabase.get_nulls">[docs]</a>    <span class="k">def</span> <span class="nf">get_nulls</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">table</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<div class="viewcode-block" id="DatascopeDatabase.get_nulls"><a class="viewcode-back" href="../../../../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.datascope.DatascopeDatabase.get_nulls">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_nulls</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">table</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieve dictionary of null values for attributes in a table.</span>
 
@@ -345,7 +345,7 @@
         <span class="n">allproperties</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_attribute_name_tbl</span><span class="p">(</span><span class="n">table</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">allproperties</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="DatascopeDatabase.join"><a class="viewcode-back" href="../../../../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.datascope.DatascopeDatabase.join">[docs]</a>    <span class="k">def</span> <span class="nf">join</span><span class="p">(</span>
+<div class="viewcode-block" id="DatascopeDatabase.join"><a class="viewcode-back" href="../../../../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.datascope.DatascopeDatabase.join">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">join</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">df_left</span><span class="p">,</span> <span class="n">table</span><span class="p">,</span> <span class="n">join_keys</span><span class="o">=</span><span class="s2">&quot;right_primary&quot;</span><span class="p">,</span> <span class="n">right_suffix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s2">&quot;right&quot;</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -427,7 +427,7 @@
         <span class="c1"># intended application - beware though</span>
         <span class="k">return</span> <span class="n">df</span></div>
 
-<div class="viewcode-block" id="DatascopeDatabase.df2table"><a class="viewcode-back" href="../../../../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.datascope.DatascopeDatabase.df2table">[docs]</a>    <span class="k">def</span> <span class="nf">df2table</span><span class="p">(</span>
+<div class="viewcode-block" id="DatascopeDatabase.df2table"><a class="viewcode-back" href="../../../../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.datascope.DatascopeDatabase.df2table">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">df2table</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">db</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">table</span><span class="o">=</span><span class="s2">&quot;wfdisc&quot;</span><span class="p">,</span> <span class="nb">dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">append</span><span class="o">=</span><span class="kc">True</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -579,7 +579,7 @@
             <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="n">ofile</span><span class="p">,</span> <span class="n">dfout</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">dfout</span></div>
 
-    <span class="k">def</span> <span class="nf">_parse_attribute_name_tbl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">table</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_parse_attribute_name_tbl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">table</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Private method to parse special parameter file format for defining</span>
 <span class="sd">        Antelope flat file table data for reading.   The algorithm parses the</span>
@@ -647,7 +647,7 @@
             <span class="n">cols</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">colstart</span><span class="p">,</span> <span class="n">colstart</span> <span class="o">+</span> <span class="n">colwidth</span><span class="p">]</span>
         <span class="k">return</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">cols</span><span class="p">,</span> <span class="n">dtypes</span><span class="p">,</span> <span class="n">nullvalues</span><span class="p">,</span> <span class="n">fmt</span><span class="p">])</span>
 
-    <span class="k">def</span> <span class="nf">_get_line_format_pf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">table</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_line_format_pf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">table</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
         <span class="n">pf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pf</span><span class="o">.</span><span class="n">get_branch</span><span class="p">(</span><span class="n">table</span><span class="p">)</span>
         <span class="c1"># magic name for this pf format</span>
         <span class="n">tbl</span> <span class="o">=</span> <span class="n">pf</span><span class="o">.</span><span class="n">get_tbl</span><span class="p">(</span><span class="s2">&quot;attributes&quot;</span><span class="p">)</span>
@@ -659,7 +659,7 @@
             <span class="n">attribute_list</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">temp</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">temp</span><span class="p">[</span><span class="mi">5</span><span class="p">]])</span>
         <span class="k">return</span> <span class="n">attribute_list</span>
 
-<div class="viewcode-block" id="DatascopeDatabase.CSS30Catalog2df"><a class="viewcode-back" href="../../../../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.datascope.DatascopeDatabase.CSS30Catalog2df">[docs]</a>    <span class="k">def</span> <span class="nf">CSS30Catalog2df</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<div class="viewcode-block" id="DatascopeDatabase.CSS30Catalog2df"><a class="viewcode-back" href="../../../../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.datascope.DatascopeDatabase.CSS30Catalog2df">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">CSS30Catalog2df</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Forms the standard catalog view of CSS3.0 sans the orid==prefor</span>
 <span class="sd">        condition to return a DataFrame formed by using</span>
@@ -692,7 +692,7 @@
 
         <span class="k">return</span> <span class="n">df</span></div>
 
-<div class="viewcode-block" id="DatascopeDatabase.wfdisc2doclist"><a class="viewcode-back" href="../../../../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.datascope.DatascopeDatabase.wfdisc2doclist">[docs]</a>    <span class="k">def</span> <span class="nf">wfdisc2doclist</span><span class="p">(</span>
+<div class="viewcode-block" id="DatascopeDatabase.wfdisc2doclist"><a class="viewcode-back" href="../../../../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.datascope.DatascopeDatabase.wfdisc2doclist">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">wfdisc2doclist</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">snetsta_xref</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">default_net</span><span class="o">=</span><span class="s2">&quot;XX&quot;</span><span class="p">,</span>
@@ -879,7 +879,7 @@
 
         <span class="k">return</span> <span class="n">olist</span></div>
 
-<div class="viewcode-block" id="DatascopeDatabase.parse_snetsta"><a class="viewcode-back" href="../../../../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.datascope.DatascopeDatabase.parse_snetsta">[docs]</a>    <span class="k">def</span> <span class="nf">parse_snetsta</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<div class="viewcode-block" id="DatascopeDatabase.parse_snetsta"><a class="viewcode-back" href="../../../../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.datascope.DatascopeDatabase.parse_snetsta">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">parse_snetsta</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Datascope is (mostly) linked to the CSS3.0 schema originally</span>
 <span class="sd">        developed ine 1970s before SEED was adopted as a standard.  At the</span>

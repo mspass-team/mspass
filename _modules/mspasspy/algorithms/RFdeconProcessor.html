@@ -6,7 +6,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>mspasspy.algorithms.RFdeconProcessor &mdash; MsPASS 0.0.1 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
 
@@ -156,23 +156,23 @@
 
 <span class="sd">@author: Gary Pavlis</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
-<span class="kn">from</span> <span class="nn">mspasspy.ccore.seismic</span> <span class="kn">import</span> <span class="n">DoubleVector</span><span class="p">,</span> <span class="n">Seismogram</span>
-<span class="kn">from</span> <span class="nn">mspasspy.ccore.utility</span> <span class="kn">import</span> <span class="n">AntelopePf</span><span class="p">,</span> <span class="n">Metadata</span><span class="p">,</span> <span class="n">MsPASSError</span><span class="p">,</span> <span class="n">ErrorSeverity</span>
-<span class="kn">from</span> <span class="nn">mspasspy.util.converter</span> <span class="kn">import</span> <span class="n">Metadata2dict</span>
-<span class="kn">from</span> <span class="nn">mspasspy.algorithms.window</span> <span class="kn">import</span> <span class="n">WindowData</span>
-<span class="kn">from</span> <span class="nn">mspasspy.ccore.algorithms.basic</span> <span class="kn">import</span> <span class="n">TimeWindow</span><span class="p">,</span> <span class="n">_ExtractComponent</span>
-<span class="kn">from</span> <span class="nn">mspasspy.ccore.algorithms.deconvolution</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.ccore.seismic</span><span class="w"> </span><span class="kn">import</span> <span class="n">DoubleVector</span><span class="p">,</span> <span class="n">Seismogram</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.ccore.utility</span><span class="w"> </span><span class="kn">import</span> <span class="n">AntelopePf</span><span class="p">,</span> <span class="n">Metadata</span><span class="p">,</span> <span class="n">MsPASSError</span><span class="p">,</span> <span class="n">ErrorSeverity</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.util.converter</span><span class="w"> </span><span class="kn">import</span> <span class="n">Metadata2dict</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.algorithms.window</span><span class="w"> </span><span class="kn">import</span> <span class="n">WindowData</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.ccore.algorithms.basic</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeWindow</span><span class="p">,</span> <span class="n">_ExtractComponent</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.ccore.algorithms.deconvolution</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">LeastSquareDecon</span><span class="p">,</span>
     <span class="n">WaterLevelDecon</span><span class="p">,</span>
     <span class="n">MultiTaperXcorDecon</span><span class="p">,</span>
     <span class="n">MultiTaperSpecDivDecon</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">mspasspy.util.decorators</span> <span class="kn">import</span> <span class="n">mspass_func_wrapper</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.util.decorators</span><span class="w"> </span><span class="kn">import</span> <span class="n">mspass_func_wrapper</span>
 
 
-<div class="viewcode-block" id="RFdeconProcessor"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor">[docs]</a><span class="k">class</span> <span class="nc">RFdeconProcessor</span><span class="p">:</span>
+<div class="viewcode-block" id="RFdeconProcessor"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">RFdeconProcessor</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This class is a wrapper for the suite of receiver function deconvolution</span>
 <span class="sd">    methods we call scalar methods.  That is, the operation is reducable to</span>
@@ -184,20 +184,20 @@
 <span class="sd">    function that should appear as a function in a spark map call.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="n">repr_str</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{type}</span><span class="s2">(alg=&#39;</span><span class="si">{alg}</span><span class="s2">&#39;, md=&#39;</span><span class="si">{md}</span><span class="s2">&#39;)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
             <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">),</span> <span class="n">alg</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span><span class="p">,</span> <span class="n">md</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">md</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">repr_str</span>
 
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="n">md_str</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">Metadata2dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">md</span><span class="p">))</span>
         <span class="n">processor_str</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{type}</span><span class="s2">(alg=&#39;</span><span class="si">{alg}</span><span class="s2">&#39;, md=&#39;</span><span class="si">{md}</span><span class="s2">&#39;)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
             <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">),</span> <span class="n">alg</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span><span class="p">,</span> <span class="n">md</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">md</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">processor_str</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alg</span><span class="o">=</span><span class="s2">&quot;LeastSquares&quot;</span><span class="p">,</span> <span class="n">pf</span><span class="o">=</span><span class="s2">&quot;RFdeconProcessor.pf&quot;</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alg</span><span class="o">=</span><span class="s2">&quot;LeastSquares&quot;</span><span class="p">,</span> <span class="n">pf</span><span class="o">=</span><span class="s2">&quot;RFdeconProcessor.pf&quot;</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span> <span class="o">=</span> <span class="n">alg</span>
         <span class="c1"># use a copy in what is more or less a switch-case block</span>
         <span class="c1"># to be robust - I don&#39;t think any of the constructors below</span>
@@ -230,7 +230,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Illegal value for alg=&quot;</span> <span class="o">+</span> <span class="n">alg</span><span class="p">)</span>
 
-<div class="viewcode-block" id="RFdeconProcessor.loaddata"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.loaddata">[docs]</a>    <span class="k">def</span> <span class="nf">loaddata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;Seismogram&quot;</span><span class="p">,</span> <span class="n">component</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="RFdeconProcessor.loaddata"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.loaddata">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">loaddata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;Seismogram&quot;</span><span class="p">,</span> <span class="n">component</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Loads data for processing.  When window is set true</span>
 <span class="sd">        use the internal pf definition of data time window</span>
@@ -298,7 +298,7 @@
         <span class="c1"># Have to explicitly convert to ndarray because DoubleVector cannot be serialized.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dvector</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">dvector</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="RFdeconProcessor.loadwavelet"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.loadwavelet">[docs]</a>    <span class="k">def</span> <span class="nf">loadwavelet</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;Seismogram&quot;</span><span class="p">,</span> <span class="n">component</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="RFdeconProcessor.loadwavelet"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.loadwavelet">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">loadwavelet</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;Seismogram&quot;</span><span class="p">,</span> <span class="n">component</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="c1"># This code is painfully similar to loaddata. To reduce errors</span>
         <span class="c1"># only the names have been changed to protect the innocent</span>
         <span class="k">if</span> <span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;raw_vector&quot;</span> <span class="ow">and</span> <span class="n">window</span><span class="p">:</span>
@@ -334,7 +334,7 @@
         <span class="c1"># Have to explicitly convert to ndarray because DoubleVector cannot be serialized.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">wvector</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">wvector</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="RFdeconProcessor.loadnoise"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.loadnoise">[docs]</a>    <span class="k">def</span> <span class="nf">loadnoise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;Seismogram&quot;</span><span class="p">,</span> <span class="n">component</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="RFdeconProcessor.loadnoise"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.loadnoise">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">loadnoise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;Seismogram&quot;</span><span class="p">,</span> <span class="n">component</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="c1"># First basic sanity checks</span>
         <span class="c1"># Return immediately for methods that ignore noise.</span>
         <span class="c1"># Note we do this silently assuming the function wrapper below</span>
@@ -379,7 +379,7 @@
         <span class="c1"># Have to explicitly convert to ndarray because DoubleVector cannot be serialized.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">nvector</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">nvector</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="RFdeconProcessor.apply"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.apply">[docs]</a>    <span class="k">def</span> <span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="RFdeconProcessor.apply"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.apply">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute the RF estimate using the algorithm defined internally.</span>
 
@@ -394,7 +394,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">processor</span><span class="o">.</span><span class="n">process</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">processor</span><span class="o">.</span><span class="n">getresult</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="RFdeconProcessor.actual_output"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.actual_output">[docs]</a>    <span class="k">def</span> <span class="nf">actual_output</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="RFdeconProcessor.actual_output"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.actual_output">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">actual_output</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The actual output of a decon operator is the inverse filter applied to</span>
 <span class="sd">        the wavelet.  By design it is an approximation of the shaping wavelet</span>
@@ -416,7 +416,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">processor</span><span class="o">.</span><span class="n">process</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">processor</span><span class="o">.</span><span class="n">actual_output</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="RFdeconProcessor.ideal_output"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.ideal_output">[docs]</a>    <span class="k">def</span> <span class="nf">ideal_output</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="RFdeconProcessor.ideal_output"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.ideal_output">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">ideal_output</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The ideal output of a decon operator is the same thing we call a</span>
 <span class="sd">        shaping wavelet.  This method returns the ideal output=shaping wavelet</span>
@@ -438,7 +438,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">processor</span><span class="o">.</span><span class="n">process</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">processor</span><span class="o">.</span><span class="n">ideal_output</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="RFdeconProcessor.inverse_filter"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.inverse_filter">[docs]</a>    <span class="k">def</span> <span class="nf">inverse_filter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="RFdeconProcessor.inverse_filter"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.inverse_filter">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">inverse_filter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This method returns the actual inverse filter that if convolved with</span>
 <span class="sd">        he original data will produce the RF estimate.  Note the filter is</span>
@@ -461,7 +461,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">processor</span><span class="o">.</span><span class="n">process</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">processor</span><span class="o">.</span><span class="n">inverse_filter</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="RFdeconProcessor.QCMetrics"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.QCMetrics">[docs]</a>    <span class="k">def</span> <span class="nf">QCMetrics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prediction_error_key</span><span class="o">=</span><span class="s2">&quot;prediction_error&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<div class="viewcode-block" id="RFdeconProcessor.QCMetrics"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.QCMetrics">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">QCMetrics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prediction_error_key</span><span class="o">=</span><span class="s2">&quot;prediction_error&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        All decon algorithms compute a set of algorithm dependent quality</span>
 <span class="sd">        control metrics.  The return is a Metadata container.</span>
@@ -480,7 +480,7 @@
         <span class="n">qcmd</span><span class="p">[</span><span class="n">prediction_error_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">perr</span>
         <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">qcmd</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="RFdeconProcessor.change_parameters"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.change_parameters">[docs]</a>    <span class="k">def</span> <span class="nf">change_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">md</span><span class="p">):</span>
+<div class="viewcode-block" id="RFdeconProcessor.change_parameters"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.change_parameters">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">change_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">md</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Use this method to change the internal parameter setting of the</span>
 <span class="sd">        processor.  It can only change the parameters for a particular</span>
@@ -496,17 +496,17 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">processor</span><span class="o">.</span><span class="n">read_metadata</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">md</span><span class="p">)</span></div>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">uses_noise</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">uses_noise</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__uses_noise</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">dwin</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">dwin</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">tws</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">md</span><span class="o">.</span><span class="n">get_double</span><span class="p">(</span><span class="s2">&quot;deconvolution_data_window_start&quot;</span><span class="p">)</span>
         <span class="n">twe</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">md</span><span class="o">.</span><span class="n">get_double</span><span class="p">(</span><span class="s2">&quot;deconvolution_data_window_end&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">TimeWindow</span><span class="p">(</span><span class="n">tws</span><span class="p">,</span> <span class="n">twe</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">nwin</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">nwin</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__uses_noise</span><span class="p">:</span>
             <span class="n">tws</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">md</span><span class="o">.</span><span class="n">get_double</span><span class="p">(</span><span class="s2">&quot;noise_window_start&quot;</span><span class="p">)</span>
             <span class="n">twe</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">md</span><span class="o">.</span><span class="n">get_double</span><span class="p">(</span><span class="s2">&quot;noise_window_end&quot;</span><span class="p">)</span>
@@ -514,7 +514,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">TimeWindow</span>  <span class="c1"># always initialize even if not used</span>
 
-    <span class="k">def</span> <span class="nf">_prediction_error</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_prediction_error</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Small internal function used to compute prediction error of</span>
 <span class="sd">        deconvolution operator defined as norm(ao-io)/norm(io) where</span>
@@ -528,7 +528,7 @@
 
 
 <div class="viewcode-block" id="RFdecon"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.RFdeconProcessor.RFdecon">[docs]</a><span class="nd">@mspass_func_wrapper</span>
-<span class="k">def</span> <span class="nf">RFdecon</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">RFdecon</span><span class="p">(</span>
     <span class="n">d</span><span class="p">,</span>
     <span class="n">engine</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">alg</span><span class="o">=</span><span class="s2">&quot;LeastSquares&quot;</span><span class="p">,</span>

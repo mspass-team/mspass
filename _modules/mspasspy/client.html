@@ -6,7 +6,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>mspasspy.client &mdash; MsPASS 0.0.1 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
 
@@ -140,36 +140,36 @@
            <div itemprop="articleBody">
              
   <h1>Source code for mspasspy.client</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">pymongo</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pymongo</span>
 
-<span class="kn">from</span> <span class="nn">mspasspy.db.client</span> <span class="kn">import</span> <span class="n">DBClient</span>
-<span class="kn">from</span> <span class="nn">mspasspy.db.database</span> <span class="kn">import</span> <span class="n">Database</span>
-<span class="kn">from</span> <span class="nn">mspasspy.global_history.manager</span> <span class="kn">import</span> <span class="n">GlobalHistoryManager</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.db.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">DBClient</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.db.database</span><span class="w"> </span><span class="kn">import</span> <span class="n">Database</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.global_history.manager</span><span class="w"> </span><span class="kn">import</span> <span class="n">GlobalHistoryManager</span>
 
 <span class="k">try</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">pyspark</span> <span class="kn">import</span> <span class="n">SparkConf</span><span class="p">,</span> <span class="n">SparkContext</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">pyspark</span><span class="w"> </span><span class="kn">import</span> <span class="n">SparkConf</span><span class="p">,</span> <span class="n">SparkContext</span>
 
     <span class="n">_mspasspy_has_pyspark</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
     <span class="n">_mspasspy_has_pyspark</span> <span class="o">=</span> <span class="kc">False</span>
 
 <span class="k">try</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">pyspark.sql</span> <span class="kn">import</span> <span class="n">SparkSession</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">pyspark.sql</span><span class="w"> </span><span class="kn">import</span> <span class="n">SparkSession</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
     <span class="n">_mspasspy_has_pyspark</span> <span class="o">=</span> <span class="kc">False</span>
 
 <span class="k">try</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">dask.distributed</span> <span class="kn">import</span> <span class="n">Client</span> <span class="k">as</span> <span class="n">DaskClient</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">dask.distributed</span><span class="w"> </span><span class="kn">import</span> <span class="n">Client</span> <span class="k">as</span> <span class="n">DaskClient</span>
 
     <span class="n">_mspasspy_has_dask_distributed</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
     <span class="n">_mspasspy_has_dask_distributed</span> <span class="o">=</span> <span class="kc">False</span>
 
-<span class="kn">from</span> <span class="nn">mspasspy.ccore.utility</span> <span class="kn">import</span> <span class="n">MsPASSError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.ccore.utility</span><span class="w"> </span><span class="kn">import</span> <span class="n">MsPASSError</span>
 
 
-<div class="viewcode-block" id="Client"><a class="viewcode-back" href="../../python_api/mspasspy.client.html#mspasspy.client.Client">[docs]</a><span class="k">class</span> <span class="nc">Client</span><span class="p">:</span>
+<div class="viewcode-block" id="Client"><a class="viewcode-back" href="../../python_api/mspasspy.client.html#mspasspy.client.Client">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">Client</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A client-side representation of MSPASS.</span>
 
@@ -182,7 +182,7 @@
 <span class="sd">    serach the environment varibales values, if not againm then use the default settings.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">database_host</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">scheduler</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -378,7 +378,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;There is no spark or dask installed, this client has no scheduler&quot;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Client.get_database_client"><a class="viewcode-back" href="../../python_api/mspasspy.client.html#mspasspy.client.Client.get_database_client">[docs]</a>    <span class="k">def</span> <span class="nf">get_database_client</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Client.get_database_client"><a class="viewcode-back" href="../../python_api/mspasspy.client.html#mspasspy.client.Client.get_database_client">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_database_client</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the database client in the global history manager</span>
 
@@ -386,7 +386,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db_client</span></div>
 
-<div class="viewcode-block" id="Client.get_database"><a class="viewcode-back" href="../../python_api/mspasspy.client.html#mspasspy.client.Client.get_database">[docs]</a>    <span class="k">def</span> <span class="nf">get_database</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">database_name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Client.get_database"><a class="viewcode-back" href="../../python_api/mspasspy.client.html#mspasspy.client.Client.get_database">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_database</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">database_name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get a database by database_name, if database_name is not specified, use the default one</span>
 
@@ -398,7 +398,7 @@
             <span class="k">return</span> <span class="n">Database</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_db_client</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default_database_name</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">Database</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_db_client</span><span class="p">,</span> <span class="n">database_name</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Client.get_global_history_manager"><a class="viewcode-back" href="../../python_api/mspasspy.client.html#mspasspy.client.Client.get_global_history_manager">[docs]</a>    <span class="k">def</span> <span class="nf">get_global_history_manager</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Client.get_global_history_manager"><a class="viewcode-back" href="../../python_api/mspasspy.client.html#mspasspy.client.Client.get_global_history_manager">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_global_history_manager</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the global history manager with this client</span>
 
@@ -406,7 +406,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_global_history_manager</span></div>
 
-<div class="viewcode-block" id="Client.get_scheduler"><a class="viewcode-back" href="../../python_api/mspasspy.client.html#mspasspy.client.Client.get_scheduler">[docs]</a>    <span class="k">def</span> <span class="nf">get_scheduler</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Client.get_scheduler"><a class="viewcode-back" href="../../python_api/mspasspy.client.html#mspasspy.client.Client.get_scheduler">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_scheduler</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the scheduler(spark/dask) with this client</span>
 
@@ -422,7 +422,7 @@
             <span class="p">)</span>
             <span class="k">return</span> <span class="kc">None</span></div>
 
-<div class="viewcode-block" id="Client.set_database_client"><a class="viewcode-back" href="../../python_api/mspasspy.client.html#mspasspy.client.Client.set_database_client">[docs]</a>    <span class="k">def</span> <span class="nf">set_database_client</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">database_host</span><span class="p">,</span> <span class="n">database_port</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Client.set_database_client"><a class="viewcode-back" href="../../python_api/mspasspy.client.html#mspasspy.client.Client.set_database_client">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">set_database_client</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">database_host</span><span class="p">,</span> <span class="n">database_port</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set a database client by database_host(and database_port)</span>
 
@@ -453,7 +453,7 @@
                 <span class="s2">&quot;Fatal&quot;</span><span class="p">,</span>
             <span class="p">)</span></div>
 
-<div class="viewcode-block" id="Client.set_global_history_manager"><a class="viewcode-back" href="../../python_api/mspasspy.client.html#mspasspy.client.Client.set_global_history_manager">[docs]</a>    <span class="k">def</span> <span class="nf">set_global_history_manager</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">history_db</span><span class="p">,</span> <span class="n">job_name</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Client.set_global_history_manager"><a class="viewcode-back" href="../../python_api/mspasspy.client.html#mspasspy.client.Client.set_global_history_manager">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">set_global_history_manager</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">history_db</span><span class="p">,</span> <span class="n">job_name</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set a global history manager by history_db, job_name(and collection)</span>
 
@@ -485,7 +485,7 @@
             <span class="n">history_db</span><span class="p">,</span> <span class="n">job_name</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="n">collection</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="Client.set_scheduler"><a class="viewcode-back" href="../../python_api/mspasspy.client.html#mspasspy.client.Client.set_scheduler">[docs]</a>    <span class="k">def</span> <span class="nf">set_scheduler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scheduler</span><span class="p">,</span> <span class="n">scheduler_host</span><span class="p">,</span> <span class="n">scheduler_port</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Client.set_scheduler"><a class="viewcode-back" href="../../python_api/mspasspy.client.html#mspasspy.client.Client.set_scheduler">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">set_scheduler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scheduler</span><span class="p">,</span> <span class="n">scheduler_host</span><span class="p">,</span> <span class="n">scheduler_port</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set a scheduler by scheduler type, scheduler_host(and scheduler_port)</span>
 
