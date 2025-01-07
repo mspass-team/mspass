@@ -164,6 +164,7 @@ private:
       ar & shaping_wavelet_number_poles;
       std::cout << "Serializing shapingwavelet"<<std::endl;
       ar & shapingwavelet;
+      ar & winlength;
       std::cout<<"Serializing power spectrum engine objects"<<std::endl;
       ar & signal_engine;
       ar & noise_engine;
@@ -176,9 +177,12 @@ private:
       /* These fixed length arrays caused probems - seg faults.
        * Apparently boost doesn't handle that corectly.  There may 
        * be a more concise way to do this but this should always work. */
+      std::cout << "Entering block for 3 component arrays"<<std::endl;
       for(auto k=0;k<3;++k)
       {
+        std::cout << "k="<<k<<std::endl;
         ar & peak_snr[k];
+        std::cout << "bandwidth_fraction"<<std::endl;
         ar & signal_bandwidth_fraction[k];
       }
       std::cout << "Exiting serialize function"<<std::endl;
