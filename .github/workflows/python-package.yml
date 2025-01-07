@@ -17,17 +17,17 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
-    - uses: actions/cache@v4
-      with:
-        path: |
-          ~/.cache/pip
-          ${{ env.pythonLocation }}/bin/*
-          ${{ env.pythonLocation }}/include
-          ${{ env.pythonLocation }}/lib/python*/site-packages/*
-          !${{ env.pythonLocation }}/bin/pip*
-          !${{ env.pythonLocation }}/lib/python*/site-packages/pip*
-          !${{ env.pythonLocation }}/lib/python*/site-packages/setuptools*
-        key: ${{ env.pythonLocation }}-${{ hashFiles('setup.py') }}-${{ hashFiles('requirements.txt') }}
+#    - uses: actions/cache@v4
+#      with:
+#        path: |
+#          ~/.cache/pip
+#          ${{ env.pythonLocation }}/bin/*
+#          ${{ env.pythonLocation }}/include
+#          ${{ env.pythonLocation }}/lib/python*/site-packages/*
+#          !${{ env.pythonLocation }}/bin/pip*
+#          !${{ env.pythonLocation }}/lib/python*/site-packages/pip*
+#          !${{ env.pythonLocation }}/lib/python*/site-packages/setuptools*
+#        key: ${{ env.pythonLocation }}-${{ hashFiles('setup.py') }}-${{ hashFiles('requirements.txt') }}
     - name: Install CXX Dependencies
       run: sudo apt-get update && sudo apt-get install -yq gfortran libboost-dev libboost-serialization-dev liblapack-dev
     - name: Install MongoDB
