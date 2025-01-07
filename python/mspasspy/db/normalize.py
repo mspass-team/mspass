@@ -2580,7 +2580,10 @@ class OriginTimeMatcher(DataFrameCacheMatcher):
       this list will need to be changed to remove _id as it in that context
       no ObjectID would normally be defined.  Be warned, however, that if
       used with a normalize function the _id may be required to match a
-      "source_id" cross reference in a seismic data object.
+      "source_id" cross reference in a seismic data object.  Also note 
+      that the list must contain the key defined by the related 
+      argument "source_time_key" as that is used to match times in 
+      the source data with data start times.   
     :type attributes_to_load:  list of string defining keys in collection
       documents
 
@@ -2612,17 +2615,19 @@ class OriginTimeMatcher(DataFrameCacheMatcher):
     :type require_unique_match:  boolean
 
     :param data_time_key:  data object Metadata key used to fetch
-    time for testing as alternative to data start time.  If set None
-    (default) the test will use the start time of an atomic data object
-    for the time test.  If nonzero it is assumed to be a string used
-    to fetch a time from the data's Metadata container.  That is the
-    best way to run this matcher on Ensembles.
+      time for testing as alternative to data start time.  If set None
+      (default) the test will use the start time of an atomic data object
+      for the time test.  If nonzero it is assumed to be a string used
+      to fetch a time from the data's Metadata container.  That is the
+      best way to run this matcher on Ensembles.
     :type data_time_key:  string
 
     :param source_time_key:  dataframe column name to use as source
-    origin time field.  Default is "time"
+      origin time field.  Default is "time".   This key must match 
+      a key in the attributes_to_load list or the constructor will 
+      throw an exception.
     :type source_time_key:  string  Can also be a None type which
-    is causes the internal value to be set to "time"
+      is causes the internal value to be set to "time"
     """
 
     def __init__(
@@ -2657,6 +2662,12 @@ class OriginTimeMatcher(DataFrameCacheMatcher):
             self.source_time_key = "time"
         else:
             self.source_time_key = source_time_key
+        if self.source_time_key not in attributes_to_load:
+            message = "OriginTimeMatcher constructor:  "
+            message += "key for fetching origin time=" + self.source_time_key
+            message += " is not in attributes_to_load list\n"
+            message += "Required for matching with waveform start times"
+            raise MsPASSError(message,ErrorSeverity.Fatal)
 
     def subset(self, mspass_object) -> pd.DataFrame:
         """ 

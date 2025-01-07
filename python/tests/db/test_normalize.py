@@ -732,6 +732,41 @@ class TestOriginTimeMatcher(TestNormalize):
         ts["testtime"] = 9999.99
         db_retdoc = db_matcher.find_one(ts)
         assert db_retdoc[0] is None
+        
+    def test_OriginTimeMatcher_find_doc(self):
+        """
+        Nearly identical code to "find_one" version immediately above but 
+        for the find_doc method that is independently implemented.  
+        There is only a dataframe version of that method though.
+        
+        TODO:  this test does not validate multiple match algorithm 
+        returning minimum time offset as unique match.  find_one test needs 
+        a similar test.
+        """
+        cached_matcher = OriginTimeMatcher(
+            self.db, source_time_key="time", t0offset=522.0
+        )
+
+        orig_doc = self.db.wf_miniseed.find_one(
+            {"_id": ObjectId("62812b08178bf05fe5787d82")}
+        )
+        orig_ts = self.db.read_data(orig_doc, collection="wf_miniseed")
+
+        #   get document for TimeSeries
+        ts_1 = TimeSeries(orig_ts)
+        doc1 = dict(ts_1)
+        doc2 = dict(ts_1)
+
+        retdoc = cached_matcher.find_doc(doc1)
+        # Failed find returns a none in component 0 so catch that
+        assert retdoc
+        assert isinstance(retdoc,dict)
+        
+        # test failure with unmatched time - should silenetly return None
+        doc2["time"] = 99999.99
+        retdoc = cached_matcher.find_doc(doc2)
+        assert retdoc is None
+
 
     def test_OriginTimeMatcher_normalize(self):
         # t0offset value needed to work with test data set.  See above
