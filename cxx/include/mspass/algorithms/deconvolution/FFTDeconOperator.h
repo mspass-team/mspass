@@ -64,18 +64,25 @@ private:
     template<class Archive>
     void save(Archive& ar, const unsigned int version) const
     {
+      std::cout << "Entered FFTDecon serialization save function"<<std::endl;
         ar & nfft;
         ar & sample_shift;
         ar & winv;
+        std::cout << "Exiting save function" << std::endl;
     }
     template<class Archive>
     void load(Archive &ar, const unsigned int version)
     {
+        std::cout << "Entered FFTDecon serializaton load function" << std::endl;
       ar & this->nfft;
       ar & this->sample_shift;
+        std::cout << "Loading winv vector" << std::endl;
       ar & winv;
+        std::cout << "Creating wavetable " << std::endl;
       this->wavetable = gsl_fft_complex_wavetable_alloc (this->nfft);
+        std::cout << "Creating workspace" << std::endl;
       this->workspace = gsl_fft_complex_workspace_alloc (this->nfft);
+        std::cout << "Exiting load" << std::endl;
     }
     BOOST_SERIALIZATION_SPLIT_MEMBER()
 };
