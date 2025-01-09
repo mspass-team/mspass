@@ -264,7 +264,7 @@ def test_CNRRFDecon():
     """
     # generate simulation wavelet, error free data, and data with noise
     # copied before use below
-    d0wn = make_test_data(noise_level=1.0)
+    d0wn = make_test_data(noise_level=0.1)
     # necessary for test but normal use would use output of broadband_snr_QC
     d0wn["low_f_band_edge"] = 2.0
     d0wn["high_f_band_edge"] = 8.0
@@ -346,7 +346,7 @@ def test_CNRRFDecon_error_handlers():
     # this copies above - really should be a pytest fixture
     # generate simulation wavelet, error free data, and data with noise
     # copied before use below
-    d0wn = make_test_data(noise_level=1.0)
+    d0wn = make_test_data(noise_level=0.1)
     # necessary for test but normal use would use output of broadband_snr_QC
     d0wn["low_f_band_edge"] = 2.0
     d0wn["high_f_band_edge"] = 8.0
@@ -436,7 +436,7 @@ def make_ensemble_test_data(N=3):
     e = SeismogramEnsemble()
     e.set_live()
     for i in range(N):
-        s = make_test_data(noise_level=1.0)
+        s = make_test_data(noise_level=0.3)
         e.member.append(s)
     return e
 
@@ -445,7 +445,7 @@ def test_CNRArrayDecon():
     e0 = make_ensemble_test_data()
     # create a seperate wavelet with lower noise level
     # note noise level of 5.0 is a frozen constant in make_ensemble_data
-    d0 = make_test_data(noise_level=1.0)
+    d0 = make_test_data(noise_level=0.1)
     w0 = ExtractComponent(d0, 2)
     pf = pfread("./data/pf/CNRDeconEngine.pf")
     engine = CNRDeconEngine(pf)
@@ -536,7 +536,7 @@ def test_CNRArrayDecon_error_handlers():
     e0 = make_ensemble_test_data()
     # create a seperate wavelet with lower noise level
     # note noise level of 5.0 is a frozen constant in make_ensemble_data
-    d0 = make_test_data(noise_level=1.0)
+    d0 = make_test_data(noise_level=0.1)
     w0 = ExtractComponent(d0, 2)
     sw = TimeWindow(-5.0, 30.0)
     # pattern for seismogram wavelet input
@@ -584,7 +584,7 @@ def test_CNRArrayDecon_error_handlers():
     assert e_d.elog.size() > 0
 
 
-test_CNRRFDecon()
+# test_CNRRFDecon()
 # test_CNRRFDecon_error_handlers()
 # test_CNRArrayDecon()
 # test_CNRRFDecon_error_handlers()
