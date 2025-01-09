@@ -195,6 +195,7 @@ class Client:
                     .master(self._spark_master_url)
                     .getOrCreate()
                 )
+                spark.parallelize([1, 2, 3, 4, 5]).collect()
                 self._spark_context = spark.sparkContext
             except Exception as err:
                 raise MsPASSError(
