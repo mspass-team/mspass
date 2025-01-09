@@ -195,11 +195,6 @@ class Client:
                     .master(self._spark_master_url)
                     .getOrCreate()
                 )
-                print("DEBUG====================")
-                print(spark.sparkContext.parallelize([1, 2, 3, 4, 5]).collect())
-                print(spark)
-                print(spark.sparkContext)
-                print("DEBUG END================")
                 self._spark_context = spark.sparkContext
             except Exception as err:
                 raise MsPASSError(
