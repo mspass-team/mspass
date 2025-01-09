@@ -46,7 +46,7 @@ endif ()
 message (STATUS "YAML_CPP_LIBRARIES   = ${YAML_CPP_LIBRARIES}")
 message (STATUS "YAML_CPP_INCLUDE_DIR = ${YAML_CPP_INCLUDE_DIR}")
 
-find_package (Boost 1.86.0 COMPONENTS serialization)
+find_package (Boost 1.74.0 COMPONENTS serialization)
 if (NOT Boost_FOUND)
   message (STATUS "Building Boost")
   include (cmake/boost.cmake)
