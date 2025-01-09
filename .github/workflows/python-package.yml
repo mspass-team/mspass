@@ -48,6 +48,7 @@ jobs:
         export PATH=$PATH:/opt/spark-3.0.0-bin-hadoop2.7/bin
         echo "/opt/spark-3.0.0-bin-hadoop2.7/bin" >> $GITHUB_PATH
         python -m pip install --upgrade --upgrade-strategy eager pyspark pytest-spark
+        sudo apt-get update && sudo apt-get install openjdk-8-jdk
     - name: Install
       run: python -m pip install -C--global-option=build -C--global-option=--debug -v '.[seisbench]'
     - name: Test with pytest
