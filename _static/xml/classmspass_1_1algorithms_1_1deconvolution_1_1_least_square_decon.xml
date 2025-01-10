@@ -1,15 +1,16 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="classmspass_1_1algorithms_1_1deconvolution_1_1_least_square_decon" kind="class" language="C++" prot="public">
     <compoundname>mspass::algorithms::deconvolution::LeastSquareDecon</compoundname>
     <basecompoundref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator" prot="public" virt="non-virtual">mspass::algorithms::deconvolution::FFTDeconOperator</basecompoundref>
     <basecompoundref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon" prot="public" virt="non-virtual">mspass::algorithms::deconvolution::ScalarDecon</basecompoundref>
-      <sectiondef kind="private-attrib">
+    <sectiondef kind="private-attrib">
       <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_least_square_decon_1a8228465eeadb84cea998fefa58c4a3c3" prot="private" static="no" mutable="no">
         <type>double</type>
         <definition>double mspass::algorithms::deconvolution::LeastSquareDecon::damp</definition>
         <argsstring></argsstring>
         <name>damp</name>
+        <qualifiedname>mspass::algorithms::deconvolution::LeastSquareDecon::damp</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -18,13 +19,14 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/LeastSquareDecon.h" line="73" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/LeastSquareDecon.h" bodystart="73" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_least_square_decon_1a6ba62d74ac383a6a0bc48ea5af6f396a" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
         <definition>mspass::algorithms::deconvolution::LeastSquareDecon::LeastSquareDecon</definition>
         <argsstring>()</argsstring>
         <name>LeastSquareDecon</name>
+        <qualifiedname>mspass::algorithms::deconvolution::LeastSquareDecon::LeastSquareDecon</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -38,6 +40,7 @@
         <definition>mspass::algorithms::deconvolution::LeastSquareDecon::LeastSquareDecon</definition>
         <argsstring>(const LeastSquareDecon &amp;parent)</argsstring>
         <name>LeastSquareDecon</name>
+        <qualifiedname>mspass::algorithms::deconvolution::LeastSquareDecon::LeastSquareDecon</qualifiedname>
         <param>
           <type>const <ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_least_square_decon" kindref="compound">LeastSquareDecon</ref> &amp;</type>
           <declname>parent</declname>
@@ -55,6 +58,7 @@
         <definition>mspass::algorithms::deconvolution::LeastSquareDecon::LeastSquareDecon</definition>
         <argsstring>(const mspass::utility::Metadata &amp;md)</argsstring>
         <name>LeastSquareDecon</name>
+        <qualifiedname>mspass::algorithms::deconvolution::LeastSquareDecon::LeastSquareDecon</qualifiedname>
         <param>
           <type>const <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">mspass::utility::Metadata</ref> &amp;</type>
           <declname>md</declname>
@@ -72,6 +76,7 @@
         <definition>mspass::algorithms::deconvolution::LeastSquareDecon::LeastSquareDecon</definition>
         <argsstring>(const mspass::utility::Metadata &amp;md, const std::vector&lt; double &gt; &amp;wavelet, const std::vector&lt; double &gt; &amp;data)</argsstring>
         <name>LeastSquareDecon</name>
+        <qualifiedname>mspass::algorithms::deconvolution::LeastSquareDecon::LeastSquareDecon</qualifiedname>
         <param>
           <type>const <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">mspass::utility::Metadata</ref> &amp;</type>
           <declname>md</declname>
@@ -97,6 +102,7 @@
         <definition>void mspass::algorithms::deconvolution::LeastSquareDecon::changeparameter</definition>
         <argsstring>(const mspass::utility::Metadata &amp;md)</argsstring>
         <name>changeparameter</name>
+        <qualifiedname>mspass::algorithms::deconvolution::LeastSquareDecon::changeparameter</qualifiedname>
         <reimplements refid="classmspass_1_1algorithms_1_1deconvolution_1_1_basic_decon_operator_1a84111e230a365037569b17b2ca693100">changeparameter</reimplements>
         <param>
           <type>const <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">mspass::utility::Metadata</ref> &amp;</type>
@@ -115,6 +121,7 @@
         <definition>void mspass::algorithms::deconvolution::LeastSquareDecon::process</definition>
         <argsstring>()</argsstring>
         <name>process</name>
+        <qualifiedname>mspass::algorithms::deconvolution::LeastSquareDecon::process</qualifiedname>
         <reimplements refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a71988c8a42788bd966945d78d5fdb6b3">process</reimplements>
         <briefdescription>
         </briefdescription>
@@ -129,6 +136,7 @@
         <definition>CoreTimeSeries mspass::algorithms::deconvolution::LeastSquareDecon::actual_output</definition>
         <argsstring>()</argsstring>
         <name>actual_output</name>
+        <qualifiedname>mspass::algorithms::deconvolution::LeastSquareDecon::actual_output</qualifiedname>
         <reimplements refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a84f320ad48e8bfc9c292f8dde33c0593">actual_output</reimplements>
         <briefdescription>
 <para>Return the actual output of the deconvolution operator. </para>
@@ -145,13 +153,13 @@
         <references refid="classmspass_1_1seismic_1_1_core_time_series_1ae538485ac0aed2f8691477dffce6cda8" compoundref="_core_time_series_8cc" startline="222" endline="247">mspass::seismic::CoreTimeSeries::set_npts</references>
         <references refid="classmspass_1_1seismic_1_1_core_time_series_1ae90b28cff0bc1997aa65a1693d8562d0" compoundref="_core_time_series_8cc" startline="203" endline="221">mspass::seismic::CoreTimeSeries::set_t0</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1ac3f8c8200710fe0d3ef211c7c758e864" compoundref="_basic_time_series_8h" startline="259" endline="262">mspass::seismic::BasicTimeSeries::set_tref</references>
-        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet_1aaec6f802d7aba4a36484ba50c9f9c9bf" compoundref="_shaping_wavelet_8h" startline="77" endline="79">mspass::algorithms::deconvolution::ShapingWavelet::wavelet</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_least_square_decon_1aff1ef8576f2d5890f0a7fd50797971e9" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type><ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">mspass::seismic::CoreTimeSeries</ref></type>
         <definition>CoreTimeSeries mspass::algorithms::deconvolution::LeastSquareDecon::inverse_wavelet</definition>
         <argsstring>(const double t0parent=0.0)</argsstring>
         <name>inverse_wavelet</name>
+        <qualifiedname>mspass::algorithms::deconvolution::LeastSquareDecon::inverse_wavelet</qualifiedname>
         <reimplements refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a9adc0519d5435d686edb32066f9f697a">inverse_wavelet</reimplements>
         <param>
           <type>const double</type>
@@ -178,14 +186,13 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/LeastSquareDecon.h" line="58" column="37" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/LeastSquareDecon.cc" bodystart="168" bodyend="179"/>
-        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1a3473dc7f359332dbf5a685efe30a684b" compoundref="_f_f_t_decon_operator_8cc" startline="119" endline="153">mspass::algorithms::deconvolution::FFTDeconOperator::FourierInverse</references>
-        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet_1aaec6f802d7aba4a36484ba50c9f9c9bf" compoundref="_shaping_wavelet_8h" startline="77" endline="79">mspass::algorithms::deconvolution::ShapingWavelet::wavelet</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_least_square_decon_1a307bb228bc11508e730f10be2f07ee24" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type><ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">mspass::seismic::CoreTimeSeries</ref></type>
         <definition>CoreTimeSeries mspass::algorithms::deconvolution::LeastSquareDecon::inverse_wavelet</definition>
         <argsstring>()</argsstring>
         <name>inverse_wavelet</name>
+        <qualifiedname>mspass::algorithms::deconvolution::LeastSquareDecon::inverse_wavelet</qualifiedname>
         <reimplements refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a078d038467a3be52d1e91e0d080d503e">inverse_wavelet</reimplements>
         <briefdescription>
 <para>Return default FIR represesentation of the inverse filter. </para>
@@ -202,6 +209,7 @@
         <definition>Metadata mspass::algorithms::deconvolution::LeastSquareDecon::QCMetrics</definition>
         <argsstring>()</argsstring>
         <name>QCMetrics</name>
+        <qualifiedname>mspass::algorithms::deconvolution::LeastSquareDecon::QCMetrics</qualifiedname>
         <reimplements refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1af683c2f25e91155c2bc1f81f9b62bbb1">QCMetrics</reimplements>
         <briefdescription>
 <para>Return appropriate quality measures. </para>
@@ -213,13 +221,14 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/LeastSquareDecon.h" line="69" column="31" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/LeastSquareDecon.cc" bodystart="187" bodyend="195"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="private-func">
+    </sectiondef>
+    <sectiondef kind="private-func">
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_least_square_decon_1a7fd337210b8d0e4be0a0401e86f0e4a1" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>
         <definition>int mspass::algorithms::deconvolution::LeastSquareDecon::read_metadata</definition>
         <argsstring>(const mspass::utility::Metadata &amp;md)</argsstring>
         <name>read_metadata</name>
+        <qualifiedname>mspass::algorithms::deconvolution::LeastSquareDecon::read_metadata</qualifiedname>
         <param>
           <type>const <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">mspass::utility::Metadata</ref> &amp;</type>
           <declname>md</declname>
@@ -237,6 +246,7 @@
         <definition>int mspass::algorithms::deconvolution::LeastSquareDecon::apply</definition>
         <argsstring>()</argsstring>
         <name>apply</name>
+        <qualifiedname>mspass::algorithms::deconvolution::LeastSquareDecon::apply</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -255,6 +265,7 @@
         <definition>void mspass::algorithms::deconvolution::LeastSquareDecon::serialize</definition>
         <argsstring>(Archive &amp;ar, const unsigned int version)</argsstring>
         <name>serialize</name>
+        <qualifiedname>mspass::algorithms::deconvolution::LeastSquareDecon::serialize</qualifiedname>
         <param>
           <type>Archive &amp;</type>
           <declname>ar</declname>
@@ -271,12 +282,20 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/LeastSquareDecon.h" line="76" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/LeastSquareDecon.h" bodystart="76" bodyend="81"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
     <inheritancegraph>
+      <node id="4">
+        <label>mspass::algorithms::deconvolution::BasicDeconOperator</label>
+        <link refid="classmspass_1_1algorithms_1_1deconvolution_1_1_basic_decon_operator"/>
+      </node>
+      <node id="2">
+        <label>mspass::algorithms::deconvolution::FFTDeconOperator</label>
+        <link refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator"/>
+      </node>
       <node id="1">
         <label>mspass::algorithms::deconvolution::LeastSquareDecon</label>
         <link refid="classmspass_1_1algorithms_1_1deconvolution_1_1_least_square_decon"/>
@@ -285,42 +304,17 @@
         <childnode refid="3" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="4">
-        <label>mspass::algorithms::deconvolution::BasicDeconOperator</label>
-        <link refid="classmspass_1_1algorithms_1_1deconvolution_1_1_basic_decon_operator"/>
-      </node>
       <node id="3">
         <label>mspass::algorithms::deconvolution::ScalarDecon</label>
         <link refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon"/>
         <childnode refid="4" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="2">
-        <label>mspass::algorithms::deconvolution::FFTDeconOperator</label>
-        <link refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator"/>
-      </node>
     </inheritancegraph>
     <collaborationgraph>
-      <node id="1">
-        <label>mspass::algorithms::deconvolution::LeastSquareDecon</label>
-        <link refid="classmspass_1_1algorithms_1_1deconvolution_1_1_least_square_decon"/>
-        <childnode refid="2" relation="public-inheritance">
-        </childnode>
-        <childnode refid="4" relation="public-inheritance">
-        </childnode>
-      </node>
       <node id="5">
         <label>mspass::algorithms::deconvolution::BasicDeconOperator</label>
         <link refid="classmspass_1_1algorithms_1_1deconvolution_1_1_basic_decon_operator"/>
-      </node>
-      <node id="4">
-        <label>mspass::algorithms::deconvolution::ScalarDecon</label>
-        <link refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon"/>
-        <childnode refid="5" relation="public-inheritance">
-        </childnode>
-        <childnode refid="6" relation="usage">
-          <edgelabel>shapingwavelet</edgelabel>
-        </childnode>
       </node>
       <node id="3">
         <label>mspass::algorithms::deconvolution::ComplexArray</label>
@@ -331,6 +325,23 @@
         <link refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator"/>
         <childnode refid="3" relation="usage">
           <edgelabel>winv</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>mspass::algorithms::deconvolution::LeastSquareDecon</label>
+        <link refid="classmspass_1_1algorithms_1_1deconvolution_1_1_least_square_decon"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>mspass::algorithms::deconvolution::ScalarDecon</label>
+        <link refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon"/>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>shapingwavelet</edgelabel>
         </childnode>
       </node>
       <node id="6">
@@ -356,7 +367,7 @@
       <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a051ad1d54899f0d64beb0249220c3405" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::LeastSquareDecon</scope><name>get_shaping_wavelet</name></member>
       <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1ad63458bb8ad8a04a66de1c140152fc96" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::LeastSquareDecon</scope><name>get_shift</name></member>
       <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1abf21bce1d1519ece5e9879d03e7f7e5a" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::LeastSquareDecon</scope><name>get_size</name></member>
-      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a20e3f9d20030f45bafc72cec73644d34" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::LeastSquareDecon</scope><name>getresult</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1ae27885f8cd4880c643f09dbe636396a9" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::LeastSquareDecon</scope><name>getresult</name></member>
       <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a889e54f83b86f0bb0087ba3da18db14e" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::LeastSquareDecon</scope><name>ideal_output</name></member>
       <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_least_square_decon_1aff1ef8576f2d5890f0a7fd50797971e9" prot="public" virt="virtual"><scope>mspass::algorithms::deconvolution::LeastSquareDecon</scope><name>inverse_wavelet</name></member>
       <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_least_square_decon_1a307bb228bc11508e730f10be2f07ee24" prot="public" virt="virtual"><scope>mspass::algorithms::deconvolution::LeastSquareDecon</scope><name>inverse_wavelet</name></member>

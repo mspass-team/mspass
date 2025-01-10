@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="memory__constants_8h" kind="file" language="C++">
     <compoundname>memory_constants.h</compoundname>
     <includedby refid="_ensemble_8h" local="yes">/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h</includedby>
@@ -19,6 +19,14 @@
         <childnode refid="5" relation="include">
         </childnode>
       </node>
+      <node id="5">
+        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h</label>
+        <link refid="_c_n_r3_c_decon_8h_source"/>
+      </node>
+      <node id="6">
+        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/mspass.h</label>
+        <link refid="mspass_8h_source"/>
+      </node>
       <node id="2">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h</label>
         <link refid="_ensemble_8h_source"/>
@@ -29,19 +37,11 @@
         <childnode refid="6" relation="include">
         </childnode>
       </node>
-      <node id="6">
-        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/mspass.h</label>
-        <link refid="mspass_8h_source"/>
-      </node>
       <node id="1">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/utility/memory_constants.h</label>
         <link refid="memory__constants_8h"/>
         <childnode refid="2" relation="include">
         </childnode>
-      </node>
-      <node id="5">
-        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h</label>
-        <link refid="_c_n_r3_c_decon_8h_source"/>
       </node>
     </invincdepgraph>
     <innernamespace refid="namespacemspass">mspass</innernamespace>

@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="_attribute_map_8h" kind="file" language="C++">
     <compoundname>AttributeMap.h</compoundname>
     <includes local="no">string</includes>
@@ -11,22 +11,15 @@
     <includedby refid="_attribute_cross_reference_8h" local="yes">/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AttributeCrossReference.h</includedby>
     <includedby refid="_attribute_map_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/utility/AttributeMap.cc</includedby>
     <incdepgraph>
-      <node id="4">
-        <label>list</label>
-      </node>
-      <node id="13">
-        <label>mspass/utility/MsPASSError.h</label>
-        <link refid="_ms_p_a_s_s_error_8h_source"/>
-        <childnode refid="8" relation="include">
+      <node id="16">
+        <label>mspass/utility/AntelopePf.h</label>
+        <link refid="_antelope_pf_8h_source"/>
+        <childnode refid="4" relation="include">
         </childnode>
-        <childnode refid="14" relation="include">
+        <childnode refid="2" relation="include">
         </childnode>
-      </node>
-      <node id="2">
-        <label>string</label>
-      </node>
-      <node id="3">
-        <label>map</label>
+        <childnode refid="5" relation="include">
+        </childnode>
       </node>
       <node id="1">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AttributeMap.h</label>
@@ -42,45 +35,11 @@
         <childnode refid="16" relation="include">
         </childnode>
       </node>
-      <node id="14">
-        <label>exception</label>
-      </node>
-      <node id="9">
-        <label>fstream</label>
-      </node>
-      <node id="11">
-        <label>boost/any.hpp</label>
-      </node>
       <node id="15">
         <label>mspass/utility/BasicMetadata.h</label>
         <link refid="_basic_metadata_8h_source"/>
         <childnode refid="2" relation="include">
         </childnode>
-      </node>
-      <node id="6">
-        <label>typeinfo</label>
-      </node>
-      <node id="10">
-        <label>sstream</label>
-      </node>
-      <node id="12">
-        <label>pybind11/pybind11.h</label>
-      </node>
-      <node id="8">
-        <label>iostream</label>
-      </node>
-      <node id="16">
-        <label>mspass/utility/AntelopePf.h</label>
-        <link refid="_antelope_pf_8h_source"/>
-        <childnode refid="4" relation="include">
-        </childnode>
-        <childnode refid="2" relation="include">
-        </childnode>
-        <childnode refid="5" relation="include">
-        </childnode>
-      </node>
-      <node id="7">
-        <label>set</label>
       </node>
       <node id="5">
         <label>mspass/utility/Metadata.h</label>
@@ -108,8 +67,53 @@
         <childnode refid="15" relation="include">
         </childnode>
       </node>
+      <node id="13">
+        <label>mspass/utility/MsPASSError.h</label>
+        <link refid="_ms_p_a_s_s_error_8h_source"/>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+      </node>
+      <node id="11">
+        <label>boost/any.hpp</label>
+      </node>
+      <node id="14">
+        <label>exception</label>
+      </node>
+      <node id="9">
+        <label>fstream</label>
+      </node>
+      <node id="8">
+        <label>iostream</label>
+      </node>
+      <node id="4">
+        <label>list</label>
+      </node>
+      <node id="3">
+        <label>map</label>
+      </node>
+      <node id="12">
+        <label>pybind11/pybind11.h</label>
+      </node>
+      <node id="7">
+        <label>set</label>
+      </node>
+      <node id="10">
+        <label>sstream</label>
+      </node>
+      <node id="2">
+        <label>string</label>
+      </node>
+      <node id="6">
+        <label>typeinfo</label>
+      </node>
     </incdepgraph>
     <invincdepgraph>
+      <node id="2">
+        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/mspass.h</label>
+        <link refid="mspass_8h_source"/>
+      </node>
       <node id="3">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AttributeCrossReference.h</label>
         <link refid="_attribute_cross_reference_8h_source"/>
@@ -123,10 +127,6 @@
         </childnode>
         <childnode refid="3" relation="include">
         </childnode>
-      </node>
-      <node id="2">
-        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/mspass.h</label>
-        <link refid="mspass_8h_source"/>
       </node>
     </invincdepgraph>
     <innerclass refid="classmspass_1_1utility_1_1_attribute_properties" prot="public">mspass::utility::AttributeProperties</innerclass>
@@ -173,10 +173,10 @@
 <codeline lineno="142"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1utility_1_1_attribute_map" kindref="compound">AttributeMap</ref>&amp;<sp/><ref refid="classmspass_1_1utility_1_1_attribute_map_1a402e3b521f85b0f7d011c38aafee191b" kindref="member">operator=</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_attribute_map" kindref="compound">AttributeMap</ref>&amp;<sp/>am0);</highlight></codeline>
 <codeline lineno="153"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1utility_1_1_attribute_properties" kindref="compound">AttributeProperties</ref><sp/><ref refid="classmspass_1_1utility_1_1_attribute_map_1a3b308d94ea4122dc3f90aae8ad950ac8" kindref="member">operator[]</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>key)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="155"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1utility_1_1_attribute_properties" kindref="compound">AttributeProperties</ref><sp/><ref refid="classmspass_1_1utility_1_1_attribute_map_1a3b308d94ea4122dc3f90aae8ad950ac8" kindref="member">operator[]</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/>key)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="181" refid="classmspass_1_1utility_1_1_attribute_map_1aeb1df686651e0e3d138f1a3d73bdda77" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::map&lt;std::string,AttributeProperties&gt;<sp/><ref refid="classmspass_1_1utility_1_1_attribute_map_1aeb1df686651e0e3d138f1a3d73bdda77" kindref="member">aliases</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>key)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="183"><highlight class="normal"><sp/><sp/><sp/><sp/>std::map&lt;std::string,AttributeProperties&gt;<sp/><ref refid="classmspass_1_1utility_1_1_attribute_map_1aeb1df686651e0e3d138f1a3d73bdda77" kindref="member">aliases</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*key)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="200" refid="classmspass_1_1utility_1_1_attribute_map_1a5b7ec0194d2f25a916efd5f9d75f82ac" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::list&lt;std::string&gt;<sp/><ref refid="classmspass_1_1utility_1_1_attribute_map_1a5b7ec0194d2f25a916efd5f9d75f82ac" kindref="member">aliastables</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>key)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="202"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::list&lt;std::string&gt;<sp/><ref refid="classmspass_1_1utility_1_1_attribute_map_1a5b7ec0194d2f25a916efd5f9d75f82ac" kindref="member">aliastables</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*key)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="181" refid="classmspass_1_1utility_1_1_attribute_map_1a6891028b48319dc93a0a798757364536" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::map&lt;std::string,AttributeProperties&gt;<sp/><ref refid="classmspass_1_1utility_1_1_attribute_map_1a6891028b48319dc93a0a798757364536" kindref="member">aliases</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>key)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="183"><highlight class="normal"><sp/><sp/><sp/><sp/>std::map&lt;std::string,AttributeProperties&gt;<sp/><ref refid="classmspass_1_1utility_1_1_attribute_map_1a6891028b48319dc93a0a798757364536" kindref="member">aliases</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*key)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="200" refid="classmspass_1_1utility_1_1_attribute_map_1adc4ea0c8e4f1e95d5d27ca8e3d61c5be" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::list&lt;std::string&gt;<sp/><ref refid="classmspass_1_1utility_1_1_attribute_map_1adc4ea0c8e4f1e95d5d27ca8e3d61c5be" kindref="member">aliastables</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>key)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="202"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::list&lt;std::string&gt;<sp/><ref refid="classmspass_1_1utility_1_1_attribute_map_1adc4ea0c8e4f1e95d5d27ca8e3d61c5be" kindref="member">aliastables</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*key)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="211" refid="classmspass_1_1utility_1_1_attribute_map_1ad60bebd12b9f3ca2aa5254c451b7bd1e" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_attribute_map_1ad60bebd12b9f3ca2aa5254c451b7bd1e" kindref="member">is_alias</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>key)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="213"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_attribute_map_1ad60bebd12b9f3ca2aa5254c451b7bd1e" kindref="member">is_alias</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*key)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="214"><highlight class="normal"></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>

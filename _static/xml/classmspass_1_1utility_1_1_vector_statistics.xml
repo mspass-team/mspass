@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="classmspass_1_1utility_1_1_vector_statistics" kind="class" language="C++" prot="public">
     <compoundname>mspass::utility::VectorStatistics</compoundname>
     <includes refid="_vector_statistics_8h" local="no">VectorStatistics.h</includes>
@@ -8,12 +8,13 @@
         <type>class T</type>
       </param>
     </templateparamlist>
-      <sectiondef kind="private-attrib">
+    <sectiondef kind="private-attrib">
       <memberdef kind="variable" id="classmspass_1_1utility_1_1_vector_statistics_1ac1859153950bb8de386012c41a090cc6" prot="private" static="no" mutable="no">
         <type>std::vector&lt; T &gt;</type>
         <definition>std::vector&lt;T&gt; mspass::utility::VectorStatistics&lt; T &gt;::d</definition>
         <argsstring></argsstring>
         <name>d</name>
+        <qualifiedname>mspass::utility::VectorStatistics::d</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -22,13 +23,14 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/VectorStatistics.h" line="50" column="13" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/VectorStatistics.h" bodystart="50" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="classmspass_1_1utility_1_1_vector_statistics_1ae3ddde97cedb562028c3a0343bd48e47" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
         <definition>mspass::utility::VectorStatistics&lt; T &gt;::VectorStatistics</definition>
         <argsstring>(std::vector&lt; T &gt; din)</argsstring>
         <name>VectorStatistics</name>
+        <qualifiedname>mspass::utility::VectorStatistics::VectorStatistics</qualifiedname>
         <param>
           <type>std::vector&lt; T &gt;</type>
           <declname>din</declname>
@@ -57,6 +59,7 @@
         <definition>mspass::utility::VectorStatistics&lt; T &gt;::VectorStatistics</definition>
         <argsstring>(T *din, int n)</argsstring>
         <name>VectorStatistics</name>
+        <qualifiedname>mspass::utility::VectorStatistics::VectorStatistics</qualifiedname>
         <param>
           <type>T *</type>
           <declname>din</declname>
@@ -79,6 +82,7 @@
         <definition>T mspass::utility::VectorStatistics&lt; T &gt;::median</definition>
         <argsstring>()</argsstring>
         <name>median</name>
+        <qualifiedname>mspass::utility::VectorStatistics::median</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -93,6 +97,7 @@
         <definition>T mspass::utility::VectorStatistics&lt; T &gt;::mean</definition>
         <argsstring>()</argsstring>
         <name>mean</name>
+        <qualifiedname>mspass::utility::VectorStatistics::mean</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -107,6 +112,7 @@
         <definition>T mspass::utility::VectorStatistics&lt; T &gt;::q1_4</definition>
         <argsstring>()</argsstring>
         <name>q1_4</name>
+        <qualifiedname>mspass::utility::VectorStatistics::q1_4</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -121,6 +127,7 @@
         <definition>T mspass::utility::VectorStatistics&lt; T &gt;::q3_4</definition>
         <argsstring>()</argsstring>
         <name>q3_4</name>
+        <qualifiedname>mspass::utility::VectorStatistics::q3_4</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -135,6 +142,7 @@
         <definition>T mspass::utility::VectorStatistics&lt; T &gt;::interquartile</definition>
         <argsstring>()</argsstring>
         <name>interquartile</name>
+        <qualifiedname>mspass::utility::VectorStatistics::interquartile</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -149,6 +157,7 @@
         <definition>T mspass::utility::VectorStatistics&lt; T &gt;::mad</definition>
         <argsstring>(T center)</argsstring>
         <name>mad</name>
+        <qualifiedname>mspass::utility::VectorStatistics::mad</qualifiedname>
         <param>
           <type>T</type>
           <declname>center</declname>
@@ -168,6 +177,7 @@
         <definition>T mspass::utility::VectorStatistics&lt; T &gt;::ssq</definition>
         <argsstring>()</argsstring>
         <name>ssq</name>
+        <qualifiedname>mspass::utility::VectorStatistics::ssq</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -182,6 +192,7 @@
         <definition>T mspass::utility::VectorStatistics&lt; T &gt;::upper_bound</definition>
         <argsstring>()</argsstring>
         <name>upper_bound</name>
+        <qualifiedname>mspass::utility::VectorStatistics::upper_bound</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -196,6 +207,7 @@
         <definition>T mspass::utility::VectorStatistics&lt; T &gt;::lower_bound</definition>
         <argsstring>()</argsstring>
         <name>lower_bound</name>
+        <qualifiedname>mspass::utility::VectorStatistics::lower_bound</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -210,6 +222,7 @@
         <definition>T mspass::utility::VectorStatistics&lt; T &gt;::range</definition>
         <argsstring>()</argsstring>
         <name>range</name>
+        <qualifiedname>mspass::utility::VectorStatistics::range</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -224,6 +237,7 @@
         <definition>T mspass::utility::VectorStatistics&lt; T &gt;::quantile</definition>
         <argsstring>(size_t n)</argsstring>
         <name>quantile</name>
+        <qualifiedname>mspass::utility::VectorStatistics::quantile</qualifiedname>
         <param>
           <type>size_t</type>
           <declname>n</declname>
@@ -237,7 +251,7 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/VectorStatistics.h" line="48" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/VectorStatistics.h" bodystart="188" bodyend="197"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
 <para>Generic object to compute common robust statistics from a vector container of data. </para>
     </briefdescription>

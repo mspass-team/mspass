@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="keywords_8h" kind="file" language="C++">
     <compoundname>keywords.h</compoundname>
     <includes local="no">string</includes>
@@ -12,14 +12,14 @@
     <includedby refid="_seismogram_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/seismic/Seismogram.cc</includedby>
     <includedby refid="_time_series_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/seismic/TimeSeries.cc</includedby>
     <incdepgraph>
-      <node id="2">
-        <label>string</label>
-      </node>
       <node id="1">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h</label>
         <link refid="keywords_8h"/>
         <childnode refid="2" relation="include">
         </childnode>
+      </node>
+      <node id="2">
+        <label>string</label>
       </node>
     </incdepgraph>
     <innernamespace refid="namespacemspass">mspass</innernamespace>
@@ -31,7 +31,7 @@
     <programlisting>
 <codeline lineno="1"><highlight class="preprocessor">#ifndef<sp/>_KEYWORDS_H_</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="2"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>_KEYWORDS_H_</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="3"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;string&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;string&gt;</highlight></codeline>
 <codeline lineno="16"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespacemspass_1_1seismic" kindref="compound">mspass::seismic</ref>{</highlight></codeline>
 <codeline lineno="18" refid="namespacemspass_1_1seismic_1ac848a79911ca1930abf265f01a6d635f" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/><ref refid="namespacemspass_1_1seismic_1ac848a79911ca1930abf265f01a6d635f" kindref="member">SEISMICMD_npts</ref>(</highlight><highlight class="stringliteral">&quot;npts&quot;</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="20" refid="namespacemspass_1_1seismic_1a3f7a9857fd532d0e6800f2a316b50772" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/><ref refid="namespacemspass_1_1seismic_1a3f7a9857fd532d0e6800f2a316b50772" kindref="member">SEISMICMD_dt</ref>(</highlight><highlight class="stringliteral">&quot;delta&quot;</highlight><highlight class="normal">);</highlight></codeline>
@@ -39,13 +39,13 @@
 <codeline lineno="24" refid="namespacemspass_1_1seismic_1aa4af747de9dc5b4dba5dc37de80a05eb" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/><ref refid="namespacemspass_1_1seismic_1aa4af747de9dc5b4dba5dc37de80a05eb" kindref="member">SEISMICMD_sampling_rate</ref>(</highlight><highlight class="stringliteral">&quot;sampling_rate&quot;</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="25"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>In<sp/>MsPASS<sp/>Seismogram<sp/>data<sp/>fetch<sp/>receiver<sp/>metadata<sp/>from<sp/>the<sp/>site<sp/>collection.</highlight></codeline>
 <codeline lineno="26"><highlight class="comment">The<sp/>schema<sp/>definition<sp/>prepends<sp/>&quot;site_&quot;<sp/>to<sp/>base<sp/>names.<sp/><sp/>Use<sp/>this<sp/>set<sp/>for</highlight></codeline>
-<codeline lineno="27"><highlight class="comment">gets<sp/>and<sp/>puts<sp/>to<sp/>Seismogram<sp/>objects<sp/>in<sp/>C++<sp/>code.<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="27"><highlight class="comment">gets<sp/>and<sp/>puts<sp/>to<sp/>Seismogram<sp/>objects<sp/>in<sp/>C++<sp/>code.<sp/>*/</highlight></codeline>
 <codeline lineno="29" refid="namespacemspass_1_1seismic_1ac1a7513c761787a80a1798f2f2e66235" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/><ref refid="namespacemspass_1_1seismic_1ac1a7513c761787a80a1798f2f2e66235" kindref="member">SEISMICMD_rlat</ref>(</highlight><highlight class="stringliteral">&quot;site_lat&quot;</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="31" refid="namespacemspass_1_1seismic_1aaaa7deae118c2fabe6146f4e44facc2a" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/><ref refid="namespacemspass_1_1seismic_1aaaa7deae118c2fabe6146f4e44facc2a" kindref="member">SEISMICMD_rlon</ref>(</highlight><highlight class="stringliteral">&quot;site_lon&quot;</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="34" refid="namespacemspass_1_1seismic_1a8261a3979c07230a72a1d69d8d45b862" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/><ref refid="namespacemspass_1_1seismic_1a8261a3979c07230a72a1d69d8d45b862" kindref="member">SEISMICMD_relev</ref>(</highlight><highlight class="stringliteral">&quot;site_elev&quot;</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="35"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>In<sp/>MsPASS<sp/>TimeSeries<sp/>data<sp/>fetch<sp/>receiver<sp/>metadata<sp/>from<sp/>the<sp/>site<sp/>collection.</highlight></codeline>
 <codeline lineno="36"><highlight class="comment">The<sp/>schema<sp/>definition<sp/>prepends<sp/>&quot;channel_&quot;<sp/>to<sp/>base<sp/>names.<sp/><sp/>Use<sp/>this<sp/>set<sp/>for</highlight></codeline>
-<codeline lineno="37"><highlight class="comment">gets<sp/>and<sp/>puts<sp/>to<sp/>TimeSeries<sp/>objects<sp/>in<sp/>C++<sp/>code.<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="37"><highlight class="comment">gets<sp/>and<sp/>puts<sp/>to<sp/>TimeSeries<sp/>objects<sp/>in<sp/>C++<sp/>code.<sp/>*/</highlight></codeline>
 <codeline lineno="39" refid="namespacemspass_1_1seismic_1ae726d0c4329425d61fd1606336b18e4c" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/><ref refid="namespacemspass_1_1seismic_1ae726d0c4329425d61fd1606336b18e4c" kindref="member">SEISMICMD_clat</ref>(</highlight><highlight class="stringliteral">&quot;channel_lat&quot;</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="41" refid="namespacemspass_1_1seismic_1ae7714c21f072de9472956add73bf014d" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/><ref refid="namespacemspass_1_1seismic_1ae7714c21f072de9472956add73bf014d" kindref="member">SEISMICMD_clon</ref>(</highlight><highlight class="stringliteral">&quot;channel_lon&quot;</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="44" refid="namespacemspass_1_1seismic_1a9098b27e4b7c79ebe30901274f2d1e09" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/><ref refid="namespacemspass_1_1seismic_1a9098b27e4b7c79ebe30901274f2d1e09" kindref="member">SEISMICMD_celev</ref>(</highlight><highlight class="stringliteral">&quot;channel_elev&quot;</highlight><highlight class="normal">);</highlight></codeline>
@@ -55,7 +55,7 @@
 <codeline lineno="50"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>In<sp/>MsPASS<sp/>source<sp/>information<sp/>is<sp/>retrieved<sp/>from<sp/>the<sp/>source<sp/>collection.</highlight></codeline>
 <codeline lineno="51"><highlight class="comment">The<sp/>schema<sp/>maps<sp/>these<sp/>to<sp/>names<sp/>with<sp/>a<sp/>&quot;source_&quot;<sp/>string<sp/>prepended<sp/>to<sp/>the</highlight></codeline>
 <codeline lineno="52"><highlight class="comment">attribute<sp/>name.<sp/><sp/><sp/>The<sp/>coordinate<sp/>names<sp/>are<sp/>common<sp/>to<sp/>other<sp/>collections.</highlight></codeline>
-<codeline lineno="53"><highlight class="comment">Use<sp/>this<sp/>set<sp/>for<sp/>gets<sp/>and<sp/>puts<sp/>to<sp/>fetch<sp/>source<sp/>coordinate<sp/>data.*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="53"><highlight class="comment">Use<sp/>this<sp/>set<sp/>for<sp/>gets<sp/>and<sp/>puts<sp/>to<sp/>fetch<sp/>source<sp/>coordinate<sp/>data.*/</highlight></codeline>
 <codeline lineno="55" refid="namespacemspass_1_1seismic_1a6185ce4ed163335717824e4802ac686f" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/><ref refid="namespacemspass_1_1seismic_1a6185ce4ed163335717824e4802ac686f" kindref="member">SEISMICMD_slat</ref>(</highlight><highlight class="stringliteral">&quot;source_lat&quot;</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="57" refid="namespacemspass_1_1seismic_1aa9af0818785cfdf6d6389fe463f39fdb" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/><ref refid="namespacemspass_1_1seismic_1aa9af0818785cfdf6d6389fe463f39fdb" kindref="member">SEISMICMD_slon</ref>(</highlight><highlight class="stringliteral">&quot;source_lon&quot;</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="59" refid="namespacemspass_1_1seismic_1a7a434abd3d2465e73c54062a74d92150" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/><ref refid="namespacemspass_1_1seismic_1a7a434abd3d2465e73c54062a74d92150" kindref="member">SEISMICMD_sdepth</ref>(</highlight><highlight class="stringliteral">&quot;source_depth&quot;</highlight><highlight class="normal">);</highlight></codeline>

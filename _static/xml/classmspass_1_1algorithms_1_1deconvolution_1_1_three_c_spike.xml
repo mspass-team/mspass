@@ -1,13 +1,14 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike" kind="class" language="C++" prot="public">
     <compoundname>mspass::algorithms::deconvolution::ThreeCSpike</compoundname>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike_1aec8775250f7d5d81b914cd1c1c4ebeec" prot="public" static="no" mutable="no">
         <type>int</type>
         <definition>int mspass::algorithms::deconvolution::ThreeCSpike::col</definition>
         <argsstring></argsstring>
         <name>col</name>
+        <qualifiedname>mspass::algorithms::deconvolution::ThreeCSpike::col</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -22,6 +23,7 @@
         <definition>double mspass::algorithms::deconvolution::ThreeCSpike::u[3]</definition>
         <argsstring>[3]</argsstring>
         <name>u</name>
+        <qualifiedname>mspass::algorithms::deconvolution::ThreeCSpike::u</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -36,6 +38,7 @@
         <definition>double mspass::algorithms::deconvolution::ThreeCSpike::amp</definition>
         <argsstring></argsstring>
         <name>amp</name>
+        <qualifiedname>mspass::algorithms::deconvolution::ThreeCSpike::amp</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -45,13 +48,14 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" line="29" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" bodystart="29" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike_1a4fd05cb28f3af9c4e934413e4de4f80c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
         <definition>mspass::algorithms::deconvolution::ThreeCSpike::ThreeCSpike</definition>
         <argsstring>(mspass::utility::dmatrix &amp;d, int k)</argsstring>
         <name>ThreeCSpike</name>
+        <qualifiedname>mspass::algorithms::deconvolution::ThreeCSpike::ThreeCSpike</qualifiedname>
         <param>
           <type><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">mspass::utility::dmatrix</ref> &amp;</type>
           <declname>d</declname>
@@ -73,6 +77,7 @@
         <definition>mspass::algorithms::deconvolution::ThreeCSpike::ThreeCSpike</definition>
         <argsstring>(const ThreeCSpike &amp;parent)</argsstring>
         <name>ThreeCSpike</name>
+        <qualifiedname>mspass::algorithms::deconvolution::ThreeCSpike::ThreeCSpike</qualifiedname>
         <param>
           <type>const <ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike" kindref="compound">ThreeCSpike</ref> &amp;</type>
           <declname>parent</declname>
@@ -94,6 +99,7 @@
         <definition>ThreeCSpike &amp; mspass::algorithms::deconvolution::ThreeCSpike::operator=</definition>
         <argsstring>(const ThreeCSpike &amp;parent)</argsstring>
         <name>operator=</name>
+        <qualifiedname>mspass::algorithms::deconvolution::ThreeCSpike::operator=</qualifiedname>
         <param>
           <type>const <ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike" kindref="compound">ThreeCSpike</ref> &amp;</type>
           <declname>parent</declname>
@@ -110,7 +116,7 @@
         <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike_1aec8775250f7d5d81b914cd1c1c4ebeec" compoundref="_general_iter_decon_8h" startline="25">col</references>
         <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike_1aa4b4869936d07d25a3078cdd52cb41e4" compoundref="_general_iter_decon_8h" startline="27">u</references>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>

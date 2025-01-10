@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="_processing_history_8cc" kind="file" language="C++">
     <compoundname>ProcessingHistory.cc</compoundname>
     <includes local="no">map</includes>
@@ -10,15 +10,6 @@
     <includes refid="_ms_p_a_s_s_error_8h" local="yes">mspass/utility/MsPASSError.h</includes>
     <includes refid="_processing_history_8h" local="yes">mspass/utility/ProcessingHistory.h</includes>
     <incdepgraph>
-      <node id="4">
-        <label>list</label>
-      </node>
-      <node id="13">
-        <label>boost/serialization/map.hpp</label>
-      </node>
-      <node id="19">
-        <label>boost/archive/text_iarchive.hpp</label>
-      </node>
       <node id="21">
         <label>mspass/utility/ErrorLogger.h</label>
         <link refid="_error_logger_8h_source"/>
@@ -48,9 +39,6 @@
         </childnode>
         <childnode refid="9" relation="include">
         </childnode>
-      </node>
-      <node id="17">
-        <label>boost/uuid/uuid_io.hpp</label>
       </node>
       <node id="10">
         <label>mspass/utility/ProcessingHistory.h</label>
@@ -100,53 +88,65 @@
         <childnode refid="10" relation="include">
         </childnode>
       </node>
-      <node id="11">
-        <label>string</label>
+      <node id="5">
+        <label>algorithm</label>
       </node>
-      <node id="2">
-        <label>map</label>
+      <node id="23">
+        <label>boost/archive/basic_archive.hpp</label>
+      </node>
+      <node id="19">
+        <label>boost/archive/text_iarchive.hpp</label>
+      </node>
+      <node id="20">
+        <label>boost/archive/text_oarchive.hpp</label>
+      </node>
+      <node id="24">
+        <label>boost/serialization/list.hpp</label>
+      </node>
+      <node id="13">
+        <label>boost/serialization/map.hpp</label>
+      </node>
+      <node id="14">
+        <label>boost/serialization/serialization.hpp</label>
+      </node>
+      <node id="15">
+        <label>boost/uuid/uuid.hpp</label>
+      </node>
+      <node id="16">
+        <label>boost/uuid/uuid_generators.hpp</label>
+      </node>
+      <node id="17">
+        <label>boost/uuid/uuid_io.hpp</label>
+      </node>
+      <node id="18">
+        <label>boost/uuid/uuid_serialize.hpp</label>
       </node>
       <node id="9">
         <label>exception</label>
       </node>
-      <node id="20">
-        <label>boost/archive/text_oarchive.hpp</label>
+      <node id="8">
+        <label>iostream</label>
+      </node>
+      <node id="4">
+        <label>list</label>
+      </node>
+      <node id="2">
+        <label>map</label>
+      </node>
+      <node id="3">
+        <label>set</label>
+      </node>
+      <node id="6">
+        <label>sstream</label>
+      </node>
+      <node id="11">
+        <label>string</label>
       </node>
       <node id="22">
         <label>unistd.h</label>
       </node>
       <node id="12">
         <label>vector</label>
-      </node>
-      <node id="16">
-        <label>boost/uuid/uuid_generators.hpp</label>
-      </node>
-      <node id="6">
-        <label>sstream</label>
-      </node>
-      <node id="8">
-        <label>iostream</label>
-      </node>
-      <node id="18">
-        <label>boost/uuid/uuid_serialize.hpp</label>
-      </node>
-      <node id="24">
-        <label>boost/serialization/list.hpp</label>
-      </node>
-      <node id="15">
-        <label>boost/uuid/uuid.hpp</label>
-      </node>
-      <node id="3">
-        <label>set</label>
-      </node>
-      <node id="14">
-        <label>boost/serialization/serialization.hpp</label>
-      </node>
-      <node id="5">
-        <label>algorithm</label>
-      </node>
-      <node id="23">
-        <label>boost/archive/basic_archive.hpp</label>
       </node>
     </incdepgraph>
     <innerclass refid="classmspass_1_1utility_1_1sort__by__stage" prot="public">mspass::utility::sort_by_stage</innerclass>
@@ -196,10 +196,10 @@
 <codeline lineno="37"><highlight class="comment">definitely<sp/>does<sp/>something<sp/>different<sp/>from<sp/>default<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="38"><highlight class="normal">NodeData::NodeData()</highlight></codeline>
 <codeline lineno="39"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="40"><highlight class="normal"><sp/><sp/>status=ProcessingStatus::UNDEFINED;</highlight></codeline>
-<codeline lineno="41"><highlight class="normal"><sp/><sp/>uuid=</highlight><highlight class="stringliteral">&quot;UNDEFINED&quot;</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="42"><highlight class="normal"><sp/><sp/>type=AtomicType::UNDEFINED;</highlight></codeline>
-<codeline lineno="43"><highlight class="normal"><sp/><sp/>stage=-1;<sp/><sp/><sp/></highlight><highlight class="comment">//Invalid<sp/>value<sp/>could<sp/>be<sp/>used<sp/>as<sp/>a<sp/>hint<sp/>of<sp/>uninitialized<sp/>data</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1utility_1_1_node_data_1a3dab2773c306f1d9977dccb455beec59" kindref="member">status</ref>=ProcessingStatus::UNDEFINED;</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1utility_1_1_node_data_1a0f0df95910b9712e36d3a8389c0c9f38" kindref="member">uuid</ref>=</highlight><highlight class="stringliteral">&quot;UNDEFINED&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1utility_1_1_node_data_1aa7c6f56ceca095d0af31f456d75954a4" kindref="member">type</ref>=AtomicType::UNDEFINED;</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1utility_1_1_node_data_1a972bd00dc85cae2e490833225f53e282" kindref="member">stage</ref>=-1;<sp/><sp/><sp/></highlight><highlight class="comment">//Invalid<sp/>value<sp/>could<sp/>be<sp/>used<sp/>as<sp/>a<sp/>hint<sp/>of<sp/>uninitialized<sp/>data</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="44"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="45"><highlight class="normal">NodeData::NodeData(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>NodeData&amp;<sp/>parent)</highlight></codeline>
 <codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>uuid(parent.uuid),algorithm(parent.algorithm),algid(parent.algid)</highlight></codeline>

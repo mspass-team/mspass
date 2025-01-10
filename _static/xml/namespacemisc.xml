@@ -1,13 +1,14 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="namespacemisc" kind="namespace" language="C++">
     <compoundname>misc</compoundname>
-      <sectiondef kind="var">
+    <sectiondef kind="var">
       <memberdef kind="variable" id="base64_8h_1a6ae31a9cfaa53f69b47d96711b236607" prot="public" static="yes" mutable="no">
         <type>const std::string</type>
         <definition>const std::string misc::base64_chars</definition>
         <argsstring></argsstring>
         <name>base64_chars</name>
+        <qualifiedname>misc::base64_chars</qualifiedname>
         <initializer>= 
              &quot;ABCDEFGHIJKLMNOPQRSTUVWXYZ&quot;
              &quot;abcdefghijklmnopqrstuvwxyz&quot;
@@ -20,13 +21,14 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/misc/base64.h" line="36" column="26" bodyfile="/home/runner/work/mspass/mspass/cxx/include/misc/base64.h" bodystart="36" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="func">
+    </sectiondef>
+    <sectiondef kind="func">
       <memberdef kind="function" id="base64_8h_1a890d7da98ec913dc8f0827de7123b8bd" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>bool</type>
         <definition>static bool misc::is_base64</definition>
         <argsstring>(unsigned char c)</argsstring>
         <name>is_base64</name>
+        <qualifiedname>misc::is_base64</qualifiedname>
         <param>
           <type>unsigned char</type>
           <declname>c</declname>
@@ -44,6 +46,7 @@
         <definition>std::string misc::base64_encode</definition>
         <argsstring>(char const *bytes_to_encode, unsigned int in_len)</argsstring>
         <name>base64_encode</name>
+        <qualifiedname>misc::base64_encode</qualifiedname>
         <param>
           <type>char const *</type>
           <declname>bytes_to_encode</declname>
@@ -65,6 +68,7 @@
         <definition>std::string misc::base64_decode</definition>
         <argsstring>(std::string const &amp;encoded_string)</argsstring>
         <name>base64_decode</name>
+        <qualifiedname>misc::base64_decode</qualifiedname>
         <param>
           <type>std::string const &amp;</type>
           <declname>encoded_string</declname>
@@ -77,7 +81,7 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/misc/base64.h" line="88" column="13" bodyfile="/home/runner/work/mspass/mspass/cxx/include/misc/base64.h" bodystart="88" bodyend="127"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>

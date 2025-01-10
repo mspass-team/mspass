@@ -1,25 +1,26 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="namespacemspass_1_1algorithms" kind="namespace" language="C++">
     <compoundname>mspass::algorithms</compoundname>
-    <innerclass refid="classmspass_1_1algorithms_1_1_butterworth" prot="public">mspass::algorithms::Butterworth</innerclass>
     <innerclass refid="classmspass_1_1algorithms_1_1_basic_taper" prot="public">mspass::algorithms::BasicTaper</innerclass>
-    <innerclass refid="classmspass_1_1algorithms_1_1_linear_taper" prot="public">mspass::algorithms::LinearTaper</innerclass>
+    <innerclass refid="classmspass_1_1algorithms_1_1_butterworth" prot="public">mspass::algorithms::Butterworth</innerclass>
     <innerclass refid="classmspass_1_1algorithms_1_1_cosine_taper" prot="public">mspass::algorithms::CosineTaper</innerclass>
-    <innerclass refid="classmspass_1_1algorithms_1_1_vector_taper" prot="public">mspass::algorithms::VectorTaper</innerclass>
-    <innerclass refid="classmspass_1_1algorithms_1_1_top_mute" prot="public">mspass::algorithms::TopMute</innerclass>
+    <innerclass refid="structmspass_1_1algorithms_1_1greater__seedorder" prot="public">mspass::algorithms::greater_seedorder</innerclass>
+    <innerclass refid="classmspass_1_1algorithms_1_1_linear_taper" prot="public">mspass::algorithms::LinearTaper</innerclass>
+    <innerclass refid="classmspass_1_1algorithms_1_1_segment_vector_properties" prot="public">mspass::algorithms::SegmentVectorProperties</innerclass>
     <innerclass refid="classmspass_1_1algorithms_1_1_time_window" prot="public">mspass::algorithms::TimeWindow</innerclass>
     <innerclass refid="classmspass_1_1algorithms_1_1_time_window_cmp" prot="public">mspass::algorithms::TimeWindowCmp</innerclass>
-    <innerclass refid="structmspass_1_1algorithms_1_1greater__seedorder" prot="public">mspass::algorithms::greater_seedorder</innerclass>
-    <innerclass refid="classmspass_1_1algorithms_1_1_segment_vector_properties" prot="public">mspass::algorithms::SegmentVectorProperties</innerclass>
+    <innerclass refid="classmspass_1_1algorithms_1_1_top_mute" prot="public">mspass::algorithms::TopMute</innerclass>
+    <innerclass refid="classmspass_1_1algorithms_1_1_vector_taper" prot="public">mspass::algorithms::VectorTaper</innerclass>
     <innernamespace refid="namespacemspass_1_1algorithms_1_1amplitudes">mspass::algorithms::amplitudes</innernamespace>
     <innernamespace refid="namespacemspass_1_1algorithms_1_1deconvolution">mspass::algorithms::deconvolution</innernamespace>
-      <sectiondef kind="func">
+    <sectiondef kind="func">
       <memberdef kind="function" id="algorithms_8h_1ae367c50f064c9ecfb2f81c8727cf9871" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref></type>
         <definition>TimeSeries mspass::algorithms::agc</definition>
         <argsstring>(mspass::seismic::Seismogram &amp;d, const double twin)</argsstring>
         <name>agc</name>
+        <qualifiedname>mspass::algorithms::agc</qualifiedname>
         <param>
           <type><ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref> &amp;</type>
           <declname>d</declname>
@@ -41,6 +42,7 @@
         <definition>Seismogram mspass::algorithms::WindowData</definition>
         <argsstring>(const mspass::seismic::Seismogram &amp;parent, const mspass::algorithms::TimeWindow &amp;tw)</argsstring>
         <name>WindowData</name>
+        <qualifiedname>mspass::algorithms::WindowData</qualifiedname>
         <param>
           <type>const <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref> &amp;</type>
           <declname>parent</declname>
@@ -115,6 +117,7 @@ It is common to need to extract a smaller segment of data from a larger time win
         <definition>CoreSeismogram mspass::algorithms::WindowData</definition>
         <argsstring>(const mspass::seismic::CoreSeismogram &amp;parent, const mspass::algorithms::TimeWindow &amp;tw)</argsstring>
         <name>WindowData</name>
+        <qualifiedname>mspass::algorithms::WindowData</qualifiedname>
         <param>
           <type>const <ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">mspass::seismic::CoreSeismogram</ref> &amp;</type>
           <declname>parent</declname>
@@ -197,6 +200,7 @@ It is common to need to extract a smaller segment of data from a larger time win
         <definition>TimeSeries mspass::algorithms::WindowData</definition>
         <argsstring>(const mspass::seismic::TimeSeries &amp;parent, const mspass::algorithms::TimeWindow &amp;tw)</argsstring>
         <name>WindowData</name>
+        <qualifiedname>mspass::algorithms::WindowData</qualifiedname>
         <param>
           <type>const <ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref> &amp;</type>
           <declname>parent</declname>
@@ -270,6 +274,7 @@ It is common to need to extract a smaller segment of data from a larger time win
         <definition>CoreTimeSeries mspass::algorithms::WindowData</definition>
         <argsstring>(const mspass::seismic::CoreTimeSeries &amp;parent, const mspass::algorithms::TimeWindow &amp;tw)</argsstring>
         <name>WindowData</name>
+        <qualifiedname>mspass::algorithms::WindowData</qualifiedname>
         <param>
           <type>const <ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">mspass::seismic::CoreTimeSeries</ref> &amp;</type>
           <declname>parent</declname>
@@ -346,11 +351,12 @@ It is common to need to extract a smaller segment of data from a larger time win
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/slice_and_dice.cc" line="90" column="16" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/slice_and_dice.cc" bodystart="90" bodyend="135" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" declline="112" declcolumn="35"/>
       </memberdef>
-      <memberdef kind="function" id="algorithms_8h_1af8a67b73e9e7380165e52ac6d084de74" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="algorithms_8h_1a294fc304b52a5c67c299251a5873bd30" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::shared_ptr&lt; <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref> &gt;</type>
-        <definition>std::shared_ptr&lt;mspass::seismic::Seismogram&gt; mspass::algorithms::ArrivalTimeReference</definition>
+        <definition>std::shared_ptr&lt; mspass::seismic::Seismogram &gt; mspass::algorithms::ArrivalTimeReference</definition>
         <argsstring>(mspass::seismic::Seismogram &amp;din, std::string key, mspass::algorithms::TimeWindow tw)</argsstring>
         <name>ArrivalTimeReference</name>
+        <qualifiedname>mspass::algorithms::ArrivalTimeReference</qualifiedname>
         <param>
           <type><ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref> &amp;</type>
           <declname>din</declname>
@@ -413,6 +419,7 @@ It is common to need to extract a smaller segment of data from a larger time win
         <definition>TimeSeries mspass::algorithms::ExtractComponent</definition>
         <argsstring>(const mspass::seismic::Seismogram &amp;tcs, const unsigned int component)</argsstring>
         <name>ExtractComponent</name>
+        <qualifiedname>mspass::algorithms::ExtractComponent</qualifiedname>
         <param>
           <type>const <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref> &amp;</type>
           <declname>tcs</declname>
@@ -460,11 +467,12 @@ It is common to need to extract a smaller segment of data from a larger time win
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/seismogram_helpers.cc" line="190" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/seismogram_helpers.cc" bodystart="190" bodyend="257" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" declline="160" declcolumn="29"/>
       </memberdef>
-      <memberdef kind="function" id="algorithms_8h_1aeec9c9f728fd909f3c438b78124a22fc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="algorithms_8h_1ad433df9db30bef632a6da8e3be2f012c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::shared_ptr&lt; <ref refid="namespacemspass_1_1seismic_1accd4b8b7754c4bec01071aad61edf3cc" kindref="member">mspass::seismic::ThreeComponentEnsemble</ref> &gt;</type>
-        <definition>std::shared_ptr&lt;mspass::seismic::ThreeComponentEnsemble&gt; mspass::algorithms::ArrivalTimeReference</definition>
+        <definition>std::shared_ptr&lt; mspass::seismic::ThreeComponentEnsemble &gt; mspass::algorithms::ArrivalTimeReference</definition>
         <argsstring>(mspass::seismic::ThreeComponentEnsemble &amp;din, std::string key, mspass::algorithms::TimeWindow tw)</argsstring>
         <name>ArrivalTimeReference</name>
+        <qualifiedname>mspass::algorithms::ArrivalTimeReference</qualifiedname>
         <param>
           <type><ref refid="namespacemspass_1_1seismic_1accd4b8b7754c4bec01071aad61edf3cc" kindref="member">mspass::seismic::ThreeComponentEnsemble</ref> &amp;</type>
           <declname>din</declname>
@@ -527,6 +535,7 @@ It is common to need to extract a smaller segment of data from a larger time win
         <definition>Ensemble&lt; TimeSeries &gt; mspass::algorithms::ExtractComponent</definition>
         <argsstring>(const mspass::seismic::Ensemble&lt; mspass::seismic::Seismogram &gt; &amp;d, const unsigned int comp)</argsstring>
         <name>ExtractComponent</name>
+        <qualifiedname>mspass::algorithms::ExtractComponent</qualifiedname>
         <param>
           <type>const <ref refid="classmspass_1_1seismic_1_1_ensemble" kindref="compound">mspass::seismic::Ensemble</ref>&lt; <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref> &gt; &amp;</type>
           <declname>d</declname>
@@ -579,6 +588,7 @@ It is common to need to extract a smaller segment of data from a larger time win
         <definition>CoreSeismogram mspass::algorithms::sparse_convolve</definition>
         <argsstring>(const mspass::seismic::CoreTimeSeries &amp;wavelet, const mspass::seismic::CoreSeismogram &amp;d)</argsstring>
         <name>sparse_convolve</name>
+        <qualifiedname>mspass::algorithms::sparse_convolve</qualifiedname>
         <param>
           <type>const <ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">mspass::seismic::CoreTimeSeries</ref> &amp;</type>
           <declname>wavelet</declname>
@@ -619,6 +629,7 @@ It is common to need to extract a smaller segment of data from a larger time win
         <definition>mspass::seismic::Seismogram mspass::algorithms::BundleSEEDGroup</definition>
         <argsstring>(const std::vector&lt; mspass::seismic::TimeSeries &gt; &amp;d, const size_t i0, const size_t iend)</argsstring>
         <name>BundleSEEDGroup</name>
+        <qualifiedname>mspass::algorithms::BundleSEEDGroup</qualifiedname>
         <param>
           <type>const std::vector&lt; <ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref> &gt; &amp;</type>
           <declname>d</declname>
@@ -696,6 +707,7 @@ It is common to need to extract a smaller segment of data from a larger time win
         <definition>LoggingEnsemble&lt; Seismogram &gt; mspass::algorithms::bundle_seed_data</definition>
         <argsstring>(mspass::seismic::LoggingEnsemble&lt; mspass::seismic::TimeSeries &gt; &amp;d)</argsstring>
         <name>bundle_seed_data</name>
+        <qualifiedname>mspass::algorithms::bundle_seed_data</qualifiedname>
         <param>
           <type><ref refid="classmspass_1_1seismic_1_1_logging_ensemble" kindref="compound">mspass::seismic::LoggingEnsemble</ref>&lt; <ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref> &gt; &amp;</type>
           <declname>d</declname>
@@ -736,6 +748,7 @@ It is common to need to extract a smaller segment of data from a larger time win
         <definition>void mspass::algorithms::seed_ensemble_sort</definition>
         <argsstring>(mspass::seismic::LoggingEnsemble&lt; mspass::seismic::TimeSeries &gt; &amp;d)</argsstring>
         <name>seed_ensemble_sort</name>
+        <qualifiedname>mspass::algorithms::seed_ensemble_sort</qualifiedname>
         <param>
           <type><ref refid="classmspass_1_1seismic_1_1_logging_ensemble" kindref="compound">mspass::seismic::LoggingEnsemble</ref>&lt; <ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref> &gt; &amp;</type>
           <declname>d</declname>
@@ -767,6 +780,7 @@ It is common to need to extract a smaller segment of data from a larger time win
         <definition>mspass::seismic::TimeSeriesWGaps mspass::algorithms::splice_segments</definition>
         <argsstring>(std::vector&lt; mspass::seismic::TimeSeries &gt; &amp;segments, bool save_history)</argsstring>
         <name>splice_segments</name>
+        <qualifiedname>mspass::algorithms::splice_segments</qualifiedname>
         <param>
           <type>std::vector&lt; <ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref> &gt; &amp;</type>
           <declname>segments</declname>
@@ -783,11 +797,12 @@ It is common to need to extract a smaller segment of data from a larger time win
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" line="347" column="34" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" declline="347" declcolumn="34"/>
       </memberdef>
-      <memberdef kind="function" id="algorithms_8h_1a90149f49eb7d56bb1395173f5d1cfabd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="algorithms_8h_1aed6a693eb8b29818d0a6e20e554b5427" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::vector&lt; <ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref> &gt;</type>
-        <definition>std::vector&lt;mspass::seismic::TimeSeries&gt; mspass::algorithms::repair_overlaps</definition>
+        <definition>std::vector&lt; mspass::seismic::TimeSeries &gt; mspass::algorithms::repair_overlaps</definition>
         <argsstring>(std::vector&lt; mspass::seismic::TimeSeries &gt; &amp;segments)</argsstring>
         <name>repair_overlaps</name>
+        <qualifiedname>mspass::algorithms::repair_overlaps</qualifiedname>
         <param>
           <type>std::vector&lt; <ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref> &gt; &amp;</type>
           <declname>segments</declname>
@@ -805,6 +820,7 @@ It is common to need to extract a smaller segment of data from a larger time win
         <definition>int mspass::algorithms::cautious_compare</definition>
         <argsstring>(const TimeSeries &amp;x, const TimeSeries &amp;y, const string key)</argsstring>
         <name>cautious_compare</name>
+        <qualifiedname>mspass::algorithms::cautious_compare</qualifiedname>
         <param>
           <type>const <ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">TimeSeries</ref> &amp;</type>
           <declname>x</declname>
@@ -830,6 +846,7 @@ It is common to need to extract a smaller segment of data from a larger time win
         <definition>Seismogram mspass::algorithms::dogtag</definition>
         <argsstring>(vector&lt; CoreTimeSeries &gt; &amp;bundle)</argsstring>
         <name>dogtag</name>
+        <qualifiedname>mspass::algorithms::dogtag</qualifiedname>
         <param>
           <type>vector&lt; <ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">CoreTimeSeries</ref> &gt; &amp;</type>
           <declname>bundle</declname>
@@ -847,6 +864,7 @@ It is common to need to extract a smaller segment of data from a larger time win
         <definition>Seismogram mspass::algorithms::BundleSEEDGroup</definition>
         <argsstring>(const std::vector&lt; TimeSeries &gt; &amp;d, const size_t i0, const size_t iend)</argsstring>
         <name>BundleSEEDGroup</name>
+        <qualifiedname>mspass::algorithms::BundleSEEDGroup</qualifiedname>
         <param>
           <type>const std::vector&lt; <ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">TimeSeries</ref> &gt; &amp;</type>
           <declname>d</declname>
@@ -872,6 +890,7 @@ It is common to need to extract a smaller segment of data from a larger time win
         <definition>void mspass::algorithms::clear_channel_metadata</definition>
         <argsstring>(Seismogram &amp;d)</argsstring>
         <name>clear_channel_metadata</name>
+        <qualifiedname>mspass::algorithms::clear_channel_metadata</qualifiedname>
         <param>
           <type><ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref> &amp;</type>
           <declname>d</declname>
@@ -889,6 +908,7 @@ It is common to need to extract a smaller segment of data from a larger time win
         <definition>const double mspass::algorithms::FHighFloor</definition>
         <argsstring>(0.45)</argsstring>
         <name>FHighFloor</name>
+        <qualifiedname>mspass::algorithms::FHighFloor</qualifiedname>
         <param>
           <type>0.</type>
           <declname>45</declname>
@@ -906,6 +926,7 @@ It is common to need to extract a smaller segment of data from a larger time win
         <definition>void mspass::algorithms::reverse_vector</definition>
         <argsstring>(int nd, double *d)</argsstring>
         <name>reverse_vector</name>
+        <qualifiedname>mspass::algorithms::reverse_vector</qualifiedname>
         <param>
           <type>int</type>
           <declname>nd</declname>
@@ -922,11 +943,12 @@ It is common to need to extract a smaller segment of data from a larger time win
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Butterworth.cc" line="320" column="6" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Butterworth.cc" bodystart="320" bodyend="329"/>
       </memberdef>
-      <memberdef kind="function" id="seismogram__helpers_8cc_1aa5fee528b7b72e0ad47786869fdb3630" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="seismogram__helpers_8cc_1ab7829ed50278bc759edaa965c03a5ee8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>shared_ptr&lt; <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref> &gt;</type>
-        <definition>shared_ptr&lt;Seismogram&gt; mspass::algorithms::ArrivalTimeReference</definition>
+        <definition>shared_ptr&lt; Seismogram &gt; mspass::algorithms::ArrivalTimeReference</definition>
         <argsstring>(Seismogram &amp;tcsi, string arrival_time_key, TimeWindow tw)</argsstring>
         <name>ArrivalTimeReference</name>
+        <qualifiedname>mspass::algorithms::ArrivalTimeReference</qualifiedname>
         <param>
           <type><ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref> &amp;</type>
           <declname>tcsi</declname>
@@ -947,11 +969,12 @@ It is common to need to extract a smaller segment of data from a larger time win
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/seismogram_helpers.cc" line="48" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/seismogram_helpers.cc" bodystart="48" bodyend="137"/>
       </memberdef>
-      <memberdef kind="function" id="seismogram__helpers_8cc_1aa87c23638933c414c340a20893d81a27" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="seismogram__helpers_8cc_1a5e2f05524d6b4bbd9ddd68df55db6189" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>shared_ptr&lt; <ref refid="classmspass_1_1seismic_1_1_ensemble" kindref="compound">Ensemble</ref>&lt; <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref> &gt; &gt;</type>
-        <definition>shared_ptr&lt;Ensemble&lt;Seismogram&gt; &gt; mspass::algorithms::ArrivalTimeReference</definition>
+        <definition>shared_ptr&lt; Ensemble&lt; Seismogram &gt; &gt; mspass::algorithms::ArrivalTimeReference</definition>
         <argsstring>(Ensemble&lt; Seismogram &gt; &amp;tcei, string arrival_time_key, TimeWindow tw)</argsstring>
         <name>ArrivalTimeReference</name>
+        <qualifiedname>mspass::algorithms::ArrivalTimeReference</qualifiedname>
         <param>
           <type><ref refid="classmspass_1_1seismic_1_1_ensemble" kindref="compound">Ensemble</ref>&lt; <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref> &gt; &amp;</type>
           <declname>tcei</declname>
@@ -977,6 +1000,7 @@ It is common to need to extract a smaller segment of data from a larger time win
         <definition>void mspass::algorithms::HorizontalRotation</definition>
         <argsstring>(Seismogram &amp;d, double phi)</argsstring>
         <name>HorizontalRotation</name>
+        <qualifiedname>mspass::algorithms::HorizontalRotation</qualifiedname>
         <param>
           <type><ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref> &amp;</type>
           <declname>d</declname>
@@ -998,6 +1022,7 @@ It is common to need to extract a smaller segment of data from a larger time win
         <definition>const double mspass::algorithms::TIME_TEAR_TOLERANCE</definition>
         <argsstring>(0.5)</argsstring>
         <name>TIME_TEAR_TOLERANCE</name>
+        <qualifiedname>mspass::algorithms::TIME_TEAR_TOLERANCE</qualifiedname>
         <param>
           <type>0.</type>
           <declname>5</declname>
@@ -1010,11 +1035,12 @@ It is common to need to extract a smaller segment of data from a larger time win
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/splicing.cc" line="24" column="14" declfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/splicing.cc" declline="24" declcolumn="14"/>
       </memberdef>
-      <memberdef kind="function" id="splicing_8cc_1a49855858a1259f1bc83365bf27cbc749" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="splicing_8cc_1add1fc96f0c480d22a8c06be996773a4c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>ostream &amp;</type>
-        <definition>ostream&amp; mspass::algorithms::operator&lt;&lt;</definition>
+        <definition>ostream &amp; mspass::algorithms::operator&lt;&lt;</definition>
         <argsstring>(ostream &amp;os, SegmentVectorProperties &amp;svp)</argsstring>
         <name>operator&lt;&lt;</name>
+        <qualifiedname>mspass::algorithms::operator&lt;&lt;</qualifiedname>
         <param>
           <type>ostream &amp;</type>
           <declname>os</declname>
@@ -1041,6 +1067,7 @@ It is common to need to extract a smaller segment of data from a larger time win
         <definition>TimeSeriesWGaps mspass::algorithms::splice_segments</definition>
         <argsstring>(std::vector&lt; TimeSeries &gt; &amp;segments, bool save_history)</argsstring>
         <name>splice_segments</name>
+        <qualifiedname>mspass::algorithms::splice_segments</qualifiedname>
         <param>
           <type>std::vector&lt; <ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">TimeSeries</ref> &gt; &amp;</type>
           <declname>segments</declname>
@@ -1062,6 +1089,7 @@ It is common to need to extract a smaller segment of data from a larger time win
         <definition>bool mspass::algorithms::samples_match</definition>
         <argsstring>(std::vector&lt; double &gt; &amp;v1, std::vector&lt; double &gt; &amp;v2)</argsstring>
         <name>samples_match</name>
+        <qualifiedname>mspass::algorithms::samples_match</qualifiedname>
         <param>
           <type>std::vector&lt; double &gt; &amp;</type>
           <declname>v1</declname>
@@ -1078,11 +1106,12 @@ It is common to need to extract a smaller segment of data from a larger time win
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/splicing.cc" line="417" column="6" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/splicing.cc" bodystart="417" bodyend="438"/>
       </memberdef>
-      <memberdef kind="function" id="splicing_8cc_1a8a5bc3ba8f1972af801958ab572b17db" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="splicing_8cc_1a5b003662eca0792f1553fbf6eaf91360" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::vector&lt; <ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">TimeSeries</ref> &gt;</type>
-        <definition>std::vector&lt;TimeSeries&gt; mspass::algorithms::repair_overlaps</definition>
+        <definition>std::vector&lt; TimeSeries &gt; mspass::algorithms::repair_overlaps</definition>
         <argsstring>(std::vector&lt; TimeSeries &gt; &amp;segments)</argsstring>
         <name>repair_overlaps</name>
+        <qualifiedname>mspass::algorithms::repair_overlaps</qualifiedname>
         <param>
           <type>std::vector&lt; <ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">TimeSeries</ref> &gt; &amp;</type>
           <declname>segments</declname>
@@ -1103,6 +1132,7 @@ It is common to need to extract a smaller segment of data from a larger time win
         <definition>double mspass::algorithms::headcos</definition>
         <argsstring>(double t0, double t1, double t)</argsstring>
         <name>headcos</name>
+        <qualifiedname>mspass::algorithms::headcos</qualifiedname>
         <param>
           <type>double</type>
           <declname>t0</declname>
@@ -1128,6 +1158,7 @@ It is common to need to extract a smaller segment of data from a larger time win
         <definition>double mspass::algorithms::tailcos</definition>
         <argsstring>(double t0, double t1, double t)</argsstring>
         <name>tailcos</name>
+        <qualifiedname>mspass::algorithms::tailcos</qualifiedname>
         <param>
           <type>double</type>
           <declname>t0</declname>
@@ -1148,11 +1179,12 @@ It is common to need to extract a smaller segment of data from a larger time win
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Taper.cc" line="189" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Taper.cc" bodystart="189" bodyend="197"/>
       </memberdef>
-      <memberdef kind="function" id="tseries__helpers_8cc_1acfbeb2b441c657883388adfa3afa3577" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="tseries__helpers_8cc_1a718e31f872f02c4d1fb26355bc646506" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>shared_ptr&lt; <ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">TimeSeries</ref> &gt;</type>
-        <definition>shared_ptr&lt;TimeSeries&gt; mspass::algorithms::ArrivalTimeReference</definition>
+        <definition>shared_ptr&lt; TimeSeries &gt; mspass::algorithms::ArrivalTimeReference</definition>
         <argsstring>(TimeSeries &amp;tcsi, string arrival_time_key, TimeWindow tw)</argsstring>
         <name>ArrivalTimeReference</name>
+        <qualifiedname>mspass::algorithms::ArrivalTimeReference</qualifiedname>
         <param>
           <type><ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">TimeSeries</ref> &amp;</type>
           <declname>tcsi</declname>
@@ -1173,11 +1205,12 @@ It is common to need to extract a smaller segment of data from a larger time win
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/tseries_helpers.cc" line="47" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/tseries_helpers.cc" bodystart="47" bodyend="124"/>
       </memberdef>
-      <memberdef kind="function" id="tseries__helpers_8cc_1a1fefa3293b0058518db2146461c6dca0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="tseries__helpers_8cc_1a29851f92541bb3bcfbdcf4f0473fb301" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>shared_ptr&lt; <ref refid="namespacemspass_1_1seismic_1a9bdfc71411e6ef751bb5daa7e97987d0" kindref="member">TimeSeriesEnsemble</ref> &gt;</type>
-        <definition>shared_ptr&lt;TimeSeriesEnsemble&gt; mspass::algorithms::ArrivalTimeReference</definition>
+        <definition>shared_ptr&lt; TimeSeriesEnsemble &gt; mspass::algorithms::ArrivalTimeReference</definition>
         <argsstring>(TimeSeriesEnsemble &amp;tcei, string arrival_time_key, TimeWindow tw)</argsstring>
         <name>ArrivalTimeReference</name>
+        <qualifiedname>mspass::algorithms::ArrivalTimeReference</qualifiedname>
         <param>
           <type><ref refid="namespacemspass_1_1seismic_1a9bdfc71411e6ef751bb5daa7e97987d0" kindref="member">TimeSeriesEnsemble</ref> &amp;</type>
           <declname>tcei</declname>
@@ -1198,7 +1231,7 @@ It is common to need to extract a smaller segment of data from a larger time win
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/tseries_helpers.cc" line="134" column="13" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/tseries_helpers.cc" bodystart="134" bodyend="166"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>

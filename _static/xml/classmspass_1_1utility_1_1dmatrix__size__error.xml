@@ -1,28 +1,30 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="classmspass_1_1utility_1_1dmatrix__size__error" kind="class" language="C++" prot="public">
     <compoundname>mspass::utility::dmatrix_size_error</compoundname>
     <basecompoundref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" prot="public" virt="non-virtual">mspass::utility::MsPASSError</basecompoundref>
     <includes refid="dmatrix_8h" local="no">dmatrix.h</includes>
-      <sectiondef kind="private-attrib">
+    <sectiondef kind="private-attrib">
       <memberdef kind="variable" id="classmspass_1_1utility_1_1dmatrix__size__error_1a6dda3edf57a9c9ca2f2b8ee796630b4a" prot="private" static="no" mutable="no">
         <type>size_t</type>
         <definition>size_t mspass::utility::dmatrix_size_error::nrow1</definition>
         <argsstring></argsstring>
         <name>nrow1</name>
+        <qualifiedname>mspass::utility::dmatrix_size_error::nrow1</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" line="84" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" bodystart="82" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" line="84" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" bodystart="84" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classmspass_1_1utility_1_1dmatrix__size__error_1a0c18cdcf24648ae5706994a66bab8a59" prot="private" static="no" mutable="no">
         <type>size_t</type>
         <definition>size_t mspass::utility::dmatrix_size_error::ncol1</definition>
         <argsstring></argsstring>
         <name>ncol1</name>
+        <qualifiedname>mspass::utility::dmatrix_size_error::ncol1</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -36,6 +38,7 @@
         <definition>size_t mspass::utility::dmatrix_size_error::nrow2</definition>
         <argsstring></argsstring>
         <name>nrow2</name>
+        <qualifiedname>mspass::utility::dmatrix_size_error::nrow2</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -49,6 +52,7 @@
         <definition>size_t mspass::utility::dmatrix_size_error::ncol2</definition>
         <argsstring></argsstring>
         <name>ncol2</name>
+        <qualifiedname>mspass::utility::dmatrix_size_error::ncol2</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -57,13 +61,14 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" line="84" column="26" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" bodystart="84" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="classmspass_1_1utility_1_1dmatrix__size__error_1ae7dc75a93d1a55a3554385fc97147d9b" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
         <definition>mspass::utility::dmatrix_size_error::dmatrix_size_error</definition>
         <argsstring>(const size_t nr1, const size_t nc1, const size_t nr2, const size_t nc2)</argsstring>
         <name>dmatrix_size_error</name>
+        <qualifiedname>mspass::utility::dmatrix_size_error::dmatrix_size_error</qualifiedname>
         <param>
           <type>const size_t</type>
           <declname>nr1</declname>
@@ -122,13 +127,14 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" line="69" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" bodystart="69" bodyend="80"/>
         <references refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1af808615110822967a251108b20708f51" compoundref="_ms_p_a_s_s_error_8h" startline="116">mspass::utility::MsPASSError::badness</references>
-        <references refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1a47e9d74154f088f38fd7e5219abc81f5" compoundref="_ms_p_a_s_s_error_8h" startline="109">mspass::utility::MsPASSError::message</references>
+        <references refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1a47e9d74154f088f38fd7e5219abc81f5" compoundref="_ms_p_a_s_s_error_8h" startline="114">mspass::utility::MsPASSError::message</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1dmatrix__size__error_1a46a9c48f342a2cd13f1d8efb0a74c792" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
         <definition>mspass::utility::dmatrix_size_error::~dmatrix_size_error</definition>
         <argsstring>()</argsstring>
         <name>~dmatrix_size_error</name>
+        <qualifiedname>mspass::utility::dmatrix_size_error::~dmatrix_size_error</qualifiedname>
         <exceptions> throw ()</exceptions>
         <briefdescription>
         </briefdescription>
@@ -138,7 +144,7 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" line="82" column="9" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" bodystart="82" bodyend="82"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
 <para>Convenience class for dmatrix use errors. </para>
     </briefdescription>
@@ -155,14 +161,14 @@
         <childnode refid="3" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="3">
-        <label>std::exception</label>
-      </node>
       <node id="1">
         <label>mspass::utility::dmatrix_size_error</label>
         <link refid="classmspass_1_1utility_1_1dmatrix__size__error"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
+      </node>
+      <node id="3">
+        <label>std::exception</label>
       </node>
     </inheritancegraph>
     <collaborationgraph>
@@ -172,14 +178,14 @@
         <childnode refid="3" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="3">
-        <label>std::exception</label>
-      </node>
       <node id="1">
         <label>mspass::utility::dmatrix_size_error</label>
         <link refid="classmspass_1_1utility_1_1dmatrix__size__error"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
+      </node>
+      <node id="3">
+        <label>std::exception</label>
       </node>
     </collaborationgraph>
     <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" line="59" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" bodystart="60" bodyend="85"/>
@@ -198,7 +204,7 @@
       <member refid="classmspass_1_1utility_1_1dmatrix__size__error_1a6dda3edf57a9c9ca2f2b8ee796630b4a" prot="private" virt="non-virtual"><scope>mspass::utility::dmatrix_size_error</scope><name>nrow1</name></member>
       <member refid="classmspass_1_1utility_1_1dmatrix__size__error_1a66fd06180619c4a1dec11522b302eb25" prot="private" virt="non-virtual"><scope>mspass::utility::dmatrix_size_error</scope><name>nrow2</name></member>
       <member refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1a3393c3878bee1728628fd3e063640d94" prot="public" virt="non-virtual"><scope>mspass::utility::dmatrix_size_error</scope><name>severity</name></member>
-      <member refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1ae47776d160eafa42f854be5bf47e00a8" prot="public" virt="non-virtual"><scope>mspass::utility::dmatrix_size_error</scope><name>what</name></member>
+      <member refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1a1dd30086a986a3a0669cd974e65bd563" prot="public" virt="non-virtual"><scope>mspass::utility::dmatrix_size_error</scope><name>what</name></member>
       <member refid="classmspass_1_1utility_1_1dmatrix__size__error_1a46a9c48f342a2cd13f1d8efb0a74c792" prot="public" virt="non-virtual"><scope>mspass::utility::dmatrix_size_error</scope><name>~dmatrix_size_error</name></member>
     </listofallmembers>
   </compounddef>

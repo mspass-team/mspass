@@ -1,55 +1,11 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="metadata__helpers_8cc" kind="file" language="C++">
     <compoundname>metadata_helpers.cc</compoundname>
     <includes refid="_ms_p_a_s_s_error_8h" local="yes">mspass/utility/MsPASSError.h</includes>
     <includes refid="_metadata_8h" local="yes">mspass/utility/Metadata.h</includes>
     <includes refid="_antelope_pf_8h" local="yes">mspass/utility/AntelopePf.h</includes>
     <incdepgraph>
-      <node id="9">
-        <label>list</label>
-      </node>
-      <node id="2">
-        <label>mspass/utility/MsPASSError.h</label>
-        <link refid="_ms_p_a_s_s_error_8h_source"/>
-        <childnode refid="3" relation="include">
-        </childnode>
-        <childnode refid="4" relation="include">
-        </childnode>
-      </node>
-      <node id="15">
-        <label>string</label>
-      </node>
-      <node id="7">
-        <label>map</label>
-      </node>
-      <node id="4">
-        <label>exception</label>
-      </node>
-      <node id="10">
-        <label>fstream</label>
-      </node>
-      <node id="12">
-        <label>boost/any.hpp</label>
-      </node>
-      <node id="14">
-        <label>mspass/utility/BasicMetadata.h</label>
-        <link refid="_basic_metadata_8h_source"/>
-        <childnode refid="15" relation="include">
-        </childnode>
-      </node>
-      <node id="6">
-        <label>typeinfo</label>
-      </node>
-      <node id="11">
-        <label>sstream</label>
-      </node>
-      <node id="13">
-        <label>pybind11/pybind11.h</label>
-      </node>
-      <node id="3">
-        <label>iostream</label>
-      </node>
       <node id="16">
         <label>mspass/utility/AntelopePf.h</label>
         <link refid="_antelope_pf_8h_source"/>
@@ -60,17 +16,10 @@
         <childnode refid="5" relation="include">
         </childnode>
       </node>
-      <node id="8">
-        <label>set</label>
-      </node>
-      <node id="1">
-        <label>/home/runner/work/mspass/mspass/cxx/src/lib/utility/metadata_helpers.cc</label>
-        <link refid="metadata__helpers_8cc"/>
-        <childnode refid="2" relation="include">
-        </childnode>
-        <childnode refid="5" relation="include">
-        </childnode>
-        <childnode refid="16" relation="include">
+      <node id="14">
+        <label>mspass/utility/BasicMetadata.h</label>
+        <link refid="_basic_metadata_8h_source"/>
+        <childnode refid="15" relation="include">
         </childnode>
       </node>
       <node id="5">
@@ -98,6 +47,57 @@
         </childnode>
         <childnode refid="14" relation="include">
         </childnode>
+      </node>
+      <node id="2">
+        <label>mspass/utility/MsPASSError.h</label>
+        <link refid="_ms_p_a_s_s_error_8h_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>/home/runner/work/mspass/mspass/cxx/src/lib/utility/metadata_helpers.cc</label>
+        <link refid="metadata__helpers_8cc"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+      </node>
+      <node id="12">
+        <label>boost/any.hpp</label>
+      </node>
+      <node id="4">
+        <label>exception</label>
+      </node>
+      <node id="10">
+        <label>fstream</label>
+      </node>
+      <node id="3">
+        <label>iostream</label>
+      </node>
+      <node id="9">
+        <label>list</label>
+      </node>
+      <node id="7">
+        <label>map</label>
+      </node>
+      <node id="13">
+        <label>pybind11/pybind11.h</label>
+      </node>
+      <node id="8">
+        <label>set</label>
+      </node>
+      <node id="11">
+        <label>sstream</label>
+      </node>
+      <node id="15">
+        <label>string</label>
+      </node>
+      <node id="6">
+        <label>typeinfo</label>
       </node>
     </incdepgraph>
     <innernamespace refid="namespacemspass">mspass</innernamespace>

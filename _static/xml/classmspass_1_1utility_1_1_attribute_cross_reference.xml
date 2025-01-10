@@ -1,14 +1,15 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="classmspass_1_1utility_1_1_attribute_cross_reference" kind="class" language="C++" prot="public">
     <compoundname>mspass::utility::AttributeCrossReference</compoundname>
     <includes refid="_attribute_cross_reference_8h" local="no">AttributeCrossReference.h</includes>
-      <sectiondef kind="private-attrib">
+    <sectiondef kind="private-attrib">
       <memberdef kind="variable" id="classmspass_1_1utility_1_1_attribute_cross_reference_1a97938f0adfb9289ebd489fc4f591f15c" prot="private" static="no" mutable="no">
         <type>std::map&lt; std::string, std::string &gt;</type>
         <definition>std::map&lt;std::string,std::string&gt; mspass::utility::AttributeCrossReference::itoe</definition>
         <argsstring></argsstring>
         <name>itoe</name>
+        <qualifiedname>mspass::utility::AttributeCrossReference::itoe</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -22,6 +23,7 @@
         <definition>std::map&lt;std::string,std::string&gt; mspass::utility::AttributeCrossReference::etoi</definition>
         <argsstring></argsstring>
         <name>etoi</name>
+        <qualifiedname>mspass::utility::AttributeCrossReference::etoi</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -35,6 +37,7 @@
         <definition>std::map&lt;std::string,MDtype&gt; mspass::utility::AttributeCrossReference::imdtypemap</definition>
         <argsstring></argsstring>
         <name>imdtypemap</name>
+        <qualifiedname>mspass::utility::AttributeCrossReference::imdtypemap</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -43,13 +46,14 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AttributeCrossReference.h" line="101" column="18" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AttributeCrossReference.h" bodystart="101" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="classmspass_1_1utility_1_1_attribute_cross_reference_1aaa7bf24e8df2c42ef42f97800d48a57e" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
         <definition>mspass::utility::AttributeCrossReference::AttributeCrossReference</definition>
         <argsstring>()</argsstring>
         <name>AttributeCrossReference</name>
+        <qualifiedname>mspass::utility::AttributeCrossReference::AttributeCrossReference</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -65,6 +69,7 @@
         <definition>mspass::utility::AttributeCrossReference::AttributeCrossReference</definition>
         <argsstring>(const std::string lines_to_parse)</argsstring>
         <name>AttributeCrossReference</name>
+        <qualifiedname>mspass::utility::AttributeCrossReference::AttributeCrossReference</qualifiedname>
         <param>
           <type>const std::string</type>
           <declname>lines_to_parse</declname>
@@ -103,6 +108,7 @@
         <definition>mspass::utility::AttributeCrossReference::AttributeCrossReference</definition>
         <argsstring>(const std::list&lt; std::string &gt; &amp;lines)</argsstring>
         <name>AttributeCrossReference</name>
+        <qualifiedname>mspass::utility::AttributeCrossReference::AttributeCrossReference</qualifiedname>
         <param>
           <type>const std::list&lt; std::string &gt; &amp;</type>
           <declname>lines</declname>
@@ -132,6 +138,7 @@
         <definition>mspass::utility::AttributeCrossReference::AttributeCrossReference</definition>
         <argsstring>(const std::map&lt; std::string, std::string &gt; internal2external, const mspass::utility::MetadataList &amp;mdlist)</argsstring>
         <name>AttributeCrossReference</name>
+        <qualifiedname>mspass::utility::AttributeCrossReference::AttributeCrossReference</qualifiedname>
         <param>
           <type>const std::map&lt; std::string, std::string &gt;</type>
           <declname>internal2external</declname>
@@ -172,6 +179,7 @@
         <definition>mspass::utility::AttributeCrossReference::AttributeCrossReference</definition>
         <argsstring>(const AttributeCrossReference &amp;parent)</argsstring>
         <name>AttributeCrossReference</name>
+        <qualifiedname>mspass::utility::AttributeCrossReference::AttributeCrossReference</qualifiedname>
         <param>
           <type>const <ref refid="classmspass_1_1utility_1_1_attribute_cross_reference" kindref="compound">AttributeCrossReference</ref> &amp;</type>
           <declname>parent</declname>
@@ -190,6 +198,7 @@
         <definition>string mspass::utility::AttributeCrossReference::internal</definition>
         <argsstring>(const std::string key) const</argsstring>
         <name>internal</name>
+        <qualifiedname>mspass::utility::AttributeCrossReference::internal</qualifiedname>
         <param>
           <type>const std::string</type>
           <declname>key</declname>
@@ -208,6 +217,7 @@
         <definition>string mspass::utility::AttributeCrossReference::external</definition>
         <argsstring>(const std::string key) const</argsstring>
         <name>external</name>
+        <qualifiedname>mspass::utility::AttributeCrossReference::external</qualifiedname>
         <param>
           <type>const std::string</type>
           <declname>key</declname>
@@ -226,6 +236,7 @@
         <definition>MDtype mspass::utility::AttributeCrossReference::type</definition>
         <argsstring>(const std::string key) const</argsstring>
         <name>type</name>
+        <qualifiedname>mspass::utility::AttributeCrossReference::type</qualifiedname>
         <param>
           <type>const std::string</type>
           <declname>key</declname>
@@ -244,6 +255,7 @@
         <definition>AttributeCrossReference &amp; mspass::utility::AttributeCrossReference::operator=</definition>
         <argsstring>(const AttributeCrossReference &amp;parent)</argsstring>
         <name>operator=</name>
+        <qualifiedname>mspass::utility::AttributeCrossReference::operator=</qualifiedname>
         <param>
           <type>const <ref refid="classmspass_1_1utility_1_1_attribute_cross_reference" kindref="compound">AttributeCrossReference</ref> &amp;</type>
           <declname>parent</declname>
@@ -262,6 +274,7 @@
         <definition>int mspass::utility::AttributeCrossReference::size</definition>
         <argsstring>() const</argsstring>
         <name>size</name>
+        <qualifiedname>mspass::utility::AttributeCrossReference::size</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -276,6 +289,7 @@
         <definition>void mspass::utility::AttributeCrossReference::put</definition>
         <argsstring>(const std::string intern, const std::string ext)</argsstring>
         <name>put</name>
+        <qualifiedname>mspass::utility::AttributeCrossReference::put</qualifiedname>
         <param>
           <type>const std::string</type>
           <declname>intern</declname>
@@ -317,6 +331,7 @@
         <definition>set&lt; string &gt; mspass::utility::AttributeCrossReference::internal_names</definition>
         <argsstring>() const</argsstring>
         <name>internal_names</name>
+        <qualifiedname>mspass::utility::AttributeCrossReference::internal_names</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -332,6 +347,7 @@
         <definition>set&lt; string &gt; mspass::utility::AttributeCrossReference::external_names</definition>
         <argsstring>() const</argsstring>
         <name>external_names</name>
+        <qualifiedname>mspass::utility::AttributeCrossReference::external_names</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -342,7 +358,7 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AttributeCrossReference.h" line="96" column="18" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/AttributeCrossReference.cc" bodystart="167" bodyend="176"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
 <para>Cross reference between external and internal names. </para>
     </briefdescription>

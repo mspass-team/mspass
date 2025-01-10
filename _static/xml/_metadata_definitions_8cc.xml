@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="_metadata_definitions_8cc" kind="file" language="C++">
     <compoundname>MetadataDefinitions.cc</compoundname>
     <includes local="no">fstream</includes>
@@ -12,121 +12,6 @@
     <includes local="yes">yaml-cpp/yaml.h</includes>
     <includes refid="_metadata_definitions_8h" local="yes">mspass/utility/MetadataDefinitions.h</includes>
     <incdepgraph>
-      <node id="16">
-        <label>list</label>
-      </node>
-      <node id="10">
-        <label>boost/serialization/vector.hpp</label>
-      </node>
-      <node id="13">
-        <label>mspass/utility/MsPASSError.h</label>
-        <link refid="_ms_p_a_s_s_error_8h_source"/>
-        <childnode refid="8" relation="include">
-        </childnode>
-        <childnode refid="14" relation="include">
-        </childnode>
-      </node>
-      <node id="12">
-        <label>boost/archive/binary_iarchive.hpp</label>
-      </node>
-      <node id="7">
-        <label>mspass/utility/dmatrix.h</label>
-        <link refid="dmatrix_8h_source"/>
-        <childnode refid="5" relation="include">
-        </childnode>
-        <childnode refid="8" relation="include">
-        </childnode>
-        <childnode refid="3" relation="include">
-        </childnode>
-        <childnode refid="9" relation="include">
-        </childnode>
-        <childnode refid="10" relation="include">
-        </childnode>
-        <childnode refid="11" relation="include">
-        </childnode>
-        <childnode refid="12" relation="include">
-        </childnode>
-        <childnode refid="13" relation="include">
-        </childnode>
-      </node>
-      <node id="5">
-        <label>string</label>
-      </node>
-      <node id="19">
-        <label>map</label>
-      </node>
-      <node id="1">
-        <label>/home/runner/work/mspass/mspass/cxx/src/lib/utility/MetadataDefinitions.cc</label>
-        <link refid="_metadata_definitions_8cc"/>
-        <childnode refid="2" relation="include">
-        </childnode>
-        <childnode refid="3" relation="include">
-        </childnode>
-        <childnode refid="4" relation="include">
-        </childnode>
-        <childnode refid="5" relation="include">
-        </childnode>
-        <childnode refid="6" relation="include">
-        </childnode>
-        <childnode refid="13" relation="include">
-        </childnode>
-        <childnode refid="15" relation="include">
-        </childnode>
-        <childnode refid="24" relation="include">
-        </childnode>
-        <childnode refid="25" relation="include">
-        </childnode>
-      </node>
-      <node id="14">
-        <label>exception</label>
-      </node>
-      <node id="2">
-        <label>fstream</label>
-      </node>
-      <node id="11">
-        <label>boost/archive/binary_oarchive.hpp</label>
-      </node>
-      <node id="21">
-        <label>boost/any.hpp</label>
-      </node>
-      <node id="24">
-        <label>yaml-cpp/yaml.h</label>
-      </node>
-      <node id="23">
-        <label>mspass/utility/BasicMetadata.h</label>
-        <link refid="_basic_metadata_8h_source"/>
-        <childnode refid="5" relation="include">
-        </childnode>
-      </node>
-      <node id="4">
-        <label>string.h</label>
-      </node>
-      <node id="18">
-        <label>typeinfo</label>
-      </node>
-      <node id="6">
-        <label>mspass/utility/utility.h</label>
-        <link refid="utility_8h_source"/>
-        <childnode refid="5" relation="include">
-        </childnode>
-        <childnode refid="7" relation="include">
-        </childnode>
-      </node>
-      <node id="26">
-        <label>tuple</label>
-      </node>
-      <node id="9">
-        <label>vector</label>
-      </node>
-      <node id="3">
-        <label>sstream</label>
-      </node>
-      <node id="22">
-        <label>pybind11/pybind11.h</label>
-      </node>
-      <node id="8">
-        <label>iostream</label>
-      </node>
       <node id="15">
         <label>mspass/utility/AntelopePf.h</label>
         <link refid="_antelope_pf_8h_source"/>
@@ -137,15 +22,10 @@
         <childnode refid="17" relation="include">
         </childnode>
       </node>
-      <node id="20">
-        <label>set</label>
-      </node>
-      <node id="25">
-        <label>mspass/utility/MetadataDefinitions.h</label>
-        <link refid="_metadata_definitions_8h_source"/>
-        <childnode refid="19" relation="include">
-        </childnode>
-        <childnode refid="26" relation="include">
+      <node id="23">
+        <label>mspass/utility/BasicMetadata.h</label>
+        <link refid="_basic_metadata_8h_source"/>
+        <childnode refid="5" relation="include">
         </childnode>
       </node>
       <node id="17">
@@ -174,10 +54,130 @@
         <childnode refid="23" relation="include">
         </childnode>
       </node>
+      <node id="25">
+        <label>mspass/utility/MetadataDefinitions.h</label>
+        <link refid="_metadata_definitions_8h_source"/>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+      </node>
+      <node id="13">
+        <label>mspass/utility/MsPASSError.h</label>
+        <link refid="_ms_p_a_s_s_error_8h_source"/>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>mspass/utility/dmatrix.h</label>
+        <link refid="dmatrix_8h_source"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>mspass/utility/utility.h</label>
+        <link refid="utility_8h_source"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>/home/runner/work/mspass/mspass/cxx/src/lib/utility/MetadataDefinitions.cc</label>
+        <link refid="_metadata_definitions_8cc"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+      </node>
+      <node id="21">
+        <label>boost/any.hpp</label>
+      </node>
+      <node id="12">
+        <label>boost/archive/binary_iarchive.hpp</label>
+      </node>
+      <node id="11">
+        <label>boost/archive/binary_oarchive.hpp</label>
+      </node>
+      <node id="10">
+        <label>boost/serialization/vector.hpp</label>
+      </node>
+      <node id="14">
+        <label>exception</label>
+      </node>
+      <node id="2">
+        <label>fstream</label>
+      </node>
+      <node id="8">
+        <label>iostream</label>
+      </node>
+      <node id="16">
+        <label>list</label>
+      </node>
+      <node id="19">
+        <label>map</label>
+      </node>
+      <node id="22">
+        <label>pybind11/pybind11.h</label>
+      </node>
+      <node id="20">
+        <label>set</label>
+      </node>
+      <node id="3">
+        <label>sstream</label>
+      </node>
+      <node id="5">
+        <label>string</label>
+      </node>
+      <node id="4">
+        <label>string.h</label>
+      </node>
+      <node id="26">
+        <label>tuple</label>
+      </node>
+      <node id="18">
+        <label>typeinfo</label>
+      </node>
+      <node id="9">
+        <label>vector</label>
+      </node>
+      <node id="24">
+        <label>yaml-cpp/yaml.h</label>
+      </node>
     </incdepgraph>
     <innernamespace refid="namespacemspass">mspass</innernamespace>
     <innernamespace refid="namespacemspass_1_1utility">mspass::utility</innernamespace>
-      <sectiondef kind="func">
+    <sectiondef kind="func">
       <memberdef kind="function" id="_metadata_definitions_8cc_1a2634affdcad151af05e532edc11e90cb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>const std::string</type>
         <definition>const std::string DefaultSchemaName</definition>
@@ -194,7 +194,7 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/src/lib/utility/MetadataDefinitions.cc" line="10" column="19" declfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/MetadataDefinitions.cc" declline="10" declcolumn="19"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
@@ -278,7 +278,7 @@
 <codeline lineno="76"><highlight class="normal"><sp/><sp/>alias_xref(parent.alias_xref),roset(parent.roset),</highlight></codeline>
 <codeline lineno="77"><highlight class="normal"><sp/><sp/>unique_id_data(parent.unique_id_data)</highlight></codeline>
 <codeline lineno="78"><highlight class="normal">{}</highlight></codeline>
-<codeline lineno="79" refid="classmspass_1_1utility_1_1_metadata_definitions_1adf9c9a40eb60eebb24ec84f2fa961319" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_metadata_definitions_1adf9c9a40eb60eebb24ec84f2fa961319" kindref="member">MetadataDefinitions::is_defined</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>key)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>noexcept</highlight></codeline>
+<codeline lineno="79" refid="classmspass_1_1utility_1_1_metadata_definitions_1adf9c9a40eb60eebb24ec84f2fa961319" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_metadata_definitions_1adf9c9a40eb60eebb24ec84f2fa961319" kindref="member">MetadataDefinitions::is_defined</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>key)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">noexcept</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="80"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="81"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>test<sp/>type<sp/>map<sp/>because<sp/>concept<sp/>can<sp/>be<sp/>empty<sp/>for<sp/>a<sp/>key<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="82"><highlight class="normal"><sp/><sp/>map&lt;string,MDtype&gt;::const_iterator<sp/>tptr;</highlight></codeline>
@@ -672,8 +672,8 @@
 <codeline lineno="470"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
 <codeline lineno="471"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>key;</highlight></codeline>
 <codeline lineno="472"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>key=attributes[i][</highlight><highlight class="stringliteral">&quot;name&quot;</highlight><highlight class="normal">].as&lt;</highlight><highlight class="keywordtype">string</highlight><highlight class="normal">&gt;();</highlight></codeline>
-<codeline lineno="473"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_metadata_definitions_1a5d131b51d99fb29753295847891ff2de" kindref="member">concept</ref>=attributes[i][</highlight><highlight class="stringliteral">&quot;concept&quot;</highlight><highlight class="normal">].as&lt;</highlight><highlight class="keywordtype">string</highlight><highlight class="normal">&gt;();</highlight></codeline>
-<codeline lineno="474"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cmap[key]=<ref refid="classmspass_1_1utility_1_1_metadata_definitions_1a5d131b51d99fb29753295847891ff2de" kindref="member">concept</ref>;</highlight></codeline>
+<codeline lineno="473"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">concept</highlight><highlight class="normal">=attributes[i][</highlight><highlight class="stringliteral">&quot;concept&quot;</highlight><highlight class="normal">].as&lt;</highlight><highlight class="keywordtype">string</highlight><highlight class="normal">&gt;();</highlight></codeline>
+<codeline lineno="474"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cmap[key]=</highlight><highlight class="keyword">concept</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="475"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>styp=attributes[i][</highlight><highlight class="stringliteral">&quot;type&quot;</highlight><highlight class="normal">].as&lt;</highlight><highlight class="keywordtype">string</highlight><highlight class="normal">&gt;();</highlight></codeline>
 <codeline lineno="476"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>MDtype<sp/>mdt_this=str2mdt(styp);</highlight></codeline>
 <codeline lineno="477"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>tmap[key]=mdt_this;</highlight></codeline>

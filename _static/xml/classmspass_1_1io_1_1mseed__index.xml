@@ -1,13 +1,14 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="classmspass_1_1io_1_1mseed__index" kind="class" language="C++" prot="public">
     <compoundname>mspass::io::mseed_index</compoundname>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="classmspass_1_1io_1_1mseed__index_1aeae52fb8509292312937fd60b12cb6d2" prot="public" static="no" mutable="no">
         <type>std::string</type>
         <definition>std::string mspass::io::mseed_index::net</definition>
         <argsstring></argsstring>
         <name>net</name>
+        <qualifiedname>mspass::io::mseed_index::net</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -21,6 +22,7 @@
         <definition>std::string mspass::io::mseed_index::sta</definition>
         <argsstring></argsstring>
         <name>sta</name>
+        <qualifiedname>mspass::io::mseed_index::sta</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -34,6 +36,7 @@
         <definition>std::string mspass::io::mseed_index::loc</definition>
         <argsstring></argsstring>
         <name>loc</name>
+        <qualifiedname>mspass::io::mseed_index::loc</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -47,6 +50,7 @@
         <definition>std::string mspass::io::mseed_index::chan</definition>
         <argsstring></argsstring>
         <name>chan</name>
+        <qualifiedname>mspass::io::mseed_index::chan</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -60,6 +64,7 @@
         <definition>size_t mspass::io::mseed_index::foff</definition>
         <argsstring></argsstring>
         <name>foff</name>
+        <qualifiedname>mspass::io::mseed_index::foff</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -73,6 +78,7 @@
         <definition>size_t mspass::io::mseed_index::nbytes</definition>
         <argsstring></argsstring>
         <name>nbytes</name>
+        <qualifiedname>mspass::io::mseed_index::nbytes</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -86,6 +92,7 @@
         <definition>size_t mspass::io::mseed_index::npts</definition>
         <argsstring></argsstring>
         <name>npts</name>
+        <qualifiedname>mspass::io::mseed_index::npts</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -99,6 +106,7 @@
         <definition>double mspass::io::mseed_index::samprate</definition>
         <argsstring></argsstring>
         <name>samprate</name>
+        <qualifiedname>mspass::io::mseed_index::samprate</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -112,6 +120,7 @@
         <definition>double mspass::io::mseed_index::starttime</definition>
         <argsstring></argsstring>
         <name>starttime</name>
+        <qualifiedname>mspass::io::mseed_index::starttime</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -125,6 +134,7 @@
         <definition>double mspass::io::mseed_index::endtime</definition>
         <argsstring></argsstring>
         <name>endtime</name>
+        <qualifiedname>mspass::io::mseed_index::endtime</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -138,6 +148,7 @@
         <definition>double mspass::io::mseed_index::last_packet_time</definition>
         <argsstring></argsstring>
         <name>last_packet_time</name>
+        <qualifiedname>mspass::io::mseed_index::last_packet_time</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -146,13 +157,14 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/io/mseed_index.h" line="22" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/io/mseed_index.h" bodystart="22" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="classmspass_1_1io_1_1mseed__index_1ab6f6e43c49d3d918295349227e924485" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
         <definition>mspass::io::mseed_index::mseed_index</definition>
         <argsstring>()</argsstring>
         <name>mseed_index</name>
+        <qualifiedname>mspass::io::mseed_index::mseed_index</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -166,6 +178,7 @@
         <definition>mspass::io::mseed_index::mseed_index</definition>
         <argsstring>(const mseed_index &amp;parent)</argsstring>
         <name>mseed_index</name>
+        <qualifiedname>mspass::io::mseed_index::mseed_index</qualifiedname>
         <param>
           <type>const <ref refid="classmspass_1_1io_1_1mseed__index" kindref="compound">mseed_index</ref> &amp;</type>
           <declname>parent</declname>
@@ -178,11 +191,12 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/io/mseed_index.h" line="39" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/io/mseed_index.h" bodystart="39" bodyend="49"/>
       </memberdef>
-      <memberdef kind="function" id="classmspass_1_1io_1_1mseed__index_1af441bc6a6380bf2a852956ccdc4181b3" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="classmspass_1_1io_1_1mseed__index_1a3df03b536f3e6a800a06dc00f9133417" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="classmspass_1_1io_1_1mseed__index" kindref="compound">mseed_index</ref> &amp;</type>
-        <definition>mseed_index&amp; mspass::io::mseed_index::operator=</definition>
+        <definition>mseed_index &amp; mspass::io::mseed_index::operator=</definition>
         <argsstring>(const mseed_index &amp;parent)</argsstring>
         <name>operator=</name>
+        <qualifiedname>mspass::io::mseed_index::operator=</qualifiedname>
         <param>
           <type>const <ref refid="classmspass_1_1io_1_1mseed__index" kindref="compound">mseed_index</ref> &amp;</type>
           <declname>parent</declname>
@@ -195,13 +209,14 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/io/mseed_index.h" line="50" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/io/mseed_index.h" bodystart="50" bodyend="67"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="friend">
-      <memberdef kind="friend" id="classmspass_1_1io_1_1mseed__index_1ae6d7ee340b7009c88346cfc6b7589f15" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+    </sectiondef>
+    <sectiondef kind="friend">
+      <memberdef kind="friend" id="classmspass_1_1io_1_1mseed__index_1a23274f67eb264f6219a663efe53aab57" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::ostringstream &amp;</type>
-        <definition>std::ostringstream&amp; operator&lt;&lt;</definition>
+        <definition>std::ostringstream &amp; operator&lt;&lt;</definition>
         <argsstring>(std::ostringstream &amp;ss, const mseed_index &amp;ind)</argsstring>
         <name>operator&lt;&lt;</name>
+        <qualifiedname>mspass::io::mseed_index::operator&lt;&lt;</qualifiedname>
         <param>
           <type>std::ostringstream &amp;</type>
           <declname>ss</declname>
@@ -218,7 +233,7 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/io/mseed_index.h" line="68" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_index.cc" bodystart="7" bodyend="25"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
@@ -235,8 +250,8 @@
       <member refid="classmspass_1_1io_1_1mseed__index_1a039994bbea83dc923a6e59ed2ea675fd" prot="public" virt="non-virtual"><scope>mspass::io::mseed_index</scope><name>nbytes</name></member>
       <member refid="classmspass_1_1io_1_1mseed__index_1aeae52fb8509292312937fd60b12cb6d2" prot="public" virt="non-virtual"><scope>mspass::io::mseed_index</scope><name>net</name></member>
       <member refid="classmspass_1_1io_1_1mseed__index_1a1e0b11b2170b54e3245aa36df0bb19f8" prot="public" virt="non-virtual"><scope>mspass::io::mseed_index</scope><name>npts</name></member>
-      <member refid="classmspass_1_1io_1_1mseed__index_1ae6d7ee340b7009c88346cfc6b7589f15" prot="public" virt="non-virtual"><scope>mspass::io::mseed_index</scope><name>operator&lt;&lt;</name></member>
-      <member refid="classmspass_1_1io_1_1mseed__index_1af441bc6a6380bf2a852956ccdc4181b3" prot="public" virt="non-virtual"><scope>mspass::io::mseed_index</scope><name>operator=</name></member>
+      <member refid="classmspass_1_1io_1_1mseed__index_1a23274f67eb264f6219a663efe53aab57" prot="public" virt="non-virtual"><scope>mspass::io::mseed_index</scope><name>operator&lt;&lt;</name></member>
+      <member refid="classmspass_1_1io_1_1mseed__index_1a3df03b536f3e6a800a06dc00f9133417" prot="public" virt="non-virtual"><scope>mspass::io::mseed_index</scope><name>operator=</name></member>
       <member refid="classmspass_1_1io_1_1mseed__index_1a2f34fc7dca12e7af7f9bf459462af9b4" prot="public" virt="non-virtual"><scope>mspass::io::mseed_index</scope><name>samprate</name></member>
       <member refid="classmspass_1_1io_1_1mseed__index_1a645d459857a3b3c9afa1f6a5cf252a66" prot="public" virt="non-virtual"><scope>mspass::io::mseed_index</scope><name>sta</name></member>
       <member refid="classmspass_1_1io_1_1mseed__index_1a9dc0248ef24184cb4b0cf7b40aaa2ec8" prot="public" virt="non-virtual"><scope>mspass::io::mseed_index</scope><name>starttime</name></member>

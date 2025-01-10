@@ -1,16 +1,10 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="wavelet_8cc" kind="file" language="C++">
     <compoundname>wavelet.cc</compoundname>
     <includes local="no">math.h</includes>
     <includes refid="dpss_8h" local="yes">mspass/algorithms/deconvolution/dpss.h</includes>
     <incdepgraph>
-      <node id="4">
-        <label>cmath</label>
-      </node>
-      <node id="5">
-        <label>string.h</label>
-      </node>
       <node id="3">
         <label>mspass/algorithms/deconvolution/dpss.h</label>
         <link refid="dpss_8h_source"/>
@@ -27,8 +21,14 @@
         <childnode refid="3" relation="include">
         </childnode>
       </node>
+      <node id="4">
+        <label>cmath</label>
+      </node>
       <node id="2">
         <label>math.h</label>
+      </node>
+      <node id="5">
+        <label>string.h</label>
       </node>
     </incdepgraph>
     <innernamespace refid="namespacemspass">mspass</innernamespace>

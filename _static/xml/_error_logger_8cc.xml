@@ -1,15 +1,9 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="_error_logger_8cc" kind="file" language="C++">
     <compoundname>ErrorLogger.cc</compoundname>
     <includes refid="_error_logger_8h" local="yes">mspass/utility/ErrorLogger.h</includes>
     <incdepgraph>
-      <node id="4">
-        <label>list</label>
-      </node>
-      <node id="6">
-        <label>boost/archive/text_iarchive.hpp</label>
-      </node>
       <node id="2">
         <label>mspass/utility/ErrorLogger.h</label>
         <link refid="_error_logger_8h_source"/>
@@ -40,32 +34,38 @@
         <childnode refid="12" relation="include">
         </childnode>
       </node>
-      <node id="12">
-        <label>exception</label>
-      </node>
-      <node id="7">
-        <label>boost/archive/text_oarchive.hpp</label>
-      </node>
-      <node id="3">
-        <label>unistd.h</label>
-      </node>
-      <node id="11">
-        <label>iostream</label>
-      </node>
-      <node id="9">
-        <label>boost/serialization/list.hpp</label>
-      </node>
       <node id="1">
         <label>/home/runner/work/mspass/mspass/cxx/src/lib/utility/ErrorLogger.cc</label>
         <link refid="_error_logger_8cc"/>
         <childnode refid="2" relation="include">
         </childnode>
       </node>
+      <node id="5">
+        <label>boost/archive/basic_archive.hpp</label>
+      </node>
+      <node id="6">
+        <label>boost/archive/text_iarchive.hpp</label>
+      </node>
+      <node id="7">
+        <label>boost/archive/text_oarchive.hpp</label>
+      </node>
+      <node id="9">
+        <label>boost/serialization/list.hpp</label>
+      </node>
       <node id="8">
         <label>boost/serialization/serialization.hpp</label>
       </node>
-      <node id="5">
-        <label>boost/archive/basic_archive.hpp</label>
+      <node id="12">
+        <label>exception</label>
+      </node>
+      <node id="11">
+        <label>iostream</label>
+      </node>
+      <node id="4">
+        <label>list</label>
+      </node>
+      <node id="3">
+        <label>unistd.h</label>
       </node>
     </incdepgraph>
     <innernamespace refid="namespacemspass">mspass</innernamespace>
@@ -88,7 +88,7 @@
 <codeline lineno="11"><highlight class="normal"><sp/><sp/>job_id=jid;</highlight></codeline>
 <codeline lineno="12"><highlight class="normal"><sp/><sp/>p_id=getpid();</highlight></codeline>
 <codeline lineno="13"><highlight class="normal"><sp/><sp/>algorithm=alg;</highlight></codeline>
-<codeline lineno="14"><highlight class="normal"><sp/><sp/>message=merr.<ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1ae47776d160eafa42f854be5bf47e00a8" kindref="member">what</ref>();</highlight></codeline>
+<codeline lineno="14"><highlight class="normal"><sp/><sp/>message=merr.<ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1a1dd30086a986a3a0669cd974e65bd563" kindref="member">what</ref>();</highlight></codeline>
 <codeline lineno="15"><highlight class="normal"><sp/><sp/>badness=merr.<ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1a3393c3878bee1728628fd3e063640d94" kindref="member">severity</ref>();</highlight></codeline>
 <codeline lineno="16"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="17" refid="classmspass_1_1utility_1_1_log_data_1a672a6557b891cb6b8ce736edc2b30b2b" refkind="member"><highlight class="normal">LogData::LogData(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>jid,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>alg,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>msg,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>mspass::utility::ErrorSeverity<sp/>lvl)</highlight></codeline>
@@ -171,7 +171,7 @@
 <codeline lineno="94" refid="classmspass_1_1utility_1_1_error_logger_1a570cc3c845bd18dd0417e84a8cafe05f" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_error_logger_1a570cc3c845bd18dd0417e84a8cafe05f" kindref="member">ErrorLogger::log_verbose</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/><sp/>alg,</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>mess)</highlight></codeline>
 <codeline lineno="95"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="96"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>count;</highlight></codeline>
-<codeline lineno="97"><highlight class="normal"><sp/><sp/>count=this-&gt;log_error(alg,mess,ErrorSeverity::Informational);</highlight></codeline>
+<codeline lineno="97"><highlight class="normal"><sp/><sp/>count=this-&gt;<ref refid="classmspass_1_1utility_1_1_error_logger_1aa69873ba0aebf67e9ba24d01992c0bcf" kindref="member">log_error</ref>(alg,mess,ErrorSeverity::Informational);</highlight></codeline>
 <codeline lineno="98"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>count;</highlight></codeline>
 <codeline lineno="99"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="100"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>This<sp/>method<sp/>needs<sp/>to<sp/>return<sp/>a<sp/>list<sp/>of<sp/>the<sp/>highest<sp/>ranking</highlight></codeline>

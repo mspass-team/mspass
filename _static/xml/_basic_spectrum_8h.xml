@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="_basic_spectrum_8h" kind="file" language="C++">
     <compoundname>BasicSpectrum.h</compoundname>
     <includes local="no">vector</includes>
@@ -29,27 +29,17 @@
       <node id="6">
         <label>exception</label>
       </node>
-      <node id="2">
-        <label>vector</label>
+      <node id="5">
+        <label>iostream</label>
       </node>
       <node id="3">
         <label>math.h</label>
       </node>
-      <node id="5">
-        <label>iostream</label>
+      <node id="2">
+        <label>vector</label>
       </node>
     </incdepgraph>
     <invincdepgraph>
-      <node id="1">
-        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h</label>
-        <link refid="_basic_spectrum_8h"/>
-        <childnode refid="2" relation="include">
-        </childnode>
-      </node>
-      <node id="5">
-        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNRDeconEngine.h</label>
-        <link refid="_c_n_r_decon_engine_8h_source"/>
-      </node>
       <node id="3">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/amplitudes.h</label>
         <link refid="amplitudes_8h_source"/>
@@ -60,12 +50,22 @@
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h</label>
         <link refid="_c_n_r3_c_decon_8h_source"/>
       </node>
+      <node id="5">
+        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNRDeconEngine.h</label>
+        <link refid="_c_n_r_decon_engine_8h_source"/>
+      </node>
       <node id="6">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MTPowerSpectrumEngine.h</label>
         <link refid="_m_t_power_spectrum_engine_8h_source"/>
         <childnode refid="4" relation="include">
         </childnode>
         <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h</label>
+        <link refid="_basic_spectrum_8h"/>
+        <childnode refid="2" relation="include">
         </childnode>
       </node>
       <node id="2">
@@ -131,7 +131,7 @@
 <codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>*</highlight><highlight class="keyword">this</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="63"><highlight class="normal"><sp/><sp/>};</highlight></codeline>
 <codeline lineno="64"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*~<sp/>Destructor.*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="65"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>~<ref refid="classmspass_1_1seismic_1_1_basic_spectrum_1ae2c68571058526795e0424e0a76e4e76" kindref="member">BasicSpectrum</ref>(){};</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>~BasicSpectrum(){};</highlight></codeline>
 <codeline lineno="72" refid="classmspass_1_1seismic_1_1_basic_spectrum_1a2bce24e09412434ec968bed19ec9843d" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_basic_spectrum_1a2bce24e09412434ec968bed19ec9843d" kindref="member">live</ref>()</highlight><highlight class="keyword">const</highlight><highlight class="normal">{</highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>is_live;};</highlight></codeline>
 <codeline lineno="80" refid="classmspass_1_1seismic_1_1_basic_spectrum_1a331f89b8216f9717ac906e922d7c2cff" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_basic_spectrum_1a331f89b8216f9717ac906e922d7c2cff" kindref="member">dead</ref>()</highlight><highlight class="keyword">const</highlight><highlight class="normal">{</highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>!is_live;};</highlight></codeline>
 <codeline lineno="87" refid="classmspass_1_1seismic_1_1_basic_spectrum_1a7400b002f21460fece1d5519dfbc26c7" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_basic_spectrum_1a7400b002f21460fece1d5519dfbc26c7" kindref="member">kill</ref>(){is_live=</highlight><highlight class="keyword">false</highlight><highlight class="normal">;};</highlight></codeline>
@@ -170,7 +170,7 @@
 <codeline lineno="151" refid="classmspass_1_1seismic_1_1_basic_spectrum_1a59236bc56e298b485927defff353de70" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_basic_spectrum_1a59236bc56e298b485927defff353de70" kindref="member">set_f0</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>f0in){f0val=f0in;};</highlight></codeline>
 <codeline lineno="153" refid="classmspass_1_1seismic_1_1_basic_spectrum_1a73a8f75cf63421c696379f57f207a93f" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_basic_spectrum_1a73a8f75cf63421c696379f57f207a93f" kindref="member">set_dt</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>dtin){parent_dt=dtin;};</highlight></codeline>
 <codeline lineno="157" refid="classmspass_1_1seismic_1_1_basic_spectrum_1a85f411357320b26e22e9d116faa3abe2" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_basic_spectrum_1a85f411357320b26e22e9d116faa3abe2" kindref="member">set_npts</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>npts_in){parent_npts=npts_in;};</highlight></codeline>
-<codeline lineno="161" refid="classmspass_1_1seismic_1_1_basic_spectrum_1aec2c5339007e54737bbee643c0f93caf" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>std::vector&lt;double&gt;<sp/><ref refid="classmspass_1_1seismic_1_1_basic_spectrum_1aec2c5339007e54737bbee643c0f93caf" kindref="member">frequencies</ref>()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="161" refid="classmspass_1_1seismic_1_1_basic_spectrum_1ad0e29676af3782c4ed1efb228ef7637a" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>std::vector&lt;double&gt;<sp/><ref refid="classmspass_1_1seismic_1_1_basic_spectrum_1ad0e29676af3782c4ed1efb228ef7637a" kindref="member">frequencies</ref>()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>=<sp/>0;</highlight></codeline>
 <codeline lineno="164" refid="classmspass_1_1seismic_1_1_basic_spectrum_1a076bd1632ad16165c842115fd2aab6a9" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_basic_spectrum_1a076bd1632ad16165c842115fd2aab6a9" kindref="member">frequency</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_basic_spectrum_1a1cb29c54744c06553765a3966c8b970f" kindref="member">sample_number</ref>)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>=<sp/>0;</highlight></codeline>
 <codeline lineno="166" refid="classmspass_1_1seismic_1_1_basic_spectrum_1a830fc9c8135253aeae01ffd80746b413" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_basic_spectrum_1a830fc9c8135253aeae01ffd80746b413" kindref="member">nf</ref>()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>=<sp/>0;</highlight></codeline>
 <codeline lineno="170" refid="classmspass_1_1seismic_1_1_basic_spectrum_1af11c7d672337c3f89c3e063ecf1be4a5" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_basic_spectrum_1af11c7d672337c3f89c3e063ecf1be4a5" kindref="member">Nyquist</ref>()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>=<sp/>0;</highlight></codeline>

@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="_f_f_t_decon_operator_8cc" kind="file" language="C++">
     <compoundname>FFTDeconOperator.cc</compoundname>
     <includes local="no">math.h</includes>
@@ -7,100 +7,9 @@
     <includes refid="_ms_p_a_s_s_error_8h" local="yes">mspass/utility/MsPASSError.h</includes>
     <includes refid="_core_time_series_8h" local="yes">mspass/seismic/CoreTimeSeries.h</includes>
     <incdepgraph>
-      <node id="13">
-        <label>list</label>
-      </node>
-      <node id="24">
-        <label>mspass/seismic/BasicTimeSeries.h</label>
-        <link refid="_basic_time_series_8h_source"/>
-        <childnode refid="2" relation="include">
-        </childnode>
-        <childnode refid="7" relation="include">
-        </childnode>
-        <childnode refid="8" relation="include">
-        </childnode>
-      </node>
-      <node id="6">
-        <label>gsl/gsl_fft_complex.h</label>
-      </node>
-      <node id="7">
-        <label>boost/archive/text_iarchive.hpp</label>
-      </node>
-      <node id="19">
-        <label>mspass/utility/MsPASSError.h</label>
-        <link refid="_ms_p_a_s_s_error_8h_source"/>
-        <childnode refid="14" relation="include">
-        </childnode>
-        <childnode refid="20" relation="include">
-        </childnode>
-      </node>
-      <node id="1">
-        <label>/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/FFTDeconOperator.cc</label>
-        <link refid="_f_f_t_decon_operator_8cc"/>
-        <childnode refid="2" relation="include">
-        </childnode>
-        <childnode refid="3" relation="include">
-        </childnode>
-        <childnode refid="19" relation="include">
-        </childnode>
-        <childnode refid="22" relation="include">
-        </childnode>
-      </node>
-      <node id="4">
-        <label>string</label>
-      </node>
-      <node id="22">
-        <label>mspass/seismic/CoreTimeSeries.h</label>
-        <link refid="_core_time_series_8h_source"/>
-        <childnode refid="23" relation="include">
-        </childnode>
-        <childnode refid="24" relation="include">
-        </childnode>
-        <childnode refid="9" relation="include">
-        </childnode>
-      </node>
-      <node id="11">
-        <label>map</label>
-      </node>
-      <node id="20">
-        <label>exception</label>
-      </node>
-      <node id="15">
-        <label>fstream</label>
-      </node>
       <node id="25">
         <label>mspass/algorithms/TimeWindow.h</label>
         <link refid="_time_window_8h_source"/>
-      </node>
-      <node id="17">
-        <label>boost/any.hpp</label>
-      </node>
-      <node id="8">
-        <label>boost/archive/text_oarchive.hpp</label>
-      </node>
-      <node id="21">
-        <label>mspass/utility/BasicMetadata.h</label>
-        <link refid="_basic_metadata_8h_source"/>
-        <childnode refid="4" relation="include">
-        </childnode>
-      </node>
-      <node id="10">
-        <label>typeinfo</label>
-      </node>
-      <node id="23">
-        <label>vector</label>
-      </node>
-      <node id="16">
-        <label>sstream</label>
-      </node>
-      <node id="18">
-        <label>pybind11/pybind11.h</label>
-      </node>
-      <node id="2">
-        <label>math.h</label>
-      </node>
-      <node id="14">
-        <label>iostream</label>
       </node>
       <node id="26">
         <label>mspass/algorithms/deconvolution/ComplexArray.h</label>
@@ -122,18 +31,6 @@
         <childnode refid="28" relation="include">
         </childnode>
       </node>
-      <node id="28">
-        <label>boost/serialization/shared_ptr.hpp</label>
-      </node>
-      <node id="12">
-        <label>set</label>
-      </node>
-      <node id="27">
-        <label>complex</label>
-      </node>
-      <node id="5">
-        <label>gsl/gsl_errno.h</label>
-      </node>
       <node id="3">
         <label>mspass/algorithms/deconvolution/FFTDeconOperator.h</label>
         <link refid="_f_f_t_decon_operator_8h_source"/>
@@ -154,6 +51,32 @@
         <childnode refid="25" relation="include">
         </childnode>
         <childnode refid="26" relation="include">
+        </childnode>
+      </node>
+      <node id="24">
+        <label>mspass/seismic/BasicTimeSeries.h</label>
+        <link refid="_basic_time_series_8h_source"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+      </node>
+      <node id="22">
+        <label>mspass/seismic/CoreTimeSeries.h</label>
+        <link refid="_core_time_series_8h_source"/>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+      </node>
+      <node id="21">
+        <label>mspass/utility/BasicMetadata.h</label>
+        <link refid="_basic_metadata_8h_source"/>
+        <childnode refid="4" relation="include">
         </childnode>
       </node>
       <node id="9">
@@ -181,6 +104,83 @@
         </childnode>
         <childnode refid="21" relation="include">
         </childnode>
+      </node>
+      <node id="19">
+        <label>mspass/utility/MsPASSError.h</label>
+        <link refid="_ms_p_a_s_s_error_8h_source"/>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/FFTDeconOperator.cc</label>
+        <link refid="_f_f_t_decon_operator_8cc"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+      </node>
+      <node id="17">
+        <label>boost/any.hpp</label>
+      </node>
+      <node id="7">
+        <label>boost/archive/text_iarchive.hpp</label>
+      </node>
+      <node id="8">
+        <label>boost/archive/text_oarchive.hpp</label>
+      </node>
+      <node id="28">
+        <label>boost/serialization/shared_ptr.hpp</label>
+      </node>
+      <node id="27">
+        <label>complex</label>
+      </node>
+      <node id="20">
+        <label>exception</label>
+      </node>
+      <node id="15">
+        <label>fstream</label>
+      </node>
+      <node id="5">
+        <label>gsl/gsl_errno.h</label>
+      </node>
+      <node id="6">
+        <label>gsl/gsl_fft_complex.h</label>
+      </node>
+      <node id="14">
+        <label>iostream</label>
+      </node>
+      <node id="13">
+        <label>list</label>
+      </node>
+      <node id="11">
+        <label>map</label>
+      </node>
+      <node id="2">
+        <label>math.h</label>
+      </node>
+      <node id="18">
+        <label>pybind11/pybind11.h</label>
+      </node>
+      <node id="12">
+        <label>set</label>
+      </node>
+      <node id="16">
+        <label>sstream</label>
+      </node>
+      <node id="4">
+        <label>string</label>
+      </node>
+      <node id="10">
+        <label>typeinfo</label>
+      </node>
+      <node id="23">
+        <label>vector</label>
       </node>
     </incdepgraph>
     <innernamespace refid="namespacemspass">mspass</innernamespace>

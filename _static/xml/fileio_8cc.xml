@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="fileio_8cc" kind="file" language="C++">
     <compoundname>fileio.cc</compoundname>
     <includes local="no">memory</includes>
@@ -14,8 +14,15 @@
     <includes refid="_ensemble_8h" local="yes">mspass/seismic/Ensemble.h</includes>
     <includes refid="fileio_8h" local="yes">mspass/io/fileio.h</includes>
     <incdepgraph>
-      <node id="21">
-        <label>list</label>
+      <node id="47">
+        <label>mspass/io/fileio.h</label>
+        <link refid="fileio_8h_source"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="37" relation="include">
+        </childnode>
       </node>
       <node id="13">
         <label>mspass/seismic/BasicTimeSeries.h</label>
@@ -27,14 +34,89 @@
         <childnode refid="16" relation="include">
         </childnode>
       </node>
-      <node id="27">
-        <label>boost/serialization/map.hpp</label>
+      <node id="38">
+        <label>mspass/seismic/CoreSeismogram.h</label>
+        <link refid="_core_seismogram_8h_source"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="39" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="43" relation="include">
+        </childnode>
+        <childnode refid="44" relation="include">
+        </childnode>
       </node>
-      <node id="40">
-        <label>boost/serialization/vector.hpp</label>
+      <node id="12">
+        <label>mspass/seismic/CoreTimeSeries.h</label>
+        <link refid="_core_time_series_8h_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
       </node>
-      <node id="15">
-        <label>boost/archive/text_iarchive.hpp</label>
+      <node id="45">
+        <label>mspass/seismic/Ensemble.h</label>
+        <link refid="_ensemble_8h_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="37" relation="include">
+        </childnode>
+        <childnode refid="46" relation="include">
+        </childnode>
+      </node>
+      <node id="37">
+        <label>mspass/seismic/Seismogram.h</label>
+        <link refid="_seismogram_8h_source"/>
+        <childnode refid="38" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="33" relation="include">
+        </childnode>
+      </node>
+      <node id="44">
+        <label>mspass/seismic/SlownessVector.h</label>
+        <link refid="_slowness_vector_8h_source"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+      </node>
+      <node id="11">
+        <label>mspass/seismic/TimeSeries.h</label>
+        <link refid="_time_series_8h_source"/>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="33" relation="include">
+        </childnode>
+      </node>
+      <node id="10">
+        <label>mspass/seismic/keywords.h</label>
+        <link refid="keywords_8h_source"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="25">
+        <label>mspass/utility/BasicMetadata.h</label>
+        <link refid="_basic_metadata_8h_source"/>
+        <childnode refid="5" relation="include">
+        </childnode>
       </node>
       <node id="33">
         <label>mspass/utility/ErrorLogger.h</label>
@@ -58,8 +140,31 @@
         <childnode refid="33" relation="include">
         </childnode>
       </node>
-      <node id="42">
-        <label>boost/archive/binary_iarchive.hpp</label>
+      <node id="17">
+        <label>mspass/utility/Metadata.h</label>
+        <link refid="_metadata_8h_source"/>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
       </node>
       <node id="7">
         <label>mspass/utility/MsPASSError.h</label>
@@ -67,29 +172,6 @@
         <childnode refid="8" relation="include">
         </childnode>
         <childnode refid="9" relation="include">
-        </childnode>
-      </node>
-      <node id="31">
-        <label>boost/uuid/uuid_io.hpp</label>
-      </node>
-      <node id="39">
-        <label>mspass/utility/dmatrix.h</label>
-        <link refid="dmatrix_8h_source"/>
-        <childnode refid="5" relation="include">
-        </childnode>
-        <childnode refid="8" relation="include">
-        </childnode>
-        <childnode refid="6" relation="include">
-        </childnode>
-        <childnode refid="3" relation="include">
-        </childnode>
-        <childnode refid="40" relation="include">
-        </childnode>
-        <childnode refid="41" relation="include">
-        </childnode>
-        <childnode refid="42" relation="include">
-        </childnode>
-        <childnode refid="7" relation="include">
         </childnode>
       </node>
       <node id="26">
@@ -122,27 +204,33 @@
         <childnode refid="33" relation="include">
         </childnode>
       </node>
-      <node id="5">
-        <label>string</label>
+      <node id="43">
+        <label>mspass/utility/SphericalCoordinate.h</label>
+        <link refid="_spherical_coordinate_8h_source"/>
       </node>
-      <node id="12">
-        <label>mspass/seismic/CoreTimeSeries.h</label>
-        <link refid="_core_time_series_8h_source"/>
+      <node id="39">
+        <label>mspass/utility/dmatrix.h</label>
+        <link refid="dmatrix_8h_source"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
         <childnode refid="3" relation="include">
         </childnode>
-        <childnode refid="13" relation="include">
+        <childnode refid="40" relation="include">
         </childnode>
-        <childnode refid="17" relation="include">
+        <childnode refid="41" relation="include">
+        </childnode>
+        <childnode refid="42" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
         </childnode>
       </node>
-      <node id="19">
-        <label>map</label>
-      </node>
-      <node id="9">
-        <label>exception</label>
-      </node>
-      <node id="22">
-        <label>fstream</label>
+      <node id="46">
+        <label>mspass/utility/memory_constants.h</label>
+        <link refid="memory__constants_8h_source"/>
       </node>
       <node id="1">
         <label>/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc</label>
@@ -170,44 +258,83 @@
         <childnode refid="47" relation="include">
         </childnode>
       </node>
-      <node id="44">
-        <label>mspass/seismic/SlownessVector.h</label>
-        <link refid="_slowness_vector_8h_source"/>
-        <childnode refid="5" relation="include">
-        </childnode>
-        <childnode refid="15" relation="include">
-        </childnode>
-        <childnode refid="16" relation="include">
-        </childnode>
+      <node id="23">
+        <label>boost/any.hpp</label>
+      </node>
+      <node id="35">
+        <label>boost/archive/basic_archive.hpp</label>
+      </node>
+      <node id="42">
+        <label>boost/archive/binary_iarchive.hpp</label>
       </node>
       <node id="41">
         <label>boost/archive/binary_oarchive.hpp</label>
       </node>
-      <node id="23">
-        <label>boost/any.hpp</label>
+      <node id="15">
+        <label>boost/archive/text_iarchive.hpp</label>
       </node>
       <node id="16">
         <label>boost/archive/text_oarchive.hpp</label>
       </node>
-      <node id="43">
-        <label>mspass/utility/SphericalCoordinate.h</label>
-        <link refid="_spherical_coordinate_8h_source"/>
+      <node id="36">
+        <label>boost/serialization/list.hpp</label>
       </node>
-      <node id="25">
-        <label>mspass/utility/BasicMetadata.h</label>
-        <link refid="_basic_metadata_8h_source"/>
-        <childnode refid="5" relation="include">
-        </childnode>
+      <node id="27">
+        <label>boost/serialization/map.hpp</label>
       </node>
-      <node id="11">
-        <label>mspass/seismic/TimeSeries.h</label>
-        <link refid="_time_series_8h_source"/>
-        <childnode refid="12" relation="include">
-        </childnode>
-        <childnode refid="26" relation="include">
-        </childnode>
-        <childnode refid="33" relation="include">
-        </childnode>
+      <node id="28">
+        <label>boost/serialization/serialization.hpp</label>
+      </node>
+      <node id="40">
+        <label>boost/serialization/vector.hpp</label>
+      </node>
+      <node id="29">
+        <label>boost/uuid/uuid.hpp</label>
+      </node>
+      <node id="30">
+        <label>boost/uuid/uuid_generators.hpp</label>
+      </node>
+      <node id="31">
+        <label>boost/uuid/uuid_io.hpp</label>
+      </node>
+      <node id="32">
+        <label>boost/uuid/uuid_serialize.hpp</label>
+      </node>
+      <node id="9">
+        <label>exception</label>
+      </node>
+      <node id="22">
+        <label>fstream</label>
+      </node>
+      <node id="8">
+        <label>iostream</label>
+      </node>
+      <node id="21">
+        <label>list</label>
+      </node>
+      <node id="19">
+        <label>map</label>
+      </node>
+      <node id="14">
+        <label>math.h</label>
+      </node>
+      <node id="2">
+        <label>memory</label>
+      </node>
+      <node id="24">
+        <label>pybind11/pybind11.h</label>
+      </node>
+      <node id="20">
+        <label>set</label>
+      </node>
+      <node id="6">
+        <label>sstream</label>
+      </node>
+      <node id="4">
+        <label>stdio.h</label>
+      </node>
+      <node id="5">
+        <label>string</label>
       </node>
       <node id="18">
         <label>typeinfo</label>
@@ -217,133 +344,6 @@
       </node>
       <node id="3">
         <label>vector</label>
-      </node>
-      <node id="30">
-        <label>boost/uuid/uuid_generators.hpp</label>
-      </node>
-      <node id="6">
-        <label>sstream</label>
-      </node>
-      <node id="24">
-        <label>pybind11/pybind11.h</label>
-      </node>
-      <node id="47">
-        <label>mspass/io/fileio.h</label>
-        <link refid="fileio_8h_source"/>
-        <childnode refid="5" relation="include">
-        </childnode>
-        <childnode refid="11" relation="include">
-        </childnode>
-        <childnode refid="37" relation="include">
-        </childnode>
-      </node>
-      <node id="38">
-        <label>mspass/seismic/CoreSeismogram.h</label>
-        <link refid="_core_seismogram_8h_source"/>
-        <childnode refid="2" relation="include">
-        </childnode>
-        <childnode refid="3" relation="include">
-        </childnode>
-        <childnode refid="17" relation="include">
-        </childnode>
-        <childnode refid="39" relation="include">
-        </childnode>
-        <childnode refid="13" relation="include">
-        </childnode>
-        <childnode refid="12" relation="include">
-        </childnode>
-        <childnode refid="43" relation="include">
-        </childnode>
-        <childnode refid="44" relation="include">
-        </childnode>
-      </node>
-      <node id="14">
-        <label>math.h</label>
-      </node>
-      <node id="45">
-        <label>mspass/seismic/Ensemble.h</label>
-        <link refid="_ensemble_8h_source"/>
-        <childnode refid="3" relation="include">
-        </childnode>
-        <childnode refid="11" relation="include">
-        </childnode>
-        <childnode refid="37" relation="include">
-        </childnode>
-        <childnode refid="46" relation="include">
-        </childnode>
-      </node>
-      <node id="8">
-        <label>iostream</label>
-      </node>
-      <node id="32">
-        <label>boost/uuid/uuid_serialize.hpp</label>
-      </node>
-      <node id="36">
-        <label>boost/serialization/list.hpp</label>
-      </node>
-      <node id="46">
-        <label>mspass/utility/memory_constants.h</label>
-        <link refid="memory__constants_8h_source"/>
-      </node>
-      <node id="10">
-        <label>mspass/seismic/keywords.h</label>
-        <link refid="keywords_8h_source"/>
-        <childnode refid="5" relation="include">
-        </childnode>
-      </node>
-      <node id="29">
-        <label>boost/uuid/uuid.hpp</label>
-      </node>
-      <node id="20">
-        <label>set</label>
-      </node>
-      <node id="28">
-        <label>boost/serialization/serialization.hpp</label>
-      </node>
-      <node id="4">
-        <label>stdio.h</label>
-      </node>
-      <node id="37">
-        <label>mspass/seismic/Seismogram.h</label>
-        <link refid="_seismogram_8h_source"/>
-        <childnode refid="38" relation="include">
-        </childnode>
-        <childnode refid="26" relation="include">
-        </childnode>
-        <childnode refid="33" relation="include">
-        </childnode>
-      </node>
-      <node id="35">
-        <label>boost/archive/basic_archive.hpp</label>
-      </node>
-      <node id="2">
-        <label>memory</label>
-      </node>
-      <node id="17">
-        <label>mspass/utility/Metadata.h</label>
-        <link refid="_metadata_8h_source"/>
-        <childnode refid="18" relation="include">
-        </childnode>
-        <childnode refid="19" relation="include">
-        </childnode>
-        <childnode refid="20" relation="include">
-        </childnode>
-        <childnode refid="21" relation="include">
-        </childnode>
-        <childnode refid="8" relation="include">
-        </childnode>
-        <childnode refid="22" relation="include">
-        </childnode>
-        <childnode refid="6" relation="include">
-        </childnode>
-        <childnode refid="23" relation="include">
-        </childnode>
-        <childnode refid="24" relation="include">
-        </childnode>
-        <childnode refid="7" relation="include">
-        </childnode>
-        <childnode refid="25" relation="include">
-        </childnode>
       </node>
     </incdepgraph>
     <innernamespace refid="namespacemspass">mspass</innernamespace>
@@ -368,8 +368,8 @@
 <codeline lineno="13"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="14"><highlight class="normal"></highlight><highlight class="comment">//using<sp/>namespace<sp/>mspass::io;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="15"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal"><ref refid="namespacemspass_1_1seismic" kindref="compound">mspass::seismic</ref>;</highlight></codeline>
-<codeline lineno="16"><highlight class="normal"></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" kindref="compound">mspass::utility::MsPASSError</ref>;</highlight></codeline>
-<codeline lineno="17"><highlight class="normal"></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/>mspass::utility::ErrorSeverity;</highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" kindref="compound">mspass::utility::MsPASSError</ref>;</highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">mspass::utility::ErrorSeverity;</highlight></codeline>
 <codeline lineno="18"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal">std;</highlight></codeline>
 <codeline lineno="19"><highlight class="normal"></highlight></codeline>
 <codeline lineno="20"><highlight class="normal"></highlight><highlight class="comment">/*This<sp/>is<sp/>a<sp/>file<sp/>scope<sp/>function<sp/>to<sp/>allow<sp/>the<sp/>overlaoded<sp/>fwrite_to_file</highlight></codeline>
@@ -423,9 +423,9 @@
 <codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>We<sp/>always<sp/>set<sp/>these<sp/>3<sp/>attributes<sp/>in<sp/>Metadata<sp/>so<sp/>they<sp/>can<sp/>be<sp/>properly</highlight></codeline>
 <codeline lineno="73"><highlight class="comment"><sp/><sp/><sp/><sp/>saved<sp/>to<sp/>the<sp/>database<sp/>after<sp/>a<sp/>successful<sp/>write.<sp/><sp/>Repetitious<sp/>with<sp/>Seismogram</highlight></codeline>
 <codeline lineno="74"><highlight class="comment"><sp/><sp/><sp/><sp/>but<sp/>a<sp/>function<sp/>to<sp/>do<sp/>this<sp/>would<sp/>be<sp/>more<sp/>confusing<sp/>that<sp/>helpful<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="75"><highlight class="normal"><sp/><sp/><sp/><sp/>d.put_string(SEISMICMD_dir,dir);</highlight></codeline>
-<codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/>d.put_string(SEISMICMD_dfile,dfile);</highlight></codeline>
-<codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/>d.put_long(SEISMICMD_foff,foff);</highlight></codeline>
+<codeline lineno="75"><highlight class="normal"><sp/><sp/><sp/><sp/>d.put_string(<ref refid="namespacemspass_1_1seismic_1ab8ff84666cf6d1c391987306eaad2546" kindref="member">SEISMICMD_dir</ref>,dir);</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/>d.put_string(<ref refid="namespacemspass_1_1seismic_1a1254f7fb8e1be5b198218604ac9b3c8a" kindref="member">SEISMICMD_dfile</ref>,dfile);</highlight></codeline>
+<codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/>d.put_long(<ref refid="namespacemspass_1_1seismic_1a17279751e3795fee46d6a3cdfe427c33" kindref="member">SEISMICMD_foff</ref>,foff);</highlight></codeline>
 <codeline lineno="78"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">(foff);</highlight></codeline>
 <codeline lineno="79"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="87"><highlight class="normal"></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>fwrite_to_file(<ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref>&amp;<sp/>d,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>dir,</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>dfile)</highlight></codeline>
@@ -437,9 +437,9 @@
 <codeline lineno="93"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">try</highlight><highlight class="normal">{</highlight></codeline>
 <codeline lineno="94"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>foff<sp/>=<sp/>fwrite_sample_data(dir,dfile,d.<ref refid="classmspass_1_1seismic_1_1_core_seismogram_1a9ac5c7c060d582b1a399fb066d06779f" kindref="member">u</ref>.get_address(0,0),3*d.<ref refid="classmspass_1_1seismic_1_1_basic_time_series_1a347b349bb4e1f0e65978dfcd45ae3472" kindref="member">npts</ref>());</highlight></codeline>
 <codeline lineno="95"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight><highlight class="keywordflow">catch</highlight><highlight class="normal">(...){</highlight><highlight class="keywordflow">throw</highlight><highlight class="normal">;};</highlight></codeline>
-<codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/>d.put_string(SEISMICMD_dir,dir);</highlight></codeline>
-<codeline lineno="97"><highlight class="normal"><sp/><sp/><sp/><sp/>d.put_string(SEISMICMD_dfile,dfile);</highlight></codeline>
-<codeline lineno="98"><highlight class="normal"><sp/><sp/><sp/><sp/>d.put_long(SEISMICMD_foff,foff);</highlight></codeline>
+<codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/>d.put_string(<ref refid="namespacemspass_1_1seismic_1ab8ff84666cf6d1c391987306eaad2546" kindref="member">SEISMICMD_dir</ref>,dir);</highlight></codeline>
+<codeline lineno="97"><highlight class="normal"><sp/><sp/><sp/><sp/>d.put_string(<ref refid="namespacemspass_1_1seismic_1a1254f7fb8e1be5b198218604ac9b3c8a" kindref="member">SEISMICMD_dfile</ref>,dfile);</highlight></codeline>
+<codeline lineno="98"><highlight class="normal"><sp/><sp/><sp/><sp/>d.put_long(<ref refid="namespacemspass_1_1seismic_1a17279751e3795fee46d6a3cdfe427c33" kindref="member">SEISMICMD_foff</ref>,foff);</highlight></codeline>
 <codeline lineno="99"><highlight class="normal"></highlight></codeline>
 <codeline lineno="100"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">(foff);</highlight></codeline>
 <codeline lineno="101"><highlight class="normal">}</highlight></codeline>
@@ -488,9 +488,9 @@
 <codeline lineno="160"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>We<sp/>always<sp/>set<sp/>these<sp/>3<sp/>attributes<sp/>in<sp/>Metadata<sp/>so<sp/>they<sp/>can<sp/>be<sp/>properly</highlight></codeline>
 <codeline lineno="161"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>saved<sp/>to<sp/>the<sp/>database<sp/>after<sp/>a<sp/>successful<sp/>write.<sp/><sp/>Repetitious<sp/>with<sp/>Seismogram</highlight></codeline>
 <codeline lineno="162"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>but<sp/>a<sp/>function<sp/>to<sp/>do<sp/>this<sp/>would<sp/>be<sp/>more<sp/>confusing<sp/>that<sp/>helpful<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="163"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>t.put_string(SEISMICMD_dir,<sp/>dir);</highlight></codeline>
-<codeline lineno="164"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>t.put_string(SEISMICMD_dfile,<sp/>dfile);</highlight></codeline>
-<codeline lineno="165"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>t.put_long(SEISMICMD_foff,<sp/>foff);</highlight></codeline>
+<codeline lineno="163"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>t.put_string(<ref refid="namespacemspass_1_1seismic_1ab8ff84666cf6d1c391987306eaad2546" kindref="member">SEISMICMD_dir</ref>,<sp/>dir);</highlight></codeline>
+<codeline lineno="164"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>t.put_string(<ref refid="namespacemspass_1_1seismic_1a1254f7fb8e1be5b198218604ac9b3c8a" kindref="member">SEISMICMD_dfile</ref>,<sp/>dfile);</highlight></codeline>
+<codeline lineno="165"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>t.put_long(<ref refid="namespacemspass_1_1seismic_1a17279751e3795fee46d6a3cdfe427c33" kindref="member">SEISMICMD_foff</ref>,<sp/>foff);</highlight></codeline>
 <codeline lineno="166"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="167"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="168"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>fclose(fp);</highlight></codeline>
@@ -538,9 +538,9 @@
 <codeline lineno="226"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>We<sp/>always<sp/>set<sp/>these<sp/>3<sp/>attributes<sp/>in<sp/>Metadata<sp/>so<sp/>they<sp/>can<sp/>be<sp/>properly</highlight></codeline>
 <codeline lineno="227"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>saved<sp/>to<sp/>the<sp/>database<sp/>after<sp/>a<sp/>successful<sp/>write.<sp/><sp/>Repetitious<sp/>with<sp/>Seismogram</highlight></codeline>
 <codeline lineno="228"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>but<sp/>a<sp/>function<sp/>to<sp/>do<sp/>this<sp/>would<sp/>be<sp/>more<sp/>confusing<sp/>that<sp/>helpful<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="229"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>t.put_string(SEISMICMD_dir,<sp/>dir);</highlight></codeline>
-<codeline lineno="230"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>t.put_string(SEISMICMD_dfile,<sp/>dfile);</highlight></codeline>
-<codeline lineno="231"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>t.put_long(SEISMICMD_foff,<sp/>foff);</highlight></codeline>
+<codeline lineno="229"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>t.put_string(<ref refid="namespacemspass_1_1seismic_1ab8ff84666cf6d1c391987306eaad2546" kindref="member">SEISMICMD_dir</ref>,<sp/>dir);</highlight></codeline>
+<codeline lineno="230"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>t.put_string(<ref refid="namespacemspass_1_1seismic_1a1254f7fb8e1be5b198218604ac9b3c8a" kindref="member">SEISMICMD_dfile</ref>,<sp/>dfile);</highlight></codeline>
+<codeline lineno="231"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>t.put_long(<ref refid="namespacemspass_1_1seismic_1a17279751e3795fee46d6a3cdfe427c33" kindref="member">SEISMICMD_foff</ref>,<sp/>foff);</highlight></codeline>
 <codeline lineno="232"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="233"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="234"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>fclose(fp);</highlight></codeline>
@@ -619,9 +619,9 @@
 <codeline lineno="307"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>ns_read;</highlight></codeline>
 <codeline lineno="308"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>i<sp/>=<sp/>indexes[ind];</highlight></codeline>
 <codeline lineno="309"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>foff;</highlight></codeline>
-<codeline lineno="310"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(de.<ref refid="classmspass_1_1seismic_1_1_ensemble_1a50f9947d9209dda797f1b7fe2b4ba81f" kindref="member">member</ref>[i].is_defined(SEISMICMD_foff))</highlight></codeline>
+<codeline lineno="310"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(de.<ref refid="classmspass_1_1seismic_1_1_ensemble_1a50f9947d9209dda797f1b7fe2b4ba81f" kindref="member">member</ref>[i].is_defined(<ref refid="namespacemspass_1_1seismic_1a17279751e3795fee46d6a3cdfe427c33" kindref="member">SEISMICMD_foff</ref>))</highlight></codeline>
 <codeline lineno="311"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
-<codeline lineno="312"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>foff<sp/>=<sp/>de.<ref refid="classmspass_1_1seismic_1_1_ensemble_1a50f9947d9209dda797f1b7fe2b4ba81f" kindref="member">member</ref>[i].get_long(SEISMICMD_foff);</highlight></codeline>
+<codeline lineno="312"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>foff<sp/>=<sp/>de.<ref refid="classmspass_1_1seismic_1_1_ensemble_1a50f9947d9209dda797f1b7fe2b4ba81f" kindref="member">member</ref>[i].get_long(<ref refid="namespacemspass_1_1seismic_1a17279751e3795fee46d6a3cdfe427c33" kindref="member">SEISMICMD_foff</ref>);</highlight></codeline>
 <codeline lineno="313"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="314"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="315"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
@@ -684,9 +684,9 @@
 <codeline lineno="372"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>ns_read;</highlight></codeline>
 <codeline lineno="373"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>i<sp/>=<sp/>indexes[ind];</highlight></codeline>
 <codeline lineno="374"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>foff;</highlight></codeline>
-<codeline lineno="375"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(de.<ref refid="classmspass_1_1seismic_1_1_ensemble_1a50f9947d9209dda797f1b7fe2b4ba81f" kindref="member">member</ref>[i].is_defined(SEISMICMD_foff))</highlight></codeline>
+<codeline lineno="375"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(de.<ref refid="classmspass_1_1seismic_1_1_ensemble_1a50f9947d9209dda797f1b7fe2b4ba81f" kindref="member">member</ref>[i].is_defined(<ref refid="namespacemspass_1_1seismic_1a17279751e3795fee46d6a3cdfe427c33" kindref="member">SEISMICMD_foff</ref>))</highlight></codeline>
 <codeline lineno="376"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
-<codeline lineno="377"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>foff<sp/>=<sp/>de.<ref refid="classmspass_1_1seismic_1_1_ensemble_1a50f9947d9209dda797f1b7fe2b4ba81f" kindref="member">member</ref>[i].get_long(SEISMICMD_foff);</highlight></codeline>
+<codeline lineno="377"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>foff<sp/>=<sp/>de.<ref refid="classmspass_1_1seismic_1_1_ensemble_1a50f9947d9209dda797f1b7fe2b4ba81f" kindref="member">member</ref>[i].get_long(<ref refid="namespacemspass_1_1seismic_1a17279751e3795fee46d6a3cdfe427c33" kindref="member">SEISMICMD_foff</ref>);</highlight></codeline>
 <codeline lineno="378"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="379"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="380"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>

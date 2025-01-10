@@ -1,14 +1,15 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="classmspass_1_1algorithms_1_1_time_window" kind="class" language="C++" prot="public">
     <compoundname>mspass::algorithms::TimeWindow</compoundname>
     <includes refid="_time_window_8h" local="no">TimeWindow.h</includes>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="classmspass_1_1algorithms_1_1_time_window_1a2277a3ea634dfe6ba5bc71296d93e76a" prot="public" static="no" mutable="no">
         <type>double</type>
         <definition>double mspass::algorithms::TimeWindow::start</definition>
         <argsstring></argsstring>
         <name>start</name>
+        <qualifiedname>mspass::algorithms::TimeWindow::start</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -23,6 +24,7 @@
         <definition>double mspass::algorithms::TimeWindow::end</definition>
         <argsstring></argsstring>
         <name>end</name>
+        <qualifiedname>mspass::algorithms::TimeWindow::end</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -32,13 +34,14 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/TimeWindow.h" line="23" column="11" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/TimeWindow.h" bodystart="23" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1_time_window_1a47add95b4b08cb15b8bad29453a93358" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
         <definition>mspass::algorithms::TimeWindow::TimeWindow</definition>
         <argsstring>()</argsstring>
         <name>TimeWindow</name>
+        <qualifiedname>mspass::algorithms::TimeWindow::TimeWindow</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -55,6 +58,7 @@
         <definition>mspass::algorithms::TimeWindow::TimeWindow</definition>
         <argsstring>(const double ts, const double te)</argsstring>
         <name>TimeWindow</name>
+        <qualifiedname>mspass::algorithms::TimeWindow::TimeWindow</qualifiedname>
         <param>
           <type>const double</type>
           <declname>ts</declname>
@@ -96,6 +100,7 @@
         <definition>mspass::algorithms::TimeWindow::TimeWindow</definition>
         <argsstring>(const TimeWindow &amp;parent)</argsstring>
         <name>TimeWindow</name>
+        <qualifiedname>mspass::algorithms::TimeWindow::TimeWindow</qualifiedname>
         <param>
           <type>const <ref refid="classmspass_1_1algorithms_1_1_time_window" kindref="compound">TimeWindow</ref> &amp;</type>
           <declname>parent</declname>
@@ -108,11 +113,12 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/TimeWindow.h" line="34" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/TimeWindow.h" bodystart="34" bodyend="38"/>
       </memberdef>
-      <memberdef kind="function" id="classmspass_1_1algorithms_1_1_time_window_1aa1009acd1f7b7412173178ed6de87604" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1_time_window_1a514252a31fd5d188c9ff5a1e35ad70ab" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="classmspass_1_1algorithms_1_1_time_window" kindref="compound">TimeWindow</ref> &amp;</type>
-        <definition>TimeWindow&amp; mspass::algorithms::TimeWindow::operator=</definition>
+        <definition>TimeWindow &amp; mspass::algorithms::TimeWindow::operator=</definition>
         <argsstring>(const TimeWindow &amp;parent)</argsstring>
         <name>operator=</name>
+        <qualifiedname>mspass::algorithms::TimeWindow::operator=</qualifiedname>
         <param>
           <type>const <ref refid="classmspass_1_1algorithms_1_1_time_window" kindref="compound">TimeWindow</ref> &amp;</type>
           <declname>parent</declname>
@@ -130,6 +136,7 @@
         <definition>TimeWindow mspass::algorithms::TimeWindow::shift</definition>
         <argsstring>(const double tshift) const</argsstring>
         <name>shift</name>
+        <qualifiedname>mspass::algorithms::TimeWindow::shift</qualifiedname>
         <param>
           <type>const double</type>
           <declname>tshift</declname>
@@ -150,6 +157,7 @@
         <definition>double mspass::algorithms::TimeWindow::length</definition>
         <argsstring>()</argsstring>
         <name>length</name>
+        <qualifiedname>mspass::algorithms::TimeWindow::length</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -161,7 +169,7 @@
         <references refid="classmspass_1_1algorithms_1_1_time_window_1a916901f8d5d1dbb2bf38300bf28a2ec3" compoundref="_time_window_8h" startline="23">end</references>
         <references refid="classmspass_1_1algorithms_1_1_time_window_1a2277a3ea634dfe6ba5bc71296d93e76a" compoundref="_time_window_8h" startline="19">start</references>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
 <para>Defines a time window. </para>
     </briefdescription>
@@ -173,7 +181,7 @@
     <listofallmembers>
       <member refid="classmspass_1_1algorithms_1_1_time_window_1a916901f8d5d1dbb2bf38300bf28a2ec3" prot="public" virt="non-virtual"><scope>mspass::algorithms::TimeWindow</scope><name>end</name></member>
       <member refid="classmspass_1_1algorithms_1_1_time_window_1a76f72268273c2b16fb85dee2e60921d7" prot="public" virt="non-virtual"><scope>mspass::algorithms::TimeWindow</scope><name>length</name></member>
-      <member refid="classmspass_1_1algorithms_1_1_time_window_1aa1009acd1f7b7412173178ed6de87604" prot="public" virt="non-virtual"><scope>mspass::algorithms::TimeWindow</scope><name>operator=</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_time_window_1a514252a31fd5d188c9ff5a1e35ad70ab" prot="public" virt="non-virtual"><scope>mspass::algorithms::TimeWindow</scope><name>operator=</name></member>
       <member refid="classmspass_1_1algorithms_1_1_time_window_1abcfead755182b85b06a7c66b8e5e4925" prot="public" virt="non-virtual"><scope>mspass::algorithms::TimeWindow</scope><name>shift</name></member>
       <member refid="classmspass_1_1algorithms_1_1_time_window_1a2277a3ea634dfe6ba5bc71296d93e76a" prot="public" virt="non-virtual"><scope>mspass::algorithms::TimeWindow</scope><name>start</name></member>
       <member refid="classmspass_1_1algorithms_1_1_time_window_1a47add95b4b08cb15b8bad29453a93358" prot="public" virt="non-virtual"><scope>mspass::algorithms::TimeWindow</scope><name>TimeWindow</name></member>

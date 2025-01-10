@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="_attribute_cross_reference_8h" kind="file" language="C++">
     <compoundname>AttributeCrossReference.h</compoundname>
     <includes local="no">string</includes>
@@ -10,22 +10,15 @@
     <includedby refid="mspass_8h" local="yes">/home/runner/work/mspass/mspass/cxx/include/mspass/mspass.h</includedby>
     <includedby refid="_attribute_cross_reference_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/utility/AttributeCrossReference.cc</includedby>
     <incdepgraph>
-      <node id="7">
-        <label>list</label>
-      </node>
-      <node id="13">
-        <label>mspass/utility/MsPASSError.h</label>
-        <link refid="_ms_p_a_s_s_error_8h_source"/>
-        <childnode refid="8" relation="include">
+      <node id="17">
+        <label>mspass/utility/AntelopePf.h</label>
+        <link refid="_antelope_pf_8h_source"/>
+        <childnode refid="7" relation="include">
         </childnode>
-        <childnode refid="14" relation="include">
+        <childnode refid="2" relation="include">
         </childnode>
-      </node>
-      <node id="2">
-        <label>string</label>
-      </node>
-      <node id="3">
-        <label>map</label>
+        <childnode refid="5" relation="include">
+        </childnode>
       </node>
       <node id="1">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AttributeCrossReference.h</label>
@@ -55,45 +48,11 @@
         <childnode refid="17" relation="include">
         </childnode>
       </node>
-      <node id="14">
-        <label>exception</label>
-      </node>
-      <node id="9">
-        <label>fstream</label>
-      </node>
-      <node id="11">
-        <label>boost/any.hpp</label>
-      </node>
       <node id="15">
         <label>mspass/utility/BasicMetadata.h</label>
         <link refid="_basic_metadata_8h_source"/>
         <childnode refid="2" relation="include">
         </childnode>
-      </node>
-      <node id="6">
-        <label>typeinfo</label>
-      </node>
-      <node id="10">
-        <label>sstream</label>
-      </node>
-      <node id="12">
-        <label>pybind11/pybind11.h</label>
-      </node>
-      <node id="8">
-        <label>iostream</label>
-      </node>
-      <node id="17">
-        <label>mspass/utility/AntelopePf.h</label>
-        <link refid="_antelope_pf_8h_source"/>
-        <childnode refid="7" relation="include">
-        </childnode>
-        <childnode refid="2" relation="include">
-        </childnode>
-        <childnode refid="5" relation="include">
-        </childnode>
-      </node>
-      <node id="4">
-        <label>set</label>
       </node>
       <node id="5">
         <label>mspass/utility/Metadata.h</label>
@@ -121,17 +80,58 @@
         <childnode refid="15" relation="include">
         </childnode>
       </node>
+      <node id="13">
+        <label>mspass/utility/MsPASSError.h</label>
+        <link refid="_ms_p_a_s_s_error_8h_source"/>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+      </node>
+      <node id="11">
+        <label>boost/any.hpp</label>
+      </node>
+      <node id="14">
+        <label>exception</label>
+      </node>
+      <node id="9">
+        <label>fstream</label>
+      </node>
+      <node id="8">
+        <label>iostream</label>
+      </node>
+      <node id="7">
+        <label>list</label>
+      </node>
+      <node id="3">
+        <label>map</label>
+      </node>
+      <node id="12">
+        <label>pybind11/pybind11.h</label>
+      </node>
+      <node id="4">
+        <label>set</label>
+      </node>
+      <node id="10">
+        <label>sstream</label>
+      </node>
+      <node id="2">
+        <label>string</label>
+      </node>
+      <node id="6">
+        <label>typeinfo</label>
+      </node>
     </incdepgraph>
     <invincdepgraph>
+      <node id="2">
+        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/mspass.h</label>
+        <link refid="mspass_8h_source"/>
+      </node>
       <node id="1">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AttributeCrossReference.h</label>
         <link refid="_attribute_cross_reference_8h"/>
         <childnode refid="2" relation="include">
         </childnode>
-      </node>
-      <node id="2">
-        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/mspass.h</label>
-        <link refid="mspass_8h_source"/>
       </node>
     </invincdepgraph>
     <innerclass refid="classmspass_1_1utility_1_1_attribute_cross_reference" prot="public">mspass::utility::AttributeCrossReference</innerclass>
@@ -162,7 +162,7 @@
 <codeline lineno="66" refid="classmspass_1_1utility_1_1_attribute_cross_reference_1afa33f80669eae48d402f63ad488cd48b" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1utility_1_1_attribute_cross_reference_1afa33f80669eae48d402f63ad488cd48b" kindref="member">AttributeCrossReference</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::map&lt;std::string,std::string&gt;<sp/>internal2external,</highlight></codeline>
 <codeline lineno="67"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>mspass::utility::MetadataList&amp;<sp/>mdlist);</highlight></codeline>
 <codeline lineno="69"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1utility_1_1_attribute_cross_reference_1aaa7bf24e8df2c42ef42f97800d48a57e" kindref="member">AttributeCrossReference</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_attribute_cross_reference" kindref="compound">AttributeCrossReference</ref>&amp;<sp/>parent);</highlight></codeline>
-<codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::string<sp/></highlight><highlight class="keyword">internal</highlight><highlight class="normal">(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>key)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::string<sp/><ref refid="classmspass_1_1utility_1_1_attribute_cross_reference_1a2264349fe7d2093900fa9b56ef84b96b" kindref="member">internal</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>key)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="73"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::string<sp/><ref refid="classmspass_1_1utility_1_1_attribute_cross_reference_1aeded33f763704fc1a42b884cf62762c6" kindref="member">external</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>key)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="75"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>MDtype<sp/><ref refid="classmspass_1_1utility_1_1_attribute_cross_reference_1a546084d7cd4b9369ee7db723c3629422" kindref="member">type</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>key)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1utility_1_1_attribute_cross_reference" kindref="compound">AttributeCrossReference</ref>&amp;<sp/><ref refid="classmspass_1_1utility_1_1_attribute_cross_reference_1a619f37e593d5d259ec6cafed2eed1aea" kindref="member">operator=</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_attribute_cross_reference" kindref="compound">AttributeCrossReference</ref>&amp;<sp/>parent);</highlight></codeline>

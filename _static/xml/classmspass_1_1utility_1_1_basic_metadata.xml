@@ -1,15 +1,16 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="classmspass_1_1utility_1_1_basic_metadata" kind="class" language="C++" prot="public" abstract="yes">
     <compoundname>mspass::utility::BasicMetadata</compoundname>
     <derivedcompoundref refid="classmspass_1_1utility_1_1_metadata" prot="public" virt="non-virtual">mspass::utility::Metadata</derivedcompoundref>
     <includes refid="_basic_metadata_8h" local="no">BasicMetadata.h</includes>
-      <sectiondef kind="public-func">
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="classmspass_1_1utility_1_1_basic_metadata_1a1d7a9ab1e25e01694cc733ad2b98c6b7" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type></type>
         <definition>virtual mspass::utility::BasicMetadata::~BasicMetadata</definition>
         <argsstring>()</argsstring>
         <name>~BasicMetadata</name>
+        <qualifiedname>mspass::utility::BasicMetadata::~BasicMetadata</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -23,6 +24,7 @@
         <definition>virtual int mspass::utility::BasicMetadata::get_int</definition>
         <argsstring>(const std::string key) const =0</argsstring>
         <name>get_int</name>
+        <qualifiedname>mspass::utility::BasicMetadata::get_int</qualifiedname>
         <reimplementedby refid="classmspass_1_1utility_1_1_metadata_1a78f3a01e1b1deccd84a0833bea4ef462">get_int</reimplementedby>
         <param>
           <type>const std::string</type>
@@ -41,6 +43,7 @@
         <definition>virtual double mspass::utility::BasicMetadata::get_double</definition>
         <argsstring>(const std::string key) const =0</argsstring>
         <name>get_double</name>
+        <qualifiedname>mspass::utility::BasicMetadata::get_double</qualifiedname>
         <reimplementedby refid="classmspass_1_1utility_1_1_metadata_1ad69a5786d997104df560775f4f688b02">get_double</reimplementedby>
         <param>
           <type>const std::string</type>
@@ -59,6 +62,7 @@
         <definition>virtual bool mspass::utility::BasicMetadata::get_bool</definition>
         <argsstring>(const std::string key) const =0</argsstring>
         <name>get_bool</name>
+        <qualifiedname>mspass::utility::BasicMetadata::get_bool</qualifiedname>
         <reimplementedby refid="classmspass_1_1utility_1_1_metadata_1a2631da9d437572ee0781ed9bd96a3ed3">get_bool</reimplementedby>
         <param>
           <type>const std::string</type>
@@ -77,6 +81,7 @@
         <definition>virtual std::string mspass::utility::BasicMetadata::get_string</definition>
         <argsstring>(const std::string key) const =0</argsstring>
         <name>get_string</name>
+        <qualifiedname>mspass::utility::BasicMetadata::get_string</qualifiedname>
         <reimplementedby refid="classmspass_1_1utility_1_1_metadata_1aa56da98a52f03babd67bf9fb55c40f3a">get_string</reimplementedby>
         <param>
           <type>const std::string</type>
@@ -95,6 +100,7 @@
         <definition>virtual void mspass::utility::BasicMetadata::put</definition>
         <argsstring>(const std::string key, const double val)=0</argsstring>
         <name>put</name>
+        <qualifiedname>mspass::utility::BasicMetadata::put</qualifiedname>
         <reimplementedby refid="classmspass_1_1utility_1_1_metadata_1aefee14db8cda9c7143a0eb7bf2d1be1f">put</reimplementedby>
         <param>
           <type>const std::string</type>
@@ -117,6 +123,7 @@
         <definition>virtual void mspass::utility::BasicMetadata::put</definition>
         <argsstring>(const std::string key, const int val)=0</argsstring>
         <name>put</name>
+        <qualifiedname>mspass::utility::BasicMetadata::put</qualifiedname>
         <reimplementedby refid="classmspass_1_1utility_1_1_metadata_1a11ef6cbc1adec7964e2d9c3a4ead15b1">put</reimplementedby>
         <param>
           <type>const std::string</type>
@@ -139,6 +146,7 @@
         <definition>virtual void mspass::utility::BasicMetadata::put</definition>
         <argsstring>(const std::string key, const bool val)=0</argsstring>
         <name>put</name>
+        <qualifiedname>mspass::utility::BasicMetadata::put</qualifiedname>
         <reimplementedby refid="classmspass_1_1utility_1_1_metadata_1ab3989b1152e9b7b3dcce36aaec89f46d">put</reimplementedby>
         <param>
           <type>const std::string</type>
@@ -161,6 +169,7 @@
         <definition>virtual void mspass::utility::BasicMetadata::put</definition>
         <argsstring>(const std::string key, const std::string val)=0</argsstring>
         <name>put</name>
+        <qualifiedname>mspass::utility::BasicMetadata::put</qualifiedname>
         <reimplementedby refid="classmspass_1_1utility_1_1_metadata_1adc016a9bb2288f1f0a7687cfa6844ceb">put</reimplementedby>
         <param>
           <type>const std::string</type>
@@ -178,7 +187,7 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/BasicMetadata.h" line="25" column="16"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
 <para>Abstract base class for <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref> concept. </para>
     </briefdescription>
@@ -186,22 +195,10 @@
 <para>A core idea in MsPASS is the idea of a generic header that allows storage and retrieval of arbitrary attributes. This base class forces support for the standard basic data types. </para>
     </detaileddescription>
     <inheritancegraph>
-      <node id="11">
-        <label>mspass::seismic::Ensemble&lt; Tdata &gt;</label>
+      <node id="3">
+        <label>mspass::seismic::Ensemble&lt; T &gt;</label>
         <link refid="classmspass_1_1seismic_1_1_ensemble"/>
         <childnode refid="2" relation="public-inheritance">
-        </childnode>
-      </node>
-      <node id="9">
-        <label>mspass::seismic::TimeSeries</label>
-        <link refid="classmspass_1_1seismic_1_1_time_series"/>
-        <childnode refid="8" relation="public-inheritance">
-        </childnode>
-      </node>
-      <node id="4">
-        <label>mspass::seismic::LoggingEnsemble&lt; T &gt;</label>
-        <link refid="classmspass_1_1seismic_1_1_logging_ensemble"/>
-        <childnode refid="3" relation="public-inheritance">
         </childnode>
       </node>
       <node id="5">
@@ -210,38 +207,22 @@
         <childnode refid="2" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="2">
-        <label>mspass::utility::Metadata</label>
-        <link refid="classmspass_1_1utility_1_1_metadata"/>
-        <childnode refid="1" relation="public-inheritance">
-        </childnode>
-      </node>
-      <node id="10">
-        <label>mspass::seismic::TimeSeriesWGaps</label>
-        <link refid="classmspass_1_1seismic_1_1_time_series_w_gaps"/>
-        <childnode refid="9" relation="public-inheritance">
-        </childnode>
-      </node>
-      <node id="7">
-        <label>mspass::seismic::SeismogramWGaps</label>
-        <link refid="classmspass_1_1seismic_1_1_seismogram_w_gaps"/>
-        <childnode refid="6" relation="public-inheritance">
-        </childnode>
-      </node>
-      <node id="1">
-        <label>mspass::utility::BasicMetadata</label>
-        <link refid="classmspass_1_1utility_1_1_basic_metadata"/>
-      </node>
-      <node id="6">
-        <label>mspass::seismic::Seismogram</label>
-        <link refid="classmspass_1_1seismic_1_1_seismogram"/>
-        <childnode refid="5" relation="public-inheritance">
-        </childnode>
-      </node>
       <node id="8">
         <label>mspass::seismic::CoreTimeSeries</label>
         <link refid="classmspass_1_1seismic_1_1_core_time_series"/>
         <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="11">
+        <label>mspass::seismic::Ensemble&lt; Tdata &gt;</label>
+        <link refid="classmspass_1_1seismic_1_1_ensemble"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>mspass::seismic::LoggingEnsemble&lt; T &gt;</label>
+        <link refid="classmspass_1_1seismic_1_1_logging_ensemble"/>
+        <childnode refid="3" relation="public-inheritance">
         </childnode>
       </node>
       <node id="12">
@@ -250,16 +231,44 @@
         <childnode refid="2" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="3">
-        <label>mspass::seismic::Ensemble&lt; T &gt;</label>
-        <link refid="classmspass_1_1seismic_1_1_ensemble"/>
-        <childnode refid="2" relation="public-inheritance">
+      <node id="6">
+        <label>mspass::seismic::Seismogram</label>
+        <link refid="classmspass_1_1seismic_1_1_seismogram"/>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>mspass::seismic::SeismogramWGaps</label>
+        <link refid="classmspass_1_1seismic_1_1_seismogram_w_gaps"/>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>mspass::seismic::TimeSeries</label>
+        <link refid="classmspass_1_1seismic_1_1_time_series"/>
+        <childnode refid="8" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="10">
+        <label>mspass::seismic::TimeSeriesWGaps</label>
+        <link refid="classmspass_1_1seismic_1_1_time_series_w_gaps"/>
+        <childnode refid="9" relation="public-inheritance">
         </childnode>
       </node>
       <node id="13">
         <label>mspass::utility::AntelopePf</label>
         <link refid="classmspass_1_1utility_1_1_antelope_pf"/>
         <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>mspass::utility::BasicMetadata</label>
+        <link refid="classmspass_1_1utility_1_1_basic_metadata"/>
+      </node>
+      <node id="2">
+        <label>mspass::utility::Metadata</label>
+        <link refid="classmspass_1_1utility_1_1_metadata"/>
+        <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
     </inheritancegraph>

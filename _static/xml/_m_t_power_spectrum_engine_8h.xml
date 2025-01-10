@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="_m_t_power_spectrum_engine_8h" kind="file" language="C++">
     <compoundname>MTPowerSpectrumEngine.h</compoundname>
     <includes local="no">memory</includes>
@@ -15,17 +15,26 @@
     <includedby refid="_c_n_r_decon_engine_8h" local="yes">/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNRDeconEngine.h</includedby>
     <includedby refid="_m_t_power_spectrum_engine_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/MTPowerSpectrumEngine.cc</includedby>
     <incdepgraph>
-      <node id="16">
-        <label>list</label>
-      </node>
-      <node id="10">
-        <label>mspass/seismic/BasicTimeSeries.h</label>
-        <link refid="_basic_time_series_8h_source"/>
-        <childnode refid="11" relation="include">
+      <node id="1">
+        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MTPowerSpectrumEngine.h</label>
+        <link refid="_m_t_power_spectrum_engine_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
         </childnode>
         <childnode refid="6" relation="include">
         </childnode>
         <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="37" relation="include">
+        </childnode>
+        <childnode refid="41" relation="include">
         </childnode>
       </node>
       <node id="42">
@@ -38,17 +47,55 @@
         <childnode refid="22" relation="include">
         </childnode>
       </node>
-      <node id="5">
-        <label>gsl/gsl_fft_complex.h</label>
+      <node id="10">
+        <label>mspass/seismic/BasicTimeSeries.h</label>
+        <link refid="_basic_time_series_8h_source"/>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
       </node>
-      <node id="27">
-        <label>boost/serialization/map.hpp</label>
+      <node id="9">
+        <label>mspass/seismic/CoreTimeSeries.h</label>
+        <link refid="_core_time_series_8h_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
       </node>
-      <node id="38">
-        <label>boost/serialization/vector.hpp</label>
+      <node id="41">
+        <label>mspass/seismic/PowerSpectrum.h</label>
+        <link refid="_power_spectrum_8h_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="33" relation="include">
+        </childnode>
+        <childnode refid="42" relation="include">
+        </childnode>
       </node>
-      <node id="6">
-        <label>boost/archive/text_iarchive.hpp</label>
+      <node id="8">
+        <label>mspass/seismic/TimeSeries.h</label>
+        <link refid="_time_series_8h_source"/>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="33" relation="include">
+        </childnode>
+      </node>
+      <node id="24">
+        <label>mspass/utility/BasicMetadata.h</label>
+        <link refid="_basic_metadata_8h_source"/>
+        <childnode refid="25" relation="include">
+        </childnode>
       </node>
       <node id="33">
         <label>mspass/utility/ErrorLogger.h</label>
@@ -72,8 +119,31 @@
         <childnode refid="33" relation="include">
         </childnode>
       </node>
-      <node id="40">
-        <label>boost/archive/binary_iarchive.hpp</label>
+      <node id="12">
+        <label>mspass/utility/Metadata.h</label>
+        <link refid="_metadata_8h_source"/>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
       </node>
       <node id="22">
         <label>mspass/utility/MsPASSError.h</label>
@@ -81,29 +151,6 @@
         <childnode refid="17" relation="include">
         </childnode>
         <childnode refid="23" relation="include">
-        </childnode>
-      </node>
-      <node id="31">
-        <label>boost/uuid/uuid_io.hpp</label>
-      </node>
-      <node id="37">
-        <label>mspass/utility/dmatrix.h</label>
-        <link refid="dmatrix_8h_source"/>
-        <childnode refid="25" relation="include">
-        </childnode>
-        <childnode refid="17" relation="include">
-        </childnode>
-        <childnode refid="19" relation="include">
-        </childnode>
-        <childnode refid="3" relation="include">
-        </childnode>
-        <childnode refid="38" relation="include">
-        </childnode>
-        <childnode refid="39" relation="include">
-        </childnode>
-        <childnode refid="40" relation="include">
-        </childnode>
-        <childnode refid="22" relation="include">
         </childnode>
       </node>
       <node id="26">
@@ -136,21 +183,67 @@
         <childnode refid="33" relation="include">
         </childnode>
       </node>
-      <node id="25">
-        <label>string</label>
-      </node>
-      <node id="9">
-        <label>mspass/seismic/CoreTimeSeries.h</label>
-        <link refid="_core_time_series_8h_source"/>
+      <node id="37">
+        <label>mspass/utility/dmatrix.h</label>
+        <link refid="dmatrix_8h_source"/>
+        <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
         <childnode refid="3" relation="include">
         </childnode>
-        <childnode refid="10" relation="include">
+        <childnode refid="38" relation="include">
         </childnode>
-        <childnode refid="12" relation="include">
+        <childnode refid="39" relation="include">
+        </childnode>
+        <childnode refid="40" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
         </childnode>
       </node>
-      <node id="14">
-        <label>map</label>
+      <node id="20">
+        <label>boost/any.hpp</label>
+      </node>
+      <node id="35">
+        <label>boost/archive/basic_archive.hpp</label>
+      </node>
+      <node id="40">
+        <label>boost/archive/binary_iarchive.hpp</label>
+      </node>
+      <node id="39">
+        <label>boost/archive/binary_oarchive.hpp</label>
+      </node>
+      <node id="6">
+        <label>boost/archive/text_iarchive.hpp</label>
+      </node>
+      <node id="7">
+        <label>boost/archive/text_oarchive.hpp</label>
+      </node>
+      <node id="36">
+        <label>boost/serialization/list.hpp</label>
+      </node>
+      <node id="27">
+        <label>boost/serialization/map.hpp</label>
+      </node>
+      <node id="28">
+        <label>boost/serialization/serialization.hpp</label>
+      </node>
+      <node id="38">
+        <label>boost/serialization/vector.hpp</label>
+      </node>
+      <node id="29">
+        <label>boost/uuid/uuid.hpp</label>
+      </node>
+      <node id="30">
+        <label>boost/uuid/uuid_generators.hpp</label>
+      </node>
+      <node id="31">
+        <label>boost/uuid/uuid_io.hpp</label>
+      </node>
+      <node id="32">
+        <label>boost/uuid/uuid_serialize.hpp</label>
       </node>
       <node id="23">
         <label>exception</label>
@@ -158,30 +251,38 @@
       <node id="18">
         <label>fstream</label>
       </node>
-      <node id="39">
-        <label>boost/archive/binary_oarchive.hpp</label>
+      <node id="4">
+        <label>gsl/gsl_errno.h</label>
       </node>
-      <node id="20">
-        <label>boost/any.hpp</label>
+      <node id="5">
+        <label>gsl/gsl_fft_complex.h</label>
       </node>
-      <node id="7">
-        <label>boost/archive/text_oarchive.hpp</label>
+      <node id="17">
+        <label>iostream</label>
       </node>
-      <node id="24">
-        <label>mspass/utility/BasicMetadata.h</label>
-        <link refid="_basic_metadata_8h_source"/>
-        <childnode refid="25" relation="include">
-        </childnode>
+      <node id="16">
+        <label>list</label>
       </node>
-      <node id="8">
-        <label>mspass/seismic/TimeSeries.h</label>
-        <link refid="_time_series_8h_source"/>
-        <childnode refid="9" relation="include">
-        </childnode>
-        <childnode refid="26" relation="include">
-        </childnode>
-        <childnode refid="33" relation="include">
-        </childnode>
+      <node id="14">
+        <label>map</label>
+      </node>
+      <node id="11">
+        <label>math.h</label>
+      </node>
+      <node id="2">
+        <label>memory</label>
+      </node>
+      <node id="21">
+        <label>pybind11/pybind11.h</label>
+      </node>
+      <node id="15">
+        <label>set</label>
+      </node>
+      <node id="19">
+        <label>sstream</label>
+      </node>
+      <node id="25">
+        <label>string</label>
       </node>
       <node id="13">
         <label>typeinfo</label>
@@ -192,116 +293,15 @@
       <node id="3">
         <label>vector</label>
       </node>
-      <node id="30">
-        <label>boost/uuid/uuid_generators.hpp</label>
-      </node>
-      <node id="19">
-        <label>sstream</label>
-      </node>
-      <node id="21">
-        <label>pybind11/pybind11.h</label>
-      </node>
-      <node id="11">
-        <label>math.h</label>
-      </node>
-      <node id="17">
-        <label>iostream</label>
-      </node>
-      <node id="32">
-        <label>boost/uuid/uuid_serialize.hpp</label>
-      </node>
-      <node id="36">
-        <label>boost/serialization/list.hpp</label>
-      </node>
-      <node id="29">
-        <label>boost/uuid/uuid.hpp</label>
-      </node>
-      <node id="15">
-        <label>set</label>
-      </node>
-      <node id="28">
-        <label>boost/serialization/serialization.hpp</label>
-      </node>
-      <node id="1">
-        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MTPowerSpectrumEngine.h</label>
-        <link refid="_m_t_power_spectrum_engine_8h"/>
-        <childnode refid="2" relation="include">
-        </childnode>
-        <childnode refid="3" relation="include">
-        </childnode>
-        <childnode refid="4" relation="include">
-        </childnode>
-        <childnode refid="5" relation="include">
-        </childnode>
-        <childnode refid="6" relation="include">
-        </childnode>
-        <childnode refid="7" relation="include">
-        </childnode>
-        <childnode refid="8" relation="include">
-        </childnode>
-        <childnode refid="37" relation="include">
-        </childnode>
-        <childnode refid="41" relation="include">
-        </childnode>
-      </node>
-      <node id="41">
-        <label>mspass/seismic/PowerSpectrum.h</label>
-        <link refid="_power_spectrum_8h_source"/>
-        <childnode refid="3" relation="include">
-        </childnode>
-        <childnode refid="12" relation="include">
-        </childnode>
-        <childnode refid="22" relation="include">
-        </childnode>
-        <childnode refid="33" relation="include">
-        </childnode>
-        <childnode refid="42" relation="include">
-        </childnode>
-      </node>
-      <node id="35">
-        <label>boost/archive/basic_archive.hpp</label>
-      </node>
-      <node id="2">
-        <label>memory</label>
-      </node>
-      <node id="4">
-        <label>gsl/gsl_errno.h</label>
-      </node>
-      <node id="12">
-        <label>mspass/utility/Metadata.h</label>
-        <link refid="_metadata_8h_source"/>
-        <childnode refid="13" relation="include">
-        </childnode>
-        <childnode refid="14" relation="include">
-        </childnode>
-        <childnode refid="15" relation="include">
-        </childnode>
-        <childnode refid="16" relation="include">
-        </childnode>
-        <childnode refid="17" relation="include">
-        </childnode>
-        <childnode refid="18" relation="include">
-        </childnode>
-        <childnode refid="19" relation="include">
-        </childnode>
-        <childnode refid="20" relation="include">
-        </childnode>
-        <childnode refid="21" relation="include">
-        </childnode>
-        <childnode refid="22" relation="include">
-        </childnode>
-        <childnode refid="24" relation="include">
-        </childnode>
-      </node>
     </incdepgraph>
     <invincdepgraph>
-      <node id="3">
-        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNRDeconEngine.h</label>
-        <link refid="_c_n_r_decon_engine_8h_source"/>
-      </node>
       <node id="2">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h</label>
         <link refid="_c_n_r3_c_decon_8h_source"/>
+      </node>
+      <node id="3">
+        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNRDeconEngine.h</label>
+        <link refid="_c_n_r_decon_engine_8h_source"/>
       </node>
       <node id="1">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MTPowerSpectrumEngine.h</label>
@@ -345,7 +345,7 @@
 <codeline lineno="56"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a8232d61152acbe74c6a890a662f89c63" kindref="member">~MTPowerSpectrumEngine</ref>();</highlight></codeline>
 <codeline lineno="58"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine" kindref="compound">MTPowerSpectrumEngine</ref>&amp;<sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a51379e47b45995eb44c519c2672de77b" kindref="member">operator=</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine" kindref="compound">MTPowerSpectrumEngine</ref>&amp;<sp/>parent);</highlight></codeline>
 <codeline lineno="73"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_power_spectrum" kindref="compound">mspass::seismic::PowerSpectrum</ref><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1aa3c10c25ea2c6b82cf8bbe2991f16bfe" kindref="member">apply</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref>&amp;<sp/>d);</highlight></codeline>
-<codeline lineno="89" refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a3b7b9b8e20cd59a00ed0f4fbeab7829b" refkind="member"><highlight class="normal"><sp/><sp/>std::vector&lt;double&gt;<sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a3b7b9b8e20cd59a00ed0f4fbeab7829b" kindref="member">apply</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::vector&lt;double&gt;&amp;<sp/>d);</highlight></codeline>
+<codeline lineno="89" refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1ab679e58c66c0c4a332350c7f4282e806" refkind="member"><highlight class="normal"><sp/><sp/>std::vector&lt;double&gt;<sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1ab679e58c66c0c4a332350c7f4282e806" kindref="member">apply</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::vector&lt;double&gt;&amp;<sp/>d);</highlight></codeline>
 <codeline lineno="91" refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1ada36c092fdc3aa128be8eb25d00349d6" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1ada36c092fdc3aa128be8eb25d00349d6" kindref="member">df</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>deltaf;};</highlight></codeline>
 <codeline lineno="94"><highlight class="normal"><sp/><sp/>std::vector&lt;double&gt;<sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a626438cc21ade06cfa7053c324ae58b4" kindref="member">frequencies</ref>();</highlight></codeline>
 <codeline lineno="96" refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a114db709279ea8ab275ba69fbdcbec13" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a114db709279ea8ab275ba69fbdcbec13" kindref="member">taper_length</ref>()</highlight><highlight class="keyword"><sp/>const</highlight></codeline>

@@ -1,13 +1,14 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="namespacemspass_1_1utility_1_1memory__constants" kind="namespace" language="C++">
     <compoundname>mspass::utility::memory_constants</compoundname>
-      <sectiondef kind="func">
+    <sectiondef kind="func">
       <memberdef kind="function" id="memory__constants_8h_1a6221d1d1d18a4093cbbe60433190f87d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>const size_t</type>
         <definition>const size_t mspass::utility::memory_constants::KEY_AVERAGE_SIZE</definition>
         <argsstring>(8)</argsstring>
         <name>KEY_AVERAGE_SIZE</name>
+        <qualifiedname>mspass::utility::memory_constants::KEY_AVERAGE_SIZE</qualifiedname>
         <param>
           <type>8</type>
         </param>
@@ -25,6 +26,7 @@
         <definition>const size_t mspass::utility::memory_constants::MD_AVERAGE_SIZE</definition>
         <argsstring>(KEY_AVERAGE_SIZE+16)</argsstring>
         <name>MD_AVERAGE_SIZE</name>
+        <qualifiedname>mspass::utility::memory_constants::MD_AVERAGE_SIZE</qualifiedname>
         <param>
           <type>KEY_AVERAGE_SIZE+</type>
           <declname>16</declname>
@@ -43,6 +45,7 @@
         <definition>const size_t mspass::utility::memory_constants::HISTORYDATA_AVERAGE_SIZE</definition>
         <argsstring>(64)</argsstring>
         <name>HISTORYDATA_AVERAGE_SIZE</name>
+        <qualifiedname>mspass::utility::memory_constants::HISTORYDATA_AVERAGE_SIZE</qualifiedname>
         <param>
           <type>64</type>
         </param>
@@ -60,6 +63,7 @@
         <definition>const size_t mspass::utility::memory_constants::ELOG_AVERAGE_SIZE</definition>
         <argsstring>(128)</argsstring>
         <name>ELOG_AVERAGE_SIZE</name>
+        <qualifiedname>mspass::utility::memory_constants::ELOG_AVERAGE_SIZE</qualifiedname>
         <param>
           <type>128</type>
         </param>
@@ -78,6 +82,7 @@
         <definition>const size_t mspass::utility::memory_constants::DATA_GAP_AVERAGE_SIZE</definition>
         <argsstring>(2 *sizeof(double)+sizeof(size_t))</argsstring>
         <name>DATA_GAP_AVERAGE_SIZE</name>
+        <qualifiedname>mspass::utility::memory_constants::DATA_GAP_AVERAGE_SIZE</qualifiedname>
         <param>
           <type>2 *</type>
           <declname>sizeof</declname>
@@ -93,7 +98,7 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/memory_constants.h" line="35" column="14" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/memory_constants.h" declline="35" declcolumn="14"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>

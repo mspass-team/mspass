@@ -1,21 +1,15 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="dpss_8h" kind="file" language="C++">
     <compoundname>dpss.h</compoundname>
     <includes local="no">cmath</includes>
     <includes local="no">string.h</includes>
-    <includedby refid="dpss_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/dpss.cc</includedby>
     <includedby refid="_m_t_power_spectrum_engine_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/MTPowerSpectrumEngine.cc</includedby>
     <includedby refid="_multi_taper_spec_div_decon_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/MultiTaperSpecDivDecon.cc</includedby>
     <includedby refid="_multi_taper_xcor_decon_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/MultiTaperXcorDecon.cc</includedby>
+    <includedby refid="dpss_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/dpss.cc</includedby>
     <includedby refid="wavelet_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/wavelet.cc</includedby>
     <incdepgraph>
-      <node id="2">
-        <label>cmath</label>
-      </node>
-      <node id="3">
-        <label>string.h</label>
-      </node>
       <node id="1">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/dpss.h</label>
         <link refid="dpss_8h"/>
@@ -23,6 +17,12 @@
         </childnode>
         <childnode refid="3" relation="include">
         </childnode>
+      </node>
+      <node id="2">
+        <label>cmath</label>
+      </node>
+      <node id="3">
+        <label>string.h</label>
       </node>
     </incdepgraph>
     <innerclass refid="classmspass_1_1algorithms_1_1deconvolution_1_1_e_r_r" prot="public">mspass::algorithms::deconvolution::ERR</innerclass>

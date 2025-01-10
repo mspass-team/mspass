@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="_process_manager_8cc" kind="file" language="C++">
     <compoundname>ProcessManager.cc</compoundname>
     <includes local="no">fstream</includes>
@@ -10,15 +10,6 @@
     <includes refid="_ms_p_a_s_s_error_8h" local="yes">mspass/utility/MsPASSError.h</includes>
     <includes refid="_process_manager_8h" local="yes">mspass/utility/ProcessManager.h</includes>
     <incdepgraph>
-      <node id="13">
-        <label>boost/serialization/map.hpp</label>
-      </node>
-      <node id="14">
-        <label>boost/serialization/vector.hpp</label>
-      </node>
-      <node id="15">
-        <label>boost/archive/text_iarchive.hpp</label>
-      </node>
       <node id="7">
         <label>mspass/utility/MsPASSError.h</label>
         <link refid="_ms_p_a_s_s_error_8h_source"/>
@@ -26,27 +17,6 @@
         </childnode>
         <childnode refid="9" relation="include">
         </childnode>
-      </node>
-      <node id="17">
-        <label>boost/uuid/uuid_io.hpp</label>
-      </node>
-      <node id="4">
-        <label>map</label>
-      </node>
-      <node id="9">
-        <label>exception</label>
-      </node>
-      <node id="2">
-        <label>fstream</label>
-      </node>
-      <node id="16">
-        <label>boost/archive/text_oarchive.hpp</label>
-      </node>
-      <node id="11">
-        <label>vector</label>
-      </node>
-      <node id="6">
-        <label>boost/uuid/uuid_generators.hpp</label>
       </node>
       <node id="10">
         <label>mspass/utility/ProcessManager.h</label>
@@ -74,21 +44,6 @@
         <childnode refid="18" relation="include">
         </childnode>
       </node>
-      <node id="3">
-        <label>sstream</label>
-      </node>
-      <node id="8">
-        <label>iostream</label>
-      </node>
-      <node id="18">
-        <label>boost/uuid/uuid_serialize.hpp</label>
-      </node>
-      <node id="5">
-        <label>boost/uuid/uuid.hpp</label>
-      </node>
-      <node id="12">
-        <label>boost/serialization/serialization.hpp</label>
-      </node>
       <node id="1">
         <label>/home/runner/work/mspass/mspass/cxx/src/lib/utility/ProcessManager.cc</label>
         <link refid="_process_manager_8cc"/>
@@ -106,6 +61,51 @@
         </childnode>
         <childnode refid="10" relation="include">
         </childnode>
+      </node>
+      <node id="15">
+        <label>boost/archive/text_iarchive.hpp</label>
+      </node>
+      <node id="16">
+        <label>boost/archive/text_oarchive.hpp</label>
+      </node>
+      <node id="13">
+        <label>boost/serialization/map.hpp</label>
+      </node>
+      <node id="12">
+        <label>boost/serialization/serialization.hpp</label>
+      </node>
+      <node id="14">
+        <label>boost/serialization/vector.hpp</label>
+      </node>
+      <node id="5">
+        <label>boost/uuid/uuid.hpp</label>
+      </node>
+      <node id="6">
+        <label>boost/uuid/uuid_generators.hpp</label>
+      </node>
+      <node id="17">
+        <label>boost/uuid/uuid_io.hpp</label>
+      </node>
+      <node id="18">
+        <label>boost/uuid/uuid_serialize.hpp</label>
+      </node>
+      <node id="9">
+        <label>exception</label>
+      </node>
+      <node id="2">
+        <label>fstream</label>
+      </node>
+      <node id="8">
+        <label>iostream</label>
+      </node>
+      <node id="4">
+        <label>map</label>
+      </node>
+      <node id="3">
+        <label>sstream</label>
+      </node>
+      <node id="11">
+        <label>vector</label>
       </node>
     </incdepgraph>
     <innernamespace refid="namespacemspass">mspass</innernamespace>

@@ -1,15 +1,16 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="classmspass_1_1seismic_1_1_basic_spectrum" kind="class" language="C++" prot="public" abstract="yes">
     <compoundname>mspass::seismic::BasicSpectrum</compoundname>
     <derivedcompoundref refid="classmspass_1_1seismic_1_1_power_spectrum" prot="public" virt="non-virtual">mspass::seismic::PowerSpectrum</derivedcompoundref>
     <includes refid="_basic_spectrum_8h" local="no">BasicSpectrum.h</includes>
-      <sectiondef kind="protected-attrib">
+    <sectiondef kind="protected-attrib">
       <memberdef kind="variable" id="classmspass_1_1seismic_1_1_basic_spectrum_1aa8b09300420826a09dcfd44783cce21b" prot="protected" static="no" mutable="no">
         <type>double</type>
         <definition>double mspass::seismic::BasicSpectrum::dfval</definition>
         <argsstring></argsstring>
         <name>dfval</name>
+        <qualifiedname>mspass::seismic::BasicSpectrum::dfval</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -23,6 +24,7 @@
         <definition>double mspass::seismic::BasicSpectrum::f0val</definition>
         <argsstring></argsstring>
         <name>f0val</name>
+        <qualifiedname>mspass::seismic::BasicSpectrum::f0val</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -36,6 +38,7 @@
         <definition>double mspass::seismic::BasicSpectrum::parent_dt</definition>
         <argsstring></argsstring>
         <name>parent_dt</name>
+        <qualifiedname>mspass::seismic::BasicSpectrum::parent_dt</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -49,6 +52,7 @@
         <definition>double mspass::seismic::BasicSpectrum::parent_npts</definition>
         <argsstring></argsstring>
         <name>parent_npts</name>
+        <qualifiedname>mspass::seismic::BasicSpectrum::parent_npts</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -62,6 +66,7 @@
         <definition>bool mspass::seismic::BasicSpectrum::is_live</definition>
         <argsstring></argsstring>
         <name>is_live</name>
+        <qualifiedname>mspass::seismic::BasicSpectrum::is_live</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -70,13 +75,14 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" line="176" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" bodystart="176" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_basic_spectrum_1ae2c68571058526795e0424e0a76e4e76" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
         <definition>mspass::seismic::BasicSpectrum::BasicSpectrum</definition>
         <argsstring>()</argsstring>
         <name>BasicSpectrum</name>
+        <qualifiedname>mspass::seismic::BasicSpectrum::BasicSpectrum</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -91,6 +97,7 @@
         <definition>mspass::seismic::BasicSpectrum::BasicSpectrum</definition>
         <argsstring>(const double dfin, const double f0in, const double dtin, const int npts_in)</argsstring>
         <name>BasicSpectrum</name>
+        <qualifiedname>mspass::seismic::BasicSpectrum::BasicSpectrum</qualifiedname>
         <param>
           <type>const double</type>
           <declname>dfin</declname>
@@ -155,6 +162,7 @@
         <definition>mspass::seismic::BasicSpectrum::BasicSpectrum</definition>
         <argsstring>(const BasicSpectrum &amp;parent)</argsstring>
         <name>BasicSpectrum</name>
+        <qualifiedname>mspass::seismic::BasicSpectrum::BasicSpectrum</qualifiedname>
         <param>
           <type>const <ref refid="classmspass_1_1seismic_1_1_basic_spectrum" kindref="compound">BasicSpectrum</ref> &amp;</type>
           <declname>parent</declname>
@@ -168,11 +176,12 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" line="44" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" bodystart="44" bodyend="51"/>
       </memberdef>
-      <memberdef kind="function" id="classmspass_1_1seismic_1_1_basic_spectrum_1a1734200c8081027e340a1078a70512d8" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="classmspass_1_1seismic_1_1_basic_spectrum_1aa63e2972ed9ef383efdf76a9b6f837a0" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="classmspass_1_1seismic_1_1_basic_spectrum" kindref="compound">BasicSpectrum</ref> &amp;</type>
-        <definition>BasicSpectrum&amp; mspass::seismic::BasicSpectrum::operator=</definition>
+        <definition>BasicSpectrum &amp; mspass::seismic::BasicSpectrum::operator=</definition>
         <argsstring>(const BasicSpectrum &amp;parent)</argsstring>
         <name>operator=</name>
+        <qualifiedname>mspass::seismic::BasicSpectrum::operator=</qualifiedname>
         <param>
           <type>const <ref refid="classmspass_1_1seismic_1_1_basic_spectrum" kindref="compound">BasicSpectrum</ref> &amp;</type>
           <declname>parent</declname>
@@ -190,6 +199,7 @@
         <definition>virtual mspass::seismic::BasicSpectrum::~BasicSpectrum</definition>
         <argsstring>()</argsstring>
         <name>~BasicSpectrum</name>
+        <qualifiedname>mspass::seismic::BasicSpectrum::~BasicSpectrum</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -203,6 +213,7 @@
         <definition>bool mspass::seismic::BasicSpectrum::live</definition>
         <argsstring>() const</argsstring>
         <name>live</name>
+        <qualifiedname>mspass::seismic::BasicSpectrum::live</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -218,6 +229,7 @@
         <definition>bool mspass::seismic::BasicSpectrum::dead</definition>
         <argsstring>() const</argsstring>
         <name>dead</name>
+        <qualifiedname>mspass::seismic::BasicSpectrum::dead</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -233,6 +245,7 @@
         <definition>void mspass::seismic::BasicSpectrum::kill</definition>
         <argsstring>()</argsstring>
         <name>kill</name>
+        <qualifiedname>mspass::seismic::BasicSpectrum::kill</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -248,6 +261,7 @@
         <definition>void mspass::seismic::BasicSpectrum::set_live</definition>
         <argsstring>()</argsstring>
         <name>set_live</name>
+        <qualifiedname>mspass::seismic::BasicSpectrum::set_live</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -263,6 +277,7 @@
         <definition>double mspass::seismic::BasicSpectrum::df</definition>
         <argsstring>() const</argsstring>
         <name>df</name>
+        <qualifiedname>mspass::seismic::BasicSpectrum::df</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -277,6 +292,7 @@
         <definition>double mspass::seismic::BasicSpectrum::f0</definition>
         <argsstring>() const</argsstring>
         <name>f0</name>
+        <qualifiedname>mspass::seismic::BasicSpectrum::f0</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -291,6 +307,7 @@
         <definition>double mspass::seismic::BasicSpectrum::dt</definition>
         <argsstring>() const</argsstring>
         <name>dt</name>
+        <qualifiedname>mspass::seismic::BasicSpectrum::dt</qualifiedname>
         <briefdescription>
 <para>Return the original sample interval of data used to generate spectrum. </para>
         </briefdescription>
@@ -306,6 +323,7 @@
         <definition>double mspass::seismic::BasicSpectrum::rayleigh</definition>
         <argsstring>() const</argsstring>
         <name>rayleigh</name>
+        <qualifiedname>mspass::seismic::BasicSpectrum::rayleigh</qualifiedname>
         <briefdescription>
 <para>Return the Rayleigh bin size for this spectrum. </para>
         </briefdescription>
@@ -321,6 +339,7 @@
         <definition>int mspass::seismic::BasicSpectrum::timeseries_npts</definition>
         <argsstring>() const</argsstring>
         <name>timeseries_npts</name>
+        <qualifiedname>mspass::seismic::BasicSpectrum::timeseries_npts</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -335,6 +354,7 @@
         <definition>int mspass::seismic::BasicSpectrum::sample_number</definition>
         <argsstring>(const double f) const</argsstring>
         <name>sample_number</name>
+        <qualifiedname>mspass::seismic::BasicSpectrum::sample_number</qualifiedname>
         <param>
           <type>const double</type>
           <declname>f</declname>
@@ -347,12 +367,14 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" line="128" column="7" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" bodystart="128" bodyend="147"/>
+        <references refid="classmspass_1_1seismic_1_1_basic_spectrum_1a830fc9c8135253aeae01ffd80746b413">nf</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_basic_spectrum_1af690c2deac6b3c2306c15fee9c452a1b" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
         <definition>void mspass::seismic::BasicSpectrum::set_df</definition>
         <argsstring>(const double dfin)</argsstring>
         <name>set_df</name>
+        <qualifiedname>mspass::seismic::BasicSpectrum::set_df</qualifiedname>
         <param>
           <type>const double</type>
           <declname>dfin</declname>
@@ -371,6 +393,7 @@
         <definition>void mspass::seismic::BasicSpectrum::set_f0</definition>
         <argsstring>(const double f0in)</argsstring>
         <name>set_f0</name>
+        <qualifiedname>mspass::seismic::BasicSpectrum::set_f0</qualifiedname>
         <param>
           <type>const double</type>
           <declname>f0in</declname>
@@ -389,6 +412,7 @@
         <definition>void mspass::seismic::BasicSpectrum::set_dt</definition>
         <argsstring>(const double dtin)</argsstring>
         <name>set_dt</name>
+        <qualifiedname>mspass::seismic::BasicSpectrum::set_dt</qualifiedname>
         <param>
           <type>const double</type>
           <declname>dtin</declname>
@@ -407,6 +431,7 @@
         <definition>void mspass::seismic::BasicSpectrum::set_npts</definition>
         <argsstring>(const int npts_in)</argsstring>
         <name>set_npts</name>
+        <qualifiedname>mspass::seismic::BasicSpectrum::set_npts</qualifiedname>
         <param>
           <type>const int</type>
           <declname>npts_in</declname>
@@ -420,11 +445,12 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" line="157" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" bodystart="157" bodyend="157"/>
       </memberdef>
-      <memberdef kind="function" id="classmspass_1_1seismic_1_1_basic_spectrum_1aec2c5339007e54737bbee643c0f93caf" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+      <memberdef kind="function" id="classmspass_1_1seismic_1_1_basic_spectrum_1ad0e29676af3782c4ed1efb228ef7637a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
         <type>std::vector&lt; double &gt;</type>
-        <definition>virtual std::vector&lt;double&gt; mspass::seismic::BasicSpectrum::frequencies</definition>
+        <definition>virtual std::vector&lt; double &gt; mspass::seismic::BasicSpectrum::frequencies</definition>
         <argsstring>() const =0</argsstring>
         <name>frequencies</name>
+        <qualifiedname>mspass::seismic::BasicSpectrum::frequencies</qualifiedname>
         <reimplementedby refid="classmspass_1_1seismic_1_1_power_spectrum_1a1ef20f133212a6288e301e5d80f87a85">frequencies</reimplementedby>
         <briefdescription>
         </briefdescription>
@@ -440,6 +466,7 @@
         <definition>virtual double mspass::seismic::BasicSpectrum::frequency</definition>
         <argsstring>(const int sample_number) const =0</argsstring>
         <name>frequency</name>
+        <qualifiedname>mspass::seismic::BasicSpectrum::frequency</qualifiedname>
         <reimplementedby refid="classmspass_1_1seismic_1_1_power_spectrum_1ad2f979f7662aba3e46f277d9c45fd07d">frequency</reimplementedby>
         <param>
           <type>const int</type>
@@ -460,6 +487,7 @@
         <definition>virtual size_t mspass::seismic::BasicSpectrum::nf</definition>
         <argsstring>() const =0</argsstring>
         <name>nf</name>
+        <qualifiedname>mspass::seismic::BasicSpectrum::nf</qualifiedname>
         <reimplementedby refid="classmspass_1_1seismic_1_1_power_spectrum_1a7675c66d7f1aa8d7b4e9437564af4beb">nf</reimplementedby>
         <briefdescription>
         </briefdescription>
@@ -475,6 +503,7 @@
         <definition>virtual double mspass::seismic::BasicSpectrum::Nyquist</definition>
         <argsstring>() const =0</argsstring>
         <name>Nyquist</name>
+        <qualifiedname>mspass::seismic::BasicSpectrum::Nyquist</qualifiedname>
         <reimplementedby refid="classmspass_1_1seismic_1_1_power_spectrum_1aef0b54806f9e5367df7dfa03804a2f87">Nyquist</reimplementedby>
         <briefdescription>
         </briefdescription>
@@ -485,7 +514,7 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" line="170" column="18"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
@@ -515,14 +544,14 @@
       <member refid="classmspass_1_1seismic_1_1_basic_spectrum_1a2155e90cad5c857f326d4399fd276755" prot="public" virt="non-virtual"><scope>mspass::seismic::BasicSpectrum</scope><name>dt</name></member>
       <member refid="classmspass_1_1seismic_1_1_basic_spectrum_1adcbe20cedb4c2a1f0ed31466e8f70c13" prot="public" virt="non-virtual"><scope>mspass::seismic::BasicSpectrum</scope><name>f0</name></member>
       <member refid="classmspass_1_1seismic_1_1_basic_spectrum_1a3889a47eac3ae9c201f95eb70d9518a4" prot="protected" virt="non-virtual"><scope>mspass::seismic::BasicSpectrum</scope><name>f0val</name></member>
-      <member refid="classmspass_1_1seismic_1_1_basic_spectrum_1aec2c5339007e54737bbee643c0f93caf" prot="public" virt="pure-virtual"><scope>mspass::seismic::BasicSpectrum</scope><name>frequencies</name></member>
+      <member refid="classmspass_1_1seismic_1_1_basic_spectrum_1ad0e29676af3782c4ed1efb228ef7637a" prot="public" virt="pure-virtual"><scope>mspass::seismic::BasicSpectrum</scope><name>frequencies</name></member>
       <member refid="classmspass_1_1seismic_1_1_basic_spectrum_1a076bd1632ad16165c842115fd2aab6a9" prot="public" virt="pure-virtual"><scope>mspass::seismic::BasicSpectrum</scope><name>frequency</name></member>
       <member refid="classmspass_1_1seismic_1_1_basic_spectrum_1a266cf681e4001dffaf775aa223f8438b" prot="protected" virt="non-virtual"><scope>mspass::seismic::BasicSpectrum</scope><name>is_live</name></member>
       <member refid="classmspass_1_1seismic_1_1_basic_spectrum_1a7400b002f21460fece1d5519dfbc26c7" prot="public" virt="non-virtual"><scope>mspass::seismic::BasicSpectrum</scope><name>kill</name></member>
       <member refid="classmspass_1_1seismic_1_1_basic_spectrum_1a2bce24e09412434ec968bed19ec9843d" prot="public" virt="non-virtual"><scope>mspass::seismic::BasicSpectrum</scope><name>live</name></member>
       <member refid="classmspass_1_1seismic_1_1_basic_spectrum_1a830fc9c8135253aeae01ffd80746b413" prot="public" virt="pure-virtual"><scope>mspass::seismic::BasicSpectrum</scope><name>nf</name></member>
       <member refid="classmspass_1_1seismic_1_1_basic_spectrum_1af11c7d672337c3f89c3e063ecf1be4a5" prot="public" virt="pure-virtual"><scope>mspass::seismic::BasicSpectrum</scope><name>Nyquist</name></member>
-      <member refid="classmspass_1_1seismic_1_1_basic_spectrum_1a1734200c8081027e340a1078a70512d8" prot="public" virt="non-virtual"><scope>mspass::seismic::BasicSpectrum</scope><name>operator=</name></member>
+      <member refid="classmspass_1_1seismic_1_1_basic_spectrum_1aa63e2972ed9ef383efdf76a9b6f837a0" prot="public" virt="non-virtual"><scope>mspass::seismic::BasicSpectrum</scope><name>operator=</name></member>
       <member refid="classmspass_1_1seismic_1_1_basic_spectrum_1aeba1d53ba50676257c3cb5fec2f691c8" prot="protected" virt="non-virtual"><scope>mspass::seismic::BasicSpectrum</scope><name>parent_dt</name></member>
       <member refid="classmspass_1_1seismic_1_1_basic_spectrum_1a2f2d159e0b767fac81f7b755e5debbc8" prot="protected" virt="non-virtual"><scope>mspass::seismic::BasicSpectrum</scope><name>parent_npts</name></member>
       <member refid="classmspass_1_1seismic_1_1_basic_spectrum_1a61c04d4d4a98d4135d3f5e0b59cc85b3" prot="public" virt="non-virtual"><scope>mspass::seismic::BasicSpectrum</scope><name>rayleigh</name></member>

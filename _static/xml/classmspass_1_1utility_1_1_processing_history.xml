@@ -1,17 +1,18 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="classmspass_1_1utility_1_1_processing_history" kind="class" language="C++" prot="public">
     <compoundname>mspass::utility::ProcessingHistory</compoundname>
     <basecompoundref refid="classmspass_1_1utility_1_1_basic_processing_history" prot="public" virt="non-virtual">mspass::utility::BasicProcessingHistory</basecompoundref>
     <derivedcompoundref refid="classmspass_1_1seismic_1_1_seismogram" prot="public" virt="non-virtual">mspass::seismic::Seismogram</derivedcompoundref>
     <derivedcompoundref refid="classmspass_1_1seismic_1_1_time_series" prot="public" virt="non-virtual">mspass::seismic::TimeSeries</derivedcompoundref>
     <includes refid="_processing_history_8h" local="no">ProcessingHistory.h</includes>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="classmspass_1_1utility_1_1_processing_history_1a6e1075575bf136ef4639c6b45f9c5402" prot="public" static="no" mutable="no">
         <type><ref refid="classmspass_1_1utility_1_1_error_logger" kindref="compound">ErrorLogger</ref></type>
         <definition>ErrorLogger mspass::utility::ProcessingHistory::elog</definition>
         <argsstring></argsstring>
         <name>elog</name>
+        <qualifiedname>mspass::utility::ProcessingHistory::elog</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -20,13 +21,14 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" line="260" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" bodystart="260" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="protected-attrib">
+    </sectiondef>
+    <sectiondef kind="protected-attrib">
       <memberdef kind="variable" id="classmspass_1_1utility_1_1_processing_history_1ad6acef2beb453d7034ab86087a3936aa" prot="protected" static="no" mutable="no">
         <type>std::multimap&lt; std::string, <ref refid="classmspass_1_1utility_1_1_node_data" kindref="compound">mspass::utility::NodeData</ref> &gt;</type>
         <definition>std::multimap&lt;std::string,mspass::utility::NodeData&gt; mspass::utility::ProcessingHistory::nodes</definition>
         <argsstring></argsstring>
         <name>nodes</name>
+        <qualifiedname>mspass::utility::ProcessingHistory::nodes</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -35,13 +37,14 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" line="683" column="17" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" bodystart="683" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="private-attrib">
+    </sectiondef>
+    <sectiondef kind="private-attrib">
       <memberdef kind="variable" id="classmspass_1_1utility_1_1_processing_history_1ae6fb28d5ceee0c60ca244e288ea5bf2f" prot="private" static="no" mutable="no">
         <type>ProcessingStatus</type>
         <definition>ProcessingStatus mspass::utility::ProcessingHistory::current_status</definition>
         <argsstring></argsstring>
         <name>current_status</name>
+        <qualifiedname>mspass::utility::ProcessingHistory::current_status</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -55,6 +58,7 @@
         <definition>std::string mspass::utility::ProcessingHistory::current_id</definition>
         <argsstring></argsstring>
         <name>current_id</name>
+        <qualifiedname>mspass::utility::ProcessingHistory::current_id</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -68,6 +72,7 @@
         <definition>int mspass::utility::ProcessingHistory::current_stage</definition>
         <argsstring></argsstring>
         <name>current_stage</name>
+        <qualifiedname>mspass::utility::ProcessingHistory::current_stage</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -81,6 +86,7 @@
         <definition>AtomicType mspass::utility::ProcessingHistory::mytype</definition>
         <argsstring></argsstring>
         <name>mytype</name>
+        <qualifiedname>mspass::utility::ProcessingHistory::mytype</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -94,6 +100,7 @@
         <definition>std::string mspass::utility::ProcessingHistory::algorithm</definition>
         <argsstring></argsstring>
         <name>algorithm</name>
+        <qualifiedname>mspass::utility::ProcessingHistory::algorithm</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -107,6 +114,7 @@
         <definition>std::string mspass::utility::ProcessingHistory::algid</definition>
         <argsstring></argsstring>
         <name>algid</name>
+        <qualifiedname>mspass::utility::ProcessingHistory::algid</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -115,13 +123,14 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" line="695" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" bodystart="695" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="classmspass_1_1utility_1_1_processing_history_1a78c4def2e3503ba2fbdadf3c02b733a7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
         <definition>mspass::utility::ProcessingHistory::ProcessingHistory</definition>
         <argsstring>()</argsstring>
         <name>ProcessingHistory</name>
+        <qualifiedname>mspass::utility::ProcessingHistory::ProcessingHistory</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -136,6 +145,7 @@
         <definition>mspass::utility::ProcessingHistory::ProcessingHistory</definition>
         <argsstring>(const std::string jobnm, const std::string jid)</argsstring>
         <name>ProcessingHistory</name>
+        <qualifiedname>mspass::utility::ProcessingHistory::ProcessingHistory</qualifiedname>
         <param>
           <type>const std::string</type>
           <declname>jobnm</declname>
@@ -176,6 +186,7 @@
         <definition>mspass::utility::ProcessingHistory::ProcessingHistory</definition>
         <argsstring>(const ProcessingHistory &amp;parent)</argsstring>
         <name>ProcessingHistory</name>
+        <qualifiedname>mspass::utility::ProcessingHistory::ProcessingHistory</qualifiedname>
         <param>
           <type>const <ref refid="classmspass_1_1utility_1_1_processing_history" kindref="compound">ProcessingHistory</ref> &amp;</type>
           <declname>parent</declname>
@@ -194,6 +205,7 @@
         <definition>bool mspass::utility::ProcessingHistory::is_empty</definition>
         <argsstring>() const</argsstring>
         <name>is_empty</name>
+        <qualifiedname>mspass::utility::ProcessingHistory::is_empty</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -209,6 +221,7 @@
         <definition>bool mspass::utility::ProcessingHistory::is_raw</definition>
         <argsstring>() const</argsstring>
         <name>is_raw</name>
+        <qualifiedname>mspass::utility::ProcessingHistory::is_raw</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -223,6 +236,7 @@
         <definition>bool mspass::utility::ProcessingHistory::is_origin</definition>
         <argsstring>() const</argsstring>
         <name>is_origin</name>
+        <qualifiedname>mspass::utility::ProcessingHistory::is_origin</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -237,6 +251,7 @@
         <definition>bool mspass::utility::ProcessingHistory::is_volatile</definition>
         <argsstring>() const</argsstring>
         <name>is_volatile</name>
+        <qualifiedname>mspass::utility::ProcessingHistory::is_volatile</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -251,6 +266,7 @@
         <definition>bool mspass::utility::ProcessingHistory::is_saved</definition>
         <argsstring>() const</argsstring>
         <name>is_saved</name>
+        <qualifiedname>mspass::utility::ProcessingHistory::is_saved</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -265,6 +281,7 @@
         <definition>size_t mspass::utility::ProcessingHistory::number_of_stages</definition>
         <argsstring>() override</argsstring>
         <name>number_of_stages</name>
+        <qualifiedname>mspass::utility::ProcessingHistory::number_of_stages</qualifiedname>
         <reimplements refid="classmspass_1_1utility_1_1_basic_processing_history_1ac02ca16b83b616ade105d6694ffb6f7d">number_of_stages</reimplements>
         <briefdescription>
 <para>Return number of processing stages that have been applied to this object. </para>
@@ -282,6 +299,7 @@
         <definition>void mspass::utility::ProcessingHistory::set_as_origin</definition>
         <argsstring>(const std::string alg, const std::string algid, const std::string uuid, const AtomicType typ, bool define_as_raw=false)</argsstring>
         <name>set_as_origin</name>
+        <qualifiedname>mspass::utility::ProcessingHistory::set_as_origin</qualifiedname>
         <param>
           <type>const std::string</type>
           <declname>alg</declname>
@@ -365,6 +383,7 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" line="350" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/ProcessingHistory.cc" bodystart="161" bodyend="186"/>
+        <references refid="classmspass_1_1utility_1_1_processing_history_1a42865512c68a26b85b394825a1629729" compoundref="_processing_history_8cc" startline="677" endline="685">clear</references>
         <references refid="classmspass_1_1utility_1_1_error_logger_1aa69873ba0aebf67e9ba24d01992c0bcf" compoundref="_error_logger_8cc" startline="81" endline="86">mspass::utility::ErrorLogger::log_error</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_processing_history_1a986da6a438099a371a0b0a9556f2c8b3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
@@ -372,6 +391,7 @@
         <definition>string mspass::utility::ProcessingHistory::new_ensemble_process</definition>
         <argsstring>(const std::string alg, const std::string algid, const AtomicType typ, const std::vector&lt; ProcessingHistory * &gt; parents, const bool create_newid=true)</argsstring>
         <name>new_ensemble_process</name>
+        <qualifiedname>mspass::utility::ProcessingHistory::new_ensemble_process</qualifiedname>
         <param>
           <type>const std::string</type>
           <declname>alg</declname>
@@ -443,15 +463,18 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" line="399" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/ProcessingHistory.cc" bodystart="187" bodyend="280"/>
         <references refid="classmspass_1_1utility_1_1_processing_history_1a42865512c68a26b85b394825a1629729" compoundref="_processing_history_8cc" startline="677" endline="685">clear</references>
+        <references refid="classmspass_1_1utility_1_1_processing_history_1a52b0394b444f6db307945284ac6e5f8a" compoundref="_processing_history_8cc" startline="657" endline="676">get_nodes</references>
         <references refid="classmspass_1_1utility_1_1_processing_history_1a8e42309bb4dfb0c0ea38496a3235f069" compoundref="_processing_history_8cc" startline="114" endline="119">is_empty</references>
         <references refid="classmspass_1_1utility_1_1_error_logger_1aa69873ba0aebf67e9ba24d01992c0bcf" compoundref="_error_logger_8cc" startline="81" endline="86">mspass::utility::ErrorLogger::log_error</references>
         <references refid="classmspass_1_1utility_1_1_processing_history_1a9a8bf8bc3632660c91fd9d82a79f8411" compoundref="_processing_history_8cc" startline="700" endline="707">newid</references>
+        <references refid="classmspass_1_1utility_1_1_node_data_1a972bd00dc85cae2e490833225f53e282" compoundref="_processing_history_8h" startline="152">mspass::utility::NodeData::stage</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_processing_history_1abf871538f6024bebc2b1512ba1e58ff7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
         <definition>void mspass::utility::ProcessingHistory::add_one_input</definition>
         <argsstring>(const ProcessingHistory &amp;data_to_add)</argsstring>
         <name>add_one_input</name>
+        <qualifiedname>mspass::utility::ProcessingHistory::add_one_input</qualifiedname>
         <param>
           <type>const <ref refid="classmspass_1_1utility_1_1_processing_history" kindref="compound">ProcessingHistory</ref> &amp;</type>
           <declname>data_to_add</declname>
@@ -475,6 +498,8 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" line="418" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/ProcessingHistory.cc" bodystart="285" bodyend="331"/>
+        <references refid="classmspass_1_1utility_1_1_processing_history_1a110c300dfa2a6f5236a7d254fa7bf663" compoundref="_processing_history_8cc" startline="712" endline="722">current_nodedata</references>
+        <references refid="classmspass_1_1utility_1_1_processing_history_1a52b0394b444f6db307945284ac6e5f8a" compoundref="_processing_history_8cc" startline="657" endline="676">get_nodes</references>
         <references refid="classmspass_1_1utility_1_1_processing_history_1adf60368ca5c699cc9186fa145d04376d" compoundref="_processing_history_8h" startline="609" endline="612">id</references>
         <references refid="classmspass_1_1utility_1_1_processing_history_1a8e42309bb4dfb0c0ea38496a3235f069" compoundref="_processing_history_8cc" startline="114" endline="119">is_empty</references>
         <references refid="classmspass_1_1utility_1_1_error_logger_1aa69873ba0aebf67e9ba24d01992c0bcf" compoundref="_error_logger_8cc" startline="81" endline="86">mspass::utility::ErrorLogger::log_error</references>
@@ -484,6 +509,7 @@
         <definition>void mspass::utility::ProcessingHistory::add_many_inputs</definition>
         <argsstring>(const std::vector&lt; ProcessingHistory * &gt; &amp;d)</argsstring>
         <name>add_many_inputs</name>
+        <qualifiedname>mspass::utility::ProcessingHistory::add_many_inputs</qualifiedname>
         <param>
           <type>const std::vector&lt; <ref refid="classmspass_1_1utility_1_1_processing_history" kindref="compound">ProcessingHistory</ref> * &gt; &amp;</type>
           <declname>d</declname>
@@ -514,6 +540,7 @@
         <definition>void mspass::utility::ProcessingHistory::merge</definition>
         <argsstring>(const ProcessingHistory &amp;data_to_add)</argsstring>
         <name>merge</name>
+        <qualifiedname>mspass::utility::ProcessingHistory::merge</qualifiedname>
         <param>
           <type>const <ref refid="classmspass_1_1utility_1_1_processing_history" kindref="compound">ProcessingHistory</ref> &amp;</type>
           <declname>data_to_add</declname>
@@ -536,6 +563,7 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" line="434" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/ProcessingHistory.cc" bodystart="463" bodyend="507"/>
+        <references refid="classmspass_1_1utility_1_1_processing_history_1a52b0394b444f6db307945284ac6e5f8a" compoundref="_processing_history_8cc" startline="657" endline="676">get_nodes</references>
         <references refid="classmspass_1_1utility_1_1_processing_history_1adf60368ca5c699cc9186fa145d04376d" compoundref="_processing_history_8h" startline="609" endline="612">id</references>
         <references refid="classmspass_1_1utility_1_1_processing_history_1a8e42309bb4dfb0c0ea38496a3235f069" compoundref="_processing_history_8cc" startline="114" endline="119">is_empty</references>
         <references refid="classmspass_1_1utility_1_1_error_logger_1aa69873ba0aebf67e9ba24d01992c0bcf" compoundref="_error_logger_8cc" startline="81" endline="86">mspass::utility::ErrorLogger::log_error</references>
@@ -545,6 +573,7 @@
         <definition>void mspass::utility::ProcessingHistory::accumulate</definition>
         <argsstring>(const std::string alg, const std::string algid, const AtomicType typ, const ProcessingHistory &amp;newinput)</argsstring>
         <name>accumulate</name>
+        <qualifiedname>mspass::utility::ProcessingHistory::accumulate</qualifiedname>
         <param>
           <type>const std::string</type>
           <declname>alg</declname>
@@ -572,13 +601,18 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" line="453" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/ProcessingHistory.cc" bodystart="509" bodyend="582"/>
         <references refid="classmspass_1_1utility_1_1_processing_history_1a110c300dfa2a6f5236a7d254fa7bf663" compoundref="_processing_history_8cc" startline="712" endline="722">current_nodedata</references>
+        <references refid="classmspass_1_1utility_1_1_processing_history_1a52b0394b444f6db307945284ac6e5f8a" compoundref="_processing_history_8cc" startline="657" endline="676">get_nodes</references>
+        <references refid="classmspass_1_1utility_1_1_processing_history_1a8e42309bb4dfb0c0ea38496a3235f069" compoundref="_processing_history_8cc" startline="114" endline="119">is_empty</references>
+        <references refid="classmspass_1_1utility_1_1_processing_history_1a4f2cb1d5af0500a526fa8745aa52db36" compoundref="_processing_history_8cc" startline="463" endline="507">merge</references>
         <references refid="classmspass_1_1utility_1_1_processing_history_1a9a8bf8bc3632660c91fd9d82a79f8411" compoundref="_processing_history_8cc" startline="700" endline="707">newid</references>
+        <references refid="classmspass_1_1utility_1_1_node_data_1a972bd00dc85cae2e490833225f53e282" compoundref="_processing_history_8h" startline="152">mspass::utility::NodeData::stage</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_processing_history_1afbcd32c36bbabff34fb51e382da69d83" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::string</type>
         <definition>string mspass::utility::ProcessingHistory::clean_accumulate_uuids</definition>
         <argsstring>()</argsstring>
         <name>clean_accumulate_uuids</name>
+        <qualifiedname>mspass::utility::ProcessingHistory::clean_accumulate_uuids</qualifiedname>
         <briefdescription>
 <para>Clean up inconsistent uuids that can be produced by reduce. </para>
         </briefdescription>
@@ -603,6 +637,7 @@
         <definition>std::string mspass::utility::ProcessingHistory::new_map</definition>
         <argsstring>(const std::string alg, const std::string algid, const AtomicType typ, const ProcessingStatus newstatus=ProcessingStatus::VOLATILE)</argsstring>
         <name>new_map</name>
+        <qualifiedname>mspass::utility::ProcessingHistory::new_map</qualifiedname>
         <param>
           <type>const std::string</type>
           <declname>alg</declname>
@@ -669,6 +704,7 @@
         <definition>std::string mspass::utility::ProcessingHistory::new_map</definition>
         <argsstring>(const std::string alg, const std::string algid, const AtomicType typ, const ProcessingHistory &amp;data_to_clone, const ProcessingStatus newstatus=ProcessingStatus::VOLATILE)</argsstring>
         <name>new_map</name>
+        <qualifiedname>mspass::utility::ProcessingHistory::new_map</qualifiedname>
         <param>
           <type>const std::string</type>
           <declname>alg</declname>
@@ -747,6 +783,7 @@
         <definition>string mspass::utility::ProcessingHistory::map_as_saved</definition>
         <argsstring>(const std::string alg, const std::string algid, const AtomicType typ)</argsstring>
         <name>map_as_saved</name>
+        <qualifiedname>mspass::utility::ProcessingHistory::map_as_saved</qualifiedname>
         <param>
           <type>const std::string</type>
           <declname>alg</declname>
@@ -801,6 +838,7 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" line="575" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/ProcessingHistory.cc" bodystart="420" bodyend="460"/>
+        <references refid="classmspass_1_1utility_1_1_processing_history_1a110c300dfa2a6f5236a7d254fa7bf663" compoundref="_processing_history_8cc" startline="712" endline="722">current_nodedata</references>
         <references refid="classmspass_1_1utility_1_1_processing_history_1adf60368ca5c699cc9186fa145d04376d" compoundref="_processing_history_8h" startline="609" endline="612">id</references>
         <references refid="classmspass_1_1utility_1_1_processing_history_1a8e42309bb4dfb0c0ea38496a3235f069" compoundref="_processing_history_8cc" startline="114" endline="119">is_empty</references>
         <references refid="classmspass_1_1utility_1_1_error_logger_1aa69873ba0aebf67e9ba24d01992c0bcf" compoundref="_error_logger_8cc" startline="81" endline="86">mspass::utility::ErrorLogger::log_error</references>
@@ -810,6 +848,7 @@
         <definition>void mspass::utility::ProcessingHistory::clear</definition>
         <argsstring>()</argsstring>
         <name>clear</name>
+        <qualifiedname>mspass::utility::ProcessingHistory::clear</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -824,6 +863,7 @@
         <definition>multimap&lt; string, NodeData &gt; mspass::utility::ProcessingHistory::get_nodes</definition>
         <argsstring>() const</argsstring>
         <name>get_nodes</name>
+        <qualifiedname>mspass::utility::ProcessingHistory::get_nodes</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -841,6 +881,7 @@
         <definition>int mspass::utility::ProcessingHistory::stage</definition>
         <argsstring>() const</argsstring>
         <name>stage</name>
+        <qualifiedname>mspass::utility::ProcessingHistory::stage</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -856,6 +897,7 @@
         <definition>ProcessingStatus mspass::utility::ProcessingHistory::status</definition>
         <argsstring>() const</argsstring>
         <name>status</name>
+        <qualifiedname>mspass::utility::ProcessingHistory::status</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -870,6 +912,7 @@
         <definition>std::string mspass::utility::ProcessingHistory::id</definition>
         <argsstring>() const</argsstring>
         <name>id</name>
+        <qualifiedname>mspass::utility::ProcessingHistory::id</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -880,11 +923,12 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" line="609" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" bodystart="609" bodyend="612"/>
       </memberdef>
-      <memberdef kind="function" id="classmspass_1_1utility_1_1_processing_history_1a50c8a73d47538a94eddccd53bdfa183a" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="classmspass_1_1utility_1_1_processing_history_1a89df41edb1ff1e92abd5a4f864c36673" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>std::pair&lt; std::string, std::string &gt;</type>
-        <definition>std::pair&lt;std::string,std::string&gt; mspass::utility::ProcessingHistory::created_by</definition>
+        <definition>std::pair&lt; std::string, std::string &gt; mspass::utility::ProcessingHistory::created_by</definition>
         <argsstring>() const</argsstring>
         <name>created_by</name>
+        <qualifiedname>mspass::utility::ProcessingHistory::created_by</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -899,6 +943,7 @@
         <definition>NodeData mspass::utility::ProcessingHistory::current_nodedata</definition>
         <argsstring>() const</argsstring>
         <name>current_nodedata</name>
+        <qualifiedname>mspass::utility::ProcessingHistory::current_nodedata</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -920,6 +965,7 @@
         <definition>string mspass::utility::ProcessingHistory::newid</definition>
         <argsstring>()</argsstring>
         <name>newid</name>
+        <qualifiedname>mspass::utility::ProcessingHistory::newid</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -935,6 +981,7 @@
         <definition>int mspass::utility::ProcessingHistory::number_inputs</definition>
         <argsstring>() const</argsstring>
         <name>number_inputs</name>
+        <qualifiedname>mspass::utility::ProcessingHistory::number_inputs</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -944,12 +991,14 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" line="638" column="7" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/ProcessingHistory.cc" bodystart="696" bodyend="699"/>
+        <references refid="classmspass_1_1utility_1_1_processing_history_1a82d681c60d2e64fab12b92e3244ce052" compoundref="_processing_history_8cc" startline="696" endline="699">number_inputs</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_processing_history_1a95006e7f8009c6d9a5c43d7e086c441b" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>
         <definition>int mspass::utility::ProcessingHistory::number_inputs</definition>
         <argsstring>(const std::string uuidstr) const</argsstring>
         <name>number_inputs</name>
+        <qualifiedname>mspass::utility::ProcessingHistory::number_inputs</qualifiedname>
         <param>
           <type>const std::string</type>
           <declname>uuidstr</declname>
@@ -979,6 +1028,7 @@
         <definition>void mspass::utility::ProcessingHistory::set_id</definition>
         <argsstring>(const std::string newid)</argsstring>
         <name>set_id</name>
+        <qualifiedname>mspass::utility::ProcessingHistory::set_id</qualifiedname>
         <param>
           <type>const std::string</type>
           <declname>newid</declname>
@@ -1009,6 +1059,7 @@
         <definition>list&lt; NodeData &gt; mspass::utility::ProcessingHistory::inputs</definition>
         <argsstring>(const std::string id_to_find) const</argsstring>
         <name>inputs</name>
+        <qualifiedname>mspass::utility::ProcessingHistory::inputs</qualifiedname>
         <param>
           <type>const std::string</type>
           <declname>id_to_find</declname>
@@ -1040,6 +1091,7 @@
         <definition>ProcessingHistory &amp; mspass::utility::ProcessingHistory::operator=</definition>
         <argsstring>(const ProcessingHistory &amp;parent)</argsstring>
         <name>operator=</name>
+        <qualifiedname>mspass::utility::ProcessingHistory::operator=</qualifiedname>
         <param>
           <type>const <ref refid="classmspass_1_1utility_1_1_processing_history" kindref="compound">ProcessingHistory</ref> &amp;</type>
           <declname>parent</declname>
@@ -1054,8 +1106,8 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" line="674" column="21" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/ProcessingHistory.cc" bodystart="741" bodyend="756"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="private-func">
+    </sectiondef>
+    <sectiondef kind="private-func">
       <memberdef kind="function" id="classmspass_1_1utility_1_1_processing_history_1a4a0d4eb6fdf47096bcb78caff961c0dd" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
           <param>
@@ -1066,6 +1118,7 @@
         <definition>void mspass::utility::ProcessingHistory::serialize</definition>
         <argsstring>(Archive &amp;ar, const unsigned int version)</argsstring>
         <name>serialize</name>
+        <qualifiedname>mspass::utility::ProcessingHistory::serialize</qualifiedname>
         <param>
           <type>Archive &amp;</type>
           <declname>ar</declname>
@@ -1082,7 +1135,7 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" line="700" column="13" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" bodystart="700" bodyend="711"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
 <para>Lightweight class to preserve procesing chain of atomic objects. </para>
     </briefdescription>
@@ -1094,10 +1147,16 @@
 <para>The concepts of raw, origin, and stage are implemented with the enum class defined above called ProcessingStatus. Each history record has that as an attribute, but each call to new_stage updates a copy kept inside this object to simplify the python wrappers. </para>
     </detaileddescription>
     <inheritancegraph>
-      <node id="1">
-        <label>mspass::utility::ProcessingHistory</label>
-        <link refid="classmspass_1_1utility_1_1_processing_history"/>
-        <childnode refid="2" relation="public-inheritance">
+      <node id="3">
+        <label>mspass::seismic::Seismogram</label>
+        <link refid="classmspass_1_1seismic_1_1_seismogram"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>mspass::seismic::SeismogramWGaps</label>
+        <link refid="classmspass_1_1seismic_1_1_seismogram_w_gaps"/>
+        <childnode refid="3" relation="public-inheritance">
         </childnode>
       </node>
       <node id="5">
@@ -1112,24 +1171,26 @@
         <childnode refid="5" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="4">
-        <label>mspass::seismic::SeismogramWGaps</label>
-        <link refid="classmspass_1_1seismic_1_1_seismogram_w_gaps"/>
-        <childnode refid="3" relation="public-inheritance">
+      <node id="2">
+        <label>mspass::utility::BasicProcessingHistory</label>
+        <link refid="classmspass_1_1utility_1_1_basic_processing_history"/>
+      </node>
+      <node id="1">
+        <label>mspass::utility::ProcessingHistory</label>
+        <link refid="classmspass_1_1utility_1_1_processing_history"/>
+        <childnode refid="2" relation="public-inheritance">
         </childnode>
       </node>
+    </inheritancegraph>
+    <collaborationgraph>
       <node id="2">
         <label>mspass::utility::BasicProcessingHistory</label>
         <link refid="classmspass_1_1utility_1_1_basic_processing_history"/>
       </node>
       <node id="3">
-        <label>mspass::seismic::Seismogram</label>
-        <link refid="classmspass_1_1seismic_1_1_seismogram"/>
-        <childnode refid="1" relation="public-inheritance">
-        </childnode>
+        <label>mspass::utility::ErrorLogger</label>
+        <link refid="classmspass_1_1utility_1_1_error_logger"/>
       </node>
-    </inheritancegraph>
-    <collaborationgraph>
       <node id="1">
         <label>mspass::utility::ProcessingHistory</label>
         <link refid="classmspass_1_1utility_1_1_processing_history"/>
@@ -1138,14 +1199,6 @@
         <childnode refid="3" relation="usage">
           <edgelabel>elog</edgelabel>
         </childnode>
-      </node>
-      <node id="3">
-        <label>mspass::utility::ErrorLogger</label>
-        <link refid="classmspass_1_1utility_1_1_error_logger"/>
-      </node>
-      <node id="2">
-        <label>mspass::utility::BasicProcessingHistory</label>
-        <link refid="classmspass_1_1utility_1_1_basic_processing_history"/>
       </node>
     </collaborationgraph>
     <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" line="257" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" bodystart="258" bodyend="712"/>
@@ -1160,7 +1213,7 @@
       <member refid="classmspass_1_1utility_1_1_basic_processing_history_1a50db83159f5d5fd204c2a8d74a43649a" prot="public" virt="non-virtual"><scope>mspass::utility::ProcessingHistory</scope><name>BasicProcessingHistory</name></member>
       <member refid="classmspass_1_1utility_1_1_processing_history_1afbcd32c36bbabff34fb51e382da69d83" prot="public" virt="non-virtual"><scope>mspass::utility::ProcessingHistory</scope><name>clean_accumulate_uuids</name></member>
       <member refid="classmspass_1_1utility_1_1_processing_history_1a42865512c68a26b85b394825a1629729" prot="public" virt="non-virtual"><scope>mspass::utility::ProcessingHistory</scope><name>clear</name></member>
-      <member refid="classmspass_1_1utility_1_1_processing_history_1a50c8a73d47538a94eddccd53bdfa183a" prot="public" virt="non-virtual"><scope>mspass::utility::ProcessingHistory</scope><name>created_by</name></member>
+      <member refid="classmspass_1_1utility_1_1_processing_history_1a89df41edb1ff1e92abd5a4f864c36673" prot="public" virt="non-virtual"><scope>mspass::utility::ProcessingHistory</scope><name>created_by</name></member>
       <member refid="classmspass_1_1utility_1_1_processing_history_1a7d9804de5348bfa124076fa9c1027e09" prot="private" virt="non-virtual"><scope>mspass::utility::ProcessingHistory</scope><name>current_id</name></member>
       <member refid="classmspass_1_1utility_1_1_processing_history_1a110c300dfa2a6f5236a7d254fa7bf663" prot="public" virt="non-virtual"><scope>mspass::utility::ProcessingHistory</scope><name>current_nodedata</name></member>
       <member refid="classmspass_1_1utility_1_1_processing_history_1a078af2bfa6413d5633871c3f1ded57b1" prot="private" virt="non-virtual"><scope>mspass::utility::ProcessingHistory</scope><name>current_stage</name></member>
@@ -1190,7 +1243,7 @@
       <member refid="classmspass_1_1utility_1_1_processing_history_1a95006e7f8009c6d9a5c43d7e086c441b" prot="public" virt="non-virtual"><scope>mspass::utility::ProcessingHistory</scope><name>number_inputs</name></member>
       <member refid="classmspass_1_1utility_1_1_processing_history_1a04eaa592369744d85f54da21b8de9776" prot="public" virt="virtual"><scope>mspass::utility::ProcessingHistory</scope><name>number_of_stages</name></member>
       <member refid="classmspass_1_1utility_1_1_processing_history_1ab6203063df0564c57f28d76f8d5969ac" prot="public" virt="non-virtual"><scope>mspass::utility::ProcessingHistory</scope><name>operator=</name></member>
-      <member refid="classmspass_1_1utility_1_1_basic_processing_history_1aa9795e245b241b3cf2ad87e91af071c9" prot="public" virt="non-virtual" ambiguityscope="mspass::utility::BasicProcessingHistory::"><scope>mspass::utility::ProcessingHistory</scope><name>operator=</name></member>
+      <member refid="classmspass_1_1utility_1_1_basic_processing_history_1a4b552f2657fdad975723d9fc73e7875a" prot="public" virt="non-virtual" ambiguityscope="mspass::utility::BasicProcessingHistory::"><scope>mspass::utility::ProcessingHistory</scope><name>operator=</name></member>
       <member refid="classmspass_1_1utility_1_1_processing_history_1a78c4def2e3503ba2fbdadf3c02b733a7" prot="public" virt="non-virtual"><scope>mspass::utility::ProcessingHistory</scope><name>ProcessingHistory</name></member>
       <member refid="classmspass_1_1utility_1_1_processing_history_1a225e2e1941f342f3764c2c27854ad2f6" prot="public" virt="non-virtual"><scope>mspass::utility::ProcessingHistory</scope><name>ProcessingHistory</name></member>
       <member refid="classmspass_1_1utility_1_1_processing_history_1a80dc3ba4e28743d0b13c105dc62428aa" prot="public" virt="non-virtual"><scope>mspass::utility::ProcessingHistory</scope><name>ProcessingHistory</name></member>

@@ -1,13 +1,13 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="blas_8h" kind="file" language="C++">
     <compoundname>blas.h</compoundname>
     <includes local="yes">FC.h</includes>
-    <includedby refid="amplitudes_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/amplitudes.cc</includedby>
     <includedby refid="_butterworth_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Butterworth.cc</includedby>
-    <includedby refid="dpss_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/dpss.cc</includedby>
+    <includedby refid="amplitudes_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/amplitudes.cc</includedby>
     <includedby refid="_multi_taper_spec_div_decon_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/MultiTaperSpecDivDecon.cc</includedby>
     <includedby refid="_shaping_wavelet_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/ShapingWavelet.cc</includedby>
+    <includedby refid="dpss_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/dpss.cc</includedby>
     <includedby refid="sparse__convolve_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/sparse_convolve.cc</includedby>
     <includedby refid="_core_seismogram_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc</includedby>
     <includedby refid="_core_time_series_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreTimeSeries.cc</includedby>
@@ -24,7 +24,7 @@
         <label>FC.h</label>
       </node>
     </incdepgraph>
-      <sectiondef kind="func">
+    <sectiondef kind="func">
       <memberdef kind="function" id="blas_8h_1a61f2081ac704f35bf765b8763daf9e0c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>double</type>
         <definition>double ddot</definition>
@@ -414,7 +414,7 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/misc/blas.h" line="23" column="5" declfile="/home/runner/work/mspass/mspass/cxx/include/misc/blas.h" declline="23" declcolumn="5"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>

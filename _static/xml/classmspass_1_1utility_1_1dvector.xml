@@ -1,15 +1,16 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="classmspass_1_1utility_1_1dvector" kind="class" language="C++" prot="public">
     <compoundname>mspass::utility::dvector</compoundname>
     <basecompoundref refid="classmspass_1_1utility_1_1dmatrix" prot="public" virt="non-virtual">mspass::utility::dmatrix</basecompoundref>
     <includes refid="dmatrix_8h" local="no">dmatrix.h</includes>
-      <sectiondef kind="public-func">
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="classmspass_1_1utility_1_1dvector_1a8d6c8cc42ead0feea6d195ac689aed54" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
         <definition>mspass::utility::dvector::dvector</definition>
         <argsstring>()</argsstring>
         <name>dvector</name>
+        <qualifiedname>mspass::utility::dvector::dvector</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -24,6 +25,7 @@
         <definition>mspass::utility::dvector::dvector</definition>
         <argsstring>(size_t nrv)</argsstring>
         <name>dvector</name>
+        <qualifiedname>mspass::utility::dvector::dvector</qualifiedname>
         <param>
           <type>size_t</type>
           <declname>nrv</declname>
@@ -42,6 +44,7 @@
         <definition>mspass::utility::dvector::dvector</definition>
         <argsstring>(const dvector &amp;other)</argsstring>
         <name>dvector</name>
+        <qualifiedname>mspass::utility::dvector::dvector</qualifiedname>
         <param>
           <type>const <ref refid="classmspass_1_1utility_1_1dvector" kindref="compound">dvector</ref> &amp;</type>
           <declname>other</declname>
@@ -60,6 +63,7 @@
         <definition>dvector &amp; mspass::utility::dvector::operator=</definition>
         <argsstring>(const dvector &amp;other)</argsstring>
         <name>operator=</name>
+        <qualifiedname>mspass::utility::dvector::operator=</qualifiedname>
         <param>
           <type>const <ref refid="classmspass_1_1utility_1_1dvector" kindref="compound">dvector</ref> &amp;</type>
           <declname>other</declname>
@@ -78,6 +82,7 @@
         <definition>double &amp; mspass::utility::dvector::operator()</definition>
         <argsstring>(size_t rowindex)</argsstring>
         <name>operator()</name>
+        <qualifiedname>mspass::utility::dvector::operator()</qualifiedname>
         <param>
           <type>size_t</type>
           <declname>rowindex</declname>
@@ -91,13 +96,14 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" line="278" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/dmatrix.cc" bodystart="256" bodyend="261"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="friend">
+    </sectiondef>
+    <sectiondef kind="friend">
       <memberdef kind="friend" id="classmspass_1_1utility_1_1dvector_1ac66d1dfe674fe885c028c57135366acc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1utility_1_1dvector" kindref="compound">dvector</ref></type>
         <definition>dvector operator*</definition>
         <argsstring>(const dmatrix &amp;A, const dvector &amp;x)</argsstring>
         <name>operator*</name>
+        <qualifiedname>mspass::utility::dvector::operator*</qualifiedname>
         <param>
           <type>const <ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref> &amp;</type>
           <declname>A</declname>
@@ -145,7 +151,7 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" line="289" column="24" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/dmatrix.cc" bodystart="262" bodyend="276"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
 <para>A vector compatible with dmatrix objects. </para>
     </briefdescription>

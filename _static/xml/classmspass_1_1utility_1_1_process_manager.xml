@@ -1,13 +1,14 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="classmspass_1_1utility_1_1_process_manager" kind="class" language="C++" prot="public">
     <compoundname>mspass::utility::ProcessManager</compoundname>
-      <sectiondef kind="private-attrib">
+    <sectiondef kind="private-attrib">
       <memberdef kind="variable" id="classmspass_1_1utility_1_1_process_manager_1a9b237dd6d6053730df5b543f039fbb86" prot="private" static="no" mutable="no">
         <type>std::string</type>
         <definition>std::string mspass::utility::ProcessManager::jobnm</definition>
         <argsstring></argsstring>
         <name>jobnm</name>
+        <qualifiedname>mspass::utility::ProcessManager::jobnm</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -21,6 +22,7 @@
         <definition>boost::uuids::uuid mspass::utility::ProcessManager::job_uuid</definition>
         <argsstring></argsstring>
         <name>job_uuid</name>
+        <qualifiedname>mspass::utility::ProcessManager::job_uuid</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -34,6 +36,7 @@
         <definition>boost::uuids::random_generator mspass::utility::ProcessManager::gen</definition>
         <argsstring></argsstring>
         <name>gen</name>
+        <qualifiedname>mspass::utility::ProcessManager::gen</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -47,6 +50,7 @@
         <definition>std::map&lt;std::string,std::vector&lt;AlgorithmDefinition&gt; &gt; mspass::utility::ProcessManager::algs</definition>
         <argsstring></argsstring>
         <name>algs</name>
+        <qualifiedname>mspass::utility::ProcessManager::algs</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -55,13 +59,14 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessManager.h" line="163" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessManager.h" bodystart="163" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="classmspass_1_1utility_1_1_process_manager_1ac62d64c793d72cadf5c1db06c8c66891" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
         <definition>mspass::utility::ProcessManager::ProcessManager</definition>
         <argsstring>()</argsstring>
         <name>ProcessManager</name>
+        <qualifiedname>mspass::utility::ProcessManager::ProcessManager</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -75,6 +80,7 @@
         <definition>mspass::utility::ProcessManager::ProcessManager</definition>
         <argsstring>(std::string fname)</argsstring>
         <name>ProcessManager</name>
+        <qualifiedname>mspass::utility::ProcessManager::ProcessManager</qualifiedname>
         <param>
           <type>std::string</type>
           <declname>fname</declname>
@@ -92,6 +98,7 @@
         <definition>AlgorithmDefinition mspass::utility::ProcessManager::algorithm</definition>
         <argsstring>(const std::string name, const size_t instance=0) const</argsstring>
         <name>algorithm</name>
+        <qualifiedname>mspass::utility::ProcessManager::algorithm</qualifiedname>
         <param>
           <type>const std::string</type>
           <declname>name</declname>
@@ -114,6 +121,7 @@
         <definition>std::string mspass::utility::ProcessManager::jobname</definition>
         <argsstring>() const</argsstring>
         <name>jobname</name>
+        <qualifiedname>mspass::utility::ProcessManager::jobname</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -127,6 +135,7 @@
         <definition>std::string mspass::utility::ProcessManager::jobid</definition>
         <argsstring>() const</argsstring>
         <name>jobid</name>
+        <qualifiedname>mspass::utility::ProcessManager::jobid</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -140,6 +149,7 @@
         <definition>std::string mspass::utility::ProcessManager::new_newid</definition>
         <argsstring>()</argsstring>
         <name>new_newid</name>
+        <qualifiedname>mspass::utility::ProcessManager::new_newid</qualifiedname>
         <briefdescription>
 <para>Get a new UUID to define unique job run. </para>
         </briefdescription>
@@ -153,8 +163,8 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessManager.h" line="153" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessManager.h" bodystart="153" bodyend="158"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="private-func">
+    </sectiondef>
+    <sectiondef kind="private-func">
       <memberdef kind="function" id="classmspass_1_1utility_1_1_process_manager_1a998b0c7fefcbb80f0c07ee404ad014f6" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
           <param>
@@ -165,6 +175,7 @@
         <definition>void mspass::utility::ProcessManager::serialize</definition>
         <argsstring>(Archive &amp;ar, const unsigned int version)</argsstring>
         <name>serialize</name>
+        <qualifiedname>mspass::utility::ProcessManager::serialize</qualifiedname>
         <param>
           <type>Archive &amp;</type>
           <declname>ar</declname>
@@ -181,7 +192,7 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessManager.h" line="166" column="11" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessManager.h" bodystart="166" bodyend="171"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>

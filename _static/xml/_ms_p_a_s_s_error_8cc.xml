@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="_ms_p_a_s_s_error_8cc" kind="file" language="C++">
     <compoundname>MsPASSError.cc</compoundname>
     <includes local="no">cstring</includes>
@@ -14,15 +14,6 @@
         <childnode refid="6" relation="include">
         </childnode>
       </node>
-      <node id="3">
-        <label>string</label>
-      </node>
-      <node id="6">
-        <label>exception</label>
-      </node>
-      <node id="5">
-        <label>iostream</label>
-      </node>
       <node id="1">
         <label>/home/runner/work/mspass/mspass/cxx/src/lib/utility/MsPASSError.cc</label>
         <link refid="_ms_p_a_s_s_error_8cc"/>
@@ -35,6 +26,15 @@
       </node>
       <node id="2">
         <label>cstring</label>
+      </node>
+      <node id="6">
+        <label>exception</label>
+      </node>
+      <node id="5">
+        <label>iostream</label>
+      </node>
+      <node id="3">
+        <label>string</label>
       </node>
     </incdepgraph>
     <innernamespace refid="namespacemspass">mspass</innernamespace>
@@ -114,7 +114,7 @@
 <codeline lineno="68"><highlight class="comment">badness.<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="69"><highlight class="normal"></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>parse_message_error_severity(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" kindref="compound">mspass::utility::MsPASSError</ref>&amp;<sp/>err)</highlight></codeline>
 <codeline lineno="70"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="71"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>s=err.<ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1ae47776d160eafa42f854be5bf47e00a8" kindref="member">what</ref>();</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>s=err.<ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1a1dd30086a986a3a0669cd974e65bd563" kindref="member">what</ref>();</highlight></codeline>
 <codeline lineno="72"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>fpos;</highlight></codeline>
 <codeline lineno="73"><highlight class="normal"><sp/><sp/>fpos=s.find_last_of(</highlight><highlight class="stringliteral">&quot;:&quot;</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="74"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>Return<sp/>Invalid<sp/>if<sp/>the<sp/>message<sp/>has<sp/>no<sp/>colon<sp/>-<sp/>maybe<sp/>should<sp/>be<sp/>fatal*/</highlight><highlight class="normal"></highlight></codeline>

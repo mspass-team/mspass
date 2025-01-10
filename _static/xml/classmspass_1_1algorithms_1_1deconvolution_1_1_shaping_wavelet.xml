@@ -1,27 +1,29 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet" kind="class" language="C++" prot="public">
     <compoundname>mspass::algorithms::deconvolution::ShapingWavelet</compoundname>
     <includes refid="_shaping_wavelet_8h" local="no">ShapingWavelet.h</includes>
-      <sectiondef kind="private-attrib">
+    <sectiondef kind="private-attrib">
       <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet_1ae1cc83066148ccb753f762fbf2db0a32" prot="private" static="no" mutable="no">
         <type>int</type>
         <definition>int mspass::algorithms::deconvolution::ShapingWavelet::nfft</definition>
         <argsstring></argsstring>
         <name>nfft</name>
+        <qualifiedname>mspass::algorithms::deconvolution::ShapingWavelet::nfft</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ShapingWavelet.h" line="96" column="9" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ShapingWavelet.h" bodystart="94" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ShapingWavelet.h" line="96" column="9" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ShapingWavelet.h" bodystart="96" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet_1acd16bc8f7e3ed920abea7f8fdae1683e" prot="private" static="no" mutable="no">
         <type><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array" kindref="compound">ComplexArray</ref></type>
         <definition>ComplexArray mspass::algorithms::deconvolution::ShapingWavelet::w</definition>
         <argsstring></argsstring>
         <name>w</name>
+        <qualifiedname>mspass::algorithms::deconvolution::ShapingWavelet::w</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -36,6 +38,7 @@
         <definition>double mspass::algorithms::deconvolution::ShapingWavelet::dt</definition>
         <argsstring></argsstring>
         <name>dt</name>
+        <qualifiedname>mspass::algorithms::deconvolution::ShapingWavelet::dt</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -49,6 +52,7 @@
         <definition>double mspass::algorithms::deconvolution::ShapingWavelet::df</definition>
         <argsstring></argsstring>
         <name>df</name>
+        <qualifiedname>mspass::algorithms::deconvolution::ShapingWavelet::df</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -62,6 +66,7 @@
         <definition>std::string mspass::algorithms::deconvolution::ShapingWavelet::wavelet_name</definition>
         <argsstring></argsstring>
         <name>wavelet_name</name>
+        <qualifiedname>mspass::algorithms::deconvolution::ShapingWavelet::wavelet_name</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -70,13 +75,14 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ShapingWavelet.h" line="100" column="17" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ShapingWavelet.h" bodystart="100" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet_1a26b441359eb4d71d4582d578a99abced" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
         <definition>mspass::algorithms::deconvolution::ShapingWavelet::ShapingWavelet</definition>
         <argsstring>()</argsstring>
         <name>ShapingWavelet</name>
+        <qualifiedname>mspass::algorithms::deconvolution::ShapingWavelet::ShapingWavelet</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -90,6 +96,7 @@
         <definition>mspass::algorithms::deconvolution::ShapingWavelet::ShapingWavelet</definition>
         <argsstring>(const mspass::utility::Metadata &amp;md, int npts=0)</argsstring>
         <name>ShapingWavelet</name>
+        <qualifiedname>mspass::algorithms::deconvolution::ShapingWavelet::ShapingWavelet</qualifiedname>
         <param>
           <type>const <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">mspass::utility::Metadata</ref> &amp;</type>
           <declname>md</declname>
@@ -129,6 +136,7 @@
         <definition>mspass::algorithms::deconvolution::ShapingWavelet::ShapingWavelet</definition>
         <argsstring>(mspass::seismic::CoreTimeSeries d, int nfft=0)</argsstring>
         <name>ShapingWavelet</name>
+        <qualifiedname>mspass::algorithms::deconvolution::ShapingWavelet::ShapingWavelet</qualifiedname>
         <param>
           <type><ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">mspass::seismic::CoreTimeSeries</ref></type>
           <declname>d</declname>
@@ -151,6 +159,7 @@
         <definition>mspass::algorithms::deconvolution::ShapingWavelet::ShapingWavelet</definition>
         <argsstring>(const double fpeak, const double dtin, const int n)</argsstring>
         <name>ShapingWavelet</name>
+        <qualifiedname>mspass::algorithms::deconvolution::ShapingWavelet::ShapingWavelet</qualifiedname>
         <param>
           <type>const double</type>
           <declname>fpeak</declname>
@@ -177,6 +186,7 @@
         <definition>mspass::algorithms::deconvolution::ShapingWavelet::ShapingWavelet</definition>
         <argsstring>(const int npolelo, const double f3dblo, const int npolehi, const double f3dbhi, const double dtin, const int n)</argsstring>
         <name>ShapingWavelet</name>
+        <qualifiedname>mspass::algorithms::deconvolution::ShapingWavelet::ShapingWavelet</qualifiedname>
         <param>
           <type>const int</type>
           <declname>npolelo</declname>
@@ -250,6 +260,7 @@
         <definition>mspass::algorithms::deconvolution::ShapingWavelet::ShapingWavelet</definition>
         <argsstring>(const ShapingWavelet &amp;parent)</argsstring>
         <name>ShapingWavelet</name>
+        <qualifiedname>mspass::algorithms::deconvolution::ShapingWavelet::ShapingWavelet</qualifiedname>
         <param>
           <type>const <ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet" kindref="compound">ShapingWavelet</ref> &amp;</type>
           <declname>parent</declname>
@@ -267,6 +278,7 @@
         <definition>ShapingWavelet &amp; mspass::algorithms::deconvolution::ShapingWavelet::operator=</definition>
         <argsstring>(const ShapingWavelet &amp;parent)</argsstring>
         <name>operator=</name>
+        <qualifiedname>mspass::algorithms::deconvolution::ShapingWavelet::operator=</qualifiedname>
         <param>
           <type>const <ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet" kindref="compound">ShapingWavelet</ref> &amp;</type>
           <declname>parent</declname>
@@ -279,11 +291,12 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ShapingWavelet.h" line="74" column="20" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/ShapingWavelet.cc" bodystart="260" bodyend="270"/>
       </memberdef>
-      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet_1aaec6f802d7aba4a36484ba50c9f9c9bf" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet_1ac922b603ff03a691075724bcd53e396f" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array" kindref="compound">ComplexArray</ref> *</type>
-        <definition>ComplexArray* mspass::algorithms::deconvolution::ShapingWavelet::wavelet</definition>
+        <definition>ComplexArray * mspass::algorithms::deconvolution::ShapingWavelet::wavelet</definition>
         <argsstring>()</argsstring>
         <name>wavelet</name>
+        <qualifiedname>mspass::algorithms::deconvolution::ShapingWavelet::wavelet</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -298,6 +311,7 @@
         <definition>CoreTimeSeries mspass::algorithms::deconvolution::ShapingWavelet::impulse_response</definition>
         <argsstring>()</argsstring>
         <name>impulse_response</name>
+        <qualifiedname>mspass::algorithms::deconvolution::ShapingWavelet::impulse_response</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -318,6 +332,7 @@
         <definition>double mspass::algorithms::deconvolution::ShapingWavelet::freq_bin_size</definition>
         <argsstring>()</argsstring>
         <name>freq_bin_size</name>
+        <qualifiedname>mspass::algorithms::deconvolution::ShapingWavelet::freq_bin_size</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -331,6 +346,7 @@
         <definition>double mspass::algorithms::deconvolution::ShapingWavelet::sample_interval</definition>
         <argsstring>()</argsstring>
         <name>sample_interval</name>
+        <qualifiedname>mspass::algorithms::deconvolution::ShapingWavelet::sample_interval</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -344,6 +360,7 @@
         <definition>std::string mspass::algorithms::deconvolution::ShapingWavelet::type</definition>
         <argsstring>()</argsstring>
         <name>type</name>
+        <qualifiedname>mspass::algorithms::deconvolution::ShapingWavelet::type</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -357,6 +374,7 @@
         <definition>int mspass::algorithms::deconvolution::ShapingWavelet::size</definition>
         <argsstring>() const</argsstring>
         <name>size</name>
+        <qualifiedname>mspass::algorithms::deconvolution::ShapingWavelet::size</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -365,8 +383,8 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ShapingWavelet.h" line="92" column="9" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ShapingWavelet.h" bodystart="92" bodyend="94"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="private-func">
+    </sectiondef>
+    <sectiondef kind="private-func">
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet_1a723f26b9e4235ec6767084742efc4cb0" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
           <param>
@@ -377,6 +395,7 @@
         <definition>void mspass::algorithms::deconvolution::ShapingWavelet::serialize</definition>
         <argsstring>(Archive &amp;ar, const unsigned int version)</argsstring>
         <name>serialize</name>
+        <qualifiedname>mspass::algorithms::deconvolution::ShapingWavelet::serialize</qualifiedname>
         <param>
           <type>Archive &amp;</type>
           <declname>ar</declname>
@@ -393,7 +412,7 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ShapingWavelet.h" line="103" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ShapingWavelet.h" bodystart="103" bodyend="110"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
 <para>Frequency domain shaping wavelet. </para>
     </briefdescription>
@@ -420,7 +439,7 @@
       <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet_1a0ae9e28502a67f03057d8aee5c126f9c" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::ShapingWavelet</scope><name>size</name></member>
       <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet_1a057dcb38c1912fe5c0a78957cd874d40" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::ShapingWavelet</scope><name>type</name></member>
       <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet_1acd16bc8f7e3ed920abea7f8fdae1683e" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::ShapingWavelet</scope><name>w</name></member>
-      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet_1aaec6f802d7aba4a36484ba50c9f9c9bf" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::ShapingWavelet</scope><name>wavelet</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet_1ac922b603ff03a691075724bcd53e396f" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::ShapingWavelet</scope><name>wavelet</name></member>
       <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet_1a6b67e5b7621a0c23bcb9dbe12e111a16" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::ShapingWavelet</scope><name>wavelet_name</name></member>
     </listofallmembers>
   </compounddef>

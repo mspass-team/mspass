@@ -1,14 +1,15 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data" kind="class" language="C++" prot="public">
     <compoundname>mspass::algorithms::amplitudes::BandwidthData</compoundname>
     <includes refid="amplitudes_8h" local="no">amplitudes.h</includes>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data_1a0f125fbec3cba28118e541d4f040501f" prot="public" static="no" mutable="no">
         <type>double</type>
         <definition>double mspass::algorithms::amplitudes::BandwidthData::low_edge_f</definition>
         <argsstring></argsstring>
         <name>low_edge_f</name>
+        <qualifiedname>mspass::algorithms::amplitudes::BandwidthData::low_edge_f</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -23,6 +24,7 @@
         <definition>double mspass::algorithms::amplitudes::BandwidthData::high_edge_f</definition>
         <argsstring></argsstring>
         <name>high_edge_f</name>
+        <qualifiedname>mspass::algorithms::amplitudes::BandwidthData::high_edge_f</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -37,6 +39,7 @@
         <definition>double mspass::algorithms::amplitudes::BandwidthData::low_edge_snr</definition>
         <argsstring></argsstring>
         <name>low_edge_snr</name>
+        <qualifiedname>mspass::algorithms::amplitudes::BandwidthData::low_edge_snr</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -51,6 +54,7 @@
         <definition>double mspass::algorithms::amplitudes::BandwidthData::high_edge_snr</definition>
         <argsstring></argsstring>
         <name>high_edge_snr</name>
+        <qualifiedname>mspass::algorithms::amplitudes::BandwidthData::high_edge_snr</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -65,6 +69,7 @@
         <definition>double mspass::algorithms::amplitudes::BandwidthData::f_range</definition>
         <argsstring></argsstring>
         <name>f_range</name>
+        <qualifiedname>mspass::algorithms::amplitudes::BandwidthData::f_range</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -73,13 +78,14 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/amplitudes.h" line="313" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/amplitudes.h" bodystart="313" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data_1a9d68263979255fecee736d396fbe5725" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
         <definition>mspass::algorithms::amplitudes::BandwidthData::BandwidthData</definition>
         <argsstring>()</argsstring>
         <name>BandwidthData</name>
+        <qualifiedname>mspass::algorithms::amplitudes::BandwidthData::BandwidthData</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -93,6 +99,7 @@
         <definition>double mspass::algorithms::amplitudes::BandwidthData::bandwidth_fraction</definition>
         <argsstring>() const</argsstring>
         <name>bandwidth_fraction</name>
+        <qualifiedname>mspass::algorithms::amplitudes::BandwidthData::bandwidth_fraction</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -109,6 +116,7 @@
         <definition>double mspass::algorithms::amplitudes::BandwidthData::bandwidth</definition>
         <argsstring>() const</argsstring>
         <name>bandwidth</name>
+        <qualifiedname>mspass::algorithms::amplitudes::BandwidthData::bandwidth</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -120,7 +128,7 @@
         <references refid="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data_1aa5e75df4c544e03a44cb3efc1077bc39" compoundref="amplitudes_8h" startline="307">high_edge_f</references>
         <references refid="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data_1a0f125fbec3cba28118e541d4f040501f" compoundref="amplitudes_8h" startline="305">low_edge_f</references>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
 <para>Holds parameters defining a passband computed from snr. </para>
     </briefdescription>

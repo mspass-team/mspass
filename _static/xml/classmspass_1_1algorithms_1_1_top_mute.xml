@@ -1,14 +1,15 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="classmspass_1_1algorithms_1_1_top_mute" kind="class" language="C++" prot="public">
     <compoundname>mspass::algorithms::TopMute</compoundname>
     <includes refid="_taper_8h" local="no">Taper.h</includes>
-      <sectiondef kind="private-attrib">
+    <sectiondef kind="private-attrib">
       <memberdef kind="variable" id="classmspass_1_1algorithms_1_1_top_mute_1aecea2d8a3d79cb361e89c52b34136baa" prot="private" static="no" mutable="no">
         <type>std::shared_ptr&lt; <ref refid="classmspass_1_1algorithms_1_1_basic_taper" kindref="compound">BasicTaper</ref> &gt;</type>
         <definition>std::shared_ptr&lt;BasicTaper&gt; mspass::algorithms::TopMute::taper</definition>
         <argsstring></argsstring>
         <name>taper</name>
+        <qualifiedname>mspass::algorithms::TopMute::taper</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -17,13 +18,14 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Taper.h" line="243" column="19" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Taper.h" bodystart="243" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1_top_mute_1ac096036720ef3eeeb06510b222caca01" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
         <definition>mspass::algorithms::TopMute::TopMute</definition>
         <argsstring>()</argsstring>
         <name>TopMute</name>
+        <qualifiedname>mspass::algorithms::TopMute::TopMute</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -38,6 +40,7 @@
         <definition>mspass::algorithms::TopMute::TopMute</definition>
         <argsstring>(const double t0, const double t1, const std::string type)</argsstring>
         <name>TopMute</name>
+        <qualifiedname>mspass::algorithms::TopMute::TopMute</qualifiedname>
         <param>
           <type>const double</type>
           <declname>t0</declname>
@@ -100,6 +103,7 @@
         <definition>mspass::algorithms::TopMute::TopMute</definition>
         <argsstring>(const TopMute &amp;parent)</argsstring>
         <name>TopMute</name>
+        <qualifiedname>mspass::algorithms::TopMute::TopMute</qualifiedname>
         <param>
           <type>const <ref refid="classmspass_1_1algorithms_1_1_top_mute" kindref="compound">TopMute</ref> &amp;</type>
           <declname>parent</declname>
@@ -118,6 +122,7 @@
         <definition>mspass::algorithms::TopMute::~TopMute</definition>
         <argsstring>()</argsstring>
         <name>~TopMute</name>
+        <qualifiedname>mspass::algorithms::TopMute::~TopMute</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -132,6 +137,7 @@
         <definition>TopMute &amp; mspass::algorithms::TopMute::operator=</definition>
         <argsstring>(const TopMute &amp;parent)</argsstring>
         <name>operator=</name>
+        <qualifiedname>mspass::algorithms::TopMute::operator=</qualifiedname>
         <param>
           <type>const <ref refid="classmspass_1_1algorithms_1_1_top_mute" kindref="compound">TopMute</ref> &amp;</type>
           <declname>parent</declname>
@@ -150,6 +156,7 @@
         <definition>int mspass::algorithms::TopMute::apply</definition>
         <argsstring>(mspass::seismic::TimeSeries &amp;d)</argsstring>
         <name>apply</name>
+        <qualifiedname>mspass::algorithms::TopMute::apply</qualifiedname>
         <param>
           <type><ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref> &amp;</type>
           <declname>d</declname>
@@ -168,6 +175,7 @@
         <definition>int mspass::algorithms::TopMute::apply</definition>
         <argsstring>(mspass::seismic::Seismogram &amp;d)</argsstring>
         <name>apply</name>
+        <qualifiedname>mspass::algorithms::TopMute::apply</qualifiedname>
         <param>
           <type><ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref> &amp;</type>
           <declname>d</declname>
@@ -186,6 +194,7 @@
         <definition>double mspass::algorithms::TopMute::get_t0</definition>
         <argsstring>() const</argsstring>
         <name>get_t0</name>
+        <qualifiedname>mspass::algorithms::TopMute::get_t0</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -200,6 +209,7 @@
         <definition>double mspass::algorithms::TopMute::get_t1</definition>
         <argsstring>() const</argsstring>
         <name>get_t1</name>
+        <qualifiedname>mspass::algorithms::TopMute::get_t1</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -214,6 +224,7 @@
         <definition>string mspass::algorithms::TopMute::taper_type</definition>
         <argsstring>() const</argsstring>
         <name>taper_type</name>
+        <qualifiedname>mspass::algorithms::TopMute::taper_type</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -223,7 +234,7 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Taper.h" line="235" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Taper.cc" bodystart="488" bodyend="502"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
 <para>Mute operator for &quot;top&quot; of signals defined first smaple forward. </para>
     </briefdescription>

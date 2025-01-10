@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="_vector_statistics_8h" kind="file" language="C++">
     <compoundname>VectorStatistics.h</compoundname>
     <includes local="no">vector</includes>
@@ -16,9 +16,6 @@
         <childnode refid="6" relation="include">
         </childnode>
       </node>
-      <node id="6">
-        <label>exception</label>
-      </node>
       <node id="1">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/utility/VectorStatistics.h</label>
         <link refid="_vector_statistics_8h"/>
@@ -29,14 +26,17 @@
         <childnode refid="4" relation="include">
         </childnode>
       </node>
-      <node id="2">
-        <label>vector</label>
+      <node id="3">
+        <label>algorithm</label>
+      </node>
+      <node id="6">
+        <label>exception</label>
       </node>
       <node id="5">
         <label>iostream</label>
       </node>
-      <node id="3">
-        <label>algorithm</label>
+      <node id="2">
+        <label>vector</label>
       </node>
     </incdepgraph>
     <invincdepgraph>
@@ -46,15 +46,15 @@
         <childnode refid="3" relation="include">
         </childnode>
       </node>
+      <node id="3">
+        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h</label>
+        <link refid="_c_n_r3_c_decon_8h_source"/>
+      </node>
       <node id="1">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/utility/VectorStatistics.h</label>
         <link refid="_vector_statistics_8h"/>
         <childnode refid="2" relation="include">
         </childnode>
-      </node>
-      <node id="3">
-        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h</label>
-        <link refid="_c_n_r3_c_decon_8h_source"/>
       </node>
     </invincdepgraph>
     <innerclass refid="classmspass_1_1utility_1_1_vector_statistics" prot="public">mspass::utility::VectorStatistics</innerclass>
@@ -77,8 +77,8 @@
 <codeline lineno="15" refid="classmspass_1_1utility_1_1_vector_statistics" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">class</highlight><highlight class="normal"><sp/>T&gt;<sp/></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classmspass_1_1utility_1_1_vector_statistics" kindref="compound">VectorStatistics</ref></highlight></codeline>
 <codeline lineno="16"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="17"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
-<codeline lineno="23"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1utility_1_1_vector_statistics_1ae3ddde97cedb562028c3a0343bd48e47" kindref="member">VectorStatistics</ref>(std::vector&lt;T&gt;<sp/>din);</highlight></codeline>
-<codeline lineno="25"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1utility_1_1_vector_statistics_1ae3ddde97cedb562028c3a0343bd48e47" kindref="member">VectorStatistics</ref>(T<sp/>*din,</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>n);</highlight></codeline>
+<codeline lineno="23"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1utility_1_1_vector_statistics" kindref="compound">VectorStatistics</ref>(std::vector&lt;T&gt;<sp/>din);</highlight></codeline>
+<codeline lineno="25"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1utility_1_1_vector_statistics" kindref="compound">VectorStatistics</ref>(T<sp/>*din,</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>n);</highlight></codeline>
 <codeline lineno="27"><highlight class="normal"><sp/><sp/><sp/><sp/>T<sp/><ref refid="classmspass_1_1utility_1_1_vector_statistics_1a228eee3fbd69e158a2cc0a62d855c7e6" kindref="member">median</ref>();</highlight></codeline>
 <codeline lineno="29"><highlight class="normal"><sp/><sp/><sp/><sp/>T<sp/><ref refid="classmspass_1_1utility_1_1_vector_statistics_1ae7d0a4345dac7fa5644dbb9169b1f5a6" kindref="member">mean</ref>();</highlight></codeline>
 <codeline lineno="31"><highlight class="normal"><sp/><sp/><sp/><sp/>T<sp/><ref refid="classmspass_1_1utility_1_1_vector_statistics_1a5f4e279cde8acf41e6f77b3e01c8ee70" kindref="member">q1_4</ref>();</highlight></codeline>

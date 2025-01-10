@@ -1,27 +1,29 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="classmspass_1_1utility_1_1_algorithm_definition" kind="class" language="C++" prot="public">
     <compoundname>mspass::utility::AlgorithmDefinition</compoundname>
     <includes refid="_process_manager_8h" local="no">ProcessManager.h</includes>
-      <sectiondef kind="private-attrib">
+    <sectiondef kind="private-attrib">
       <memberdef kind="variable" id="classmspass_1_1utility_1_1_algorithm_definition_1a5710be2a0e914ed47c80cb12a72f4e91" prot="private" static="no" mutable="no">
         <type>std::string</type>
         <definition>std::string mspass::utility::AlgorithmDefinition::nm</definition>
         <argsstring></argsstring>
         <name>nm</name>
+        <qualifiedname>mspass::utility::AlgorithmDefinition::nm</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessManager.h" line="115" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessManager.h" bodystart="113" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessManager.h" line="115" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessManager.h" bodystart="115" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classmspass_1_1utility_1_1_algorithm_definition_1a865187a8175d8624cdf20f637e99a6cc" prot="private" static="no" mutable="no">
         <type>std::string</type>
         <definition>std::string mspass::utility::AlgorithmDefinition::myid</definition>
         <argsstring></argsstring>
         <name>myid</name>
+        <qualifiedname>mspass::utility::AlgorithmDefinition::myid</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -35,6 +37,7 @@
         <definition>std::string mspass::utility::AlgorithmDefinition::input_type</definition>
         <argsstring></argsstring>
         <name>input_type</name>
+        <qualifiedname>mspass::utility::AlgorithmDefinition::input_type</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -48,6 +51,7 @@
         <definition>std::string mspass::utility::AlgorithmDefinition::output_type</definition>
         <argsstring></argsstring>
         <name>output_type</name>
+        <qualifiedname>mspass::utility::AlgorithmDefinition::output_type</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -56,13 +60,14 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessManager.h" line="118" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessManager.h" bodystart="118" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="classmspass_1_1utility_1_1_algorithm_definition_1a23ca24b9ba072a9a874044c7d16116f0" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
         <definition>mspass::utility::AlgorithmDefinition::AlgorithmDefinition</definition>
         <argsstring>()</argsstring>
         <name>AlgorithmDefinition</name>
+        <qualifiedname>mspass::utility::AlgorithmDefinition::AlgorithmDefinition</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -79,6 +84,7 @@
         <definition>mspass::utility::AlgorithmDefinition::AlgorithmDefinition</definition>
         <argsstring>(const std::string name, const std::string typin, const std::string typout, const std::string id)</argsstring>
         <name>AlgorithmDefinition</name>
+        <qualifiedname>mspass::utility::AlgorithmDefinition::AlgorithmDefinition</qualifiedname>
         <param>
           <type>const std::string</type>
           <declname>name</declname>
@@ -129,6 +135,7 @@
         <definition>mspass::utility::AlgorithmDefinition::AlgorithmDefinition</definition>
         <argsstring>(const AlgorithmDefinition &amp;parent)</argsstring>
         <name>AlgorithmDefinition</name>
+        <qualifiedname>mspass::utility::AlgorithmDefinition::AlgorithmDefinition</qualifiedname>
         <param>
           <type>const <ref refid="classmspass_1_1utility_1_1_algorithm_definition" kindref="compound">AlgorithmDefinition</ref> &amp;</type>
           <declname>parent</declname>
@@ -146,6 +153,7 @@
         <definition>std::string mspass::utility::AlgorithmDefinition::name</definition>
         <argsstring>() const</argsstring>
         <name>name</name>
+        <qualifiedname>mspass::utility::AlgorithmDefinition::name</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -159,6 +167,7 @@
         <definition>std::string mspass::utility::AlgorithmDefinition::id</definition>
         <argsstring>() const</argsstring>
         <name>id</name>
+        <qualifiedname>mspass::utility::AlgorithmDefinition::id</qualifiedname>
         <briefdescription>
 <para>return the id as a string. </para>
         </briefdescription>
@@ -174,6 +183,7 @@
         <definition>void mspass::utility::AlgorithmDefinition::set_id</definition>
         <argsstring>(const std::string id)</argsstring>
         <name>set_id</name>
+        <qualifiedname>mspass::utility::AlgorithmDefinition::set_id</qualifiedname>
         <param>
           <type>const std::string</type>
           <declname>id</declname>
@@ -189,11 +199,12 @@
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessManager.h" line="101" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessManager.h" bodystart="101" bodyend="101"/>
         <references refid="classmspass_1_1utility_1_1_algorithm_definition_1ae249ed54773be28bc994b347106eb11b" compoundref="_process_manager_8h" startline="90" endline="93">id</references>
       </memberdef>
-      <memberdef kind="function" id="classmspass_1_1utility_1_1_algorithm_definition_1ac3530e744955be31cfda8abc75375b73" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="classmspass_1_1utility_1_1_algorithm_definition_1a440cf34cfdad5ef177475b570cfe5df6" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="classmspass_1_1utility_1_1_algorithm_definition" kindref="compound">AlgorithmDefinition</ref> &amp;</type>
-        <definition>AlgorithmDefinition&amp; mspass::utility::AlgorithmDefinition::operator=</definition>
+        <definition>AlgorithmDefinition &amp; mspass::utility::AlgorithmDefinition::operator=</definition>
         <argsstring>(const AlgorithmDefinition &amp;parent)</argsstring>
         <name>operator=</name>
+        <qualifiedname>mspass::utility::AlgorithmDefinition::operator=</qualifiedname>
         <param>
           <type>const <ref refid="classmspass_1_1utility_1_1_algorithm_definition" kindref="compound">AlgorithmDefinition</ref> &amp;</type>
           <declname>parent</declname>
@@ -206,8 +217,8 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessManager.h" line="103" column="23" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessManager.h" bodystart="103" bodyend="113"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="private-func">
+    </sectiondef>
+    <sectiondef kind="private-func">
       <memberdef kind="function" id="classmspass_1_1utility_1_1_algorithm_definition_1a96d0b39dbc12bbb07cf925d57c55893f" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
           <param>
@@ -218,6 +229,7 @@
         <definition>void mspass::utility::AlgorithmDefinition::serialize</definition>
         <argsstring>(Archive &amp;ar, const unsigned int version)</argsstring>
         <name>serialize</name>
+        <qualifiedname>mspass::utility::AlgorithmDefinition::serialize</qualifiedname>
         <param>
           <type>Archive &amp;</type>
           <declname>ar</declname>
@@ -234,7 +246,7 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessManager.h" line="121" column="11" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessManager.h" bodystart="121" bodyend="125"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
 <para>Lightweight data structure to completely describe an algorithm. </para>
     </briefdescription>
@@ -253,7 +265,7 @@
       <member refid="classmspass_1_1utility_1_1_algorithm_definition_1a865187a8175d8624cdf20f637e99a6cc" prot="private" virt="non-virtual"><scope>mspass::utility::AlgorithmDefinition</scope><name>myid</name></member>
       <member refid="classmspass_1_1utility_1_1_algorithm_definition_1a450718baca75f269b4e5305a221a6e0c" prot="public" virt="non-virtual"><scope>mspass::utility::AlgorithmDefinition</scope><name>name</name></member>
       <member refid="classmspass_1_1utility_1_1_algorithm_definition_1a5710be2a0e914ed47c80cb12a72f4e91" prot="private" virt="non-virtual"><scope>mspass::utility::AlgorithmDefinition</scope><name>nm</name></member>
-      <member refid="classmspass_1_1utility_1_1_algorithm_definition_1ac3530e744955be31cfda8abc75375b73" prot="public" virt="non-virtual"><scope>mspass::utility::AlgorithmDefinition</scope><name>operator=</name></member>
+      <member refid="classmspass_1_1utility_1_1_algorithm_definition_1a440cf34cfdad5ef177475b570cfe5df6" prot="public" virt="non-virtual"><scope>mspass::utility::AlgorithmDefinition</scope><name>operator=</name></member>
       <member refid="classmspass_1_1utility_1_1_algorithm_definition_1ad706e56cf2c6e1ae07f1c120e9b0379c" prot="private" virt="non-virtual"><scope>mspass::utility::AlgorithmDefinition</scope><name>output_type</name></member>
       <member refid="classmspass_1_1utility_1_1_algorithm_definition_1a96d0b39dbc12bbb07cf925d57c55893f" prot="private" virt="non-virtual"><scope>mspass::utility::AlgorithmDefinition</scope><name>serialize</name></member>
       <member refid="classmspass_1_1utility_1_1_algorithm_definition_1a68aacda33ad00fd84803b51013e8b4ff" prot="public" virt="non-virtual"><scope>mspass::utility::AlgorithmDefinition</scope><name>set_id</name></member>

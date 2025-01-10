@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="classmspass_1_1utility_1_1_metadata" kind="class" language="C++" prot="public">
     <compoundname>mspass::utility::Metadata</compoundname>
     <basecompoundref refid="classmspass_1_1utility_1_1_basic_metadata" prot="public" virt="non-virtual">mspass::utility::BasicMetadata</basecompoundref>
@@ -9,12 +9,13 @@
     <derivedcompoundref refid="classmspass_1_1seismic_1_1_ensemble" prot="public" virt="non-virtual">mspass::seismic::Ensemble&lt; Tdata &gt;</derivedcompoundref>
     <derivedcompoundref refid="classmspass_1_1seismic_1_1_power_spectrum" prot="public" virt="non-virtual">mspass::seismic::PowerSpectrum</derivedcompoundref>
     <derivedcompoundref refid="classmspass_1_1utility_1_1_antelope_pf" prot="public" virt="non-virtual">mspass::utility::AntelopePf</derivedcompoundref>
-      <sectiondef kind="protected-attrib">
+    <sectiondef kind="protected-attrib">
       <memberdef kind="variable" id="classmspass_1_1utility_1_1_metadata_1af564bb9ced4cc480d71a1e13c3fa582e" prot="protected" static="no" mutable="no">
         <type>std::map&lt; std::string, boost::any &gt;</type>
         <definition>std::map&lt;std::string,boost::any&gt; mspass::utility::Metadata::md</definition>
         <argsstring></argsstring>
         <name>md</name>
+        <qualifiedname>mspass::utility::Metadata::md</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -28,6 +29,7 @@
         <definition>std::set&lt;std::string&gt; mspass::utility::Metadata::changed_or_set</definition>
         <argsstring></argsstring>
         <name>changed_or_set</name>
+        <qualifiedname>mspass::utility::Metadata::changed_or_set</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -36,13 +38,14 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="470" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="470" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_1a4a87cd6a6f8fc5cdbee65cb85958cb2c" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
         <definition>mspass::utility::Metadata::Metadata</definition>
         <argsstring>()</argsstring>
         <name>Metadata</name>
+        <qualifiedname>mspass::utility::Metadata::Metadata</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -57,12 +60,13 @@
         <definition>mspass::utility::Metadata::Metadata</definition>
         <argsstring>(std::ifstream &amp;ifs, const std::string form=std::string(&quot;pf&quot;))</argsstring>
         <name>Metadata</name>
+        <qualifiedname>mspass::utility::Metadata::Metadata</qualifiedname>
         <param>
           <type>std::ifstream &amp;</type>
           <declname>ifs</declname>
         </param>
         <param>
-          <type>const std::string</type>
+          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> std::string</type>
           <declname>form</declname>
           <defval>std::string(&quot;pf&quot;)</defval>
         </param>
@@ -108,8 +112,9 @@
         <definition>mspass::utility::Metadata::Metadata</definition>
         <argsstring>(const Metadata &amp;mdold)</argsstring>
         <name>Metadata</name>
+        <qualifiedname>mspass::utility::Metadata::Metadata</qualifiedname>
         <param>
-          <type>const <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref> &amp;</type>
+          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref> &amp;</type>
           <declname>mdold</declname>
         </param>
         <briefdescription>
@@ -136,6 +141,7 @@
         <definition>virtual mspass::utility::Metadata::~Metadata</definition>
         <argsstring>()</argsstring>
         <name>~Metadata</name>
+        <qualifiedname>mspass::utility::Metadata::~Metadata</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -150,8 +156,9 @@
         <definition>Metadata &amp; mspass::utility::Metadata::operator=</definition>
         <argsstring>(const Metadata &amp;mdold)</argsstring>
         <name>operator=</name>
+        <qualifiedname>mspass::utility::Metadata::operator=</qualifiedname>
         <param>
-          <type>const <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref> &amp;</type>
+          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref> &amp;</type>
           <declname>mdold</declname>
         </param>
         <briefdescription>
@@ -171,14 +178,16 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="108" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/Metadata.cc" bodystart="108" bodyend="116"/>
+        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="472" endline="490">get</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_1afadcdb42814abc1448a78d1d9f3d44aa" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
         <type><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref> &amp;</type>
         <definition>Metadata &amp; mspass::utility::Metadata::operator+=</definition>
         <argsstring>(const Metadata &amp;rhs) noexcept</argsstring>
         <name>operator+=</name>
+        <qualifiedname>mspass::utility::Metadata::operator+=</qualifiedname>
         <param>
-          <type>const <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref> &amp;</type>
+          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref> &amp;</type>
           <declname>rhs</declname>
         </param>
         <briefdescription>
@@ -202,12 +211,13 @@
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="124" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/Metadata.cc" bodystart="118" bodyend="133"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_1afbd50c491ecc4d42cf2b4213b8bc3327" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
-        <type>const <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref></type>
+        <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref></type>
         <definition>const Metadata mspass::utility::Metadata::operator+</definition>
         <argsstring>(const Metadata &amp;other) const</argsstring>
         <name>operator+</name>
+        <qualifiedname>mspass::utility::Metadata::operator+</qualifiedname>
         <param>
-          <type>const <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref> &amp;</type>
+          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref> &amp;</type>
           <declname>other</declname>
         </param>
         <briefdescription>
@@ -218,15 +228,17 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="126" column="18" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/Metadata.cc" bodystart="134" bodyend="139"/>
+        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="472" endline="490">get</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_1ad69a5786d997104df560775f4f688b02" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
-        <type>double</type>
+        <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">double</ref></type>
         <definition>double mspass::utility::Metadata::get_double</definition>
         <argsstring>(const std::string key) const override</argsstring>
         <name>get_double</name>
+        <qualifiedname>mspass::utility::Metadata::get_double</qualifiedname>
         <reimplements refid="classmspass_1_1utility_1_1_basic_metadata_1a9165cfdea79974e629d94d0142adf371">get_double</reimplements>
         <param>
-          <type>const std::string</type>
+          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> std::string</type>
           <declname>key</declname>
         </param>
         <briefdescription>
@@ -256,15 +268,17 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="135" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="135" bodyend="152"/>
+        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="472" endline="490">get</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_1a78f3a01e1b1deccd84a0833bea4ef462" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
-        <type>int</type>
+        <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">int</ref></type>
         <definition>int mspass::utility::Metadata::get_int</definition>
         <argsstring>(const std::string key) const override</argsstring>
         <name>get_int</name>
+        <qualifiedname>mspass::utility::Metadata::get_int</qualifiedname>
         <reimplements refid="classmspass_1_1utility_1_1_basic_metadata_1a1790a8b30ed7bb2f9e6b9ebffd6155ef">get_int</reimplements>
         <param>
-          <type>const std::string</type>
+          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> std::string</type>
           <declname>key</declname>
         </param>
         <briefdescription>
@@ -294,14 +308,16 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="159" column="7" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="159" bodyend="177"/>
+        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="472" endline="490">get</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_1a7ace0c05ebb00b3c383cb8cccd225504" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
-        <type>long</type>
+        <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">long</ref></type>
         <definition>long mspass::utility::Metadata::get_long</definition>
         <argsstring>(const std::string key) const</argsstring>
         <name>get_long</name>
+        <qualifiedname>mspass::utility::Metadata::get_long</qualifiedname>
         <param>
-          <type>const std::string</type>
+          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> std::string</type>
           <declname>key</declname>
         </param>
         <briefdescription>
@@ -331,15 +347,17 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="184" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="184" bodyend="202"/>
+        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="472" endline="490">get</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_1aa56da98a52f03babd67bf9fb55c40f3a" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
         <type>std::string</type>
         <definition>std::string mspass::utility::Metadata::get_string</definition>
         <argsstring>(const std::string key) const override</argsstring>
         <name>get_string</name>
+        <qualifiedname>mspass::utility::Metadata::get_string</qualifiedname>
         <reimplements refid="classmspass_1_1utility_1_1_basic_metadata_1a4c96a06a69b18e8f1ca1897ba87ceaae">get_string</reimplements>
         <param>
-          <type>const std::string</type>
+          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> std::string</type>
           <declname>key</declname>
         </param>
         <briefdescription>
@@ -370,15 +388,17 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="213" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="213" bodyend="219"/>
+        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="472" endline="490">get</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_1a2631da9d437572ee0781ed9bd96a3ed3" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
-        <type>bool</type>
+        <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">bool</ref></type>
         <definition>bool mspass::utility::Metadata::get_bool</definition>
         <argsstring>(const std::string key) const override</argsstring>
         <name>get_bool</name>
+        <qualifiedname>mspass::utility::Metadata::get_bool</qualifiedname>
         <reimplements refid="classmspass_1_1utility_1_1_basic_metadata_1a1dac44e02436791b7bdd2a2b9f278b3d">get_bool</reimplements>
         <param>
-          <type>const std::string</type>
+          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> std::string</type>
           <declname>key</declname>
         </param>
         <briefdescription>
@@ -400,17 +420,19 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="228" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="228" bodyend="234"/>
+        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="472" endline="490">get</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
           <param>
-            <type>typename T</type>
+            <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">typename</ref> <ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">T</ref></type>
           </param>
         </templateparamlist>
         <type>T</type>
         <definition>T mspass::utility::Metadata::get</definition>
         <argsstring>(const std::string key) const</argsstring>
         <name>get</name>
+        <qualifiedname>mspass::utility::Metadata::get</qualifiedname>
         <param>
           <type>const std::string</type>
           <declname>key</declname>
@@ -443,17 +465,19 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="250" column="17" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="472" bodyend="490"/>
+        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="472" endline="490">get</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_1a5d6876ed25c3f5d93052239ec828a3c5" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
           <param>
-            <type>typename T</type>
+            <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">typename</ref> <ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">T</ref></type>
           </param>
         </templateparamlist>
         <type>T</type>
         <definition>T mspass::utility::Metadata::get</definition>
         <argsstring>(const char *key) const</argsstring>
         <name>get</name>
+        <qualifiedname>mspass::utility::Metadata::get</qualifiedname>
         <param>
           <type>const char *</type>
           <declname>key</declname>
@@ -478,14 +502,16 @@ on the string key version of this same generic function.
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="265" column="17" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="265" bodyend="272"/>
+        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="472" endline="490">get</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_1a991516933477580b6b59dd578819df06" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>boost::any</type>
         <definition>boost::any mspass::utility::Metadata::get_any</definition>
         <argsstring>(const std::string key) const</argsstring>
         <name>get_any</name>
+        <qualifiedname>mspass::utility::Metadata::get_any</qualifiedname>
         <param>
-          <type>const std::string</type>
+          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> std::string</type>
           <declname>key</declname>
         </param>
         <briefdescription>
@@ -516,14 +542,16 @@ on the string key version of this same generic function.
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="283" column="14" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="283" bodyend="291"/>
+        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="472" endline="490">get</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_1ad5cd3bfc81c7fccd83bbb30ef1c2774c" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>std::string</type>
         <definition>std::string mspass::utility::Metadata::type</definition>
         <argsstring>(const std::string key) const</argsstring>
         <name>type</name>
+        <qualifiedname>mspass::utility::Metadata::type</qualifiedname>
         <param>
-          <type>const std::string</type>
+          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> std::string</type>
           <declname>key</declname>
         </param>
         <briefdescription>
@@ -537,19 +565,20 @@ on the string key version of this same generic function.
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_1ab2162ed3e7349998ee06ace77645bf77" prot="public" static="no" const="no" explicit="no" inline="yes" noexcept="yes" virt="non-virtual">
         <templateparamlist>
           <param>
-            <type>typename T</type>
+            <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">typename</ref> <ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">T</ref></type>
           </param>
         </templateparamlist>
-        <type>void</type>
+        <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">void</ref></type>
         <definition>void mspass::utility::Metadata::put</definition>
         <argsstring>(const std::string key, T val) noexcept</argsstring>
         <name>put</name>
+        <qualifiedname>mspass::utility::Metadata::put</qualifiedname>
         <param>
-          <type>const std::string</type>
+          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> std::string</type>
           <declname>key</declname>
         </param>
         <param>
-          <type>T</type>
+          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">T</ref></type>
           <declname>val</declname>
         </param>
         <briefdescription>
@@ -563,19 +592,20 @@ on the string key version of this same generic function.
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_1aec776bbbbf8528903432d9b30d1272d8" prot="public" static="no" const="no" explicit="no" inline="yes" noexcept="yes" virt="non-virtual">
         <templateparamlist>
           <param>
-            <type>typename T</type>
+            <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">typename</ref> <ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">T</ref></type>
           </param>
         </templateparamlist>
-        <type>void</type>
+        <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">void</ref></type>
         <definition>void mspass::utility::Metadata::put</definition>
         <argsstring>(const char *key, T val) noexcept</argsstring>
         <name>put</name>
+        <qualifiedname>mspass::utility::Metadata::put</qualifiedname>
         <param>
-          <type>const char *</type>
+          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">char</ref> *</type>
           <declname>key</declname>
         </param>
         <param>
-          <type>T</type>
+          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">T</ref></type>
           <declname>val</declname>
         </param>
         <briefdescription>
@@ -587,17 +617,18 @@ on the string key version of this same generic function.
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="299" column="20" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="299" bodyend="306"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_1aefee14db8cda9c7143a0eb7bf2d1be1f" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
-        <type>void</type>
+        <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">void</ref></type>
         <definition>void mspass::utility::Metadata::put</definition>
         <argsstring>(const std::string key, const double val) override</argsstring>
         <name>put</name>
+        <qualifiedname>mspass::utility::Metadata::put</qualifiedname>
         <reimplements refid="classmspass_1_1utility_1_1_basic_metadata_1addfa968c481e8c2d883a5ee0a8574d7e">put</reimplements>
         <param>
-          <type>const std::string</type>
+          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> std::string</type>
           <declname>key</declname>
         </param>
         <param>
-          <type>const double</type>
+          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">double</ref></type>
           <declname>val</declname>
         </param>
         <briefdescription>
@@ -609,17 +640,18 @@ on the string key version of this same generic function.
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="307" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="307" bodyend="310"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_1a11ef6cbc1adec7964e2d9c3a4ead15b1" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
-        <type>void</type>
+        <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">void</ref></type>
         <definition>void mspass::utility::Metadata::put</definition>
         <argsstring>(const std::string key, const int val) override</argsstring>
         <name>put</name>
+        <qualifiedname>mspass::utility::Metadata::put</qualifiedname>
         <reimplements refid="classmspass_1_1utility_1_1_basic_metadata_1ac1f7986dd9007cdc2615f0b7a1c542e5">put</reimplements>
         <param>
-          <type>const std::string</type>
+          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> std::string</type>
           <declname>key</declname>
         </param>
         <param>
-          <type>const int</type>
+          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">int</ref></type>
           <declname>val</declname>
         </param>
         <briefdescription>
@@ -631,17 +663,18 @@ on the string key version of this same generic function.
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="311" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="311" bodyend="314"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_1ab3989b1152e9b7b3dcce36aaec89f46d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
-        <type>void</type>
+        <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">void</ref></type>
         <definition>void mspass::utility::Metadata::put</definition>
         <argsstring>(const std::string key, const bool val) override</argsstring>
         <name>put</name>
+        <qualifiedname>mspass::utility::Metadata::put</qualifiedname>
         <reimplements refid="classmspass_1_1utility_1_1_basic_metadata_1aa0195094122a714ac43e113083041314">put</reimplements>
         <param>
-          <type>const std::string</type>
+          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> std::string</type>
           <declname>key</declname>
         </param>
         <param>
-          <type>const bool</type>
+          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">bool</ref></type>
           <declname>val</declname>
         </param>
         <briefdescription>
@@ -653,17 +686,18 @@ on the string key version of this same generic function.
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="315" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="315" bodyend="318"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_1adc016a9bb2288f1f0a7687cfa6844ceb" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
-        <type>void</type>
+        <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">void</ref></type>
         <definition>void mspass::utility::Metadata::put</definition>
         <argsstring>(const std::string key, const std::string val) override</argsstring>
         <name>put</name>
+        <qualifiedname>mspass::utility::Metadata::put</qualifiedname>
         <reimplements refid="classmspass_1_1utility_1_1_basic_metadata_1ab777d4098cc92fa2189315a219579a30">put</reimplements>
         <param>
-          <type>const std::string</type>
+          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> std::string</type>
           <declname>key</declname>
         </param>
         <param>
-          <type>const std::string</type>
+          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> std::string</type>
           <declname>val</declname>
         </param>
         <briefdescription>
@@ -675,16 +709,17 @@ on the string key version of this same generic function.
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="319" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="319" bodyend="322"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_1aa60d283b9eaae245294914557c723c30" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
-        <type>void</type>
+        <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">void</ref></type>
         <definition>void mspass::utility::Metadata::put</definition>
         <argsstring>(const char *key, const char *val)</argsstring>
         <name>put</name>
+        <qualifiedname>mspass::utility::Metadata::put</qualifiedname>
         <param>
-          <type>const char *</type>
+          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">char</ref> *</type>
           <declname>key</declname>
         </param>
         <param>
-          <type>const char *</type>
+          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">char</ref> *</type>
           <declname>val</declname>
         </param>
         <briefdescription>
@@ -695,18 +730,20 @@ on the string key version of this same generic function.
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="327" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="327" bodyend="331"/>
+        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="472" endline="490">get</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_1a45c295b33cdbcc297b7429235b81de9a" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
-        <type>void</type>
+        <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">void</ref></type>
         <definition>void mspass::utility::Metadata::put</definition>
         <argsstring>(std::string key, const char *val)</argsstring>
         <name>put</name>
+        <qualifiedname>mspass::utility::Metadata::put</qualifiedname>
         <param>
           <type>std::string</type>
           <declname>key</declname>
         </param>
         <param>
-          <type>const char *</type>
+          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">char</ref> *</type>
           <declname>val</declname>
         </param>
         <briefdescription>
@@ -718,16 +755,17 @@ on the string key version of this same generic function.
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="332" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="332" bodyend="335"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_1aa8402af6778236df398ff0fe25911e21" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
-        <type>void</type>
+        <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">void</ref></type>
         <definition>void mspass::utility::Metadata::put_object</definition>
         <argsstring>(const std::string key, const pybind11::object val)</argsstring>
         <name>put_object</name>
+        <qualifiedname>mspass::utility::Metadata::put_object</qualifiedname>
         <param>
-          <type>const std::string</type>
+          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> std::string</type>
           <declname>key</declname>
         </param>
         <param>
-          <type>const pybind11::object</type>
+          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> pybind11::object</type>
           <declname>val</declname>
         </param>
         <briefdescription>
@@ -739,16 +777,17 @@ on the string key version of this same generic function.
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="336" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="336" bodyend="339"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_1a5fe91d35373564958386f08915b7ce3c" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
-        <type>void</type>
+        <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">void</ref></type>
         <definition>void mspass::utility::Metadata::put_int</definition>
         <argsstring>(const std::string key, const int val)</argsstring>
         <name>put_int</name>
+        <qualifiedname>mspass::utility::Metadata::put_int</qualifiedname>
         <param>
-          <type>const std::string</type>
+          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> std::string</type>
           <declname>key</declname>
         </param>
         <param>
-          <type>const int</type>
+          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">int</ref></type>
           <declname>val</declname>
         </param>
         <briefdescription>
@@ -760,16 +799,17 @@ on the string key version of this same generic function.
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="340" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="340" bodyend="343"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_1a5efd5678db951e3517c5667fefe93ddf" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
-        <type>void</type>
+        <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">void</ref></type>
         <definition>void mspass::utility::Metadata::put_string</definition>
         <argsstring>(const std::string key, const std::string val)</argsstring>
         <name>put_string</name>
+        <qualifiedname>mspass::utility::Metadata::put_string</qualifiedname>
         <param>
-          <type>const std::string</type>
+          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> std::string</type>
           <declname>key</declname>
         </param>
         <param>
-          <type>const std::string</type>
+          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> std::string</type>
           <declname>val</declname>
         </param>
         <briefdescription>
@@ -781,16 +821,17 @@ on the string key version of this same generic function.
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="344" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="344" bodyend="347"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_1add02049febdc316d70d0fb62e96b2e36" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
-        <type>void</type>
+        <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">void</ref></type>
         <definition>void mspass::utility::Metadata::put_bool</definition>
         <argsstring>(const std::string key, const bool val)</argsstring>
         <name>put_bool</name>
+        <qualifiedname>mspass::utility::Metadata::put_bool</qualifiedname>
         <param>
-          <type>const std::string</type>
+          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> std::string</type>
           <declname>key</declname>
         </param>
         <param>
-          <type>const bool</type>
+          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">bool</ref></type>
           <declname>val</declname>
         </param>
         <briefdescription>
@@ -802,16 +843,17 @@ on the string key version of this same generic function.
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="348" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="348" bodyend="351"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_1aafaa017f0e16f37a81a6abdb406a1e08" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
-        <type>void</type>
+        <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">void</ref></type>
         <definition>void mspass::utility::Metadata::put_double</definition>
         <argsstring>(const std::string key, const double val)</argsstring>
         <name>put_double</name>
+        <qualifiedname>mspass::utility::Metadata::put_double</qualifiedname>
         <param>
-          <type>const std::string</type>
+          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> std::string</type>
           <declname>key</declname>
         </param>
         <param>
-          <type>const double</type>
+          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">double</ref></type>
           <declname>val</declname>
         </param>
         <briefdescription>
@@ -823,16 +865,17 @@ on the string key version of this same generic function.
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="352" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="352" bodyend="355"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_1ab1ede27ae9810767832f0879ccbfd234" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
-        <type>void</type>
+        <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">void</ref></type>
         <definition>void mspass::utility::Metadata::put_long</definition>
         <argsstring>(const std::string key, const long val)</argsstring>
         <name>put_long</name>
+        <qualifiedname>mspass::utility::Metadata::put_long</qualifiedname>
         <param>
-          <type>const std::string</type>
+          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> std::string</type>
           <declname>key</declname>
         </param>
         <param>
-          <type>const long</type>
+          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">long</ref></type>
           <declname>val</declname>
         </param>
         <briefdescription>
@@ -844,20 +887,21 @@ on the string key version of this same generic function.
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="356" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="356" bodyend="359"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_1aa288eb54e6fafb8af13f71e2f3dce4a2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type>void</type>
+        <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">void</ref></type>
         <definition>void mspass::utility::Metadata::append_chain</definition>
         <argsstring>(const std::string key, const std::string val, const std::string separator=std::string(&quot;:&quot;))</argsstring>
         <name>append_chain</name>
+        <qualifiedname>mspass::utility::Metadata::append_chain</qualifiedname>
         <param>
-          <type>const std::string</type>
+          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> std::string</type>
           <declname>key</declname>
         </param>
         <param>
-          <type>const std::string</type>
+          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> std::string</type>
           <declname>val</declname>
         </param>
         <param>
-          <type>const std::string</type>
+          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> std::string</type>
           <declname>separator</declname>
           <defval>std::string(&quot;:&quot;)</defval>
         </param>
@@ -865,7 +909,7 @@ on the string key version of this same generic function.
         </briefdescription>
         <detaileddescription>
 <para>Create or append to a chained string.</para>
-<para>A chain conceptually is identical to a list of string data. We implement it in <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref> because sometimes (e.g. MongoDB interaction and some constructs like the unix shell PATH variable) handling a full scale container like list&lt;std::string&gt; would be awkward. If more extensive capability like that is needed it would be better to add a class that inherits <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref> and does so. <ref refid="classmspass_1_1utility_1_1_antelope_pf" kindref="compound">AntelopePf</ref> more or less does this, for example, handling Tbl sections. In any case, this usage is more for one word strings separated by a common separator: e.g. path=/usr/local/bin:/bin uses : as the separator. /usr/local/bin and /bin are the chain.</para>
+<para>A chain conceptually is identical to a list of string data. We implement it in <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref> because sometimes (e.g. MongoDB interaction and some constructs like the unix shell PATH variable) handling a full scale container like <ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">list&lt;std::string&gt;</ref> would be awkward. If more extensive capability like that is needed it would be better to add a class that inherits <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref> and does so. <ref refid="classmspass_1_1utility_1_1_antelope_pf" kindref="compound">AntelopePf</ref> more or less does this, for example, handling Tbl sections. In any case, this usage is more for one word strings separated by a common separator: e.g. path=/usr/local/bin:/bin uses : as the separator. /usr/local/bin and /bin are the chain.</para>
 <para>If the key related to the chain does not yet exist it is silently created. If it already exists and we append to it.</para>
 <para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
@@ -906,13 +950,16 @@ on the string key version of this same generic function.
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="383" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/Metadata.cc" bodystart="86" bodyend="107"/>
+        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="472" endline="490">get</references>
+        <references refid="classmspass_1_1utility_1_1_metadata_1aa56da98a52f03babd67bf9fb55c40f3a" compoundref="_metadata_8h" startline="213" endline="219">get_string</references>
         <references refid="classmspass_1_1utility_1_1_metadata_1a1e96e8682297fe8b21acf09b4d399cc6" compoundref="_metadata_8cc" startline="73" endline="85">is_defined</references>
       </memberdef>
-      <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_1a0fec2640022e944afe1ae1180e741da5" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_1ad42258d0cd85b4a3e28eb1448cafe62e" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>std::set&lt; std::string &gt;</type>
-        <definition>std::set&lt;std::string&gt; mspass::utility::Metadata::modified</definition>
+        <definition>std::set&lt; std::string &gt; mspass::utility::Metadata::modified</definition>
         <argsstring>() const</argsstring>
         <name>modified</name>
+        <qualifiedname>mspass::utility::Metadata::modified</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -923,10 +970,11 @@ on the string key version of this same generic function.
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="387" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="387" bodyend="390"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_1a610962d5ca59e48d1b2833e613bbad1d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
-        <type>void</type>
+        <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">void</ref></type>
         <definition>void mspass::utility::Metadata::clear_modified</definition>
         <argsstring>()</argsstring>
         <name>clear_modified</name>
+        <qualifiedname>mspass::utility::Metadata::clear_modified</qualifiedname>
         <briefdescription>
 <para>Mark all data as unmodified. </para>
         </briefdescription>
@@ -942,6 +990,7 @@ on the string key version of this same generic function.
         <definition>set&lt; string &gt; mspass::utility::Metadata::keys</definition>
         <argsstring>() const noexcept</argsstring>
         <name>keys</name>
+        <qualifiedname>mspass::utility::Metadata::keys</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -950,14 +999,16 @@ on the string key version of this same generic function.
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="406" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/Metadata.cc" bodystart="140" bodyend="150"/>
+        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="472" endline="490">get</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_1a1e96e8682297fe8b21acf09b4d399cc6" prot="public" static="no" const="yes" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
-        <type>bool</type>
+        <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">bool</ref></type>
         <definition>bool mspass::utility::Metadata::is_defined</definition>
         <argsstring>(const std::string key) const noexcept</argsstring>
         <name>is_defined</name>
+        <qualifiedname>mspass::utility::Metadata::is_defined</qualifiedname>
         <param>
-          <type>const std::string</type>
+          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> std::string</type>
           <declname>key</declname>
         </param>
         <briefdescription>
@@ -970,12 +1021,13 @@ on the string key version of this same generic function.
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="409" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/Metadata.cc" bodystart="73" bodyend="85"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_1a096d3ea32cc03c3f9ae9c69cd9ee28ba" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type>void</type>
+        <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">void</ref></type>
         <definition>void mspass::utility::Metadata::erase</definition>
         <argsstring>(const std::string key)</argsstring>
         <name>erase</name>
+        <qualifiedname>mspass::utility::Metadata::erase</qualifiedname>
         <param>
-          <type>const std::string</type>
+          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> std::string</type>
           <declname>key</declname>
         </param>
         <briefdescription>
@@ -987,12 +1039,14 @@ on the string key version of this same generic function.
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="418" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/Metadata.cc" bodystart="151" bodyend="162"/>
+        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="472" endline="490">get</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_1a153ca69299a4d70aa0c6e69e8c70a767" prot="public" static="no" const="yes" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
         <type>std::size_t</type>
         <definition>std::size_t mspass::utility::Metadata::size</definition>
         <argsstring>() const noexcept</argsstring>
         <name>size</name>
+        <qualifiedname>mspass::utility::Metadata::size</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -1004,10 +1058,11 @@ on the string key version of this same generic function.
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="427" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/Metadata.cc" bodystart="163" bodyend="166"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_1af9aea7916d2b11f9f1e94b7d84b8db23" prot="public" static="no" const="yes" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
-        <type>std::map&lt; std::string, boost::any &gt;::const_iterator</type>
+        <type>std::map&lt; std::string, boost::any &gt;<ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">::const_iterator</ref></type>
         <definition>std::map&lt; string, boost::any &gt;::const_iterator mspass::utility::Metadata::begin</definition>
         <argsstring>() const noexcept</argsstring>
         <name>begin</name>
+        <qualifiedname>mspass::utility::Metadata::begin</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -1018,10 +1073,11 @@ on the string key version of this same generic function.
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="429" column="30" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/Metadata.cc" bodystart="167" bodyend="170"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_1a7f1e227ec1acaab97343ecbf47bedac4" prot="public" static="no" const="yes" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
-        <type>std::map&lt; std::string, boost::any &gt;::const_iterator</type>
+        <type>std::map&lt; std::string, boost::any &gt;<ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">::const_iterator</ref></type>
         <definition>std::map&lt; string, boost::any &gt;::const_iterator mspass::utility::Metadata::end</definition>
         <argsstring>() const noexcept</argsstring>
         <name>end</name>
+        <qualifiedname>mspass::utility::Metadata::end</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -1032,16 +1088,17 @@ on the string key version of this same generic function.
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="431" column="30" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/Metadata.cc" bodystart="171" bodyend="174"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_1a20c1da469f6e0a073b291a680425f9e8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type>void</type>
+        <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">void</ref></type>
         <definition>void mspass::utility::Metadata::change_key</definition>
         <argsstring>(const std::string oldkey, const std::string newkey)</argsstring>
         <name>change_key</name>
+        <qualifiedname>mspass::utility::Metadata::change_key</qualifiedname>
         <param>
-          <type>const std::string</type>
+          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> std::string</type>
           <declname>oldkey</declname>
         </param>
         <param>
-          <type>const std::string</type>
+          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> std::string</type>
           <declname>newkey</declname>
         </param>
         <briefdescription>
@@ -1071,16 +1128,18 @@ on the string key version of this same generic function.
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="446" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/Metadata.cc" bodystart="324" bodyend="334"/>
+        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="472" endline="490">get</references>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="friend">
+    </sectiondef>
+    <sectiondef kind="friend">
       <memberdef kind="friend" id="classmspass_1_1utility_1_1_metadata_1a492ba774f3adb7d1f45bdf41eaa4639b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>pybind11::object</type>
         <definition>pybind11::object serialize_metadata_py</definition>
         <argsstring>(const Metadata &amp;md)</argsstring>
         <name>serialize_metadata_py</name>
+        <qualifiedname>mspass::utility::Metadata::serialize_metadata_py</qualifiedname>
         <param>
-          <type>const <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref> &amp;</type>
+          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref> &amp;</type>
           <declname>md</declname>
         </param>
         <briefdescription>
@@ -1108,8 +1167,9 @@ on the string key version of this same generic function.
         <definition>Metadata restore_serialized_metadata_py</definition>
         <argsstring>(const pybind11::object &amp;sd)</argsstring>
         <name>restore_serialized_metadata_py</name>
+        <qualifiedname>mspass::utility::Metadata::restore_serialized_metadata_py</qualifiedname>
         <param>
-          <type>const pybind11::object &amp;</type>
+          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> pybind11::object &amp;</type>
           <declname>sd</declname>
         </param>
         <briefdescription>
@@ -1134,16 +1194,17 @@ on the string key version of this same generic function.
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="463" column="19" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/Metadata.cc" bodystart="302" bodyend="322"/>
       </memberdef>
-      <memberdef kind="friend" id="classmspass_1_1utility_1_1_metadata_1a9aefda8821c48b62ef52d8e9f90ef7a1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="friend" id="classmspass_1_1utility_1_1_metadata_1ab5bd5012ea08b04497a3d19e97412ab1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::ostringstream &amp;</type>
-        <definition>std::ostringstream&amp; operator&lt;&lt;</definition>
+        <definition>std::ostringstream &amp; operator&lt;&lt;</definition>
         <argsstring>(std::ostringstream &amp;, const mspass::utility::Metadata &amp;)</argsstring>
         <name>operator&lt;&lt;</name>
+        <qualifiedname>mspass::utility::Metadata::operator&lt;&lt;</qualifiedname>
         <param>
           <type>std::ostringstream &amp;</type>
         </param>
         <param>
-          <type>const <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">mspass::utility::Metadata</ref> &amp;</type>
+          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">mspass::utility::Metadata</ref> &amp;</type>
         </param>
         <briefdescription>
         </briefdescription>
@@ -1154,28 +1215,16 @@ on the string key version of this same generic function.
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="465" column="10"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
     <inheritancegraph>
-      <node id="11">
-        <label>mspass::seismic::Ensemble&lt; Tdata &gt;</label>
+      <node id="3">
+        <label>mspass::seismic::Ensemble&lt; T &gt;</label>
         <link refid="classmspass_1_1seismic_1_1_ensemble"/>
         <childnode refid="1" relation="public-inheritance">
-        </childnode>
-      </node>
-      <node id="9">
-        <label>mspass::seismic::TimeSeries</label>
-        <link refid="classmspass_1_1seismic_1_1_time_series"/>
-        <childnode refid="8" relation="public-inheritance">
-        </childnode>
-      </node>
-      <node id="4">
-        <label>mspass::seismic::LoggingEnsemble&lt; T &gt;</label>
-        <link refid="classmspass_1_1seismic_1_1_logging_ensemble"/>
-        <childnode refid="3" relation="public-inheritance">
         </childnode>
       </node>
       <node id="5">
@@ -1184,38 +1233,22 @@ on the string key version of this same generic function.
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="1">
-        <label>mspass::utility::Metadata</label>
-        <link refid="classmspass_1_1utility_1_1_metadata"/>
-        <childnode refid="2" relation="public-inheritance">
-        </childnode>
-      </node>
-      <node id="10">
-        <label>mspass::seismic::TimeSeriesWGaps</label>
-        <link refid="classmspass_1_1seismic_1_1_time_series_w_gaps"/>
-        <childnode refid="9" relation="public-inheritance">
-        </childnode>
-      </node>
-      <node id="7">
-        <label>mspass::seismic::SeismogramWGaps</label>
-        <link refid="classmspass_1_1seismic_1_1_seismogram_w_gaps"/>
-        <childnode refid="6" relation="public-inheritance">
-        </childnode>
-      </node>
-      <node id="2">
-        <label>mspass::utility::BasicMetadata</label>
-        <link refid="classmspass_1_1utility_1_1_basic_metadata"/>
-      </node>
-      <node id="6">
-        <label>mspass::seismic::Seismogram</label>
-        <link refid="classmspass_1_1seismic_1_1_seismogram"/>
-        <childnode refid="5" relation="public-inheritance">
-        </childnode>
-      </node>
       <node id="8">
         <label>mspass::seismic::CoreTimeSeries</label>
         <link refid="classmspass_1_1seismic_1_1_core_time_series"/>
         <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="11">
+        <label>mspass::seismic::Ensemble&lt; Tdata &gt;</label>
+        <link refid="classmspass_1_1seismic_1_1_ensemble"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>mspass::seismic::LoggingEnsemble&lt; T &gt;</label>
+        <link refid="classmspass_1_1seismic_1_1_logging_ensemble"/>
+        <childnode refid="3" relation="public-inheritance">
         </childnode>
       </node>
       <node id="12">
@@ -1224,10 +1257,28 @@ on the string key version of this same generic function.
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="3">
-        <label>mspass::seismic::Ensemble&lt; T &gt;</label>
-        <link refid="classmspass_1_1seismic_1_1_ensemble"/>
-        <childnode refid="1" relation="public-inheritance">
+      <node id="6">
+        <label>mspass::seismic::Seismogram</label>
+        <link refid="classmspass_1_1seismic_1_1_seismogram"/>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>mspass::seismic::SeismogramWGaps</label>
+        <link refid="classmspass_1_1seismic_1_1_seismogram_w_gaps"/>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>mspass::seismic::TimeSeries</label>
+        <link refid="classmspass_1_1seismic_1_1_time_series"/>
+        <childnode refid="8" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="10">
+        <label>mspass::seismic::TimeSeriesWGaps</label>
+        <link refid="classmspass_1_1seismic_1_1_time_series_w_gaps"/>
+        <childnode refid="9" relation="public-inheritance">
         </childnode>
       </node>
       <node id="13">
@@ -1236,17 +1287,27 @@ on the string key version of this same generic function.
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-    </inheritancegraph>
-    <collaborationgraph>
+      <node id="2">
+        <label>mspass::utility::BasicMetadata</label>
+        <link refid="classmspass_1_1utility_1_1_basic_metadata"/>
+      </node>
       <node id="1">
         <label>mspass::utility::Metadata</label>
         <link refid="classmspass_1_1utility_1_1_metadata"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
       </node>
+    </inheritancegraph>
+    <collaborationgraph>
       <node id="2">
         <label>mspass::utility::BasicMetadata</label>
         <link refid="classmspass_1_1utility_1_1_basic_metadata"/>
+      </node>
+      <node id="1">
+        <label>mspass::utility::Metadata</label>
+        <link refid="classmspass_1_1utility_1_1_metadata"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
       </node>
     </collaborationgraph>
     <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="75" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="76" bodyend="471"/>
@@ -1272,10 +1333,10 @@ on the string key version of this same generic function.
       <member refid="classmspass_1_1utility_1_1_metadata_1a4a87cd6a6f8fc5cdbee65cb85958cb2c" prot="public" virt="non-virtual"><scope>mspass::utility::Metadata</scope><name>Metadata</name></member>
       <member refid="classmspass_1_1utility_1_1_metadata_1a5255fc3ae6accb650f221c9065a92eff" prot="public" virt="non-virtual"><scope>mspass::utility::Metadata</scope><name>Metadata</name></member>
       <member refid="classmspass_1_1utility_1_1_metadata_1afa617529be5501b6b059091118a1a51f" prot="public" virt="non-virtual"><scope>mspass::utility::Metadata</scope><name>Metadata</name></member>
-      <member refid="classmspass_1_1utility_1_1_metadata_1a0fec2640022e944afe1ae1180e741da5" prot="public" virt="non-virtual"><scope>mspass::utility::Metadata</scope><name>modified</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1ad42258d0cd85b4a3e28eb1448cafe62e" prot="public" virt="non-virtual"><scope>mspass::utility::Metadata</scope><name>modified</name></member>
       <member refid="classmspass_1_1utility_1_1_metadata_1afbd50c491ecc4d42cf2b4213b8bc3327" prot="public" virt="non-virtual"><scope>mspass::utility::Metadata</scope><name>operator+</name></member>
       <member refid="classmspass_1_1utility_1_1_metadata_1afadcdb42814abc1448a78d1d9f3d44aa" prot="public" virt="non-virtual"><scope>mspass::utility::Metadata</scope><name>operator+=</name></member>
-      <member refid="classmspass_1_1utility_1_1_metadata_1a9aefda8821c48b62ef52d8e9f90ef7a1" prot="public" virt="non-virtual"><scope>mspass::utility::Metadata</scope><name>operator&lt;&lt;</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1ab5bd5012ea08b04497a3d19e97412ab1" prot="public" virt="non-virtual"><scope>mspass::utility::Metadata</scope><name>operator&lt;&lt;</name></member>
       <member refid="classmspass_1_1utility_1_1_metadata_1aadbae283dfdb87a82832519a9955fdfa" prot="public" virt="non-virtual"><scope>mspass::utility::Metadata</scope><name>operator=</name></member>
       <member refid="classmspass_1_1utility_1_1_metadata_1ab2162ed3e7349998ee06ace77645bf77" prot="public" virt="non-virtual"><scope>mspass::utility::Metadata</scope><name>put</name></member>
       <member refid="classmspass_1_1utility_1_1_metadata_1aec776bbbbf8528903432d9b30d1272d8" prot="public" virt="non-virtual"><scope>mspass::utility::Metadata</scope><name>put</name></member>

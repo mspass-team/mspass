@@ -1,14 +1,15 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="classmspass_1_1algorithms_1_1deconvolution_1_1_e_r_r" kind="class" language="C++" prot="public">
     <compoundname>mspass::algorithms::deconvolution::ERR</compoundname>
     <derivedcompoundref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_l_a_p_a_c_k___e_r_r_o_r" prot="public" virt="non-virtual">mspass::algorithms::deconvolution::LAPACK_ERROR</derivedcompoundref>
-      <sectiondef kind="protected-attrib">
+    <sectiondef kind="protected-attrib">
       <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_e_r_r_1a0ed4cfe1666a82fd2818714d798ca1f0" prot="protected" static="no" mutable="no">
         <type>char</type>
         <definition>char mspass::algorithms::deconvolution::ERR::msg[30]</definition>
         <argsstring>[30]</argsstring>
         <name>msg</name>
+        <qualifiedname>mspass::algorithms::deconvolution::ERR::msg</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -17,13 +18,14 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/dpss.h" line="15" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/dpss.h" bodystart="15" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_e_r_r_1a5ed2125f603b76ec0e51ce6227151f08" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
         <definition>mspass::algorithms::deconvolution::ERR::ERR</definition>
         <argsstring>()</argsstring>
         <name>ERR</name>
+        <qualifiedname>mspass::algorithms::deconvolution::ERR::ERR</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -37,6 +39,7 @@
         <definition>mspass::algorithms::deconvolution::ERR::ERR</definition>
         <argsstring>(const char *msg)</argsstring>
         <name>ERR</name>
+        <qualifiedname>mspass::algorithms::deconvolution::ERR::ERR</qualifiedname>
         <param>
           <type>const char *</type>
           <declname>msg</declname>
@@ -54,6 +57,7 @@
         <definition>void mspass::algorithms::deconvolution::ERR::getmsg</definition>
         <argsstring>(char *errmsg)</argsstring>
         <name>getmsg</name>
+        <qualifiedname>mspass::algorithms::deconvolution::ERR::getmsg</qualifiedname>
         <param>
           <type>char *</type>
           <declname>errmsg</declname>
@@ -71,6 +75,7 @@
         <definition>const char * mspass::algorithms::deconvolution::ERR::getmsg</definition>
         <argsstring>()</argsstring>
         <name>getmsg</name>
+        <qualifiedname>mspass::algorithms::deconvolution::ERR::getmsg</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -79,7 +84,7 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/dpss.h" line="13" column="16" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/dpss.cc" bodystart="202" bodyend="204"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>

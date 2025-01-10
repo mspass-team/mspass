@@ -1,14 +1,15 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="classmspass_1_1utility_1_1_node_data" kind="class" language="C++" prot="public">
     <compoundname>mspass::utility::NodeData</compoundname>
     <includes refid="_processing_history_8h" local="no">ProcessingHistory.h</includes>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="classmspass_1_1utility_1_1_node_data_1a3dab2773c306f1d9977dccb455beec59" prot="public" static="no" mutable="no">
         <type>mspass::utility::ProcessingStatus</type>
         <definition>mspass::utility::ProcessingStatus mspass::utility::NodeData::status</definition>
         <argsstring></argsstring>
         <name>status</name>
+        <qualifiedname>mspass::utility::NodeData::status</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -23,6 +24,7 @@
         <definition>std::string mspass::utility::NodeData::uuid</definition>
         <argsstring></argsstring>
         <name>uuid</name>
+        <qualifiedname>mspass::utility::NodeData::uuid</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -37,6 +39,7 @@
         <definition>mspass::utility::AtomicType mspass::utility::NodeData::type</definition>
         <argsstring></argsstring>
         <name>type</name>
+        <qualifiedname>mspass::utility::NodeData::type</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -52,6 +55,7 @@
         <definition>int mspass::utility::NodeData::stage</definition>
         <argsstring></argsstring>
         <name>stage</name>
+        <qualifiedname>mspass::utility::NodeData::stage</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -66,6 +70,7 @@
         <definition>std::string mspass::utility::NodeData::algorithm</definition>
         <argsstring></argsstring>
         <name>algorithm</name>
+        <qualifiedname>mspass::utility::NodeData::algorithm</qualifiedname>
         <briefdescription>
 <para>Name of algorithm algorithm applied at this stage. </para>
         </briefdescription>
@@ -81,6 +86,7 @@
         <definition>std::string mspass::utility::NodeData::algid</definition>
         <argsstring></argsstring>
         <name>algid</name>
+        <qualifiedname>mspass::utility::NodeData::algid</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -91,13 +97,14 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" line="171" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" bodystart="171" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="classmspass_1_1utility_1_1_node_data_1a5409c41f5c4c9386607d4bb7a4a147c4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
         <definition>mspass::utility::NodeData::NodeData</definition>
         <argsstring>()</argsstring>
         <name>NodeData</name>
+        <qualifiedname>mspass::utility::NodeData::NodeData</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -111,6 +118,7 @@
         <definition>mspass::utility::NodeData::NodeData</definition>
         <argsstring>(const NodeData &amp;parent)</argsstring>
         <name>NodeData</name>
+        <qualifiedname>mspass::utility::NodeData::NodeData</qualifiedname>
         <param>
           <type>const <ref refid="classmspass_1_1utility_1_1_node_data" kindref="compound">NodeData</ref> &amp;</type>
           <declname>parent</declname>
@@ -128,6 +136,7 @@
         <definition>NodeData &amp; mspass::utility::NodeData::operator=</definition>
         <argsstring>(const NodeData &amp;parent)</argsstring>
         <name>operator=</name>
+        <qualifiedname>mspass::utility::NodeData::operator=</qualifiedname>
         <param>
           <type>const <ref refid="classmspass_1_1utility_1_1_node_data" kindref="compound">NodeData</ref> &amp;</type>
           <declname>parent</declname>
@@ -145,6 +154,7 @@
         <definition>bool mspass::utility::NodeData::operator==</definition>
         <argsstring>(const NodeData &amp;other)</argsstring>
         <name>operator==</name>
+        <qualifiedname>mspass::utility::NodeData::operator==</qualifiedname>
         <param>
           <type>const <ref refid="classmspass_1_1utility_1_1_node_data" kindref="compound">NodeData</ref> &amp;</type>
           <declname>other</declname>
@@ -162,6 +172,7 @@
         <definition>bool mspass::utility::NodeData::operator!=</definition>
         <argsstring>(const NodeData &amp;other)</argsstring>
         <name>operator!=</name>
+        <qualifiedname>mspass::utility::NodeData::operator!=</qualifiedname>
         <param>
           <type>const <ref refid="classmspass_1_1utility_1_1_node_data" kindref="compound">NodeData</ref> &amp;</type>
           <declname>other</declname>
@@ -174,8 +185,8 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" line="178" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/ProcessingHistory.cc" bodystart="78" bodyend="81"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="private-func">
+    </sectiondef>
+    <sectiondef kind="private-func">
       <memberdef kind="function" id="classmspass_1_1utility_1_1_node_data_1adc92573476dc839e02e8d2085401b7aa" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
           <param>
@@ -186,6 +197,7 @@
         <definition>void mspass::utility::NodeData::serialize</definition>
         <argsstring>(Archive &amp;ar, const unsigned int version)</argsstring>
         <name>serialize</name>
+        <qualifiedname>mspass::utility::NodeData::serialize</qualifiedname>
         <param>
           <type>Archive &amp;</type>
           <declname>ar</declname>
@@ -202,7 +214,7 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" line="182" column="13" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" bodystart="182" bodyend="190"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
 <para>Holds properties of data used as input to algorithm that created this object. </para>
     </briefdescription>

@@ -1,20 +1,11 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="_slowness_vector_8cc" kind="file" language="C++">
     <compoundname>SlownessVector.cc</compoundname>
     <includes local="no">float.h</includes>
     <includes local="no">math.h</includes>
     <includes refid="_slowness_vector_8h" local="yes">mspass/seismic/SlownessVector.h</includes>
     <incdepgraph>
-      <node id="2">
-        <label>float.h</label>
-      </node>
-      <node id="6">
-        <label>boost/archive/text_iarchive.hpp</label>
-      </node>
-      <node id="5">
-        <label>string</label>
-      </node>
       <node id="4">
         <label>mspass/seismic/SlownessVector.h</label>
         <link refid="_slowness_vector_8h_source"/>
@@ -25,12 +16,6 @@
         <childnode refid="7" relation="include">
         </childnode>
       </node>
-      <node id="7">
-        <label>boost/archive/text_oarchive.hpp</label>
-      </node>
-      <node id="3">
-        <label>math.h</label>
-      </node>
       <node id="1">
         <label>/home/runner/work/mspass/mspass/cxx/src/lib/seismic/SlownessVector.cc</label>
         <link refid="_slowness_vector_8cc"/>
@@ -40,6 +25,21 @@
         </childnode>
         <childnode refid="4" relation="include">
         </childnode>
+      </node>
+      <node id="6">
+        <label>boost/archive/text_iarchive.hpp</label>
+      </node>
+      <node id="7">
+        <label>boost/archive/text_oarchive.hpp</label>
+      </node>
+      <node id="2">
+        <label>float.h</label>
+      </node>
+      <node id="3">
+        <label>math.h</label>
+      </node>
+      <node id="5">
+        <label>string</label>
       </node>
     </incdepgraph>
     <innernamespace refid="namespacemspass">mspass</innernamespace>

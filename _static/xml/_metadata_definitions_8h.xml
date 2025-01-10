@@ -1,17 +1,11 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="_metadata_definitions_8h" kind="file" language="C++">
     <compoundname>MetadataDefinitions.h</compoundname>
     <includes local="no">map</includes>
     <includes local="no">tuple</includes>
     <includedby refid="_metadata_definitions_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/utility/MetadataDefinitions.cc</includedby>
     <incdepgraph>
-      <node id="2">
-        <label>map</label>
-      </node>
-      <node id="3">
-        <label>tuple</label>
-      </node>
       <node id="1">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/utility/MetadataDefinitions.h</label>
         <link refid="_metadata_definitions_8h"/>
@@ -19,6 +13,12 @@
         </childnode>
         <childnode refid="3" relation="include">
         </childnode>
+      </node>
+      <node id="2">
+        <label>map</label>
+      </node>
+      <node id="3">
+        <label>tuple</label>
       </node>
     </incdepgraph>
     <innerclass refid="classmspass_1_1utility_1_1_metadata_definitions" prot="public">mspass::utility::MetadataDefinitions</innerclass>
@@ -48,8 +48,8 @@
 <codeline lineno="42"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1utility_1_1_metadata_definitions_1a5cca4385b19e235ff08215a6b731dc23" kindref="member">MetadataDefinitions</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>mdname);</highlight></codeline>
 <codeline lineno="51" refid="classmspass_1_1utility_1_1_metadata_definitions_1a02457e4d234a24bbbbde8537963d339a" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1utility_1_1_metadata_definitions_1a02457e4d234a24bbbbde8537963d339a" kindref="member">MetadataDefinitions</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>mdname,</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>mspass::utility::MDDefFormat<sp/>form);</highlight></codeline>
 <codeline lineno="53"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1utility_1_1_metadata_definitions_1a5cca4385b19e235ff08215a6b731dc23" kindref="member">MetadataDefinitions</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_metadata_definitions" kindref="compound">MetadataDefinitions</ref>&amp;<sp/>parent);</highlight></codeline>
-<codeline lineno="55"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_metadata_definitions_1adf9c9a40eb60eebb24ec84f2fa961319" kindref="member">is_defined</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>key)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>noexcept;</highlight></codeline>
-<codeline lineno="62"><highlight class="normal"><sp/><sp/>std::string<sp/><ref refid="classmspass_1_1utility_1_1_metadata_definitions_1a5d131b51d99fb29753295847891ff2de" kindref="member">concept</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>key)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_metadata_definitions_1adf9c9a40eb60eebb24ec84f2fa961319" kindref="member">is_defined</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>key)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">noexcept</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><sp/><sp/>std::string<sp/></highlight><highlight class="keyword">concept</highlight><highlight class="normal">(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>key)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="69"><highlight class="normal"><sp/><sp/>mspass::utility::MDtype<sp/><ref refid="classmspass_1_1utility_1_1_metadata_definitions_1a8472df22024cde279e81c84e9129e4fd" kindref="member">type</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>key)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="70"><highlight class="normal"><sp/><sp/>std::list&lt;std::string&gt;<sp/>keys()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="81"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_metadata_definitions_1a555a85e15897c780964a7e4f7018dca6" kindref="member">add</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>key,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>concept_,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>MDtype<sp/>mdt);</highlight></codeline>

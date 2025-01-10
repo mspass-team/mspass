@@ -1,108 +1,116 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_xcor_decon" kind="class" language="C++" prot="public">
     <compoundname>mspass::algorithms::deconvolution::MultiTaperXcorDecon</compoundname>
     <basecompoundref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator" prot="public" virt="non-virtual">mspass::algorithms::deconvolution::FFTDeconOperator</basecompoundref>
     <basecompoundref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon" prot="public" virt="non-virtual">mspass::algorithms::deconvolution::ScalarDecon</basecompoundref>
-      <sectiondef kind="private-attrib">
+    <sectiondef kind="private-attrib">
       <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_xcor_decon_1a6f7057b7bae0be669d2753f26161ea7c" prot="private" static="no" mutable="no">
         <type>std::vector&lt; double &gt;</type>
         <definition>std::vector&lt;double&gt; mspass::algorithms::deconvolution::MultiTaperXcorDecon::noise</definition>
         <argsstring></argsstring>
         <name>noise</name>
+        <qualifiedname>mspass::algorithms::deconvolution::MultiTaperXcorDecon::noise</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MultiTaperXcorDecon.h" line="105" column="17" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MultiTaperXcorDecon.h" bodystart="105" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MultiTaperXcorDecon.h" line="102" column="17" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MultiTaperXcorDecon.h" bodystart="102" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_xcor_decon_1ab5401fc313fcdc09f5b466e2fd80a6ed" prot="private" static="no" mutable="no">
         <type>double</type>
         <definition>double mspass::algorithms::deconvolution::MultiTaperXcorDecon::nw</definition>
         <argsstring></argsstring>
         <name>nw</name>
+        <qualifiedname>mspass::algorithms::deconvolution::MultiTaperXcorDecon::nw</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MultiTaperXcorDecon.h" line="106" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MultiTaperXcorDecon.h" bodystart="106" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MultiTaperXcorDecon.h" line="103" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MultiTaperXcorDecon.h" bodystart="103" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_xcor_decon_1ae830d1d8b475d520916b4f83479f2a03" prot="private" static="no" mutable="no">
         <type>double</type>
         <definition>double mspass::algorithms::deconvolution::MultiTaperXcorDecon::damp</definition>
         <argsstring></argsstring>
         <name>damp</name>
+        <qualifiedname>mspass::algorithms::deconvolution::MultiTaperXcorDecon::damp</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MultiTaperXcorDecon.h" line="106" column="14" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MultiTaperXcorDecon.h" bodystart="106" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MultiTaperXcorDecon.h" line="103" column="14" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MultiTaperXcorDecon.h" bodystart="103" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_xcor_decon_1a45b1300f5678f05d8fe4989f594a2684" prot="private" static="no" mutable="no">
         <type>int</type>
         <definition>int mspass::algorithms::deconvolution::MultiTaperXcorDecon::nseq</definition>
         <argsstring></argsstring>
         <name>nseq</name>
+        <qualifiedname>mspass::algorithms::deconvolution::MultiTaperXcorDecon::nseq</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MultiTaperXcorDecon.h" line="107" column="9" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MultiTaperXcorDecon.h" bodystart="107" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MultiTaperXcorDecon.h" line="104" column="9" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MultiTaperXcorDecon.h" bodystart="104" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_xcor_decon_1af7fdb57fe88b7da9191fe8913aeaa14d" prot="private" static="no" mutable="no">
         <type>unsigned int</type>
         <definition>unsigned int mspass::algorithms::deconvolution::MultiTaperXcorDecon::taperlen</definition>
         <argsstring></argsstring>
         <name>taperlen</name>
+        <qualifiedname>mspass::algorithms::deconvolution::MultiTaperXcorDecon::taperlen</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MultiTaperXcorDecon.h" line="108" column="18" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MultiTaperXcorDecon.h" bodystart="108" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MultiTaperXcorDecon.h" line="105" column="18" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MultiTaperXcorDecon.h" bodystart="105" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_xcor_decon_1a90149d32db2df84bd148ad91052e3e24" prot="private" static="no" mutable="no">
         <type><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">mspass::utility::dmatrix</ref></type>
         <definition>mspass::utility::dmatrix mspass::algorithms::deconvolution::MultiTaperXcorDecon::tapers</definition>
         <argsstring></argsstring>
         <name>tapers</name>
+        <qualifiedname>mspass::algorithms::deconvolution::MultiTaperXcorDecon::tapers</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MultiTaperXcorDecon.h" line="109" column="30" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MultiTaperXcorDecon.h" bodystart="109" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MultiTaperXcorDecon.h" line="106" column="30" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MultiTaperXcorDecon.h" bodystart="106" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_xcor_decon_1aadc258dfa222d8662eeaee20a543ce34" prot="private" static="no" mutable="no">
         <type><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array" kindref="compound">ComplexArray</ref></type>
         <definition>ComplexArray mspass::algorithms::deconvolution::MultiTaperXcorDecon::ao_fft</definition>
         <argsstring></argsstring>
         <name>ao_fft</name>
+        <qualifiedname>mspass::algorithms::deconvolution::MultiTaperXcorDecon::ao_fft</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MultiTaperXcorDecon.h" line="114" column="18" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MultiTaperXcorDecon.h" bodystart="114" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MultiTaperXcorDecon.h" line="111" column="18" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MultiTaperXcorDecon.h" bodystart="111" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_xcor_decon_1a7803e634bb1ffd2cf89e195f02d9beee" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
         <definition>mspass::algorithms::deconvolution::MultiTaperXcorDecon::MultiTaperXcorDecon</definition>
         <argsstring>()</argsstring>
         <name>MultiTaperXcorDecon</name>
+        <qualifiedname>mspass::algorithms::deconvolution::MultiTaperXcorDecon::MultiTaperXcorDecon</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -117,6 +125,7 @@
         <definition>mspass::algorithms::deconvolution::MultiTaperXcorDecon::MultiTaperXcorDecon</definition>
         <argsstring>(const mspass::utility::Metadata &amp;md, const std::vector&lt; double &gt; &amp;noise, const std::vector&lt; double &gt; &amp;wavelet, const std::vector&lt; double &gt; &amp;data)</argsstring>
         <name>MultiTaperXcorDecon</name>
+        <qualifiedname>mspass::algorithms::deconvolution::MultiTaperXcorDecon::MultiTaperXcorDecon</qualifiedname>
         <param>
           <type>const <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">mspass::utility::Metadata</ref> &amp;</type>
           <declname>md</declname>
@@ -146,6 +155,7 @@
         <definition>mspass::algorithms::deconvolution::MultiTaperXcorDecon::MultiTaperXcorDecon</definition>
         <argsstring>(const mspass::utility::Metadata &amp;md)</argsstring>
         <name>MultiTaperXcorDecon</name>
+        <qualifiedname>mspass::algorithms::deconvolution::MultiTaperXcorDecon::MultiTaperXcorDecon</qualifiedname>
         <param>
           <type>const <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">mspass::utility::Metadata</ref> &amp;</type>
           <declname>md</declname>
@@ -163,6 +173,7 @@
         <definition>mspass::algorithms::deconvolution::MultiTaperXcorDecon::MultiTaperXcorDecon</definition>
         <argsstring>(const MultiTaperXcorDecon &amp;parent)</argsstring>
         <name>MultiTaperXcorDecon</name>
+        <qualifiedname>mspass::algorithms::deconvolution::MultiTaperXcorDecon::MultiTaperXcorDecon</qualifiedname>
         <param>
           <type>const <ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_xcor_decon" kindref="compound">MultiTaperXcorDecon</ref> &amp;</type>
           <declname>parent</declname>
@@ -180,6 +191,7 @@
         <definition>mspass::algorithms::deconvolution::MultiTaperXcorDecon::~MultiTaperXcorDecon</definition>
         <argsstring>()</argsstring>
         <name>~MultiTaperXcorDecon</name>
+        <qualifiedname>mspass::algorithms::deconvolution::MultiTaperXcorDecon::~MultiTaperXcorDecon</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -193,6 +205,7 @@
         <definition>void mspass::algorithms::deconvolution::MultiTaperXcorDecon::changeparameter</definition>
         <argsstring>(const mspass::utility::Metadata &amp;md)</argsstring>
         <name>changeparameter</name>
+        <qualifiedname>mspass::algorithms::deconvolution::MultiTaperXcorDecon::changeparameter</qualifiedname>
         <reimplements refid="classmspass_1_1algorithms_1_1deconvolution_1_1_basic_decon_operator_1a84111e230a365037569b17b2ca693100">changeparameter</reimplements>
         <param>
           <type>const <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">mspass::utility::Metadata</ref> &amp;</type>
@@ -211,6 +224,7 @@
         <definition>int mspass::algorithms::deconvolution::MultiTaperXcorDecon::loadnoise</definition>
         <argsstring>(const std::vector&lt; double &gt; &amp;noise)</argsstring>
         <name>loadnoise</name>
+        <qualifiedname>mspass::algorithms::deconvolution::MultiTaperXcorDecon::loadnoise</qualifiedname>
         <param>
           <type>const std::vector&lt; double &gt; &amp;</type>
           <declname>noise</declname>
@@ -230,6 +244,7 @@
         <definition>int mspass::algorithms::deconvolution::MultiTaperXcorDecon::load</definition>
         <argsstring>(const std::vector&lt; double &gt; &amp;w, const std::vector&lt; double &gt; &amp;d, const std::vector&lt; double &gt; &amp;n)</argsstring>
         <name>load</name>
+        <qualifiedname>mspass::algorithms::deconvolution::MultiTaperXcorDecon::load</qualifiedname>
         <param>
           <type>const std::vector&lt; double &gt; &amp;</type>
           <declname>w</declname>
@@ -269,14 +284,13 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MultiTaperXcorDecon.h" line="44" column="9" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/MultiTaperXcorDecon.cc" bodystart="154" bodyend="165"/>
-        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a9478e366652c54b4331e14b5a0eb85ea" compoundref="_scalar_decon_8cc" startline="39" endline="45">mspass::algorithms::deconvolution::ScalarDecon::load</references>
-        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_xcor_decon_1aaa4de146e8f178218b170be5cf6bd55c" compoundref="_multi_taper_xcor_decon_8cc" startline="135" endline="153">loadnoise</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_xcor_decon_1aac6fc172d69975b1afe4be16658fbff6" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
         <definition>void mspass::algorithms::deconvolution::MultiTaperXcorDecon::process</definition>
         <argsstring>()</argsstring>
         <name>process</name>
+        <qualifiedname>mspass::algorithms::deconvolution::MultiTaperXcorDecon::process</qualifiedname>
         <reimplements refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a71988c8a42788bd966945d78d5fdb6b3">process</reimplements>
         <briefdescription>
         </briefdescription>
@@ -291,6 +305,7 @@
         <definition>CoreTimeSeries mspass::algorithms::deconvolution::MultiTaperXcorDecon::actual_output</definition>
         <argsstring>()</argsstring>
         <name>actual_output</name>
+        <qualifiedname>mspass::algorithms::deconvolution::MultiTaperXcorDecon::actual_output</qualifiedname>
         <reimplements refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a84f320ad48e8bfc9c292f8dde33c0593">actual_output</reimplements>
         <briefdescription>
         </briefdescription>
@@ -307,13 +322,13 @@
         <references refid="classmspass_1_1seismic_1_1_core_time_series_1ae538485ac0aed2f8691477dffce6cda8" compoundref="_core_time_series_8cc" startline="222" endline="247">mspass::seismic::CoreTimeSeries::set_npts</references>
         <references refid="classmspass_1_1seismic_1_1_core_time_series_1ae90b28cff0bc1997aa65a1693d8562d0" compoundref="_core_time_series_8cc" startline="203" endline="221">mspass::seismic::CoreTimeSeries::set_t0</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1ac3f8c8200710fe0d3ef211c7c758e864" compoundref="_basic_time_series_8h" startline="259" endline="262">mspass::seismic::BasicTimeSeries::set_tref</references>
-        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet_1aaec6f802d7aba4a36484ba50c9f9c9bf" compoundref="_shaping_wavelet_8h" startline="77" endline="79">mspass::algorithms::deconvolution::ShapingWavelet::wavelet</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_xcor_decon_1a9b75632d27ed2db87a108d11f68f9d44" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type><ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">mspass::seismic::CoreTimeSeries</ref></type>
         <definition>CoreTimeSeries mspass::algorithms::deconvolution::MultiTaperXcorDecon::inverse_wavelet</definition>
         <argsstring>(const double t0parent=0.0)</argsstring>
         <name>inverse_wavelet</name>
+        <qualifiedname>mspass::algorithms::deconvolution::MultiTaperXcorDecon::inverse_wavelet</qualifiedname>
         <reimplements refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a9adc0519d5435d686edb32066f9f697a">inverse_wavelet</reimplements>
         <param>
           <type>const double</type>
@@ -340,14 +355,13 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MultiTaperXcorDecon.h" line="79" column="37" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/MultiTaperXcorDecon.cc" bodystart="388" bodyend="399"/>
-        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1a3473dc7f359332dbf5a685efe30a684b" compoundref="_f_f_t_decon_operator_8cc" startline="119" endline="153">mspass::algorithms::deconvolution::FFTDeconOperator::FourierInverse</references>
-        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet_1aaec6f802d7aba4a36484ba50c9f9c9bf" compoundref="_shaping_wavelet_8h" startline="77" endline="79">mspass::algorithms::deconvolution::ShapingWavelet::wavelet</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_xcor_decon_1a7457a141f5eb2ba694989ee248dc29cd" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type><ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">mspass::seismic::CoreTimeSeries</ref></type>
         <definition>CoreTimeSeries mspass::algorithms::deconvolution::MultiTaperXcorDecon::inverse_wavelet</definition>
         <argsstring>()</argsstring>
         <name>inverse_wavelet</name>
+        <qualifiedname>mspass::algorithms::deconvolution::MultiTaperXcorDecon::inverse_wavelet</qualifiedname>
         <reimplements refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a078d038467a3be52d1e91e0d080d503e">inverse_wavelet</reimplements>
         <briefdescription>
 <para>Return default FIR represesentation of the inverse filter. </para>
@@ -364,6 +378,7 @@
         <definition>Metadata mspass::algorithms::deconvolution::MultiTaperXcorDecon::QCMetrics</definition>
         <argsstring>()</argsstring>
         <name>QCMetrics</name>
+        <qualifiedname>mspass::algorithms::deconvolution::MultiTaperXcorDecon::QCMetrics</qualifiedname>
         <reimplements refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1af683c2f25e91155c2bc1f81f9b62bbb1">QCMetrics</reimplements>
         <briefdescription>
 <para>Return appropriate quality measures. </para>
@@ -380,6 +395,7 @@
         <definition>int mspass::algorithms::deconvolution::MultiTaperXcorDecon::get_taperlen</definition>
         <argsstring>()</argsstring>
         <name>get_taperlen</name>
+        <qualifiedname>mspass::algorithms::deconvolution::MultiTaperXcorDecon::get_taperlen</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -393,6 +409,7 @@
         <definition>int mspass::algorithms::deconvolution::MultiTaperXcorDecon::get_number_tapers</definition>
         <argsstring>()</argsstring>
         <name>get_number_tapers</name>
+        <qualifiedname>mspass::algorithms::deconvolution::MultiTaperXcorDecon::get_number_tapers</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -406,6 +423,7 @@
         <definition>double mspass::algorithms::deconvolution::MultiTaperXcorDecon::get_time_bandwidth_product</definition>
         <argsstring>()</argsstring>
         <name>get_time_bandwidth_product</name>
+        <qualifiedname>mspass::algorithms::deconvolution::MultiTaperXcorDecon::get_time_bandwidth_product</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -414,13 +432,14 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MultiTaperXcorDecon.h" line="97" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MultiTaperXcorDecon.h" bodystart="97" bodyend="99"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="private-func">
+    </sectiondef>
+    <sectiondef kind="private-func">
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_xcor_decon_1af28435bcf30b0dd24c505619771ee698" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>
         <definition>int mspass::algorithms::deconvolution::MultiTaperXcorDecon::read_metadata</definition>
         <argsstring>(const mspass::utility::Metadata &amp;md, bool refresh)</argsstring>
         <name>read_metadata</name>
+        <qualifiedname>mspass::algorithms::deconvolution::MultiTaperXcorDecon::read_metadata</qualifiedname>
         <param>
           <type>const <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">mspass::utility::Metadata</ref> &amp;</type>
           <declname>md</declname>
@@ -437,13 +456,14 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MultiTaperXcorDecon.h" line="102" column="9" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/MultiTaperXcorDecon.cc" bodystart="47" bodyend="134"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MultiTaperXcorDecon.h" line="113" column="9" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/MultiTaperXcorDecon.cc" bodystart="47" bodyend="134"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_xcor_decon_1a9af78f1a2aba20f0983adeae6ae99c6f" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::vector&lt; <ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array" kindref="compound">ComplexArray</ref> &gt;</type>
         <definition>vector&lt; ComplexArray &gt; mspass::algorithms::deconvolution::MultiTaperXcorDecon::taper_data</definition>
         <argsstring>(const std::vector&lt; double &gt; &amp;signal)</argsstring>
         <name>taper_data</name>
+        <qualifiedname>mspass::algorithms::deconvolution::MultiTaperXcorDecon::taper_data</qualifiedname>
         <param>
           <type>const std::vector&lt; double &gt; &amp;</type>
           <declname>signal</declname>
@@ -454,20 +474,21 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MultiTaperXcorDecon.h" line="104" column="17" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/MultiTaperXcorDecon.cc" bodystart="179" bodyend="206"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MultiTaperXcorDecon.h" line="115" column="17" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/MultiTaperXcorDecon.cc" bodystart="179" bodyend="206"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_xcor_decon_1a8935665f83e824691c9946c7f8e39589" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>
         <definition>int mspass::algorithms::deconvolution::MultiTaperXcorDecon::apply</definition>
         <argsstring>()</argsstring>
         <name>apply</name>
+        <qualifiedname>mspass::algorithms::deconvolution::MultiTaperXcorDecon::apply</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MultiTaperXcorDecon.h" line="115" column="9"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MultiTaperXcorDecon.h" line="116" column="9"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_xcor_decon_1aa63c5bd7232b412312750cc59da2a54c" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -479,6 +500,7 @@
         <definition>void mspass::algorithms::deconvolution::MultiTaperXcorDecon::serialize</definition>
         <argsstring>(Archive &amp;ar, const unsigned int version)</argsstring>
         <name>serialize</name>
+        <qualifiedname>mspass::algorithms::deconvolution::MultiTaperXcorDecon::serialize</qualifiedname>
         <param>
           <type>Archive &amp;</type>
           <declname>ar</declname>
@@ -493,9 +515,9 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MultiTaperXcorDecon.h" line="118" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MultiTaperXcorDecon.h" bodystart="118" bodyend="130"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MultiTaperXcorDecon.h" line="119" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MultiTaperXcorDecon.h" bodystart="119" bodyend="130"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
@@ -504,6 +526,10 @@
       <node id="4">
         <label>mspass::algorithms::deconvolution::BasicDeconOperator</label>
         <link refid="classmspass_1_1algorithms_1_1deconvolution_1_1_basic_decon_operator"/>
+      </node>
+      <node id="2">
+        <label>mspass::algorithms::deconvolution::FFTDeconOperator</label>
+        <link refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator"/>
       </node>
       <node id="1">
         <label>mspass::algorithms::deconvolution::MultiTaperXcorDecon</label>
@@ -519,15 +545,22 @@
         <childnode refid="4" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="2">
-        <label>mspass::algorithms::deconvolution::FFTDeconOperator</label>
-        <link refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator"/>
-      </node>
     </inheritancegraph>
     <collaborationgraph>
       <node id="5">
         <label>mspass::algorithms::deconvolution::BasicDeconOperator</label>
         <link refid="classmspass_1_1algorithms_1_1deconvolution_1_1_basic_decon_operator"/>
+      </node>
+      <node id="3">
+        <label>mspass::algorithms::deconvolution::ComplexArray</label>
+        <link refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array"/>
+      </node>
+      <node id="2">
+        <label>mspass::algorithms::deconvolution::FFTDeconOperator</label>
+        <link refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator"/>
+        <childnode refid="3" relation="usage">
+          <edgelabel>winv</edgelabel>
+        </childnode>
       </node>
       <node id="1">
         <label>mspass::algorithms::deconvolution::MultiTaperXcorDecon</label>
@@ -544,17 +577,6 @@
         </childnode>
         <childnode refid="6" relation="usage">
           <edgelabel>shapingwavelet</edgelabel>
-        </childnode>
-      </node>
-      <node id="3">
-        <label>mspass::algorithms::deconvolution::ComplexArray</label>
-        <link refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array"/>
-      </node>
-      <node id="2">
-        <label>mspass::algorithms::deconvolution::FFTDeconOperator</label>
-        <link refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator"/>
-        <childnode refid="3" relation="usage">
-          <edgelabel>winv</edgelabel>
         </childnode>
       </node>
       <node id="6">
@@ -584,7 +606,7 @@
       <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1abf21bce1d1519ece5e9879d03e7f7e5a" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::MultiTaperXcorDecon</scope><name>get_size</name></member>
       <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_xcor_decon_1aa97c15f8672cff8bd0e8430221d7fef0" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::MultiTaperXcorDecon</scope><name>get_taperlen</name></member>
       <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_xcor_decon_1ab88128916470a682bf49547e9a4131b7" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::MultiTaperXcorDecon</scope><name>get_time_bandwidth_product</name></member>
-      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a20e3f9d20030f45bafc72cec73644d34" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::MultiTaperXcorDecon</scope><name>getresult</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1ae27885f8cd4880c643f09dbe636396a9" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::MultiTaperXcorDecon</scope><name>getresult</name></member>
       <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a889e54f83b86f0bb0087ba3da18db14e" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::MultiTaperXcorDecon</scope><name>ideal_output</name></member>
       <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_xcor_decon_1a9b75632d27ed2db87a108d11f68f9d44" prot="public" virt="virtual"><scope>mspass::algorithms::deconvolution::MultiTaperXcorDecon</scope><name>inverse_wavelet</name></member>
       <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_xcor_decon_1a7457a141f5eb2ba694989ee248dc29cd" prot="public" virt="virtual"><scope>mspass::algorithms::deconvolution::MultiTaperXcorDecon</scope><name>inverse_wavelet</name></member>

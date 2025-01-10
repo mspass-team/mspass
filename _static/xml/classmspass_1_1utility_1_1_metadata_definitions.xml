@@ -1,14 +1,15 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="classmspass_1_1utility_1_1_metadata_definitions" kind="class" language="C++" prot="public">
     <compoundname>mspass::utility::MetadataDefinitions</compoundname>
     <includes refid="_metadata_definitions_8h" local="no">MetadataDefinitions.h</includes>
-      <sectiondef kind="private-attrib">
+    <sectiondef kind="private-attrib">
       <memberdef kind="variable" id="classmspass_1_1utility_1_1_metadata_definitions_1af2ad9c68925e22286479ceae792d7124" prot="private" static="no" mutable="no">
         <type>std::map&lt; std::string, MDtype &gt;</type>
         <definition>std::map&lt;std::string,MDtype&gt; mspass::utility::MetadataDefinitions::tmap</definition>
         <argsstring></argsstring>
         <name>tmap</name>
+        <qualifiedname>mspass::utility::MetadataDefinitions::tmap</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -22,6 +23,7 @@
         <definition>std::map&lt;std::string,std::string&gt; mspass::utility::MetadataDefinitions::cmap</definition>
         <argsstring></argsstring>
         <name>cmap</name>
+        <qualifiedname>mspass::utility::MetadataDefinitions::cmap</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -35,6 +37,7 @@
         <definition>std::multimap&lt;std::string,std::string&gt; mspass::utility::MetadataDefinitions::aliasmap</definition>
         <argsstring></argsstring>
         <name>aliasmap</name>
+        <qualifiedname>mspass::utility::MetadataDefinitions::aliasmap</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -48,6 +51,7 @@
         <definition>std::map&lt;std::string,std::string&gt; mspass::utility::MetadataDefinitions::alias_xref</definition>
         <argsstring></argsstring>
         <name>alias_xref</name>
+        <qualifiedname>mspass::utility::MetadataDefinitions::alias_xref</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -61,6 +65,7 @@
         <definition>std::set&lt;std::string&gt; mspass::utility::MetadataDefinitions::roset</definition>
         <argsstring></argsstring>
         <name>roset</name>
+        <qualifiedname>mspass::utility::MetadataDefinitions::roset</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -74,6 +79,7 @@
         <definition>std::map&lt;std::string,std::tuple&lt;std::string,std::string&gt; &gt; mspass::utility::MetadataDefinitions::unique_id_data</definition>
         <argsstring></argsstring>
         <name>unique_id_data</name>
+        <qualifiedname>mspass::utility::MetadataDefinitions::unique_id_data</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -82,13 +88,14 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/MetadataDefinitions.h" line="289" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/MetadataDefinitions.h" bodystart="289" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_definitions_1a5cca4385b19e235ff08215a6b731dc23" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
         <definition>mspass::utility::MetadataDefinitions::MetadataDefinitions</definition>
         <argsstring>()</argsstring>
         <name>MetadataDefinitions</name>
+        <qualifiedname>mspass::utility::MetadataDefinitions::MetadataDefinitions</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -103,6 +110,7 @@
         <definition>mspass::utility::MetadataDefinitions::MetadataDefinitions</definition>
         <argsstring>(const std::string mdname)</argsstring>
         <name>MetadataDefinitions</name>
+        <qualifiedname>mspass::utility::MetadataDefinitions::MetadataDefinitions</qualifiedname>
         <param>
           <type>const std::string</type>
           <declname>mdname</declname>
@@ -122,6 +130,7 @@
         <definition>mspass::utility::MetadataDefinitions::MetadataDefinitions</definition>
         <argsstring>(const std::string mdname, const mspass::utility::MDDefFormat form)</argsstring>
         <name>MetadataDefinitions</name>
+        <qualifiedname>mspass::utility::MetadataDefinitions::MetadataDefinitions</qualifiedname>
         <param>
           <type>const std::string</type>
           <declname>mdname</declname>
@@ -163,6 +172,7 @@
         <definition>mspass::utility::MetadataDefinitions::MetadataDefinitions</definition>
         <argsstring>(const MetadataDefinitions &amp;parent)</argsstring>
         <name>MetadataDefinitions</name>
+        <qualifiedname>mspass::utility::MetadataDefinitions::MetadataDefinitions</qualifiedname>
         <param>
           <type>const <ref refid="classmspass_1_1utility_1_1_metadata_definitions" kindref="compound">MetadataDefinitions</ref> &amp;</type>
           <declname>parent</declname>
@@ -181,6 +191,7 @@
         <definition>bool mspass::utility::MetadataDefinitions::is_defined</definition>
         <argsstring>(const std::string key) const noexcept</argsstring>
         <name>is_defined</name>
+        <qualifiedname>mspass::utility::MetadataDefinitions::is_defined</qualifiedname>
         <param>
           <type>const std::string</type>
           <declname>key</declname>
@@ -199,6 +210,7 @@
         <definition>std::string mspass::utility::MetadataDefinitions::concept</definition>
         <argsstring>(const std::string key) const</argsstring>
         <name>concept</name>
+        <qualifiedname>mspass::utility::MetadataDefinitions::concept</qualifiedname>
         <param>
           <type>const std::string</type>
           <declname>key</declname>
@@ -229,6 +241,7 @@
         <definition>mspass::utility::MDtype mspass::utility::MetadataDefinitions::type</definition>
         <argsstring>(const std::string key) const</argsstring>
         <name>type</name>
+        <qualifiedname>mspass::utility::MetadataDefinitions::type</qualifiedname>
         <param>
           <type>const std::string</type>
           <declname>key</declname>
@@ -261,6 +274,7 @@
         <definition>std::list&lt; std::string &gt; mspass::utility::MetadataDefinitions::keys</definition>
         <argsstring>() const</argsstring>
         <name>keys</name>
+        <qualifiedname>mspass::utility::MetadataDefinitions::keys</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -274,6 +288,7 @@
         <definition>void mspass::utility::MetadataDefinitions::add</definition>
         <argsstring>(const std::string key, const std::string concept_, const MDtype mdt)</argsstring>
         <name>add</name>
+        <qualifiedname>mspass::utility::MetadataDefinitions::add</qualifiedname>
         <param>
           <type>const std::string</type>
           <declname>key</declname>
@@ -327,6 +342,7 @@
         <definition>bool mspass::utility::MetadataDefinitions::has_alias</definition>
         <argsstring>(const std::string key) const</argsstring>
         <name>has_alias</name>
+        <qualifiedname>mspass::utility::MetadataDefinitions::has_alias</qualifiedname>
         <param>
           <type>const std::string</type>
           <declname>key</declname>
@@ -346,6 +362,7 @@
         <definition>bool mspass::utility::MetadataDefinitions::is_alias</definition>
         <argsstring>(const std::string key) const</argsstring>
         <name>is_alias</name>
+        <qualifiedname>mspass::utility::MetadataDefinitions::is_alias</qualifiedname>
         <param>
           <type>const std::string</type>
           <declname>key</declname>
@@ -365,6 +382,7 @@
         <definition>list&lt; std::string &gt; mspass::utility::MetadataDefinitions::aliases</definition>
         <argsstring>(const std::string key) const</argsstring>
         <name>aliases</name>
+        <qualifiedname>mspass::utility::MetadataDefinitions::aliases</qualifiedname>
         <param>
           <type>const std::string</type>
           <declname>key</declname>
@@ -382,6 +400,7 @@
         <definition>std::pair&lt; std::string, mspass::utility::MDtype &gt; mspass::utility::MetadataDefinitions::unique_name</definition>
         <argsstring>(const std::string aliasname) const</argsstring>
         <name>unique_name</name>
+        <qualifiedname>mspass::utility::MetadataDefinitions::unique_name</qualifiedname>
         <param>
           <type>const std::string</type>
           <declname>aliasname</declname>
@@ -413,6 +432,7 @@
         <definition>void mspass::utility::MetadataDefinitions::add_alias</definition>
         <argsstring>(const std::string key, const std::string aliasname)</argsstring>
         <name>add_alias</name>
+        <qualifiedname>mspass::utility::MetadataDefinitions::add_alias</qualifiedname>
         <param>
           <type>const std::string</type>
           <declname>key</declname>
@@ -453,6 +473,7 @@
         <definition>bool mspass::utility::MetadataDefinitions::writeable</definition>
         <argsstring>(const std::string key) const</argsstring>
         <name>writeable</name>
+        <qualifiedname>mspass::utility::MetadataDefinitions::writeable</qualifiedname>
         <param>
           <type>const std::string</type>
           <declname>key</declname>
@@ -485,6 +506,7 @@
         <definition>bool mspass::utility::MetadataDefinitions::readonly</definition>
         <argsstring>(const std::string key) const</argsstring>
         <name>readonly</name>
+        <qualifiedname>mspass::utility::MetadataDefinitions::readonly</qualifiedname>
         <param>
           <type>const std::string</type>
           <declname>key</declname>
@@ -516,6 +538,7 @@
         <definition>void mspass::utility::MetadataDefinitions::set_readonly</definition>
         <argsstring>(const std::string key)</argsstring>
         <name>set_readonly</name>
+        <qualifiedname>mspass::utility::MetadataDefinitions::set_readonly</qualifiedname>
         <param>
           <type>const std::string</type>
           <declname>key</declname>
@@ -545,6 +568,7 @@
         <definition>void mspass::utility::MetadataDefinitions::set_writeable</definition>
         <argsstring>(const std::string key)</argsstring>
         <name>set_writeable</name>
+        <qualifiedname>mspass::utility::MetadataDefinitions::set_writeable</qualifiedname>
         <param>
           <type>const std::string</type>
           <declname>key</declname>
@@ -574,6 +598,7 @@
         <definition>bool mspass::utility::MetadataDefinitions::is_normalized</definition>
         <argsstring>(const std::string key) const</argsstring>
         <name>is_normalized</name>
+        <qualifiedname>mspass::utility::MetadataDefinitions::is_normalized</qualifiedname>
         <param>
           <type>const std::string</type>
           <declname>key</declname>
@@ -593,6 +618,7 @@
         <definition>string mspass::utility::MetadataDefinitions::unique_id_key</definition>
         <argsstring>(const std::string key) const</argsstring>
         <name>unique_id_key</name>
+        <qualifiedname>mspass::utility::MetadataDefinitions::unique_id_key</qualifiedname>
         <param>
           <type>const std::string</type>
           <declname>key</declname>
@@ -625,6 +651,7 @@
         <definition>string mspass::utility::MetadataDefinitions::collection</definition>
         <argsstring>(const std::string key) const</argsstring>
         <name>collection</name>
+        <qualifiedname>mspass::utility::MetadataDefinitions::collection</qualifiedname>
         <param>
           <type>const std::string</type>
           <declname>key</declname>
@@ -656,6 +683,7 @@
         <definition>std::pair&lt; std::string, std::string &gt; mspass::utility::MetadataDefinitions::normalize_data</definition>
         <argsstring>(const std::string key) const</argsstring>
         <name>normalize_data</name>
+        <qualifiedname>mspass::utility::MetadataDefinitions::normalize_data</qualifiedname>
         <param>
           <type>const std::string</type>
           <declname>key</declname>
@@ -687,6 +715,7 @@
         <definition>std::list&lt; string &gt; mspass::utility::MetadataDefinitions::apply_aliases</definition>
         <argsstring>(mspass::utility::Metadata &amp;d, const std::list&lt; std::string &gt; aliaslist)</argsstring>
         <name>apply_aliases</name>
+        <qualifiedname>mspass::utility::MetadataDefinitions::apply_aliases</qualifiedname>
         <param>
           <type><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">mspass::utility::Metadata</ref> &amp;</type>
           <declname>d</declname>
@@ -734,6 +763,7 @@
         <definition>void mspass::utility::MetadataDefinitions::clear_aliases</definition>
         <argsstring>(mspass::utility::Metadata &amp;d)</argsstring>
         <name>clear_aliases</name>
+        <qualifiedname>mspass::utility::MetadataDefinitions::clear_aliases</qualifiedname>
         <param>
           <type><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">mspass::utility::Metadata</ref> &amp;</type>
           <declname>d</declname>
@@ -769,6 +799,7 @@
         <definition>MetadataDefinitions &amp; mspass::utility::MetadataDefinitions::operator=</definition>
         <argsstring>(const MetadataDefinitions &amp;other)</argsstring>
         <name>operator=</name>
+        <qualifiedname>mspass::utility::MetadataDefinitions::operator=</qualifiedname>
         <param>
           <type>const <ref refid="classmspass_1_1utility_1_1_metadata_definitions" kindref="compound">MetadataDefinitions</ref> &amp;</type>
           <declname>other</declname>
@@ -787,6 +818,7 @@
         <definition>MetadataDefinitions &amp; mspass::utility::MetadataDefinitions::operator+=</definition>
         <argsstring>(const MetadataDefinitions &amp;other)</argsstring>
         <name>operator+=</name>
+        <qualifiedname>mspass::utility::MetadataDefinitions::operator+=</qualifiedname>
         <param>
           <type>const <ref refid="classmspass_1_1utility_1_1_metadata_definitions" kindref="compound">MetadataDefinitions</ref> &amp;</type>
           <declname>other</declname>
@@ -803,13 +835,14 @@
         <references refid="classmspass_1_1utility_1_1_metadata_definitions_1a5d131b51d99fb29753295847891ff2de" compoundref="_metadata_definitions_8cc" startline="102" endline="114">concept</references>
         <references refid="classmspass_1_1utility_1_1_metadata_definitions_1a8472df22024cde279e81c84e9129e4fd" compoundref="_metadata_definitions_8cc" startline="116" endline="130">type</references>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="private-func">
+    </sectiondef>
+    <sectiondef kind="private-func">
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_definitions_1a476e73fc9a422e8dc5c11ff80dd93890" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
         <definition>void mspass::utility::MetadataDefinitions::pfreader</definition>
         <argsstring>(const std::string pfname)</argsstring>
         <name>pfreader</name>
+        <qualifiedname>mspass::utility::MetadataDefinitions::pfreader</qualifiedname>
         <param>
           <type>const std::string</type>
           <declname>pfname</declname>
@@ -827,6 +860,7 @@
         <definition>void mspass::utility::MetadataDefinitions::yaml_reader</definition>
         <argsstring>(const std::string fname)</argsstring>
         <name>yaml_reader</name>
+        <qualifiedname>mspass::utility::MetadataDefinitions::yaml_reader</qualifiedname>
         <param>
           <type>const std::string</type>
           <declname>fname</declname>
@@ -839,7 +873,7 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/MetadataDefinitions.h" line="291" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/MetadataDefinitions.cc" bodystart="455" bodyend="517"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
 <para>Define properties of <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref> known to mspass. </para>
     </briefdescription>

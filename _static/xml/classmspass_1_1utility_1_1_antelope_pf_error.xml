@@ -1,15 +1,16 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="classmspass_1_1utility_1_1_antelope_pf_error" kind="class" language="C++" prot="public">
     <compoundname>mspass::utility::AntelopePfError</compoundname>
     <basecompoundref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" prot="public" virt="non-virtual">mspass::utility::MsPASSError</basecompoundref>
     <includes refid="_antelope_pf_8h" local="no">AntelopePf.h</includes>
-      <sectiondef kind="public-func">
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="classmspass_1_1utility_1_1_antelope_pf_error_1a3c9e1c28ebef0a70d0e8ea02f3ca451c" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
         <definition>mspass::utility::AntelopePfError::AntelopePfError</definition>
         <argsstring>()</argsstring>
         <name>AntelopePfError</name>
+        <qualifiedname>mspass::utility::AntelopePfError::AntelopePfError</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -23,6 +24,7 @@
         <definition>mspass::utility::AntelopePfError::AntelopePfError</definition>
         <argsstring>(std::string mess)</argsstring>
         <name>AntelopePfError</name>
+        <qualifiedname>mspass::utility::AntelopePfError::AntelopePfError</qualifiedname>
         <param>
           <type>std::string</type>
           <declname>mess</declname>
@@ -40,6 +42,7 @@
         <definition>mspass::utility::AntelopePfError::AntelopePfError</definition>
         <argsstring>(const char *mess)</argsstring>
         <name>AntelopePfError</name>
+        <qualifiedname>mspass::utility::AntelopePfError::AntelopePfError</qualifiedname>
         <param>
           <type>const char *</type>
           <declname>mess</declname>
@@ -57,6 +60,7 @@
         <definition>void mspass::utility::AntelopePfError::log_error</definition>
         <argsstring>()</argsstring>
         <name>log_error</name>
+        <qualifiedname>mspass::utility::AntelopePfError::log_error</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -65,7 +69,7 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" line="180" column="14" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" bodystart="180" bodyend="182"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
 <para>Error class for <ref refid="classmspass_1_1utility_1_1_antelope_pf" kindref="compound">AntelopePf</ref> object. </para>
     </briefdescription>
@@ -73,6 +77,12 @@
 <para>This error object is similar to that for <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref> but tags all errors cleanly as originating from this child of <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref>. Note <ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" kindref="compound">MsPASSError</ref> is a child of std::exception, so catch that to most easily fetch messages coming from this beast. </para>
     </detaileddescription>
     <inheritancegraph>
+      <node id="1">
+        <label>mspass::utility::AntelopePfError</label>
+        <link refid="classmspass_1_1utility_1_1_antelope_pf_error"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
       <node id="2">
         <label>mspass::utility::MsPASSError</label>
         <link refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error"/>
@@ -81,15 +91,15 @@
       </node>
       <node id="3">
         <label>std::exception</label>
-      </node>
-      <node id="1">
-        <label>mspass::utility::AntelopePfError</label>
-        <link refid="classmspass_1_1utility_1_1_antelope_pf_error"/>
-        <childnode refid="2" relation="public-inheritance">
-        </childnode>
       </node>
     </inheritancegraph>
     <collaborationgraph>
+      <node id="1">
+        <label>mspass::utility::AntelopePfError</label>
+        <link refid="classmspass_1_1utility_1_1_antelope_pf_error"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
       <node id="2">
         <label>mspass::utility::MsPASSError</label>
         <link refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error"/>
@@ -98,12 +108,6 @@
       </node>
       <node id="3">
         <label>std::exception</label>
-      </node>
-      <node id="1">
-        <label>mspass::utility::AntelopePfError</label>
-        <link refid="classmspass_1_1utility_1_1_antelope_pf_error"/>
-        <childnode refid="2" relation="public-inheritance">
-        </childnode>
       </node>
     </collaborationgraph>
     <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" line="166" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" bodystart="167" bodyend="183"/>
@@ -120,7 +124,7 @@
       <member refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1a0f75099c3f9c8130b44398601753745f" prot="public" virt="non-virtual"><scope>mspass::utility::AntelopePfError</scope><name>MsPASSError</name></member>
       <member refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1af209344a8eb784695556f02b7df481c9" prot="public" virt="non-virtual"><scope>mspass::utility::AntelopePfError</scope><name>MsPASSError</name></member>
       <member refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1a3393c3878bee1728628fd3e063640d94" prot="public" virt="non-virtual"><scope>mspass::utility::AntelopePfError</scope><name>severity</name></member>
-      <member refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1ae47776d160eafa42f854be5bf47e00a8" prot="public" virt="non-virtual"><scope>mspass::utility::AntelopePfError</scope><name>what</name></member>
+      <member refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1a1dd30086a986a3a0669cd974e65bd563" prot="public" virt="non-virtual"><scope>mspass::utility::AntelopePfError</scope><name>what</name></member>
     </listofallmembers>
   </compounddef>
 </doxygen>

@@ -1,15 +1,16 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon" kind="class" language="C++" prot="public">
     <compoundname>mspass::algorithms::deconvolution::GeneralIterDecon</compoundname>
     <basecompoundref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon" prot="public" virt="non-virtual">mspass::algorithms::deconvolution::ScalarDecon</basecompoundref>
     <includes refid="_general_iter_decon_8h" local="no">GeneralIterDecon.h</includes>
-      <sectiondef kind="private-attrib">
+    <sectiondef kind="private-attrib">
       <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1ab7b5a392695343cb4aa0b00ea27aab5d" prot="private" static="no" mutable="no">
         <type><ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">mspass::seismic::CoreSeismogram</ref></type>
         <definition>mspass::seismic::CoreSeismogram mspass::algorithms::deconvolution::GeneralIterDecon::d_all</definition>
         <argsstring></argsstring>
         <name>d_all</name>
+        <qualifiedname>mspass::algorithms::deconvolution::GeneralIterDecon::d_all</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -23,6 +24,7 @@
         <definition>mspass::seismic::CoreSeismogram mspass::algorithms::deconvolution::GeneralIterDecon::d_decon</definition>
         <argsstring></argsstring>
         <name>d_decon</name>
+        <qualifiedname>mspass::algorithms::deconvolution::GeneralIterDecon::d_decon</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -36,6 +38,7 @@
         <definition>mspass::seismic::CoreSeismogram mspass::algorithms::deconvolution::GeneralIterDecon::r</definition>
         <argsstring></argsstring>
         <name>r</name>
+        <qualifiedname>mspass::algorithms::deconvolution::GeneralIterDecon::r</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -49,6 +52,7 @@
         <definition>mspass::seismic::CoreSeismogram mspass::algorithms::deconvolution::GeneralIterDecon::n</definition>
         <argsstring></argsstring>
         <name>n</name>
+        <qualifiedname>mspass::algorithms::deconvolution::GeneralIterDecon::n</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -62,6 +66,7 @@
         <definition>int mspass::algorithms::deconvolution::GeneralIterDecon::ndwin</definition>
         <argsstring></argsstring>
         <name>ndwin</name>
+        <qualifiedname>mspass::algorithms::deconvolution::GeneralIterDecon::ndwin</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -75,6 +80,7 @@
         <definition>int mspass::algorithms::deconvolution::GeneralIterDecon::nnwin</definition>
         <argsstring></argsstring>
         <name>nnwin</name>
+        <qualifiedname>mspass::algorithms::deconvolution::GeneralIterDecon::nnwin</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -88,6 +94,7 @@
         <definition>int mspass::algorithms::deconvolution::GeneralIterDecon::nfft</definition>
         <argsstring></argsstring>
         <name>nfft</name>
+        <qualifiedname>mspass::algorithms::deconvolution::GeneralIterDecon::nfft</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -101,6 +108,7 @@
         <definition>int mspass::algorithms::deconvolution::GeneralIterDecon::time_shift</definition>
         <argsstring></argsstring>
         <name>time_shift</name>
+        <qualifiedname>mspass::algorithms::deconvolution::GeneralIterDecon::time_shift</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -114,6 +122,7 @@
         <definition>mspass::algorithms::TimeWindow mspass::algorithms::deconvolution::GeneralIterDecon::dwin</definition>
         <argsstring></argsstring>
         <name>dwin</name>
+        <qualifiedname>mspass::algorithms::deconvolution::GeneralIterDecon::dwin</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -127,6 +136,7 @@
         <definition>mspass::algorithms::TimeWindow mspass::algorithms::deconvolution::GeneralIterDecon::nwin</definition>
         <argsstring></argsstring>
         <name>nwin</name>
+        <qualifiedname>mspass::algorithms::deconvolution::GeneralIterDecon::nwin</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -140,6 +150,7 @@
         <definition>mspass::algorithms::TimeWindow mspass::algorithms::deconvolution::GeneralIterDecon::fftwin</definition>
         <argsstring></argsstring>
         <name>fftwin</name>
+        <qualifiedname>mspass::algorithms::deconvolution::GeneralIterDecon::fftwin</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -153,6 +164,7 @@
         <definition>int mspass::algorithms::deconvolution::GeneralIterDecon::noise_component</definition>
         <argsstring></argsstring>
         <name>noise_component</name>
+        <qualifiedname>mspass::algorithms::deconvolution::GeneralIterDecon::noise_component</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -167,6 +179,7 @@
         <definition>std::list&lt;ThreeCSpike&gt; mspass::algorithms::deconvolution::GeneralIterDecon::spikes</definition>
         <argsstring></argsstring>
         <name>spikes</name>
+        <qualifiedname>mspass::algorithms::deconvolution::GeneralIterDecon::spikes</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -181,6 +194,7 @@
         <definition>std::vector&lt;double&gt; mspass::algorithms::deconvolution::GeneralIterDecon::lag_weights</definition>
         <argsstring></argsstring>
         <name>lag_weights</name>
+        <qualifiedname>mspass::algorithms::deconvolution::GeneralIterDecon::lag_weights</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -196,6 +210,7 @@
         <definition>std::vector&lt;double&gt; mspass::algorithms::deconvolution::GeneralIterDecon::wtf</definition>
         <argsstring></argsstring>
         <name>wtf</name>
+        <qualifiedname>mspass::algorithms::deconvolution::GeneralIterDecon::wtf</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -209,6 +224,7 @@
         <definition>int mspass::algorithms::deconvolution::GeneralIterDecon::nwtf</definition>
         <argsstring></argsstring>
         <name>nwtf</name>
+        <qualifiedname>mspass::algorithms::deconvolution::GeneralIterDecon::nwtf</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -222,6 +238,7 @@
         <definition>ScalarDecon* mspass::algorithms::deconvolution::GeneralIterDecon::preprocessor</definition>
         <argsstring></argsstring>
         <name>preprocessor</name>
+        <qualifiedname>mspass::algorithms::deconvolution::GeneralIterDecon::preprocessor</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -235,6 +252,7 @@
         <definition>ShapingWavelet mspass::algorithms::deconvolution::GeneralIterDecon::shapingwavelet</definition>
         <argsstring></argsstring>
         <name>shapingwavelet</name>
+        <qualifiedname>mspass::algorithms::deconvolution::GeneralIterDecon::shapingwavelet</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -248,6 +266,7 @@
         <definition>int mspass::algorithms::deconvolution::GeneralIterDecon::wavelet_pad</definition>
         <argsstring></argsstring>
         <name>wavelet_pad</name>
+        <qualifiedname>mspass::algorithms::deconvolution::GeneralIterDecon::wavelet_pad</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -261,6 +280,7 @@
         <definition>std::vector&lt;double&gt; mspass::algorithms::deconvolution::GeneralIterDecon::winv_fir</definition>
         <argsstring></argsstring>
         <name>winv_fir</name>
+        <qualifiedname>mspass::algorithms::deconvolution::GeneralIterDecon::winv_fir</qualifiedname>
         <briefdescription>
 <para>Shorted inverse wavelet used for iteration. </para>
         </briefdescription>
@@ -276,6 +296,7 @@
         <definition>std::vector&lt;double&gt; mspass::algorithms::deconvolution::GeneralIterDecon::actual_o_fir</definition>
         <argsstring></argsstring>
         <name>actual_o_fir</name>
+        <qualifiedname>mspass::algorithms::deconvolution::GeneralIterDecon::actual_o_fir</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -289,6 +310,7 @@
         <definition>int mspass::algorithms::deconvolution::GeneralIterDecon::actual_o_0</definition>
         <argsstring></argsstring>
         <name>actual_o_0</name>
+        <qualifiedname>mspass::algorithms::deconvolution::GeneralIterDecon::actual_o_0</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -302,6 +324,7 @@
         <definition>IterDeconType mspass::algorithms::deconvolution::GeneralIterDecon::decon_type</definition>
         <argsstring></argsstring>
         <name>decon_type</name>
+        <qualifiedname>mspass::algorithms::deconvolution::GeneralIterDecon::decon_type</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -315,6 +338,7 @@
         <definition>double mspass::algorithms::deconvolution::GeneralIterDecon::lw_linf_initial</definition>
         <argsstring></argsstring>
         <name>lw_linf_initial</name>
+        <qualifiedname>mspass::algorithms::deconvolution::GeneralIterDecon::lw_linf_initial</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -328,6 +352,7 @@
         <definition>double mspass::algorithms::deconvolution::GeneralIterDecon::lw_linf_prev</definition>
         <argsstring></argsstring>
         <name>lw_linf_prev</name>
+        <qualifiedname>mspass::algorithms::deconvolution::GeneralIterDecon::lw_linf_prev</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -341,6 +366,7 @@
         <definition>double mspass::algorithms::deconvolution::GeneralIterDecon::lw_l2_initial</definition>
         <argsstring></argsstring>
         <name>lw_l2_initial</name>
+        <qualifiedname>mspass::algorithms::deconvolution::GeneralIterDecon::lw_l2_initial</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -354,6 +380,7 @@
         <definition>double mspass::algorithms::deconvolution::GeneralIterDecon::lw_l2_prev</definition>
         <argsstring></argsstring>
         <name>lw_l2_prev</name>
+        <qualifiedname>mspass::algorithms::deconvolution::GeneralIterDecon::lw_l2_prev</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -367,6 +394,7 @@
         <definition>double mspass::algorithms::deconvolution::GeneralIterDecon::resid_linf_initial</definition>
         <argsstring></argsstring>
         <name>resid_linf_initial</name>
+        <qualifiedname>mspass::algorithms::deconvolution::GeneralIterDecon::resid_linf_initial</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -380,6 +408,7 @@
         <definition>double mspass::algorithms::deconvolution::GeneralIterDecon::resid_linf_prev</definition>
         <argsstring></argsstring>
         <name>resid_linf_prev</name>
+        <qualifiedname>mspass::algorithms::deconvolution::GeneralIterDecon::resid_linf_prev</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -393,6 +422,7 @@
         <definition>double mspass::algorithms::deconvolution::GeneralIterDecon::resid_l2_initial</definition>
         <argsstring></argsstring>
         <name>resid_l2_initial</name>
+        <qualifiedname>mspass::algorithms::deconvolution::GeneralIterDecon::resid_l2_initial</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -406,6 +436,7 @@
         <definition>double mspass::algorithms::deconvolution::GeneralIterDecon::resid_l2_prev</definition>
         <argsstring></argsstring>
         <name>resid_l2_prev</name>
+        <qualifiedname>mspass::algorithms::deconvolution::GeneralIterDecon::resid_l2_prev</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -419,6 +450,7 @@
         <definition>int mspass::algorithms::deconvolution::GeneralIterDecon::iter_count</definition>
         <argsstring></argsstring>
         <name>iter_count</name>
+        <qualifiedname>mspass::algorithms::deconvolution::GeneralIterDecon::iter_count</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -432,6 +464,7 @@
         <definition>int mspass::algorithms::deconvolution::GeneralIterDecon::iter_max</definition>
         <argsstring></argsstring>
         <name>iter_max</name>
+        <qualifiedname>mspass::algorithms::deconvolution::GeneralIterDecon::iter_max</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -445,6 +478,7 @@
         <definition>double mspass::algorithms::deconvolution::GeneralIterDecon::lw_linf_floor</definition>
         <argsstring></argsstring>
         <name>lw_linf_floor</name>
+        <qualifiedname>mspass::algorithms::deconvolution::GeneralIterDecon::lw_linf_floor</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -458,6 +492,7 @@
         <definition>double mspass::algorithms::deconvolution::GeneralIterDecon::lw_l2_floor</definition>
         <argsstring></argsstring>
         <name>lw_l2_floor</name>
+        <qualifiedname>mspass::algorithms::deconvolution::GeneralIterDecon::lw_l2_floor</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -471,6 +506,7 @@
         <definition>double mspass::algorithms::deconvolution::GeneralIterDecon::resid_linf_prob</definition>
         <argsstring></argsstring>
         <name>resid_linf_prob</name>
+        <qualifiedname>mspass::algorithms::deconvolution::GeneralIterDecon::resid_linf_prob</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -484,6 +520,7 @@
         <definition>double mspass::algorithms::deconvolution::GeneralIterDecon::resid_linf_floor</definition>
         <argsstring></argsstring>
         <name>resid_linf_floor</name>
+        <qualifiedname>mspass::algorithms::deconvolution::GeneralIterDecon::resid_linf_floor</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -497,6 +534,7 @@
         <definition>double mspass::algorithms::deconvolution::GeneralIterDecon::resid_l2_tol</definition>
         <argsstring></argsstring>
         <name>resid_l2_tol</name>
+        <qualifiedname>mspass::algorithms::deconvolution::GeneralIterDecon::resid_l2_tol</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -510,6 +548,7 @@
         <definition>std::vector&lt;double&gt; mspass::algorithms::deconvolution::GeneralIterDecon::lw_linf_history</definition>
         <argsstring></argsstring>
         <name>lw_linf_history</name>
+        <qualifiedname>mspass::algorithms::deconvolution::GeneralIterDecon::lw_linf_history</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -523,6 +562,7 @@
         <definition>std::vector&lt;double&gt; mspass::algorithms::deconvolution::GeneralIterDecon::lw_l2_history</definition>
         <argsstring></argsstring>
         <name>lw_l2_history</name>
+        <qualifiedname>mspass::algorithms::deconvolution::GeneralIterDecon::lw_l2_history</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -536,6 +576,7 @@
         <definition>std::vector&lt;double&gt; mspass::algorithms::deconvolution::GeneralIterDecon::resid_l2_history</definition>
         <argsstring></argsstring>
         <name>resid_l2_history</name>
+        <qualifiedname>mspass::algorithms::deconvolution::GeneralIterDecon::resid_l2_history</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -549,6 +590,7 @@
         <definition>std::vector&lt;double&gt; mspass::algorithms::deconvolution::GeneralIterDecon::resid_linf_history</definition>
         <argsstring></argsstring>
         <name>resid_linf_history</name>
+        <qualifiedname>mspass::algorithms::deconvolution::GeneralIterDecon::resid_linf_history</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -557,13 +599,14 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" line="215" column="61" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" bodystart="215" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a716eeb950de422de7aceb5514accd9f5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
         <definition>mspass::algorithms::deconvolution::GeneralIterDecon::GeneralIterDecon</definition>
         <argsstring>(mspass::utility::AntelopePf &amp;md)</argsstring>
         <name>GeneralIterDecon</name>
+        <qualifiedname>mspass::algorithms::deconvolution::GeneralIterDecon::GeneralIterDecon</qualifiedname>
         <param>
           <type><ref refid="classmspass_1_1utility_1_1_antelope_pf" kindref="compound">mspass::utility::AntelopePf</ref> &amp;</type>
           <declname>md</declname>
@@ -586,6 +629,7 @@
         <definition>mspass::algorithms::deconvolution::GeneralIterDecon::GeneralIterDecon</definition>
         <argsstring>(const GeneralIterDecon &amp;parent)</argsstring>
         <name>GeneralIterDecon</name>
+        <qualifiedname>mspass::algorithms::deconvolution::GeneralIterDecon::GeneralIterDecon</qualifiedname>
         <param>
           <type>const <ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon" kindref="compound">GeneralIterDecon</ref> &amp;</type>
           <declname>parent</declname>
@@ -603,6 +647,7 @@
         <definition>void mspass::algorithms::deconvolution::GeneralIterDecon::changeparameter</definition>
         <argsstring>(const mspass::utility::Metadata &amp;md)</argsstring>
         <name>changeparameter</name>
+        <qualifiedname>mspass::algorithms::deconvolution::GeneralIterDecon::changeparameter</qualifiedname>
         <reimplements refid="classmspass_1_1algorithms_1_1deconvolution_1_1_basic_decon_operator_1a84111e230a365037569b17b2ca693100">changeparameter</reimplements>
         <param>
           <type>const <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">mspass::utility::Metadata</ref> &amp;</type>
@@ -621,6 +666,7 @@
         <definition>int mspass::algorithms::deconvolution::GeneralIterDecon::load</definition>
         <argsstring>(const mspass::seismic::CoreSeismogram &amp;d, mspass::algorithms::TimeWindow dwin)</argsstring>
         <name>load</name>
+        <qualifiedname>mspass::algorithms::deconvolution::GeneralIterDecon::load</qualifiedname>
         <param>
           <type>const <ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">mspass::seismic::CoreSeismogram</ref> &amp;</type>
           <declname>d</declname>
@@ -642,6 +688,7 @@
         <definition>int mspass::algorithms::deconvolution::GeneralIterDecon::loadnoise</definition>
         <argsstring>(const mspass::seismic::CoreSeismogram &amp;d, mspass::algorithms::TimeWindow nwin)</argsstring>
         <name>loadnoise</name>
+        <qualifiedname>mspass::algorithms::deconvolution::GeneralIterDecon::loadnoise</qualifiedname>
         <param>
           <type>const <ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">mspass::seismic::CoreSeismogram</ref> &amp;</type>
           <declname>d</declname>
@@ -663,6 +710,7 @@
         <definition>int mspass::algorithms::deconvolution::GeneralIterDecon::load</definition>
         <argsstring>(const mspass::seismic::CoreSeismogram &amp;d, mspass::algorithms::TimeWindow dwin, mspass::algorithms::TimeWindow nwin)</argsstring>
         <name>load</name>
+        <qualifiedname>mspass::algorithms::deconvolution::GeneralIterDecon::load</qualifiedname>
         <param>
           <type>const <ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">mspass::seismic::CoreSeismogram</ref> &amp;</type>
           <declname>d</declname>
@@ -690,6 +738,7 @@
         <definition>void mspass::algorithms::deconvolution::GeneralIterDecon::process</definition>
         <argsstring>()</argsstring>
         <name>process</name>
+        <qualifiedname>mspass::algorithms::deconvolution::GeneralIterDecon::process</qualifiedname>
         <reimplements refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a71988c8a42788bd966945d78d5fdb6b3">process</reimplements>
         <briefdescription>
         </briefdescription>
@@ -704,6 +753,7 @@
         <definition>mspass::algorithms::deconvolution::GeneralIterDecon::~GeneralIterDecon</definition>
         <argsstring>()</argsstring>
         <name>~GeneralIterDecon</name>
+        <qualifiedname>mspass::algorithms::deconvolution::GeneralIterDecon::~GeneralIterDecon</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -717,6 +767,7 @@
         <definition>CoreSeismogram mspass::algorithms::deconvolution::GeneralIterDecon::getresult</definition>
         <argsstring>()</argsstring>
         <name>getresult</name>
+        <qualifiedname>mspass::algorithms::deconvolution::GeneralIterDecon::getresult</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -730,6 +781,7 @@
         <definition>mspass::seismic::CoreTimeSeries mspass::algorithms::deconvolution::GeneralIterDecon::ideal_output</definition>
         <argsstring>()</argsstring>
         <name>ideal_output</name>
+        <qualifiedname>mspass::algorithms::deconvolution::GeneralIterDecon::ideal_output</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -743,6 +795,7 @@
         <definition>mspass::seismic::CoreTimeSeries mspass::algorithms::deconvolution::GeneralIterDecon::actual_output</definition>
         <argsstring>()</argsstring>
         <name>actual_output</name>
+        <qualifiedname>mspass::algorithms::deconvolution::GeneralIterDecon::actual_output</qualifiedname>
         <reimplements refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a84f320ad48e8bfc9c292f8dde33c0593">actual_output</reimplements>
         <briefdescription>
 <para>Return the actual output of the deconvolution operator. </para>
@@ -760,6 +813,7 @@
         <definition>mspass::seismic::CoreTimeSeries mspass::algorithms::deconvolution::GeneralIterDecon::inverse_wavelet</definition>
         <argsstring>()</argsstring>
         <name>inverse_wavelet</name>
+        <qualifiedname>mspass::algorithms::deconvolution::GeneralIterDecon::inverse_wavelet</qualifiedname>
         <reimplements refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a078d038467a3be52d1e91e0d080d503e">inverse_wavelet</reimplements>
         <briefdescription>
 <para>Return a FIR represention of the inverse filter. </para>
@@ -778,6 +832,7 @@
         <definition>mspass::seismic::CoreTimeSeries mspass::algorithms::deconvolution::GeneralIterDecon::inverse_wavelet</definition>
         <argsstring>(double t0parent)</argsstring>
         <name>inverse_wavelet</name>
+        <qualifiedname>mspass::algorithms::deconvolution::GeneralIterDecon::inverse_wavelet</qualifiedname>
         <reimplements refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a9adc0519d5435d686edb32066f9f697a">inverse_wavelet</reimplements>
         <param>
           <type>double</type>
@@ -796,6 +851,7 @@
         <definition>Metadata mspass::algorithms::deconvolution::GeneralIterDecon::QCMetrics</definition>
         <argsstring>()</argsstring>
         <name>QCMetrics</name>
+        <qualifiedname>mspass::algorithms::deconvolution::GeneralIterDecon::QCMetrics</qualifiedname>
         <reimplements refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1af683c2f25e91155c2bc1f81f9b62bbb1">QCMetrics</reimplements>
         <briefdescription>
 <para>Return appropriate quality measures. </para>
@@ -807,13 +863,14 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" line="105" column="31" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/GeneralIterDecon.cc" bodystart="736" bodyend="740"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="private-func">
+    </sectiondef>
+    <sectiondef kind="private-func">
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1af3204ea83400f3ecf86399239beb03be" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
         <definition>void mspass::algorithms::deconvolution::GeneralIterDecon::construct_weight_penalty_function</definition>
         <argsstring>(const mspass::utility::Metadata &amp;md)</argsstring>
         <name>construct_weight_penalty_function</name>
+        <qualifiedname>mspass::algorithms::deconvolution::GeneralIterDecon::construct_weight_penalty_function</qualifiedname>
         <param>
           <type>const <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">mspass::utility::Metadata</ref> &amp;</type>
           <declname>md</declname>
@@ -831,6 +888,7 @@
         <definition>void mspass::algorithms::deconvolution::GeneralIterDecon::update_residual_matrix</definition>
         <argsstring>(ThreeCSpike spk)</argsstring>
         <name>update_residual_matrix</name>
+        <qualifiedname>mspass::algorithms::deconvolution::GeneralIterDecon::update_residual_matrix</qualifiedname>
         <param>
           <type><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike" kindref="compound">ThreeCSpike</ref></type>
           <declname>spk</declname>
@@ -859,6 +917,7 @@
         <definition>void mspass::algorithms::deconvolution::GeneralIterDecon::update_lag_weights</definition>
         <argsstring>(int col)</argsstring>
         <name>update_lag_weights</name>
+        <qualifiedname>mspass::algorithms::deconvolution::GeneralIterDecon::update_lag_weights</qualifiedname>
         <param>
           <type>int</type>
           <declname>col</declname>
@@ -878,6 +937,7 @@
         <definition>double mspass::algorithms::deconvolution::GeneralIterDecon::compute_resid_linf_floor</definition>
         <argsstring>()</argsstring>
         <name>compute_resid_linf_floor</name>
+        <qualifiedname>mspass::algorithms::deconvolution::GeneralIterDecon::compute_resid_linf_floor</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -892,6 +952,7 @@
         <definition>bool mspass::algorithms::deconvolution::GeneralIterDecon::has_not_converged</definition>
         <argsstring>()</argsstring>
         <name>has_not_converged</name>
+        <qualifiedname>mspass::algorithms::deconvolution::GeneralIterDecon::has_not_converged</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -906,6 +967,7 @@
         <definition>void mspass::algorithms::deconvolution::GeneralIterDecon::print_convergence_history</definition>
         <argsstring>(std::ostream &amp;ofs)</argsstring>
         <name>print_convergence_history</name>
+        <qualifiedname>mspass::algorithms::deconvolution::GeneralIterDecon::print_convergence_history</qualifiedname>
         <param>
           <type>std::ostream &amp;</type>
           <declname>ofs</declname>
@@ -918,7 +980,7 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" line="216" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" bodystart="216" bodyend="255"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
 <para>Implements the Generalized Iterative Method of Wang and Pavlis. </para>
     </briefdescription>

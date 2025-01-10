@@ -1,14 +1,15 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="classmspass_1_1seismic_1_1_time_window_cmp" kind="class" language="C++" prot="public">
     <compoundname>mspass::seismic::TimeWindowCmp</compoundname>
     <includes refid="_data_gap_8h" local="no">DataGap.h</includes>
-      <sectiondef kind="public-func">
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_time_window_cmp_1ad4907b066765551fa19bbf0d4c8a6e31" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>bool</type>
         <definition>bool mspass::seismic::TimeWindowCmp::operator()</definition>
         <argsstring>(const mspass::algorithms::TimeWindow ti1, const mspass::algorithms::TimeWindow ti2) const</argsstring>
         <name>operator()</name>
+        <qualifiedname>mspass::seismic::TimeWindowCmp::operator()</qualifiedname>
         <param>
           <type>const <ref refid="classmspass_1_1algorithms_1_1_time_window" kindref="compound">mspass::algorithms::TimeWindow</ref></type>
           <declname>ti1</declname>
@@ -25,7 +26,7 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/DataGap.h" line="19" column="14" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/DataGap.h" bodystart="19" bodyend="21"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
 <para>Function object used for weak comparison to order TimeWindow objects. </para>
     </briefdescription>

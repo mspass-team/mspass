@@ -2495,6 +2495,49 @@ those safeties the code would throw an error if net or loc were null.</p>
 </dd></dl>
 
 <dl class="py class">
+<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.ComplexArray">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.ccore.algorithms.deconvolution.</span></span><span class="sig-name descname"><span class="pre">ComplexArray</span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.ComplexArray" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_object</span></code></p>
+<p>Complex valued Fortran style array implementation used in MsPASS Decon opertors</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.ComplexArray.abs">
+<span class="sig-name descname"><span class="pre">abs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.ComplexArray" title="mspasspy.ccore.algorithms.deconvolution.ComplexArray"><span class="pre">mspasspy.ccore.algorithms.deconvolution.ComplexArray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.DoubleVector" title="mspasspy.ccore.algorithms.deconvolution.DoubleVector"><span class="pre">mspasspy.ccore.algorithms.deconvolution.DoubleVector</span></a></span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.ComplexArray.abs" title="Permalink to this definition"></a></dt>
+<dd><p>Return DoubleVector of complex magnitudes</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.ComplexArray.conj">
+<span class="sig-name descname"><span class="pre">conj</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.ComplexArray" title="mspasspy.ccore.algorithms.deconvolution.ComplexArray"><span class="pre">mspasspy.ccore.algorithms.deconvolution.ComplexArray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.ComplexArray.conj" title="Permalink to this definition"></a></dt>
+<dd><p>Convert array elements to complex conjugates</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.ComplexArray.norm2">
+<span class="sig-name descname"><span class="pre">norm2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.ComplexArray" title="mspasspy.ccore.algorithms.deconvolution.ComplexArray"><span class="pre">mspasspy.ccore.algorithms.deconvolution.ComplexArray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.ComplexArray.norm2" title="Permalink to this definition"></a></dt>
+<dd><p>Return L2 norm of array content</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.ComplexArray.phase">
+<span class="sig-name descname"><span class="pre">phase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.ComplexArray" title="mspasspy.ccore.algorithms.deconvolution.ComplexArray"><span class="pre">mspasspy.ccore.algorithms.deconvolution.ComplexArray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.DoubleVector" title="mspasspy.ccore.algorithms.deconvolution.DoubleVector"><span class="pre">mspasspy.ccore.algorithms.deconvolution.DoubleVector</span></a></span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.ComplexArray.phase" title="Permalink to this definition"></a></dt>
+<dd><p>Return DoubleVector of phase of components</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.ComplexArray.rms">
+<span class="sig-name descname"><span class="pre">rms</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.ComplexArray" title="mspasspy.ccore.algorithms.deconvolution.ComplexArray"><span class="pre">mspasspy.ccore.algorithms.deconvolution.ComplexArray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.ComplexArray.rms" title="Permalink to this definition"></a></dt>
+<dd><p>Return rms of array content</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.ComplexArray.size">
+<span class="sig-name descname"><span class="pre">size</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.ComplexArray" title="mspasspy.ccore.algorithms.deconvolution.ComplexArray"><span class="pre">mspasspy.ccore.algorithms.deconvolution.ComplexArray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.ComplexArray.size" title="Permalink to this definition"></a></dt>
+<dd><p>Return number of components in the array</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.DoubleVector">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.ccore.algorithms.deconvolution.</span></span><span class="sig-name descname"><span class="pre">DoubleVector</span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.DoubleVector" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_object</span></code></p>
@@ -2866,13 +2909,13 @@ those safeties the code would throw an error if net or loc were null.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.ScalarDecon.change_shaping_wavelet">
-<span class="sig-name descname"><span class="pre">change_shaping_wavelet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self:</span> <span class="pre">mspasspy.ccore.algorithms.deconvolution.ScalarDecon</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg0:</span> <span class="pre">mspass::algorithms::deconvolution::ShapingWavelet</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.ScalarDecon.change_shaping_wavelet" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">change_shaping_wavelet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.ScalarDecon" title="mspasspy.ccore.algorithms.deconvolution.ScalarDecon"><span class="pre">mspasspy.ccore.algorithms.deconvolution.ScalarDecon</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.ShapingWavelet" title="mspasspy.ccore.algorithms.deconvolution.ShapingWavelet"><span class="pre">mspasspy.ccore.algorithms.deconvolution.ShapingWavelet</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.ScalarDecon.change_shaping_wavelet" title="Permalink to this definition"></a></dt>
 <dd><p>Change the shaping wavelet applied to output</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.ScalarDecon.get_shaping_wavelet">
-<span class="sig-name descname"><span class="pre">get_shaping_wavelet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.ScalarDecon" title="mspasspy.ccore.algorithms.deconvolution.ScalarDecon"><span class="pre">mspasspy.ccore.algorithms.deconvolution.ScalarDecon</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">mspass::algorithms::deconvolution::ShapingWavelet</span></span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.ScalarDecon.get_shaping_wavelet" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_shaping_wavelet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.ScalarDecon" title="mspasspy.ccore.algorithms.deconvolution.ScalarDecon"><span class="pre">mspasspy.ccore.algorithms.deconvolution.ScalarDecon</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.ShapingWavelet" title="mspasspy.ccore.algorithms.deconvolution.ShapingWavelet"><span class="pre">mspasspy.ccore.algorithms.deconvolution.ShapingWavelet</span></a></span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.ScalarDecon.get_shaping_wavelet" title="Permalink to this definition"></a></dt>
 <dd><p>Get the shaping wavelet used by this operator</p>
 </dd></dl>
 
@@ -2918,6 +2961,43 @@ those safeties the code would throw an error if net or loc were null.</p>
 <dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.ScalarDecon.process">
 <span class="sig-name descname"><span class="pre">process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.ScalarDecon" title="mspasspy.ccore.algorithms.deconvolution.ScalarDecon"><span class="pre">mspasspy.ccore.algorithms.deconvolution.ScalarDecon</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.ScalarDecon.process" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.ShapingWavelet">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.ccore.algorithms.deconvolution.</span></span><span class="sig-name descname"><span class="pre">ShapingWavelet</span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.ShapingWavelet" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_object</span></code></p>
+<p>Shaping wavelet object used in MsPASS decon frequency domain decon operators</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.ShapingWavelet.df">
+<span class="sig-name descname"><span class="pre">df</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.ShapingWavelet" title="mspasspy.ccore.algorithms.deconvolution.ShapingWavelet"><span class="pre">mspasspy.ccore.algorithms.deconvolution.ShapingWavelet</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.ShapingWavelet.df" title="Permalink to this definition"></a></dt>
+<dd><p>Return frequency bin size (Hz)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.ShapingWavelet.dt">
+<span class="sig-name descname"><span class="pre">dt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.ShapingWavelet" title="mspasspy.ccore.algorithms.deconvolution.ShapingWavelet"><span class="pre">mspasspy.ccore.algorithms.deconvolution.ShapingWavelet</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.ShapingWavelet.dt" title="Permalink to this definition"></a></dt>
+<dd><p>Return sample interval of wavelet in the time domain</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.ShapingWavelet.impulse_response">
+<span class="sig-name descname"><span class="pre">impulse_response</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.ShapingWavelet" title="mspasspy.ccore.algorithms.deconvolution.ShapingWavelet"><span class="pre">mspasspy.ccore.algorithms.deconvolution.ShapingWavelet</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">mspasspy.ccore.seismic._CoreTimeSeries</span></span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.ShapingWavelet.impulse_response" title="Permalink to this definition"></a></dt>
+<dd><p>Return the impulse response of the wavelet in a CoreTimeSeries container</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.ShapingWavelet.size">
+<span class="sig-name descname"><span class="pre">size</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.ShapingWavelet" title="mspasspy.ccore.algorithms.deconvolution.ShapingWavelet"><span class="pre">mspasspy.ccore.algorithms.deconvolution.ShapingWavelet</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.ShapingWavelet.size" title="Permalink to this definition"></a></dt>
+<dd><p>Size of the complex array defining the wavelet internally</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.ShapingWavelet.type">
+<span class="sig-name descname"><span class="pre">type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.ShapingWavelet" title="mspasspy.ccore.algorithms.deconvolution.ShapingWavelet"><span class="pre">mspasspy.ccore.algorithms.deconvolution.ShapingWavelet</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.ShapingWavelet.type" title="Permalink to this definition"></a></dt>
+<dd><p>Return the string description of the type of signal this wavelet defines</p>
+</dd></dl>
 
 </dd></dl>
 

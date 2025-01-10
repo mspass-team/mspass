@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="_process_manager_8h" kind="file" language="C++">
     <compoundname>ProcessManager.h</compoundname>
     <includes local="no">map</includes>
@@ -15,30 +15,6 @@
     <includes local="no">boost/uuid/uuid_serialize.hpp</includes>
     <includedby refid="_process_manager_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/utility/ProcessManager.cc</includedby>
     <incdepgraph>
-      <node id="5">
-        <label>boost/serialization/map.hpp</label>
-      </node>
-      <node id="6">
-        <label>boost/serialization/vector.hpp</label>
-      </node>
-      <node id="7">
-        <label>boost/archive/text_iarchive.hpp</label>
-      </node>
-      <node id="11">
-        <label>boost/uuid/uuid_io.hpp</label>
-      </node>
-      <node id="2">
-        <label>map</label>
-      </node>
-      <node id="8">
-        <label>boost/archive/text_oarchive.hpp</label>
-      </node>
-      <node id="3">
-        <label>vector</label>
-      </node>
-      <node id="10">
-        <label>boost/uuid/uuid_generators.hpp</label>
-      </node>
       <node id="1">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessManager.h</label>
         <link refid="_process_manager_8h"/>
@@ -65,14 +41,38 @@
         <childnode refid="12" relation="include">
         </childnode>
       </node>
-      <node id="12">
-        <label>boost/uuid/uuid_serialize.hpp</label>
+      <node id="7">
+        <label>boost/archive/text_iarchive.hpp</label>
+      </node>
+      <node id="8">
+        <label>boost/archive/text_oarchive.hpp</label>
+      </node>
+      <node id="5">
+        <label>boost/serialization/map.hpp</label>
+      </node>
+      <node id="4">
+        <label>boost/serialization/serialization.hpp</label>
+      </node>
+      <node id="6">
+        <label>boost/serialization/vector.hpp</label>
       </node>
       <node id="9">
         <label>boost/uuid/uuid.hpp</label>
       </node>
-      <node id="4">
-        <label>boost/serialization/serialization.hpp</label>
+      <node id="10">
+        <label>boost/uuid/uuid_generators.hpp</label>
+      </node>
+      <node id="11">
+        <label>boost/uuid/uuid_io.hpp</label>
+      </node>
+      <node id="12">
+        <label>boost/uuid/uuid_serialize.hpp</label>
+      </node>
+      <node id="2">
+        <label>map</label>
+      </node>
+      <node id="3">
+        <label>vector</label>
       </node>
     </incdepgraph>
     <innerclass refid="classmspass_1_1utility_1_1_algorithm_definition" prot="public">mspass::utility::AlgorithmDefinition</innerclass>

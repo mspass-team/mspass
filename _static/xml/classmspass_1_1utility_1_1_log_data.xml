@@ -1,13 +1,14 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="classmspass_1_1utility_1_1_log_data" kind="class" language="C++" prot="public">
     <compoundname>mspass::utility::LogData</compoundname>
-      <sectiondef kind="public-attrib">
+    <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="classmspass_1_1utility_1_1_log_data_1a51d8dbbff398cccfa3e853fd55690cb0" prot="public" static="no" mutable="no">
         <type>int</type>
         <definition>int mspass::utility::LogData::job_id</definition>
         <argsstring></argsstring>
         <name>job_id</name>
+        <qualifiedname>mspass::utility::LogData::job_id</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -21,6 +22,7 @@
         <definition>int mspass::utility::LogData::p_id</definition>
         <argsstring></argsstring>
         <name>p_id</name>
+        <qualifiedname>mspass::utility::LogData::p_id</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -34,6 +36,7 @@
         <definition>std::string mspass::utility::LogData::algorithm</definition>
         <argsstring></argsstring>
         <name>algorithm</name>
+        <qualifiedname>mspass::utility::LogData::algorithm</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -47,6 +50,7 @@
         <definition>mspass::utility::ErrorSeverity mspass::utility::LogData::badness</definition>
         <argsstring></argsstring>
         <name>badness</name>
+        <qualifiedname>mspass::utility::LogData::badness</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -60,6 +64,7 @@
         <definition>std::string mspass::utility::LogData::message</definition>
         <argsstring></argsstring>
         <name>message</name>
+        <qualifiedname>mspass::utility::LogData::message</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -68,13 +73,14 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ErrorLogger.h" line="22" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ErrorLogger.h" bodystart="22" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="public-func">
+    </sectiondef>
+    <sectiondef kind="public-func">
       <memberdef kind="function" id="classmspass_1_1utility_1_1_log_data_1ad706d7c53a40a474e31712a44117534e" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
         <definition>mspass::utility::LogData::LogData</definition>
         <argsstring>()</argsstring>
         <name>LogData</name>
+        <qualifiedname>mspass::utility::LogData::LogData</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -88,6 +94,7 @@
         <definition>mspass::utility::LogData::LogData</definition>
         <argsstring>(const int jid, const std::string alg, const mspass::utility::MsPASSError &amp;merr)</argsstring>
         <name>LogData</name>
+        <qualifiedname>mspass::utility::LogData::LogData</qualifiedname>
         <param>
           <type>const int</type>
           <declname>jid</declname>
@@ -135,13 +142,14 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ErrorLogger.h" line="30" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/ErrorLogger.cc" bodystart="8" bodyend="16"/>
         <references refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1a3393c3878bee1728628fd3e063640d94" compoundref="_ms_p_a_s_s_error_8h" startline="109" endline="109">mspass::utility::MsPASSError::severity</references>
-        <references refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1ae47776d160eafa42f854be5bf47e00a8" compoundref="_ms_p_a_s_s_error_8h" startline="107" endline="107">mspass::utility::MsPASSError::what</references>
+        <references refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1a1dd30086a986a3a0669cd974e65bd563" compoundref="_ms_p_a_s_s_error_8h" startline="107" endline="107">mspass::utility::MsPASSError::what</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_log_data_1a672a6557b891cb6b8ce736edc2b30b2b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
         <definition>mspass::utility::LogData::LogData</definition>
         <argsstring>(const int jid, const std::string alg, const std::string msg, const mspass::utility::ErrorSeverity lvl)</argsstring>
         <name>LogData</name>
+        <qualifiedname>mspass::utility::LogData::LogData</qualifiedname>
         <param>
           <type>const int</type>
           <declname>jid</declname>
@@ -201,13 +209,14 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ErrorLogger.h" line="38" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/ErrorLogger.cc" bodystart="17" bodyend="24"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="friend">
-      <memberdef kind="friend" id="classmspass_1_1utility_1_1_log_data_1a5dd42ce5ba18a84c251894ba81877184" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+    </sectiondef>
+    <sectiondef kind="friend">
+      <memberdef kind="friend" id="classmspass_1_1utility_1_1_log_data_1a3fd9226ca1936981ce2d72198181eaf1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::ostream &amp;</type>
-        <definition>std::ostream&amp; operator&lt;&lt;</definition>
+        <definition>std::ostream &amp; operator&lt;&lt;</definition>
         <argsstring>(std::ostream &amp;, LogData &amp;)</argsstring>
         <name>operator&lt;&lt;</name>
+        <qualifiedname>mspass::utility::LogData::operator&lt;&lt;</qualifiedname>
         <param>
           <type>std::ostream &amp;</type>
         </param>
@@ -222,8 +231,8 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ErrorLogger.h" line="39" column="10"/>
       </memberdef>
-      </sectiondef>
-      <sectiondef kind="private-func">
+    </sectiondef>
+    <sectiondef kind="private-func">
       <memberdef kind="function" id="classmspass_1_1utility_1_1_log_data_1aab6f0707ed510ba391be183d2da74f54" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
           <param>
@@ -234,6 +243,7 @@
         <definition>void mspass::utility::LogData::serialize</definition>
         <argsstring>(Archive &amp;ar, const unsigned int version)</argsstring>
         <name>serialize</name>
+        <qualifiedname>mspass::utility::LogData::serialize</qualifiedname>
         <param>
           <type>Archive &amp;</type>
           <declname>ar</declname>
@@ -250,21 +260,21 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ErrorLogger.h" line="43" column="11" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ErrorLogger.h" bodystart="43" bodyend="50"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
     <collaborationgraph>
+      <node id="2">
+        <label>ErrorSeverity</label>
+      </node>
       <node id="1">
         <label>mspass::utility::LogData</label>
         <link refid="classmspass_1_1utility_1_1_log_data"/>
         <childnode refid="2" relation="usage">
           <edgelabel>badness</edgelabel>
         </childnode>
-      </node>
-      <node id="2">
-        <label>ErrorSeverity</label>
       </node>
     </collaborationgraph>
     <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ErrorLogger.h" line="15" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ErrorLogger.h" bodystart="16" bodyend="51"/>
@@ -276,7 +286,7 @@
       <member refid="classmspass_1_1utility_1_1_log_data_1adc3c00e5dc191b90cfc32cb0b148f6bb" prot="public" virt="non-virtual"><scope>mspass::utility::LogData</scope><name>LogData</name></member>
       <member refid="classmspass_1_1utility_1_1_log_data_1a672a6557b891cb6b8ce736edc2b30b2b" prot="public" virt="non-virtual"><scope>mspass::utility::LogData</scope><name>LogData</name></member>
       <member refid="classmspass_1_1utility_1_1_log_data_1afc4b20a2fe4c3ab0331e3a05c6c89f5e" prot="public" virt="non-virtual"><scope>mspass::utility::LogData</scope><name>message</name></member>
-      <member refid="classmspass_1_1utility_1_1_log_data_1a5dd42ce5ba18a84c251894ba81877184" prot="public" virt="non-virtual"><scope>mspass::utility::LogData</scope><name>operator&lt;&lt;</name></member>
+      <member refid="classmspass_1_1utility_1_1_log_data_1a3fd9226ca1936981ce2d72198181eaf1" prot="public" virt="non-virtual"><scope>mspass::utility::LogData</scope><name>operator&lt;&lt;</name></member>
       <member refid="classmspass_1_1utility_1_1_log_data_1af419f98dd2dc772769bf0b71312de16f" prot="public" virt="non-virtual"><scope>mspass::utility::LogData</scope><name>p_id</name></member>
       <member refid="classmspass_1_1utility_1_1_log_data_1aab6f0707ed510ba391be183d2da74f54" prot="private" virt="non-virtual"><scope>mspass::utility::LogData</scope><name>serialize</name></member>
     </listofallmembers>
