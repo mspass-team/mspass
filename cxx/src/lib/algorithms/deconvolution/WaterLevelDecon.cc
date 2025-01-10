@@ -9,7 +9,7 @@ using namespace mspass::utility;
 using mspass::algorithms::amplitudes::normalize;
 
 WaterLevelDecon::WaterLevelDecon(const WaterLevelDecon &parent)
-    : FFTDeconOperator(parent)
+    : FFTDeconOperator(parent),ScalarDecon(parent)
 {
     wlv=parent.wlv;
 }

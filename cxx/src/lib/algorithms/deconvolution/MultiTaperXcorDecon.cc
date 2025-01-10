@@ -32,15 +32,15 @@ MultiTaperXcorDecon::MultiTaperXcorDecon(const Metadata &md)
 }
 
 MultiTaperXcorDecon::MultiTaperXcorDecon(const MultiTaperXcorDecon &parent)
-    : FFTDeconOperator(parent), tapers(parent.tapers)
+    : FFTDeconOperator(parent), 
+        ScalarDecon(parent), 
+          tapers(parent.tapers),
+            noise(parent.noise),
+              ao_fft(parent.ao_fft)
 {
-    /* wavelet and data vectors are copied in ScalarDecon copy constructor.
-    This method needs a noise vector so we have explicitly copy it here. */
-    noise=parent.noise;
-    /* ditto for shaping wavelet vector */
-    shapingwavelet=parent.shapingwavelet;
     /* multitaper parameters to copy */
     nw=parent.nw;
+    nseq=parent.nseq;
     taperlen=parent.taperlen;
     damp=parent.damp;
 }

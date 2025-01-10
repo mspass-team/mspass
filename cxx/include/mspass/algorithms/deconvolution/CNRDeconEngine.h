@@ -153,29 +153,39 @@ private:
   template<class Archive>
   void serialize(Archive& ar, const unsigned int version)
   {
-      /* See boost documentation for why these are needed.
-      tapers are referenced through a polymorphic shared_ptr.
-      It seems all subclasses to be used need this incantation*/
-      ar.register_type(static_cast<LinearTaper *>(NULL));
-      ar.register_type(static_cast<CosineTaper *>(NULL));
-      ar.register_type(static_cast<VectorTaper *>(NULL));
+      //std::cout <<"Entered serialize function"<<std::endl;
       ar & boost::serialization::base_object<FFTDeconOperator>(*this);
+      //std::cout << "Serializing first group of simple parameters"<<std::endl;
       ar & algorithm;
       ar & damp;
       ar & noise_floor;
       ar & band_snr_floor;
       ar & operator_dt;
       ar & shaping_wavelet_number_poles;
+      //std::cout << "Serializing shapingwavelet"<<std::endl;
       ar & shapingwavelet;
+      ar & winlength;
+      //std::cout<<"Serializing power spectrum engine objects"<<std::endl;
       ar & signal_engine;
       ar & noise_engine;
       ar & snr_regularization_floor;
+      //std::cout << "Serializin winv vector"<<std::endl;
       ar & winv;
       ar & winv_t0_lag;
+      //std::cout<<"Serializing final block of parameters"<<std::endl;
       ar & regularization_bandwidth_fraction;
-      ar & peak_snr;
-      ar & signal_bandwidth_fraction;
-
+      /* These fixed length arrays caused probems - seg faults.
+       * Apparently boost doesn't handle that corectly.  There may 
+       * be a more concise way to do this but this should always work. */
+      //std::cout << "Entering block for 3 component arrays"<<std::endl;
+      for(auto k=0;k<3;++k)
+      {
+        //std::cout << "k="<<k<<std::endl;
+        ar & peak_snr[k];
+        //std::cout << "bandwidth_fraction"<<std::endl;
+        ar & signal_bandwidth_fraction[k];
+      }
+      //std::cout << "Exiting serialize function"<<std::endl;
   }
 };
 }  // End namespace enscapsulation

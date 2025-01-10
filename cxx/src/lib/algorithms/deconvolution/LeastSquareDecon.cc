@@ -10,7 +10,7 @@ using namespace mspass::utility;
 using mspass::algorithms::amplitudes::normalize;
 
 LeastSquareDecon::LeastSquareDecon(const LeastSquareDecon &parent)
-    : FFTDeconOperator(parent)
+    : FFTDeconOperator(parent),ScalarDecon(parent)
 {
     damp=parent.damp;
 }

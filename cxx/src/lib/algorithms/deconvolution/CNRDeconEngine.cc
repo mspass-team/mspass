@@ -132,7 +132,8 @@ CNRDeconEngine::CNRDeconEngine(const AntelopePf& pf)
 }
 /* Standard copy constructor */
 CNRDeconEngine::CNRDeconEngine(const CNRDeconEngine& parent)
-  : shapingwavelet(parent.shapingwavelet),
+  : FFTDeconOperator(parent),
+     shapingwavelet(parent.shapingwavelet),
       signal_engine(parent.signal_engine),
         noise_engine(parent.noise_engine),
           winv(parent.winv)
@@ -142,6 +143,7 @@ CNRDeconEngine::CNRDeconEngine(const CNRDeconEngine& parent)
   this->noise_floor = parent.noise_floor;
   this->band_snr_floor = parent.band_snr_floor;
   this->operator_dt = parent.operator_dt;
+  this->winlength = parent.winlength;
   this->shaping_wavelet_number_poles = parent.shaping_wavelet_number_poles;
   this->snr_regularization_floor = parent.snr_regularization_floor;
   this->regularization_bandwidth_fraction = parent.regularization_bandwidth_fraction;
