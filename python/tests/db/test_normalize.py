@@ -667,11 +667,12 @@ class TestEqualityMatcher(TestNormalize):
 
 class TestOriginTimeMatcher(TestNormalize):
     """
-    tester class for OriginTimeMatcher and OriginTimeDBMatcher.   
-    Note that the tests require a database to be running and and the 
-    right data loaded by the setup methods for the TestNormalize 
-    class it inherits.  
+    tester class for OriginTimeMatcher and OriginTimeDBMatcher.
+    Note that the tests require a database to be running and and the
+    right data loaded by the setup methods for the TestNormalize
+    class it inherits.
     """
+
     def setup_method(self):
         super().setup_method()
         self.df = pd.DataFrame(list(self.db["source"].find()))
@@ -682,27 +683,27 @@ class TestOriginTimeMatcher(TestNormalize):
 
     def test_OriginTimeMatcher_find_one(self):
         """
-        These tests of the OriginTimeMatcher and OriginTimeDBMatcher 
-        center on matching a single datum either in the form of an 
-        original wf_miniseed document or the TimeSeries object created 
-        by read_data using that document.   The database is loaded with the 
-        setup methods for this module. Be aware these test are very very 
-        heavily dependent on magic properties of that import db.  
-        If the dump files of that database were lost it will be a serious 
-        pain to reconstruct this set of tests.  
+        These tests of the OriginTimeMatcher and OriginTimeDBMatcher
+        center on matching a single datum either in the form of an
+        original wf_miniseed document or the TimeSeries object created
+        by read_data using that document.   The database is loaded with the
+        setup methods for this module. Be aware these test are very very
+        heavily dependent on magic properties of that import db.
+        If the dump files of that database were lost it will be a serious
+        pain to reconstruct this set of tests.
 
-        
-        Actually the key thing for these tests is a magic number of 522 
-        which is the origin time offset of the starttime of the one and only 
+
+        Actually the key thing for these tests is a magic number of 522
+        which is the origin time offset of the starttime of the one and only
         one datum used in these tests.  522 is a rounding of 522.28499
-        determined in testing outside this file.   That minor difference 
-        is appropriate and ok since this opoerator has a range test.  
-        I (glp) have no idea where that number came from but suspect it is 
-        a P wave arrival time and the data were cut relative to that time. 
-        A key point is you should not expect the data in the waveform to 
+        determined in testing outside this file.   That minor difference
+        is appropriate and ok since this opoerator has a range test.
+        I (glp) have no idea where that number came from but suspect it is
+        a P wave arrival time and the data were cut relative to that time.
+        A key point is you should not expect the data in the waveform to
         have any relationship to reality.  We test here only the starttime
-        relative to the contents of the source collection stored in the 
-        test database loaded by the class setup method. 
+        relative to the contents of the source collection stored in the
+        test database loaded by the class setup method.
         """
         cached_matcher = OriginTimeMatcher(
             self.db, source_time_key="time", t0offset=522.0
@@ -750,15 +751,15 @@ class TestOriginTimeMatcher(TestNormalize):
         ts["testtime"] = 9999.99
         db_retdoc = db_matcher.find_one(ts)
         assert db_retdoc[0] is None
-        
+
     def test_OriginTimeMatcher_find_doc(self):
         """
-        Nearly identical code to "find_one" version immediately above but 
-        for the find_doc method that is independently implemented.  
+        Nearly identical code to "find_one" version immediately above but
+        for the find_doc method that is independently implemented.
         There is only a dataframe version of that method though.
-        
-        TODO:  this test does not validate multiple match algorithm 
-        returning minimum time offset as unique match.  find_one test needs 
+
+        TODO:  this test does not validate multiple match algorithm
+        returning minimum time offset as unique match.  find_one test needs
         a similar test.
         """
         cached_matcher = OriginTimeMatcher(
@@ -768,18 +769,17 @@ class TestOriginTimeMatcher(TestNormalize):
         wfdoc = self.db.wf_miniseed.find_one(
             {"_id": ObjectId("627fc20559a116ff99f38243")}
         )
-        test_time=wfdoc["starttime"]
+        test_time = wfdoc["starttime"]
 
         retdoc = cached_matcher.find_doc(wfdoc)
         # Failed find returns a none in component 0 so catch that
         assert retdoc
-        assert isinstance(retdoc,dict)
-        
+        assert isinstance(retdoc, dict)
+
         # test failure with unmatched time - should silenetly return None
         wfdoc["starttime"] = 99999.99
         retdoc = cached_matcher.find_doc(wfdoc)
         assert retdoc is None
-
 
     def test_OriginTimeMatcher_normalize(self):
         # t0offset value needed to work with test data set.  See above
