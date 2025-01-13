@@ -156,12 +156,7 @@ class TestDataFrameCacheMatcherUtil(TestNormalize):
             custom_null_values=null_value_dict,
             attributes_to_load=["lat", "lon", "depth", "time", "magnitude"],
         )
-        print("DEBUG")
-        print("cache value")
         val = otm.cache.to_dict(orient="records")[-1]
-        print(val)
-        print("match output")
-        print(matched_dict)
         assert Metadata_cmp(otm.cache.to_dict(orient="records")[-1], matched_dict)
 
 
@@ -671,6 +666,12 @@ class TestEqualityMatcher(TestNormalize):
 
 
 class TestOriginTimeMatcher(TestNormalize):
+    """
+    tester class for OriginTimeMatcher and OriginTimeDBMatcher.   
+    Note that the tests require a database to be running and and the 
+    right data loaded by the setup methods for the TestNormalize 
+    class it inherits.  
+    """
     def setup_method(self):
         super().setup_method()
         self.df = pd.DataFrame(list(self.db["source"].find()))
@@ -680,12 +681,29 @@ class TestOriginTimeMatcher(TestNormalize):
         self.db_matcher_multi_match_msg = "Using first one in list"
 
     def test_OriginTimeMatcher_find_one(self):
-        # The 522.0 for t0offset is a hack fix for a data problem with the
-        # test data set loaded here.   Fixed by glp Apr 2024 by verifying
-        # wf_miniseed data read were consistent database loaded.   Why this
-        # test worked prior to a bug fix made a this time is a bit mysterious
-        # if this test breaks in the future consider replacing the entire
-        # test data set it references
+        """
+        These tests of the OriginTimeMatcher and OriginTimeDBMatcher 
+        center on matching a single datum either in the form of an 
+        original wf_miniseed document or the TimeSeries object created 
+        by read_data using that document.   The database is loaded with the 
+        setup methods for this module. Be aware these test are very very 
+        heavily dependent on magic properties of that import db.  
+        If the dump files of that database were lost it will be a serious 
+        pain to reconstruct this set of tests.  
+
+        
+        Actually the key thing for these tests is a magic number of 522 
+        which is the origin time offset of the starttime of the one and only 
+        one datum used in these tests.  522 is a rounding of 522.28499
+        determined in testing outside this file.   That minor difference 
+        is appropriate and ok since this opoerator has a range test.  
+        I (glp) have no idea where that number came from but suspect it is 
+        a P wave arrival time and the data were cut relative to that time. 
+        A key point is you should not expect the data in the waveform to 
+        have any relationship to reality.  We test here only the starttime
+        relative to the contents of the source collection stored in the 
+        test database loaded by the class setup method. 
+        """
         cached_matcher = OriginTimeMatcher(
             self.db, source_time_key="time", t0offset=522.0
         )
@@ -747,24 +765,19 @@ class TestOriginTimeMatcher(TestNormalize):
             self.db, source_time_key="time", t0offset=522.0
         )
 
-        orig_doc = self.db.wf_miniseed.find_one(
-            {"_id": ObjectId("62812b08178bf05fe5787d82")}
+        wfdoc = self.db.wf_miniseed.find_one(
+            {"_id": ObjectId("627fc20559a116ff99f38243")}
         )
-        orig_ts = self.db.read_data(orig_doc, collection="wf_miniseed")
+        test_time=wfdoc["starttime"]
 
-        #   get document for TimeSeries
-        ts_1 = TimeSeries(orig_ts)
-        doc1 = dict(ts_1)
-        doc2 = dict(ts_1)
-
-        retdoc = cached_matcher.find_doc(doc1)
+        retdoc = cached_matcher.find_doc(wfdoc)
         # Failed find returns a none in component 0 so catch that
         assert retdoc
         assert isinstance(retdoc,dict)
         
         # test failure with unmatched time - should silenetly return None
-        doc2["time"] = 99999.99
-        retdoc = cached_matcher.find_doc(doc2)
+        wfdoc["starttime"] = 99999.99
+        retdoc = cached_matcher.find_doc(wfdoc)
         assert retdoc is None
 
 
