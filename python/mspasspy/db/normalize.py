@@ -2625,7 +2625,9 @@ class OriginTimeMatcher(DataFrameCacheMatcher):
     :param source_time_key:  dataframe column name to use as source
       origin time field.  Default is "time".   This key must match 
       a key in the attributes_to_load list or the constructor will 
-      throw an exception.
+      throw an exception.  Note this should match the key definingn 
+      origin time in the collection not the common actual value 
+      stored with data.  I.e. normal usage is "time" not "source_time"
     :type source_time_key:  string  Can also be a None type which
       is causes the internal value to be set to "time"
     """
@@ -2668,6 +2670,7 @@ class OriginTimeMatcher(DataFrameCacheMatcher):
             message += " is not in attributes_to_load list\n"
             message += "Required for matching with waveform start times"
             raise MsPASSError(message,ErrorSeverity.Fatal)
+
 
     def subset(self, mspass_object) -> pd.DataFrame:
         """ 
@@ -2763,30 +2766,49 @@ class OriginTimeMatcher(DataFrameCacheMatcher):
         if mdlist is None:
             return findreturn
         elif len(mdlist) == 1:
-            component_to_use = 0
+            md2use = mdlist[0]
         elif len(mdlist) > 1:
-            N_matches = len(mdlist)
-            # find component of list with the minimum projected time offset
-            dt=np.zeros(N_matches)
-            i=0
-            for md in mdlist:
-                dt[i] = md[self.source_time_key]
-                i += 1
-            # always use t0
-            # this logic, however, allows mspass_object to be a
-            # plain Metadata container.  
-            # intentinally let this throw an exception for Metadata if the 
-            # required key is missing
-            if hasattr(mspass_object,"t0"):
-                test_time = mspass_object.t0
-            else:
-                test_time = mspass_object[self.data_time_key]
-            test_time += self.t0offset
-            dt -= test_time
-            dt = np.abs(dt)
-            component_to_use = np.argmin(dt)
-        return [mdlist[component_to_use],findreturn[1]]
+            md2use = self._nearest_time_source(mspass_object, mdlist)
+        return [md2use,findreturn[1]]
 
+    def _nearest_time_source(self,mspass_object,mdlist):
+        """
+        Private method to define the algorithm used to resolve 
+        an ambiguity when multipe sources are returned by find.  
+        This returns the Metadata container for the source 
+        most whose offset origin time most closely matches te 
+        content defined my mspass_object.   
+        """
+        if self.prepend_collection_name:
+            # the find method returns modified names if 
+            # prepend_collection_names is True.  Note the 
+            # actual DAtaframe uses the names without thae prepend string
+            # This is needed to handle that property of find
+            time_key = self.collection + "_" + self.source_time_key
+        else:
+            time_key = self.source_time_key
+        N_matches = len(mdlist)
+        # find component of list with the minimum projected time offset
+        dt=np.zeros(N_matches)
+        i=0
+        for md in mdlist:
+            dt[i] = md[time_key]
+            i += 1
+        # always use t0 if possile.
+        # this logic, however, allows mspass_object to be a
+        # plain Metadata container or a python dictionary
+        # intentinally let this throw an exception for Metadata if the 
+        # required key is missing.  If t0 is not defined it tries to 
+        # use self.data_time_key (normaly "startttme")
+        if hasattr(mspass_object,"t0"):
+            test_time = mspass_object.t0
+        else:
+            test_time = mspass_object[self.data_time_key]
+        test_time -= self.t0offset
+        dt -= test_time
+        dt = np.abs(dt)
+        component_to_use = np.argmin(dt)
+        return mdlist[component_to_use]
 
     def find_doc(self,doc,starttime_key="starttime")->dict:
         """
@@ -2835,7 +2857,7 @@ class OriginTimeMatcher(DataFrameCacheMatcher):
         """
         if starttime_key in doc:
             test_time = doc[starttime_key]
-            test_time += self.t0offset
+            test_time -= self.t0offset
             # copied from subset method 
             tmin = test_time - self.tolerance
             tmax = test_time + self.tolerance
