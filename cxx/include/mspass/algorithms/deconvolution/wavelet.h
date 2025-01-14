@@ -1,6 +1,6 @@
 #ifndef __DECON_H__
 #define __DECON_H__
-namespace mspass::algorithms::deconvolution{
+namespace mspass::algorithms::deconvolution {
 double *rickerwavelet(float fpeak, float dt, int n);
 double *gaussian(float sigma, float dt, int n);
 /*! \brief Creates frequency domain window as a 0th order slepian wavelet.
@@ -35,6 +35,6 @@ time series length.
 function in the frequency domain BUT will nearly always need to undergo a
 circular shift to put the peak at 0.   NOT done here to avoid confusion.
 */
-double *slepian0(double tbp,int n);
-} 
+double *slepian0(double tbp, int n);
+} // namespace mspass::algorithms::deconvolution
 #endif

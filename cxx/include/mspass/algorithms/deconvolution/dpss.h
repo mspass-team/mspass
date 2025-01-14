@@ -2,36 +2,40 @@
 #define __DPSS_H__
 #include <cmath>
 #include <string.h>
-namespace mspass::algorithms::deconvolution{
+namespace mspass::algorithms::deconvolution {
 
-//Error classes for LAPACK, and a general error
+// Error classes for LAPACK, and a general error
 class ERR {
 public:
-    ERR() {};
-    ERR(const char *msg);
-    void getmsg(char *errmsg);
-    const char *getmsg();
+  ERR() {};
+  ERR(const char *msg);
+  void getmsg(char *errmsg);
+  const char *getmsg();
+
 protected:
-    char msg[30];
+  char msg[30];
 };
 
 class LAPACK_ERROR : public ERR {
 public:
-    LAPACK_ERROR() {};
-    LAPACK_ERROR(const char *errmsg);
+  LAPACK_ERROR() {};
+  LAPACK_ERROR(const char *errmsg);
 };
 
-void compute_energy_concentrations(double *h, int n, double NW, double *lambda, int nseq);
+void compute_energy_concentrations(double *h, int n, double NW, double *lambda,
+                                   int nseq);
 
-void eig_iit(int n, double *D, double *E, int il, int iu, double *eig_val, double *eig_vec, int vec_length);
+void eig_iit(int n, double *D, double *E, int il, int iu, double *eig_val,
+             double *eig_vec, int vec_length);
 
-//normalizes a vector h
+// normalizes a vector h
 void normalize_vec(double *h, int n);
 
-//polarizes the sequences
+// polarizes the sequences
 void polarize_dpss(double *h, int n, int iseq);
 
-//Reduces the problem using simple even/odd splitting (exploiting double symmetry)
+// Reduces the problem using simple even/odd splitting (exploiting double
+// symmetry)
 void dpss_calc(int n, double NW, int seql, int sequ, double *h);
-}
+} // namespace mspass::algorithms::deconvolution
 #endif

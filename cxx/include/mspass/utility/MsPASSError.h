@@ -1,9 +1,9 @@
 #ifndef _MSPASS_ERROR_H_
 #define _MSPASS_ERROR_H_
-#include <iostream>
 #include <exception>
+#include <iostream>
 namespace mspass {
-namespace utility{
+namespace utility {
 
 /*! \brief Severity code for error messages.
 
@@ -11,18 +11,17 @@ C++11 added the construct of a enum class that we use here.  It makes
 the enum more strongly typed to avoid collisions for these common
 words that would be trouble otherwise.   This class is used in
 all MsPASSError objects. */
-enum class ErrorSeverity
-{
-	Fatal,
-	Invalid,
-	Suspect,
-	Complaint,
-	Debug,
-	Informational
+enum class ErrorSeverity {
+  Fatal,
+  Invalid,
+  Suspect,
+  Complaint,
+  Debug,
+  Informational
 };
 
-
-/*! Internal used to convert the keyword in a message string to an ErrorSeverity.*/
+/*! Internal used to convert the keyword in a message string to an
+ * ErrorSeverity.*/
 mspass::utility::ErrorSeverity string2severity(const std::string howbad);
 /*! Inverse of string2severity*/
 std::string severity2string(const mspass::utility::ErrorSeverity es);
@@ -36,100 +35,95 @@ std::string severity2string(const mspass::utility::ErrorSeverity es);
  MsPASS error objects that are it's descendents.
 \author Gary L. Pavlis
 **/
-class MsPASSError : public std::exception
-{
+class MsPASSError : public std::exception {
 public:
+  /*!
+   Default constructor built inline.
+  **/
+  MsPASSError() {
+    message = "MsPASS library error\n";
+    badness = ErrorSeverity::Fatal;
+  };
+  /*! \brief Construct from a std::string with badness defined by keywords in a
+  string.
 
-/*!
- Default constructor built inline.
-**/
-	MsPASSError(){
-		message="MsPASS library error\n";
-		badness=ErrorSeverity::Fatal;
-	};
-/*! \brief Construct from a std::string with badness defined by keywords in a string.
+  Sometimes it is easier and more readable to use a string literal to define
+  the error class.  This uses that approach.
 
-Sometimes it is easier and more readable to use a string literal to define
-the error class.  This uses that approach.
+  \param mess is the error message posted.
+  \param howbad is a string to translate to one of the allowed enum values.  The
+    allowed values are the same as the enum defined in this file:
+          FATAL,Invalid,Suspect,Complaint,Debug,Informational.
+  **/
+  MsPASSError(const std::string mess, const char *howbad) {
+    message = mess;
+    std::string s(howbad);
+    /* this small helper function parses s to conver to the
+    enum class of badness*/
+    badness = string2severity(s);
+  };
+  /*! Construct from a string with enum defining severity.
 
-\param mess is the error message posted.
-\param howbad is a string to translate to one of the allowed enum values.  The
-  allowed values are the same as the enum defined in this file:
-	FATAL,Invalid,Suspect,Complaint,Debug,Informational.
-**/
-	MsPASSError(const std::string mess,const char *howbad){
-		message=mess;
-		std::string s(howbad);
-		/* this small helper function parses s to conver to the
-		enum class of badness*/
-		badness=string2severity(s);
-	};
-/*! Construct from a string with enum defining severity.
+  This should be the normal form of this error object to throw.   Default of
+  the enum allows simpler usage for most errors.
 
-This should be the normal form of this error object to throw.   Default of
-the enum allows simpler usage for most errors.
-
-\param mess - is the error message to be posted.
-\param s is the severity enum (default Invalid).
-*/
-	MsPASSError(const std::string mess,const ErrorSeverity s=ErrorSeverity::Invalid)
-        {
-            message=mess;
-            badness=s;
-        };
-/*! Construct from a char * and severity enum.
-**/
-	MsPASSError(const char *mess,const ErrorSeverity s){
-		message=std::string(mess);
-		badness=s;
-	};
-/*!
- Sends error message thrown by MsPASS library functions to standard error.
-**/
-void log_error(){
-  std::cerr << message << std::endl;
-};
-/*! Overloaded method for sending error message to other than stderr. */
-void log_error(std::ostream& ofs)
-{
-	ofs << message <<std::endl;
-}
-/*! This overrides the method in std::exception to load our string.
-  This allows handlers to use the what method and get the error string
-  from seisp.  Idea copied from:
-  http://www.cplusplus.com/doc/tutorial/exceptions/
-
-	pybind11 limitations make it problematic for
-	python error handlers to get the output of the severity method or
-	even get to the badness attribute.   See the cc code for the implementation
-	detail.
+  \param mess - is the error message to be posted.
+  \param s is the severity enum (default Invalid).
   */
-  const char * what() const noexcept{return message.c_str();};
-	/*! Return error severity as the enum value. */
-	ErrorSeverity severity() const {return badness;};
+  MsPASSError(const std::string mess,
+              const ErrorSeverity s = ErrorSeverity::Invalid) {
+    message = mess;
+    badness = s;
+  };
+  /*! Construct from a char * and severity enum.
+   **/
+  MsPASSError(const char *mess, const ErrorSeverity s) {
+    message = std::string(mess);
+    badness = s;
+  };
+  /*!
+   Sends error message thrown by MsPASS library functions to standard error.
+  **/
+  void log_error() { std::cerr << message << std::endl; };
+  /*! Overloaded method for sending error message to other than stderr. */
+  void log_error(std::ostream &ofs) { ofs << message << std::endl; }
+  /*! This overrides the method in std::exception to load our string.
+    This allows handlers to use the what method and get the error string
+    from seisp.  Idea copied from:
+    http://www.cplusplus.com/doc/tutorial/exceptions/
+
+          pybind11 limitations make it problematic for
+          python error handlers to get the output of the severity method or
+          even get to the badness attribute.   See the cc code for the
+    implementation detail.
+    */
+  const char *what() const noexcept { return message.c_str(); };
+  /*! Return error severity as the enum value. */
+  ErrorSeverity severity() const { return badness; };
+
 protected:
-	/*!
-	 Holds error message that can be printed with log_error method.
-	**/
-		std::string message;
-		/*! Defines the severity of this error - see enum class above */
-		ErrorSeverity badness;
+  /*!
+   Holds error message that can be printed with log_error method.
+  **/
+  std::string message;
+  /*! Defines the severity of this error - see enum class above */
+  ErrorSeverity badness;
 };
 /* Helper function prototypes.  The following set of functions proved necessary
 because of a limitation in pybind11.  It appears there is no easy way to bind
-a full interface to MsPASSError when it is handled as an exception.   As a result
-neither the badness attribute (if made public) nor the severity method are
-visible when treated as an exception in python.   To circumvent this the what
-method writes a string representation of badness to the message.   Bound versions
-of the functions below can be used in python programs to test severity of
-a thrown MsPASSError.
+a full interface to MsPASSError when it is handled as an exception.   As a
+result neither the badness attribute (if made public) nor the severity method
+are visible when treated as an exception in python.   To circumvent this the
+what method writes a string representation of badness to the message.   Bound
+versions of the functions below can be used in python programs to test severity
+of a thrown MsPASSError.
 */
 /*! \brief Test if a thrown error indicates data are no longer valid.
 
 Errors vary in severity.  Use this function as fast test for an error so
 severe an algorithm failed and any subsequent use of the data is ill advised.
 */
-bool error_says_data_bad(const mspass::utility::MsPASSError& err);
+bool error_says_data_bad(const mspass::utility::MsPASSError &err);
 
 /*! \brief Return a string representation of error severity.
 
@@ -140,17 +134,19 @@ Complaint,Debug, or Informational.   It will return Fatal if there is no
 match to any of the keywords assuming something has corrupted memory for
 that to happen.
 */
-std::string parse_message_error_severity(const mspass::utility::MsPASSError& err);
+std::string
+parse_message_error_severity(const mspass::utility::MsPASSError &err);
 /*! \brief return message severity as an ErrorSeverity enum class.
 
 ErrorSeverity is bound with pybind11 and provides a way to define the
-severity of an error.  This function is a close companion to parse_message_error_severity.
-In fact, in the current implementation it calls parse_message_error_severity and converts
-the result string to an ErrorSeverity it returns.    That process has a small
-overhead and it is largely a decision of asthetics whether or not to use this
-function of parse_message_error_severity.
+severity of an error.  This function is a close companion to
+parse_message_error_severity. In fact, in the current implementation it calls
+parse_message_error_severity and converts the result string to an ErrorSeverity
+it returns.    That process has a small overhead and it is largely a decision of
+asthetics whether or not to use this function of parse_message_error_severity.
 */
-mspass::utility::ErrorSeverity message_error_severity(const mspass::utility::MsPASSError& err);
-} // end utility namespace
-}  // End mspass namespace declaration
+mspass::utility::ErrorSeverity
+message_error_severity(const mspass::utility::MsPASSError &err);
+} // namespace utility
+} // namespace mspass
 #endif

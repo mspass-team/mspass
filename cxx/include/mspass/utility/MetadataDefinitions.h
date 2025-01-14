@@ -1,14 +1,14 @@
 #ifndef _METADATADEFINITIONS_H_
 #define _METADATADEFINITIONS_H_
+#include <string>
 #include <map>
 #include <tuple>
-namespace mspass{
-namespace utility{
-enum class MDDefFormat
-{
-    PF,
-    YAML
-};
+#include <list>
+#include "mspass/utility/Metadata.h"
+namespace mspass {
+namespace utility {
+using mspass::utility::MDtype;
+enum class MDDefFormat { PF, YAML };
 
 /*! \brief Define properties of Metadata known to mspass.
 
@@ -22,13 +22,12 @@ by loosy goosy about types.   The main use is then expected that all gets and
 puts to Metadata will be preceded by calls to the type method here.  Based on
 the return the right get or put method can be called.
 
-The overhead of creating this thing is not small.   It will likely be recommended
-as an initialization step for most mspass processing scripts.   Ultimately it
-perhaps should have a database constructor, but initially we will build it only from
-data file.
+The overhead of creating this thing is not small.   It will likely be
+recommended as an initialization step for most mspass processing scripts.
+Ultimately it perhaps should have a database constructor, but initially we will
+build it only from data file.
 */
-class MetadataDefinitions
-{
+class MetadataDefinitions {
 public:
   /*! Default constructor.   Loads default schema name of mspass. */
   MetadataDefinitions();
@@ -48,16 +47,18 @@ public:
   \param mdname is the file to read
   \param form defines the format (limited by MDDefFormat definitions)
   */
-  MetadataDefinitions(const std::string mdname,const mspass::utility::MDDefFormat form);
+  MetadataDefinitions(const std::string mdname,
+                      const mspass::utility::MDDefFormat form);
   /*! Standard copy constructor. */
-  MetadataDefinitions(const MetadataDefinitions& parent);
+  MetadataDefinitions(const MetadataDefinitions &parent);
   /*! Test if a key is defined either as a unique key or an alias */
   bool is_defined(const std::string key) const noexcept;
   /*! Return a description of the concept this attribute defines.
 
   \param key is the name that defines the attribute of interest
 
-  \return a string with a terse description of the concept this attribute defines.
+  \return a string with a terse description of the concept this attribute
+  defines.
   */
   std::string concept(const std::string key) const;
   /*! Get the type of an attribute.
@@ -107,9 +108,10 @@ public:
 
   \param aliasname is the name of the alias for which we want the definitive key
 
-  \return std::pair with the definitive key as the first of the pair and the type
-  in the second field. */
-  std::pair<std::string,mspass::utility::MDtype> unique_name(const std::string aliasname) const;
+  \return std::pair with the definitive key as the first of the pair and the
+  type in the second field. */
+  std::pair<std::string, mspass::utility::MDtype>
+  unique_name(const std::string aliasname) const;
   /*! Add an alias for key.
 
   \param key is the main key for which an alias is to be defined
@@ -184,13 +186,14 @@ public:
   related collection method that is designed to handle that.
 
   This method should normally be used only on read operations
-  to select the correct entry for what could otherwise be a potentially ambiguous key.
+  to select the correct entry for what could otherwise be a potentially
+  ambiguous key.
   \param key is the flat namespace key for which normalizing data is needed
 
   \return  name for unique id for requested key.  Returns an empty string if
-    the key is not defined as normalized.   In multiple calls it is more efficient
-    to test for a null return and handle such entries inline instead of a double
-    search required if preceded by is_normalized.
+    the key is not defined as normalized.   In multiple calls it is more
+  efficient to test for a null return and handle such entries inline instead of
+  a double search required if preceded by is_normalized.
   */
   std::string unique_id_key(const std::string key) const;
   /*! \Brief return the master collection (table) for a key used as a unique id.
@@ -199,13 +202,13 @@ public:
   that contain the data using normalization.   In seismic data type examples are
   receiver location tables, receiver response tables, and source location data.
   This method should nearly always be paired with a call to unique_id_key.
-  The idea is to first ask for the unique_id_key and then ask what collection (table)
-  contains the key returned by unique_id_key.   This provides a fast and
+  The idea is to first ask for the unique_id_key and then ask what collection
+  (table) contains the key returned by unique_id_key.   This provides a fast and
   convenient lookup for normalized data.
 
   \param key is the normally the return from unique_id_key
-  \return string defining the collection(table) the key can be used for locating the
-     unique tuple/document required to access related Metadata.  String will be
+  \return string defining the collection(table) the key can be used for locating
+  the unique tuple/document required to access related Metadata.  String will be
      empty if the search fails.
   */
   std::string collection(const std::string key) const;
@@ -213,15 +216,17 @@ public:
 
   For mspass using mongodb normalization for all currently supported Metadata
   can be reduced to a collection(table)-attribute name pair.   The unique_id_key
-  and collection methods can be called to obtained this information, but doing so
-  requires a purely duplicate (internal map container) search.
-  This convenience method is best used with MongoDB for efficiency.
+  and collection methods can be called to obtained this information, but doing
+  so requires a purely duplicate (internal map container) search. This
+  convenience method is best used with MongoDB for efficiency.
 
   \param key is the flat namespace key for which normalizing data is needed
-  \return an std::pair with of strings with first=collection and second=attribute name.
+  \return an std::pair with of strings with first=collection and
+  second=attribute name.
   */
 
-  std::pair<std::string,std::string> normalize_data(const std::string key) const;
+  std::pair<std::string, std::string>
+  normalize_data(const std::string key) const;
   /*! \brief Apply a set of aliases to data.
 
   This method should be called in processing workflows to apply a series
@@ -237,8 +242,8 @@ public:
     \return std::list of srings of failed changes.  Callers should
      test the size of this return and take action if needed.
     */
-std::list<std::string> apply_aliases(mspass::utility::Metadata& d,
-          const std::list<std::string> aliaslist);
+  std::list<std::string> apply_aliases(mspass::utility::Metadata &d,
+                                       const std::list<std::string> aliaslist);
   /*! \brief Restore any aliases to unique names.
 
   Aliases are needed to support legacy packages, but can cause downstream
@@ -253,9 +258,9 @@ std::list<std::string> apply_aliases(mspass::utility::Metadata& d,
    a log entry into this returned object. Caller should test the size of
    the return and handle or ignore errors as appropriate.
    */
-  void clear_aliases(mspass::utility::Metadata& d);
+  void clear_aliases(mspass::utility::Metadata &d);
   /*! Standard assignment operator. */
-  MetadataDefinitions& operator=(const MetadataDefinitions& other);
+  MetadataDefinitions &operator=(const MetadataDefinitions &other);
   /*!\brief Accumulate additional definitions.
 
   Appends data in other to current.   The behavior or this operator
@@ -274,23 +279,24 @@ std::list<std::string> apply_aliases(mspass::utility::Metadata& d,
   and is not expected to ever be used by processors.
 
   */
-  MetadataDefinitions& operator+=(const MetadataDefinitions& other);
+  MetadataDefinitions &operator+=(const MetadataDefinitions &other);
+
 private:
-  std::map<std::string,MDtype> tmap;
-  std::map<std::string,std::string> cmap;
-  std::multimap<std::string,std::string> aliasmap;
-  std::map<std::string,std::string> alias_xref;
+  std::map<std::string, MDtype> tmap;
+  std::map<std::string, std::string> cmap;
+  std::multimap<std::string, std::string> aliasmap;
+  std::map<std::string, std::string> alias_xref;
   std::set<std::string> roset;
   /* This map is used to handle normalized data in any database.   For the
   initial design the data could be a pair, but I make it a tuple because I
   can conveive extensions that would require additional information to provides
-  a unique index definition.   e.g.  the antelope indexing of sta,chan,time:endtime.
+  a unique index definition.   e.g.  the antelope indexing of
+  sta,chan,time:endtime.
   */
-  std::map<std::string,std::tuple<std::string,std::string>> unique_id_data;
+  std::map<std::string, std::tuple<std::string, std::string>> unique_id_data;
   void pfreader(const std::string pfname);
   void yaml_reader(const std::string fname);
-
 };
-} // end utility namespace
-}  // end mspass namespace
+} // namespace utility
+} // namespace mspass
 #endif

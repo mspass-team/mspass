@@ -1,13 +1,11 @@
 #ifndef _MSEED_INDEX_H_
 #define _MSEED_INDEX_H_
-#include <vector>
-#include <string>
 #include "mspass/utility/ErrorLogger.h"
-namespace mspass::io
-{
+#include <string>
+#include <vector>
+namespace mspass::io {
 
-class mseed_index
-{
+class mseed_index {
 public:
   std::string net;
   std::string sta;
@@ -22,50 +20,47 @@ public:
   double last_packet_time;
   /* These aren't really essential because the compiler should automatically
   generate them, but better to be explicit since the std::vector demands them*/
-  mseed_index()
-  {
-    net="";
-    sta="";
-    loc="";
-    chan="";
-    foff=0;
+  mseed_index() {
+    net = "";
+    sta = "";
+    loc = "";
+    chan = "";
+    foff = 0;
     nbytes = 0;
     npts = 0;
     samprate = 0.0;
     starttime = 0.0;
     endtime = 0.0;
-    last_packet_time=0.0;
+    last_packet_time = 0.0;
   };
-  mseed_index(const mseed_index& parent) : net(parent.net),sta(parent.sta),
-     loc(parent.loc),chan(parent.chan)
-  {
-    foff=parent.foff;
-    nbytes=parent.nbytes;
-    npts=parent.npts;
-    samprate=parent.samprate;
-    starttime=parent.starttime;
-    endtime=parent.endtime;
-    last_packet_time=parent.last_packet_time;
+  mseed_index(const mseed_index &parent)
+      : net(parent.net), sta(parent.sta), loc(parent.loc), chan(parent.chan) {
+    foff = parent.foff;
+    nbytes = parent.nbytes;
+    npts = parent.npts;
+    samprate = parent.samprate;
+    starttime = parent.starttime;
+    endtime = parent.endtime;
+    last_packet_time = parent.last_packet_time;
   };
-  mseed_index& operator=(const mseed_index& parent)
-  {
-    if(&parent != this)
-    {
-      net=parent.net;
-      sta=parent.sta;
-      loc=parent.loc;
-      chan=parent.chan;
-      foff=parent.foff;
-      npts=parent.npts;
-      nbytes=parent.nbytes;
-      samprate=parent.samprate;
-      starttime=parent.starttime;
-      endtime=parent.endtime;
-      last_packet_time=parent.last_packet_time;
+  mseed_index &operator=(const mseed_index &parent) {
+    if (&parent != this) {
+      net = parent.net;
+      sta = parent.sta;
+      loc = parent.loc;
+      chan = parent.chan;
+      foff = parent.foff;
+      npts = parent.npts;
+      nbytes = parent.nbytes;
+      samprate = parent.samprate;
+      starttime = parent.starttime;
+      endtime = parent.endtime;
+      last_packet_time = parent.last_packet_time;
     }
     return *this;
   };
-  friend std::ostringstream& operator<< (std::ostringstream& ss,const mseed_index& ind);
+  friend std::ostringstream &operator<<(std::ostringstream &ss,
+                                        const mseed_index &ind);
 };
 /*! \brief Construct an index for a miniseed file.
 
@@ -96,16 +91,16 @@ of interest only if something breaks.
   logged.  That is, at present if this parameter is true any time the logic
   detects a time tear it is logged in the returned error log as an informational
   log message.   If false only reading errors for things like garbled miniseed
-  packets are logged.  
+  packets are logged.
 \param return is an std::pair.  "First" contains a vector of objects
   called mseed_index that contain the basic information defining an index for
   inputfile.  See class description of mseed_index for more details. "second"
   contains an ErrorLogger objects.  Caller should test that the contents are
   empty and if not save the error log or print it.
 */
-std::pair<std::vector<mseed_index>,mspass::utility::ErrorLogger>
-   mseed_file_indexer(const std::string inputfile, const bool segment_timetears,
-     const bool Verbose);
+std::pair<std::vector<mseed_index>, mspass::utility::ErrorLogger>
+mseed_file_indexer(const std::string inputfile, const bool segment_timetears,
+                   const bool Verbose);
 
-} // end namespace
+} // namespace mspass::io
 #endif
