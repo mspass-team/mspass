@@ -2,6 +2,7 @@
 #define _MSEED_INDEX_H_
 #include "mspass/seismic/Seismogram.h"
 #include "mspass/seismic/TimeSeries.h"
+#include "mspass/seismic/Ensemble.h"
 #include <string>
 namespace mspass::io {
 /*! \brief Fast file writer for native TimeSeries save to a file.
