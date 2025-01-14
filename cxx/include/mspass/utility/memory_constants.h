@@ -10,14 +10,12 @@ use in those containers it will not cause issues.  These constants may
 require tuning with experiences.   Initial values set May 2023 by glp
 are guesses.
 */
-namespace mspass::utility
-{
-namespace memory_constants
-{
+namespace mspass::utility {
+namespace memory_constants {
 /*! Average size of key string used for Metadata. */
 const size_t KEY_AVERAGE_SIZE(8);
 /*! Average Metadata entry size.  key-value so key size + wag of average size */
-const size_t MD_AVERAGE_SIZE(KEY_AVERAGE_SIZE+16);
+const size_t MD_AVERAGE_SIZE(KEY_AVERAGE_SIZE + 16);
 /*! Average size of history record.
 History is stored as a multimap of fixed format records.   The variable is that
 the strings in the NodeData class have variable length.  This is a WAG of
@@ -32,7 +30,7 @@ The dominant data for an error log entry is the posted error message.
 This is a power of 2 wag*/
 const size_t ELOG_AVERAGE_SIZE(128);
 /*! Average size of a data gap set entry.  */
-const size_t DATA_GAP_AVERAGE_SIZE(2*sizeof(double)+sizeof(size_t));
-}
-}
+const size_t DATA_GAP_AVERAGE_SIZE(2 * sizeof(double) + sizeof(size_t));
+} // namespace memory_constants
+} // namespace mspass::utility
 #endif

@@ -13,12 +13,13 @@ each name are roughly the same as the concept line in the yaml file for the
 mspass schema at the time this file was created.   Do not depend on an
 exact match, but the idea behind each phrase should not change (the concept).
 */
-namespace mspass::seismic{
+namespace mspass::seismic {
 /*! Number of data samples.*/
 const std::string SEISMICMD_npts("npts");
 /*! data sample interval in seconds.*/
 const std::string SEISMICMD_dt("delta");
-/*! Time of first sample of data (epoch time or relative to some other time mark)*/
+/*! Time of first sample of data (epoch time or relative to some other time
+ * mark)*/
 const std::string SEISMICMD_t0("starttime");
 /*! Data sampling frequency in Hz=1/s */
 const std::string SEISMICMD_sampling_rate("sampling_rate");
@@ -44,7 +45,8 @@ depth for borehole instruments) - TimeSeries*/
 const std::string SEISMICMD_celev("channel_elev");
 /*!  Azimuth (in degree) of a seismometer component - horizontal angle*/
 const std::string SEISMICMD_hang("channel_hang");
-/*!  Inclination from +up (in degree) of a seismometer component - vertical angle*/
+/*!  Inclination from +up (in degree) of a seismometer component - vertical
+ * angle*/
 const std::string SEISMICMD_vang("channel_vang");
 
 /* In MsPASS source information is retrieved from the source collection.
@@ -73,17 +75,20 @@ const std::string SEISMICMD_uuid("uuid");
 const std::string SEISMICMD_rawdata("rawdata");
 /*! network code (net component of SEED net:sta:chan)*/
 const std::string SEISMICMD_net("net");
-/*! station code assigned to a spot on Earth (sta component of SEED net:sta:chan)*/
+/*! station code assigned to a spot on Earth (sta component of SEED
+ * net:sta:chan)*/
 const std::string SEISMICMD_sta("sta");
 /*! channel name (e.g. HHZ, BHE, etc.) - normally a SEED channel code*/
 const std::string SEISMICMD_chan("chan");
-/*! location code assigned to an instrument (loc component of SEED net:sta:chan)*/
+/*! location code assigned to an instrument (loc component of SEED
+ * net:sta:chan)*/
 const std::string SEISMICMD_loc("loc");
 /*! Define time reference (normally UTC or Relative)*/
 const std::string SEISMICMD_time_standard("time_standard");
 /*! Define the t0_shift attribute of BasicTimeSeries. */
 const std::string SEISMICMD_t0_shift("starttime_shift");
-/*! Defines boolean used in BasicTimeSeries for properly handling Relative/UTC time standards*/
+/*! Defines boolean used in BasicTimeSeries for properly handling Relative/UTC
+ * time standards*/
 const std::string SEISMICMD_utc_convertible("utc_convertible");
-}
+} // namespace mspass::seismic
 #endif

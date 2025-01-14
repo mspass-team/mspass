@@ -1,11 +1,11 @@
 #ifndef _MSPASS_SEISMIC_SEISWGAPS_H_
 #define _MSPASS_SEISMIC_SEISWGAPS_H_
-#include "mspass/seismic/Seismogram.h"
 #include "mspass/seismic/DataGap.h"
+#include "mspass/seismic/Seismogram.h"
 
-namespace mspass::seismic{
-class SeismogramWGaps : public mspass::seismic::Seismogram, public mspass::seismic::DataGap
-{
+namespace mspass::seismic {
+class SeismogramWGaps : public mspass::seismic::Seismogram,
+                        public mspass::seismic::DataGap {
 public:
   /*! \brief Constructor.
 
@@ -13,13 +13,13 @@ public:
   set gap is an issue. */
   SeismogramWGaps();
   /*! Copy constructor. */
-  SeismogramWGaps(const SeismogramWGaps& parent);
-  SeismogramWGaps& operator=(const SeismogramWGaps& parent);
+  SeismogramWGaps(const SeismogramWGaps &parent);
+  SeismogramWGaps &operator=(const SeismogramWGaps &parent);
   ~SeismogramWGaps();
 
-/*! Force all data inside data gaps to zero.
-**/
+  /*! Force all data inside data gaps to zero.
+   **/
   void zero_gaps();
 };
-} //end mspass::seismic namespace
-#endif //end guard
+} // namespace mspass::seismic
+#endif // end guard
