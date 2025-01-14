@@ -2960,8 +2960,8 @@ DataFramematcher</p>
 <dt class="sig sig-object py" id="mspasspy.db.normalize.BasicMatcher">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.db.normalize.</span></span><span class="sig-name descname"><span class="pre">BasicMatcher</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">attributes_to_load</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load_if_defined</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aliases</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/normalize.html#BasicMatcher"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.normalize.BasicMatcher" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
-<p>Base class defining the api for a generic matching capability for
-MongoDB normalization.   The base class is a skeleton that
+<p>This base class defines the api for a generic matching capability for
+MongoDB normalization.   The base class is a mostly a skeleton that
 defines on required abstract methods and initializes a set of
 universal attributes all matchers need.  It cannot be instatiated directly.</p>
 <p>Matching is defined as one of two things:  (1)  a one-to-one
@@ -3034,6 +3034,36 @@ and handle different levels differently  (e.g. Fatal and
 Informational should always be treated differently)</p></li>
 </ol>
 </div></blockquote>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.db.normalize.BasicMatcher.find_doc">
+<span class="sig-name descname"><span class="pre">find_doc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">doc</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.utility.Metadata" title="mspasspy.ccore.utility.Metadata"><span class="pre">Metadata</span></a></span></span><a class="reference internal" href="../_modules/mspasspy/db/normalize.html#BasicMatcher.find_doc"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.normalize.BasicMatcher.find_doc" title="Permalink to this definition"></a></dt>
+<dd><p>find a unique match using a python dictionary as input.</p>
+<p>The bulk_normalize function  requires an implementation of a
+method with this name. It is conceptually similar to find_one
+but it uses a python dictionary (the doc argument) as input
+instead of a mspass seismic data object.  It also returns only
+a Metadata container on success or None if it fails to find
+a match.</p>
+<p>This method is little more than a thin wrapper around
+an implementation of the find_one method. It checkes
+the elog for entries marked Invalid and if
+so returns None.  Otherwise it converts the Metdata container
+to a python dictionary it return.  It is part of the
+base class because it depends only on the near equivalence of
+a python dictionary and the MsPASS Metadata containers.</p>
+<p>When find_one returns a ErrorLogger object the contents are
+inspected.   Errors less severe than “Invalid” are ignored
+and dropped.   If the log contains a message tagged “Invalid”
+this function will silently return None.   That could be
+problematic as it is indistinguishable from the return when
+there is no match, but is useful to simply the api.  If an
+entry is tagged “Fatal” a MsPASSError exception will be
+thrown with the message posted to the MsPASSError container.</p>
+<p>Subclasses may wish to override this method if the approach
+used here is inappropriate.   i.e. if this were C++ this
+method would be declared virtual.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -3913,7 +3943,7 @@ If any of the required keys is missing it will return a None</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.db.normalize.MiniseedMatcher.find_doc">
 <span class="sig-name descname"><span class="pre">find_doc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">doc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wfdoc_starttime_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'starttime'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/normalize.html#MiniseedMatcher.find_doc"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.normalize.MiniseedMatcher.find_doc" title="Permalink to this definition"></a></dt>
-<dd><p>Optional function to support application to bulk_normalize to
+<dd><p>Function to support application to bulk_normalize to
 set channel_id or site_id.  Acts like find_one but without support
 for readonly recovery.   The bigger difference is that this
 method accepts a python dict retrieved in a cursor loop for
@@ -3922,6 +3952,8 @@ from the cache.   This uses the same algorithm as the overloaded
 find_one above where a linear search is used to handle the time
 interval matching.  Here, however, the time field is extracted
 from doc with the key defined by starttime.</p>
+<p>This method overrides the generic version in BasicMatcher due
+to some special peculiarities of miniseed.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -4322,7 +4354,10 @@ DataFrame created from something like a Datascope origin table
 this list will need to be changed to remove _id as it in that context
 no ObjectID would normally be defined.  Be warned, however, that if
 used with a normalize function the _id may be required to match a
-“source_id” cross reference in a seismic data object.</p></li>
+“source_id” cross reference in a seismic data object.  Also note
+that the list must contain the key defined by the related
+argument “source_time_key” as that is used to match times in
+the source data with data start times.</p></li>
 <li><p><strong>load_if_defined</strong> – list of keys of optional attributes to be
 extracted by find method.  Any data attached to these keys will only
 be posted in the find return if they are defined in the database
@@ -4343,28 +4378,135 @@ document would be returned as “channel_lat”.</p></li>
 When True find_one will throw an error if an entry is tries to match
 is not unique.  When False find_one returns the first document
 found and logs a complaint message.  (default is False)</p></li>
-<li><p><strong>data_time_key</strong> – data object Metadata key used to fetch</p></li>
-</ul>
-</dd>
-</dl>
-<p>time for testing as alternative to data start time.  If set None
+<li><p><strong>data_time_key</strong> (<em>string</em>) – data object Metadata key used to fetch
+time for testing as alternative to data start time.  If set None
 (default) the test will use the start time of an atomic data object
 for the time test.  If nonzero it is assumed to be a string used
 to fetch a time from the data’s Metadata container.  That is the
-best way to run this matcher on Ensembles.
-:type data_time_key:  string</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>source_time_key</strong> – dataframe column name to use as source</p>
+best way to run this matcher on Ensembles.</p></li>
+<li><p><strong>source_time_key</strong> (<em>string  Can also be a None type which
+is causes the internal value to be set to &quot;time&quot;</em>) – dataframe column name to use as source
+origin time field.  Default is “time”.   This key must match
+a key in the attributes_to_load list or the constructor will
+throw an exception.  Note this should match the key definingn
+origin time in the collection not the common actual value
+stored with data.  I.e. normal usage is “time” not “source_time”</p></li>
+</ul>
 </dd>
 </dl>
-<p>origin time field.  Default is “time”
-:type source_time_key:  string  Can also be a None type which
-is causes the internal value to be set to “time”</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.db.normalize.OriginTimeMatcher.find_doc">
+<span class="sig-name descname"><span class="pre">find_doc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">doc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">starttime_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'starttime'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../_modules/mspasspy/db/normalize.html#OriginTimeMatcher.find_doc"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.normalize.OriginTimeMatcher.find_doc" title="Permalink to this definition"></a></dt>
+<dd><p>Override of the find_doc method of BasicMatcher.   This method
+acts lke find_one but the inputs and outputs are different.
+The input to this method is a python dictionary that is
+expected to normally be a MongoDB document.   The output is
+also a python dictionary without (normally) a reduced set of
+attributes defined by self.attributes_to_load and
+self.load_if_defined.  We need to override the base class
+version of ths method because the base class version by
+default requires an atomic seismic data object
+(TimeSEries or Seismogram).  The algorithm used is a variant of
+that in the subset method of this class.</p>
+<p>This method also differs from find_one it that it has no
+mechanism to log errors.   find_one returns a Metadata container
+and an ErrorLogger container used to post messages.  This method
+will return a None if there are errors that cause it to fail.
+That can be ambiguous because a None return also is used to
+indicate failure to match anything.  The primary use of this
+method is normalizing an entire data set with the ObjetIds of
+source documnts with the <cite>bulk_normaize</cite> function.   In that case
+additional forensic work is possible with MongoDB to uncover why
+a given document match failed.</p>
+<p>Because the interval match relative to a waveform start time can
+be ambiguous from global events (Although rare earthquakes can
+easily occur with + or - self.tolerance time) when multiple
+rows of the dataframe match the interval test the one returned
+is the one for which the time projected from the waveform
+start time (uses self.t0offset value) is defined as the match
+that is returned.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>doc</strong> (<em>python dictionary</em>) – wf document (i.e. a document used to construct
+an atomic datum) to be matched with content of this object
+(assued the source collection or a variant that contains
+source origin times).</p></li>
+<li><p><strong>starttime_key</strong> (<em>str</em><em> (</em><em>default &quot;starttime&quot;</em><em>)</em>) – key that can be used fetch the waveform
+segment start time that is to be used to match against
+origin times loaded in the object’s cache.  ‘</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>python dictionary of the best match or None if there is
+no match or in nonfatal error conditions.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.db.normalize.OriginTimeMatcher.find_one">
+<span class="sig-name descname"><span class="pre">find_one</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mspass_object</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="reference internal" href="../_modules/mspasspy/db/normalize.html#OriginTimeMatcher.find_one"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.normalize.OriginTimeMatcher.find_one" title="Permalink to this definition"></a></dt>
+<dd><p>Override of find_one method of DataframeMatcher.  The override is
+necessary to handle the ambiguity of a timer interval match for
+source origin times.   That is, there is a finite probability
+that tow earthquakes can occur with the interval of this matcher
+defined by the time projected from the waveform start time
+(starttime - self.t0offset) + or - self.tolerance.   When
+multiple matches are found this method handles that ambiguity by
+finding the source where the origin time is closest to the
+waveform start time corrected by self.t0offset.</p>
+<p>Note this method normally expects input to be an atomic
+seismic object.  It also, however, accepts any object that
+is a subclass of Metadata.   The most important example of that
+is <cite>TimeSeriesEnsemble</cite> and <cite>SeismogramEnsemble</cite> objects.
+For that to work, however, you MUST define a key to use to
+fetch a reference time in the constructor to this object
+via the <cite>data_time_key</cite> argument.  If you then load the
+appropriate reference time in the ensemble’s Metadata container
+you can normalize a common source gather’s ensemble container
+with a workflow.   Here is a code fragment illustrating the idea:</p>
+<p><code class="docutils literal notranslate"><span class="pre">`</span>
+<span class="pre">source_matcher</span> <span class="pre">=</span> <span class="pre">OriginTimeMatcher(db,data_time_key=&quot;origin_time&quot;)</span>
+<span class="pre">e</span> <span class="pre">=</span> <span class="pre">db.read_data(cursor,</span> <span class="pre">...</span> <span class="pre">read</span> <span class="pre">args...)</span>&#160; <span class="pre">#</span> <span class="pre">read</span> <span class="pre">ensemle</span> <span class="pre">e</span>
+<span class="pre">#</span> <span class="pre">assume</span> <span class="pre">we</span> <span class="pre">got</span> <span class="pre">ths</span> <span class="pre">time</span> <span class="pre">(otime)vsome</span> <span class="pre">other</span> <span class="pre">way</span> <span class="pre">above</span>
+<span class="pre">e['origin_time']</span> <span class="pre">=</span> <span class="pre">otime</span>
+<span class="pre">e</span> <span class="pre">=</span> <span class="pre">normalize(e,source_matcher)</span>
+<span class="pre">`</span></code>
+If the match suceeds the attributes defined in te Dataframe
+cache will be loaded into the Metadata contaienr of e.
+That is the defiition of a common source gather.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>mspass_object</strong> – atomic seismic data object to be matched.
+The match is normally made against the datum’s t0 value so
+there is an implict assumption the datum is a UTC epoch time.
+If a data set is passed through this operator and the data
+are relative time all will fail.   The function intentionaly
+avoids that test for efficiency.   A plain Metadata container
+can be passed through mspass_object if and only if it
+contains a value associated with the key defined by the
+starttime_key attibute.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>a tuple consistent with the BasicMatcher API definition.
+(i.e. pair [Metadata,ErrorLogger])</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.db.normalize.OriginTimeMatcher.subset">
 <span class="sig-name descname"><span class="pre">subset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mspass_object</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="reference internal" href="../_modules/mspasspy/db/normalize.html#OriginTimeMatcher.subset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.normalize.OriginTimeMatcher.subset" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Implementation of subset method requried by inheritance from
+DataframeCacheMatcher.   Returns a subset of the cache
+Dataframe with source origin times matching the definition
+of this object.  i.e. a time interval relative to the
+start time defined by mspass_object.   Note that if a key is
+given the time will be extrated from the Metadata container of
+mspass_object.  If no key is defined (self.data_time_key == None)
+the t0 attribute of mspass_object will be used.</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -4381,23 +4523,21 @@ run this function on wf_miniseed data running a matcher to set
 channel_id, site_id, and source_id.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>db</strong> – should be a MsPASS database handle containing the wf_col</p>
-</dd>
-</dl>
-<p>and the collections defined by the matcher_list list.
-:param wf_col: The collection that need to be normalized, default is
-wf_miniseed
-:param blockssize:   To speed up updates this function uses the
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>db</strong> – should be a MsPASS database handle containing the wf_col
+and the collections defined by the matcher_list list.</p></li>
+<li><p><strong>wf_col</strong> – The collection that need to be normalized, default is
+wf_miniseed</p></li>
+<li><p><strong>blockssize</strong> – To speed up updates this function uses the
 bulk writer/updater methods of MongoDB that can be orders of
 magnitude faster than one-at-a-time updates. A user should not normally
-need to alter this parameter.
-:param wfquery: is an optional query to apply to wf_col.  The output of this
+need to alter this parameter.</p></li>
+<li><p><strong>wfquery</strong> – is an optional query to apply to wf_col.  The output of this
 query defines the list of documents that the algorithm will attempt
 to normalize as described above.  The default (None) will process the entire
-collection (query set to an emtpy dict).
-:param matcher_list: a list of instances of one or more subclasses of BasicMather.</p>
-<blockquote>
-<div><p>In addition to the required classes all instances passed to through
+collection (query set to an emtpy dict).</p></li>
+<li><p><strong>matcher_list</strong> – a list of instances of one or more subclasses of BasicMather.
+In addition to the required classes all instances passed to through
 this interface must contain two required attributes:  (1) collection
 which defines the collection name, and (2) prepend_collection_name is
 a boolean that determines if the attributes loaded should have
@@ -4405,16 +4545,16 @@ the collection name prepended (e.g. channel_id).  In addition,
 all instances must define the find_doc method which is not required
 by the BasicMatcher interface.   (find_doc is comparable to find_one
 but uses a python dictionary as the container instead of referencing
-a mspass data object.  find_one is the core method for inline normalization)</p>
-</div></blockquote>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>a list with a length of len(matcher_list)+1.  0 is the number of documents</p>
+a mspass data object.  find_one is the core method for inline normalization)</p></li>
+</ul>
 </dd>
-</dl>
-<p>processed in the collection (output of query), The rest are the numbers of
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>a list with a length of len(matcher_list)+1.  0 is the number of documents
+processed in the collection (output of query), The rest are the numbers of
 success normalizations for the corresponding NMF instances, they are mapped
 one on one (matcher_list[x] -&gt; ret[x+1]).</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">

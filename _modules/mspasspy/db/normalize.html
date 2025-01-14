@@ -168,8 +168,8 @@
 
 <div class="viewcode-block" id="BasicMatcher"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.BasicMatcher">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">BasicMatcher</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Base class defining the api for a generic matching capability for</span>
-<span class="sd">    MongoDB normalization.   The base class is a skeleton that</span>
+<span class="sd">    This base class defines the api for a generic matching capability for</span>
+<span class="sd">    MongoDB normalization.   The base class is a mostly a skeleton that</span>
 <span class="sd">    defines on required abstract methods and initializes a set of</span>
 <span class="sd">    universal attributes all matchers need.  It cannot be instatiated directly.</span>
 
@@ -362,7 +362,55 @@
 <span class="sd">              Informational should always be treated differently)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">pass</span></div></div>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="BasicMatcher.find_doc"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.BasicMatcher.find_doc">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">find_doc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">doc</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Metadata</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        find a unique match using a python dictionary as input.</span>
+
+<span class="sd">        The bulk_normalize function  requires an implementation of a</span>
+<span class="sd">        method with this name. It is conceptually similar to find_one</span>
+<span class="sd">        but it uses a python dictionary (the doc argument) as input</span>
+<span class="sd">        instead of a mspass seismic data object.  It also returns only</span>
+<span class="sd">        a Metadata container on success or None if it fails to find</span>
+<span class="sd">        a match.</span>
+
+<span class="sd">        This method is little more than a thin wrapper around</span>
+<span class="sd">        an implementation of the find_one method. It checkes</span>
+<span class="sd">        the elog for entries marked Invalid and if</span>
+<span class="sd">        so returns None.  Otherwise it converts the Metdata container</span>
+<span class="sd">        to a python dictionary it return.  It is part of the</span>
+<span class="sd">        base class because it depends only on the near equivalence of</span>
+<span class="sd">        a python dictionary and the MsPASS Metadata containers.</span>
+
+<span class="sd">        When find_one returns a ErrorLogger object the contents are</span>
+<span class="sd">        inspected.   Errors less severe than &quot;Invalid&quot; are ignored</span>
+<span class="sd">        and dropped.   If the log contains a message tagged &quot;Invalid&quot;</span>
+<span class="sd">        this function will silently return None.   That could be</span>
+<span class="sd">        problematic as it is indistinguishable from the return when</span>
+<span class="sd">        there is no match, but is useful to simply the api.  If an</span>
+<span class="sd">        entry is tagged &quot;Fatal&quot; a MsPASSError exception will be</span>
+<span class="sd">        thrown with the message posted to the MsPASSError container.</span>
+
+<span class="sd">        Subclasses may wish to override this method if the approach</span>
+<span class="sd">        used here is inappropriate.   i.e. if this were C++ this</span>
+<span class="sd">        method would be declared virtual.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">md2test</span> <span class="o">=</span> <span class="n">Metadata</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
+        <span class="p">[</span><span class="n">md</span><span class="p">,</span> <span class="n">elog</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span><span class="n">md2test</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">elog</span><span class="p">:</span>
+            <span class="n">elist</span> <span class="o">=</span> <span class="n">elog</span><span class="o">.</span><span class="n">worst_errors</span><span class="p">()</span>
+            <span class="c1"># Return no success if Invalid</span>
+            <span class="n">worst</span> <span class="o">=</span> <span class="n">elist</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">badness</span>
+            <span class="k">if</span> <span class="n">worst</span> <span class="o">==</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">None</span>
+            <span class="k">elif</span> <span class="n">worst</span> <span class="o">==</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Fatal</span><span class="p">:</span>
+                <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;find_doc method failed.   Messages posted:</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">elist</span><span class="p">:</span>
+                    <span class="n">message</span> <span class="o">+=</span> <span class="n">e</span><span class="o">.</span><span class="n">message</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Fatal</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">md</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="DatabaseMatcher"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.DatabaseMatcher">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">DatabaseMatcher</span><span class="p">(</span><span class="n">BasicMatcher</span><span class="p">):</span>
@@ -459,12 +507,13 @@
 <span class="sd">        is there is no place to put it and something else has gone really</span>
 <span class="sd">        wrong.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">_input_is_valid</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">Metadata</span><span class="p">):</span>
             <span class="n">elog</span> <span class="o">=</span> <span class="n">PyErrorLogger</span><span class="p">()</span>
             <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;received invalid data.  Arg0 must be a valid MsPASS data object&quot;</span>
             <span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
-            <span class="k">return</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="s2">&quot;dead&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
+                <span class="k">return</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span>
         <span class="n">query</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">query_generator</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">query</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">elog</span> <span class="o">=</span> <span class="n">PyErrorLogger</span><span class="p">()</span>
@@ -775,15 +824,16 @@
 <span class="sd">                containing attributes_to_load and load_if_defined</span>
 <span class="sd">                (if appropriate) in each component.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">_input_is_valid</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">Metadata</span><span class="p">):</span>
             <span class="n">elog</span> <span class="o">=</span> <span class="n">PyErrorLogger</span><span class="p">()</span>
             <span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
                 <span class="s2">&quot;Received datum that was not a valid MsPASS data object&quot;</span><span class="p">,</span>
                 <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="k">return</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="n">elog</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
-            <span class="k">return</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="s2">&quot;dead&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
+                <span class="k">return</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span>
         <span class="n">thisid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache_id</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">)</span>
         <span class="c1"># this should perhaps generate two different messages as the</span>
         <span class="c1"># they imply slightly different things - the current message</span>
@@ -882,6 +932,7 @@
 <span class="sd">        This function does the same thing as _db_load_normalization_cache, the</span>
 <span class="sd">        only difference is that this current function takes one argument, which</span>
 <span class="sd">        is a dataframe.</span>
+
 <span class="sd">        :param df: a pandas/dask dataframe where we load data from</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">query_result</span> <span class="o">=</span> <span class="n">df</span>
@@ -1053,7 +1104,7 @@
 <span class="sd">        null load_if_defined into one Metadata container for each</span>
 <span class="sd">        row of the returned DataFrame.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">_input_is_valid</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">Metadata</span><span class="p">):</span>
             <span class="n">elog</span> <span class="o">=</span> <span class="n">PyErrorLogger</span><span class="p">(</span>
                 <span class="s2">&quot;DataFrameCacheMatcher.find&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;Received datum that was not a valid MsPASS data object&quot;</span><span class="p">,</span>
@@ -1147,7 +1198,7 @@
                     <span class="s2">&quot;DataFrameCacheMatcher.find_one:  found </span><span class="si">{n}</span><span class="s2"> matches when require_unique_match was set true&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                         <span class="n">n</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">mdlist</span><span class="p">)</span>
                     <span class="p">),</span>
-                    <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Fatal</span><span class="p">,</span>
+                    <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
                 <span class="p">)</span>
             <span class="k">if</span> <span class="n">findreturn</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">elog</span> <span class="o">=</span> <span class="n">PyErrorLogger</span><span class="p">()</span>
@@ -1160,7 +1211,11 @@
             <span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">error_message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span><span class="p">)</span>
             <span class="k">return</span> <span class="p">[</span><span class="n">mdlist</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">elog</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># only land here if mdlist is something for which len returns 0</span>
+            <span class="c1"># This is a safety purely for code maintenance.</span>
+            <span class="c1"># currently find either returns None or a list with data in it</span>
+            <span class="c1"># we enter this safety ONLY if find returns a zero length list</span>
+            <span class="c1"># we raise an exception if that happens because it is</span>
+            <span class="c1"># not expeted.</span>
             <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
                 <span class="s2">&quot;DataFrameCacheMatchter.find_one:   find returned an empty list.  Can only happen if custom matcher has overridden find.  Find should return None if the match fails&quot;</span><span class="p">,</span>
                 <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Fatal</span><span class="p">,</span>
@@ -2034,7 +2089,7 @@
 
 <div class="viewcode-block" id="MiniseedMatcher.find_doc"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.MiniseedMatcher.find_doc">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">find_doc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">doc</span><span class="p">,</span> <span class="n">wfdoc_starttime_key</span><span class="o">=</span><span class="s2">&quot;starttime&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Optional function to support application to bulk_normalize to</span>
+<span class="sd">        Function to support application to bulk_normalize to</span>
 <span class="sd">        set channel_id or site_id.  Acts like find_one but without support</span>
 <span class="sd">        for readonly recovery.   The bigger difference is that this</span>
 <span class="sd">        method accepts a python dict retrieved in a cursor loop for</span>
@@ -2043,6 +2098,9 @@
 <span class="sd">        find_one above where a linear search is used to handle the time</span>
 <span class="sd">        interval matching.  Here, however, the time field is extracted</span>
 <span class="sd">        from doc with the key defined by starttime.</span>
+
+<span class="sd">        This method overrides the generic version in BasicMatcher due</span>
+<span class="sd">        to some special peculiarities of miniseed.</span>
 
 <span class="sd">        :param doc:  document (pretty much assumed to be from wf_miniseed)</span>
 <span class="sd">          to be matched with channel or site.</span>
@@ -2284,8 +2342,9 @@
 <span class="sd">           two other situations can cause the return to have no data:</span>
 <span class="sd">               (1) dead input, and (2) match keys missing from mspass_object.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
-            <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DateFrame</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="s2">&quot;dead&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
+                <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
         <span class="c1"># I don&#39;t think this can cause a memory problem as in python</span>
         <span class="c1"># this make dfret a temporary alias for self.cache</span>
         <span class="c1"># In the loop it is replaced by subset dataframes</span>
@@ -2565,10 +2624,11 @@
         <span class="c1"># badly, but  it makes the code more stable - otherwise</span>
         <span class="c1"># a parallel job could, for example, abort if one of the</span>
         <span class="c1"># components in a bag/rdd got set to None</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">_input_is_valid</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">Metadata</span><span class="p">):</span>
             <span class="k">return</span> <span class="kc">None</span>
-        <span class="k">if</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
-            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="s2">&quot;dead&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
+                <span class="k">return</span> <span class="kc">None</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_time_key</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># this maybe should have a test to assure UTC time standard</span>
@@ -2662,7 +2722,10 @@
 <span class="sd">      this list will need to be changed to remove _id as it in that context</span>
 <span class="sd">      no ObjectID would normally be defined.  Be warned, however, that if</span>
 <span class="sd">      used with a normalize function the _id may be required to match a</span>
-<span class="sd">      &quot;source_id&quot; cross reference in a seismic data object.</span>
+<span class="sd">      &quot;source_id&quot; cross reference in a seismic data object.  Also note</span>
+<span class="sd">      that the list must contain the key defined by the related</span>
+<span class="sd">      argument &quot;source_time_key&quot; as that is used to match times in</span>
+<span class="sd">      the source data with data start times.</span>
 <span class="sd">    :type attributes_to_load:  list of string defining keys in collection</span>
 <span class="sd">      documents</span>
 
@@ -2694,17 +2757,21 @@
 <span class="sd">    :type require_unique_match:  boolean</span>
 
 <span class="sd">    :param data_time_key:  data object Metadata key used to fetch</span>
-<span class="sd">    time for testing as alternative to data start time.  If set None</span>
-<span class="sd">    (default) the test will use the start time of an atomic data object</span>
-<span class="sd">    for the time test.  If nonzero it is assumed to be a string used</span>
-<span class="sd">    to fetch a time from the data&#39;s Metadata container.  That is the</span>
-<span class="sd">    best way to run this matcher on Ensembles.</span>
+<span class="sd">      time for testing as alternative to data start time.  If set None</span>
+<span class="sd">      (default) the test will use the start time of an atomic data object</span>
+<span class="sd">      for the time test.  If nonzero it is assumed to be a string used</span>
+<span class="sd">      to fetch a time from the data&#39;s Metadata container.  That is the</span>
+<span class="sd">      best way to run this matcher on Ensembles.</span>
 <span class="sd">    :type data_time_key:  string</span>
 
 <span class="sd">    :param source_time_key:  dataframe column name to use as source</span>
-<span class="sd">    origin time field.  Default is &quot;time&quot;</span>
+<span class="sd">      origin time field.  Default is &quot;time&quot;.   This key must match</span>
+<span class="sd">      a key in the attributes_to_load list or the constructor will</span>
+<span class="sd">      throw an exception.  Note this should match the key definingn</span>
+<span class="sd">      origin time in the collection not the common actual value</span>
+<span class="sd">      stored with data.  I.e. normal usage is &quot;time&quot; not &quot;source_time&quot;</span>
 <span class="sd">    :type source_time_key:  string  Can also be a None type which</span>
-<span class="sd">    is causes the internal value to be set to &quot;time&quot;</span>
+<span class="sd">      is causes the internal value to be set to &quot;time&quot;</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
@@ -2739,13 +2806,29 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">source_time_key</span> <span class="o">=</span> <span class="s2">&quot;time&quot;</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">source_time_key</span> <span class="o">=</span> <span class="n">source_time_key</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">source_time_key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">attributes_to_load</span><span class="p">:</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;OriginTimeMatcher constructor:  &quot;</span>
+            <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;key for fetching origin time=&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">source_time_key</span>
+            <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot; is not in attributes_to_load list</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Required for matching with waveform start times&quot;</span>
+            <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Fatal</span><span class="p">)</span>
 
 <div class="viewcode-block" id="OriginTimeMatcher.subset"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.OriginTimeMatcher.subset">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">subset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">_input_is_valid</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Implementation of subset method requried by inheritance from</span>
+<span class="sd">        DataframeCacheMatcher.   Returns a subset of the cache</span>
+<span class="sd">        Dataframe with source origin times matching the definition</span>
+<span class="sd">        of this object.  i.e. a time interval relative to the</span>
+<span class="sd">        start time defined by mspass_object.   Note that if a key is</span>
+<span class="sd">        given the time will be extrated from the Metadata container of</span>
+<span class="sd">        mspass_object.  If no key is defined (self.data_time_key == None)</span>
+<span class="sd">        the t0 attribute of mspass_object will be used.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">Metadata</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
-            <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="s2">&quot;dead&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
+                <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_time_key</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># this maybe should have a test to assure UTC time standard</span>
@@ -2771,7 +2854,226 @@
         <span class="p">)</span>
         <span class="n">dfret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">dfquery</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">dfret</span></div></div>
+        <span class="k">return</span> <span class="n">dfret</span></div>
+
+<div class="viewcode-block" id="OriginTimeMatcher.find_one"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.OriginTimeMatcher.find_one">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">find_one</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Override of find_one method of DataframeMatcher.  The override is</span>
+<span class="sd">        necessary to handle the ambiguity of a timer interval match for</span>
+<span class="sd">        source origin times.   That is, there is a finite probability</span>
+<span class="sd">        that tow earthquakes can occur with the interval of this matcher</span>
+<span class="sd">        defined by the time projected from the waveform start time</span>
+<span class="sd">        (starttime - self.t0offset) + or - self.tolerance.   When</span>
+<span class="sd">        multiple matches are found this method handles that ambiguity by</span>
+<span class="sd">        finding the source where the origin time is closest to the</span>
+<span class="sd">        waveform start time corrected by self.t0offset.</span>
+
+<span class="sd">        Note this method normally expects input to be an atomic</span>
+<span class="sd">        seismic object.  It also, however, accepts any object that</span>
+<span class="sd">        is a subclass of Metadata.   The most important example of that</span>
+<span class="sd">        is `TimeSeriesEnsemble` and `SeismogramEnsemble` objects.</span>
+<span class="sd">        For that to work, however, you MUST define a key to use to</span>
+<span class="sd">        fetch a reference time in the constructor to this object</span>
+<span class="sd">        via the `data_time_key` argument.  If you then load the</span>
+<span class="sd">        appropriate reference time in the ensemble&#39;s Metadata container</span>
+<span class="sd">        you can normalize a common source gather&#39;s ensemble container</span>
+<span class="sd">        with a workflow.   Here is a code fragment illustrating the idea:</span>
+
+<span class="sd">        ```</span>
+<span class="sd">        source_matcher = OriginTimeMatcher(db,data_time_key=&quot;origin_time&quot;)</span>
+<span class="sd">        e = db.read_data(cursor, ... read args...)  # read ensemle e</span>
+<span class="sd">        # assume we got ths time (otime)vsome other way above</span>
+<span class="sd">        e[&#39;origin_time&#39;] = otime</span>
+<span class="sd">        e = normalize(e,source_matcher)</span>
+<span class="sd">        ```</span>
+<span class="sd">        If the match suceeds the attributes defined in te Dataframe</span>
+<span class="sd">        cache will be loaded into the Metadata contaienr of e.</span>
+<span class="sd">        That is the defiition of a common source gather.</span>
+
+<span class="sd">        :param mspass_object:  atomic seismic data object to be matched.</span>
+<span class="sd">           The match is normally made against the datum&#39;s t0 value so</span>
+<span class="sd">           there is an implict assumption the datum is a UTC epoch time.</span>
+<span class="sd">           If a data set is passed through this operator and the data</span>
+<span class="sd">           are relative time all will fail.   The function intentionaly</span>
+<span class="sd">           avoids that test for efficiency.   A plain Metadata container</span>
+<span class="sd">           can be passed through mspass_object if and only if it</span>
+<span class="sd">           contains a value associated with the key defined by the</span>
+<span class="sd">           starttime_key attibute.</span>
+
+<span class="sd">        :return: a tuple consistent with the BasicMatcher API definition.</span>
+<span class="sd">          (i.e. pair [Metadata,ErrorLogger])</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">findreturn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">)</span>
+        <span class="n">mdlist</span> <span class="o">=</span> <span class="n">findreturn</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">mdlist</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">findreturn</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">mdlist</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">md2use</span> <span class="o">=</span> <span class="n">mdlist</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">mdlist</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">md2use</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nearest_time_source</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">mdlist</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">md2use</span><span class="p">,</span> <span class="n">findreturn</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span></div>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_nearest_time_source</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">,</span> <span class="n">mdlist</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Private method to define the algorithm used to resolve</span>
+<span class="sd">        an ambiguity when multipe sources are returned by find.</span>
+<span class="sd">        This returns the Metadata container for the source</span>
+<span class="sd">        most whose offset origin time most closely matches te</span>
+<span class="sd">        content defined my mspass_object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">prepend_collection_name</span><span class="p">:</span>
+            <span class="c1"># the find method returns modified names if</span>
+            <span class="c1"># prepend_collection_names is True.  Note the</span>
+            <span class="c1"># actual DAtaframe uses the names without thae prepend string</span>
+            <span class="c1"># This is needed to handle that property of find</span>
+            <span class="n">time_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">source_time_key</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">time_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">source_time_key</span>
+        <span class="n">N_matches</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">mdlist</span><span class="p">)</span>
+        <span class="c1"># find component of list with the minimum projected time offset</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">N_matches</span><span class="p">)</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">md</span> <span class="ow">in</span> <span class="n">mdlist</span><span class="p">:</span>
+            <span class="n">dt</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">md</span><span class="p">[</span><span class="n">time_key</span><span class="p">]</span>
+            <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="c1"># always use t0 if possile.</span>
+        <span class="c1"># this logic, however, allows mspass_object to be a</span>
+        <span class="c1"># plain Metadata container or a python dictionary</span>
+        <span class="c1"># intentinally let this throw an exception for Metadata if the</span>
+        <span class="c1"># required key is missing.  If t0 is not defined it tries to</span>
+        <span class="c1"># use self.data_time_key (normaly &quot;startttme&quot;)</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="s2">&quot;t0&quot;</span><span class="p">):</span>
+            <span class="n">test_time</span> <span class="o">=</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">t0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">test_time</span> <span class="o">=</span> <span class="n">mspass_object</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">data_time_key</span><span class="p">]</span>
+        <span class="n">test_time</span> <span class="o">-=</span> <span class="bp">self</span><span class="o">.</span><span class="n">t0offset</span>
+        <span class="n">dt</span> <span class="o">-=</span> <span class="n">test_time</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
+        <span class="n">component_to_use</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">mdlist</span><span class="p">[</span><span class="n">component_to_use</span><span class="p">]</span>
+
+<div class="viewcode-block" id="OriginTimeMatcher.find_doc"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.OriginTimeMatcher.find_doc">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">find_doc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">doc</span><span class="p">,</span> <span class="n">starttime_key</span><span class="o">=</span><span class="s2">&quot;starttime&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Override of the find_doc method of BasicMatcher.   This method</span>
+<span class="sd">        acts lke find_one but the inputs and outputs are different.</span>
+<span class="sd">        The input to this method is a python dictionary that is</span>
+<span class="sd">        expected to normally be a MongoDB document.   The output is</span>
+<span class="sd">        also a python dictionary without (normally) a reduced set of</span>
+<span class="sd">        attributes defined by self.attributes_to_load and</span>
+<span class="sd">        self.load_if_defined.  We need to override the base class</span>
+<span class="sd">        version of ths method because the base class version by</span>
+<span class="sd">        default requires an atomic seismic data object</span>
+<span class="sd">        (TimeSEries or Seismogram).  The algorithm used is a variant of</span>
+<span class="sd">        that in the subset method of this class.</span>
+
+<span class="sd">        This method also differs from find_one it that it has no</span>
+<span class="sd">        mechanism to log errors.   find_one returns a Metadata container</span>
+<span class="sd">        and an ErrorLogger container used to post messages.  This method</span>
+<span class="sd">        will return a None if there are errors that cause it to fail.</span>
+<span class="sd">        That can be ambiguous because a None return also is used to</span>
+<span class="sd">        indicate failure to match anything.  The primary use of this</span>
+<span class="sd">        method is normalizing an entire data set with the ObjetIds of</span>
+<span class="sd">        source documnts with the `bulk_normaize` function.   In that case</span>
+<span class="sd">        additional forensic work is possible with MongoDB to uncover why</span>
+<span class="sd">        a given document match failed.</span>
+
+<span class="sd">        Because the interval match relative to a waveform start time can</span>
+<span class="sd">        be ambiguous from global events (Although rare earthquakes can</span>
+<span class="sd">        easily occur with + or - self.tolerance time) when multiple</span>
+<span class="sd">        rows of the dataframe match the interval test the one returned</span>
+<span class="sd">        is the one for which the time projected from the waveform</span>
+<span class="sd">        start time (uses self.t0offset value) is defined as the match</span>
+<span class="sd">        that is returned.</span>
+
+<span class="sd">        :param doc:  wf document (i.e. a document used to construct</span>
+<span class="sd">          an atomic datum) to be matched with content of this object</span>
+<span class="sd">          (assued the source collection or a variant that contains</span>
+<span class="sd">          source origin times).</span>
+<span class="sd">        :type doc:  python dictionary</span>
+<span class="sd">        :param starttime_key:  key that can be used fetch the waveform</span>
+<span class="sd">          segment start time that is to be used to match against</span>
+<span class="sd">          origin times loaded in the object&#39;s cache.  &#39;</span>
+<span class="sd">        :type starttime_key:  str (default &quot;starttime&quot;)</span>
+<span class="sd">        :return:  python dictionary of the best match or None if there is</span>
+<span class="sd">          no match or in nonfatal error conditions.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">starttime_key</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
+            <span class="n">test_time</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="n">starttime_key</span><span class="p">]</span>
+            <span class="n">test_time</span> <span class="o">-=</span> <span class="bp">self</span><span class="o">.</span><span class="n">t0offset</span>
+            <span class="c1"># copied from subset method</span>
+            <span class="n">tmin</span> <span class="o">=</span> <span class="n">test_time</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">tolerance</span>
+            <span class="n">tmax</span> <span class="o">=</span> <span class="n">test_time</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">tolerance</span>
+            <span class="c1"># For this matcher we dogmatically use &lt;= equivalent in the between</span>
+            <span class="c1"># construct here - inclusive=True.  In this context seems appropriate</span>
+            <span class="n">inclusive</span> <span class="o">=</span> <span class="s1">&#39;&quot;both&quot;&#39;</span>
+            <span class="n">dfquery</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">source_time_key</span>
+                <span class="o">+</span> <span class="s2">&quot;.between(</span><span class="si">{tmin}</span><span class="s2">,</span><span class="si">{tmax}</span><span class="s2">,inclusive=</span><span class="si">{inclusive}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">tmin</span><span class="o">=</span><span class="n">tmin</span><span class="p">,</span> <span class="n">tmax</span><span class="o">=</span><span class="n">tmax</span><span class="p">,</span> <span class="n">inclusive</span><span class="o">=</span><span class="n">inclusive</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">subset_df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">dfquery</span><span class="p">)</span>
+            <span class="n">N_matches</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">subset_df</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">N_matches</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="c1"># no match return</span>
+                <span class="k">return</span> <span class="kc">None</span>
+            <span class="k">elif</span> <span class="n">N_matches</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="c1"># first find the row with source origin time most closely</span>
+                <span class="c1"># matching the doc starrtime value</span>
+                <span class="n">dt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">N_matches</span><span class="p">)</span>
+                <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">subset_df</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+                    <span class="c1"># this key has to exist or we wouldn&#39;t get here</span>
+                    <span class="n">dt</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">source_time_key</span><span class="p">]</span>
+                <span class="n">dt</span> <span class="o">-=</span> <span class="n">test_time</span>
+                <span class="n">dt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
+                <span class="n">row_index_to_use</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">row_index_to_use</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">row</span> <span class="o">=</span> <span class="n">subset_df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">row_index_to_use</span><span class="p">]</span>
+            <span class="n">doc_out</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+            <span class="n">notnulltest</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">notnull</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes_to_load</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">notnulltest</span><span class="p">[</span><span class="n">k</span><span class="p">]:</span>
+                    <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">aliases</span><span class="p">:</span>
+                        <span class="n">key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">aliases</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">key</span> <span class="o">=</span> <span class="n">k</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">prepend_collection_name</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;_id&quot;</span><span class="p">:</span>
+                            <span class="n">mdkey</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span> <span class="o">+</span> <span class="n">key</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">mdkey</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">key</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">mdkey</span> <span class="o">=</span> <span class="n">key</span>
+                    <span class="n">doc_out</span><span class="p">[</span><span class="n">mdkey</span><span class="p">]</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># land here if a required attribute is missing</span>
+                    <span class="c1"># from the dataframe cache.  find logs</span>
+                    <span class="c1"># an error but all we can do here is flag</span>
+                    <span class="c1"># failure returning None.   There is a rare</span>
+                    <span class="c1"># possibilit of this failing with multiple</span>
+                    <span class="c1"># source documents where one is bad and the other</span>
+                    <span class="c1"># is not</span>
+                    <span class="k">return</span> <span class="kc">None</span>
+
+                <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_if_defined</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">notnulltest</span><span class="p">[</span><span class="n">k</span><span class="p">]:</span>
+                        <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">aliases</span><span class="p">:</span>
+                            <span class="n">key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">aliases</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">key</span> <span class="o">=</span> <span class="n">k</span>
+                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">prepend_collection_name</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;_id&quot;</span><span class="p">:</span>
+                                <span class="n">mdkey</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span> <span class="o">+</span> <span class="n">key</span>
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="n">mdkey</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">key</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">mdkey</span> <span class="o">=</span> <span class="n">key</span>
+                    <span class="n">doc_out</span><span class="p">[</span><span class="n">mdkey</span><span class="p">]</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+            <span class="k">return</span> <span class="n">doc_out</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span></div></div>
 
 
 <div class="viewcode-block" id="ArrivalDBMatcher"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.ArrivalDBMatcher">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">ArrivalDBMatcher</span><span class="p">(</span><span class="n">DatabaseMatcher</span><span class="p">):</span>
@@ -3074,7 +3376,7 @@
 <span class="sd">        DataFramematcher</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="k">if</span> <span class="n">_input_is_valid</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">Metadata</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">live</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">_input_is_atomic</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">):</span>
                     <span class="n">stime</span> <span class="o">=</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">t0</span>
@@ -3149,8 +3451,9 @@
 <span class="sd">    :return:  copy of mspass_object.  dead data are returned immediately.</span>
 <span class="sd">    if kill_on_failure is true the result may be killed on return.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
-        <span class="k">return</span> <span class="n">mspass_object</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="s2">&quot;dead&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
+            <span class="k">return</span> <span class="n">mspass_object</span>
     <span class="n">find_output</span> <span class="o">=</span> <span class="n">matcher</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">)</span>
     <span class="c1"># api of BasicMatcher specified a pair return we handle here</span>
     <span class="k">if</span> <span class="n">find_output</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -3187,17 +3490,17 @@
 <span class="sd">    channel_id, site_id, and source_id.</span>
 
 <span class="sd">    :param db: should be a MsPASS database handle containing the wf_col</span>
-<span class="sd">    and the collections defined by the matcher_list list.</span>
+<span class="sd">      and the collections defined by the matcher_list list.</span>
 <span class="sd">    :param wf_col: The collection that need to be normalized, default is</span>
-<span class="sd">    wf_miniseed</span>
+<span class="sd">      wf_miniseed</span>
 <span class="sd">    :param blockssize:   To speed up updates this function uses the</span>
-<span class="sd">    bulk writer/updater methods of MongoDB that can be orders of</span>
-<span class="sd">    magnitude faster than one-at-a-time updates. A user should not normally</span>
-<span class="sd">    need to alter this parameter.</span>
+<span class="sd">      bulk writer/updater methods of MongoDB that can be orders of</span>
+<span class="sd">      magnitude faster than one-at-a-time updates. A user should not normally</span>
+<span class="sd">      need to alter this parameter.</span>
 <span class="sd">    :param wfquery: is an optional query to apply to wf_col.  The output of this</span>
-<span class="sd">    query defines the list of documents that the algorithm will attempt</span>
-<span class="sd">    to normalize as described above.  The default (None) will process the entire</span>
-<span class="sd">    collection (query set to an emtpy dict).</span>
+<span class="sd">      query defines the list of documents that the algorithm will attempt</span>
+<span class="sd">      to normalize as described above.  The default (None) will process the entire</span>
+<span class="sd">      collection (query set to an emtpy dict).</span>
 <span class="sd">    :param matcher_list: a list of instances of one or more subclasses of BasicMather.</span>
 <span class="sd">      In addition to the required classes all instances passed to through</span>
 <span class="sd">      this interface must contain two required attributes:  (1) collection</span>
@@ -3210,11 +3513,10 @@
 <span class="sd">      a mspass data object.  find_one is the core method for inline normalization)</span>
 
 
-
 <span class="sd">    :return: a list with a length of len(matcher_list)+1.  0 is the number of documents</span>
-<span class="sd">    processed in the collection (output of query), The rest are the numbers of</span>
-<span class="sd">    success normalizations for the corresponding NMF instances, they are mapped</span>
-<span class="sd">    one on one (matcher_list[x] -&gt; ret[x+1]).</span>
+<span class="sd">      processed in the collection (output of query), The rest are the numbers of</span>
+<span class="sd">      success normalizations for the corresponding NMF instances, they are mapped</span>
+<span class="sd">      one on one (matcher_list[x] -&gt; ret[x+1]).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">if</span> <span class="n">wfquery</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -3469,21 +3771,6 @@
             <span class="k">return</span> <span class="n">d</span><span class="p">[</span><span class="n">testkey</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
-
-
-<span class="k">def</span><span class="w"> </span><span class="nf">_input_is_valid</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    This internal function standardizes the test to certify the</span>
-<span class="sd">    input datum, d, is or is not a valid MsPASS data object.   Putting it</span>
-<span class="sd">    in one place makes extending the code base for other data types much</span>
-<span class="sd">    easier.  It uses an isinstance tests of d to standardize the test that</span>
-<span class="sd">    the input is valid data.  It returns True if d is one a valid data</span>
-<span class="sd">    object known to mspass.  Returns false it not.  Caller must decide</span>
-<span class="sd">    what to do if the function returns false.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span>
-        <span class="n">d</span><span class="p">,</span> <span class="p">(</span><span class="n">TimeSeries</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">,</span> <span class="n">TimeSeriesEnsemble</span><span class="p">,</span> <span class="n">SeismogramEnsemble</span><span class="p">)</span>
-    <span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_input_is_atomic</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
