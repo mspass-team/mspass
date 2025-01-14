@@ -180,8 +180,7 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><b>ncc</b></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A vector compatible with dmatrix objects. </p>
-<p>A vector is a special case of a matrix with one row or column. In this implementation, however, it always means a column vector. Hence, it is possible to multiply a vector x and a matrix A as Ax provided they are compatible sizes. This differs from matlab where row and columns vectors are sometimes used interchangably. <br  />
- </p>
+<p>A vector is a special case of a matrix with one row or column. In this implementation, however, it always means a column vector. Hence, it is possible to multiply a vector x and a matrix A as Ax provided they are compatible sizes. This differs from matlab where row and columns vectors are sometimes used interchangably. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a8d6c8cc42ead0feea6d195ac689aed54" name="a8d6c8cc42ead0feea6d195ac689aed54"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a8d6c8cc42ead0feea6d195ac689aed54">&#9670;&#160;</a></span>dvector() <span class="overload">[1/3]</span></h2>
@@ -206,7 +205,7 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><b>ncc</b></td></tr>
 </table>
 </div><div class="memdoc">
 <p>Default constructor creates an empty vector. </p>
-<div class="fragment"><div class="line"><span class="lineno">  270</span>:<a class="code hl_function" href="classmspass_1_1utility_1_1dmatrix.html#ae6bfdbc8f954f4d5340baa7e02975fb1">dmatrix</a>(){};</div>
+<div class="fragment"><div class="line"><span class="lineno">  276</span>: <a class="code hl_function" href="classmspass_1_1utility_1_1dmatrix.html#ae6bfdbc8f954f4d5340baa7e02975fb1">dmatrix</a>() {};</div>
 <div class="ttc" id="aclassmspass_1_1utility_1_1dmatrix_html_ae6bfdbc8f954f4d5340baa7e02975fb1"><div class="ttname"><a href="classmspass_1_1utility_1_1dmatrix.html#ae6bfdbc8f954f4d5340baa7e02975fb1">mspass::utility::dmatrix::dmatrix</a></div><div class="ttdeci">dmatrix()</div><div class="ttdef"><b>Definition</b> dmatrix.cc:8</div></div>
 </div><!-- fragment -->
 </div>
@@ -235,7 +234,7 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><b>ncc</b></td></tr>
 </table>
 </div><div class="memdoc">
 <p>Create a (zero initialized) vector of length nrv. </p>
-<div class="fragment"><div class="line"><span class="lineno">  272</span>: <a class="code hl_function" href="classmspass_1_1utility_1_1dmatrix.html#ae6bfdbc8f954f4d5340baa7e02975fb1">dmatrix</a>(nrv,1){};</div>
+<div class="fragment"><div class="line"><span class="lineno">  278</span>: <a class="code hl_function" href="classmspass_1_1utility_1_1dmatrix.html#ae6bfdbc8f954f4d5340baa7e02975fb1">dmatrix</a>(nrv, 1) {};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -255,12 +254,12 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><b>ncc</b></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Copy constructor. </p>
-<div class="fragment"><div class="line"><span class="lineno">  250</span>{</div>
-<div class="line"><span class="lineno">  251</span>    ncc=1;</div>
-<div class="line"><span class="lineno">  252</span>    nrr=other.nrr;</div>
-<div class="line"><span class="lineno">  253</span>    length=other.length;</div>
-<div class="line"><span class="lineno">  254</span>  ary=other.ary;</div>
-<div class="line"><span class="lineno">  255</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  228</span>                                     {</div>
+<div class="line"><span class="lineno">  229</span>  ncc = 1;</div>
+<div class="line"><span class="lineno">  230</span>  nrr = other.nrr;</div>
+<div class="line"><span class="lineno">  231</span>  length = other.length;</div>
+<div class="line"><span class="lineno">  232</span>  ary = other.ary;</div>
+<div class="line"><span class="lineno">  233</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -281,11 +280,11 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><b>ncc</b></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Extract component rowindex. </p>
-<div class="fragment"><div class="line"><span class="lineno">  257</span>{</div>
-<div class="line"><span class="lineno">  258</span>  <span class="keywordflow">if</span> (rowindex&gt;=nrr)</div>
-<div class="line"><span class="lineno">  259</span>    <span class="keywordflow">throw</span> dmatrix_index_error(nrr,1,rowindex,1);</div>
-<div class="line"><span class="lineno">  260</span>  <span class="keywordflow">return</span> (ary[rowindex]);</div>
-<div class="line"><span class="lineno">  261</span>}       </div>
+<div class="fragment"><div class="line"><span class="lineno">  234</span>                                                 {</div>
+<div class="line"><span class="lineno">  235</span>  <span class="keywordflow">if</span> (rowindex &gt;= nrr)</div>
+<div class="line"><span class="lineno">  236</span>    <span class="keywordflow">throw</span> dmatrix_index_error(nrr, 1, rowindex, 1);</div>
+<div class="line"><span class="lineno">  237</span>  <span class="keywordflow">return</span> (ary[rowindex]);</div>
+<div class="line"><span class="lineno">  238</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -305,16 +304,15 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><b>ncc</b></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Standard assignment operator. </p>
-<div class="fragment"><div class="line"><span class="lineno">  239</span>{</div>
-<div class="line"><span class="lineno">  240</span>    <span class="keywordflow">if</span>(<span class="keyword">this</span> != &amp;other)</div>
-<div class="line"><span class="lineno">  241</span>    {</div>
-<div class="line"><span class="lineno">  242</span>        ncc=1;</div>
-<div class="line"><span class="lineno">  243</span>        nrr=other.nrr;</div>
-<div class="line"><span class="lineno">  244</span>        length=other.length;</div>
-<div class="line"><span class="lineno">  245</span>                ary=other.ary;</div>
-<div class="line"><span class="lineno">  246</span>    } </div>
-<div class="line"><span class="lineno">  247</span>    <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
-<div class="line"><span class="lineno">  248</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  219</span>                                                {</div>
+<div class="line"><span class="lineno">  220</span>  <span class="keywordflow">if</span> (<span class="keyword">this</span> != &amp;other) {</div>
+<div class="line"><span class="lineno">  221</span>    ncc = 1;</div>
+<div class="line"><span class="lineno">  222</span>    nrr = other.nrr;</div>
+<div class="line"><span class="lineno">  223</span>    length = other.length;</div>
+<div class="line"><span class="lineno">  224</span>    ary = other.ary;</div>
+<div class="line"><span class="lineno">  225</span>  }</div>
+<div class="line"><span class="lineno">  226</span>  <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
+<div class="line"><span class="lineno">  227</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -353,8 +351,7 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><b>ncc</b></td></tr>
 </table>
 </div><div class="memdoc">
 <p>Matrix vector multiple operator.</p>
-<p>This operator is used for constructs like y=Ax where x is a vector and A is a matrix. y is the returned vector. <br  />
- </p><dl class="params"><dt>Parameters</dt><dd>
+<p>This operator is used for constructs like y=Ax where x is a vector and A is a matrix. y is the returned vector. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">A</td><td>- matrix on right in multiply </td></tr>
     <tr><td class="paramname">x</td><td>- vector on left of multiply operation</td></tr>
@@ -368,22 +365,21 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><b>ncc</b></td></tr>
   </table>
   </dd>
 </dl>
-<div class="fragment"><div class="line"><span class="lineno">  263</span>{</div>
-<div class="line"><span class="lineno">  264</span>    <span class="keywordtype">size_t</span> i;</div>
-<div class="line"><span class="lineno">  265</span>  <span class="keywordtype">size_t</span> nrx1=x1.rows();</div>
-<div class="line"><span class="lineno">  266</span>  <span class="keywordtype">size_t</span> ncx1=x1.columns();</div>
-<div class="line"><span class="lineno">  267</span>  <span class="keywordtype">size_t</span> nrb=<span class="keyword">const_cast&lt;</span><a class="code hl_function" href="classmspass_1_1utility_1_1dvector.html#a8d6c8cc42ead0feea6d195ac689aed54">dvector</a>&amp;<span class="keyword">&gt;</span>(b).<a class="code hl_function" href="classmspass_1_1utility_1_1dmatrix.html#a178f65f7f0efb2c99980c8c81cf71bca">rows</a>();</div>
-<div class="line"><span class="lineno">  268</span>    <span class="keywordflow">if</span>(ncx1!=nrb)</div>
-<div class="line"><span class="lineno">  269</span>        <span class="keywordflow">throw</span> dmatrix_size_error(nrx1, ncx1, nrb, 1);</div>
-<div class="line"><span class="lineno">  270</span>    <a class="code hl_function" href="classmspass_1_1utility_1_1dvector.html#a8d6c8cc42ead0feea6d195ac689aed54">dvector</a> prod(nrx1);</div>
-<div class="line"><span class="lineno">  271</span>    <span class="keywordflow">for</span>(i=0;i&lt;nrx1;i++)</div>
-<div class="line"><span class="lineno">  272</span>        prod(i)=ddot(nrb,</div>
-<div class="line"><span class="lineno">  273</span>            <span class="keyword">const_cast&lt;</span><a class="code hl_function" href="classmspass_1_1utility_1_1dmatrix.html#ae6bfdbc8f954f4d5340baa7e02975fb1">dmatrix</a>&amp;<span class="keyword">&gt;</span>(x1).get_address(i,0),nrx1,</div>
-<div class="line"><span class="lineno">  274</span>            <span class="keyword">const_cast&lt;</span><a class="code hl_function" href="classmspass_1_1utility_1_1dvector.html#a8d6c8cc42ead0feea6d195ac689aed54">dvector</a>&amp;<span class="keyword">&gt;</span>(b).get_address(0,0),1);</div>
-<div class="line"><span class="lineno">  275</span>    <span class="keywordflow">return</span> prod;</div>
-<div class="line"><span class="lineno">  276</span>}</div>
-<div class="ttc" id="aclassmspass_1_1utility_1_1dmatrix_html_a178f65f7f0efb2c99980c8c81cf71bca"><div class="ttname"><a href="classmspass_1_1utility_1_1dmatrix.html#a178f65f7f0efb2c99980c8c81cf71bca">mspass::utility::dmatrix::rows</a></div><div class="ttdeci">size_t rows() const</div><div class="ttdef"><b>Definition</b> dmatrix.cc:228</div></div>
-<div class="ttc" id="aclassmspass_1_1utility_1_1dvector_html_a8d6c8cc42ead0feea6d195ac689aed54"><div class="ttname"><a href="classmspass_1_1utility_1_1dvector.html#a8d6c8cc42ead0feea6d195ac689aed54">mspass::utility::dvector::dvector</a></div><div class="ttdeci">dvector()</div><div class="ttdef"><b>Definition</b> dmatrix.h:270</div></div>
+<div class="fragment"><div class="line"><span class="lineno">  239</span>                                                       {</div>
+<div class="line"><span class="lineno">  240</span>  <span class="keywordtype">size_t</span> i;</div>
+<div class="line"><span class="lineno">  241</span>  <span class="keywordtype">size_t</span> nrx1 = x1.rows();</div>
+<div class="line"><span class="lineno">  242</span>  <span class="keywordtype">size_t</span> ncx1 = x1.columns();</div>
+<div class="line"><span class="lineno">  243</span>  <span class="keywordtype">size_t</span> nrb = <span class="keyword">const_cast&lt;</span><a class="code hl_function" href="classmspass_1_1utility_1_1dvector.html#a8d6c8cc42ead0feea6d195ac689aed54">dvector</a> &amp;<span class="keyword">&gt;</span>(b).<a class="code hl_function" href="classmspass_1_1utility_1_1dmatrix.html#a178f65f7f0efb2c99980c8c81cf71bca">rows</a>();</div>
+<div class="line"><span class="lineno">  244</span>  <span class="keywordflow">if</span> (ncx1 != nrb)</div>
+<div class="line"><span class="lineno">  245</span>    <span class="keywordflow">throw</span> dmatrix_size_error(nrx1, ncx1, nrb, 1);</div>
+<div class="line"><span class="lineno">  246</span>  <a class="code hl_function" href="classmspass_1_1utility_1_1dvector.html#a8d6c8cc42ead0feea6d195ac689aed54">dvector</a> prod(nrx1);</div>
+<div class="line"><span class="lineno">  247</span>  <span class="keywordflow">for</span> (i = 0; i &lt; nrx1; i++)</div>
+<div class="line"><span class="lineno">  248</span>    prod(i) = ddot(nrb, <span class="keyword">const_cast&lt;</span><a class="code hl_function" href="classmspass_1_1utility_1_1dmatrix.html#ae6bfdbc8f954f4d5340baa7e02975fb1">dmatrix</a> &amp;<span class="keyword">&gt;</span>(x1).get_address(i, 0), nrx1,</div>
+<div class="line"><span class="lineno">  249</span>                   <span class="keyword">const_cast&lt;</span><a class="code hl_function" href="classmspass_1_1utility_1_1dvector.html#a8d6c8cc42ead0feea6d195ac689aed54">dvector</a> &amp;<span class="keyword">&gt;</span>(b).get_address(0, 0), 1);</div>
+<div class="line"><span class="lineno">  250</span>  <span class="keywordflow">return</span> prod;</div>
+<div class="line"><span class="lineno">  251</span>}</div>
+<div class="ttc" id="aclassmspass_1_1utility_1_1dmatrix_html_a178f65f7f0efb2c99980c8c81cf71bca"><div class="ttname"><a href="classmspass_1_1utility_1_1dmatrix.html#a178f65f7f0efb2c99980c8c81cf71bca">mspass::utility::dmatrix::rows</a></div><div class="ttdeci">size_t rows() const</div><div class="ttdef"><b>Definition</b> dmatrix.cc:215</div></div>
+<div class="ttc" id="aclassmspass_1_1utility_1_1dvector_html_a8d6c8cc42ead0feea6d195ac689aed54"><div class="ttname"><a href="classmspass_1_1utility_1_1dvector.html#a8d6c8cc42ead0feea6d195ac689aed54">mspass::utility::dvector::dvector</a></div><div class="ttdeci">dvector()</div><div class="ttdef"><b>Definition</b> dmatrix.h:276</div></div>
 </div><!-- fragment -->
 </div>
 </div>

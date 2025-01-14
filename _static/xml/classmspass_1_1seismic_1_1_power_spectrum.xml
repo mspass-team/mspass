@@ -20,7 +20,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" line="20" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" bodystart="20" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" line="18" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" bodystart="18" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classmspass_1_1seismic_1_1_power_spectrum_1a924f5b005efdeef3f2da34355821e0c0" prot="public" static="no" mutable="no">
         <type>std::vector&lt; <ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">double</ref> &gt;</type>
@@ -35,7 +35,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" line="22" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" bodystart="22" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" line="20" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" bodystart="20" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classmspass_1_1seismic_1_1_power_spectrum_1a920cd0761252df4312168f4571165f2b" prot="public" static="no" mutable="no">
         <type><ref refid="classmspass_1_1utility_1_1_error_logger" kindref="compound">mspass::utility::ErrorLogger</ref></type>
@@ -51,7 +51,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" line="28" column="32" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" bodystart="28" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" line="26" column="32" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" bodystart="26" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
@@ -68,9 +68,9 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" line="30" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/PowerSpectrum.cc" bodystart="11" bodyend="14"/>
-        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="472" endline="490">mspass::utility::Metadata::get</references>
-        <references refid="classmspass_1_1seismic_1_1_power_spectrum_1affca22f42c28a0fe251405b227674ce6" compoundref="_power_spectrum_8h" startline="20">spectrum_type</references>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" line="28" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/PowerSpectrum.cc" bodystart="10" bodyend="12"/>
+        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="445" endline="460">mspass::utility::Metadata::get</references>
+        <references refid="classmspass_1_1seismic_1_1_power_spectrum_1affca22f42c28a0fe251405b227674ce6" compoundref="_power_spectrum_8h" startline="18">spectrum_type</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_power_spectrum_1a7a93e1366099327d8b5b02788389e7ee" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -178,10 +178,10 @@ Fully parameterized constructor template.</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" line="47" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" bodystart="109" bodyend="121"/>
-        <references refid="classmspass_1_1seismic_1_1_basic_spectrum_1a2abdea1d94e0ec8753a09eb2cf20a290" compoundref="_basic_spectrum_8h" startline="94" endline="94">mspass::seismic::BasicSpectrum::set_live</references>
-        <references refid="classmspass_1_1seismic_1_1_power_spectrum_1a924f5b005efdeef3f2da34355821e0c0" compoundref="_power_spectrum_8h" startline="22">spectrum</references>
-        <references refid="classmspass_1_1seismic_1_1_power_spectrum_1affca22f42c28a0fe251405b227674ce6" compoundref="_power_spectrum_8h" startline="20">spectrum_type</references>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" line="46" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" bodystart="105" bodyend="116"/>
+        <references refid="classmspass_1_1seismic_1_1_basic_spectrum_1a2abdea1d94e0ec8753a09eb2cf20a290" compoundref="_basic_spectrum_8h" startline="91" endline="91">mspass::seismic::BasicSpectrum::set_live</references>
+        <references refid="classmspass_1_1seismic_1_1_power_spectrum_1a924f5b005efdeef3f2da34355821e0c0" compoundref="_power_spectrum_8h" startline="20">spectrum</references>
+        <references refid="classmspass_1_1seismic_1_1_power_spectrum_1affca22f42c28a0fe251405b227674ce6" compoundref="_power_spectrum_8h" startline="18">spectrum_type</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_power_spectrum_1a377c8508a72f2aff53da0d528de12bb7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -199,7 +199,7 @@ Fully parameterized constructor template.</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" line="54" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/PowerSpectrum.cc" bodystart="15" bodyend="22"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" line="49" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/PowerSpectrum.cc" bodystart="13" bodyend="19"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_power_spectrum_1a5045c9886a94320a3f351058cd3d6ea3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1seismic_1_1_power_spectrum" kindref="compound">PowerSpectrum</ref> &amp;</type>
@@ -217,7 +217,7 @@ Fully parameterized constructor template.</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" line="55" column="17" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/PowerSpectrum.cc" bodystart="23" bodyend="34"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" line="50" column="17" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/PowerSpectrum.cc" bodystart="20" bodyend="29"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_power_spectrum_1a8306434c52e142797c227fed6f91fd82" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1seismic_1_1_power_spectrum" kindref="compound">PowerSpectrum</ref> &amp;</type>
@@ -247,15 +247,15 @@ Fully parameterized constructor template.</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" line="65" column="17" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/PowerSpectrum.cc" bodystart="35" bodyend="81"/>
-        <references refid="classmspass_1_1seismic_1_1_basic_spectrum_1ac01289c8a10cc1939f51d51f3c1cdb72" compoundref="_basic_spectrum_8h" startline="96" endline="96">mspass::seismic::BasicSpectrum::df</references>
-        <references refid="classmspass_1_1seismic_1_1_power_spectrum_1a920cd0761252df4312168f4571165f2b" compoundref="_power_spectrum_8h" startline="28">elog</references>
-        <references refid="classmspass_1_1seismic_1_1_basic_spectrum_1adcbe20cedb4c2a1f0ed31466e8f70c13" compoundref="_basic_spectrum_8h" startline="101" endline="101">mspass::seismic::BasicSpectrum::f0</references>
-        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="472" endline="490">mspass::utility::Metadata::get</references>
-        <references refid="classmspass_1_1seismic_1_1_basic_spectrum_1a7400b002f21460fece1d5519dfbc26c7" compoundref="_basic_spectrum_8h" startline="87" endline="87">mspass::seismic::BasicSpectrum::kill</references>
-        <references refid="classmspass_1_1utility_1_1_error_logger_1aa69873ba0aebf67e9ba24d01992c0bcf" compoundref="_error_logger_8cc" startline="81" endline="86">mspass::utility::ErrorLogger::log_error</references>
-        <references refid="classmspass_1_1seismic_1_1_power_spectrum_1a7675c66d7f1aa8d7b4e9437564af4beb" compoundref="_power_spectrum_8h" startline="97" endline="97">nf</references>
-        <references refid="classmspass_1_1seismic_1_1_power_spectrum_1a924f5b005efdeef3f2da34355821e0c0" compoundref="_power_spectrum_8h" startline="22">spectrum</references>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" line="60" column="17" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/PowerSpectrum.cc" bodystart="30" bodyend="66"/>
+        <references refid="classmspass_1_1seismic_1_1_basic_spectrum_1ac01289c8a10cc1939f51d51f3c1cdb72" compoundref="_basic_spectrum_8h" startline="93" endline="93">mspass::seismic::BasicSpectrum::df</references>
+        <references refid="classmspass_1_1seismic_1_1_power_spectrum_1a920cd0761252df4312168f4571165f2b" compoundref="_power_spectrum_8h" startline="26">elog</references>
+        <references refid="classmspass_1_1seismic_1_1_basic_spectrum_1adcbe20cedb4c2a1f0ed31466e8f70c13" compoundref="_basic_spectrum_8h" startline="98" endline="98">mspass::seismic::BasicSpectrum::f0</references>
+        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="445" endline="460">mspass::utility::Metadata::get</references>
+        <references refid="classmspass_1_1seismic_1_1_basic_spectrum_1a7400b002f21460fece1d5519dfbc26c7" compoundref="_basic_spectrum_8h" startline="84" endline="84">mspass::seismic::BasicSpectrum::kill</references>
+        <references refid="classmspass_1_1utility_1_1_error_logger_1aa69873ba0aebf67e9ba24d01992c0bcf" compoundref="_error_logger_8cc" startline="72" endline="76">mspass::utility::ErrorLogger::log_error</references>
+        <references refid="classmspass_1_1seismic_1_1_power_spectrum_1a7675c66d7f1aa8d7b4e9437564af4beb" compoundref="_power_spectrum_8h" startline="94" endline="94">nf</references>
+        <references refid="classmspass_1_1seismic_1_1_power_spectrum_1a924f5b005efdeef3f2da34355821e0c0" compoundref="_power_spectrum_8h" startline="20">spectrum</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_power_spectrum_1abbfb81f3ad4a3f0a1488b869a60148a2" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>std::vector&lt; <ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">double</ref> &gt;</type>
@@ -271,9 +271,9 @@ Fully parameterized constructor template.</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" line="70" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/PowerSpectrum.cc" bodystart="82" bodyend="89"/>
-        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="472" endline="490">mspass::utility::Metadata::get</references>
-        <references refid="classmspass_1_1seismic_1_1_power_spectrum_1a924f5b005efdeef3f2da34355821e0c0" compoundref="_power_spectrum_8h" startline="22">spectrum</references>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" line="65" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/PowerSpectrum.cc" bodystart="67" bodyend="73"/>
+        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="445" endline="460">mspass::utility::Metadata::get</references>
+        <references refid="classmspass_1_1seismic_1_1_power_spectrum_1a924f5b005efdeef3f2da34355821e0c0" compoundref="_power_spectrum_8h" startline="20">spectrum</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_power_spectrum_1a3d1e72618b8e88c5929839c5e8885859" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">double</ref></type>
@@ -312,9 +312,9 @@ Fully parameterized constructor template.</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" line="81" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/PowerSpectrum.cc" bodystart="90" bodyend="105"/>
-        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="472" endline="490">mspass::utility::Metadata::get</references>
-        <references refid="classmspass_1_1seismic_1_1_power_spectrum_1a924f5b005efdeef3f2da34355821e0c0" compoundref="_power_spectrum_8h" startline="22">spectrum</references>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" line="76" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/PowerSpectrum.cc" bodystart="74" bodyend="89"/>
+        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="445" endline="460">mspass::utility::Metadata::get</references>
+        <references refid="classmspass_1_1seismic_1_1_power_spectrum_1a924f5b005efdeef3f2da34355821e0c0" compoundref="_power_spectrum_8h" startline="20">spectrum</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_power_spectrum_1ad2f979f7662aba3e46f277d9c45fd07d" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
         <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">double</ref></type>
@@ -335,11 +335,11 @@ Fully parameterized constructor template.</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" line="83" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" bodystart="83" bodyend="91"/>
-        <references refid="classmspass_1_1seismic_1_1_basic_spectrum_1ac01289c8a10cc1939f51d51f3c1cdb72" compoundref="_basic_spectrum_8h" startline="96" endline="96">mspass::seismic::BasicSpectrum::df</references>
-        <references refid="classmspass_1_1seismic_1_1_basic_spectrum_1adcbe20cedb4c2a1f0ed31466e8f70c13" compoundref="_basic_spectrum_8h" startline="101" endline="101">mspass::seismic::BasicSpectrum::f0</references>
-        <references refid="classmspass_1_1seismic_1_1_power_spectrum_1a7675c66d7f1aa8d7b4e9437564af4beb" compoundref="_power_spectrum_8h" startline="97" endline="97">nf</references>
-        <references refid="classmspass_1_1seismic_1_1_basic_spectrum_1a1cb29c54744c06553765a3966c8b970f" compoundref="_basic_spectrum_8h" startline="128" endline="147">mspass::seismic::BasicSpectrum::sample_number</references>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" line="78" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" bodystart="78" bodyend="88"/>
+        <references refid="classmspass_1_1seismic_1_1_basic_spectrum_1ac01289c8a10cc1939f51d51f3c1cdb72" compoundref="_basic_spectrum_8h" startline="93" endline="93">mspass::seismic::BasicSpectrum::df</references>
+        <references refid="classmspass_1_1seismic_1_1_basic_spectrum_1adcbe20cedb4c2a1f0ed31466e8f70c13" compoundref="_basic_spectrum_8h" startline="98" endline="98">mspass::seismic::BasicSpectrum::f0</references>
+        <references refid="classmspass_1_1seismic_1_1_power_spectrum_1a7675c66d7f1aa8d7b4e9437564af4beb" compoundref="_power_spectrum_8h" startline="94" endline="94">nf</references>
+        <references refid="classmspass_1_1seismic_1_1_basic_spectrum_1a1cb29c54744c06553765a3966c8b970f" compoundref="_basic_spectrum_8h" startline="124" endline="139">mspass::seismic::BasicSpectrum::sample_number</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_power_spectrum_1a1ef20f133212a6288e301e5d80f87a85" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>std::vector&lt; <ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">double</ref> &gt;</type>
@@ -355,9 +355,9 @@ Fully parameterized constructor template.</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" line="92" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/PowerSpectrum.cc" bodystart="106" bodyend="112"/>
-        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="472" endline="490">mspass::utility::Metadata::get</references>
-        <references refid="classmspass_1_1seismic_1_1_power_spectrum_1a7675c66d7f1aa8d7b4e9437564af4beb" compoundref="_power_spectrum_8h" startline="97" endline="97">nf</references>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" line="89" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/PowerSpectrum.cc" bodystart="90" bodyend="96"/>
+        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="445" endline="460">mspass::utility::Metadata::get</references>
+        <references refid="classmspass_1_1seismic_1_1_power_spectrum_1a7675c66d7f1aa8d7b4e9437564af4beb" compoundref="_power_spectrum_8h" startline="94" endline="94">nf</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_power_spectrum_1a7675c66d7f1aa8d7b4e9437564af4beb" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
         <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">size_t</ref></type>
@@ -373,8 +373,8 @@ Fully parameterized constructor template.</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" line="97" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" bodystart="97" bodyend="97"/>
-        <references refid="classmspass_1_1seismic_1_1_power_spectrum_1a924f5b005efdeef3f2da34355821e0c0" compoundref="_power_spectrum_8h" startline="22">spectrum</references>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" line="94" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" bodystart="94" bodyend="94"/>
+        <references refid="classmspass_1_1seismic_1_1_power_spectrum_1a924f5b005efdeef3f2da34355821e0c0" compoundref="_power_spectrum_8h" startline="20">spectrum</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_power_spectrum_1aef0b54806f9e5367df7dfa03804a2f87" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
         <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">double</ref></type>
@@ -390,7 +390,7 @@ Fully parameterized constructor template.</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" line="99" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" bodystart="99" bodyend="101"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" line="96" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" bodystart="96" bodyend="96"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -453,7 +453,7 @@ Fully parameterized constructor template.</para>
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" line="11" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" bodystart="13" bodyend="102"/>
+    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" line="10" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" bodystart="11" bodyend="97"/>
     <listofallmembers>
       <member refid="classmspass_1_1seismic_1_1_power_spectrum_1abbfb81f3ad4a3f0a1488b869a60148a2" prot="public" virt="non-virtual"><scope>mspass::seismic::PowerSpectrum</scope><name>amplitude</name></member>
       <member refid="classmspass_1_1utility_1_1_metadata_1aa288eb54e6fafb8af13f71e2f3dce4a2" prot="public" virt="non-virtual"><scope>mspass::seismic::PowerSpectrum</scope><name>append_chain</name></member>
@@ -488,7 +488,7 @@ Fully parameterized constructor template.</para>
       <member refid="classmspass_1_1utility_1_1_metadata_1a52e2040555616a39b900aa0831c3bd10" prot="public" virt="non-virtual"><scope>mspass::seismic::PowerSpectrum</scope><name>keys</name></member>
       <member refid="classmspass_1_1seismic_1_1_basic_spectrum_1a7400b002f21460fece1d5519dfbc26c7" prot="public" virt="non-virtual"><scope>mspass::seismic::PowerSpectrum</scope><name>kill</name></member>
       <member refid="classmspass_1_1seismic_1_1_basic_spectrum_1a2bce24e09412434ec968bed19ec9843d" prot="public" virt="non-virtual"><scope>mspass::seismic::PowerSpectrum</scope><name>live</name></member>
-      <member refid="classmspass_1_1utility_1_1_metadata_1af564bb9ced4cc480d71a1e13c3fa582e" prot="protected" virt="non-virtual"><scope>mspass::seismic::PowerSpectrum</scope><name>md</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1a8be7decfdbefb7aa8c3d9e977ac26f0b" prot="protected" virt="non-virtual"><scope>mspass::seismic::PowerSpectrum</scope><name>md</name></member>
       <member refid="classmspass_1_1utility_1_1_metadata_1a4a87cd6a6f8fc5cdbee65cb85958cb2c" prot="public" virt="non-virtual"><scope>mspass::seismic::PowerSpectrum</scope><name>Metadata</name></member>
       <member refid="classmspass_1_1utility_1_1_metadata_1a5255fc3ae6accb650f221c9065a92eff" prot="public" virt="non-virtual"><scope>mspass::seismic::PowerSpectrum</scope><name>Metadata</name></member>
       <member refid="classmspass_1_1utility_1_1_metadata_1afa617529be5501b6b059091118a1a51f" prot="public" virt="non-virtual"><scope>mspass::seismic::PowerSpectrum</scope><name>Metadata</name></member>

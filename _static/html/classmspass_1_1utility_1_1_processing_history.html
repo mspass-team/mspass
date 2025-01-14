@@ -211,9 +211,9 @@ Public Attributes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
-<tr class="memitem:ad6acef2beb453d7034ab86087a3936aa" id="r_ad6acef2beb453d7034ab86087a3936aa"><td class="memItemLeft" align="right" valign="top"><a id="ad6acef2beb453d7034ab86087a3936aa" name="ad6acef2beb453d7034ab86087a3936aa"></a>
+<tr class="memitem:a31ee1661077d22932b4002f617b19a8f" id="r_a31ee1661077d22932b4002f617b19a8f"><td class="memItemLeft" align="right" valign="top"><a id="a31ee1661077d22932b4002f617b19a8f" name="a31ee1661077d22932b4002f617b19a8f"></a>
 std::multimap&lt; std::string, <a class="el" href="classmspass_1_1utility_1_1_node_data.html">mspass::utility::NodeData</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>nodes</b></td></tr>
-<tr class="separator:ad6acef2beb453d7034ab86087a3936aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="separator:a31ee1661077d22932b4002f617b19a8f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_attribs_classmspass_1_1utility_1_1_basic_processing_history"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_classmspass_1_1utility_1_1_basic_processing_history')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classmspass_1_1utility_1_1_basic_processing_history.html">mspass::utility::BasicProcessingHistory</a></td></tr>
 <tr class="memitem:ac3ffa201ded102104675f2daccd379d9 inherit pro_attribs_classmspass_1_1utility_1_1_basic_processing_history" id="r_ac3ffa201ded102104675f2daccd379d9"><td class="memItemLeft" align="right" valign="top">
 std::string&#160;</td><td class="memItemRight" valign="bottom"><b>jid</b></td></tr>
@@ -245,15 +245,15 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>jnm</b></td></
       </table>
 </div><div class="memdoc">
 <p>Default constructor. </p>
-<div class="fragment"><div class="line"><span class="lineno">   86</span>                                    :elog()</div>
-<div class="line"><span class="lineno">   87</span>{</div>
-<div class="line"><span class="lineno">   88</span>  current_status=ProcessingStatus::UNDEFINED;</div>
-<div class="line"><span class="lineno">   89</span>  current_id=<span class="stringliteral">&quot;UNDEFINED&quot;</span>;</div>
-<div class="line"><span class="lineno">   90</span>  current_stage=-1;  <span class="comment">//illegal value that could be used as signal for uninitalized</span></div>
-<div class="line"><span class="lineno">   91</span>  mytype=AtomicType::UNDEFINED;</div>
-<div class="line"><span class="lineno">   92</span>  algorithm=<span class="stringliteral">&quot;UNDEFINED&quot;</span>;</div>
-<div class="line"><span class="lineno">   93</span>  algid=<span class="stringliteral">&quot;UNDEFINED&quot;</span>;</div>
-<div class="line"><span class="lineno">   94</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">   82</span>                                     : elog() {</div>
+<div class="line"><span class="lineno">   83</span>  current_status = ProcessingStatus::UNDEFINED;</div>
+<div class="line"><span class="lineno">   84</span>  current_id = <span class="stringliteral">&quot;UNDEFINED&quot;</span>;</div>
+<div class="line"><span class="lineno">   85</span>  current_stage =</div>
+<div class="line"><span class="lineno">   86</span>      -1; <span class="comment">// illegal value that could be used as signal for uninitalized</span></div>
+<div class="line"><span class="lineno">   87</span>  mytype = AtomicType::UNDEFINED;</div>
+<div class="line"><span class="lineno">   88</span>  algorithm = <span class="stringliteral">&quot;UNDEFINED&quot;</span>;</div>
+<div class="line"><span class="lineno">   89</span>  algid = <span class="stringliteral">&quot;UNDEFINED&quot;</span>;</div>
+<div class="line"><span class="lineno">   90</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -309,14 +309,13 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>jnm</b></td></
       </table>
 </div><div class="memdoc">
 <p>Standard copy constructor. </p>
-<div class="fragment"><div class="line"><span class="lineno">  106</span>  : BasicProcessingHistory(parent),elog(parent.elog),nodes(parent.nodes),</div>
-<div class="line"><span class="lineno">  107</span>      algorithm(parent.algorithm),algid(parent.algid)</div>
-<div class="line"><span class="lineno">  108</span>{</div>
-<div class="line"><span class="lineno">  109</span>  current_status=parent.current_status;</div>
-<div class="line"><span class="lineno">  110</span>  current_id=parent.current_id;</div>
-<div class="line"><span class="lineno">  111</span>  current_stage=parent.current_stage;</div>
-<div class="line"><span class="lineno">  112</span>  mytype=parent.mytype;</div>
-<div class="line"><span class="lineno">  113</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  102</span>    : BasicProcessingHistory(parent), elog(parent.elog), nodes(parent.nodes),</div>
+<div class="line"><span class="lineno">  103</span>      algorithm(parent.algorithm), algid(parent.algid) {</div>
+<div class="line"><span class="lineno">  104</span>  current_status = parent.current_status;</div>
+<div class="line"><span class="lineno">  105</span>  current_id = parent.current_id;</div>
+<div class="line"><span class="lineno">  106</span>  current_stage = parent.current_stage;</div>
+<div class="line"><span class="lineno">  107</span>  mytype = parent.mytype;</div>
+<div class="line"><span class="lineno">  108</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -362,83 +361,80 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>jnm</b></td></
 <p>Method to use with a spark reduce algorithm. </p>
 <p>A reduce operator in spark utilizes a binary function where two inputs are used to generate a single output object. Because the inputs could be scattered on multiple processor nodes this operation must be associative. The new_ensemble_process method does not satisfy that constraint so this method was necessary to handle that type of algorithm correctly.</p>
 <p>The way this algorithm works is it fundamentally branches on two different cases: (1) initialization, which is detected by testing if the node data map is empty or (2) secondary calls. This should work even if multiple inputs are combined at the end of the reduce operation because the copies being merged will not be empty. Note an empty input will create a complaint entry in the error log. </p>
-<div class="fragment"><div class="line"><span class="lineno">  511</span>{</div>
-<div class="line"><span class="lineno">  512</span>  <a class="code hl_function" href="classmspass_1_1utility_1_1_processing_history.html#a78c4def2e3503ba2fbdadf3c02b733a7">ProcessingHistory</a> newinput(ni);</div>
-<div class="line"><span class="lineno">  513</span>  <span class="keywordflow">if</span>((newinput.algorithm != algin) || (newinput.algid != algidin)</div>
-<div class="line"><span class="lineno">  514</span>    || (newinput.jid  != newinput.jobid()) || (newinput.jnm != newinput.jobname()))</div>
-<div class="line"><span class="lineno">  515</span>  {</div>
-<div class="line"><span class="lineno">  516</span>    NodeData nd;</div>
-<div class="line"><span class="lineno">  517</span>    nd=newinput.current_nodedata();</div>
-<div class="line"><span class="lineno">  518</span>    newinput.newid();</div>
-<div class="line"><span class="lineno">  519</span>    pair&lt;string,NodeData&gt; pn(newinput.current_id,nd);</div>
-<div class="line"><span class="lineno">  520</span>    newinput.nodes.insert(pn);</div>
-<div class="line"><span class="lineno">  521</span>    newinput.jid=newinput.jobid();</div>
-<div class="line"><span class="lineno">  522</span>    newinput.jnm=newinput.jobname();</div>
-<div class="line"><span class="lineno">  523</span>    newinput.algorithm=algin;</div>
-<div class="line"><span class="lineno">  524</span>    newinput.algid=algidin;</div>
-<div class="line"><span class="lineno">  525</span>    newinput.current_status=ProcessingStatus::VOLATILE;</div>
-<div class="line"><span class="lineno">  526</span>    newinput.current_stage=nd.stage+1;</div>
-<div class="line"><span class="lineno">  527</span>    newinput.mytype=typ;</div>
-<div class="line"><span class="lineno">  528</span>  }</div>
-<div class="line"><span class="lineno">  529</span>  <span class="comment">/* We have to detect an initialization condition without losing the</span></div>
-<div class="line"><span class="lineno">  530</span><span class="comment">  stored history.   There are two conditions we need to handle.  First,</span></div>
-<div class="line"><span class="lineno">  531</span><span class="comment">  if we create an empty container to hold the accmulator and put it on the</span></div>
-<div class="line"><span class="lineno">  532</span><span class="comment">  left hand side we will want to clear the history chain or we will</span></div>
-<div class="line"><span class="lineno">  533</span><span class="comment">  accumulate random junk.   The second condition is if we accumulate in</span></div>
-<div class="line"><span class="lineno">  534</span><span class="comment">  a way were the left hand side is some existing data where we do want to</span></div>
-<div class="line"><span class="lineno">  535</span><span class="comment">  preserve the history.   For the is_empty logic:   we just copy the</span></div>
-<div class="line"><span class="lineno">  536</span><span class="comment">  newinput&#39;s history and add make its current node data the connection</span></div>
-<div class="line"><span class="lineno">  537</span><span class="comment">  backward - i.e. we have to make a new uuid and add an entry. */</span></div>
-<div class="line"><span class="lineno">  538</span>  <span class="keywordflow">if</span>(this-&gt;<a class="code hl_function" href="classmspass_1_1utility_1_1_processing_history.html#a8e42309bb4dfb0c0ea38496a3235f069">is_empty</a>())</div>
-<div class="line"><span class="lineno">  539</span>  {</div>
-<div class="line"><span class="lineno">  540</span>    this-&gt;<a class="code hl_function" href="classmspass_1_1utility_1_1_processing_history.html#a9a8bf8bc3632660c91fd9d82a79f8411">newid</a>();</div>
-<div class="line"><span class="lineno">  541</span>    nodes=ni.get_nodes();</div>
-<div class="line"><span class="lineno">  542</span>    NodeData nd;</div>
-<div class="line"><span class="lineno">  543</span>    nd=ni.current_nodedata();</div>
-<div class="line"><span class="lineno">  544</span>    pair&lt;string,NodeData&gt; pn(current_id,nd);</div>
-<div class="line"><span class="lineno">  545</span>    this-&gt;nodes.insert(pn);</div>
-<div class="line"><span class="lineno">  546</span>    this-&gt;set_jobid(ni.jobid());</div>
-<div class="line"><span class="lineno">  547</span>    this-&gt;set_jobname(ni.jobname());</div>
-<div class="line"><span class="lineno">  548</span>    algorithm=algin;</div>
-<div class="line"><span class="lineno">  549</span>    algid=algidin;</div>
-<div class="line"><span class="lineno">  550</span>    current_status=ProcessingStatus::VOLATILE;</div>
-<div class="line"><span class="lineno">  551</span>    current_stage=nd.stage+1;</div>
-<div class="line"><span class="lineno">  552</span>    mytype=typ;</div>
-<div class="line"><span class="lineno">  553</span>  }</div>
-<div class="line"><span class="lineno">  554</span>  <span class="comment">/* This is the condition for a left hand side that is not empty but not</span></div>
-<div class="line"><span class="lineno">  555</span><span class="comment">  yet initialized.   We detect this condition by a mismatch in all the unique</span></div>
-<div class="line"><span class="lineno">  556</span><span class="comment">  names and ids that mark the current process define this reduce operation*/</span></div>
-<div class="line"><span class="lineno">  557</span>  <span class="keywordflow">else</span> <span class="keywordflow">if</span>((this-&gt;algorithm != algin) || (this-&gt;algid != algidin)</div>
-<div class="line"><span class="lineno">  558</span>    || (this-&gt;jid  != newinput.jobid()) || (this-&gt;jnm != newinput.jobname()))</div>
-<div class="line"><span class="lineno">  559</span>  {</div>
-<div class="line"><span class="lineno">  560</span>    <span class="comment">/* This is similar to the block above, but the key difference here is we</span></div>
-<div class="line"><span class="lineno">  561</span><span class="comment">    have to push this&#39;s history data to convert it&#39;s current data to define an input.</span></div>
-<div class="line"><span class="lineno">  562</span><span class="comment">    That means getting a new uuid and pushing current node data to the nodes map</span></div>
-<div class="line"><span class="lineno">  563</span><span class="comment">    as an input */</span></div>
-<div class="line"><span class="lineno">  564</span>    NodeData nd;</div>
-<div class="line"><span class="lineno">  565</span>    nd=this-&gt;<a class="code hl_function" href="classmspass_1_1utility_1_1_processing_history.html#a110c300dfa2a6f5236a7d254fa7bf663">current_nodedata</a>();</div>
-<div class="line"><span class="lineno">  566</span>    this-&gt;<a class="code hl_function" href="classmspass_1_1utility_1_1_processing_history.html#a9a8bf8bc3632660c91fd9d82a79f8411">newid</a>();</div>
-<div class="line"><span class="lineno">  567</span>    pair&lt;string,NodeData&gt; pn(current_id,nd);</div>
-<div class="line"><span class="lineno">  568</span>    this-&gt;nodes.insert(pn);</div>
-<div class="line"><span class="lineno">  569</span>    this-&gt;jid=newinput.jobid();</div>
-<div class="line"><span class="lineno">  570</span>    this-&gt;jnm=newinput.jobname();</div>
-<div class="line"><span class="lineno">  571</span>    this-&gt;algorithm=algin;</div>
-<div class="line"><span class="lineno">  572</span>    this-&gt;algid=algidin;</div>
-<div class="line"><span class="lineno">  573</span>    this-&gt;current_status=ProcessingStatus::VOLATILE;</div>
-<div class="line"><span class="lineno">  574</span>    this-&gt;current_stage=nd.stage+1;</div>
-<div class="line"><span class="lineno">  575</span>    this-&gt;mytype=typ;</div>
-<div class="line"><span class="lineno">  576</span>    this-&gt;<a class="code hl_function" href="classmspass_1_1utility_1_1_processing_history.html#a4f2cb1d5af0500a526fa8745aa52db36">merge</a>(newinput);</div>
-<div class="line"><span class="lineno">  577</span>  }</div>
-<div class="line"><span class="lineno">  578</span>  <span class="keywordflow">else</span></div>
-<div class="line"><span class="lineno">  579</span>  {</div>
-<div class="line"><span class="lineno">  580</span>    this-&gt;<a class="code hl_function" href="classmspass_1_1utility_1_1_processing_history.html#a4f2cb1d5af0500a526fa8745aa52db36">merge</a>(newinput);</div>
-<div class="line"><span class="lineno">  581</span>  }</div>
-<div class="line"><span class="lineno">  582</span>}</div>
-<div class="ttc" id="aclassmspass_1_1utility_1_1_processing_history_html_a110c300dfa2a6f5236a7d254fa7bf663"><div class="ttname"><a href="classmspass_1_1utility_1_1_processing_history.html#a110c300dfa2a6f5236a7d254fa7bf663">mspass::utility::ProcessingHistory::current_nodedata</a></div><div class="ttdeci">NodeData current_nodedata() const</div><div class="ttdef"><b>Definition</b> ProcessingHistory.cc:712</div></div>
-<div class="ttc" id="aclassmspass_1_1utility_1_1_processing_history_html_a4f2cb1d5af0500a526fa8745aa52db36"><div class="ttname"><a href="classmspass_1_1utility_1_1_processing_history.html#a4f2cb1d5af0500a526fa8745aa52db36">mspass::utility::ProcessingHistory::merge</a></div><div class="ttdeci">void merge(const ProcessingHistory &amp;data_to_add)</div><div class="ttdoc">Merge the history nodes from another.</div><div class="ttdef"><b>Definition</b> ProcessingHistory.cc:463</div></div>
-<div class="ttc" id="aclassmspass_1_1utility_1_1_processing_history_html_a78c4def2e3503ba2fbdadf3c02b733a7"><div class="ttname"><a href="classmspass_1_1utility_1_1_processing_history.html#a78c4def2e3503ba2fbdadf3c02b733a7">mspass::utility::ProcessingHistory::ProcessingHistory</a></div><div class="ttdeci">ProcessingHistory()</div><div class="ttdef"><b>Definition</b> ProcessingHistory.cc:86</div></div>
-<div class="ttc" id="aclassmspass_1_1utility_1_1_processing_history_html_a8e42309bb4dfb0c0ea38496a3235f069"><div class="ttname"><a href="classmspass_1_1utility_1_1_processing_history.html#a8e42309bb4dfb0c0ea38496a3235f069">mspass::utility::ProcessingHistory::is_empty</a></div><div class="ttdeci">bool is_empty() const</div><div class="ttdef"><b>Definition</b> ProcessingHistory.cc:114</div></div>
-<div class="ttc" id="aclassmspass_1_1utility_1_1_processing_history_html_a9a8bf8bc3632660c91fd9d82a79f8411"><div class="ttname"><a href="classmspass_1_1utility_1_1_processing_history.html#a9a8bf8bc3632660c91fd9d82a79f8411">mspass::utility::ProcessingHistory::newid</a></div><div class="ttdeci">std::string newid()</div><div class="ttdef"><b>Definition</b> ProcessingHistory.cc:700</div></div>
+<div class="fragment"><div class="line"><span class="lineno">  476</span>                                                                {</div>
+<div class="line"><span class="lineno">  477</span>  <a class="code hl_function" href="classmspass_1_1utility_1_1_processing_history.html#a78c4def2e3503ba2fbdadf3c02b733a7">ProcessingHistory</a> newinput(ni);</div>
+<div class="line"><span class="lineno">  478</span>  <span class="keywordflow">if</span> ((newinput.algorithm != algin) || (newinput.algid != algidin) ||</div>
+<div class="line"><span class="lineno">  479</span>      (newinput.jid != newinput.jobid()) ||</div>
+<div class="line"><span class="lineno">  480</span>      (newinput.jnm != newinput.jobname())) {</div>
+<div class="line"><span class="lineno">  481</span>    NodeData nd;</div>
+<div class="line"><span class="lineno">  482</span>    nd = newinput.current_nodedata();</div>
+<div class="line"><span class="lineno">  483</span>    newinput.newid();</div>
+<div class="line"><span class="lineno">  484</span>    pair&lt;string, NodeData&gt; pn(newinput.current_id, nd);</div>
+<div class="line"><span class="lineno">  485</span>    newinput.nodes.insert(pn);</div>
+<div class="line"><span class="lineno">  486</span>    newinput.jid = newinput.jobid();</div>
+<div class="line"><span class="lineno">  487</span>    newinput.jnm = newinput.jobname();</div>
+<div class="line"><span class="lineno">  488</span>    newinput.algorithm = algin;</div>
+<div class="line"><span class="lineno">  489</span>    newinput.algid = algidin;</div>
+<div class="line"><span class="lineno">  490</span>    newinput.current_status = ProcessingStatus::VOLATILE;</div>
+<div class="line"><span class="lineno">  491</span>    newinput.current_stage = nd.stage + 1;</div>
+<div class="line"><span class="lineno">  492</span>    newinput.mytype = typ;</div>
+<div class="line"><span class="lineno">  493</span>  }</div>
+<div class="line"><span class="lineno">  494</span>  <span class="comment">/* We have to detect an initialization condition without losing the</span></div>
+<div class="line"><span class="lineno">  495</span><span class="comment">  stored history.   There are two conditions we need to handle.  First,</span></div>
+<div class="line"><span class="lineno">  496</span><span class="comment">  if we create an empty container to hold the accmulator and put it on the</span></div>
+<div class="line"><span class="lineno">  497</span><span class="comment">  left hand side we will want to clear the history chain or we will</span></div>
+<div class="line"><span class="lineno">  498</span><span class="comment">  accumulate random junk.   The second condition is if we accumulate in</span></div>
+<div class="line"><span class="lineno">  499</span><span class="comment">  a way were the left hand side is some existing data where we do want to</span></div>
+<div class="line"><span class="lineno">  500</span><span class="comment">  preserve the history.   For the is_empty logic:   we just copy the</span></div>
+<div class="line"><span class="lineno">  501</span><span class="comment">  newinput&#39;s history and add make its current node data the connection</span></div>
+<div class="line"><span class="lineno">  502</span><span class="comment">  backward - i.e. we have to make a new uuid and add an entry. */</span></div>
+<div class="line"><span class="lineno">  503</span>  <span class="keywordflow">if</span> (this-&gt;<a class="code hl_function" href="classmspass_1_1utility_1_1_processing_history.html#a8e42309bb4dfb0c0ea38496a3235f069">is_empty</a>()) {</div>
+<div class="line"><span class="lineno">  504</span>    this-&gt;<a class="code hl_function" href="classmspass_1_1utility_1_1_processing_history.html#a9a8bf8bc3632660c91fd9d82a79f8411">newid</a>();</div>
+<div class="line"><span class="lineno">  505</span>    nodes = ni.get_nodes();</div>
+<div class="line"><span class="lineno">  506</span>    NodeData nd;</div>
+<div class="line"><span class="lineno">  507</span>    nd = ni.current_nodedata();</div>
+<div class="line"><span class="lineno">  508</span>    pair&lt;string, NodeData&gt; pn(current_id, nd);</div>
+<div class="line"><span class="lineno">  509</span>    this-&gt;nodes.insert(pn);</div>
+<div class="line"><span class="lineno">  510</span>    this-&gt;set_jobid(ni.jobid());</div>
+<div class="line"><span class="lineno">  511</span>    this-&gt;set_jobname(ni.jobname());</div>
+<div class="line"><span class="lineno">  512</span>    algorithm = algin;</div>
+<div class="line"><span class="lineno">  513</span>    algid = algidin;</div>
+<div class="line"><span class="lineno">  514</span>    current_status = ProcessingStatus::VOLATILE;</div>
+<div class="line"><span class="lineno">  515</span>    current_stage = nd.stage + 1;</div>
+<div class="line"><span class="lineno">  516</span>    mytype = typ;</div>
+<div class="line"><span class="lineno">  517</span>  }</div>
+<div class="line"><span class="lineno">  518</span>  <span class="comment">/* This is the condition for a left hand side that is not empty but not</span></div>
+<div class="line"><span class="lineno">  519</span><span class="comment">  yet initialized.   We detect this condition by a mismatch in all the unique</span></div>
+<div class="line"><span class="lineno">  520</span><span class="comment">  names and ids that mark the current process define this reduce operation*/</span></div>
+<div class="line"><span class="lineno">  521</span>  <span class="keywordflow">else</span> <span class="keywordflow">if</span> ((this-&gt;algorithm != algin) || (this-&gt;algid != algidin) ||</div>
+<div class="line"><span class="lineno">  522</span>           (this-&gt;jid != newinput.jobid()) ||</div>
+<div class="line"><span class="lineno">  523</span>           (this-&gt;jnm != newinput.jobname())) {</div>
+<div class="line"><span class="lineno">  524</span>    <span class="comment">/* This is similar to the block above, but the key difference here is we</span></div>
+<div class="line"><span class="lineno">  525</span><span class="comment">    have to push this&#39;s history data to convert it&#39;s current data to define an</span></div>
+<div class="line"><span class="lineno">  526</span><span class="comment">    input. That means getting a new uuid and pushing current node data to the</span></div>
+<div class="line"><span class="lineno">  527</span><span class="comment">    nodes map as an input */</span></div>
+<div class="line"><span class="lineno">  528</span>    NodeData nd;</div>
+<div class="line"><span class="lineno">  529</span>    nd = this-&gt;<a class="code hl_function" href="classmspass_1_1utility_1_1_processing_history.html#a110c300dfa2a6f5236a7d254fa7bf663">current_nodedata</a>();</div>
+<div class="line"><span class="lineno">  530</span>    this-&gt;<a class="code hl_function" href="classmspass_1_1utility_1_1_processing_history.html#a9a8bf8bc3632660c91fd9d82a79f8411">newid</a>();</div>
+<div class="line"><span class="lineno">  531</span>    pair&lt;string, NodeData&gt; pn(current_id, nd);</div>
+<div class="line"><span class="lineno">  532</span>    this-&gt;nodes.insert(pn);</div>
+<div class="line"><span class="lineno">  533</span>    this-&gt;jid = newinput.jobid();</div>
+<div class="line"><span class="lineno">  534</span>    this-&gt;jnm = newinput.jobname();</div>
+<div class="line"><span class="lineno">  535</span>    this-&gt;algorithm = algin;</div>
+<div class="line"><span class="lineno">  536</span>    this-&gt;algid = algidin;</div>
+<div class="line"><span class="lineno">  537</span>    this-&gt;current_status = ProcessingStatus::VOLATILE;</div>
+<div class="line"><span class="lineno">  538</span>    this-&gt;current_stage = nd.stage + 1;</div>
+<div class="line"><span class="lineno">  539</span>    this-&gt;mytype = typ;</div>
+<div class="line"><span class="lineno">  540</span>    this-&gt;<a class="code hl_function" href="classmspass_1_1utility_1_1_processing_history.html#a4f2cb1d5af0500a526fa8745aa52db36">merge</a>(newinput);</div>
+<div class="line"><span class="lineno">  541</span>  } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  542</span>    this-&gt;<a class="code hl_function" href="classmspass_1_1utility_1_1_processing_history.html#a4f2cb1d5af0500a526fa8745aa52db36">merge</a>(newinput);</div>
+<div class="line"><span class="lineno">  543</span>  }</div>
+<div class="line"><span class="lineno">  544</span>}</div>
+<div class="ttc" id="aclassmspass_1_1utility_1_1_processing_history_html_a110c300dfa2a6f5236a7d254fa7bf663"><div class="ttname"><a href="classmspass_1_1utility_1_1_processing_history.html#a110c300dfa2a6f5236a7d254fa7bf663">mspass::utility::ProcessingHistory::current_nodedata</a></div><div class="ttdeci">NodeData current_nodedata() const</div><div class="ttdef"><b>Definition</b> ProcessingHistory.cc:659</div></div>
+<div class="ttc" id="aclassmspass_1_1utility_1_1_processing_history_html_a4f2cb1d5af0500a526fa8745aa52db36"><div class="ttname"><a href="classmspass_1_1utility_1_1_processing_history.html#a4f2cb1d5af0500a526fa8745aa52db36">mspass::utility::ProcessingHistory::merge</a></div><div class="ttdeci">void merge(const ProcessingHistory &amp;data_to_add)</div><div class="ttdoc">Merge the history nodes from another.</div><div class="ttdef"><b>Definition</b> ProcessingHistory.cc:439</div></div>
+<div class="ttc" id="aclassmspass_1_1utility_1_1_processing_history_html_a78c4def2e3503ba2fbdadf3c02b733a7"><div class="ttname"><a href="classmspass_1_1utility_1_1_processing_history.html#a78c4def2e3503ba2fbdadf3c02b733a7">mspass::utility::ProcessingHistory::ProcessingHistory</a></div><div class="ttdeci">ProcessingHistory()</div><div class="ttdef"><b>Definition</b> ProcessingHistory.cc:82</div></div>
+<div class="ttc" id="aclassmspass_1_1utility_1_1_processing_history_html_a8e42309bb4dfb0c0ea38496a3235f069"><div class="ttname"><a href="classmspass_1_1utility_1_1_processing_history.html#a8e42309bb4dfb0c0ea38496a3235f069">mspass::utility::ProcessingHistory::is_empty</a></div><div class="ttdeci">bool is_empty() const</div><div class="ttdef"><b>Definition</b> ProcessingHistory.cc:109</div></div>
+<div class="ttc" id="aclassmspass_1_1utility_1_1_processing_history_html_a9a8bf8bc3632660c91fd9d82a79f8411"><div class="ttname"><a href="classmspass_1_1utility_1_1_processing_history.html#a9a8bf8bc3632660c91fd9d82a79f8411">mspass::utility::ProcessingHistory::newid</a></div><div class="ttdeci">std::string newid()</div><div class="ttdef"><b>Definition</b> ProcessingHistory.cc:651</div></div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1utility_1_1_processing_history.html#a110c300dfa2a6f5236a7d254fa7bf663">current_nodedata()</a>, <a class="el" href="classmspass_1_1utility_1_1_processing_history.html#a52b0394b444f6db307945284ac6e5f8a">get_nodes()</a>, <a class="el" href="classmspass_1_1utility_1_1_processing_history.html#a8e42309bb4dfb0c0ea38496a3235f069">is_empty()</a>, <a class="el" href="classmspass_1_1utility_1_1_processing_history.html#a4f2cb1d5af0500a526fa8745aa52db36">merge()</a>, <a class="el" href="classmspass_1_1utility_1_1_processing_history.html#a9a8bf8bc3632660c91fd9d82a79f8411">newid()</a>, and <a class="el" href="classmspass_1_1utility_1_1_node_data.html#a972bd00dc85cae2e490833225f53e282">mspass::utility::NodeData::stage</a>.</p>
 
@@ -468,16 +464,15 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>jnm</b></td></
   </table>
   </dd>
 </dl>
-<div class="fragment"><div class="line"><span class="lineno">  335</span>{</div>
-<div class="line"><span class="lineno">  336</span>  vector&lt;ProcessingHistory*&gt;::const_iterator dptr;</div>
-<div class="line"><span class="lineno">  337</span>  <span class="keywordflow">for</span>(dptr=d.begin();dptr!=d.end();++dptr)</div>
-<div class="line"><span class="lineno">  338</span>  {</div>
-<div class="line"><span class="lineno">  339</span>    <a class="code hl_function" href="classmspass_1_1utility_1_1_processing_history.html#a78c4def2e3503ba2fbdadf3c02b733a7">ProcessingHistory</a> *ptr;</div>
-<div class="line"><span class="lineno">  340</span>    ptr=(*dptr);</div>
-<div class="line"><span class="lineno">  341</span>    this-&gt;<a class="code hl_function" href="classmspass_1_1utility_1_1_processing_history.html#abf871538f6024bebc2b1512ba1e58ff7">add_one_input</a>(*ptr);</div>
-<div class="line"><span class="lineno">  342</span>  }</div>
-<div class="line"><span class="lineno">  343</span>}</div>
-<div class="ttc" id="aclassmspass_1_1utility_1_1_processing_history_html_abf871538f6024bebc2b1512ba1e58ff7"><div class="ttname"><a href="classmspass_1_1utility_1_1_processing_history.html#abf871538f6024bebc2b1512ba1e58ff7">mspass::utility::ProcessingHistory::add_one_input</a></div><div class="ttdeci">void add_one_input(const ProcessingHistory &amp;data_to_add)</div><div class="ttdoc">Add one datum as an input for current data.</div><div class="ttdef"><b>Definition</b> ProcessingHistory.cc:285</div></div>
+<div class="fragment"><div class="line"><span class="lineno">  304</span>                                                                            {</div>
+<div class="line"><span class="lineno">  305</span>  vector&lt;ProcessingHistory *&gt;::const_iterator dptr;</div>
+<div class="line"><span class="lineno">  306</span>  <span class="keywordflow">for</span> (dptr = d.begin(); dptr != d.end(); ++dptr) {</div>
+<div class="line"><span class="lineno">  307</span>    <a class="code hl_function" href="classmspass_1_1utility_1_1_processing_history.html#a78c4def2e3503ba2fbdadf3c02b733a7">ProcessingHistory</a> *ptr;</div>
+<div class="line"><span class="lineno">  308</span>    ptr = (*dptr);</div>
+<div class="line"><span class="lineno">  309</span>    this-&gt;<a class="code hl_function" href="classmspass_1_1utility_1_1_processing_history.html#abf871538f6024bebc2b1512ba1e58ff7">add_one_input</a>(*ptr);</div>
+<div class="line"><span class="lineno">  310</span>  }</div>
+<div class="line"><span class="lineno">  311</span>}</div>
+<div class="ttc" id="aclassmspass_1_1utility_1_1_processing_history_html_abf871538f6024bebc2b1512ba1e58ff7"><div class="ttname"><a href="classmspass_1_1utility_1_1_processing_history.html#abf871538f6024bebc2b1512ba1e58ff7">mspass::utility::ProcessingHistory::add_one_input</a></div><div class="ttdeci">void add_one_input(const ProcessingHistory &amp;data_to_add)</div><div class="ttdoc">Add one datum as an input for current data.</div><div class="ttdef"><b>Definition</b> ProcessingHistory.cc:263</div></div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1utility_1_1_processing_history.html#abf871538f6024bebc2b1512ba1e58ff7">add_one_input()</a>.</p>
 
@@ -507,53 +502,46 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>jnm</b></td></
   </table>
   </dd>
 </dl>
-<div class="fragment"><div class="line"><span class="lineno">  286</span>{</div>
-<div class="line"><span class="lineno">  287</span> </div>
-<div class="line"><span class="lineno">  288</span>  <span class="keywordflow">if</span>(data_to_add.is_empty())</div>
-<div class="line"><span class="lineno">  289</span>  {</div>
-<div class="line"><span class="lineno">  290</span>    stringstream ss;</div>
-<div class="line"><span class="lineno">  291</span>    ss&lt;&lt;<span class="stringliteral">&quot;Data with uuid=&quot;</span>&lt;&lt;data_to_add.id()&lt;&lt;<span class="stringliteral">&quot; has an empty history chain&quot;</span>&lt;&lt;endl</div>
-<div class="line"><span class="lineno">  292</span>      &lt;&lt; <span class="stringliteral">&quot;At best this will leave ProcessingHistory incomplete&quot;</span>&lt;&lt;endl;</div>
-<div class="line"><span class="lineno">  293</span>    elog.<a class="code hl_function" href="classmspass_1_1utility_1_1_error_logger.html#aa69873ba0aebf67e9ba24d01992c0bcf">log_error</a>(<span class="stringliteral">&quot;ProcessingHistory::add_one_input&quot;</span>,ss.str(),</div>
-<div class="line"><span class="lineno">  294</span>      ErrorSeverity::Complaint);</div>
-<div class="line"><span class="lineno">  295</span>  }</div>
-<div class="line"><span class="lineno">  296</span>  <span class="keywordflow">else</span></div>
-<div class="line"><span class="lineno">  297</span>  {</div>
-<div class="line"><span class="lineno">  298</span>    multimap&lt;string,NodeData&gt;::iterator nptr;</div>
-<div class="line"><span class="lineno">  299</span>    multimap&lt;string,NodeData&gt; newhistory = data_to_add.get_nodes();</div>
-<div class="line"><span class="lineno">  300</span>    multimap&lt;string,NodeData&gt;::iterator nl,nu;</div>
-<div class="line"><span class="lineno">  301</span>    <span class="comment">/* As above this one needs check for duplicates and only add</span></div>
-<div class="line"><span class="lineno">  302</span><span class="comment">    a node if the data are unique.  This is simple compared to new_ensemble_process</span></div>
-<div class="line"><span class="lineno">  303</span><span class="comment">    because we just have to check one object&#39;s history at a time. */</span></div>
-<div class="line"><span class="lineno">  304</span>    <span class="keywordflow">for</span>(nptr=newhistory.begin();nptr!=newhistory.end();++nptr)</div>
-<div class="line"><span class="lineno">  305</span>    {</div>
-<div class="line"><span class="lineno">  306</span>      <span class="keywordtype">string</span> key(nptr-&gt;first);</div>
-<div class="line"><span class="lineno">  307</span>      <span class="keywordflow">if</span>(this-&gt;nodes.count(key)&gt;0)</div>
-<div class="line"><span class="lineno">  308</span>      {</div>
-<div class="line"><span class="lineno">  309</span>        nl=this-&gt;nodes.lower_bound(key);</div>
-<div class="line"><span class="lineno">  310</span>        nu=this-&gt;nodes.upper_bound(key);</div>
-<div class="line"><span class="lineno">  311</span>        <span class="keywordflow">for</span>(<span class="keyword">auto</span> ptr=nl;ptr!=nu;++ptr)</div>
-<div class="line"><span class="lineno">  312</span>        {</div>
-<div class="line"><span class="lineno">  313</span>          NodeData ndtest(ptr-&gt;second);</div>
-<div class="line"><span class="lineno">  314</span>          <span class="keywordflow">if</span>(ndtest != (nptr-&gt;second))</div>
-<div class="line"><span class="lineno">  315</span>          {</div>
-<div class="line"><span class="lineno">  316</span>            this-&gt;nodes.insert(*nptr);</div>
-<div class="line"><span class="lineno">  317</span>          }</div>
-<div class="line"><span class="lineno">  318</span>        }</div>
-<div class="line"><span class="lineno">  319</span>      }</div>
-<div class="line"><span class="lineno">  320</span>      <span class="keywordflow">else</span></div>
-<div class="line"><span class="lineno">  321</span>      {</div>
-<div class="line"><span class="lineno">  322</span>        this-&gt;nodes.insert(*nptr);</div>
-<div class="line"><span class="lineno">  323</span>      }</div>
-<div class="line"><span class="lineno">  324</span>    }</div>
-<div class="line"><span class="lineno">  325</span>    <span class="comment">/* Don&#39;t forget head node data*/</span></div>
-<div class="line"><span class="lineno">  326</span>    NodeData nd=data_to_add.current_nodedata();</div>
-<div class="line"><span class="lineno">  327</span>    NodeData ndhere=this-&gt;<a class="code hl_function" href="classmspass_1_1utility_1_1_processing_history.html#a110c300dfa2a6f5236a7d254fa7bf663">current_nodedata</a>();</div>
-<div class="line"><span class="lineno">  328</span>    pair&lt;string,NodeData&gt; pnd(current_id,nd);</div>
-<div class="line"><span class="lineno">  329</span>    this-&gt;nodes.insert(pnd);</div>
-<div class="line"><span class="lineno">  330</span>  }</div>
-<div class="line"><span class="lineno">  331</span>}</div>
-<div class="ttc" id="aclassmspass_1_1utility_1_1_error_logger_html_aa69873ba0aebf67e9ba24d01992c0bcf"><div class="ttname"><a href="classmspass_1_1utility_1_1_error_logger.html#aa69873ba0aebf67e9ba24d01992c0bcf">mspass::utility::ErrorLogger::log_error</a></div><div class="ttdeci">int log_error(const mspass::utility::MsPASSError &amp;merr)</div><div class="ttdef"><b>Definition</b> ErrorLogger.cc:81</div></div>
+<div class="fragment"><div class="line"><span class="lineno">  263</span>                                                                          {</div>
+<div class="line"><span class="lineno">  264</span> </div>
+<div class="line"><span class="lineno">  265</span>  <span class="keywordflow">if</span> (data_to_add.is_empty()) {</div>
+<div class="line"><span class="lineno">  266</span>    stringstream ss;</div>
+<div class="line"><span class="lineno">  267</span>    ss &lt;&lt; <span class="stringliteral">&quot;Data with uuid=&quot;</span> &lt;&lt; data_to_add.id() &lt;&lt; <span class="stringliteral">&quot; has an empty history chain&quot;</span></div>
+<div class="line"><span class="lineno">  268</span>       &lt;&lt; endl</div>
+<div class="line"><span class="lineno">  269</span>       &lt;&lt; <span class="stringliteral">&quot;At best this will leave ProcessingHistory incomplete&quot;</span> &lt;&lt; endl;</div>
+<div class="line"><span class="lineno">  270</span>    elog.<a class="code hl_function" href="classmspass_1_1utility_1_1_error_logger.html#aa69873ba0aebf67e9ba24d01992c0bcf">log_error</a>(<span class="stringliteral">&quot;ProcessingHistory::add_one_input&quot;</span>, ss.str(),</div>
+<div class="line"><span class="lineno">  271</span>                   ErrorSeverity::Complaint);</div>
+<div class="line"><span class="lineno">  272</span>  } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  273</span>    multimap&lt;string, NodeData&gt;::iterator nptr;</div>
+<div class="line"><span class="lineno">  274</span>    multimap&lt;string, NodeData&gt; newhistory = data_to_add.get_nodes();</div>
+<div class="line"><span class="lineno">  275</span>    multimap&lt;string, NodeData&gt;::iterator nl, nu;</div>
+<div class="line"><span class="lineno">  276</span>    <span class="comment">/* As above this one needs check for duplicates and only add</span></div>
+<div class="line"><span class="lineno">  277</span><span class="comment">    a node if the data are unique.  This is simple compared to</span></div>
+<div class="line"><span class="lineno">  278</span><span class="comment">    new_ensemble_process because we just have to check one object&#39;s history at a</span></div>
+<div class="line"><span class="lineno">  279</span><span class="comment">    time. */</span></div>
+<div class="line"><span class="lineno">  280</span>    <span class="keywordflow">for</span> (nptr = newhistory.begin(); nptr != newhistory.end(); ++nptr) {</div>
+<div class="line"><span class="lineno">  281</span>      <span class="keywordtype">string</span> key(nptr-&gt;first);</div>
+<div class="line"><span class="lineno">  282</span>      <span class="keywordflow">if</span> (this-&gt;nodes.count(key) &gt; 0) {</div>
+<div class="line"><span class="lineno">  283</span>        nl = this-&gt;nodes.lower_bound(key);</div>
+<div class="line"><span class="lineno">  284</span>        nu = this-&gt;nodes.upper_bound(key);</div>
+<div class="line"><span class="lineno">  285</span>        <span class="keywordflow">for</span> (<span class="keyword">auto</span> ptr = nl; ptr != nu; ++ptr) {</div>
+<div class="line"><span class="lineno">  286</span>          NodeData ndtest(ptr-&gt;second);</div>
+<div class="line"><span class="lineno">  287</span>          <span class="keywordflow">if</span> (ndtest != (nptr-&gt;second)) {</div>
+<div class="line"><span class="lineno">  288</span>            this-&gt;nodes.insert(*nptr);</div>
+<div class="line"><span class="lineno">  289</span>          }</div>
+<div class="line"><span class="lineno">  290</span>        }</div>
+<div class="line"><span class="lineno">  291</span>      } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  292</span>        this-&gt;nodes.insert(*nptr);</div>
+<div class="line"><span class="lineno">  293</span>      }</div>
+<div class="line"><span class="lineno">  294</span>    }</div>
+<div class="line"><span class="lineno">  295</span>    <span class="comment">/* Don&#39;t forget head node data*/</span></div>
+<div class="line"><span class="lineno">  296</span>    NodeData nd = data_to_add.current_nodedata();</div>
+<div class="line"><span class="lineno">  297</span>    NodeData ndhere = this-&gt;<a class="code hl_function" href="classmspass_1_1utility_1_1_processing_history.html#a110c300dfa2a6f5236a7d254fa7bf663">current_nodedata</a>();</div>
+<div class="line"><span class="lineno">  298</span>    pair&lt;string, NodeData&gt; pnd(current_id, nd);</div>
+<div class="line"><span class="lineno">  299</span>    this-&gt;nodes.insert(pnd);</div>
+<div class="line"><span class="lineno">  300</span>  }</div>
+<div class="line"><span class="lineno">  301</span>}</div>
+<div class="ttc" id="aclassmspass_1_1utility_1_1_error_logger_html_aa69873ba0aebf67e9ba24d01992c0bcf"><div class="ttname"><a href="classmspass_1_1utility_1_1_error_logger.html#aa69873ba0aebf67e9ba24d01992c0bcf">mspass::utility::ErrorLogger::log_error</a></div><div class="ttdeci">int log_error(const mspass::utility::MsPASSError &amp;merr)</div><div class="ttdef"><b>Definition</b> ErrorLogger.cc:72</div></div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1utility_1_1_processing_history.html#a110c300dfa2a6f5236a7d254fa7bf663">current_nodedata()</a>, <a class="el" href="classmspass_1_1utility_1_1_processing_history.html#a52b0394b444f6db307945284ac6e5f8a">get_nodes()</a>, <a class="el" href="classmspass_1_1utility_1_1_processing_history.html#adf60368ca5c699cc9186fa145d04376d">id()</a>, <a class="el" href="classmspass_1_1utility_1_1_processing_history.html#a8e42309bb4dfb0c0ea38496a3235f069">is_empty()</a>, and <a class="el" href="classmspass_1_1utility_1_1_error_logger.html#aa69873ba0aebf67e9ba24d01992c0bcf">mspass::utility::ErrorLogger::log_error()</a>.</p>
 
@@ -578,78 +566,72 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>jnm</b></td></
 <p>In a spark reduce operation it is possible to create multiple uuid keys for inputs to the same algorithm instance. That happpens because the mechanism used by <a class="el" href="classmspass_1_1utility_1_1_processing_history.html" title="Lightweight class to preserve procesing chain of atomic objects.">ProcessingHistory</a> to define the process history tree is not associative. When a reduce gets sprayed across multiple nodes multiple initializations can occur that make artifical inconsitent uuids. This method should normally be called after a reduce operator if history is being preserved or the history chain may be foobarred - no invalid just mess up with extra branches in the processing tree.</p>
 <p>A VERY IMPORTANT limitation of the algorithm used by this method is that the combination of algorithm and algid in "this" MUST be unique for a given job run when a reduce is called. i.e. if an earlier workflow had used alg and algid but with a different jobid and jobname the distintion cannot be detected with this algorithm. This means our global history handling must guarantee algid is unique for each run.</p>
 <dl class="section return"><dt>Returns</dt><dd>unique uuid for alg,algid match set in the history chain. Note if there are no duplicates it simply returns the only one it finds. If there are duplicates it returns the lexically smallest (first in alphabetic order) uuid. Most importantly if there is no match or if history is empty it returns the string UNDEFINED. </dd></dl>
-<div class="fragment"><div class="line"><span class="lineno">  585</span>{</div>
-<div class="line"><span class="lineno">  586</span>  <span class="comment">/* Return undefined immediately if the history chain is empty */</span></div>
-<div class="line"><span class="lineno">  587</span>  <span class="keywordflow">if</span>(this-&gt;<a class="code hl_function" href="classmspass_1_1utility_1_1_processing_history.html#a8e42309bb4dfb0c0ea38496a3235f069">is_empty</a>()) <span class="keywordflow">return</span> string(<span class="stringliteral">&quot;UNDEFINED&quot;</span>);</div>
-<div class="line"><span class="lineno">  588</span>  NodeData ndthis=this-&gt;<a class="code hl_function" href="classmspass_1_1utility_1_1_processing_history.html#a110c300dfa2a6f5236a7d254fa7bf663">current_nodedata</a>();</div>
-<div class="line"><span class="lineno">  589</span>  <span class="keywordtype">string</span> alg(ndthis.algorithm);</div>
-<div class="line"><span class="lineno">  590</span>  <span class="keywordtype">string</span> algidtest(ndthis.algid);</div>
-<div class="line"><span class="lineno">  591</span>  <span class="comment">/* The algorithm here finds all entries for which algorithm is alg and</span></div>
-<div class="line"><span class="lineno">  592</span><span class="comment">  algid matches aldid.  We build a list of uuids (keys) linked to that unique</span></div>
-<div class="line"><span class="lineno">  593</span><span class="comment">  algorithm.  We then use the id in ndthis as the master*/</span></div>
-<div class="line"><span class="lineno">  594</span>  set&lt;string&gt; matching_ids;</div>
-<div class="line"><span class="lineno">  595</span>  matching_ids.insert(ndthis.uuid);</div>
-<div class="line"><span class="lineno">  596</span>  <span class="comment">/* this approach of pushing iterators to this list that match seemed to</span></div>
-<div class="line"><span class="lineno">  597</span><span class="comment">  be the only way I could make this work correctly.   Not sure why, but</span></div>
-<div class="line"><span class="lineno">  598</span><span class="comment">  the added cost over handling this correctly in the loops is small. */</span></div>
-<div class="line"><span class="lineno">  599</span>  std::list&lt;multimap&lt;string,NodeData&gt;::iterator&gt; need_to_erase;</div>
-<div class="line"><span class="lineno">  600</span>  <span class="keywordflow">for</span>(<span class="keyword">auto</span> nptr=this-&gt;nodes.begin();nptr!=this-&gt;nodes.end();++nptr)</div>
-<div class="line"><span class="lineno">  601</span>  {</div>
-<div class="line"><span class="lineno">  602</span>    <span class="comment">/* this copy operation is somewhat inefficient, but the cost is small</span></div>
-<div class="line"><span class="lineno">  603</span><span class="comment">    compared to how obscure the code will look if we directly manipulate the</span></div>
-<div class="line"><span class="lineno">  604</span><span class="comment">    second value */</span></div>
-<div class="line"><span class="lineno">  605</span>    NodeData nd(nptr-&gt;second);</div>
-<div class="line"><span class="lineno">  606</span>    <span class="comment">/* this depends upon the distinction between set and multiset.  i.e. an insert</span></div>
-<div class="line"><span class="lineno">  607</span><span class="comment">    of a duplicate does nothing*/</span></div>
-<div class="line"><span class="lineno">  608</span>    <span class="keywordflow">if</span>((alg==nd.algorithm) &amp;&amp; (algidtest==nd.algid))</div>
-<div class="line"><span class="lineno">  609</span>    {</div>
-<div class="line"><span class="lineno">  610</span>      matching_ids.insert(nd.uuid);</div>
-<div class="line"><span class="lineno">  611</span>      need_to_erase.push_back(nptr);</div>
-<div class="line"><span class="lineno">  612</span>    }</div>
-<div class="line"><span class="lineno">  613</span>  }</div>
-<div class="line"><span class="lineno">  614</span>  <span class="comment">// handle no match situation gracefully</span></div>
-<div class="line"><span class="lineno">  615</span>  <span class="keywordflow">if</span>(matching_ids.empty())</div>
-<div class="line"><span class="lineno">  616</span>    <span class="keywordflow">return</span> string(<span class="stringliteral">&quot;UNDEFINED&quot;</span>);</div>
-<div class="line"><span class="lineno">  617</span>  <span class="comment">/* Nothing more to do but return the uuid if there is only one*/</span></div>
-<div class="line"><span class="lineno">  618</span>  <span class="keywordflow">if</span>(matching_ids.size()==1)</div>
-<div class="line"><span class="lineno">  619</span>    <span class="keywordflow">return</span> *(matching_ids.begin());</div>
-<div class="line"><span class="lineno">  620</span>  <span class="keywordflow">else</span></div>
-<div class="line"><span class="lineno">  621</span>  {</div>
-<div class="line"><span class="lineno">  622</span>    <span class="keywordflow">for</span>(<span class="keyword">auto</span> sptr=need_to_erase.begin();sptr!=need_to_erase.end();++sptr)</div>
-<div class="line"><span class="lineno">  623</span>    {</div>
-<div class="line"><span class="lineno">  624</span>      nodes.erase(*sptr);</div>
-<div class="line"><span class="lineno">  625</span>    }</div>
-<div class="line"><span class="lineno">  626</span>    need_to_erase.clear();</div>
-<div class="line"><span class="lineno">  627</span>  }</div>
-<div class="line"><span class="lineno">  628</span>  <span class="comment">/* Here is the complicated case.  We use the uuid from ndthis as the master</span></div>
-<div class="line"><span class="lineno">  629</span><span class="comment">  and change all the others.   This operation works ONLY because in a multimap</span></div>
-<div class="line"><span class="lineno">  630</span><span class="comment">  erase only invalidates the iterator it points to and others remain valid.</span></div>
-<div class="line"><span class="lineno">  631</span><span class="comment">  */</span></div>
-<div class="line"><span class="lineno">  632</span>  <span class="keywordtype">string</span> master_uuid=ndthis.uuid;</div>
-<div class="line"><span class="lineno">  633</span>  <span class="keywordflow">for</span>(<span class="keyword">auto</span> sptr=matching_ids.begin();sptr!=matching_ids.end();++sptr)</div>
-<div class="line"><span class="lineno">  634</span>  {</div>
-<div class="line"><span class="lineno">  635</span>    <span class="comment">/* Note this test is necessary to stip the master_uuid - no else needed*/</span></div>
-<div class="line"><span class="lineno">  636</span>    <span class="keywordflow">if</span>((*sptr)!=master_uuid)</div>
-<div class="line"><span class="lineno">  637</span>    {</div>
-<div class="line"><span class="lineno">  638</span>      multimap&lt;string,NodeData&gt;::iterator nl,nu;</div>
-<div class="line"><span class="lineno">  639</span>      nl=this-&gt;nodes.lower_bound(*sptr);</div>
-<div class="line"><span class="lineno">  640</span>      nu=this-&gt;nodes.upper_bound(*sptr);</div>
-<div class="line"><span class="lineno">  641</span>      <span class="keywordflow">for</span>(<span class="keyword">auto</span> nptr=nl;nptr!=nu;++nptr)</div>
-<div class="line"><span class="lineno">  642</span>      {</div>
-<div class="line"><span class="lineno">  643</span>        NodeData nd;</div>
-<div class="line"><span class="lineno">  644</span>        nd=(nptr-&gt;second);</div>
-<div class="line"><span class="lineno">  645</span>        need_to_erase.push_back(nptr);</div>
-<div class="line"><span class="lineno">  646</span>        nodes.insert(pair&lt;string,NodeData&gt;(master_uuid,nd));</div>
-<div class="line"><span class="lineno">  647</span>      }</div>
-<div class="line"><span class="lineno">  648</span>    }</div>
-<div class="line"><span class="lineno">  649</span>  }</div>
-<div class="line"><span class="lineno">  650</span>  <span class="keywordflow">for</span>(<span class="keyword">auto</span> sptr=need_to_erase.begin();sptr!=need_to_erase.end();++sptr)</div>
-<div class="line"><span class="lineno">  651</span>  {</div>
-<div class="line"><span class="lineno">  652</span>    nodes.erase(*sptr);</div>
-<div class="line"><span class="lineno">  653</span>  }</div>
-<div class="line"><span class="lineno">  654</span> </div>
-<div class="line"><span class="lineno">  655</span>  <span class="keywordflow">return</span> master_uuid;</div>
-<div class="line"><span class="lineno">  656</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  546</span>                                                 {</div>
+<div class="line"><span class="lineno">  547</span>  <span class="comment">/* Return undefined immediately if the history chain is empty */</span></div>
+<div class="line"><span class="lineno">  548</span>  <span class="keywordflow">if</span> (this-&gt;<a class="code hl_function" href="classmspass_1_1utility_1_1_processing_history.html#a8e42309bb4dfb0c0ea38496a3235f069">is_empty</a>())</div>
+<div class="line"><span class="lineno">  549</span>    <span class="keywordflow">return</span> string(<span class="stringliteral">&quot;UNDEFINED&quot;</span>);</div>
+<div class="line"><span class="lineno">  550</span>  NodeData ndthis = this-&gt;<a class="code hl_function" href="classmspass_1_1utility_1_1_processing_history.html#a110c300dfa2a6f5236a7d254fa7bf663">current_nodedata</a>();</div>
+<div class="line"><span class="lineno">  551</span>  <span class="keywordtype">string</span> alg(ndthis.algorithm);</div>
+<div class="line"><span class="lineno">  552</span>  <span class="keywordtype">string</span> algidtest(ndthis.algid);</div>
+<div class="line"><span class="lineno">  553</span>  <span class="comment">/* The algorithm here finds all entries for which algorithm is alg and</span></div>
+<div class="line"><span class="lineno">  554</span><span class="comment">  algid matches aldid.  We build a list of uuids (keys) linked to that unique</span></div>
+<div class="line"><span class="lineno">  555</span><span class="comment">  algorithm.  We then use the id in ndthis as the master*/</span></div>
+<div class="line"><span class="lineno">  556</span>  set&lt;string&gt; matching_ids;</div>
+<div class="line"><span class="lineno">  557</span>  matching_ids.insert(ndthis.uuid);</div>
+<div class="line"><span class="lineno">  558</span>  <span class="comment">/* this approach of pushing iterators to this list that match seemed to</span></div>
+<div class="line"><span class="lineno">  559</span><span class="comment">  be the only way I could make this work correctly.   Not sure why, but</span></div>
+<div class="line"><span class="lineno">  560</span><span class="comment">  the added cost over handling this correctly in the loops is small. */</span></div>
+<div class="line"><span class="lineno">  561</span>  std::list&lt;multimap&lt;string, NodeData&gt;::iterator&gt; need_to_erase;</div>
+<div class="line"><span class="lineno">  562</span>  <span class="keywordflow">for</span> (<span class="keyword">auto</span> nptr = this-&gt;nodes.begin(); nptr != this-&gt;nodes.end(); ++nptr) {</div>
+<div class="line"><span class="lineno">  563</span>    <span class="comment">/* this copy operation is somewhat inefficient, but the cost is small</span></div>
+<div class="line"><span class="lineno">  564</span><span class="comment">    compared to how obscure the code will look if we directly manipulate the</span></div>
+<div class="line"><span class="lineno">  565</span><span class="comment">    second value */</span></div>
+<div class="line"><span class="lineno">  566</span>    NodeData nd(nptr-&gt;second);</div>
+<div class="line"><span class="lineno">  567</span>    <span class="comment">/* this depends upon the distinction between set and multiset.  i.e. an</span></div>
+<div class="line"><span class="lineno">  568</span><span class="comment">    insert of a duplicate does nothing*/</span></div>
+<div class="line"><span class="lineno">  569</span>    <span class="keywordflow">if</span> ((alg == nd.algorithm) &amp;&amp; (algidtest == nd.algid)) {</div>
+<div class="line"><span class="lineno">  570</span>      matching_ids.insert(nd.uuid);</div>
+<div class="line"><span class="lineno">  571</span>      need_to_erase.push_back(nptr);</div>
+<div class="line"><span class="lineno">  572</span>    }</div>
+<div class="line"><span class="lineno">  573</span>  }</div>
+<div class="line"><span class="lineno">  574</span>  <span class="comment">// handle no match situation gracefully</span></div>
+<div class="line"><span class="lineno">  575</span>  <span class="keywordflow">if</span> (matching_ids.empty())</div>
+<div class="line"><span class="lineno">  576</span>    <span class="keywordflow">return</span> string(<span class="stringliteral">&quot;UNDEFINED&quot;</span>);</div>
+<div class="line"><span class="lineno">  577</span>  <span class="comment">/* Nothing more to do but return the uuid if there is only one*/</span></div>
+<div class="line"><span class="lineno">  578</span>  <span class="keywordflow">if</span> (matching_ids.size() == 1)</div>
+<div class="line"><span class="lineno">  579</span>    <span class="keywordflow">return</span> *(matching_ids.begin());</div>
+<div class="line"><span class="lineno">  580</span>  <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  581</span>    <span class="keywordflow">for</span> (<span class="keyword">auto</span> sptr = need_to_erase.begin(); sptr != need_to_erase.end();</div>
+<div class="line"><span class="lineno">  582</span>         ++sptr) {</div>
+<div class="line"><span class="lineno">  583</span>      nodes.erase(*sptr);</div>
+<div class="line"><span class="lineno">  584</span>    }</div>
+<div class="line"><span class="lineno">  585</span>    need_to_erase.clear();</div>
+<div class="line"><span class="lineno">  586</span>  }</div>
+<div class="line"><span class="lineno">  587</span>  <span class="comment">/* Here is the complicated case.  We use the uuid from ndthis as the master</span></div>
+<div class="line"><span class="lineno">  588</span><span class="comment">  and change all the others.   This operation works ONLY because in a multimap</span></div>
+<div class="line"><span class="lineno">  589</span><span class="comment">  erase only invalidates the iterator it points to and others remain valid.</span></div>
+<div class="line"><span class="lineno">  590</span><span class="comment">  */</span></div>
+<div class="line"><span class="lineno">  591</span>  <span class="keywordtype">string</span> master_uuid = ndthis.uuid;</div>
+<div class="line"><span class="lineno">  592</span>  <span class="keywordflow">for</span> (<span class="keyword">auto</span> sptr = matching_ids.begin(); sptr != matching_ids.end(); ++sptr) {</div>
+<div class="line"><span class="lineno">  593</span>    <span class="comment">/* Note this test is necessary to stip the master_uuid - no else needed*/</span></div>
+<div class="line"><span class="lineno">  594</span>    <span class="keywordflow">if</span> ((*sptr) != master_uuid) {</div>
+<div class="line"><span class="lineno">  595</span>      multimap&lt;string, NodeData&gt;::iterator nl, nu;</div>
+<div class="line"><span class="lineno">  596</span>      nl = this-&gt;nodes.lower_bound(*sptr);</div>
+<div class="line"><span class="lineno">  597</span>      nu = this-&gt;nodes.upper_bound(*sptr);</div>
+<div class="line"><span class="lineno">  598</span>      <span class="keywordflow">for</span> (<span class="keyword">auto</span> nptr = nl; nptr != nu; ++nptr) {</div>
+<div class="line"><span class="lineno">  599</span>        NodeData nd;</div>
+<div class="line"><span class="lineno">  600</span>        nd = (nptr-&gt;second);</div>
+<div class="line"><span class="lineno">  601</span>        need_to_erase.push_back(nptr);</div>
+<div class="line"><span class="lineno">  602</span>        nodes.insert(pair&lt;string, NodeData&gt;(master_uuid, nd));</div>
+<div class="line"><span class="lineno">  603</span>      }</div>
+<div class="line"><span class="lineno">  604</span>    }</div>
+<div class="line"><span class="lineno">  605</span>  }</div>
+<div class="line"><span class="lineno">  606</span>  <span class="keywordflow">for</span> (<span class="keyword">auto</span> sptr = need_to_erase.begin(); sptr != need_to_erase.end(); ++sptr) {</div>
+<div class="line"><span class="lineno">  607</span>    nodes.erase(*sptr);</div>
+<div class="line"><span class="lineno">  608</span>  }</div>
+<div class="line"><span class="lineno">  609</span> </div>
+<div class="line"><span class="lineno">  610</span>  <span class="keywordflow">return</span> master_uuid;</div>
+<div class="line"><span class="lineno">  611</span>}</div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1utility_1_1_node_data.html#aa51f302e3e070fd072255e1d1af9073f">mspass::utility::NodeData::algid</a>, <a class="el" href="classmspass_1_1utility_1_1_node_data.html#a040189091bc8458cc84b7a3781856643">mspass::utility::NodeData::algorithm</a>, <a class="el" href="classmspass_1_1utility_1_1_processing_history.html#a110c300dfa2a6f5236a7d254fa7bf663">current_nodedata()</a>, <a class="el" href="classmspass_1_1utility_1_1_processing_history.html#a8e42309bb4dfb0c0ea38496a3235f069">is_empty()</a>, and <a class="el" href="classmspass_1_1utility_1_1_node_data.html#a0f0df95910b9712e36d3a8389c0c9f38">mspass::utility::NodeData::uuid</a>.</p>
 
@@ -670,14 +652,14 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>jnm</b></td></
       </table>
 </div><div class="memdoc">
 <p>Clear this history chain - use with caution. </p>
-<div class="fragment"><div class="line"><span class="lineno">  678</span>{</div>
-<div class="line"><span class="lineno">  679</span>  nodes.clear();</div>
-<div class="line"><span class="lineno">  680</span>  current_status=ProcessingStatus::UNDEFINED;</div>
-<div class="line"><span class="lineno">  681</span>  current_stage=0;</div>
-<div class="line"><span class="lineno">  682</span>  mytype=AtomicType::UNDEFINED;</div>
-<div class="line"><span class="lineno">  683</span>  algorithm=<span class="stringliteral">&quot;UNDEFINED&quot;</span>;</div>
-<div class="line"><span class="lineno">  684</span>  algid=<span class="stringliteral">&quot;UNDEFINED&quot;</span>;</div>
-<div class="line"><span class="lineno">  685</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  631</span>                              {</div>
+<div class="line"><span class="lineno">  632</span>  nodes.clear();</div>
+<div class="line"><span class="lineno">  633</span>  current_status = ProcessingStatus::UNDEFINED;</div>
+<div class="line"><span class="lineno">  634</span>  current_stage = 0;</div>
+<div class="line"><span class="lineno">  635</span>  mytype = AtomicType::UNDEFINED;</div>
+<div class="line"><span class="lineno">  636</span>  algorithm = <span class="stringliteral">&quot;UNDEFINED&quot;</span>;</div>
+<div class="line"><span class="lineno">  637</span>  algid = <span class="stringliteral">&quot;UNDEFINED&quot;</span>;</div>
+<div class="line"><span class="lineno">  638</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -704,10 +686,10 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>jnm</b></td></
 </table>
 </div><div class="memdoc">
 <p>Return the algorithm name and id that created current node. </p>
-<div class="fragment"><div class="line"><span class="lineno">  615</span>  {</div>
-<div class="line"><span class="lineno">  616</span>    std::pair&lt;std::string,std::string&gt; result(algorithm,algid);</div>
-<div class="line"><span class="lineno">  617</span>    <span class="keywordflow">return</span> result;</div>
-<div class="line"><span class="lineno">  618</span>  }</div>
+<div class="fragment"><div class="line"><span class="lineno">  581</span>                                                   {</div>
+<div class="line"><span class="lineno">  582</span>    std::pair&lt;std::string, std::string&gt; result(algorithm, algid);</div>
+<div class="line"><span class="lineno">  583</span>    <span class="keywordflow">return</span> result;</div>
+<div class="line"><span class="lineno">  584</span>  }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -727,16 +709,16 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>jnm</b></td></
 </div><div class="memdoc">
 <p>Return all the attributes of current.</p>
 <p>This is a convenience method strictly for the C++ interface (it too nonpythonic to be useful to wrap for python). It returns a <a class="el" href="classmspass_1_1utility_1_1_node_data.html" title="Holds properties of data used as input to algorithm that created this object.">NodeData</a> class containing the attributes of the head of the chain. Like the getters above that is needed to save that data. </p>
-<div class="fragment"><div class="line"><span class="lineno">  713</span>{</div>
-<div class="line"><span class="lineno">  714</span>  NodeData nd;</div>
-<div class="line"><span class="lineno">  715</span>  nd.status=current_status;</div>
-<div class="line"><span class="lineno">  716</span>  nd.uuid=current_id;</div>
-<div class="line"><span class="lineno">  717</span>  nd.type=mytype;</div>
-<div class="line"><span class="lineno">  718</span>  nd.stage=current_stage;</div>
-<div class="line"><span class="lineno">  719</span>  nd.algorithm=algorithm;</div>
-<div class="line"><span class="lineno">  720</span>  nd.algid=algid;</div>
-<div class="line"><span class="lineno">  721</span>  <span class="keywordflow">return</span> nd;</div>
-<div class="line"><span class="lineno">  722</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  659</span>                                                   {</div>
+<div class="line"><span class="lineno">  660</span>  NodeData nd;</div>
+<div class="line"><span class="lineno">  661</span>  nd.status = current_status;</div>
+<div class="line"><span class="lineno">  662</span>  nd.uuid = current_id;</div>
+<div class="line"><span class="lineno">  663</span>  nd.type = mytype;</div>
+<div class="line"><span class="lineno">  664</span>  nd.stage = current_stage;</div>
+<div class="line"><span class="lineno">  665</span>  nd.algorithm = algorithm;</div>
+<div class="line"><span class="lineno">  666</span>  nd.algid = algid;</div>
+<div class="line"><span class="lineno">  667</span>  <span class="keywordflow">return</span> nd;</div>
+<div class="line"><span class="lineno">  668</span>}</div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1utility_1_1_node_data.html#aa51f302e3e070fd072255e1d1af9073f">mspass::utility::NodeData::algid</a>, <a class="el" href="classmspass_1_1utility_1_1_node_data.html#a040189091bc8458cc84b7a3781856643">mspass::utility::NodeData::algorithm</a>, <a class="el" href="classmspass_1_1utility_1_1_node_data.html#a972bd00dc85cae2e490833225f53e282">mspass::utility::NodeData::stage</a>, <a class="el" href="classmspass_1_1utility_1_1_node_data.html#a3dab2773c306f1d9977dccb455beec59">mspass::utility::NodeData::status</a>, <a class="el" href="classmspass_1_1utility_1_1_node_data.html#aa7c6f56ceca095d0af31f456d75954a4">mspass::utility::NodeData::type</a>, and <a class="el" href="classmspass_1_1utility_1_1_node_data.html#a0f0df95910b9712e36d3a8389c0c9f38">mspass::utility::NodeData::uuid</a>.</p>
 
@@ -759,25 +741,25 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>jnm</b></td></
 <p>Retrieve the nodes multimap that defines the tree stucture branches.</p>
 <p>This method does more than just get the protected multimap called nodes. It copies the map and then pushes the "current" contents to the map before returning the copy. This allows the data defines as current to not be pushed into the tree until they are needed. <br  />
  </p>
-<div class="fragment"><div class="line"><span class="lineno">  658</span>{</div>
-<div class="line"><span class="lineno">  659</span>  <span class="comment">/* Return empty map if it has no data - necessary or the logic</span></div>
-<div class="line"><span class="lineno">  660</span><span class="comment">  below will insert an empty head to the chain. */</span></div>
-<div class="line"><span class="lineno">  661</span>  <span class="keywordflow">if</span>(this-&gt;<a class="code hl_function" href="classmspass_1_1utility_1_1_processing_history.html#a8e42309bb4dfb0c0ea38496a3235f069">is_empty</a>())</div>
-<div class="line"><span class="lineno">  662</span>      <span class="keywordflow">return</span> nodes;  <span class="comment">// a way to return an empty container</span></div>
-<div class="line"><span class="lineno">  663</span>  <span class="comment">/* This is wrong, I think, but retained to test before removing.</span></div>
-<div class="line"><span class="lineno">  664</span><span class="comment">  remove this once current idea is confirmed. Note if that</span></div>
-<div class="line"><span class="lineno">  665</span><span class="comment">  proves true we can also remove the two lines above as they do</span></div>
-<div class="line"><span class="lineno">  666</span><span class="comment">  nothing useful*/</span></div>
-<div class="line"><span class="lineno">  667</span>  <span class="comment">/*</span></div>
-<div class="line"><span class="lineno">  668</span><span class="comment">  NodeData nd;</span></div>
-<div class="line"><span class="lineno">  669</span><span class="comment">  nd=this-&gt;current_nodedata();</span></div>
-<div class="line"><span class="lineno">  670</span><span class="comment">  pair&lt;string,NodeData&gt; pn(current_id,nd);</span></div>
-<div class="line"><span class="lineno">  671</span><span class="comment">  multimap&lt;string,NodeData&gt; result(this-&gt;nodes);</span></div>
-<div class="line"><span class="lineno">  672</span><span class="comment">  result.insert(pn);</span></div>
-<div class="line"><span class="lineno">  673</span><span class="comment">  return result;</span></div>
-<div class="line"><span class="lineno">  674</span><span class="comment">  */</span></div>
-<div class="line"><span class="lineno">  675</span>  <span class="keywordflow">return</span> nodes;</div>
-<div class="line"><span class="lineno">  676</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  612</span>                                                              {</div>
+<div class="line"><span class="lineno">  613</span>  <span class="comment">/* Return empty map if it has no data - necessary or the logic</span></div>
+<div class="line"><span class="lineno">  614</span><span class="comment">  below will insert an empty head to the chain. */</span></div>
+<div class="line"><span class="lineno">  615</span>  <span class="keywordflow">if</span> (this-&gt;<a class="code hl_function" href="classmspass_1_1utility_1_1_processing_history.html#a8e42309bb4dfb0c0ea38496a3235f069">is_empty</a>())</div>
+<div class="line"><span class="lineno">  616</span>    <span class="keywordflow">return</span> nodes; <span class="comment">// a way to return an empty container</span></div>
+<div class="line"><span class="lineno">  617</span>  <span class="comment">/* This is wrong, I think, but retained to test before removing.</span></div>
+<div class="line"><span class="lineno">  618</span><span class="comment">  remove this once current idea is confirmed. Note if that</span></div>
+<div class="line"><span class="lineno">  619</span><span class="comment">  proves true we can also remove the two lines above as they do</span></div>
+<div class="line"><span class="lineno">  620</span><span class="comment">  nothing useful*/</span></div>
+<div class="line"><span class="lineno">  621</span>  <span class="comment">/*</span></div>
+<div class="line"><span class="lineno">  622</span><span class="comment">  NodeData nd;</span></div>
+<div class="line"><span class="lineno">  623</span><span class="comment">  nd=this-&gt;current_nodedata();</span></div>
+<div class="line"><span class="lineno">  624</span><span class="comment">  pair&lt;string,NodeData&gt; pn(current_id,nd);</span></div>
+<div class="line"><span class="lineno">  625</span><span class="comment">  multimap&lt;string,NodeData&gt; result(this-&gt;nodes);</span></div>
+<div class="line"><span class="lineno">  626</span><span class="comment">  result.insert(pn);</span></div>
+<div class="line"><span class="lineno">  627</span><span class="comment">  return result;</span></div>
+<div class="line"><span class="lineno">  628</span><span class="comment">  */</span></div>
+<div class="line"><span class="lineno">  629</span>  <span class="keywordflow">return</span> nodes;</div>
+<div class="line"><span class="lineno">  630</span>}</div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1utility_1_1_processing_history.html#a8e42309bb4dfb0c0ea38496a3235f069">is_empty()</a>.</p>
 
@@ -807,9 +789,7 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>jnm</b></td></
 </div><div class="memdoc">
 <p>Return the id of this object set for this history chain.</p>
 <p>We maintain the uuid for a data object inside this class. This method fetches the string representation of the uuid of this data object. </p>
-<div class="fragment"><div class="line"><span class="lineno">  610</span>  {</div>
-<div class="line"><span class="lineno">  611</span>    <span class="keywordflow">return</span> current_id;</div>
-<div class="line"><span class="lineno">  612</span>  };</div>
+<div class="fragment"><div class="line"><span class="lineno">  579</span>{ <span class="keywordflow">return</span> current_id; };</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -838,21 +818,21 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>jnm</b></td></
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>list of <a class="el" href="classmspass_1_1utility_1_1_node_data.html" title="Holds properties of data used as input to algorithm that created this object.">NodeData</a> that define the inputs. Will silently return empty list if the key is not found. </dd></dl>
-<div class="fragment"><div class="line"><span class="lineno">  725</span>{</div>
-<div class="line"><span class="lineno">  726</span>  list&lt;NodeData&gt; result;</div>
-<div class="line"><span class="lineno">  727</span>  <span class="comment">// Return empty list immediately if key not found</span></div>
-<div class="line"><span class="lineno">  728</span>  <span class="keywordflow">if</span>(nodes.count(id_to_find)&lt;=0) <span class="keywordflow">return</span> result;</div>
-<div class="line"><span class="lineno">  729</span>  <span class="comment">/* Note these have to be const_iterators because method is tagged const*/</span></div>
-<div class="line"><span class="lineno">  730</span>  multimap&lt;string,NodeData&gt;::const_iterator upper,lower;</div>
-<div class="line"><span class="lineno">  731</span>  lower=nodes.lower_bound(id_to_find);</div>
-<div class="line"><span class="lineno">  732</span>  upper=nodes.upper_bound(id_to_find);</div>
-<div class="line"><span class="lineno">  733</span>  multimap&lt;string,NodeData&gt;::const_iterator mptr;</div>
-<div class="line"><span class="lineno">  734</span>  <span class="keywordflow">for</span>(mptr=lower;mptr!=upper;++mptr)</div>
-<div class="line"><span class="lineno">  735</span>  {</div>
-<div class="line"><span class="lineno">  736</span>    result.push_back(mptr-&gt;second);</div>
-<div class="line"><span class="lineno">  737</span>  }</div>
-<div class="line"><span class="lineno">  738</span>  <span class="keywordflow">return</span> result;</div>
-<div class="line"><span class="lineno">  739</span>};</div>
+<div class="fragment"><div class="line"><span class="lineno">  670</span>                                                                         {</div>
+<div class="line"><span class="lineno">  671</span>  list&lt;NodeData&gt; result;</div>
+<div class="line"><span class="lineno">  672</span>  <span class="comment">// Return empty list immediately if key not found</span></div>
+<div class="line"><span class="lineno">  673</span>  <span class="keywordflow">if</span> (nodes.count(id_to_find) &lt;= 0)</div>
+<div class="line"><span class="lineno">  674</span>    <span class="keywordflow">return</span> result;</div>
+<div class="line"><span class="lineno">  675</span>  <span class="comment">/* Note these have to be const_iterators because method is tagged const*/</span></div>
+<div class="line"><span class="lineno">  676</span>  multimap&lt;string, NodeData&gt;::const_iterator upper, lower;</div>
+<div class="line"><span class="lineno">  677</span>  lower = nodes.lower_bound(id_to_find);</div>
+<div class="line"><span class="lineno">  678</span>  upper = nodes.upper_bound(id_to_find);</div>
+<div class="line"><span class="lineno">  679</span>  multimap&lt;string, NodeData&gt;::const_iterator mptr;</div>
+<div class="line"><span class="lineno">  680</span>  <span class="keywordflow">for</span> (mptr = lower; mptr != upper; ++mptr) {</div>
+<div class="line"><span class="lineno">  681</span>    result.push_back(mptr-&gt;second);</div>
+<div class="line"><span class="lineno">  682</span>  }</div>
+<div class="line"><span class="lineno">  683</span>  <span class="keywordflow">return</span> result;</div>
+<div class="line"><span class="lineno">  684</span>};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -872,11 +852,11 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>jnm</b></td></
 </div><div class="memdoc">
 <p>Return true if the processing chain is empty.</p>
 <p>This method provides a standard test for an invalid, empty processing chain. Constructors except the copy constructor will all put this object in an invalid state that will cause this method to return true. Only if the chain is initialized properly with a call to set_as_origin will this method return a false. </p>
-<div class="fragment"><div class="line"><span class="lineno">  115</span>{</div>
-<div class="line"><span class="lineno">  116</span>  <span class="keywordflow">if</span>( (current_status==ProcessingStatus::UNDEFINED)</div>
-<div class="line"><span class="lineno">  117</span>     &amp;&amp; (nodes.empty()) )<span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><span class="lineno">  118</span>  <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">  119</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  109</span>                                       {</div>
+<div class="line"><span class="lineno">  110</span>  <span class="keywordflow">if</span> ((current_status == ProcessingStatus::UNDEFINED) &amp;&amp; (nodes.empty()))</div>
+<div class="line"><span class="lineno">  111</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  112</span>  <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  113</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -895,12 +875,13 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>jnm</b></td></
       </table>
 </div><div class="memdoc">
 <p>Return true if the current data is in state defined as "origin" - see class description </p>
-<div class="fragment"><div class="line"><span class="lineno">  128</span>{</div>
-<div class="line"><span class="lineno">  129</span>  <span class="keywordflow">if</span>(current_status==ProcessingStatus::RAW || current_status==ProcessingStatus::ORIGIN)</div>
-<div class="line"><span class="lineno">  130</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><span class="lineno">  131</span>  <span class="keywordflow">else</span></div>
-<div class="line"><span class="lineno">  132</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">  133</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  120</span>                                        {</div>
+<div class="line"><span class="lineno">  121</span>  <span class="keywordflow">if</span> (current_status == ProcessingStatus::RAW ||</div>
+<div class="line"><span class="lineno">  122</span>      current_status == ProcessingStatus::ORIGIN)</div>
+<div class="line"><span class="lineno">  123</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  124</span>  <span class="keywordflow">else</span></div>
+<div class="line"><span class="lineno">  125</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  126</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -919,12 +900,12 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>jnm</b></td></
       </table>
 </div><div class="memdoc">
 <p>Return true if the current data is in state defined as "raw" - see class description </p>
-<div class="fragment"><div class="line"><span class="lineno">  121</span>{</div>
-<div class="line"><span class="lineno">  122</span>  <span class="keywordflow">if</span>(current_status==ProcessingStatus::RAW)</div>
-<div class="line"><span class="lineno">  123</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><span class="lineno">  124</span>  <span class="keywordflow">else</span></div>
-<div class="line"><span class="lineno">  125</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">  126</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  114</span>                                     {</div>
+<div class="line"><span class="lineno">  115</span>  <span class="keywordflow">if</span> (current_status == ProcessingStatus::RAW)</div>
+<div class="line"><span class="lineno">  116</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  117</span>  <span class="keywordflow">else</span></div>
+<div class="line"><span class="lineno">  118</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  119</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -943,12 +924,12 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>jnm</b></td></
       </table>
 </div><div class="memdoc">
 <p>Return true if the current data is in state defined as "saved" - see class description </p>
-<div class="fragment"><div class="line"><span class="lineno">  142</span>{</div>
-<div class="line"><span class="lineno">  143</span>  <span class="keywordflow">if</span>(current_status==ProcessingStatus::SAVED)</div>
-<div class="line"><span class="lineno">  144</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><span class="lineno">  145</span>  <span class="keywordflow">else</span></div>
-<div class="line"><span class="lineno">  146</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">  147</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  133</span>                                       {</div>
+<div class="line"><span class="lineno">  134</span>  <span class="keywordflow">if</span> (current_status == ProcessingStatus::SAVED)</div>
+<div class="line"><span class="lineno">  135</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  136</span>  <span class="keywordflow">else</span></div>
+<div class="line"><span class="lineno">  137</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  138</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -967,12 +948,12 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>jnm</b></td></
       </table>
 </div><div class="memdoc">
 <p>Return true if the current data is in state defined as "volatile" - see class description </p>
-<div class="fragment"><div class="line"><span class="lineno">  135</span>{</div>
-<div class="line"><span class="lineno">  136</span>  <span class="keywordflow">if</span>(current_status==ProcessingStatus::VOLATILE)</div>
-<div class="line"><span class="lineno">  137</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><span class="lineno">  138</span>  <span class="keywordflow">else</span></div>
-<div class="line"><span class="lineno">  139</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">  140</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  127</span>                                          {</div>
+<div class="line"><span class="lineno">  128</span>  <span class="keywordflow">if</span> (current_status == ProcessingStatus::VOLATILE)</div>
+<div class="line"><span class="lineno">  129</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  130</span>  <span class="keywordflow">else</span></div>
+<div class="line"><span class="lineno">  131</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  132</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1024,46 +1005,48 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>jnm</b></td></
   </table>
   </dd>
 </dl>
-<div class="fragment"><div class="line"><span class="lineno">  422</span>{</div>
-<div class="line"><span class="lineno">  423</span>  <span class="keywordflow">if</span>(this-&gt;<a class="code hl_function" href="classmspass_1_1utility_1_1_processing_history.html#a8e42309bb4dfb0c0ea38496a3235f069">is_empty</a>())</div>
-<div class="line"><span class="lineno">  424</span>  {</div>
-<div class="line"><span class="lineno">  425</span>    stringstream ss;</div>
-<div class="line"><span class="lineno">  426</span>    ss &lt;&lt; <span class="stringliteral">&quot;Attempt to call this method on an empty history chain for uuid=&quot;</span></div>
-<div class="line"><span class="lineno">  427</span>       &lt;&lt; this-&gt;<a class="code hl_function" href="classmspass_1_1utility_1_1_processing_history.html#adf60368ca5c699cc9186fa145d04376d">id</a>()&lt;&lt;endl</div>
-<div class="line"><span class="lineno">  428</span>       &lt;&lt; <span class="stringliteral">&quot;Cannot preserve history for writer=&quot;</span>&lt;&lt;alg&lt;&lt;<span class="stringliteral">&quot; with id=&quot;</span>&lt;&lt;algid&lt;&lt;endl;</div>
-<div class="line"><span class="lineno">  429</span>    elog.<a class="code hl_function" href="classmspass_1_1utility_1_1_error_logger.html#aa69873ba0aebf67e9ba24d01992c0bcf">log_error</a>(<span class="stringliteral">&quot;ProcessingHistory::map_as_saved&quot;</span>,ss.str(),ErrorSeverity::Complaint);</div>
-<div class="line"><span class="lineno">  430</span>    <span class="keywordflow">return</span> current_id;</div>
-<div class="line"><span class="lineno">  431</span>  }</div>
-<div class="line"><span class="lineno">  432</span>  <span class="comment">/* This is essentially pushing current data to the end of the history chain</span></div>
-<div class="line"><span class="lineno">  433</span><span class="comment">  but using a special id that may or may not be saved by the caller.</span></div>
-<div class="line"><span class="lineno">  434</span><span class="comment">  We use a fixed keyword defined in ProcessingHistory.h assuming saves</span></div>
-<div class="line"><span class="lineno">  435</span><span class="comment">  are always a one-to-one operation (definition of atomic really)*/</span></div>
-<div class="line"><span class="lineno">  436</span>  NodeData nd(this-&gt;<a class="code hl_function" href="classmspass_1_1utility_1_1_processing_history.html#a110c300dfa2a6f5236a7d254fa7bf663">current_nodedata</a>());</div>
-<div class="line"><span class="lineno">  437</span>  pair&lt;string,NodeData&gt; pn(SAVED_ID_KEY,nd);</div>
-<div class="line"><span class="lineno">  438</span>  this-&gt;nodes.insert(pn);</div>
-<div class="line"><span class="lineno">  439</span>  <span class="comment">/* Now we reset current to define it as the saver.  Then calls to the</span></div>
-<div class="line"><span class="lineno">  440</span><span class="comment">  getters for the multimap will properly insert this data as the end of the</span></div>
-<div class="line"><span class="lineno">  441</span><span class="comment">  chain.  Note a key difference from new_map is we don&#39;t create a new uuid.</span></div>
-<div class="line"><span class="lineno">  442</span><span class="comment">  I don&#39;t think that will cause an ambiguity, but it might be better to</span></div>
-<div class="line"><span class="lineno">  443</span><span class="comment">  just create a new one here - will do it this way unless that proves a problem</span></div>
-<div class="line"><span class="lineno">  444</span><span class="comment">  as the equality of the two might be a useful test for other purposes */</span></div>
-<div class="line"><span class="lineno">  445</span>  algorithm=alg;</div>
-<div class="line"><span class="lineno">  446</span>  algid=algid_in;</div>
-<div class="line"><span class="lineno">  447</span>  current_status=ProcessingStatus::SAVED;</div>
-<div class="line"><span class="lineno">  448</span>  current_id=SAVED_ID_KEY;</div>
-<div class="line"><span class="lineno">  449</span>  <span class="keywordflow">if</span>(current_stage&gt;=0)</div>
-<div class="line"><span class="lineno">  450</span>    ++current_stage;</div>
-<div class="line"><span class="lineno">  451</span>  <span class="keywordflow">else</span></div>
-<div class="line"><span class="lineno">  452</span>  {</div>
-<div class="line"><span class="lineno">  453</span>    elog.<a class="code hl_function" href="classmspass_1_1utility_1_1_error_logger.html#aa69873ba0aebf67e9ba24d01992c0bcf">log_error</a>(<span class="stringliteral">&quot;ProcessingHistory::map_as_saved&quot;</span>,</div>
-<div class="line"><span class="lineno">  454</span>      <span class="stringliteral">&quot;current_stage on entry had not been initialized\nImproper usage will create an invalid history chain that may cause downstream problems&quot;</span>,</div>
-<div class="line"><span class="lineno">  455</span>       ErrorSeverity::Complaint);</div>
-<div class="line"><span class="lineno">  456</span>    current_stage=0;</div>
-<div class="line"><span class="lineno">  457</span>  }</div>
-<div class="line"><span class="lineno">  458</span>  mytype=typ;</div>
-<div class="line"><span class="lineno">  459</span>  <span class="keywordflow">return</span> current_id;</div>
-<div class="line"><span class="lineno">  460</span>}</div>
-<div class="ttc" id="aclassmspass_1_1utility_1_1_processing_history_html_adf60368ca5c699cc9186fa145d04376d"><div class="ttname"><a href="classmspass_1_1utility_1_1_processing_history.html#adf60368ca5c699cc9186fa145d04376d">mspass::utility::ProcessingHistory::id</a></div><div class="ttdeci">std::string id() const</div><div class="ttdef"><b>Definition</b> ProcessingHistory.h:609</div></div>
+<div class="fragment"><div class="line"><span class="lineno">  396</span>                                                             {</div>
+<div class="line"><span class="lineno">  397</span>  <span class="keywordflow">if</span> (this-&gt;<a class="code hl_function" href="classmspass_1_1utility_1_1_processing_history.html#a8e42309bb4dfb0c0ea38496a3235f069">is_empty</a>()) {</div>
+<div class="line"><span class="lineno">  398</span>    stringstream ss;</div>
+<div class="line"><span class="lineno">  399</span>    ss &lt;&lt; <span class="stringliteral">&quot;Attempt to call this method on an empty history chain for uuid=&quot;</span></div>
+<div class="line"><span class="lineno">  400</span>       &lt;&lt; this-&gt;<a class="code hl_function" href="classmspass_1_1utility_1_1_processing_history.html#adf60368ca5c699cc9186fa145d04376d">id</a>() &lt;&lt; endl</div>
+<div class="line"><span class="lineno">  401</span>       &lt;&lt; <span class="stringliteral">&quot;Cannot preserve history for writer=&quot;</span> &lt;&lt; alg &lt;&lt; <span class="stringliteral">&quot; with id=&quot;</span> &lt;&lt; algid</div>
+<div class="line"><span class="lineno">  402</span>       &lt;&lt; endl;</div>
+<div class="line"><span class="lineno">  403</span>    elog.<a class="code hl_function" href="classmspass_1_1utility_1_1_error_logger.html#aa69873ba0aebf67e9ba24d01992c0bcf">log_error</a>(<span class="stringliteral">&quot;ProcessingHistory::map_as_saved&quot;</span>, ss.str(),</div>
+<div class="line"><span class="lineno">  404</span>                   ErrorSeverity::Complaint);</div>
+<div class="line"><span class="lineno">  405</span>    <span class="keywordflow">return</span> current_id;</div>
+<div class="line"><span class="lineno">  406</span>  }</div>
+<div class="line"><span class="lineno">  407</span>  <span class="comment">/* This is essentially pushing current data to the end of the history chain</span></div>
+<div class="line"><span class="lineno">  408</span><span class="comment">  but using a special id that may or may not be saved by the caller.</span></div>
+<div class="line"><span class="lineno">  409</span><span class="comment">  We use a fixed keyword defined in ProcessingHistory.h assuming saves</span></div>
+<div class="line"><span class="lineno">  410</span><span class="comment">  are always a one-to-one operation (definition of atomic really)*/</span></div>
+<div class="line"><span class="lineno">  411</span>  NodeData nd(this-&gt;<a class="code hl_function" href="classmspass_1_1utility_1_1_processing_history.html#a110c300dfa2a6f5236a7d254fa7bf663">current_nodedata</a>());</div>
+<div class="line"><span class="lineno">  412</span>  pair&lt;string, NodeData&gt; pn(SAVED_ID_KEY, nd);</div>
+<div class="line"><span class="lineno">  413</span>  this-&gt;nodes.insert(pn);</div>
+<div class="line"><span class="lineno">  414</span>  <span class="comment">/* Now we reset current to define it as the saver.  Then calls to the</span></div>
+<div class="line"><span class="lineno">  415</span><span class="comment">  getters for the multimap will properly insert this data as the end of the</span></div>
+<div class="line"><span class="lineno">  416</span><span class="comment">  chain.  Note a key difference from new_map is we don&#39;t create a new uuid.</span></div>
+<div class="line"><span class="lineno">  417</span><span class="comment">  I don&#39;t think that will cause an ambiguity, but it might be better to</span></div>
+<div class="line"><span class="lineno">  418</span><span class="comment">  just create a new one here - will do it this way unless that proves a problem</span></div>
+<div class="line"><span class="lineno">  419</span><span class="comment">  as the equality of the two might be a useful test for other purposes */</span></div>
+<div class="line"><span class="lineno">  420</span>  algorithm = alg;</div>
+<div class="line"><span class="lineno">  421</span>  algid = algid_in;</div>
+<div class="line"><span class="lineno">  422</span>  current_status = ProcessingStatus::SAVED;</div>
+<div class="line"><span class="lineno">  423</span>  current_id = SAVED_ID_KEY;</div>
+<div class="line"><span class="lineno">  424</span>  <span class="keywordflow">if</span> (current_stage &gt;= 0)</div>
+<div class="line"><span class="lineno">  425</span>    ++current_stage;</div>
+<div class="line"><span class="lineno">  426</span>  <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  427</span>    elog.<a class="code hl_function" href="classmspass_1_1utility_1_1_error_logger.html#aa69873ba0aebf67e9ba24d01992c0bcf">log_error</a>(</div>
+<div class="line"><span class="lineno">  428</span>        <span class="stringliteral">&quot;ProcessingHistory::map_as_saved&quot;</span>,</div>
+<div class="line"><span class="lineno">  429</span>        <span class="stringliteral">&quot;current_stage on entry had not been initialized\nImproper usage will &quot;</span></div>
+<div class="line"><span class="lineno">  430</span>        <span class="stringliteral">&quot;create an invalid history chain that may cause downstream problems&quot;</span>,</div>
+<div class="line"><span class="lineno">  431</span>        ErrorSeverity::Complaint);</div>
+<div class="line"><span class="lineno">  432</span>    current_stage = 0;</div>
+<div class="line"><span class="lineno">  433</span>  }</div>
+<div class="line"><span class="lineno">  434</span>  mytype = typ;</div>
+<div class="line"><span class="lineno">  435</span>  <span class="keywordflow">return</span> current_id;</div>
+<div class="line"><span class="lineno">  436</span>}</div>
+<div class="ttc" id="aclassmspass_1_1utility_1_1_processing_history_html_adf60368ca5c699cc9186fa145d04376d"><div class="ttname"><a href="classmspass_1_1utility_1_1_processing_history.html#adf60368ca5c699cc9186fa145d04376d">mspass::utility::ProcessingHistory::id</a></div><div class="ttdeci">std::string id() const</div><div class="ttdef"><b>Definition</b> ProcessingHistory.h:579</div></div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1utility_1_1_processing_history.html#a110c300dfa2a6f5236a7d254fa7bf663">current_nodedata()</a>, <a class="el" href="classmspass_1_1utility_1_1_processing_history.html#adf60368ca5c699cc9186fa145d04376d">id()</a>, <a class="el" href="classmspass_1_1utility_1_1_processing_history.html#a8e42309bb4dfb0c0ea38496a3235f069">is_empty()</a>, and <a class="el" href="classmspass_1_1utility_1_1_error_logger.html#aa69873ba0aebf67e9ba24d01992c0bcf">mspass::utility::ErrorLogger::log_error()</a>.</p>
 
@@ -1092,50 +1075,40 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>jnm</b></td></
   </table>
   </dd>
 </dl>
-<div class="fragment"><div class="line"><span class="lineno">  464</span>{</div>
-<div class="line"><span class="lineno">  465</span> </div>
-<div class="line"><span class="lineno">  466</span>  <span class="keywordflow">if</span>(data_to_add.is_empty())</div>
-<div class="line"><span class="lineno">  467</span>  {</div>
-<div class="line"><span class="lineno">  468</span>    stringstream ss;</div>
-<div class="line"><span class="lineno">  469</span>    ss&lt;&lt;<span class="stringliteral">&quot;Data with uuid=&quot;</span>&lt;&lt;data_to_add.id()&lt;&lt;<span class="stringliteral">&quot; has an empty history chain&quot;</span>&lt;&lt;endl</div>
-<div class="line"><span class="lineno">  470</span>      &lt;&lt; <span class="stringliteral">&quot;At best this will leave ProcessingHistory incomplete&quot;</span>&lt;&lt;endl;</div>
-<div class="line"><span class="lineno">  471</span>    elog.<a class="code hl_function" href="classmspass_1_1utility_1_1_error_logger.html#aa69873ba0aebf67e9ba24d01992c0bcf">log_error</a>(<span class="stringliteral">&quot;ProcessingHistory::merge&quot;</span>,ss.str(),</div>
-<div class="line"><span class="lineno">  472</span>      ErrorSeverity::Complaint);</div>
-<div class="line"><span class="lineno">  473</span>  }</div>
-<div class="line"><span class="lineno">  474</span>  <span class="keywordflow">else</span></div>
-<div class="line"><span class="lineno">  475</span>  {</div>
-<div class="line"><span class="lineno">  476</span>    multimap&lt;string,NodeData&gt;::iterator nptr;</div>
-<div class="line"><span class="lineno">  477</span>    multimap&lt;string,NodeData&gt; newhistory = data_to_add.get_nodes();</div>
-<div class="line"><span class="lineno">  478</span>    multimap&lt;string,NodeData&gt;::iterator nl,nu;</div>
-<div class="line"><span class="lineno">  479</span>    <span class="keywordflow">for</span>(nptr=newhistory.begin();nptr!=newhistory.end();++nptr)</div>
-<div class="line"><span class="lineno">  480</span>    {</div>
-<div class="line"><span class="lineno">  481</span>      <span class="keywordtype">string</span> key(nptr-&gt;first);</div>
-<div class="line"><span class="lineno">  482</span>      <span class="comment">/* if the data_to_add&#39;s key matches its current id,</span></div>
-<div class="line"><span class="lineno">  483</span><span class="comment">      we merge all the nodes under the current id of *this. */</span></div>
-<div class="line"><span class="lineno">  484</span>      <span class="keywordflow">if</span>(key == data_to_add.current_id)</div>
-<div class="line"><span class="lineno">  485</span>      {</div>
-<div class="line"><span class="lineno">  486</span>        this-&gt;nodes.insert(std::make_pair(this-&gt;current_id, nptr-&gt;second));</div>
-<div class="line"><span class="lineno">  487</span>      }</div>
-<div class="line"><span class="lineno">  488</span>      <span class="keywordflow">else</span> <span class="keywordflow">if</span>(this-&gt;nodes.count(key)&gt;0)</div>
-<div class="line"><span class="lineno">  489</span>      {</div>
-<div class="line"><span class="lineno">  490</span>        nl=this-&gt;nodes.lower_bound(key);</div>
-<div class="line"><span class="lineno">  491</span>        nu=this-&gt;nodes.upper_bound(key);</div>
-<div class="line"><span class="lineno">  492</span>        <span class="keywordflow">for</span>(<span class="keyword">auto</span> ptr=nl;ptr!=nu;++ptr)</div>
-<div class="line"><span class="lineno">  493</span>        {</div>
-<div class="line"><span class="lineno">  494</span>          NodeData ndtest(ptr-&gt;second);</div>
-<div class="line"><span class="lineno">  495</span>          <span class="keywordflow">if</span>(ndtest != (nptr-&gt;second))</div>
-<div class="line"><span class="lineno">  496</span>          {</div>
-<div class="line"><span class="lineno">  497</span>            this-&gt;nodes.insert(*nptr);</div>
-<div class="line"><span class="lineno">  498</span>          }</div>
-<div class="line"><span class="lineno">  499</span>        }</div>
-<div class="line"><span class="lineno">  500</span>      }</div>
-<div class="line"><span class="lineno">  501</span>      <span class="keywordflow">else</span></div>
-<div class="line"><span class="lineno">  502</span>      {</div>
-<div class="line"><span class="lineno">  503</span>        this-&gt;nodes.insert(*nptr);</div>
-<div class="line"><span class="lineno">  504</span>      }</div>
-<div class="line"><span class="lineno">  505</span>    }</div>
-<div class="line"><span class="lineno">  506</span>  }</div>
-<div class="line"><span class="lineno">  507</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  439</span>                                                                  {</div>
+<div class="line"><span class="lineno">  440</span> </div>
+<div class="line"><span class="lineno">  441</span>  <span class="keywordflow">if</span> (data_to_add.is_empty()) {</div>
+<div class="line"><span class="lineno">  442</span>    stringstream ss;</div>
+<div class="line"><span class="lineno">  443</span>    ss &lt;&lt; <span class="stringliteral">&quot;Data with uuid=&quot;</span> &lt;&lt; data_to_add.id() &lt;&lt; <span class="stringliteral">&quot; has an empty history chain&quot;</span></div>
+<div class="line"><span class="lineno">  444</span>       &lt;&lt; endl</div>
+<div class="line"><span class="lineno">  445</span>       &lt;&lt; <span class="stringliteral">&quot;At best this will leave ProcessingHistory incomplete&quot;</span> &lt;&lt; endl;</div>
+<div class="line"><span class="lineno">  446</span>    elog.<a class="code hl_function" href="classmspass_1_1utility_1_1_error_logger.html#aa69873ba0aebf67e9ba24d01992c0bcf">log_error</a>(<span class="stringliteral">&quot;ProcessingHistory::merge&quot;</span>, ss.str(),</div>
+<div class="line"><span class="lineno">  447</span>                   ErrorSeverity::Complaint);</div>
+<div class="line"><span class="lineno">  448</span>  } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  449</span>    multimap&lt;string, NodeData&gt;::iterator nptr;</div>
+<div class="line"><span class="lineno">  450</span>    multimap&lt;string, NodeData&gt; newhistory = data_to_add.get_nodes();</div>
+<div class="line"><span class="lineno">  451</span>    multimap&lt;string, NodeData&gt;::iterator nl, nu;</div>
+<div class="line"><span class="lineno">  452</span>    <span class="keywordflow">for</span> (nptr = newhistory.begin(); nptr != newhistory.end(); ++nptr) {</div>
+<div class="line"><span class="lineno">  453</span>      <span class="keywordtype">string</span> key(nptr-&gt;first);</div>
+<div class="line"><span class="lineno">  454</span>      <span class="comment">/* if the data_to_add&#39;s key matches its current id,</span></div>
+<div class="line"><span class="lineno">  455</span><span class="comment">      we merge all the nodes under the current id of *this. */</span></div>
+<div class="line"><span class="lineno">  456</span>      <span class="keywordflow">if</span> (key == data_to_add.current_id) {</div>
+<div class="line"><span class="lineno">  457</span>        this-&gt;nodes.insert(std::make_pair(this-&gt;current_id, nptr-&gt;second));</div>
+<div class="line"><span class="lineno">  458</span>      } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (this-&gt;nodes.count(key) &gt; 0) {</div>
+<div class="line"><span class="lineno">  459</span>        nl = this-&gt;nodes.lower_bound(key);</div>
+<div class="line"><span class="lineno">  460</span>        nu = this-&gt;nodes.upper_bound(key);</div>
+<div class="line"><span class="lineno">  461</span>        <span class="keywordflow">for</span> (<span class="keyword">auto</span> ptr = nl; ptr != nu; ++ptr) {</div>
+<div class="line"><span class="lineno">  462</span>          NodeData ndtest(ptr-&gt;second);</div>
+<div class="line"><span class="lineno">  463</span>          <span class="keywordflow">if</span> (ndtest != (nptr-&gt;second)) {</div>
+<div class="line"><span class="lineno">  464</span>            this-&gt;nodes.insert(*nptr);</div>
+<div class="line"><span class="lineno">  465</span>          }</div>
+<div class="line"><span class="lineno">  466</span>        }</div>
+<div class="line"><span class="lineno">  467</span>      } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  468</span>        this-&gt;nodes.insert(*nptr);</div>
+<div class="line"><span class="lineno">  469</span>      }</div>
+<div class="line"><span class="lineno">  470</span>    }</div>
+<div class="line"><span class="lineno">  471</span>  }</div>
+<div class="line"><span class="lineno">  472</span>}</div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1utility_1_1_processing_history.html#a52b0394b444f6db307945284ac6e5f8a">get_nodes()</a>, <a class="el" href="classmspass_1_1utility_1_1_processing_history.html#adf60368ca5c699cc9186fa145d04376d">id()</a>, <a class="el" href="classmspass_1_1utility_1_1_processing_history.html#a8e42309bb4dfb0c0ea38496a3235f069">is_empty()</a>, and <a class="el" href="classmspass_1_1utility_1_1_error_logger.html#aa69873ba0aebf67e9ba24d01992c0bcf">mspass::utility::ErrorLogger::log_error()</a>.</p>
 
@@ -1200,99 +1173,93 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>jnm</b></td></
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>a string representation of the uuid of the data to which this <a class="el" href="classmspass_1_1utility_1_1_processing_history.html" title="Lightweight class to preserve procesing chain of atomic objects.">ProcessingHistory</a> is now attached. </dd></dl>
-<div class="fragment"><div class="line"><span class="lineno">  190</span>{</div>
-<div class="line"><span class="lineno">  191</span>  <span class="keywordflow">if</span>(create_newid)</div>
-<div class="line"><span class="lineno">  192</span>  {</div>
-<div class="line"><span class="lineno">  193</span>    this-&gt;<a class="code hl_function" href="classmspass_1_1utility_1_1_processing_history.html#a9a8bf8bc3632660c91fd9d82a79f8411">newid</a>();</div>
-<div class="line"><span class="lineno">  194</span>  }</div>
-<div class="line"><span class="lineno">  195</span>  <span class="comment">/* We need to clear the tree contents because all the parents will</span></div>
-<div class="line"><span class="lineno">  196</span><span class="comment">  branch from this.  Hence, we have to put the node data into an empty</span></div>
-<div class="line"><span class="lineno">  197</span><span class="comment">  container */</span></div>
-<div class="line"><span class="lineno">  198</span>  this-&gt;<a class="code hl_function" href="classmspass_1_1utility_1_1_processing_history.html#a42865512c68a26b85b394825a1629729">clear</a>();</div>
-<div class="line"><span class="lineno">  199</span>  algorithm=alg;</div>
-<div class="line"><span class="lineno">  200</span>  algid=algid_in;</div>
-<div class="line"><span class="lineno">  201</span>  mytype=typ;</div>
-<div class="line"><span class="lineno">  202</span>  <span class="comment">/* Initialize current stage but assume it will be updated as max of</span></div>
-<div class="line"><span class="lineno">  203</span><span class="comment">  parents below */</span></div>
-<div class="line"><span class="lineno">  204</span>  current_stage=0;</div>
-<div class="line"><span class="lineno">  205</span>  multimap&lt;string,NodeData&gt;::const_iterator nptr,nl,nu;</div>
-<div class="line"><span class="lineno">  206</span>  <span class="keywordtype">size_t</span> i;</div>
-<div class="line"><span class="lineno">  207</span>  <span class="comment">/* current_stage can be ambiguous from multiple inputs.  We define</span></div>
-<div class="line"><span class="lineno">  208</span><span class="comment">  the current stage from a reduce as the largest stage value found</span></div>
-<div class="line"><span class="lineno">  209</span><span class="comment">  in all inputs.  Note we only test the stage value at the head for</span></div>
-<div class="line"><span class="lineno">  210</span><span class="comment">  each parent */</span></div>
-<div class="line"><span class="lineno">  211</span>  <span class="keywordtype">int</span> max_stage(0);</div>
-<div class="line"><span class="lineno">  212</span>  <span class="keywordflow">for</span>(i=0;i&lt;parents.size();++i)</div>
-<div class="line"><span class="lineno">  213</span>  {</div>
-<div class="line"><span class="lineno">  214</span>    <span class="keywordflow">if</span>(parents[i]-&gt;<a class="code hl_function" href="classmspass_1_1utility_1_1_processing_history.html#a8e42309bb4dfb0c0ea38496a3235f069">is_empty</a>())</div>
-<div class="line"><span class="lineno">  215</span>    {</div>
-<div class="line"><span class="lineno">  216</span>      stringstream ss;</div>
-<div class="line"><span class="lineno">  217</span>      ss &lt;&lt; <span class="stringliteral">&quot;Vector member number &quot;</span>&lt;&lt;i&lt;&lt;<span class="stringliteral">&quot; with uuid=&quot;</span>&lt;&lt;parents[i]-&gt;id()</div>
-<div class="line"><span class="lineno">  218</span>         &lt;&lt; <span class="stringliteral">&quot; has an empty history chain&quot;</span>&lt;&lt;endl</div>
-<div class="line"><span class="lineno">  219</span>         &lt;&lt; <span class="stringliteral">&quot;At best the processing history data will be incomplete&quot;</span>&lt;&lt;endl;</div>
-<div class="line"><span class="lineno">  220</span>      elog.<a class="code hl_function" href="classmspass_1_1utility_1_1_error_logger.html#aa69873ba0aebf67e9ba24d01992c0bcf">log_error</a>(<span class="stringliteral">&quot;ProcessingHistory::new_ensemble_process&quot;</span>,ss.str(),</div>
-<div class="line"><span class="lineno">  221</span>        ErrorSeverity::Complaint);</div>
-<div class="line"><span class="lineno">  222</span>      <span class="keywordflow">continue</span>;</div>
-<div class="line"><span class="lineno">  223</span>    }</div>
-<div class="line"><span class="lineno">  224</span>    multimap&lt;string,NodeData&gt; parent_node_data(parents[i]-&gt;<a class="code hl_function" href="classmspass_1_1utility_1_1_processing_history.html#a52b0394b444f6db307945284ac6e5f8a">get_nodes</a>());</div>
-<div class="line"><span class="lineno">  225</span>    <span class="comment">/* We also have to get the head data with this method now */</span></div>
-<div class="line"><span class="lineno">  226</span>    NodeData nd=parents[i]-&gt;current_nodedata();</div>
-<div class="line"><span class="lineno">  227</span>    <span class="keywordflow">if</span>(nd.stage&gt;max_stage) max_stage=nd.stage;</div>
-<div class="line"><span class="lineno">  228</span>    <span class="keywordflow">for</span>(nptr=parent_node_data.begin();nptr!=parent_node_data.end();++nptr)</div>
-<div class="line"><span class="lineno">  229</span>    {</div>
-<div class="line"><span class="lineno">  230</span>      <span class="comment">/*Adding to nodes multimap has a complication.  It is possible in</span></div>
-<div class="line"><span class="lineno">  231</span><span class="comment">      some situations to have duplicate node data coming from different</span></div>
-<div class="line"><span class="lineno">  232</span><span class="comment">      inputs.  The method we use to reconstruct the processing history tree</span></div>
-<div class="line"><span class="lineno">  233</span><span class="comment">      will be confused by such duplicates so we need to test for pure</span></div>
-<div class="line"><span class="lineno">  234</span><span class="comment">      duplicates in NodeData values. This algorithm would not scale well</span></div>
-<div class="line"><span class="lineno">  235</span><span class="comment">      if the number of values with a common key is large for either</span></div>
-<div class="line"><span class="lineno">  236</span><span class="comment">      this or parent[i]*/</span></div>
-<div class="line"><span class="lineno">  237</span>      <span class="keywordtype">string</span> key(nptr-&gt;first);</div>
-<div class="line"><span class="lineno">  238</span>      <span class="keywordflow">if</span>(this-&gt;nodes.count(key)&gt;0)</div>
-<div class="line"><span class="lineno">  239</span>      {</div>
-<div class="line"><span class="lineno">  240</span>        nl=this-&gt;nodes.lower_bound(key);</div>
-<div class="line"><span class="lineno">  241</span>        nu=this-&gt;nodes.upper_bound(key);</div>
-<div class="line"><span class="lineno">  242</span>        <span class="keywordflow">for</span>(<span class="keyword">auto</span> ptr=nl;ptr!=nu;++ptr)</div>
-<div class="line"><span class="lineno">  243</span>        {</div>
-<div class="line"><span class="lineno">  244</span>          NodeData ndtest(ptr-&gt;second);</div>
-<div class="line"><span class="lineno">  245</span>          <span class="keywordflow">if</span>(ndtest != (nptr-&gt;second))</div>
-<div class="line"><span class="lineno">  246</span>          {</div>
-<div class="line"><span class="lineno">  247</span>            this-&gt;nodes.insert(*nptr);</div>
-<div class="line"><span class="lineno">  248</span>          }</div>
-<div class="line"><span class="lineno">  249</span>        }</div>
-<div class="line"><span class="lineno">  250</span>      }</div>
-<div class="line"><span class="lineno">  251</span>      <span class="keywordflow">else</span></div>
-<div class="line"><span class="lineno">  252</span>      {</div>
-<div class="line"><span class="lineno">  253</span>        <span class="comment">/* No problem just inserting a node if there were no previous</span></div>
-<div class="line"><span class="lineno">  254</span><span class="comment">        entries*/</span></div>
-<div class="line"><span class="lineno">  255</span>        this-&gt;nodes.insert(*nptr);</div>
-<div class="line"><span class="lineno">  256</span>      }</div>
-<div class="line"><span class="lineno">  257</span>    }</div>
-<div class="line"><span class="lineno">  258</span>    <span class="comment">/* Also insert the head data */</span></div>
-<div class="line"><span class="lineno">  259</span>    pair&lt;string,NodeData&gt; pnd(current_id,nd);</div>
-<div class="line"><span class="lineno">  260</span>    this-&gt;nodes.insert(pnd);</div>
-<div class="line"><span class="lineno">  261</span>  }</div>
-<div class="line"><span class="lineno">  262</span>  current_stage=max_stage;</div>
-<div class="line"><span class="lineno">  263</span>  <span class="comment">/* Now reset the current contents to make it the base of the history tree.</span></div>
-<div class="line"><span class="lineno">  264</span><span class="comment">  Be careful of uninitialized current_stage*/</span></div>
-<div class="line"><span class="lineno">  265</span>  <span class="keywordflow">if</span>(current_stage&gt;=0)</div>
-<div class="line"><span class="lineno">  266</span>    ++current_stage;</div>
-<div class="line"><span class="lineno">  267</span>  <span class="keywordflow">else</span></div>
-<div class="line"><span class="lineno">  268</span>  {</div>
-<div class="line"><span class="lineno">  269</span>    elog.<a class="code hl_function" href="classmspass_1_1utility_1_1_error_logger.html#aa69873ba0aebf67e9ba24d01992c0bcf">log_error</a>(<span class="stringliteral">&quot;ProcessingHistory::new_ensemble_process&quot;</span>,</div>
-<div class="line"><span class="lineno">  270</span>      <span class="stringliteral">&quot;current_stage for none of the parents was initialized\nImproper usage will create an invalid history chain that may cause downstream problems&quot;</span>,</div>
-<div class="line"><span class="lineno">  271</span>       ErrorSeverity::Complaint);</div>
-<div class="line"><span class="lineno">  272</span>    current_stage=0;</div>
-<div class="line"><span class="lineno">  273</span>  }</div>
-<div class="line"><span class="lineno">  274</span>  algorithm=alg;</div>
-<div class="line"><span class="lineno">  275</span>  algid=algid_in;</div>
-<div class="line"><span class="lineno">  276</span>  <span class="comment">// note this is output type - inputs can be variable and defined by nodes</span></div>
-<div class="line"><span class="lineno">  277</span>  mytype=typ;</div>
-<div class="line"><span class="lineno">  278</span>  current_status=ProcessingStatus::VOLATILE;</div>
-<div class="line"><span class="lineno">  279</span>  <span class="keywordflow">return</span> current_id;</div>
-<div class="line"><span class="lineno">  280</span>}</div>
-<div class="ttc" id="aclassmspass_1_1utility_1_1_processing_history_html_a42865512c68a26b85b394825a1629729"><div class="ttname"><a href="classmspass_1_1utility_1_1_processing_history.html#a42865512c68a26b85b394825a1629729">mspass::utility::ProcessingHistory::clear</a></div><div class="ttdeci">void clear()</div><div class="ttdef"><b>Definition</b> ProcessingHistory.cc:677</div></div>
-<div class="ttc" id="aclassmspass_1_1utility_1_1_processing_history_html_a52b0394b444f6db307945284ac6e5f8a"><div class="ttname"><a href="classmspass_1_1utility_1_1_processing_history.html#a52b0394b444f6db307945284ac6e5f8a">mspass::utility::ProcessingHistory::get_nodes</a></div><div class="ttdeci">std::multimap&lt; std::string, mspass::utility::NodeData &gt; get_nodes() const</div><div class="ttdef"><b>Definition</b> ProcessingHistory.cc:657</div></div>
+<div class="fragment"><div class="line"><span class="lineno">  174</span>                                                                        {</div>
+<div class="line"><span class="lineno">  175</span>  <span class="keywordflow">if</span> (create_newid) {</div>
+<div class="line"><span class="lineno">  176</span>    this-&gt;<a class="code hl_function" href="classmspass_1_1utility_1_1_processing_history.html#a9a8bf8bc3632660c91fd9d82a79f8411">newid</a>();</div>
+<div class="line"><span class="lineno">  177</span>  }</div>
+<div class="line"><span class="lineno">  178</span>  <span class="comment">/* We need to clear the tree contents because all the parents will</span></div>
+<div class="line"><span class="lineno">  179</span><span class="comment">  branch from this.  Hence, we have to put the node data into an empty</span></div>
+<div class="line"><span class="lineno">  180</span><span class="comment">  container */</span></div>
+<div class="line"><span class="lineno">  181</span>  this-&gt;<a class="code hl_function" href="classmspass_1_1utility_1_1_processing_history.html#a42865512c68a26b85b394825a1629729">clear</a>();</div>
+<div class="line"><span class="lineno">  182</span>  algorithm = alg;</div>
+<div class="line"><span class="lineno">  183</span>  algid = algid_in;</div>
+<div class="line"><span class="lineno">  184</span>  mytype = typ;</div>
+<div class="line"><span class="lineno">  185</span>  <span class="comment">/* Initialize current stage but assume it will be updated as max of</span></div>
+<div class="line"><span class="lineno">  186</span><span class="comment">  parents below */</span></div>
+<div class="line"><span class="lineno">  187</span>  current_stage = 0;</div>
+<div class="line"><span class="lineno">  188</span>  multimap&lt;string, NodeData&gt;::const_iterator nptr, nl, nu;</div>
+<div class="line"><span class="lineno">  189</span>  <span class="keywordtype">size_t</span> i;</div>
+<div class="line"><span class="lineno">  190</span>  <span class="comment">/* current_stage can be ambiguous from multiple inputs.  We define</span></div>
+<div class="line"><span class="lineno">  191</span><span class="comment">  the current stage from a reduce as the largest stage value found</span></div>
+<div class="line"><span class="lineno">  192</span><span class="comment">  in all inputs.  Note we only test the stage value at the head for</span></div>
+<div class="line"><span class="lineno">  193</span><span class="comment">  each parent */</span></div>
+<div class="line"><span class="lineno">  194</span>  <span class="keywordtype">int</span> max_stage(0);</div>
+<div class="line"><span class="lineno">  195</span>  <span class="keywordflow">for</span> (i = 0; i &lt; parents.size(); ++i) {</div>
+<div class="line"><span class="lineno">  196</span>    <span class="keywordflow">if</span> (parents[i]-&gt;<a class="code hl_function" href="classmspass_1_1utility_1_1_processing_history.html#a8e42309bb4dfb0c0ea38496a3235f069">is_empty</a>()) {</div>
+<div class="line"><span class="lineno">  197</span>      stringstream ss;</div>
+<div class="line"><span class="lineno">  198</span>      ss &lt;&lt; <span class="stringliteral">&quot;Vector member number &quot;</span> &lt;&lt; i &lt;&lt; <span class="stringliteral">&quot; with uuid=&quot;</span> &lt;&lt; parents[i]-&gt;id()</div>
+<div class="line"><span class="lineno">  199</span>         &lt;&lt; <span class="stringliteral">&quot; has an empty history chain&quot;</span> &lt;&lt; endl</div>
+<div class="line"><span class="lineno">  200</span>         &lt;&lt; <span class="stringliteral">&quot;At best the processing history data will be incomplete&quot;</span> &lt;&lt; endl;</div>
+<div class="line"><span class="lineno">  201</span>      elog.<a class="code hl_function" href="classmspass_1_1utility_1_1_error_logger.html#aa69873ba0aebf67e9ba24d01992c0bcf">log_error</a>(<span class="stringliteral">&quot;ProcessingHistory::new_ensemble_process&quot;</span>, ss.str(),</div>
+<div class="line"><span class="lineno">  202</span>                     ErrorSeverity::Complaint);</div>
+<div class="line"><span class="lineno">  203</span>      <span class="keywordflow">continue</span>;</div>
+<div class="line"><span class="lineno">  204</span>    }</div>
+<div class="line"><span class="lineno">  205</span>    multimap&lt;string, NodeData&gt; parent_node_data(parents[i]-&gt;<a class="code hl_function" href="classmspass_1_1utility_1_1_processing_history.html#a52b0394b444f6db307945284ac6e5f8a">get_nodes</a>());</div>
+<div class="line"><span class="lineno">  206</span>    <span class="comment">/* We also have to get the head data with this method now */</span></div>
+<div class="line"><span class="lineno">  207</span>    NodeData nd = parents[i]-&gt;current_nodedata();</div>
+<div class="line"><span class="lineno">  208</span>    <span class="keywordflow">if</span> (nd.stage &gt; max_stage)</div>
+<div class="line"><span class="lineno">  209</span>      max_stage = nd.stage;</div>
+<div class="line"><span class="lineno">  210</span>    <span class="keywordflow">for</span> (nptr = parent_node_data.begin(); nptr != parent_node_data.end();</div>
+<div class="line"><span class="lineno">  211</span>         ++nptr) {</div>
+<div class="line"><span class="lineno">  212</span>      <span class="comment">/*Adding to nodes multimap has a complication.  It is possible in</span></div>
+<div class="line"><span class="lineno">  213</span><span class="comment">      some situations to have duplicate node data coming from different</span></div>
+<div class="line"><span class="lineno">  214</span><span class="comment">      inputs.  The method we use to reconstruct the processing history tree</span></div>
+<div class="line"><span class="lineno">  215</span><span class="comment">      will be confused by such duplicates so we need to test for pure</span></div>
+<div class="line"><span class="lineno">  216</span><span class="comment">      duplicates in NodeData values. This algorithm would not scale well</span></div>
+<div class="line"><span class="lineno">  217</span><span class="comment">      if the number of values with a common key is large for either</span></div>
+<div class="line"><span class="lineno">  218</span><span class="comment">      this or parent[i]*/</span></div>
+<div class="line"><span class="lineno">  219</span>      <span class="keywordtype">string</span> key(nptr-&gt;first);</div>
+<div class="line"><span class="lineno">  220</span>      <span class="keywordflow">if</span> (this-&gt;nodes.count(key) &gt; 0) {</div>
+<div class="line"><span class="lineno">  221</span>        nl = this-&gt;nodes.lower_bound(key);</div>
+<div class="line"><span class="lineno">  222</span>        nu = this-&gt;nodes.upper_bound(key);</div>
+<div class="line"><span class="lineno">  223</span>        <span class="keywordflow">for</span> (<span class="keyword">auto</span> ptr = nl; ptr != nu; ++ptr) {</div>
+<div class="line"><span class="lineno">  224</span>          NodeData ndtest(ptr-&gt;second);</div>
+<div class="line"><span class="lineno">  225</span>          <span class="keywordflow">if</span> (ndtest != (nptr-&gt;second)) {</div>
+<div class="line"><span class="lineno">  226</span>            this-&gt;nodes.insert(*nptr);</div>
+<div class="line"><span class="lineno">  227</span>          }</div>
+<div class="line"><span class="lineno">  228</span>        }</div>
+<div class="line"><span class="lineno">  229</span>      } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  230</span>        <span class="comment">/* No problem just inserting a node if there were no previous</span></div>
+<div class="line"><span class="lineno">  231</span><span class="comment">        entries*/</span></div>
+<div class="line"><span class="lineno">  232</span>        this-&gt;nodes.insert(*nptr);</div>
+<div class="line"><span class="lineno">  233</span>      }</div>
+<div class="line"><span class="lineno">  234</span>    }</div>
+<div class="line"><span class="lineno">  235</span>    <span class="comment">/* Also insert the head data */</span></div>
+<div class="line"><span class="lineno">  236</span>    pair&lt;string, NodeData&gt; pnd(current_id, nd);</div>
+<div class="line"><span class="lineno">  237</span>    this-&gt;nodes.insert(pnd);</div>
+<div class="line"><span class="lineno">  238</span>  }</div>
+<div class="line"><span class="lineno">  239</span>  current_stage = max_stage;</div>
+<div class="line"><span class="lineno">  240</span>  <span class="comment">/* Now reset the current contents to make it the base of the history tree.</span></div>
+<div class="line"><span class="lineno">  241</span><span class="comment">  Be careful of uninitialized current_stage*/</span></div>
+<div class="line"><span class="lineno">  242</span>  <span class="keywordflow">if</span> (current_stage &gt;= 0)</div>
+<div class="line"><span class="lineno">  243</span>    ++current_stage;</div>
+<div class="line"><span class="lineno">  244</span>  <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  245</span>    elog.<a class="code hl_function" href="classmspass_1_1utility_1_1_error_logger.html#aa69873ba0aebf67e9ba24d01992c0bcf">log_error</a>(<span class="stringliteral">&quot;ProcessingHistory::new_ensemble_process&quot;</span>,</div>
+<div class="line"><span class="lineno">  246</span>                   <span class="stringliteral">&quot;current_stage for none of the parents was &quot;</span></div>
+<div class="line"><span class="lineno">  247</span>                   <span class="stringliteral">&quot;initialized\nImproper usage will create an invalid history &quot;</span></div>
+<div class="line"><span class="lineno">  248</span>                   <span class="stringliteral">&quot;chain that may cause downstream problems&quot;</span>,</div>
+<div class="line"><span class="lineno">  249</span>                   ErrorSeverity::Complaint);</div>
+<div class="line"><span class="lineno">  250</span>    current_stage = 0;</div>
+<div class="line"><span class="lineno">  251</span>  }</div>
+<div class="line"><span class="lineno">  252</span>  algorithm = alg;</div>
+<div class="line"><span class="lineno">  253</span>  algid = algid_in;</div>
+<div class="line"><span class="lineno">  254</span>  <span class="comment">// note this is output type - inputs can be variable and defined by nodes</span></div>
+<div class="line"><span class="lineno">  255</span>  mytype = typ;</div>
+<div class="line"><span class="lineno">  256</span>  current_status = ProcessingStatus::VOLATILE;</div>
+<div class="line"><span class="lineno">  257</span>  <span class="keywordflow">return</span> current_id;</div>
+<div class="line"><span class="lineno">  258</span>}</div>
+<div class="ttc" id="aclassmspass_1_1utility_1_1_processing_history_html_a42865512c68a26b85b394825a1629729"><div class="ttname"><a href="classmspass_1_1utility_1_1_processing_history.html#a42865512c68a26b85b394825a1629729">mspass::utility::ProcessingHistory::clear</a></div><div class="ttdeci">void clear()</div><div class="ttdef"><b>Definition</b> ProcessingHistory.cc:631</div></div>
+<div class="ttc" id="aclassmspass_1_1utility_1_1_processing_history_html_a52b0394b444f6db307945284ac6e5f8a"><div class="ttname"><a href="classmspass_1_1utility_1_1_processing_history.html#a52b0394b444f6db307945284ac6e5f8a">mspass::utility::ProcessingHistory::get_nodes</a></div><div class="ttdeci">std::multimap&lt; std::string, mspass::utility::NodeData &gt; get_nodes() const</div><div class="ttdef"><b>Definition</b> ProcessingHistory.cc:612</div></div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1utility_1_1_processing_history.html#a42865512c68a26b85b394825a1629729">clear()</a>, <a class="el" href="classmspass_1_1utility_1_1_processing_history.html#a52b0394b444f6db307945284ac6e5f8a">get_nodes()</a>, <a class="el" href="classmspass_1_1utility_1_1_processing_history.html#a8e42309bb4dfb0c0ea38496a3235f069">is_empty()</a>, <a class="el" href="classmspass_1_1utility_1_1_error_logger.html#aa69873ba0aebf67e9ba24d01992c0bcf">mspass::utility::ErrorLogger::log_error()</a>, <a class="el" href="classmspass_1_1utility_1_1_processing_history.html#a9a8bf8bc3632660c91fd9d82a79f8411">newid()</a>, and <a class="el" href="classmspass_1_1utility_1_1_node_data.html#a972bd00dc85cae2e490833225f53e282">mspass::utility::NodeData::stage</a>.</p>
 
@@ -1425,13 +1392,13 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>jnm</b></td></
 </div><div class="memdoc">
 <p>Create a new id.</p>
 <p>This creates a new uuid - how is an implementation detail but here we use boost's random number generator uuid generator that has some absurdly small probability of generating two equal ids. It returns the string representation of the id created. </p>
-<div class="fragment"><div class="line"><span class="lineno">  701</span>{</div>
-<div class="line"><span class="lineno">  702</span>  boost::uuids::random_generator gen;</div>
-<div class="line"><span class="lineno">  703</span>  boost::uuids::uuid uuidval;</div>
-<div class="line"><span class="lineno">  704</span>  uuidval=gen();</div>
-<div class="line"><span class="lineno">  705</span>  this-&gt;current_id=boost::uuids::to_string(uuidval);</div>
-<div class="line"><span class="lineno">  706</span>  <span class="keywordflow">return</span> current_id;</div>
-<div class="line"><span class="lineno">  707</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  651</span>                                {</div>
+<div class="line"><span class="lineno">  652</span>  boost::uuids::random_generator gen;</div>
+<div class="line"><span class="lineno">  653</span>  boost::uuids::uuid uuidval;</div>
+<div class="line"><span class="lineno">  654</span>  uuidval = gen();</div>
+<div class="line"><span class="lineno">  655</span>  this-&gt;current_id = boost::uuids::to_string(uuidval);</div>
+<div class="line"><span class="lineno">  656</span>  <span class="keywordflow">return</span> current_id;</div>
+<div class="line"><span class="lineno">  657</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1451,10 +1418,10 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>jnm</b></td></
 </div><div class="memdoc">
 <p>Return the number of inputs used to create current data.</p>
 <p>In a number of contexts it can be useful to know the number of inputs defined for the current object. This returns that count. </p>
-<div class="fragment"><div class="line"><span class="lineno">  697</span>{</div>
-<div class="line"><span class="lineno">  698</span>  <span class="keywordflow">return</span> this-&gt;<a class="code hl_function" href="classmspass_1_1utility_1_1_processing_history.html#a82d681c60d2e64fab12b92e3244ce052">number_inputs</a>(current_id);</div>
-<div class="line"><span class="lineno">  699</span>}</div>
-<div class="ttc" id="aclassmspass_1_1utility_1_1_processing_history_html_a82d681c60d2e64fab12b92e3244ce052"><div class="ttname"><a href="classmspass_1_1utility_1_1_processing_history.html#a82d681c60d2e64fab12b92e3244ce052">mspass::utility::ProcessingHistory::number_inputs</a></div><div class="ttdeci">int number_inputs() const</div><div class="ttdef"><b>Definition</b> ProcessingHistory.cc:696</div></div>
+<div class="fragment"><div class="line"><span class="lineno">  648</span>                                           {</div>
+<div class="line"><span class="lineno">  649</span>  <span class="keywordflow">return</span> this-&gt;<a class="code hl_function" href="classmspass_1_1utility_1_1_processing_history.html#a82d681c60d2e64fab12b92e3244ce052">number_inputs</a>(current_id);</div>
+<div class="line"><span class="lineno">  650</span>}</div>
+<div class="ttc" id="aclassmspass_1_1utility_1_1_processing_history_html_a82d681c60d2e64fab12b92e3244ce052"><div class="ttname"><a href="classmspass_1_1utility_1_1_processing_history.html#a82d681c60d2e64fab12b92e3244ce052">mspass::utility::ProcessingHistory::number_inputs</a></div><div class="ttdeci">int number_inputs() const</div><div class="ttdef"><b>Definition</b> ProcessingHistory.cc:648</div></div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1utility_1_1_processing_history.html#a82d681c60d2e64fab12b92e3244ce052">number_inputs()</a>.</p>
 
@@ -1514,9 +1481,7 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>jnm</b></td></
 <p>Important note is that the number return is the number of processing steps since the last save. Because a save operation is assumed to save the history chain then flush it there is not easy way at present to keep track of the total number of stages. If we really need this functionality it could be easily retrofitted with another private variable that is not reset when the clear method is called. </p>
 
 <p>Reimplemented from <a class="el" href="classmspass_1_1utility_1_1_basic_processing_history.html#ac02ca16b83b616ade105d6694ffb6f7d">mspass::utility::BasicProcessingHistory</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  149</span>{</div>
-<div class="line"><span class="lineno">  150</span>  <span class="keywordflow">return</span> current_stage;</div>
-<div class="line"><span class="lineno">  151</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  139</span>{ <span class="keywordflow">return</span> current_stage; }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1537,21 +1502,20 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>jnm</b></td></
 </div><div class="memdoc">
 <p>Assignment operator. <br  />
  </p>
-<div class="fragment"><div class="line"><span class="lineno">  742</span>{</div>
-<div class="line"><span class="lineno">  743</span>  <span class="keywordflow">if</span>(<span class="keyword">this</span>!=(&amp;parent))</div>
-<div class="line"><span class="lineno">  744</span>  {</div>
-<div class="line"><span class="lineno">  745</span>    this-&gt;BasicProcessingHistory::operator=(parent);</div>
-<div class="line"><span class="lineno">  746</span>    nodes=parent.nodes;</div>
-<div class="line"><span class="lineno">  747</span>    current_status=parent.current_status;</div>
-<div class="line"><span class="lineno">  748</span>    current_id=parent.current_id;</div>
-<div class="line"><span class="lineno">  749</span>    current_stage=parent.current_stage;</div>
-<div class="line"><span class="lineno">  750</span>    mytype=parent.mytype;</div>
-<div class="line"><span class="lineno">  751</span>    algorithm=parent.algorithm;</div>
-<div class="line"><span class="lineno">  752</span>    algid=parent.algid;</div>
-<div class="line"><span class="lineno">  753</span>    elog=parent.elog;</div>
-<div class="line"><span class="lineno">  754</span>  }</div>
-<div class="line"><span class="lineno">  755</span>  <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
-<div class="line"><span class="lineno">  756</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  687</span>                                                            {</div>
+<div class="line"><span class="lineno">  688</span>  <span class="keywordflow">if</span> (<span class="keyword">this</span> != (&amp;parent)) {</div>
+<div class="line"><span class="lineno">  689</span>    this-&gt;BasicProcessingHistory::operator=(parent);</div>
+<div class="line"><span class="lineno">  690</span>    nodes = parent.nodes;</div>
+<div class="line"><span class="lineno">  691</span>    current_status = parent.current_status;</div>
+<div class="line"><span class="lineno">  692</span>    current_id = parent.current_id;</div>
+<div class="line"><span class="lineno">  693</span>    current_stage = parent.current_stage;</div>
+<div class="line"><span class="lineno">  694</span>    mytype = parent.mytype;</div>
+<div class="line"><span class="lineno">  695</span>    algorithm = parent.algorithm;</div>
+<div class="line"><span class="lineno">  696</span>    algid = parent.algid;</div>
+<div class="line"><span class="lineno">  697</span>    elog = parent.elog;</div>
+<div class="line"><span class="lineno">  698</span>  }</div>
+<div class="line"><span class="lineno">  699</span>  <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
+<div class="line"><span class="lineno">  700</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1618,30 +1582,27 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>jnm</b></td></
   </table>
   </dd>
 </dl>
-<div class="fragment"><div class="line"><span class="lineno">  163</span>{</div>
-<div class="line"><span class="lineno">  164</span>  <span class="keyword">const</span> <span class="keywordtype">string</span> base_error(<span class="stringliteral">&quot;ProcessingHistory::set_as_origin:  &quot;</span>);</div>
-<div class="line"><span class="lineno">  165</span>  <span class="keywordflow">if</span>( nodes.size()&gt;0 )</div>
-<div class="line"><span class="lineno">  166</span>  {</div>
-<div class="line"><span class="lineno">  167</span>    elog.<a class="code hl_function" href="classmspass_1_1utility_1_1_error_logger.html#aa69873ba0aebf67e9ba24d01992c0bcf">log_error</a>(alg+<span class="stringliteral">&quot;:&quot;</span>+algid_in,</div>
-<div class="line"><span class="lineno">  168</span>      base_error + <span class="stringliteral">&quot;Illegal usage.  History chain was not empty.   Calling clear method and continuing&quot;</span>,</div>
-<div class="line"><span class="lineno">  169</span>       ErrorSeverity::Complaint);</div>
-<div class="line"><span class="lineno">  170</span>    this-&gt;<a class="code hl_function" href="classmspass_1_1utility_1_1_processing_history.html#a42865512c68a26b85b394825a1629729">clear</a>();</div>
-<div class="line"><span class="lineno">  171</span>  }</div>
-<div class="line"><span class="lineno">  172</span>  <span class="keywordflow">if</span>(define_as_raw)</div>
-<div class="line"><span class="lineno">  173</span>  {</div>
-<div class="line"><span class="lineno">  174</span>    current_status=ProcessingStatus::RAW;</div>
-<div class="line"><span class="lineno">  175</span>  }</div>
-<div class="line"><span class="lineno">  176</span>  <span class="keywordflow">else</span></div>
-<div class="line"><span class="lineno">  177</span>  {</div>
-<div class="line"><span class="lineno">  178</span>    current_status=ProcessingStatus::ORIGIN;</div>
-<div class="line"><span class="lineno">  179</span>  }</div>
-<div class="line"><span class="lineno">  180</span>  algorithm=alg;</div>
-<div class="line"><span class="lineno">  181</span>  algid=algid_in;</div>
-<div class="line"><span class="lineno">  182</span>  current_id=uuid;</div>
-<div class="line"><span class="lineno">  183</span>  mytype=typ;</div>
-<div class="line"><span class="lineno">  184</span>  <span class="comment">/* Origin/raw are always defined as stage 0 even after a save. */</span></div>
-<div class="line"><span class="lineno">  185</span>  current_stage=0;</div>
-<div class="line"><span class="lineno">  186</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  151</span>                                                          {</div>
+<div class="line"><span class="lineno">  152</span>  <span class="keyword">const</span> <span class="keywordtype">string</span> base_error(<span class="stringliteral">&quot;ProcessingHistory::set_as_origin:  &quot;</span>);</div>
+<div class="line"><span class="lineno">  153</span>  <span class="keywordflow">if</span> (nodes.size() &gt; 0) {</div>
+<div class="line"><span class="lineno">  154</span>    elog.<a class="code hl_function" href="classmspass_1_1utility_1_1_error_logger.html#aa69873ba0aebf67e9ba24d01992c0bcf">log_error</a>(alg + <span class="stringliteral">&quot;:&quot;</span> + algid_in,</div>
+<div class="line"><span class="lineno">  155</span>                   base_error + <span class="stringliteral">&quot;Illegal usage.  History chain was not empty.  &quot;</span></div>
+<div class="line"><span class="lineno">  156</span>                                <span class="stringliteral">&quot; Calling clear method and continuing&quot;</span>,</div>
+<div class="line"><span class="lineno">  157</span>                   ErrorSeverity::Complaint);</div>
+<div class="line"><span class="lineno">  158</span>    this-&gt;<a class="code hl_function" href="classmspass_1_1utility_1_1_processing_history.html#a42865512c68a26b85b394825a1629729">clear</a>();</div>
+<div class="line"><span class="lineno">  159</span>  }</div>
+<div class="line"><span class="lineno">  160</span>  <span class="keywordflow">if</span> (define_as_raw) {</div>
+<div class="line"><span class="lineno">  161</span>    current_status = ProcessingStatus::RAW;</div>
+<div class="line"><span class="lineno">  162</span>  } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  163</span>    current_status = ProcessingStatus::ORIGIN;</div>
+<div class="line"><span class="lineno">  164</span>  }</div>
+<div class="line"><span class="lineno">  165</span>  algorithm = alg;</div>
+<div class="line"><span class="lineno">  166</span>  algid = algid_in;</div>
+<div class="line"><span class="lineno">  167</span>  current_id = uuid;</div>
+<div class="line"><span class="lineno">  168</span>  mytype = typ;</div>
+<div class="line"><span class="lineno">  169</span>  <span class="comment">/* Origin/raw are always defined as stage 0 even after a save. */</span></div>
+<div class="line"><span class="lineno">  170</span>  current_stage = 0;</div>
+<div class="line"><span class="lineno">  171</span>}</div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1utility_1_1_processing_history.html#a42865512c68a26b85b394825a1629729">clear()</a>, and <a class="el" href="classmspass_1_1utility_1_1_error_logger.html#aa69873ba0aebf67e9ba24d01992c0bcf">mspass::utility::ErrorLogger::log_error()</a>.</p>
 
@@ -1670,9 +1631,7 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>jnm</b></td></
   </table>
   </dd>
 </dl>
-<div class="fragment"><div class="line"><span class="lineno">  709</span>{</div>
-<div class="line"><span class="lineno">  710</span>  this-&gt;current_id=<a class="code hl_function" href="classmspass_1_1utility_1_1_processing_history.html#a9a8bf8bc3632660c91fd9d82a79f8411">newid</a>;</div>
-<div class="line"><span class="lineno">  711</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  658</span>{ this-&gt;current_id = <a class="code hl_function" href="classmspass_1_1utility_1_1_processing_history.html#a9a8bf8bc3632660c91fd9d82a79f8411">newid</a>; }</div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1utility_1_1_processing_history.html#a9a8bf8bc3632660c91fd9d82a79f8411">newid()</a>.</p>
 
@@ -1702,9 +1661,7 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>jnm</b></td></
 </div><div class="memdoc">
 <p>Return the current stage count for this object.</p>
 <p>We maintain a counter of the number of processing steps that have been applied to produce this data object. This simple method returns that counter. With this implementation this is identical to number_of_stages. We retain it in the API in the event we want to implement an accumulating counter. </p>
-<div class="fragment"><div class="line"><span class="lineno">  596</span>  {</div>
-<div class="line"><span class="lineno">  597</span>    <span class="keywordflow">return</span> current_stage;</div>
-<div class="line"><span class="lineno">  598</span>  };</div>
+<div class="fragment"><div class="line"><span class="lineno">  571</span>{ <span class="keywordflow">return</span> current_stage; };</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1731,9 +1688,7 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>jnm</b></td></
 </table>
 </div><div class="memdoc">
 <p>Return the current status definition (an enum). </p>
-<div class="fragment"><div class="line"><span class="lineno">  601</span>  {</div>
-<div class="line"><span class="lineno">  602</span>    <span class="keywordflow">return</span> current_status;</div>
-<div class="line"><span class="lineno">  603</span>  };</div>
+<div class="fragment"><div class="line"><span class="lineno">  573</span>{ <span class="keywordflow">return</span> current_status; };</div>
 </div><!-- fragment -->
 </div>
 </div>

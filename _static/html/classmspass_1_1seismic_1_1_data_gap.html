@@ -136,10 +136,10 @@ Public Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
-<tr class="memitem:a29c06c530f6b02c7d94c21b08af9c384" id="r_a29c06c530f6b02c7d94c21b08af9c384"><td class="memItemLeft" align="right" valign="top"><a id="a29c06c530f6b02c7d94c21b08af9c384" name="a29c06c530f6b02c7d94c21b08af9c384"></a>
+<tr class="memitem:a7cb06f3ead8475c9527c2248968a2c83" id="r_a7cb06f3ead8475c9527c2248968a2c83"><td class="memItemLeft" align="right" valign="top"><a id="a7cb06f3ead8475c9527c2248968a2c83" name="a7cb06f3ead8475c9527c2248968a2c83"></a>
 std::set&lt; <a class="el" href="classmspass_1_1algorithms_1_1_time_window.html">mspass::algorithms::TimeWindow</a>, <a class="el" href="classmspass_1_1algorithms_1_1_time_window_cmp.html">mspass::algorithms::TimeWindowCmp</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>gaps</b></td></tr>
-<tr class="memdesc:a29c06c530f6b02c7d94c21b08af9c384"><td class="mdescLeft">&#160;</td><td class="mdescRight">Holds data gap definitions. We use an STL set object to define data gaps for any time series object derived from this base class. The set is keyed by a TimeWindow which allows a simple, fast way to define a time range with invalid data. <br /></td></tr>
-<tr class="separator:a29c06c530f6b02c7d94c21b08af9c384"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memdesc:a7cb06f3ead8475c9527c2248968a2c83"><td class="mdescLeft">&#160;</td><td class="mdescRight">Holds data gap definitions. We use an STL set object to define data gaps for any time series object derived from this base class. The set is keyed by a TimeWindow which allows a simple, fast way to define a time range with invalid data. <br /></td></tr>
+<tr class="separator:a7cb06f3ead8475c9527c2248968a2c83"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="aa2a1e74ae7bf6ef9f3ff79153b890146" name="aa2a1e74ae7bf6ef9f3ff79153b890146"></a>
@@ -165,7 +165,7 @@ std::set&lt; <a class="el" href="classmspass_1_1algorithms_1_1_time_window.html"
 </table>
 </div><div class="memdoc">
 <p>Default construtor. Does nothing but create empty gap container. </p>
-<div class="fragment"><div class="line"><span class="lineno">   28</span>{};</div>
+<div class="fragment"><div class="line"><span class="lineno">   27</span>{};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -211,8 +211,8 @@ std::set&lt; <a class="el" href="classmspass_1_1algorithms_1_1_time_window.html"
   </tr>
 </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   31</span>:<a class="code hl_variable" href="classmspass_1_1seismic_1_1_data_gap.html#a29c06c530f6b02c7d94c21b08af9c384">gaps</a>(parent.gaps){};</div>
-<div class="ttc" id="aclassmspass_1_1seismic_1_1_data_gap_html_a29c06c530f6b02c7d94c21b08af9c384"><div class="ttname"><a href="classmspass_1_1seismic_1_1_data_gap.html#a29c06c530f6b02c7d94c21b08af9c384">mspass::seismic::DataGap::gaps</a></div><div class="ttdeci">std::set&lt; mspass::algorithms::TimeWindow, mspass::algorithms::TimeWindowCmp &gt; gaps</div><div class="ttdoc">Holds data gap definitions. We use an STL set object to define data gaps for any time series object d...</div><div class="ttdef"><b>Definition</b> DataGap.h:106</div></div>
+<div class="fragment"><div class="line"><span class="lineno">   30</span>: <a class="code hl_variable" href="classmspass_1_1seismic_1_1_data_gap.html#a7cb06f3ead8475c9527c2248968a2c83">gaps</a>(parent.gaps) {};</div>
+<div class="ttc" id="aclassmspass_1_1seismic_1_1_data_gap_html_a7cb06f3ead8475c9527c2248968a2c83"><div class="ttname"><a href="classmspass_1_1seismic_1_1_data_gap.html#a7cb06f3ead8475c9527c2248968a2c83">mspass::seismic::DataGap::gaps</a></div><div class="ttdeci">std::set&lt; mspass::algorithms::TimeWindow, mspass::algorithms::TimeWindowCmp &gt; gaps</div><div class="ttdoc">Holds data gap definitions. We use an STL set object to define data gaps for any time series object d...</div><div class="ttdef"><b>Definition</b> DataGap.h:110</div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -238,7 +238,7 @@ std::set&lt; <a class="el" href="classmspass_1_1algorithms_1_1_time_window.html"
   </tr>
 </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   32</span>{};</div>
+<div class="fragment"><div class="line"><span class="lineno">   31</span>{};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -259,31 +259,30 @@ std::set&lt; <a class="el" href="classmspass_1_1algorithms_1_1_time_window.html"
       </table>
 </div><div class="memdoc">
 <p>Adds a gap to the gap definitions for this data object. Sometimes an algorithm detects or needs to create a gap (e.g. a mute, or a constructor). This function provides a common mechanism to define such a gap in the data. </p>
-<div class="fragment"><div class="line"><span class="lineno">   15</span>{</div>
-<div class="line"><span class="lineno">   16</span>  <span class="keyword">auto</span> insert_result = this-&gt;<a class="code hl_variable" href="classmspass_1_1seismic_1_1_data_gap.html#a29c06c530f6b02c7d94c21b08af9c384">gaps</a>.insert(tw);</div>
-<div class="line"><span class="lineno">   17</span>  <span class="keywordflow">if</span>(!insert_result.second)</div>
-<div class="line"><span class="lineno">   18</span>  {</div>
-<div class="line"><span class="lineno">   19</span>    <span class="comment">/* We land here if tw overlaps or duplicates something already in </span></div>
-<div class="line"><span class="lineno">   20</span><span class="comment">     * the gaps container.  first in this case contains an iterator to </span></div>
-<div class="line"><span class="lineno">   21</span><span class="comment">     * the potential duplicate.  We have to resolve which to keep*/</span></div>
-<div class="line"><span class="lineno">   22</span>    TimeWindow old_tw(*insert_result.first);</div>
-<div class="line"><span class="lineno">   23</span>    TimeWindow new_tw;</div>
-<div class="line"><span class="lineno">   24</span>    <span class="keywordflow">if</span>(tw.<a class="code hl_variable" href="classmspass_1_1algorithms_1_1_time_window.html#a2277a3ea634dfe6ba5bc71296d93e76a">start</a>&lt;old_tw.start)</div>
-<div class="line"><span class="lineno">   25</span>      new_tw.start=tw.<a class="code hl_variable" href="classmspass_1_1algorithms_1_1_time_window.html#a2277a3ea634dfe6ba5bc71296d93e76a">start</a>;</div>
-<div class="line"><span class="lineno">   26</span>    <span class="keywordflow">else</span></div>
-<div class="line"><span class="lineno">   27</span>      new_tw.start=old_tw.start;</div>
-<div class="line"><span class="lineno">   28</span>    <span class="keywordflow">if</span>(tw.<a class="code hl_variable" href="classmspass_1_1algorithms_1_1_time_window.html#a916901f8d5d1dbb2bf38300bf28a2ec3">end</a>&gt;old_tw.end)</div>
-<div class="line"><span class="lineno">   29</span>        new_tw.end=tw.<a class="code hl_variable" href="classmspass_1_1algorithms_1_1_time_window.html#a916901f8d5d1dbb2bf38300bf28a2ec3">end</a>;</div>
-<div class="line"><span class="lineno">   30</span>    <span class="keywordflow">else</span></div>
-<div class="line"><span class="lineno">   31</span>      new_tw.end=old_tw.end;</div>
-<div class="line"><span class="lineno">   32</span>    <a class="code hl_variable" href="classmspass_1_1seismic_1_1_data_gap.html#a29c06c530f6b02c7d94c21b08af9c384">gaps</a>.erase(insert_result.first);</div>
-<div class="line"><span class="lineno">   33</span>    <a class="code hl_variable" href="classmspass_1_1seismic_1_1_data_gap.html#a29c06c530f6b02c7d94c21b08af9c384">gaps</a>.insert(new_tw);</div>
-<div class="line"><span class="lineno">   34</span>  }</div>
-<div class="line"><span class="lineno">   35</span>}</div>
-<div class="ttc" id="aclassmspass_1_1algorithms_1_1_time_window_html_a2277a3ea634dfe6ba5bc71296d93e76a"><div class="ttname"><a href="classmspass_1_1algorithms_1_1_time_window.html#a2277a3ea634dfe6ba5bc71296d93e76a">mspass::algorithms::TimeWindow::start</a></div><div class="ttdeci">double start</div><div class="ttdef"><b>Definition</b> TimeWindow.h:19</div></div>
-<div class="ttc" id="aclassmspass_1_1algorithms_1_1_time_window_html_a916901f8d5d1dbb2bf38300bf28a2ec3"><div class="ttname"><a href="classmspass_1_1algorithms_1_1_time_window.html#a916901f8d5d1dbb2bf38300bf28a2ec3">mspass::algorithms::TimeWindow::end</a></div><div class="ttdeci">double end</div><div class="ttdef"><b>Definition</b> TimeWindow.h:23</div></div>
+<div class="fragment"><div class="line"><span class="lineno">   13</span>                                         {</div>
+<div class="line"><span class="lineno">   14</span>  <span class="keyword">auto</span> insert_result = this-&gt;<a class="code hl_variable" href="classmspass_1_1seismic_1_1_data_gap.html#a7cb06f3ead8475c9527c2248968a2c83">gaps</a>.insert(tw);</div>
+<div class="line"><span class="lineno">   15</span>  <span class="keywordflow">if</span> (!insert_result.second) {</div>
+<div class="line"><span class="lineno">   16</span>    <span class="comment">/* We land here if tw overlaps or duplicates something already in</span></div>
+<div class="line"><span class="lineno">   17</span><span class="comment">     * the gaps container.  first in this case contains an iterator to</span></div>
+<div class="line"><span class="lineno">   18</span><span class="comment">     * the potential duplicate.  We have to resolve which to keep*/</span></div>
+<div class="line"><span class="lineno">   19</span>    TimeWindow old_tw(*insert_result.first);</div>
+<div class="line"><span class="lineno">   20</span>    TimeWindow new_tw;</div>
+<div class="line"><span class="lineno">   21</span>    <span class="keywordflow">if</span> (tw.<a class="code hl_variable" href="classmspass_1_1algorithms_1_1_time_window.html#a2277a3ea634dfe6ba5bc71296d93e76a">start</a> &lt; old_tw.start)</div>
+<div class="line"><span class="lineno">   22</span>      new_tw.start = tw.<a class="code hl_variable" href="classmspass_1_1algorithms_1_1_time_window.html#a2277a3ea634dfe6ba5bc71296d93e76a">start</a>;</div>
+<div class="line"><span class="lineno">   23</span>    <span class="keywordflow">else</span></div>
+<div class="line"><span class="lineno">   24</span>      new_tw.start = old_tw.start;</div>
+<div class="line"><span class="lineno">   25</span>    <span class="keywordflow">if</span> (tw.<a class="code hl_variable" href="classmspass_1_1algorithms_1_1_time_window.html#a916901f8d5d1dbb2bf38300bf28a2ec3">end</a> &gt; old_tw.end)</div>
+<div class="line"><span class="lineno">   26</span>      new_tw.end = tw.<a class="code hl_variable" href="classmspass_1_1algorithms_1_1_time_window.html#a916901f8d5d1dbb2bf38300bf28a2ec3">end</a>;</div>
+<div class="line"><span class="lineno">   27</span>    <span class="keywordflow">else</span></div>
+<div class="line"><span class="lineno">   28</span>      new_tw.end = old_tw.end;</div>
+<div class="line"><span class="lineno">   29</span>    <a class="code hl_variable" href="classmspass_1_1seismic_1_1_data_gap.html#a7cb06f3ead8475c9527c2248968a2c83">gaps</a>.erase(insert_result.first);</div>
+<div class="line"><span class="lineno">   30</span>    <a class="code hl_variable" href="classmspass_1_1seismic_1_1_data_gap.html#a7cb06f3ead8475c9527c2248968a2c83">gaps</a>.insert(new_tw);</div>
+<div class="line"><span class="lineno">   31</span>  }</div>
+<div class="line"><span class="lineno">   32</span>}</div>
+<div class="ttc" id="aclassmspass_1_1algorithms_1_1_time_window_html_a2277a3ea634dfe6ba5bc71296d93e76a"><div class="ttname"><a href="classmspass_1_1algorithms_1_1_time_window.html#a2277a3ea634dfe6ba5bc71296d93e76a">mspass::algorithms::TimeWindow::start</a></div><div class="ttdeci">double start</div><div class="ttdef"><b>Definition</b> TimeWindow.h:17</div></div>
+<div class="ttc" id="aclassmspass_1_1algorithms_1_1_time_window_html_a916901f8d5d1dbb2bf38300bf28a2ec3"><div class="ttname"><a href="classmspass_1_1algorithms_1_1_time_window.html#a916901f8d5d1dbb2bf38300bf28a2ec3">mspass::algorithms::TimeWindow::end</a></div><div class="ttdeci">double end</div><div class="ttdef"><b>Definition</b> TimeWindow.h:21</div></div>
 </div><!-- fragment -->
-<p class="reference">References <a class="el" href="classmspass_1_1algorithms_1_1_time_window.html#a916901f8d5d1dbb2bf38300bf28a2ec3">mspass::algorithms::TimeWindow::end</a>, <a class="el" href="classmspass_1_1seismic_1_1_data_gap.html#a29c06c530f6b02c7d94c21b08af9c384">gaps</a>, and <a class="el" href="classmspass_1_1algorithms_1_1_time_window.html#a2277a3ea634dfe6ba5bc71296d93e76a">mspass::algorithms::TimeWindow::start</a>.</p>
+<p class="reference">References <a class="el" href="classmspass_1_1algorithms_1_1_time_window.html#a916901f8d5d1dbb2bf38300bf28a2ec3">mspass::algorithms::TimeWindow::end</a>, <a class="el" href="classmspass_1_1seismic_1_1_data_gap.html#a7cb06f3ead8475c9527c2248968a2c83">gaps</a>, and <a class="el" href="classmspass_1_1algorithms_1_1_time_window.html#a2277a3ea634dfe6ba5bc71296d93e76a">mspass::algorithms::TimeWindow::start</a>.</p>
 
 </div>
 </div>
@@ -312,9 +311,12 @@ std::set&lt; <a class="el" href="classmspass_1_1algorithms_1_1_time_window.html"
 
 <p>Clear gaps. </p>
 <p>It is sometimes necessary to clear gap definitions. This is particularly important when a descendent of this class is cloned and then morphed into something else. This method clears the entire content. This class assumes gaps are an immutable property of recorded data. A subclass could be used to add that functionality. </p>
-<div class="fragment"><div class="line"><span class="lineno">   75</span>{<span class="keywordflow">if</span>(!<a class="code hl_variable" href="classmspass_1_1seismic_1_1_data_gap.html#a29c06c530f6b02c7d94c21b08af9c384">gaps</a>.empty())<a class="code hl_variable" href="classmspass_1_1seismic_1_1_data_gap.html#a29c06c530f6b02c7d94c21b08af9c384">gaps</a>.clear();};</div>
+<div class="fragment"><div class="line"><span class="lineno">   74</span>                    {</div>
+<div class="line"><span class="lineno">   75</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="classmspass_1_1seismic_1_1_data_gap.html#a7cb06f3ead8475c9527c2248968a2c83">gaps</a>.empty())</div>
+<div class="line"><span class="lineno">   76</span>      <a class="code hl_variable" href="classmspass_1_1seismic_1_1_data_gap.html#a7cb06f3ead8475c9527c2248968a2c83">gaps</a>.clear();</div>
+<div class="line"><span class="lineno">   77</span>  };</div>
 </div><!-- fragment -->
-<p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_data_gap.html#a29c06c530f6b02c7d94c21b08af9c384">gaps</a>.</p>
+<p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_data_gap.html#a7cb06f3ead8475c9527c2248968a2c83">gaps</a>.</p>
 
 </div>
 </div>
@@ -333,14 +335,14 @@ std::set&lt; <a class="el" href="classmspass_1_1algorithms_1_1_time_window.html"
       </table>
 </div><div class="memdoc">
 <p>Getter returns a list of TimeWindows defining a set of gaps. </p>
-<div class="fragment"><div class="line"><span class="lineno">   58</span>{</div>
-<div class="line"><span class="lineno">   59</span>  std::list&lt;TimeWindow&gt; result;</div>
-<div class="line"><span class="lineno">   60</span>  <span class="keywordflow">for</span>(<span class="keyword">auto</span> sptr=this-&gt;<a class="code hl_variable" href="classmspass_1_1seismic_1_1_data_gap.html#a29c06c530f6b02c7d94c21b08af9c384">gaps</a>.begin(); sptr!=this-&gt;<a class="code hl_variable" href="classmspass_1_1seismic_1_1_data_gap.html#a29c06c530f6b02c7d94c21b08af9c384">gaps</a>.end(); ++sptr)</div>
-<div class="line"><span class="lineno">   61</span>    result.push_back(*sptr);</div>
-<div class="line"><span class="lineno">   62</span>  <span class="keywordflow">return</span> result;</div>
-<div class="line"><span class="lineno">   63</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">   55</span>                                            {</div>
+<div class="line"><span class="lineno">   56</span>  std::list&lt;TimeWindow&gt; result;</div>
+<div class="line"><span class="lineno">   57</span>  <span class="keywordflow">for</span> (<span class="keyword">auto</span> sptr = this-&gt;<a class="code hl_variable" href="classmspass_1_1seismic_1_1_data_gap.html#a7cb06f3ead8475c9527c2248968a2c83">gaps</a>.begin(); sptr != this-&gt;<a class="code hl_variable" href="classmspass_1_1seismic_1_1_data_gap.html#a7cb06f3ead8475c9527c2248968a2c83">gaps</a>.end(); ++sptr)</div>
+<div class="line"><span class="lineno">   58</span>    result.push_back(*sptr);</div>
+<div class="line"><span class="lineno">   59</span>  <span class="keywordflow">return</span> result;</div>
+<div class="line"><span class="lineno">   60</span>}</div>
 </div><!-- fragment -->
-<p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_data_gap.html#a29c06c530f6b02c7d94c21b08af9c384">gaps</a>.</p>
+<p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_data_gap.html#a7cb06f3ead8475c9527c2248968a2c83">gaps</a>.</p>
 
 </div>
 </div>
@@ -367,9 +369,9 @@ std::set&lt; <a class="el" href="classmspass_1_1algorithms_1_1_time_window.html"
 </table>
 </div><div class="memdoc">
 <p>Global test to see if data has any gaps defined. Gap processing is expensive and we need this simple method to test to see if the associated object has any gaps defined. </p><dl class="section return"><dt>Returns</dt><dd>true if the associated object has any gaps defined. </dd></dl>
-<div class="fragment"><div class="line"><span class="lineno">   56</span>{<span class="keywordflow">return</span>(!<a class="code hl_variable" href="classmspass_1_1seismic_1_1_data_gap.html#a29c06c530f6b02c7d94c21b08af9c384">gaps</a>.empty());};</div>
+<div class="fragment"><div class="line"><span class="lineno">   55</span>{ <span class="keywordflow">return</span> (!<a class="code hl_variable" href="classmspass_1_1seismic_1_1_data_gap.html#a7cb06f3ead8475c9527c2248968a2c83">gaps</a>.empty()); };</div>
 </div><!-- fragment -->
-<p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_data_gap.html#a29c06c530f6b02c7d94c21b08af9c384">gaps</a>.</p>
+<p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_data_gap.html#a7cb06f3ead8475c9527c2248968a2c83">gaps</a>.</p>
 
 </div>
 </div>
@@ -395,15 +397,16 @@ std::set&lt; <a class="el" href="classmspass_1_1algorithms_1_1_time_window.html"
   </table>
   </dd>
 </dl>
-<div class="fragment"><div class="line"><span class="lineno">   50</span>{</div>
-<div class="line"><span class="lineno">   51</span>  <span class="keywordflow">if</span>(<a class="code hl_variable" href="classmspass_1_1seismic_1_1_data_gap.html#a29c06c530f6b02c7d94c21b08af9c384">gaps</a>.empty())<span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">   52</span>  <span class="keywordflow">if</span>(<a class="code hl_variable" href="classmspass_1_1seismic_1_1_data_gap.html#a29c06c530f6b02c7d94c21b08af9c384">gaps</a>.find(twin)==<a class="code hl_variable" href="classmspass_1_1seismic_1_1_data_gap.html#a29c06c530f6b02c7d94c21b08af9c384">gaps</a>.end())</div>
-<div class="line"><span class="lineno">   53</span>    <span class="keywordflow">return</span>(<span class="keyword">false</span>);</div>
-<div class="line"><span class="lineno">   54</span>  <span class="keywordflow">else</span></div>
-<div class="line"><span class="lineno">   55</span>    <span class="keywordflow">return</span>(<span class="keyword">true</span>);</div>
-<div class="line"><span class="lineno">   56</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">   47</span>                                           {</div>
+<div class="line"><span class="lineno">   48</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="classmspass_1_1seismic_1_1_data_gap.html#a7cb06f3ead8475c9527c2248968a2c83">gaps</a>.empty())</div>
+<div class="line"><span class="lineno">   49</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">   50</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="classmspass_1_1seismic_1_1_data_gap.html#a7cb06f3ead8475c9527c2248968a2c83">gaps</a>.find(twin) == <a class="code hl_variable" href="classmspass_1_1seismic_1_1_data_gap.html#a7cb06f3ead8475c9527c2248968a2c83">gaps</a>.end())</div>
+<div class="line"><span class="lineno">   51</span>    <span class="keywordflow">return</span> (<span class="keyword">false</span>);</div>
+<div class="line"><span class="lineno">   52</span>  <span class="keywordflow">else</span></div>
+<div class="line"><span class="lineno">   53</span>    <span class="keywordflow">return</span> (<span class="keyword">true</span>);</div>
+<div class="line"><span class="lineno">   54</span>}</div>
 </div><!-- fragment -->
-<p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_data_gap.html#a29c06c530f6b02c7d94c21b08af9c384">gaps</a>.</p>
+<p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_data_gap.html#a7cb06f3ead8475c9527c2248968a2c83">gaps</a>.</p>
 
 </div>
 </div>
@@ -428,19 +431,21 @@ std::set&lt; <a class="el" href="classmspass_1_1algorithms_1_1_time_window.html"
   </table>
   </dd>
 </dl>
-<div class="fragment"><div class="line"><span class="lineno">   37</span>{</div>
-<div class="line"><span class="lineno">   38</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> dt(0.001);   <span class="comment">// used to define small time interval smaller than most sampling</span></div>
-<div class="line"><span class="lineno">   39</span>  <span class="keywordflow">if</span>(<a class="code hl_variable" href="classmspass_1_1seismic_1_1_data_gap.html#a29c06c530f6b02c7d94c21b08af9c384">gaps</a>.empty())<span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">   40</span>  TimeWindow twin;</div>
-<div class="line"><span class="lineno">   41</span>  twin.start = ttest - dt*0.5;</div>
-<div class="line"><span class="lineno">   42</span>  twin.end = ttest + dt*0.5;</div>
-<div class="line"><span class="lineno">   43</span>  <span class="keywordflow">if</span>(<a class="code hl_variable" href="classmspass_1_1seismic_1_1_data_gap.html#a29c06c530f6b02c7d94c21b08af9c384">gaps</a>.find(twin)==<a class="code hl_variable" href="classmspass_1_1seismic_1_1_data_gap.html#a29c06c530f6b02c7d94c21b08af9c384">gaps</a>.end())</div>
-<div class="line"><span class="lineno">   44</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">   45</span>  <span class="keywordflow">else</span></div>
-<div class="line"><span class="lineno">   46</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><span class="lineno">   47</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">   33</span>                                       {</div>
+<div class="line"><span class="lineno">   34</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> dt(</div>
+<div class="line"><span class="lineno">   35</span>      0.001); <span class="comment">// used to define small time interval smaller than most sampling</span></div>
+<div class="line"><span class="lineno">   36</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="classmspass_1_1seismic_1_1_data_gap.html#a7cb06f3ead8475c9527c2248968a2c83">gaps</a>.empty())</div>
+<div class="line"><span class="lineno">   37</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">   38</span>  TimeWindow twin;</div>
+<div class="line"><span class="lineno">   39</span>  twin.start = ttest - dt * 0.5;</div>
+<div class="line"><span class="lineno">   40</span>  twin.end = ttest + dt * 0.5;</div>
+<div class="line"><span class="lineno">   41</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="classmspass_1_1seismic_1_1_data_gap.html#a7cb06f3ead8475c9527c2248968a2c83">gaps</a>.find(twin) == <a class="code hl_variable" href="classmspass_1_1seismic_1_1_data_gap.html#a7cb06f3ead8475c9527c2248968a2c83">gaps</a>.end())</div>
+<div class="line"><span class="lineno">   42</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">   43</span>  <span class="keywordflow">else</span></div>
+<div class="line"><span class="lineno">   44</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">   45</span>}</div>
 </div><!-- fragment -->
-<p class="reference">References <a class="el" href="classmspass_1_1algorithms_1_1_time_window.html#a916901f8d5d1dbb2bf38300bf28a2ec3">mspass::algorithms::TimeWindow::end</a>, <a class="el" href="classmspass_1_1seismic_1_1_data_gap.html#a29c06c530f6b02c7d94c21b08af9c384">gaps</a>, and <a class="el" href="classmspass_1_1algorithms_1_1_time_window.html#a2277a3ea634dfe6ba5bc71296d93e76a">mspass::algorithms::TimeWindow::start</a>.</p>
+<p class="reference">References <a class="el" href="classmspass_1_1algorithms_1_1_time_window.html#a916901f8d5d1dbb2bf38300bf28a2ec3">mspass::algorithms::TimeWindow::end</a>, <a class="el" href="classmspass_1_1seismic_1_1_data_gap.html#a7cb06f3ead8475c9527c2248968a2c83">gaps</a>, and <a class="el" href="classmspass_1_1algorithms_1_1_time_window.html#a2277a3ea634dfe6ba5bc71296d93e76a">mspass::algorithms::TimeWindow::start</a>.</p>
 
 </div>
 </div>
@@ -467,9 +472,9 @@ std::set&lt; <a class="el" href="classmspass_1_1algorithms_1_1_time_window.html"
 </table>
 </div><div class="memdoc">
 <p>Return number of defined gaps. </p>
-<div class="fragment"><div class="line"><span class="lineno">   77</span>{<span class="keywordflow">return</span> <a class="code hl_variable" href="classmspass_1_1seismic_1_1_data_gap.html#a29c06c530f6b02c7d94c21b08af9c384">gaps</a>.size();};</div>
+<div class="fragment"><div class="line"><span class="lineno">   79</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="classmspass_1_1seismic_1_1_data_gap.html#a7cb06f3ead8475c9527c2248968a2c83">gaps</a>.size(); };</div>
 </div><!-- fragment -->
-<p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_data_gap.html#a29c06c530f6b02c7d94c21b08af9c384">gaps</a>.</p>
+<p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_data_gap.html#a7cb06f3ead8475c9527c2248968a2c83">gaps</a>.</p>
 
 </div>
 </div>
@@ -490,13 +495,14 @@ std::set&lt; <a class="el" href="classmspass_1_1algorithms_1_1_time_window.html"
 </div><div class="memdoc">
 <p>Add contents of another <a class="el" href="classmspass_1_1seismic_1_1_data_gap.html">DataGap</a> container to this one. <br  />
  </p>
-<div class="fragment"><div class="line"><span class="lineno">  114</span>{</div>
-<div class="line"><span class="lineno">  115</span>  <span class="keywordflow">for</span>(<span class="keyword">auto</span> ptr=parent.gaps.begin();ptr!=parent.gaps.end();++ptr) this-&gt;<a class="code hl_function" href="classmspass_1_1seismic_1_1_data_gap.html#a29bd754c4f58ce811c4e6e1e4056927c">add_gap</a>(*ptr);</div>
-<div class="line"><span class="lineno">  116</span>  <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
-<div class="line"><span class="lineno">  117</span>}</div>
-<div class="ttc" id="aclassmspass_1_1seismic_1_1_data_gap_html_a29bd754c4f58ce811c4e6e1e4056927c"><div class="ttname"><a href="classmspass_1_1seismic_1_1_data_gap.html#a29bd754c4f58ce811c4e6e1e4056927c">mspass::seismic::DataGap::add_gap</a></div><div class="ttdeci">void add_gap(const mspass::algorithms::TimeWindow tw)</div><div class="ttdef"><b>Definition</b> DataGap.cc:14</div></div>
+<div class="fragment"><div class="line"><span class="lineno">  103</span>                                                  {</div>
+<div class="line"><span class="lineno">  104</span>  <span class="keywordflow">for</span> (<span class="keyword">auto</span> ptr = parent.gaps.begin(); ptr != parent.gaps.end(); ++ptr)</div>
+<div class="line"><span class="lineno">  105</span>    this-&gt;<a class="code hl_function" href="classmspass_1_1seismic_1_1_data_gap.html#a29bd754c4f58ce811c4e6e1e4056927c">add_gap</a>(*ptr);</div>
+<div class="line"><span class="lineno">  106</span>  <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
+<div class="line"><span class="lineno">  107</span>}</div>
+<div class="ttc" id="aclassmspass_1_1seismic_1_1_data_gap_html_a29bd754c4f58ce811c4e6e1e4056927c"><div class="ttname"><a href="classmspass_1_1seismic_1_1_data_gap.html#a29bd754c4f58ce811c4e6e1e4056927c">mspass::seismic::DataGap::add_gap</a></div><div class="ttdeci">void add_gap(const mspass::algorithms::TimeWindow tw)</div><div class="ttdef"><b>Definition</b> DataGap.cc:13</div></div>
 </div><!-- fragment -->
-<p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_data_gap.html#a29bd754c4f58ce811c4e6e1e4056927c">add_gap()</a>, and <a class="el" href="classmspass_1_1seismic_1_1_data_gap.html#a29c06c530f6b02c7d94c21b08af9c384">gaps</a>.</p>
+<p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_data_gap.html#a29bd754c4f58ce811c4e6e1e4056927c">add_gap()</a>, and <a class="el" href="classmspass_1_1seismic_1_1_data_gap.html#a7cb06f3ead8475c9527c2248968a2c83">gaps</a>.</p>
 
 </div>
 </div>
@@ -516,15 +522,14 @@ std::set&lt; <a class="el" href="classmspass_1_1algorithms_1_1_time_window.html"
       </table>
 </div><div class="memdoc">
 <p>Standard assignment operator. </p>
-<div class="fragment"><div class="line"><span class="lineno">  106</span>{</div>
-<div class="line"><span class="lineno">  107</span>    <span class="keywordflow">if</span>(<span class="keyword">this</span>!=(&amp;parent))</div>
-<div class="line"><span class="lineno">  108</span>    {</div>
-<div class="line"><span class="lineno">  109</span>        <a class="code hl_variable" href="classmspass_1_1seismic_1_1_data_gap.html#a29c06c530f6b02c7d94c21b08af9c384">gaps</a>=parent.gaps;</div>
-<div class="line"><span class="lineno">  110</span>    }</div>
-<div class="line"><span class="lineno">  111</span>    <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
-<div class="line"><span class="lineno">  112</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">   97</span>                                                 {</div>
+<div class="line"><span class="lineno">   98</span>  <span class="keywordflow">if</span> (<span class="keyword">this</span> != (&amp;parent)) {</div>
+<div class="line"><span class="lineno">   99</span>    <a class="code hl_variable" href="classmspass_1_1seismic_1_1_data_gap.html#a7cb06f3ead8475c9527c2248968a2c83">gaps</a> = parent.gaps;</div>
+<div class="line"><span class="lineno">  100</span>  }</div>
+<div class="line"><span class="lineno">  101</span>  <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
+<div class="line"><span class="lineno">  102</span>}</div>
 </div><!-- fragment -->
-<p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_data_gap.html#a29c06c530f6b02c7d94c21b08af9c384">gaps</a>.</p>
+<p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_data_gap.html#a7cb06f3ead8475c9527c2248968a2c83">gaps</a>.</p>
 
 </div>
 </div>
@@ -550,24 +555,22 @@ std::set&lt; <a class="el" href="classmspass_1_1algorithms_1_1_time_window.html"
   </table>
   </dd>
 </dl>
-<div class="fragment"><div class="line"><span class="lineno">   65</span>{</div>
-<div class="line"><span class="lineno">   66</span>  <span class="comment">/* This could be implemented with the set equal_range method </span></div>
-<div class="line"><span class="lineno">   67</span><span class="comment">   * but these objects are expected to normally be very small</span></div>
-<div class="line"><span class="lineno">   68</span><span class="comment">   * and it is a lot clearer what this algorithm does.</span></div>
-<div class="line"><span class="lineno">   69</span><span class="comment">   * */</span></div>
-<div class="line"><span class="lineno">   70</span>   <a class="code hl_function" href="classmspass_1_1seismic_1_1_data_gap.html#aa2a1e74ae7bf6ef9f3ff79153b890146">DataGap</a> result;</div>
-<div class="line"><span class="lineno">   71</span>   std::list&lt;TimeWindow&gt; gaplist = this-&gt;<a class="code hl_function" href="classmspass_1_1seismic_1_1_data_gap.html#ac1a5133f17e4e741f8b7560c46d1d204">get_gaps</a>();</div>
-<div class="line"><span class="lineno">   72</span>   <span class="keywordflow">for</span>(<span class="keyword">auto</span> twptr= gaplist.begin();twptr!=gaplist.end();++twptr)</div>
-<div class="line"><span class="lineno">   73</span>   {</div>
-<div class="line"><span class="lineno">   74</span>     <span class="keywordflow">if</span>( ((twptr-&gt;end)&gt;tw.<a class="code hl_variable" href="classmspass_1_1algorithms_1_1_time_window.html#a2277a3ea634dfe6ba5bc71296d93e76a">start</a>) &amp;&amp; ((twptr-&gt;start)&lt;tw.<a class="code hl_variable" href="classmspass_1_1algorithms_1_1_time_window.html#a916901f8d5d1dbb2bf38300bf28a2ec3">end</a>))</div>
-<div class="line"><span class="lineno">   75</span>     {</div>
-<div class="line"><span class="lineno">   76</span>       result.add_gap(*twptr);</div>
-<div class="line"><span class="lineno">   77</span>     }</div>
-<div class="line"><span class="lineno">   78</span>   }</div>
-<div class="line"><span class="lineno">   79</span>   <span class="keywordflow">return</span> result;</div>
-<div class="line"><span class="lineno">   80</span>}</div>
-<div class="ttc" id="aclassmspass_1_1seismic_1_1_data_gap_html_aa2a1e74ae7bf6ef9f3ff79153b890146"><div class="ttname"><a href="classmspass_1_1seismic_1_1_data_gap.html#aa2a1e74ae7bf6ef9f3ff79153b890146">mspass::seismic::DataGap::DataGap</a></div><div class="ttdeci">DataGap()</div><div class="ttdef"><b>Definition</b> DataGap.h:28</div></div>
-<div class="ttc" id="aclassmspass_1_1seismic_1_1_data_gap_html_ac1a5133f17e4e741f8b7560c46d1d204"><div class="ttname"><a href="classmspass_1_1seismic_1_1_data_gap.html#ac1a5133f17e4e741f8b7560c46d1d204">mspass::seismic::DataGap::get_gaps</a></div><div class="ttdeci">std::list&lt; mspass::algorithms::TimeWindow &gt; get_gaps() const</div><div class="ttdef"><b>Definition</b> DataGap.cc:57</div></div>
+<div class="fragment"><div class="line"><span class="lineno">   61</span>                                                 {</div>
+<div class="line"><span class="lineno">   62</span>  <span class="comment">/* This could be implemented with the set equal_range method</span></div>
+<div class="line"><span class="lineno">   63</span><span class="comment">   * but these objects are expected to normally be very small</span></div>
+<div class="line"><span class="lineno">   64</span><span class="comment">   * and it is a lot clearer what this algorithm does.</span></div>
+<div class="line"><span class="lineno">   65</span><span class="comment">   * */</span></div>
+<div class="line"><span class="lineno">   66</span>  <a class="code hl_function" href="classmspass_1_1seismic_1_1_data_gap.html#aa2a1e74ae7bf6ef9f3ff79153b890146">DataGap</a> result;</div>
+<div class="line"><span class="lineno">   67</span>  std::list&lt;TimeWindow&gt; gaplist = this-&gt;<a class="code hl_function" href="classmspass_1_1seismic_1_1_data_gap.html#ac1a5133f17e4e741f8b7560c46d1d204">get_gaps</a>();</div>
+<div class="line"><span class="lineno">   68</span>  <span class="keywordflow">for</span> (<span class="keyword">auto</span> twptr = gaplist.begin(); twptr != gaplist.end(); ++twptr) {</div>
+<div class="line"><span class="lineno">   69</span>    <span class="keywordflow">if</span> (((twptr-&gt;end) &gt; tw.<a class="code hl_variable" href="classmspass_1_1algorithms_1_1_time_window.html#a2277a3ea634dfe6ba5bc71296d93e76a">start</a>) &amp;&amp; ((twptr-&gt;start) &lt; tw.<a class="code hl_variable" href="classmspass_1_1algorithms_1_1_time_window.html#a916901f8d5d1dbb2bf38300bf28a2ec3">end</a>)) {</div>
+<div class="line"><span class="lineno">   70</span>      result.add_gap(*twptr);</div>
+<div class="line"><span class="lineno">   71</span>    }</div>
+<div class="line"><span class="lineno">   72</span>  }</div>
+<div class="line"><span class="lineno">   73</span>  <span class="keywordflow">return</span> result;</div>
+<div class="line"><span class="lineno">   74</span>}</div>
+<div class="ttc" id="aclassmspass_1_1seismic_1_1_data_gap_html_aa2a1e74ae7bf6ef9f3ff79153b890146"><div class="ttname"><a href="classmspass_1_1seismic_1_1_data_gap.html#aa2a1e74ae7bf6ef9f3ff79153b890146">mspass::seismic::DataGap::DataGap</a></div><div class="ttdeci">DataGap()</div><div class="ttdef"><b>Definition</b> DataGap.h:27</div></div>
+<div class="ttc" id="aclassmspass_1_1seismic_1_1_data_gap_html_ac1a5133f17e4e741f8b7560c46d1d204"><div class="ttname"><a href="classmspass_1_1seismic_1_1_data_gap.html#ac1a5133f17e4e741f8b7560c46d1d204">mspass::seismic::DataGap::get_gaps</a></div><div class="ttdeci">std::list&lt; mspass::algorithms::TimeWindow &gt; get_gaps() const</div><div class="ttdef"><b>Definition</b> DataGap.cc:55</div></div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_data_gap.html#a29bd754c4f58ce811c4e6e1e4056927c">add_gap()</a>, <a class="el" href="classmspass_1_1algorithms_1_1_time_window.html#a916901f8d5d1dbb2bf38300bf28a2ec3">mspass::algorithms::TimeWindow::end</a>, <a class="el" href="classmspass_1_1seismic_1_1_data_gap.html#ac1a5133f17e4e741f8b7560c46d1d204">get_gaps()</a>, and <a class="el" href="classmspass_1_1algorithms_1_1_time_window.html#a2277a3ea634dfe6ba5bc71296d93e76a">mspass::algorithms::TimeWindow::start</a>.</p>
 
@@ -589,24 +592,22 @@ std::set&lt; <a class="el" href="classmspass_1_1algorithms_1_1_time_window.html"
       </table>
 </div><div class="memdoc">
 <p>Shift the times of all gaps by a value.</p>
-<p>When used with a <a class="el" href="classmspass_1_1seismic_1_1_time_series.html" title="Implemntation of TimeSeries for MsPASS.">TimeSeries</a> or <a class="el" href="classmspass_1_1seismic_1_1_seismogram.html" title="Implemntation of Seismogram for MsPASS.">Seismogram</a> the concept of UTC versus relative time requires shifting the time origin. <br  />
- This method should be used in that context or any other context where the data origin is shifted. The number passed as shift is subtracted from all the window start and end times that define data gaps. </p>
-<div class="fragment"><div class="line"><span class="lineno">   92</span>{</div>
-<div class="line"><span class="lineno">   93</span>  std::set&lt;TimeWindow,TimeWindowCmp&gt; translated_gaps;</div>
-<div class="line"><span class="lineno">   94</span>  <span class="keywordflow">for</span>(<span class="keyword">auto</span> ptr=this-&gt;<a class="code hl_variable" href="classmspass_1_1seismic_1_1_data_gap.html#a29c06c530f6b02c7d94c21b08af9c384">gaps</a>.begin();ptr!=this-&gt;<a class="code hl_variable" href="classmspass_1_1seismic_1_1_data_gap.html#a29c06c530f6b02c7d94c21b08af9c384">gaps</a>.end();++ptr)</div>
-<div class="line"><span class="lineno">   95</span>  {</div>
-<div class="line"><span class="lineno">   96</span>    TimeWindow tw(*ptr);</div>
-<div class="line"><span class="lineno">   97</span>    tw.start -= origin_time;</div>
-<div class="line"><span class="lineno">   98</span>    tw.end -= origin_time;</div>
-<div class="line"><span class="lineno">   99</span>    translated_gaps.insert(tw);</div>
-<div class="line"><span class="lineno">  100</span>  }</div>
-<div class="line"><span class="lineno">  101</span>  this-&gt;<a class="code hl_function" href="classmspass_1_1seismic_1_1_data_gap.html#a8a5b2919df07147fe740a5d4f2af1908">clear_gaps</a>();</div>
-<div class="line"><span class="lineno">  102</span>  <span class="keywordflow">for</span>(<span class="keyword">auto</span> ptr=translated_gaps.begin();ptr!=translated_gaps.end();++ptr)</div>
-<div class="line"><span class="lineno">  103</span>      this-&gt;<a class="code hl_function" href="classmspass_1_1seismic_1_1_data_gap.html#a29bd754c4f58ce811c4e6e1e4056927c">add_gap</a>(*ptr);</div>
-<div class="line"><span class="lineno">  104</span>}</div>
-<div class="ttc" id="aclassmspass_1_1seismic_1_1_data_gap_html_a8a5b2919df07147fe740a5d4f2af1908"><div class="ttname"><a href="classmspass_1_1seismic_1_1_data_gap.html#a8a5b2919df07147fe740a5d4f2af1908">mspass::seismic::DataGap::clear_gaps</a></div><div class="ttdeci">void clear_gaps()</div><div class="ttdoc">Clear gaps.</div><div class="ttdef"><b>Definition</b> DataGap.h:75</div></div>
+<p>When used with a <a class="el" href="classmspass_1_1seismic_1_1_time_series.html" title="Implemntation of TimeSeries for MsPASS.">TimeSeries</a> or <a class="el" href="classmspass_1_1seismic_1_1_seismogram.html" title="Implemntation of Seismogram for MsPASS.">Seismogram</a> the concept of UTC versus relative time requires shifting the time origin. This method should be used in that context or any other context where the data origin is shifted. The number passed as shift is subtracted from all the window start and end times that define data gaps. </p>
+<div class="fragment"><div class="line"><span class="lineno">   85</span>                                                 {</div>
+<div class="line"><span class="lineno">   86</span>  std::set&lt;TimeWindow, TimeWindowCmp&gt; translated_gaps;</div>
+<div class="line"><span class="lineno">   87</span>  <span class="keywordflow">for</span> (<span class="keyword">auto</span> ptr = this-&gt;<a class="code hl_variable" href="classmspass_1_1seismic_1_1_data_gap.html#a7cb06f3ead8475c9527c2248968a2c83">gaps</a>.begin(); ptr != this-&gt;<a class="code hl_variable" href="classmspass_1_1seismic_1_1_data_gap.html#a7cb06f3ead8475c9527c2248968a2c83">gaps</a>.end(); ++ptr) {</div>
+<div class="line"><span class="lineno">   88</span>    TimeWindow tw(*ptr);</div>
+<div class="line"><span class="lineno">   89</span>    tw.start -= origin_time;</div>
+<div class="line"><span class="lineno">   90</span>    tw.end -= origin_time;</div>
+<div class="line"><span class="lineno">   91</span>    translated_gaps.insert(tw);</div>
+<div class="line"><span class="lineno">   92</span>  }</div>
+<div class="line"><span class="lineno">   93</span>  this-&gt;<a class="code hl_function" href="classmspass_1_1seismic_1_1_data_gap.html#a8a5b2919df07147fe740a5d4f2af1908">clear_gaps</a>();</div>
+<div class="line"><span class="lineno">   94</span>  <span class="keywordflow">for</span> (<span class="keyword">auto</span> ptr = translated_gaps.begin(); ptr != translated_gaps.end(); ++ptr)</div>
+<div class="line"><span class="lineno">   95</span>    this-&gt;<a class="code hl_function" href="classmspass_1_1seismic_1_1_data_gap.html#a29bd754c4f58ce811c4e6e1e4056927c">add_gap</a>(*ptr);</div>
+<div class="line"><span class="lineno">   96</span>}</div>
+<div class="ttc" id="aclassmspass_1_1seismic_1_1_data_gap_html_a8a5b2919df07147fe740a5d4f2af1908"><div class="ttname"><a href="classmspass_1_1seismic_1_1_data_gap.html#a8a5b2919df07147fe740a5d4f2af1908">mspass::seismic::DataGap::clear_gaps</a></div><div class="ttdeci">void clear_gaps()</div><div class="ttdoc">Clear gaps.</div><div class="ttdef"><b>Definition</b> DataGap.h:74</div></div>
 </div><!-- fragment -->
-<p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_data_gap.html#a29bd754c4f58ce811c4e6e1e4056927c">add_gap()</a>, <a class="el" href="classmspass_1_1seismic_1_1_data_gap.html#a8a5b2919df07147fe740a5d4f2af1908">clear_gaps()</a>, <a class="el" href="classmspass_1_1algorithms_1_1_time_window.html#a916901f8d5d1dbb2bf38300bf28a2ec3">mspass::algorithms::TimeWindow::end</a>, <a class="el" href="classmspass_1_1seismic_1_1_data_gap.html#a29c06c530f6b02c7d94c21b08af9c384">gaps</a>, and <a class="el" href="classmspass_1_1algorithms_1_1_time_window.html#a2277a3ea634dfe6ba5bc71296d93e76a">mspass::algorithms::TimeWindow::start</a>.</p>
+<p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_data_gap.html#a29bd754c4f58ce811c4e6e1e4056927c">add_gap()</a>, <a class="el" href="classmspass_1_1seismic_1_1_data_gap.html#a8a5b2919df07147fe740a5d4f2af1908">clear_gaps()</a>, <a class="el" href="classmspass_1_1algorithms_1_1_time_window.html#a916901f8d5d1dbb2bf38300bf28a2ec3">mspass::algorithms::TimeWindow::end</a>, <a class="el" href="classmspass_1_1seismic_1_1_data_gap.html#a7cb06f3ead8475c9527c2248968a2c83">gaps</a>, and <a class="el" href="classmspass_1_1algorithms_1_1_time_window.html#a2277a3ea634dfe6ba5bc71296d93e76a">mspass::algorithms::TimeWindow::start</a>.</p>
 
 </div>
 </div>

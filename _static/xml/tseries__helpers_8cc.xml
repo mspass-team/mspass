@@ -2,140 +2,138 @@
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="tseries__helpers_8cc" kind="file" language="C++">
     <compoundname>tseries_helpers.cc</compoundname>
-    <includes local="no">math.h</includes>
-    <includes refid="_ms_p_a_s_s_error_8h" local="yes">mspass/utility/MsPASSError.h</includes>
     <includes refid="_time_window_8h" local="yes">mspass/algorithms/TimeWindow.h</includes>
-    <includes refid="_time_series_8h" local="yes">mspass/seismic/TimeSeries.h</includes>
     <includes refid="_ensemble_8h" local="yes">mspass/seismic/Ensemble.h</includes>
+    <includes refid="_time_series_8h" local="yes">mspass/seismic/TimeSeries.h</includes>
+    <includes refid="_ms_p_a_s_s_error_8h" local="yes">mspass/utility/MsPASSError.h</includes>
+    <includes local="no">math.h</includes>
     <incdepgraph>
-      <node id="6">
+      <node id="2">
         <label>mspass/algorithms/TimeWindow.h</label>
         <link refid="_time_window_8h_source"/>
       </node>
-      <node id="10">
+      <node id="6">
         <label>mspass/seismic/BasicTimeSeries.h</label>
         <link refid="_basic_time_series_8h_source"/>
-        <childnode refid="2" relation="include">
-        </childnode>
-        <childnode refid="11" relation="include">
-        </childnode>
-        <childnode refid="12" relation="include">
-        </childnode>
-      </node>
-      <node id="37">
-        <label>mspass/seismic/CoreSeismogram.h</label>
-        <link refid="_core_seismogram_8h_source"/>
-        <childnode refid="38" relation="include">
-        </childnode>
-        <childnode refid="9" relation="include">
-        </childnode>
-        <childnode refid="13" relation="include">
-        </childnode>
-        <childnode refid="39" relation="include">
-        </childnode>
-        <childnode refid="10" relation="include">
-        </childnode>
-        <childnode refid="8" relation="include">
-        </childnode>
-        <childnode refid="43" relation="include">
-        </childnode>
-        <childnode refid="44" relation="include">
-        </childnode>
-      </node>
-      <node id="8">
-        <label>mspass/seismic/CoreTimeSeries.h</label>
-        <link refid="_core_time_series_8h_source"/>
-        <childnode refid="9" relation="include">
-        </childnode>
-        <childnode refid="10" relation="include">
-        </childnode>
-        <childnode refid="13" relation="include">
-        </childnode>
-      </node>
-      <node id="35">
-        <label>mspass/seismic/Ensemble.h</label>
-        <link refid="_ensemble_8h_source"/>
-        <childnode refid="9" relation="include">
-        </childnode>
         <childnode refid="7" relation="include">
         </childnode>
-        <childnode refid="36" relation="include">
-        </childnode>
-        <childnode refid="45" relation="include">
-        </childnode>
-      </node>
-      <node id="36">
-        <label>mspass/seismic/Seismogram.h</label>
-        <link refid="_seismogram_8h_source"/>
-        <childnode refid="37" relation="include">
-        </childnode>
-        <childnode refid="24" relation="include">
-        </childnode>
-        <childnode refid="31" relation="include">
-        </childnode>
-      </node>
-      <node id="44">
-        <label>mspass/seismic/SlownessVector.h</label>
-        <link refid="_slowness_vector_8h_source"/>
-        <childnode refid="23" relation="include">
-        </childnode>
-        <childnode refid="11" relation="include">
-        </childnode>
-        <childnode refid="12" relation="include">
-        </childnode>
-      </node>
-      <node id="7">
-        <label>mspass/seismic/TimeSeries.h</label>
-        <link refid="_time_series_8h_source"/>
         <childnode refid="8" relation="include">
         </childnode>
-        <childnode refid="24" relation="include">
-        </childnode>
-        <childnode refid="31" relation="include">
+        <childnode refid="9" relation="include">
         </childnode>
       </node>
-      <node id="22">
-        <label>mspass/utility/BasicMetadata.h</label>
-        <link refid="_basic_metadata_8h_source"/>
-        <childnode refid="23" relation="include">
+      <node id="5">
+        <label>mspass/seismic/CoreSeismogram.h</label>
+        <link refid="_core_seismogram_8h_source"/>
+        <childnode refid="6" relation="include">
         </childnode>
-      </node>
-      <node id="31">
-        <label>mspass/utility/ErrorLogger.h</label>
-        <link refid="_error_logger_8h_source"/>
-        <childnode refid="32" relation="include">
-        </childnode>
-        <childnode refid="17" relation="include">
-        </childnode>
-        <childnode refid="33" relation="include">
-        </childnode>
-        <childnode refid="11" relation="include">
-        </childnode>
-        <childnode refid="12" relation="include">
+        <childnode refid="10" relation="include">
         </childnode>
         <childnode refid="26" relation="include">
         </childnode>
-        <childnode refid="34" relation="include">
+        <childnode refid="11" relation="include">
         </childnode>
-        <childnode refid="3" relation="include">
+        <childnode refid="27" relation="include">
         </childnode>
-        <childnode refid="31" relation="include">
+        <childnode refid="28" relation="include">
+        </childnode>
+        <childnode refid="32" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
         </childnode>
       </node>
-      <node id="13">
-        <label>mspass/utility/Metadata.h</label>
-        <link refid="_metadata_8h_source"/>
+      <node id="10">
+        <label>mspass/seismic/CoreTimeSeries.h</label>
+        <link refid="_core_time_series_8h_source"/>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>mspass/seismic/Ensemble.h</label>
+        <link refid="_ensemble_8h_source"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="44" relation="include">
+        </childnode>
+        <childnode refid="45" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>mspass/seismic/Seismogram.h</label>
+        <link refid="_seismogram_8h_source"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="33" relation="include">
+        </childnode>
+        <childnode refid="38" relation="include">
+        </childnode>
+      </node>
+      <node id="26">
+        <label>mspass/seismic/SlownessVector.h</label>
+        <link refid="_slowness_vector_8h_source"/>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+      </node>
+      <node id="44">
+        <label>mspass/seismic/TimeSeries.h</label>
+        <link refid="_time_series_8h_source"/>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="33" relation="include">
+        </childnode>
+        <childnode refid="38" relation="include">
+        </childnode>
+      </node>
+      <node id="12">
+        <label>mspass/utility/BasicMetadata.h</label>
+        <link refid="_basic_metadata_8h_source"/>
+        <childnode refid="13" relation="include">
+        </childnode>
+      </node>
+      <node id="33">
+        <label>mspass/utility/ErrorLogger.h</label>
+        <link refid="_error_logger_8h_source"/>
+        <childnode refid="33" relation="include">
+        </childnode>
         <childnode refid="14" relation="include">
         </childnode>
-        <childnode refid="15" relation="include">
+        <childnode refid="34" relation="include">
         </childnode>
-        <childnode refid="16" relation="include">
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="35" relation="include">
+        </childnode>
+        <childnode refid="36" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="37" relation="include">
+        </childnode>
+      </node>
+      <node id="11">
+        <label>mspass/utility/Metadata.h</label>
+        <link refid="_metadata_8h_source"/>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
         </childnode>
         <childnode refid="17" relation="include">
         </childnode>
-        <childnode refid="4" relation="include">
-        </childnode>
         <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
         </childnode>
         <childnode refid="19" relation="include">
         </childnode>
@@ -143,63 +141,33 @@
         </childnode>
         <childnode refid="21" relation="include">
         </childnode>
-        <childnode refid="3" relation="include">
-        </childnode>
         <childnode refid="22" relation="include">
         </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
       </node>
-      <node id="3">
+      <node id="14">
         <label>mspass/utility/MsPASSError.h</label>
         <link refid="_ms_p_a_s_s_error_8h_source"/>
-        <childnode refid="4" relation="include">
-        </childnode>
-        <childnode refid="5" relation="include">
-        </childnode>
-      </node>
-      <node id="24">
-        <label>mspass/utility/ProcessingHistory.h</label>
-        <link refid="_processing_history_8h_source"/>
-        <childnode refid="23" relation="include">
-        </childnode>
-        <childnode refid="17" relation="include">
-        </childnode>
-        <childnode refid="9" relation="include">
-        </childnode>
         <childnode refid="15" relation="include">
         </childnode>
-        <childnode refid="25" relation="include">
-        </childnode>
-        <childnode refid="26" relation="include">
-        </childnode>
-        <childnode refid="27" relation="include">
-        </childnode>
-        <childnode refid="28" relation="include">
-        </childnode>
-        <childnode refid="29" relation="include">
-        </childnode>
-        <childnode refid="30" relation="include">
-        </childnode>
-        <childnode refid="11" relation="include">
-        </childnode>
-        <childnode refid="12" relation="include">
-        </childnode>
-        <childnode refid="31" relation="include">
+        <childnode refid="16" relation="include">
         </childnode>
       </node>
-      <node id="43">
-        <label>mspass/utility/SphericalCoordinate.h</label>
-        <link refid="_spherical_coordinate_8h_source"/>
-      </node>
-      <node id="39">
-        <label>mspass/utility/dmatrix.h</label>
-        <link refid="dmatrix_8h_source"/>
-        <childnode refid="23" relation="include">
+      <node id="38">
+        <label>mspass/utility/ProcessingHistory.h</label>
+        <link refid="_processing_history_8h_source"/>
+        <childnode refid="33" relation="include">
         </childnode>
-        <childnode refid="4" relation="include">
+        <childnode refid="7" relation="include">
         </childnode>
-        <childnode refid="19" relation="include">
+        <childnode refid="8" relation="include">
         </childnode>
-        <childnode refid="9" relation="include">
+        <childnode refid="39" relation="include">
+        </childnode>
+        <childnode refid="36" relation="include">
         </childnode>
         <childnode refid="40" relation="include">
         </childnode>
@@ -207,7 +175,39 @@
         </childnode>
         <childnode refid="42" relation="include">
         </childnode>
-        <childnode refid="3" relation="include">
+        <childnode refid="43" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+      </node>
+      <node id="27">
+        <label>mspass/utility/SphericalCoordinate.h</label>
+        <link refid="_spherical_coordinate_8h_source"/>
+      </node>
+      <node id="28">
+        <label>mspass/utility/dmatrix.h</label>
+        <link refid="dmatrix_8h_source"/>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="29" relation="include">
+        </childnode>
+        <childnode refid="30" relation="include">
+        </childnode>
+        <childnode refid="31" relation="include">
         </childnode>
       </node>
       <node id="45">
@@ -221,95 +221,95 @@
         </childnode>
         <childnode refid="3" relation="include">
         </childnode>
-        <childnode refid="6" relation="include">
+        <childnode refid="44" relation="include">
         </childnode>
-        <childnode refid="7" relation="include">
+        <childnode refid="14" relation="include">
         </childnode>
-        <childnode refid="35" relation="include">
+        <childnode refid="9" relation="include">
         </childnode>
       </node>
-      <node id="20">
+      <node id="17">
         <label>boost/any.hpp</label>
       </node>
-      <node id="33">
+      <node id="34">
         <label>boost/archive/basic_archive.hpp</label>
       </node>
-      <node id="42">
+      <node id="29">
         <label>boost/archive/binary_iarchive.hpp</label>
       </node>
-      <node id="41">
+      <node id="30">
         <label>boost/archive/binary_oarchive.hpp</label>
       </node>
-      <node id="11">
+      <node id="7">
         <label>boost/archive/text_iarchive.hpp</label>
       </node>
-      <node id="12">
+      <node id="8">
         <label>boost/archive/text_oarchive.hpp</label>
       </node>
-      <node id="34">
+      <node id="35">
         <label>boost/serialization/list.hpp</label>
       </node>
-      <node id="25">
+      <node id="39">
         <label>boost/serialization/map.hpp</label>
       </node>
-      <node id="26">
+      <node id="36">
         <label>boost/serialization/serialization.hpp</label>
       </node>
-      <node id="40">
+      <node id="31">
         <label>boost/serialization/vector.hpp</label>
       </node>
-      <node id="27">
+      <node id="40">
         <label>boost/uuid/uuid.hpp</label>
       </node>
-      <node id="28">
+      <node id="41">
         <label>boost/uuid/uuid_generators.hpp</label>
       </node>
-      <node id="29">
+      <node id="42">
         <label>boost/uuid/uuid_io.hpp</label>
       </node>
-      <node id="30">
+      <node id="43">
         <label>boost/uuid/uuid_serialize.hpp</label>
       </node>
-      <node id="5">
+      <node id="15">
         <label>exception</label>
       </node>
       <node id="18">
         <label>fstream</label>
       </node>
-      <node id="4">
+      <node id="16">
         <label>iostream</label>
       </node>
-      <node id="17">
+      <node id="19">
         <label>list</label>
       </node>
-      <node id="15">
+      <node id="20">
         <label>map</label>
       </node>
-      <node id="2">
+      <node id="9">
         <label>math.h</label>
       </node>
-      <node id="38">
+      <node id="32">
         <label>memory</label>
       </node>
       <node id="21">
         <label>pybind11/pybind11.h</label>
       </node>
-      <node id="16">
+      <node id="22">
         <label>set</label>
       </node>
-      <node id="19">
+      <node id="23">
         <label>sstream</label>
       </node>
-      <node id="23">
+      <node id="13">
         <label>string</label>
       </node>
-      <node id="14">
+      <node id="24">
         <label>typeinfo</label>
       </node>
-      <node id="32">
+      <node id="37">
         <label>unistd.h</label>
       </node>
-      <node id="9">
+      <node id="25">
         <label>vector</label>
       </node>
     </incdepgraph>
@@ -320,175 +320,164 @@
     <detaileddescription>
     </detaileddescription>
     <programlisting>
-<codeline lineno="1"><highlight class="preprocessor">#include<sp/>&lt;math.h&gt;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="2"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/utility/MsPASSError.h&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="3"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/algorithms/TimeWindow.h&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="4"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/seismic/TimeSeries.h&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/seismic/Ensemble.h&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="6"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">mspass::algorithms</highlight></codeline>
-<codeline lineno="7"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="8"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal">std;</highlight></codeline>
-<codeline lineno="9"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal"><ref refid="namespacemspass_1_1seismic" kindref="compound">mspass::seismic</ref>;</highlight></codeline>
-<codeline lineno="10"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal">mspass::utility;</highlight></codeline>
-<codeline lineno="11"><highlight class="normal"></highlight></codeline>
-<codeline lineno="12"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>This<sp/>file<sp/>is<sp/>very<sp/>very<sp/>similar<sp/>to<sp/>a<sp/>related<sp/>set<sp/>of<sp/>procedures<sp/>found</highlight></codeline>
-<codeline lineno="13"><highlight class="comment">in<sp/>the<sp/>file<sp/>three_component_helpers.cc.<sp/><sp/>Future<sp/>efforts<sp/>could<sp/>merge</highlight></codeline>
-<codeline lineno="14"><highlight class="comment">them<sp/>into<sp/>a<sp/>template<sp/>version<sp/>standardizes<sp/>what<sp/>these<sp/>do.</highlight></codeline>
-<codeline lineno="15"><highlight class="comment">At<sp/>the<sp/>time<sp/>of<sp/>this<sp/>conversion<sp/>(Aug<sp/>2005)<sp/>this<sp/>and<sp/>it&apos;s<sp/>parent<sp/>do</highlight></codeline>
-<codeline lineno="16"><highlight class="comment">only<sp/>one<sp/>thing<sp/>--<sp/>they<sp/>contain<sp/>procedures<sp/>to<sp/>take<sp/>seismograms<sp/>in</highlight></codeline>
-<codeline lineno="17"><highlight class="comment">defined<sp/>with<sp/>an<sp/>UTC<sp/>time<sp/>standard<sp/>and<sp/>convert<sp/>them<sp/>to<sp/>an</highlight></codeline>
-<codeline lineno="18"><highlight class="comment">&quot;arrival<sp/>time<sp/>reference<sp/>frame&quot;<sp/>.<sp/><sp/>See<sp/>below<sp/>for<sp/>a<sp/>description.</highlight></codeline>
-<codeline lineno="19"><highlight class="comment"></highlight></codeline>
-<codeline lineno="20"><highlight class="comment">Author:<sp/><sp/>Gary<sp/>L.<sp/>Pavlis</highlight></codeline>
-<codeline lineno="21"><highlight class="comment"><sp/><sp/><sp/><sp/>Indiana<sp/>University</highlight></codeline>
-<codeline lineno="22"><highlight class="comment"><sp/><sp/><sp/><sp/>pavlis@indiana.edu</highlight></codeline>
-<codeline lineno="23"><highlight class="comment">*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="24"><highlight class="normal"></highlight></codeline>
-<codeline lineno="25"><highlight class="normal"></highlight></codeline>
-<codeline lineno="26"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>This<sp/>function<sp/>converts<sp/>a<sp/>seismogram<sp/>from<sp/>an<sp/>absolute<sp/>time<sp/>standard<sp/>to</highlight></codeline>
-<codeline lineno="27"><highlight class="comment">an<sp/>arrival<sp/>time<sp/>reference<sp/>frame<sp/>using<sp/>an<sp/>arrival<sp/>time<sp/>stored<sp/>in<sp/>the</highlight></codeline>
-<codeline lineno="28"><highlight class="comment">metadata<sp/>area<sp/>of<sp/>the<sp/>object<sp/>and<sp/>referenced<sp/>by<sp/>a<sp/>variable<sp/>keyword.</highlight></codeline>
-<codeline lineno="29"><highlight class="comment">A<sp/>time<sp/>window<sp/>is<sp/>relative<sp/>time<sp/>units<sp/>defines<sp/>the<sp/>portion<sp/>to<sp/>be<sp/>extracted.</highlight></codeline>
-<codeline lineno="30"><highlight class="comment">If<sp/>the<sp/>window<sp/>is<sp/>larger<sp/>than<sp/>the<sp/>data<sp/>the<sp/>whole<sp/>array<sp/>of<sp/>data<sp/>is<sp/>copied</highlight></codeline>
-<codeline lineno="31"><highlight class="comment">to<sp/>the<sp/>result.<sp/><sp/>If<sp/>the<sp/>window<sp/>is<sp/>smaller<sp/>a<sp/>subset<sp/>is<sp/>returned<sp/>and</highlight></codeline>
-<codeline lineno="32"><highlight class="comment">appropriate<sp/>parameters<sp/>are<sp/>updated.</highlight></codeline>
-<codeline lineno="33"><highlight class="comment"></highlight></codeline>
-<codeline lineno="34"><highlight class="comment">Arguments:</highlight></codeline>
-<codeline lineno="35"><highlight class="comment"><sp/><sp/><sp/><sp/>tcsi<sp/>-<sp/>input<sp/>data.<sp/><sp/>Assumed<sp/>to<sp/>be<sp/>in<sp/>the<sp/>reference<sp/>frame<sp/>that</highlight></codeline>
-<codeline lineno="36"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>matches<sp/>the<sp/>arrival<sp/>time<sp/>to<sp/>be<sp/>used<sp/>to<sp/>define<sp/>time<sp/>window</highlight></codeline>
-<codeline lineno="37"><highlight class="comment"><sp/><sp/><sp/><sp/>arrival_time_key<sp/>-<sp/>metadata<sp/>keyword<sp/>string<sp/>used<sp/>to<sp/>extract<sp/>the</highlight></codeline>
-<codeline lineno="38"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>time<sp/>used<sp/>to<sp/>define<sp/>time<sp/>0.<sp/><sp/>i.e.<sp/>this<sp/>is<sp/>the<sp/>keyword</highlight></codeline>
-<codeline lineno="39"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>used<sp/>to<sp/>access<sp/>a<sp/>metadata<sp/>field<sp/>that<sp/>defines<sp/>the<sp/>time</highlight></codeline>
-<codeline lineno="40"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>that<sp/>will<sp/>become<sp/>time<sp/>0<sp/>o<sp/>the<sp/>result.</highlight></codeline>
-<codeline lineno="41"><highlight class="comment"><sp/><sp/><sp/><sp/>tw<sp/>-<sp/>TimeWindow<sp/>in<sp/>relative<sp/>time<sp/>units<sp/>wrt<sp/>arrival<sp/>time<sp/>defining</highlight></codeline>
-<codeline lineno="42"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>section<sp/>of<sp/>data<sp/>to<sp/>be<sp/>extracted.<sp/><sp/>Time<sp/>0<sp/>of<sp/>the<sp/>result</highlight></codeline>
-<codeline lineno="43"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>will<sp/>be<sp/>the<sp/>arrival<sp/>time.</highlight></codeline>
-<codeline lineno="44"><highlight class="comment"></highlight></codeline>
-<codeline lineno="45"><highlight class="comment">*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="46"><highlight class="normal"></highlight></codeline>
-<codeline lineno="47"><highlight class="normal">shared_ptr&lt;TimeSeries&gt;<sp/>ArrivalTimeReference(<ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">TimeSeries</ref>&amp;<sp/>tcsi,</highlight></codeline>
-<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>arrival_time_key,</highlight></codeline>
-<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1_time_window" kindref="compound">TimeWindow</ref><sp/>tw)</highlight></codeline>
-<codeline lineno="50"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>atime;</highlight></codeline>
-<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>base_error_message(</highlight><highlight class="stringliteral">&quot;ArrivalTimeReference:<sp/>&quot;</highlight><highlight class="normal">);</highlight></codeline>
-<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">try</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
-<codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>atime<sp/>=<sp/>tcsi.<ref refid="classmspass_1_1utility_1_1_metadata_1ad69a5786d997104df560775f4f688b02" kindref="member">get_double</ref>(arrival_time_key);</highlight></codeline>
-<codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Intentionally<sp/>use<sp/>the<sp/>base<sp/>class<sp/>since<sp/>the<sp/>contents<sp/>are<sp/>discarded</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>get_double<sp/>currently<sp/>would<sp/>throw<sp/>a<sp/>MetadataGetError</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">catch</highlight><highlight class="normal"><sp/>(<ref refid="classmspass_1_1utility_1_1_metadata_get_error" kindref="compound">MetadataGetError</ref>&amp;<sp/>mde)</highlight></codeline>
-<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
-<codeline lineno="60"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">throw</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" kindref="compound">MsPASSError</ref>(base_error_message</highlight></codeline>
-<codeline lineno="61"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>+<sp/>arrival_time_key</highlight></codeline>
-<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>+<sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal">(</highlight><highlight class="stringliteral">&quot;<sp/>not<sp/>found<sp/>in<sp/>TimeSeries<sp/>object&quot;</highlight><highlight class="normal">),</highlight></codeline>
-<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ErrorSeverity::Invalid);</highlight></codeline>
-<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>We<sp/>have<sp/>to<sp/>check<sp/>this<sp/>condition<sp/>because<sp/>ator<sp/>will<sp/>do<sp/>nothing<sp/>if</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>time<sp/>is<sp/>already<sp/>relative<sp/>and<sp/>this<sp/>condition<sp/>cannot<sp/>be<sp/>tolerated</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="67"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>here<sp/>as<sp/>we<sp/>have<sp/>no<sp/>idea<sp/>what<sp/>the<sp/>time<sp/>standard<sp/>might<sp/>be<sp/>otherwise</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(tcsi.time_is_relative())</highlight></codeline>
-<codeline lineno="69"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">throw</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" kindref="compound">MsPASSError</ref>(</highlight><highlight class="keywordtype">string</highlight><highlight class="normal">(</highlight><highlight class="stringliteral">&quot;ArrivalTimeReference:<sp/><sp/>&quot;</highlight><highlight class="normal">)</highlight></codeline>
-<codeline lineno="70"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>+<sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal">(</highlight><highlight class="stringliteral">&quot;received<sp/>data<sp/>in<sp/>relative<sp/>time<sp/>units\n&quot;</highlight><highlight class="normal">)</highlight></codeline>
-<codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>+<sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal">(</highlight><highlight class="stringliteral">&quot;Cannot<sp/>proceed<sp/>as<sp/>timing<sp/>is<sp/>ambiguous&quot;</highlight><highlight class="normal">),</highlight></codeline>
-<codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ErrorSeverity::Invalid);</highlight></codeline>
-<codeline lineno="73"><highlight class="normal"></highlight></codeline>
-<codeline lineno="74"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>start<sp/>with<sp/>a<sp/>clone<sp/>of<sp/>the<sp/>original</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="75"><highlight class="normal"><sp/><sp/><sp/><sp/>shared_ptr&lt;TimeSeries&gt;<sp/>tcso(</highlight><highlight class="keyword">new</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">TimeSeries</ref>(tcsi));</highlight></codeline>
-<codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/>tcso-&gt;ator(atime);<sp/><sp/></highlight><highlight class="comment">//<sp/>shifts<sp/>to<sp/>arrival<sp/>time<sp/>relative<sp/>time<sp/>reference</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="77"><highlight class="normal"></highlight></codeline>
-<codeline lineno="78"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Extracting<sp/>a<sp/>subset<sp/>of<sp/>the<sp/>data<sp/>is<sp/>not<sp/>needed<sp/>when<sp/>the<sp/>requested</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>time<sp/>window<sp/>encloses<sp/>all<sp/>the<sp/>data</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="80"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Note<sp/>an<sp/>alternative<sp/>approach<sp/>is<sp/>to<sp/>pad<sp/>with<sp/>zeros<sp/>and<sp/>mark<sp/>ends<sp/>as</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="81"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>a<sp/>gap,<sp/>but<sp/>here<sp/>I<sp/>view<sp/>ends<sp/>as<sp/>better<sp/>treated<sp/>with<sp/>variable</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="82"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>start<sp/>and<sp/>end<sp/>times</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="83"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(<sp/>(tw.<ref refid="classmspass_1_1algorithms_1_1_time_window_1a2277a3ea634dfe6ba5bc71296d93e76a" kindref="member">start</ref><sp/>&gt;<sp/>tcso-&gt;t0())<sp/><sp/>||<sp/>(tw.<ref refid="classmspass_1_1algorithms_1_1_time_window_1a916901f8d5d1dbb2bf38300bf28a2ec3" kindref="member">end</ref>&lt;tcso-&gt;time(tcso-&gt;npts()-1)<sp/>)<sp/>)</highlight></codeline>
-<codeline lineno="84"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
-<codeline lineno="85"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>jstart,<sp/>jend;</highlight></codeline>
-<codeline lineno="86"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>ns_to_copy;</highlight></codeline>
-<codeline lineno="87"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>j,jj;</highlight></codeline>
-<codeline lineno="88"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>jstart<sp/>=<sp/>tcso-&gt;sample_number(tw.<ref refid="classmspass_1_1algorithms_1_1_time_window_1a2277a3ea634dfe6ba5bc71296d93e76a" kindref="member">start</ref>);</highlight></codeline>
-<codeline lineno="89"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>jend<sp/>=<sp/>tcso-&gt;sample_number(tw.<ref refid="classmspass_1_1algorithms_1_1_time_window_1a916901f8d5d1dbb2bf38300bf28a2ec3" kindref="member">end</ref>);</highlight></codeline>
-<codeline lineno="90"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(jstart&lt;0)<sp/>jstart=0;</highlight></codeline>
-<codeline lineno="91"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(jend&gt;=tcso-&gt;npts())<sp/>jend<sp/>=<sp/>tcso-&gt;npts()<sp/>-<sp/>1;</highlight></codeline>
-<codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ns_to_copy<sp/>=<sp/>jend<sp/>-<sp/>jstart<sp/>+<sp/>1;</highlight></codeline>
-<codeline lineno="93"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(ns_to_copy&lt;=0)</highlight></codeline>
-<codeline lineno="94"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
-<codeline lineno="95"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>tcso-&gt;kill();</highlight></codeline>
-<codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>tcso-&gt;s.clear();</highlight></codeline>
-<codeline lineno="97"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">(tcso);</highlight></codeline>
-<codeline lineno="98"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="99"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>tcso-&gt;set_npts(ns_to_copy);</highlight></codeline>
-<codeline lineno="100"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>This<sp/>assumes<sp/>set_npts<sp/>initializes<sp/>the<sp/>s<sp/>buffer<sp/>so<sp/>we<sp/>use<sp/>operator[]</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="101"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>instead<sp/>of<sp/>push_back</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="102"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal">(j=0,jj=jstart;<sp/>j&lt;ns_to_copy;<sp/>++j,++jj)</highlight></codeline>
-<codeline lineno="103"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>tcso-&gt;s[j]=tcsi.<ref refid="classmspass_1_1seismic_1_1_core_time_series_1ab044edb3fe5fe734cb577a4434f390a2" kindref="member">s</ref>[jj];</highlight></codeline>
-<codeline lineno="104"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>This<sp/>was<sp/>the<sp/>way<sp/>t0<sp/>was<sp/>set<sp/>with<sp/>the<sp/>old<sp/>api</highlight></codeline>
-<codeline lineno="105"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>tcso-&gt;t0<sp/>+=<sp/>(tcso-&gt;dt)*static_cast&lt;double&gt;(jstart);</highlight></codeline>
-<codeline lineno="106"><highlight class="comment"></highlight></codeline>
-<codeline lineno="107"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>this<sp/>is<sp/>the<sp/>new<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="108"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>newt0;</highlight></codeline>
-<codeline lineno="109"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>newt0=tcso-&gt;t0()<sp/>+<sp/>(tcso-&gt;dt())*</highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keywordtype">double</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(jstart);</highlight></codeline>
-<codeline lineno="110"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>tcso-&gt;set_t0(newt0);</highlight></codeline>
-<codeline lineno="111"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>This<sp/>same<sp/>block<sp/>of<sp/>code<sp/>appeared<sp/>in<sp/>the<sp/>parallel<sp/>function<sp/>for</highlight></codeline>
-<codeline lineno="112"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>CoreSeismogram.<sp/><sp/><sp/>I<sp/>don&apos;t<sp/>think<sp/>this<sp/>is<sp/>necessary<sp/>with<sp/>the<sp/>new<sp/>api,<sp/>but</highlight></codeline>
-<codeline lineno="113"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>as<sp/>in<sp/>that<sp/>file<sp/>I&apos;m<sp/>retaining<sp/>it<sp/>in<sp/>case<sp/>that<sp/>is<sp/>incorrect<sp/>glp,<sp/>6/7/2020</highlight></codeline>
-<codeline lineno="114"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if(jstart&gt;0)</highlight></codeline>
-<codeline lineno="115"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
-<codeline lineno="116"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>double<sp/>stime=atime+tcso-&gt;t0;</highlight></codeline>
-<codeline lineno="117"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>tcso-&gt;put(&quot;time&quot;,stime);</highlight></codeline>
-<codeline lineno="118"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>this<sp/>one<sp/>may<sp/>not<sp/>really<sp/>be<sp/>necessary</highlight></codeline>
-<codeline lineno="119"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>tcso-&gt;put(&quot;endtime&quot;,atime+tcso-&gt;endtime());</highlight></codeline>
-<codeline lineno="120"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="121"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="122"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="123"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">(tcso);</highlight></codeline>
-<codeline lineno="124"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="125"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>Similar<sp/>function<sp/>to<sp/>above<sp/>but<sp/>processes<sp/>an<sp/>entire<sp/>ensemble.<sp/><sp/>The<sp/>only</highlight></codeline>
-<codeline lineno="126"><highlight class="comment">special<sp/>thing<sp/>it<sp/>does<sp/>is<sp/>handle<sp/>exceptions.<sp/><sp/>When<sp/>the<sp/>single<sp/>object</highlight></codeline>
-<codeline lineno="127"><highlight class="comment">processing<sp/>function<sp/>throws<sp/>an<sp/>exception<sp/>the<sp/>error<sp/>is<sp/>printed<sp/>and<sp/>the</highlight></codeline>
-<codeline lineno="128"><highlight class="comment">object<sp/>is<sp/>simply<sp/>not<sp/>copied<sp/>to<sp/>the<sp/>output<sp/>ensemble.</highlight></codeline>
-<codeline lineno="129"><highlight class="comment"></highlight></codeline>
-<codeline lineno="130"><highlight class="comment">This<sp/>procedure<sp/>is<sp/>retained,<sp/>but<sp/>probably<sp/>should<sp/>be<sp/>depricated<sp/>to<sp/>only</highlight></codeline>
-<codeline lineno="131"><highlight class="comment">be<sp/>used<sp/>on<sp/>error<sp/>logging<sp/>children<sp/>of<sp/>TimeSeries<sp/>that<sp/>can<sp/>post<sp/>an</highlight></codeline>
-<codeline lineno="132"><highlight class="comment">error<sp/>like<sp/>the<sp/>one<sp/>handled<sp/>here<sp/>to<sp/>an<sp/>error<sp/>log.<sp/><sp/>Retained<sp/>for<sp/>now</highlight></codeline>
-<codeline lineno="133"><highlight class="comment">as<sp/>this<sp/>functionality<sp/>is<sp/>essential.<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="134"><highlight class="normal">shared_ptr<sp/>&lt;TimeSeriesEnsemble&gt;<sp/>ArrivalTimeReference(<ref refid="classmspass_1_1seismic_1_1_ensemble" kindref="compound">TimeSeriesEnsemble</ref>&amp;<sp/>tcei,</highlight></codeline>
-<codeline lineno="135"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>arrival_time_key,</highlight></codeline>
-<codeline lineno="136"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1_time_window" kindref="compound">TimeWindow</ref><sp/>tw)</highlight></codeline>
-<codeline lineno="137"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="138"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>nmembers=tcei.<ref refid="classmspass_1_1seismic_1_1_ensemble_1a50f9947d9209dda797f1b7fe2b4ba81f" kindref="member">member</ref>.size();</highlight></codeline>
-<codeline lineno="139"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>use<sp/>the<sp/>special<sp/>constructor<sp/>to<sp/>only<sp/>clone<sp/>the<sp/>metadata<sp/>and</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="140"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>set<sp/>aside<sp/>slots<sp/>for<sp/>the<sp/>new<sp/>ensemble.</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="141"><highlight class="normal"><sp/><sp/><sp/><sp/>shared_ptr&lt;TimeSeriesEnsemble&gt;</highlight></codeline>
-<codeline lineno="142"><highlight class="normal"><sp/><sp/><sp/><sp/>tceo(</highlight><highlight class="keyword">new</highlight><highlight class="normal"><sp/><ref refid="namespacemspass_1_1seismic_1a9bdfc71411e6ef751bb5daa7e97987d0" kindref="member">TimeSeriesEnsemble</ref>(</highlight><highlight class="keyword">dynamic_cast&lt;</highlight><highlight class="normal"><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref>&amp;</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(tcei),</highlight></codeline>
-<codeline lineno="143"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>nmembers));</highlight></codeline>
-<codeline lineno="144"><highlight class="normal"><sp/><sp/><sp/><sp/>tceo-&gt;member.reserve(nmembers);<sp/><sp/></highlight><highlight class="comment">//<sp/>reserve<sp/>this<sp/>many<sp/>slots<sp/>for<sp/>efficiency</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="145"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>We<sp/>have<sp/>to<sp/>use<sp/>a<sp/>loop<sp/>instead<sp/>of<sp/>for_each<sp/>as<sp/>I<sp/>don&apos;t<sp/>see<sp/>how</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="146"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>else<sp/>to<sp/>handle<sp/>errors<sp/>cleanly<sp/>here.</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="147"><highlight class="normal"><sp/><sp/><sp/><sp/>vector&lt;TimeSeries&gt;::iterator<sp/>indata;</highlight></codeline>
-<codeline lineno="148"><highlight class="normal"><sp/><sp/><sp/><sp/>shared_ptr&lt;TimeSeries&gt;<sp/>tcs;</highlight></codeline>
-<codeline lineno="149"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal">(indata=tcei.<ref refid="classmspass_1_1seismic_1_1_ensemble_1a50f9947d9209dda797f1b7fe2b4ba81f" kindref="member">member</ref>.begin();<sp/>indata!=tcei.<ref refid="classmspass_1_1seismic_1_1_ensemble_1a50f9947d9209dda797f1b7fe2b4ba81f" kindref="member">member</ref>.end();<sp/>++indata)</highlight></codeline>
-<codeline lineno="150"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
-<codeline lineno="151"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">try</highlight><highlight class="normal"><sp/>{</highlight></codeline>
-<codeline lineno="152"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>tcs=ArrivalTimeReference(*indata,</highlight></codeline>
-<codeline lineno="153"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>arrival_time_key,tw);</highlight></codeline>
-<codeline lineno="154"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>tceo-&gt;member.push_back(*tcs);</highlight></codeline>
-<codeline lineno="155"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">catch</highlight><highlight class="normal"><sp/>(<sp/><ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" kindref="compound">MsPASSError</ref>&amp;<sp/>serr)</highlight></codeline>
-<codeline lineno="156"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
-<codeline lineno="157"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>tcs-&gt;kill();</highlight></codeline>
-<codeline lineno="158"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>tceo-&gt;member.push_back(*tcs);</highlight></codeline>
-<codeline lineno="159"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cerr<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;Warning:<sp/><sp/>ArrivalTimeReference<sp/>threw<sp/>this<sp/>error<sp/>for<sp/>current<sp/>seismogram&quot;</highlight><highlight class="normal">&lt;&lt;endl;</highlight></codeline>
-<codeline lineno="160"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>serr.<ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1ab66bb8b76a50addea48e18663744ca94" kindref="member">log_error</ref>();</highlight></codeline>
-<codeline lineno="161"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cerr<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;Seismogram<sp/>was<sp/>marked<sp/>dead<sp/>but<sp/>copied<sp/>to<sp/>output<sp/>Ensemble&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="162"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&lt;&lt;endl;</highlight></codeline>
-<codeline lineno="163"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="164"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="165"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">(tceo);</highlight></codeline>
-<codeline lineno="166"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="167"><highlight class="normal"></highlight></codeline>
-<codeline lineno="168"><highlight class="normal"></highlight></codeline>
-<codeline lineno="169"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>end<sp/>mspass<sp/>namespace<sp/>encapsulation</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="1"><highlight class="preprocessor">#include<sp/>&quot;mspass/algorithms/TimeWindow.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/seismic/Ensemble.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/seismic/TimeSeries.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/utility/MsPASSError.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;math.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">mspass::algorithms<sp/>{</highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal">std;</highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal"><ref refid="namespacemspass_1_1seismic" kindref="compound">mspass::seismic</ref>;</highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal">mspass::utility;</highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>This<sp/>file<sp/>is<sp/>very<sp/>very<sp/>similar<sp/>to<sp/>a<sp/>related<sp/>set<sp/>of<sp/>procedures<sp/>found</highlight></codeline>
+<codeline lineno="12"><highlight class="comment">in<sp/>the<sp/>file<sp/>three_component_helpers.cc.<sp/><sp/>Future<sp/>efforts<sp/>could<sp/>merge</highlight></codeline>
+<codeline lineno="13"><highlight class="comment">them<sp/>into<sp/>a<sp/>template<sp/>version<sp/>standardizes<sp/>what<sp/>these<sp/>do.</highlight></codeline>
+<codeline lineno="14"><highlight class="comment">At<sp/>the<sp/>time<sp/>of<sp/>this<sp/>conversion<sp/>(Aug<sp/>2005)<sp/>this<sp/>and<sp/>it&apos;s<sp/>parent<sp/>do</highlight></codeline>
+<codeline lineno="15"><highlight class="comment">only<sp/>one<sp/>thing<sp/>--<sp/>they<sp/>contain<sp/>procedures<sp/>to<sp/>take<sp/>seismograms<sp/>in</highlight></codeline>
+<codeline lineno="16"><highlight class="comment">defined<sp/>with<sp/>an<sp/>UTC<sp/>time<sp/>standard<sp/>and<sp/>convert<sp/>them<sp/>to<sp/>an</highlight></codeline>
+<codeline lineno="17"><highlight class="comment">&quot;arrival<sp/>time<sp/>reference<sp/>frame&quot;<sp/>.<sp/><sp/>See<sp/>below<sp/>for<sp/>a<sp/>description.</highlight></codeline>
+<codeline lineno="18"><highlight class="comment"></highlight></codeline>
+<codeline lineno="19"><highlight class="comment">Author:<sp/><sp/>Gary<sp/>L.<sp/>Pavlis</highlight></codeline>
+<codeline lineno="20"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Indiana<sp/>University</highlight></codeline>
+<codeline lineno="21"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>pavlis@indiana.edu</highlight></codeline>
+<codeline lineno="22"><highlight class="comment">*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="23"><highlight class="normal"></highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>This<sp/>function<sp/>converts<sp/>a<sp/>seismogram<sp/>from<sp/>an<sp/>absolute<sp/>time<sp/>standard<sp/>to</highlight></codeline>
+<codeline lineno="25"><highlight class="comment">an<sp/>arrival<sp/>time<sp/>reference<sp/>frame<sp/>using<sp/>an<sp/>arrival<sp/>time<sp/>stored<sp/>in<sp/>the</highlight></codeline>
+<codeline lineno="26"><highlight class="comment">metadata<sp/>area<sp/>of<sp/>the<sp/>object<sp/>and<sp/>referenced<sp/>by<sp/>a<sp/>variable<sp/>keyword.</highlight></codeline>
+<codeline lineno="27"><highlight class="comment">A<sp/>time<sp/>window<sp/>is<sp/>relative<sp/>time<sp/>units<sp/>defines<sp/>the<sp/>portion<sp/>to<sp/>be<sp/>extracted.</highlight></codeline>
+<codeline lineno="28"><highlight class="comment">If<sp/>the<sp/>window<sp/>is<sp/>larger<sp/>than<sp/>the<sp/>data<sp/>the<sp/>whole<sp/>array<sp/>of<sp/>data<sp/>is<sp/>copied</highlight></codeline>
+<codeline lineno="29"><highlight class="comment">to<sp/>the<sp/>result.<sp/><sp/>If<sp/>the<sp/>window<sp/>is<sp/>smaller<sp/>a<sp/>subset<sp/>is<sp/>returned<sp/>and</highlight></codeline>
+<codeline lineno="30"><highlight class="comment">appropriate<sp/>parameters<sp/>are<sp/>updated.</highlight></codeline>
+<codeline lineno="31"><highlight class="comment"></highlight></codeline>
+<codeline lineno="32"><highlight class="comment">Arguments:</highlight></codeline>
+<codeline lineno="33"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>tcsi<sp/>-<sp/>input<sp/>data.<sp/><sp/>Assumed<sp/>to<sp/>be<sp/>in<sp/>the<sp/>reference<sp/>frame<sp/>that</highlight></codeline>
+<codeline lineno="34"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>matches<sp/>the<sp/>arrival<sp/>time<sp/>to<sp/>be<sp/>used<sp/>to<sp/>define<sp/>time<sp/>window</highlight></codeline>
+<codeline lineno="35"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>arrival_time_key<sp/>-<sp/>metadata<sp/>keyword<sp/>string<sp/>used<sp/>to<sp/>extract<sp/>the</highlight></codeline>
+<codeline lineno="36"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>time<sp/>used<sp/>to<sp/>define<sp/>time<sp/>0.<sp/><sp/>i.e.<sp/>this<sp/>is<sp/>the<sp/>keyword</highlight></codeline>
+<codeline lineno="37"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>used<sp/>to<sp/>access<sp/>a<sp/>metadata<sp/>field<sp/>that<sp/>defines<sp/>the<sp/>time</highlight></codeline>
+<codeline lineno="38"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>that<sp/>will<sp/>become<sp/>time<sp/>0<sp/>o<sp/>the<sp/>result.</highlight></codeline>
+<codeline lineno="39"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>tw<sp/>-<sp/>TimeWindow<sp/>in<sp/>relative<sp/>time<sp/>units<sp/>wrt<sp/>arrival<sp/>time<sp/>defining</highlight></codeline>
+<codeline lineno="40"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>section<sp/>of<sp/>data<sp/>to<sp/>be<sp/>extracted.<sp/><sp/>Time<sp/>0<sp/>of<sp/>the<sp/>result</highlight></codeline>
+<codeline lineno="41"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>will<sp/>be<sp/>the<sp/>arrival<sp/>time.</highlight></codeline>
+<codeline lineno="42"><highlight class="comment"></highlight></codeline>
+<codeline lineno="43"><highlight class="comment">*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="44"><highlight class="normal"></highlight></codeline>
+<codeline lineno="45"><highlight class="normal">shared_ptr&lt;TimeSeries&gt;</highlight></codeline>
+<codeline lineno="46"><highlight class="normal">ArrivalTimeReference(<ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">TimeSeries</ref><sp/>&amp;tcsi,<sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>arrival_time_key,<sp/><ref refid="classmspass_1_1algorithms_1_1_time_window" kindref="compound">TimeWindow</ref><sp/>tw)<sp/>{</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>atime;</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>base_error_message(</highlight><highlight class="stringliteral">&quot;ArrivalTimeReference:<sp/>&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">try</highlight><highlight class="normal"><sp/>{</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/>atime<sp/>=<sp/>tcsi.<ref refid="classmspass_1_1utility_1_1_metadata_1ad69a5786d997104df560775f4f688b02" kindref="member">get_double</ref>(arrival_time_key);</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Intentionally<sp/>use<sp/>the<sp/>base<sp/>class<sp/>since<sp/>the<sp/>contents<sp/>are<sp/>discarded</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>get_double<sp/>currently<sp/>would<sp/>throw<sp/>a<sp/>MetadataGetError</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">catch</highlight><highlight class="normal"><sp/>(<ref refid="classmspass_1_1utility_1_1_metadata_get_error" kindref="compound">MetadataGetError</ref><sp/>&amp;mde)<sp/>{</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">throw</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" kindref="compound">MsPASSError</ref>(base_error_message<sp/>+<sp/>arrival_time_key<sp/>+</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal">(</highlight><highlight class="stringliteral">&quot;<sp/>not<sp/>found<sp/>in<sp/>TimeSeries<sp/>object&quot;</highlight><highlight class="normal">),</highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ErrorSeverity::Invalid);</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>We<sp/>have<sp/>to<sp/>check<sp/>this<sp/>condition<sp/>because<sp/>ator<sp/>will<sp/>do<sp/>nothing<sp/>if</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>time<sp/>is<sp/>already<sp/>relative<sp/>and<sp/>this<sp/>condition<sp/>cannot<sp/>be<sp/>tolerated</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>here<sp/>as<sp/>we<sp/>have<sp/>no<sp/>idea<sp/>what<sp/>the<sp/>time<sp/>standard<sp/>might<sp/>be<sp/>otherwise</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="61"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(tcsi.time_is_relative())</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">throw</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" kindref="compound">MsPASSError</ref>(</highlight><highlight class="keywordtype">string</highlight><highlight class="normal">(</highlight><highlight class="stringliteral">&quot;ArrivalTimeReference:<sp/><sp/>&quot;</highlight><highlight class="normal">)<sp/>+</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal">(</highlight><highlight class="stringliteral">&quot;received<sp/>data<sp/>in<sp/>relative<sp/>time<sp/>units\n&quot;</highlight><highlight class="normal">)<sp/>+</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal">(</highlight><highlight class="stringliteral">&quot;Cannot<sp/>proceed<sp/>as<sp/>timing<sp/>is<sp/>ambiguous&quot;</highlight><highlight class="normal">),</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ErrorSeverity::Invalid);</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"></highlight></codeline>
+<codeline lineno="67"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>start<sp/>with<sp/>a<sp/>clone<sp/>of<sp/>the<sp/>original</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="68"><highlight class="normal"><sp/><sp/>shared_ptr&lt;TimeSeries&gt;<sp/>tcso(</highlight><highlight class="keyword">new</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">TimeSeries</ref>(tcsi));</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"><sp/><sp/>tcso-&gt;ator(atime);<sp/></highlight><highlight class="comment">//<sp/>shifts<sp/>to<sp/>arrival<sp/>time<sp/>relative<sp/>time<sp/>reference</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="70"><highlight class="normal"></highlight></codeline>
+<codeline lineno="71"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Extracting<sp/>a<sp/>subset<sp/>of<sp/>the<sp/>data<sp/>is<sp/>not<sp/>needed<sp/>when<sp/>the<sp/>requested</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>time<sp/>window<sp/>encloses<sp/>all<sp/>the<sp/>data</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="73"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Note<sp/>an<sp/>alternative<sp/>approach<sp/>is<sp/>to<sp/>pad<sp/>with<sp/>zeros<sp/>and<sp/>mark<sp/>ends<sp/>as</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="74"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>a<sp/>gap,<sp/>but<sp/>here<sp/>I<sp/>view<sp/>ends<sp/>as<sp/>better<sp/>treated<sp/>with<sp/>variable</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="75"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>start<sp/>and<sp/>end<sp/>times</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="76"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>((tw.<ref refid="classmspass_1_1algorithms_1_1_time_window_1a2277a3ea634dfe6ba5bc71296d93e76a" kindref="member">start</ref><sp/>&gt;<sp/>tcso-&gt;t0())<sp/>||<sp/>(tw.<ref refid="classmspass_1_1algorithms_1_1_time_window_1a916901f8d5d1dbb2bf38300bf28a2ec3" kindref="member">end</ref><sp/>&lt;<sp/>tcso-&gt;time(tcso-&gt;npts()<sp/>-<sp/>1)))<sp/>{</highlight></codeline>
+<codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>jstart,<sp/>jend;</highlight></codeline>
+<codeline lineno="78"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>ns_to_copy;</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>j,<sp/>jj;</highlight></codeline>
+<codeline lineno="80"><highlight class="normal"><sp/><sp/><sp/><sp/>jstart<sp/>=<sp/>tcso-&gt;sample_number(tw.<ref refid="classmspass_1_1algorithms_1_1_time_window_1a2277a3ea634dfe6ba5bc71296d93e76a" kindref="member">start</ref>);</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"><sp/><sp/><sp/><sp/>jend<sp/>=<sp/>tcso-&gt;sample_number(tw.<ref refid="classmspass_1_1algorithms_1_1_time_window_1a916901f8d5d1dbb2bf38300bf28a2ec3" kindref="member">end</ref>);</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(jstart<sp/>&lt;<sp/>0)</highlight></codeline>
+<codeline lineno="83"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>jstart<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(jend<sp/>&gt;=<sp/>tcso-&gt;npts())</highlight></codeline>
+<codeline lineno="85"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>jend<sp/>=<sp/>tcso-&gt;npts()<sp/>-<sp/>1;</highlight></codeline>
+<codeline lineno="86"><highlight class="normal"><sp/><sp/><sp/><sp/>ns_to_copy<sp/>=<sp/>jend<sp/>-<sp/>jstart<sp/>+<sp/>1;</highlight></codeline>
+<codeline lineno="87"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(ns_to_copy<sp/>&lt;=<sp/>0)<sp/>{</highlight></codeline>
+<codeline lineno="88"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>tcso-&gt;kill();</highlight></codeline>
+<codeline lineno="89"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>tcso-&gt;s.clear();</highlight></codeline>
+<codeline lineno="90"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>(tcso);</highlight></codeline>
+<codeline lineno="91"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/>tcso-&gt;set_npts(ns_to_copy);</highlight></codeline>
+<codeline lineno="93"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>This<sp/>assumes<sp/>set_npts<sp/>initializes<sp/>the<sp/>s<sp/>buffer<sp/>so<sp/>we<sp/>use<sp/>operator[]</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="94"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>instead<sp/>of<sp/>push_back</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="95"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(j<sp/>=<sp/>0,<sp/>jj<sp/>=<sp/>jstart;<sp/>j<sp/>&lt;<sp/>ns_to_copy;<sp/>++j,<sp/>++jj)</highlight></codeline>
+<codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>tcso-&gt;s[j]<sp/>=<sp/>tcsi.<ref refid="classmspass_1_1seismic_1_1_core_time_series_1ab044edb3fe5fe734cb577a4434f390a2" kindref="member">s</ref>[jj];</highlight></codeline>
+<codeline lineno="97"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>This<sp/>was<sp/>the<sp/>way<sp/>t0<sp/>was<sp/>set<sp/>with<sp/>the<sp/>old<sp/>api</highlight></codeline>
+<codeline lineno="98"><highlight class="comment"><sp/><sp/><sp/><sp/>tcso-&gt;t0<sp/>+=<sp/>(tcso-&gt;dt)*static_cast&lt;double&gt;(jstart);</highlight></codeline>
+<codeline lineno="99"><highlight class="comment"></highlight></codeline>
+<codeline lineno="100"><highlight class="comment"><sp/><sp/><sp/><sp/>this<sp/>is<sp/>the<sp/>new<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="101"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>newt0;</highlight></codeline>
+<codeline lineno="102"><highlight class="normal"><sp/><sp/><sp/><sp/>newt0<sp/>=<sp/>tcso-&gt;t0()<sp/>+<sp/>(tcso-&gt;dt())<sp/>*<sp/></highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keywordtype">double</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(jstart);</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"><sp/><sp/><sp/><sp/>tcso-&gt;set_t0(newt0);</highlight></codeline>
+<codeline lineno="104"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>This<sp/>same<sp/>block<sp/>of<sp/>code<sp/>appeared<sp/>in<sp/>the<sp/>parallel<sp/>function<sp/>for</highlight></codeline>
+<codeline lineno="105"><highlight class="comment"><sp/><sp/><sp/><sp/>CoreSeismogram.<sp/><sp/><sp/>I<sp/>don&apos;t<sp/>think<sp/>this<sp/>is<sp/>necessary<sp/>with<sp/>the<sp/>new<sp/>api,<sp/>but</highlight></codeline>
+<codeline lineno="106"><highlight class="comment"><sp/><sp/><sp/><sp/>as<sp/>in<sp/>that<sp/>file<sp/>I&apos;m<sp/>retaining<sp/>it<sp/>in<sp/>case<sp/>that<sp/>is<sp/>incorrect<sp/>glp,<sp/>6/7/2020</highlight></codeline>
+<codeline lineno="107"><highlight class="comment"><sp/><sp/><sp/><sp/>if(jstart&gt;0)</highlight></codeline>
+<codeline lineno="108"><highlight class="comment"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="109"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>double<sp/>stime=atime+tcso-&gt;t0;</highlight></codeline>
+<codeline lineno="110"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>tcso-&gt;put(&quot;time&quot;,stime);</highlight></codeline>
+<codeline lineno="111"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>this<sp/>one<sp/>may<sp/>not<sp/>really<sp/>be<sp/>necessary</highlight></codeline>
+<codeline lineno="112"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>tcso-&gt;put(&quot;endtime&quot;,atime+tcso-&gt;endtime());</highlight></codeline>
+<codeline lineno="113"><highlight class="comment"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="114"><highlight class="comment"><sp/><sp/><sp/><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="115"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="116"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>(tcso);</highlight></codeline>
+<codeline lineno="117"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="118"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>Similar<sp/>function<sp/>to<sp/>above<sp/>but<sp/>processes<sp/>an<sp/>entire<sp/>ensemble.<sp/><sp/>The<sp/>only</highlight></codeline>
+<codeline lineno="119"><highlight class="comment">special<sp/>thing<sp/>it<sp/>does<sp/>is<sp/>handle<sp/>exceptions.<sp/><sp/>When<sp/>the<sp/>single<sp/>object</highlight></codeline>
+<codeline lineno="120"><highlight class="comment">processing<sp/>function<sp/>throws<sp/>an<sp/>exception<sp/>the<sp/>error<sp/>is<sp/>printed<sp/>and<sp/>the</highlight></codeline>
+<codeline lineno="121"><highlight class="comment">object<sp/>is<sp/>simply<sp/>not<sp/>copied<sp/>to<sp/>the<sp/>output<sp/>ensemble.</highlight></codeline>
+<codeline lineno="122"><highlight class="comment"></highlight></codeline>
+<codeline lineno="123"><highlight class="comment">This<sp/>procedure<sp/>is<sp/>retained,<sp/>but<sp/>probably<sp/>should<sp/>be<sp/>depricated<sp/>to<sp/>only</highlight></codeline>
+<codeline lineno="124"><highlight class="comment">be<sp/>used<sp/>on<sp/>error<sp/>logging<sp/>children<sp/>of<sp/>TimeSeries<sp/>that<sp/>can<sp/>post<sp/>an</highlight></codeline>
+<codeline lineno="125"><highlight class="comment">error<sp/>like<sp/>the<sp/>one<sp/>handled<sp/>here<sp/>to<sp/>an<sp/>error<sp/>log.<sp/><sp/>Retained<sp/>for<sp/>now</highlight></codeline>
+<codeline lineno="126"><highlight class="comment">as<sp/>this<sp/>functionality<sp/>is<sp/>essential.<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="127"><highlight class="normal">shared_ptr&lt;TimeSeriesEnsemble&gt;<sp/>ArrivalTimeReference(<ref refid="classmspass_1_1seismic_1_1_ensemble" kindref="compound">TimeSeriesEnsemble</ref><sp/>&amp;tcei,</highlight></codeline>
+<codeline lineno="128"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>arrival_time_key,</highlight></codeline>
+<codeline lineno="129"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1_time_window" kindref="compound">TimeWindow</ref><sp/>tw)<sp/>{</highlight></codeline>
+<codeline lineno="130"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>nmembers<sp/>=<sp/>tcei.<ref refid="classmspass_1_1seismic_1_1_ensemble_1a50f9947d9209dda797f1b7fe2b4ba81f" kindref="member">member</ref>.size();</highlight></codeline>
+<codeline lineno="131"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>use<sp/>the<sp/>special<sp/>constructor<sp/>to<sp/>only<sp/>clone<sp/>the<sp/>metadata<sp/>and</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="132"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>set<sp/>aside<sp/>slots<sp/>for<sp/>the<sp/>new<sp/>ensemble.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="133"><highlight class="normal"><sp/><sp/>shared_ptr&lt;TimeSeriesEnsemble&gt;<sp/>tceo(</highlight></codeline>
+<codeline lineno="134"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">new</highlight><highlight class="normal"><sp/><ref refid="namespacemspass_1_1seismic_1a9bdfc71411e6ef751bb5daa7e97987d0" kindref="member">TimeSeriesEnsemble</ref>(</highlight><highlight class="keyword">dynamic_cast&lt;</highlight><highlight class="normal"><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref><sp/>&amp;</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(tcei),<sp/>nmembers));</highlight></codeline>
+<codeline lineno="135"><highlight class="normal"><sp/><sp/>tceo-&gt;member.reserve(nmembers);<sp/></highlight><highlight class="comment">//<sp/>reserve<sp/>this<sp/>many<sp/>slots<sp/>for<sp/>efficiency</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="136"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>We<sp/>have<sp/>to<sp/>use<sp/>a<sp/>loop<sp/>instead<sp/>of<sp/>for_each<sp/>as<sp/>I<sp/>don&apos;t<sp/>see<sp/>how</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="137"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>else<sp/>to<sp/>handle<sp/>errors<sp/>cleanly<sp/>here.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="138"><highlight class="normal"><sp/><sp/>vector&lt;TimeSeries&gt;::iterator<sp/>indata;</highlight></codeline>
+<codeline lineno="139"><highlight class="normal"><sp/><sp/>shared_ptr&lt;TimeSeries&gt;<sp/>tcs;</highlight></codeline>
+<codeline lineno="140"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(indata<sp/>=<sp/>tcei.<ref refid="classmspass_1_1seismic_1_1_ensemble_1a50f9947d9209dda797f1b7fe2b4ba81f" kindref="member">member</ref>.begin();<sp/>indata<sp/>!=<sp/>tcei.<ref refid="classmspass_1_1seismic_1_1_ensemble_1a50f9947d9209dda797f1b7fe2b4ba81f" kindref="member">member</ref>.end();<sp/>++indata)<sp/>{</highlight></codeline>
+<codeline lineno="141"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">try</highlight><highlight class="normal"><sp/>{</highlight></codeline>
+<codeline lineno="142"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>tcs<sp/>=<sp/>ArrivalTimeReference(*indata,<sp/>arrival_time_key,<sp/>tw);</highlight></codeline>
+<codeline lineno="143"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>tceo-&gt;member.push_back(*tcs);</highlight></codeline>
+<codeline lineno="144"><highlight class="normal"><sp/><sp/><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">catch</highlight><highlight class="normal"><sp/>(<ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" kindref="compound">MsPASSError</ref><sp/>&amp;serr)<sp/>{</highlight></codeline>
+<codeline lineno="145"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>tcs-&gt;kill();</highlight></codeline>
+<codeline lineno="146"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>tceo-&gt;member.push_back(*tcs);</highlight></codeline>
+<codeline lineno="147"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>cerr<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;Warning:<sp/><sp/>ArrivalTimeReference<sp/>threw<sp/>this<sp/>error<sp/>for<sp/>current<sp/>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="148"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;seismogram&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="149"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&lt;&lt;<sp/>endl;</highlight></codeline>
+<codeline lineno="150"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>serr.<ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1ab66bb8b76a50addea48e18663744ca94" kindref="member">log_error</ref>();</highlight></codeline>
+<codeline lineno="151"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>cerr<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;Seismogram<sp/>was<sp/>marked<sp/>dead<sp/>but<sp/>copied<sp/>to<sp/>output<sp/>Ensemble&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="152"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&lt;&lt;<sp/>endl;</highlight></codeline>
+<codeline lineno="153"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="154"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="155"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>(tceo);</highlight></codeline>
+<codeline lineno="156"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="157"><highlight class="normal"></highlight></codeline>
+<codeline lineno="158"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>mspass::algorithms</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/tseries_helpers.cc"/>
   </compounddef>

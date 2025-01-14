@@ -196,17 +196,20 @@ Additional Inherited Members</h2></td></tr>
   </table>
   </dd>
 </dl>
-<div class="fragment"><div class="line"><span class="lineno">   38</span>        {</div>
-<div class="line"><span class="lineno">   39</span>                row = ir; column=ic; nrr=nrmax; ncc=ncmax;</div>
-<div class="line"><span class="lineno">   40</span>                std::ostringstream oss;</div>
-<div class="line"><span class="lineno">   41</span>                oss &lt;&lt; <span class="stringliteral">&quot;dmatrix object:  indexing error&quot;</span>&lt;&lt;std::endl</div>
-<div class="line"><span class="lineno">   42</span>                        &lt;&lt; <span class="stringliteral">&quot;Matrix index (&quot;</span> &lt;&lt; row &lt;&lt; <span class="stringliteral">&quot;,&quot;</span> &lt;&lt; column</div>
-<div class="line"><span class="lineno">   43</span>                        &lt;&lt; <span class="stringliteral">&quot;)is outside range = &quot;</span> &lt;&lt; nrr &lt;&lt; <span class="stringliteral">&quot;,&quot;</span> &lt;&lt; ncc &lt;&lt; std::endl;</div>
-<div class="line"><span class="lineno">   44</span>                <a class="code hl_variable" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#a47e9d74154f088f38fd7e5219abc81f5">message</a> = oss.str();</div>
-<div class="line"><span class="lineno">   45</span>                <a class="code hl_variable" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#af808615110822967a251108b20708f51">badness</a> = ErrorSeverity::Invalid;</div>
-<div class="line"><span class="lineno">   46</span>        };</div>
-<div class="ttc" id="aclassmspass_1_1utility_1_1_ms_p_a_s_s_error_html_a47e9d74154f088f38fd7e5219abc81f5"><div class="ttname"><a href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#a47e9d74154f088f38fd7e5219abc81f5">mspass::utility::MsPASSError::message</a></div><div class="ttdeci">std::string message</div><div class="ttdef"><b>Definition</b> MsPASSError.h:114</div></div>
-<div class="ttc" id="aclassmspass_1_1utility_1_1_ms_p_a_s_s_error_html_af808615110822967a251108b20708f51"><div class="ttname"><a href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#af808615110822967a251108b20708f51">mspass::utility::MsPASSError::badness</a></div><div class="ttdeci">ErrorSeverity badness</div><div class="ttdef"><b>Definition</b> MsPASSError.h:116</div></div>
+<div class="fragment"><div class="line"><span class="lineno">   35</span>                                       {</div>
+<div class="line"><span class="lineno">   36</span>    row = ir;</div>
+<div class="line"><span class="lineno">   37</span>    column = ic;</div>
+<div class="line"><span class="lineno">   38</span>    nrr = nrmax;</div>
+<div class="line"><span class="lineno">   39</span>    ncc = ncmax;</div>
+<div class="line"><span class="lineno">   40</span>    std::ostringstream oss;</div>
+<div class="line"><span class="lineno">   41</span>    oss &lt;&lt; <span class="stringliteral">&quot;dmatrix object:  indexing error&quot;</span> &lt;&lt; std::endl</div>
+<div class="line"><span class="lineno">   42</span>        &lt;&lt; <span class="stringliteral">&quot;Matrix index (&quot;</span> &lt;&lt; row &lt;&lt; <span class="stringliteral">&quot;,&quot;</span> &lt;&lt; column</div>
+<div class="line"><span class="lineno">   43</span>        &lt;&lt; <span class="stringliteral">&quot;)is outside range = &quot;</span> &lt;&lt; nrr &lt;&lt; <span class="stringliteral">&quot;,&quot;</span> &lt;&lt; ncc &lt;&lt; std::endl;</div>
+<div class="line"><span class="lineno">   44</span>    <a class="code hl_variable" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#a47e9d74154f088f38fd7e5219abc81f5">message</a> = oss.str();</div>
+<div class="line"><span class="lineno">   45</span>    <a class="code hl_variable" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#af808615110822967a251108b20708f51">badness</a> = ErrorSeverity::Invalid;</div>
+<div class="line"><span class="lineno">   46</span>  };</div>
+<div class="ttc" id="aclassmspass_1_1utility_1_1_ms_p_a_s_s_error_html_a47e9d74154f088f38fd7e5219abc81f5"><div class="ttname"><a href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#a47e9d74154f088f38fd7e5219abc81f5">mspass::utility::MsPASSError::message</a></div><div class="ttdeci">std::string message</div><div class="ttdef"><b>Definition</b> MsPASSError.h:108</div></div>
+<div class="ttc" id="aclassmspass_1_1utility_1_1_ms_p_a_s_s_error_html_af808615110822967a251108b20708f51"><div class="ttname"><a href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#af808615110822967a251108b20708f51">mspass::utility::MsPASSError::badness</a></div><div class="ttdeci">ErrorSeverity badness</div><div class="ttdef"><b>Definition</b> MsPASSError.h:110</div></div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#af808615110822967a251108b20708f51">mspass::utility::MsPASSError::badness</a>, and <a class="el" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#a47e9d74154f088f38fd7e5219abc81f5">mspass::utility::MsPASSError::message</a>.</p>
 

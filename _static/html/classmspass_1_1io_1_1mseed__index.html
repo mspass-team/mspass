@@ -164,19 +164,19 @@ Friends</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   26</span>  {</div>
-<div class="line"><span class="lineno">   27</span>    net=<span class="stringliteral">&quot;&quot;</span>;</div>
-<div class="line"><span class="lineno">   28</span>    sta=<span class="stringliteral">&quot;&quot;</span>;</div>
-<div class="line"><span class="lineno">   29</span>    loc=<span class="stringliteral">&quot;&quot;</span>;</div>
-<div class="line"><span class="lineno">   30</span>    chan=<span class="stringliteral">&quot;&quot;</span>;</div>
-<div class="line"><span class="lineno">   31</span>    foff=0;</div>
-<div class="line"><span class="lineno">   32</span>    nbytes = 0;</div>
-<div class="line"><span class="lineno">   33</span>    npts = 0;</div>
-<div class="line"><span class="lineno">   34</span>    samprate = 0.0;</div>
-<div class="line"><span class="lineno">   35</span>    starttime = 0.0;</div>
-<div class="line"><span class="lineno">   36</span>    endtime = 0.0;</div>
-<div class="line"><span class="lineno">   37</span>    last_packet_time=0.0;</div>
-<div class="line"><span class="lineno">   38</span>  };</div>
+<div class="fragment"><div class="line"><span class="lineno">   23</span>                {</div>
+<div class="line"><span class="lineno">   24</span>    net = <span class="stringliteral">&quot;&quot;</span>;</div>
+<div class="line"><span class="lineno">   25</span>    sta = <span class="stringliteral">&quot;&quot;</span>;</div>
+<div class="line"><span class="lineno">   26</span>    loc = <span class="stringliteral">&quot;&quot;</span>;</div>
+<div class="line"><span class="lineno">   27</span>    chan = <span class="stringliteral">&quot;&quot;</span>;</div>
+<div class="line"><span class="lineno">   28</span>    foff = 0;</div>
+<div class="line"><span class="lineno">   29</span>    nbytes = 0;</div>
+<div class="line"><span class="lineno">   30</span>    npts = 0;</div>
+<div class="line"><span class="lineno">   31</span>    samprate = 0.0;</div>
+<div class="line"><span class="lineno">   32</span>    starttime = 0.0;</div>
+<div class="line"><span class="lineno">   33</span>    endtime = 0.0;</div>
+<div class="line"><span class="lineno">   34</span>    last_packet_time = 0.0;</div>
+<div class="line"><span class="lineno">   35</span>  };</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -203,17 +203,15 @@ Friends</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   39</span>                                         : net(parent.net),sta(parent.sta),</div>
-<div class="line"><span class="lineno">   40</span>     loc(parent.loc),chan(parent.chan)</div>
-<div class="line"><span class="lineno">   41</span>  {</div>
-<div class="line"><span class="lineno">   42</span>    foff=parent.foff;</div>
-<div class="line"><span class="lineno">   43</span>    nbytes=parent.nbytes;</div>
-<div class="line"><span class="lineno">   44</span>    npts=parent.npts;</div>
-<div class="line"><span class="lineno">   45</span>    samprate=parent.samprate;</div>
-<div class="line"><span class="lineno">   46</span>    starttime=parent.starttime;</div>
-<div class="line"><span class="lineno">   47</span>    endtime=parent.endtime;</div>
-<div class="line"><span class="lineno">   48</span>    last_packet_time=parent.last_packet_time;</div>
-<div class="line"><span class="lineno">   49</span>  };</div>
+<div class="fragment"><div class="line"><span class="lineno">   37</span>      : net(parent.net), sta(parent.sta), loc(parent.loc), chan(parent.chan) {</div>
+<div class="line"><span class="lineno">   38</span>    foff = parent.foff;</div>
+<div class="line"><span class="lineno">   39</span>    nbytes = parent.nbytes;</div>
+<div class="line"><span class="lineno">   40</span>    npts = parent.npts;</div>
+<div class="line"><span class="lineno">   41</span>    samprate = parent.samprate;</div>
+<div class="line"><span class="lineno">   42</span>    starttime = parent.starttime;</div>
+<div class="line"><span class="lineno">   43</span>    endtime = parent.endtime;</div>
+<div class="line"><span class="lineno">   44</span>    last_packet_time = parent.last_packet_time;</div>
+<div class="line"><span class="lineno">   45</span>  };</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -241,23 +239,22 @@ Friends</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   51</span>  {</div>
-<div class="line"><span class="lineno">   52</span>    <span class="keywordflow">if</span>(&amp;parent != <span class="keyword">this</span>)</div>
-<div class="line"><span class="lineno">   53</span>    {</div>
-<div class="line"><span class="lineno">   54</span>      net=parent.net;</div>
-<div class="line"><span class="lineno">   55</span>      sta=parent.sta;</div>
-<div class="line"><span class="lineno">   56</span>      loc=parent.loc;</div>
-<div class="line"><span class="lineno">   57</span>      chan=parent.chan;</div>
-<div class="line"><span class="lineno">   58</span>      foff=parent.foff;</div>
-<div class="line"><span class="lineno">   59</span>      npts=parent.npts;</div>
-<div class="line"><span class="lineno">   60</span>      nbytes=parent.nbytes;</div>
-<div class="line"><span class="lineno">   61</span>      samprate=parent.samprate;</div>
-<div class="line"><span class="lineno">   62</span>      starttime=parent.starttime;</div>
-<div class="line"><span class="lineno">   63</span>      endtime=parent.endtime;</div>
-<div class="line"><span class="lineno">   64</span>      last_packet_time=parent.last_packet_time;</div>
-<div class="line"><span class="lineno">   65</span>    }</div>
-<div class="line"><span class="lineno">   66</span>    <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
-<div class="line"><span class="lineno">   67</span>  };</div>
+<div class="fragment"><div class="line"><span class="lineno">   46</span>                                                    {</div>
+<div class="line"><span class="lineno">   47</span>    <span class="keywordflow">if</span> (&amp;parent != <span class="keyword">this</span>) {</div>
+<div class="line"><span class="lineno">   48</span>      net = parent.net;</div>
+<div class="line"><span class="lineno">   49</span>      sta = parent.sta;</div>
+<div class="line"><span class="lineno">   50</span>      loc = parent.loc;</div>
+<div class="line"><span class="lineno">   51</span>      chan = parent.chan;</div>
+<div class="line"><span class="lineno">   52</span>      foff = parent.foff;</div>
+<div class="line"><span class="lineno">   53</span>      npts = parent.npts;</div>
+<div class="line"><span class="lineno">   54</span>      nbytes = parent.nbytes;</div>
+<div class="line"><span class="lineno">   55</span>      samprate = parent.samprate;</div>
+<div class="line"><span class="lineno">   56</span>      starttime = parent.starttime;</div>
+<div class="line"><span class="lineno">   57</span>      endtime = parent.endtime;</div>
+<div class="line"><span class="lineno">   58</span>      last_packet_time = parent.last_packet_time;</div>
+<div class="line"><span class="lineno">   59</span>    }</div>
+<div class="line"><span class="lineno">   60</span>    <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
+<div class="line"><span class="lineno">   61</span>  };</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -295,24 +292,17 @@ Friends</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">    8</span>{</div>
-<div class="line"><span class="lineno">    9</span>  ss &lt;&lt; ind.net &lt;&lt;<span class="stringliteral">&quot; &quot;</span></div>
-<div class="line"><span class="lineno">   10</span>     &lt;&lt; ind.sta &lt;&lt; <span class="stringliteral">&quot; &quot;</span>;</div>
-<div class="line"><span class="lineno">   11</span>  <span class="keywordflow">if</span>(ind.loc.size()&gt;0)</div>
-<div class="line"><span class="lineno">   12</span>    ss &lt;&lt; ind.loc&lt;&lt;<span class="stringliteral">&quot; &quot;</span>;</div>
-<div class="line"><span class="lineno">   13</span>  <span class="keywordflow">else</span></div>
-<div class="line"><span class="lineno">   14</span>    ss &lt;&lt; <span class="stringliteral">&quot;NULL &quot;</span>;</div>
-<div class="line"><span class="lineno">   15</span>  ss &lt;&lt; ind.chan&lt;&lt;<span class="stringliteral">&quot; &quot;</span></div>
-<div class="line"><span class="lineno">   16</span>     &lt;&lt; ind.foff&lt;&lt;<span class="stringliteral">&quot; &quot;</span></div>
-<div class="line"><span class="lineno">   17</span>     &lt;&lt; ind.nbytes&lt;&lt;<span class="stringliteral">&quot; &quot;</span></div>
-<div class="line"><span class="lineno">   18</span>     &lt;&lt; std::setprecision(20)</div>
-<div class="line"><span class="lineno">   19</span>     &lt;&lt; ind.starttime&lt;&lt;<span class="stringliteral">&quot; &quot;</span></div>
-<div class="line"><span class="lineno">   20</span>     &lt;&lt; ind.last_packet_time&lt;&lt;<span class="stringliteral">&quot; &quot;</span></div>
-<div class="line"><span class="lineno">   21</span>     &lt;&lt; ind.endtime&lt;&lt;<span class="stringliteral">&quot; &quot;</span></div>
-<div class="line"><span class="lineno">   22</span>     &lt;&lt; ind.samprate&lt;&lt;<span class="stringliteral">&quot; &quot;</span></div>
-<div class="line"><span class="lineno">   23</span>     &lt;&lt; ind.npts;</div>
-<div class="line"><span class="lineno">   24</span>  <span class="keywordflow">return</span> ss;</div>
-<div class="line"><span class="lineno">   25</span>};</div>
+<div class="fragment"><div class="line"><span class="lineno">    6</span>                                                                           {</div>
+<div class="line"><span class="lineno">    7</span>  ss &lt;&lt; ind.net &lt;&lt; <span class="stringliteral">&quot; &quot;</span> &lt;&lt; ind.sta &lt;&lt; <span class="stringliteral">&quot; &quot;</span>;</div>
+<div class="line"><span class="lineno">    8</span>  <span class="keywordflow">if</span> (ind.loc.size() &gt; 0)</div>
+<div class="line"><span class="lineno">    9</span>    ss &lt;&lt; ind.loc &lt;&lt; <span class="stringliteral">&quot; &quot;</span>;</div>
+<div class="line"><span class="lineno">   10</span>  <span class="keywordflow">else</span></div>
+<div class="line"><span class="lineno">   11</span>    ss &lt;&lt; <span class="stringliteral">&quot;NULL &quot;</span>;</div>
+<div class="line"><span class="lineno">   12</span>  ss &lt;&lt; ind.chan &lt;&lt; <span class="stringliteral">&quot; &quot;</span> &lt;&lt; ind.foff &lt;&lt; <span class="stringliteral">&quot; &quot;</span> &lt;&lt; ind.nbytes &lt;&lt; <span class="stringliteral">&quot; &quot;</span></div>
+<div class="line"><span class="lineno">   13</span>     &lt;&lt; std::setprecision(20) &lt;&lt; ind.starttime &lt;&lt; <span class="stringliteral">&quot; &quot;</span> &lt;&lt; ind.last_packet_time</div>
+<div class="line"><span class="lineno">   14</span>     &lt;&lt; <span class="stringliteral">&quot; &quot;</span> &lt;&lt; ind.endtime &lt;&lt; <span class="stringliteral">&quot; &quot;</span> &lt;&lt; ind.samprate &lt;&lt; <span class="stringliteral">&quot; &quot;</span> &lt;&lt; ind.npts;</div>
+<div class="line"><span class="lineno">   15</span>  <span class="keywordflow">return</span> ss;</div>
+<div class="line"><span class="lineno">   16</span>};</div>
 </div><!-- fragment -->
 </div>
 </div>

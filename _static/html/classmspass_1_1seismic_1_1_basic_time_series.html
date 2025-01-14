@@ -220,20 +220,20 @@ double&#160;</td><td class="memItemRight" valign="bottom"><b>t0shift</b></td></t
       </table>
 </div><div class="memdoc">
 <p>Default constructor. Does essentially nothing since a <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html" title="Base class for time series objects.">BasicTimeSeries</a> object has no data. Does initialize data to avoid run time checkers bitching about unitialized data, but values are meaningless when this constructor is called. </p>
-<div class="fragment"><div class="line"><span class="lineno">   43</span>{</div>
-<div class="line"><span class="lineno">   44</span>    <a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#aeb40f4223a8ee73e79f9af065372a757">mt0</a>=0.0;</div>
-<div class="line"><span class="lineno">   45</span>    <a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#abb88ddef3bab3b3205dfe6c6cfdb91aa">tref</a>=<a class="code hl_enumvalue" href="namespacemspass_1_1seismic.html#a0b8373068c66c7453bd012fe5367dbd2a2ca9469819fb0fb61ff98e914a7ccca0">TimeReferenceType::Relative</a>;</div>
-<div class="line"><span class="lineno">   46</span>    <a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#a7b2e9b878959d376790f09194edc51d9">mlive</a>=<span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">   47</span>    <a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#aea80df11992ca2c7ff915aab5fcba6f5">mdt</a>=1.0;</div>
-<div class="line"><span class="lineno">   48</span>    <a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">nsamp</a>=0;</div>
-<div class="line"><span class="lineno">   49</span>    t0shift=0.0;</div>
-<div class="line"><span class="lineno">   50</span>    t0shift_is_valid=<span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">   51</span>}</div>
-<div class="ttc" id="aclassmspass_1_1seismic_1_1_basic_time_series_html_a0cb0afe9272567b8fd3394f79f46628a"><div class="ttname"><a href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">mspass::seismic::BasicTimeSeries::nsamp</a></div><div class="ttdeci">size_t nsamp</div><div class="ttdef"><b>Definition</b> BasicTimeSeries.h:284</div></div>
-<div class="ttc" id="aclassmspass_1_1seismic_1_1_basic_time_series_html_a7b2e9b878959d376790f09194edc51d9"><div class="ttname"><a href="classmspass_1_1seismic_1_1_basic_time_series.html#a7b2e9b878959d376790f09194edc51d9">mspass::seismic::BasicTimeSeries::mlive</a></div><div class="ttdeci">bool mlive</div><div class="ttdef"><b>Definition</b> BasicTimeSeries.h:272</div></div>
-<div class="ttc" id="aclassmspass_1_1seismic_1_1_basic_time_series_html_abb88ddef3bab3b3205dfe6c6cfdb91aa"><div class="ttname"><a href="classmspass_1_1seismic_1_1_basic_time_series.html#abb88ddef3bab3b3205dfe6c6cfdb91aa">mspass::seismic::BasicTimeSeries::tref</a></div><div class="ttdeci">TimeReferenceType tref</div><div class="ttdef"><b>Definition</b> BasicTimeSeries.h:294</div></div>
-<div class="ttc" id="aclassmspass_1_1seismic_1_1_basic_time_series_html_aea80df11992ca2c7ff915aab5fcba6f5"><div class="ttname"><a href="classmspass_1_1seismic_1_1_basic_time_series.html#aea80df11992ca2c7ff915aab5fcba6f5">mspass::seismic::BasicTimeSeries::mdt</a></div><div class="ttdeci">double mdt</div><div class="ttdef"><b>Definition</b> BasicTimeSeries.h:276</div></div>
-<div class="ttc" id="aclassmspass_1_1seismic_1_1_basic_time_series_html_aeb40f4223a8ee73e79f9af065372a757"><div class="ttname"><a href="classmspass_1_1seismic_1_1_basic_time_series.html#aeb40f4223a8ee73e79f9af065372a757">mspass::seismic::BasicTimeSeries::mt0</a></div><div class="ttdeci">double mt0</div><div class="ttdef"><b>Definition</b> BasicTimeSeries.h:280</div></div>
+<div class="fragment"><div class="line"><span class="lineno">   45</span>                                 {</div>
+<div class="line"><span class="lineno">   46</span>  <a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#aeb40f4223a8ee73e79f9af065372a757">mt0</a> = 0.0;</div>
+<div class="line"><span class="lineno">   47</span>  <a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#abb88ddef3bab3b3205dfe6c6cfdb91aa">tref</a> = <a class="code hl_enumvalue" href="namespacemspass_1_1seismic.html#a0b8373068c66c7453bd012fe5367dbd2a2ca9469819fb0fb61ff98e914a7ccca0">TimeReferenceType::Relative</a>;</div>
+<div class="line"><span class="lineno">   48</span>  <a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#a7b2e9b878959d376790f09194edc51d9">mlive</a> = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">   49</span>  <a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#aea80df11992ca2c7ff915aab5fcba6f5">mdt</a> = 1.0;</div>
+<div class="line"><span class="lineno">   50</span>  <a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">nsamp</a> = 0;</div>
+<div class="line"><span class="lineno">   51</span>  t0shift = 0.0;</div>
+<div class="line"><span class="lineno">   52</span>  t0shift_is_valid = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">   53</span>}</div>
+<div class="ttc" id="aclassmspass_1_1seismic_1_1_basic_time_series_html_a0cb0afe9272567b8fd3394f79f46628a"><div class="ttname"><a href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">mspass::seismic::BasicTimeSeries::nsamp</a></div><div class="ttdeci">size_t nsamp</div><div class="ttdef"><b>Definition</b> BasicTimeSeries.h:255</div></div>
+<div class="ttc" id="aclassmspass_1_1seismic_1_1_basic_time_series_html_a7b2e9b878959d376790f09194edc51d9"><div class="ttname"><a href="classmspass_1_1seismic_1_1_basic_time_series.html#a7b2e9b878959d376790f09194edc51d9">mspass::seismic::BasicTimeSeries::mlive</a></div><div class="ttdeci">bool mlive</div><div class="ttdef"><b>Definition</b> BasicTimeSeries.h:243</div></div>
+<div class="ttc" id="aclassmspass_1_1seismic_1_1_basic_time_series_html_abb88ddef3bab3b3205dfe6c6cfdb91aa"><div class="ttname"><a href="classmspass_1_1seismic_1_1_basic_time_series.html#abb88ddef3bab3b3205dfe6c6cfdb91aa">mspass::seismic::BasicTimeSeries::tref</a></div><div class="ttdeci">TimeReferenceType tref</div><div class="ttdef"><b>Definition</b> BasicTimeSeries.h:265</div></div>
+<div class="ttc" id="aclassmspass_1_1seismic_1_1_basic_time_series_html_aea80df11992ca2c7ff915aab5fcba6f5"><div class="ttname"><a href="classmspass_1_1seismic_1_1_basic_time_series.html#aea80df11992ca2c7ff915aab5fcba6f5">mspass::seismic::BasicTimeSeries::mdt</a></div><div class="ttdeci">double mdt</div><div class="ttdef"><b>Definition</b> BasicTimeSeries.h:247</div></div>
+<div class="ttc" id="aclassmspass_1_1seismic_1_1_basic_time_series_html_aeb40f4223a8ee73e79f9af065372a757"><div class="ttname"><a href="classmspass_1_1seismic_1_1_basic_time_series.html#aeb40f4223a8ee73e79f9af065372a757">mspass::seismic::BasicTimeSeries::mt0</a></div><div class="ttdeci">double mt0</div><div class="ttdef"><b>Definition</b> BasicTimeSeries.h:251</div></div>
 <div class="ttc" id="anamespacemspass_1_1seismic_html_a0b8373068c66c7453bd012fe5367dbd2a2ca9469819fb0fb61ff98e914a7ccca0"><div class="ttname"><a href="namespacemspass_1_1seismic.html#a0b8373068c66c7453bd012fe5367dbd2a2ca9469819fb0fb61ff98e914a7ccca0">mspass::seismic::TimeReferenceType::Relative</a></div><div class="ttdeci">@ Relative</div></div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#aea80df11992ca2c7ff915aab5fcba6f5">mdt</a>, <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#a7b2e9b878959d376790f09194edc51d9">mlive</a>, <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#aeb40f4223a8ee73e79f9af065372a757">mt0</a>, <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">nsamp</a>, <a class="el" href="namespacemspass_1_1seismic.html#a0b8373068c66c7453bd012fe5367dbd2a2ca9469819fb0fb61ff98e914a7ccca0">mspass::seismic::Relative</a>, and <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#abb88ddef3bab3b3205dfe6c6cfdb91aa">tref</a>.</p>
@@ -256,15 +256,15 @@ double&#160;</td><td class="memItemRight" valign="bottom"><b>t0shift</b></td></t
       </table>
 </div><div class="memdoc">
 <p>Standard copy constructor. </p>
-<div class="fragment"><div class="line"><span class="lineno">   53</span>{</div>
-<div class="line"><span class="lineno">   54</span>    <a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#aeb40f4223a8ee73e79f9af065372a757">mt0</a>=tsin.mt0;</div>
-<div class="line"><span class="lineno">   55</span>    <a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#abb88ddef3bab3b3205dfe6c6cfdb91aa">tref</a>=tsin.tref;</div>
-<div class="line"><span class="lineno">   56</span>    <a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#a7b2e9b878959d376790f09194edc51d9">mlive</a>=tsin.mlive;</div>
-<div class="line"><span class="lineno">   57</span>    <a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#aea80df11992ca2c7ff915aab5fcba6f5">mdt</a>=tsin.mdt;</div>
-<div class="line"><span class="lineno">   58</span>    <a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">nsamp</a>=tsin.nsamp;</div>
-<div class="line"><span class="lineno">   59</span>    t0shift=tsin.t0shift;</div>
-<div class="line"><span class="lineno">   60</span>    t0shift_is_valid=tsin.t0shift_is_valid;</div>
-<div class="line"><span class="lineno">   61</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">   54</span>                                                            {</div>
+<div class="line"><span class="lineno">   55</span>  <a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#aeb40f4223a8ee73e79f9af065372a757">mt0</a> = tsin.mt0;</div>
+<div class="line"><span class="lineno">   56</span>  <a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#abb88ddef3bab3b3205dfe6c6cfdb91aa">tref</a> = tsin.tref;</div>
+<div class="line"><span class="lineno">   57</span>  <a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#a7b2e9b878959d376790f09194edc51d9">mlive</a> = tsin.mlive;</div>
+<div class="line"><span class="lineno">   58</span>  <a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#aea80df11992ca2c7ff915aab5fcba6f5">mdt</a> = tsin.mdt;</div>
+<div class="line"><span class="lineno">   59</span>  <a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">nsamp</a> = tsin.nsamp;</div>
+<div class="line"><span class="lineno">   60</span>  t0shift = tsin.t0shift;</div>
+<div class="line"><span class="lineno">   61</span>  t0shift_is_valid = tsin.t0shift_is_valid;</div>
+<div class="line"><span class="lineno">   62</span>}</div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#aea80df11992ca2c7ff915aab5fcba6f5">mdt</a>, <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#a7b2e9b878959d376790f09194edc51d9">mlive</a>, <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#aeb40f4223a8ee73e79f9af065372a757">mt0</a>, <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">nsamp</a>, and <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#abb88ddef3bab3b3205dfe6c6cfdb91aa">tref</a>.</p>
 
@@ -295,7 +295,7 @@ double&#160;</td><td class="memItemRight" valign="bottom"><b>t0shift</b></td></t
 
 <p>Virtual destructor. </p>
 <p>A base class with virtual members like this requires this incantation to avoid some odd conflicts. This particular one was added to make the boost::serialization code work properly. The geeky details for why this is necessary can be found in Scott Meyers book "Effective C++" </p>
-<div class="fragment"><div class="line"><span class="lineno">   56</span>{};</div>
+<div class="fragment"><div class="line"><span class="lineno">   55</span>{};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -331,15 +331,17 @@ double&#160;</td><td class="memItemRight" valign="bottom"><b>t0shift</b></td></t
 </dl>
 
 <p>Reimplemented in <a class="el" href="classmspass_1_1seismic_1_1_time_series_w_gaps.html#ac0738e8e0441f49d3c03b504dc7e44b9">mspass::seismic::TimeSeriesWGaps</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   10</span>{</div>
-<div class="line"><span class="lineno">   11</span>    <span class="comment">/* dead traces should to totally ignored */</span></div>
-<div class="line"><span class="lineno">   12</span>    <span class="keywordflow">if</span>(!(this-&gt;<a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#a7b2e9b878959d376790f09194edc51d9">mlive</a>)) <span class="keywordflow">return</span>;</div>
-<div class="line"><span class="lineno">   13</span>    <span class="keywordflow">if</span>(<a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#abb88ddef3bab3b3205dfe6c6cfdb91aa">tref</a>==<a class="code hl_enumvalue" href="namespacemspass_1_1seismic.html#a0b8373068c66c7453bd012fe5367dbd2a2ca9469819fb0fb61ff98e914a7ccca0">TimeReferenceType::Relative</a>) <span class="keywordflow">return</span>;</div>
-<div class="line"><span class="lineno">   14</span>    t0shift=tshift;</div>
-<div class="line"><span class="lineno">   15</span>    <a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#aeb40f4223a8ee73e79f9af065372a757">mt0</a> -= tshift;</div>
-<div class="line"><span class="lineno">   16</span>    <a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#abb88ddef3bab3b3205dfe6c6cfdb91aa">tref</a>=<a class="code hl_enumvalue" href="namespacemspass_1_1seismic.html#a0b8373068c66c7453bd012fe5367dbd2a2ca9469819fb0fb61ff98e914a7ccca0">TimeReferenceType::Relative</a>;</div>
-<div class="line"><span class="lineno">   17</span>    t0shift_is_valid=<span class="keyword">true</span>;</div>
-<div class="line"><span class="lineno">   18</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">    9</span>                                        {</div>
+<div class="line"><span class="lineno">   10</span>  <span class="comment">/* dead traces should to totally ignored */</span></div>
+<div class="line"><span class="lineno">   11</span>  <span class="keywordflow">if</span> (!(this-&gt;<a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#a7b2e9b878959d376790f09194edc51d9">mlive</a>))</div>
+<div class="line"><span class="lineno">   12</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">   13</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#abb88ddef3bab3b3205dfe6c6cfdb91aa">tref</a> == <a class="code hl_enumvalue" href="namespacemspass_1_1seismic.html#a0b8373068c66c7453bd012fe5367dbd2a2ca9469819fb0fb61ff98e914a7ccca0">TimeReferenceType::Relative</a>)</div>
+<div class="line"><span class="lineno">   14</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">   15</span>  t0shift = tshift;</div>
+<div class="line"><span class="lineno">   16</span>  <a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#aeb40f4223a8ee73e79f9af065372a757">mt0</a> -= tshift;</div>
+<div class="line"><span class="lineno">   17</span>  <a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#abb88ddef3bab3b3205dfe6c6cfdb91aa">tref</a> = <a class="code hl_enumvalue" href="namespacemspass_1_1seismic.html#a0b8373068c66c7453bd012fe5367dbd2a2ca9469819fb0fb61ff98e914a7ccca0">TimeReferenceType::Relative</a>;</div>
+<div class="line"><span class="lineno">   18</span>  t0shift_is_valid = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">   19</span>}</div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#a7b2e9b878959d376790f09194edc51d9">mlive</a>, <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#aeb40f4223a8ee73e79f9af065372a757">mt0</a>, <a class="el" href="namespacemspass_1_1seismic.html#a0b8373068c66c7453bd012fe5367dbd2a2ca9469819fb0fb61ff98e914a7ccca0">mspass::seismic::Relative</a>, and <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#abb88ddef3bab3b3205dfe6c6cfdb91aa">tref</a>.</p>
 
@@ -368,7 +370,7 @@ double&#160;</td><td class="memItemRight" valign="bottom"><b>t0shift</b></td></t
 </table>
 </div><div class="memdoc">
 <p>Return true if the data have been marked bad (killed) - inverse of <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#a8aae898b7cf2f75d111b3eb6d8184396">live()</a> </p>
-<div class="fragment"><div class="line"><span class="lineno">  154</span>{<span class="keywordflow">return</span> !(this-&gt;<a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#a7b2e9b878959d376790f09194edc51d9">mlive</a>);};</div>
+<div class="fragment"><div class="line"><span class="lineno">  145</span>{ <span class="keywordflow">return</span> !(this-&gt;<a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#a7b2e9b878959d376790f09194edc51d9">mlive</a>); };</div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#a7b2e9b878959d376790f09194edc51d9">mlive</a>.</p>
 
@@ -397,7 +399,7 @@ double&#160;</td><td class="memItemRight" valign="bottom"><b>t0shift</b></td></t
 </table>
 </div><div class="memdoc">
 <p>Return the data sample interval. </p>
-<div class="fragment"><div class="line"><span class="lineno">  162</span>{<span class="keywordflow">return</span> this-&gt;<a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#aea80df11992ca2c7ff915aab5fcba6f5">mdt</a>;};</div>
+<div class="fragment"><div class="line"><span class="lineno">  153</span>{ <span class="keywordflow">return</span> this-&gt;<a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#aea80df11992ca2c7ff915aab5fcba6f5">mdt</a>; };</div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#aea80df11992ca2c7ff915aab5fcba6f5">mdt</a>.</p>
 
@@ -426,9 +428,9 @@ double&#160;</td><td class="memItemRight" valign="bottom"><b>t0shift</b></td></t
 </table>
 </div><div class="memdoc">
 <p>Returns the end time (time associated with last data sample) of this data object. </p>
-<div class="fragment"><div class="line"><span class="lineno">   83</span>        {</div>
-<div class="line"><span class="lineno">   84</span>          <span class="keywordflow">return</span>(<a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#aeb40f4223a8ee73e79f9af065372a757">mt0</a> + (<span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">nsamp</a>) - 1.0)*<a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#aea80df11992ca2c7ff915aab5fcba6f5">mdt</a>);</div>
-<div class="line"><span class="lineno">   85</span>        };</div>
+<div class="fragment"><div class="line"><span class="lineno">   77</span>                                  {</div>
+<div class="line"><span class="lineno">   78</span>    <span class="keywordflow">return</span> (<a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#aeb40f4223a8ee73e79f9af065372a757">mt0</a> + (<span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">nsamp</a>) - 1.0) * <a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#aea80df11992ca2c7ff915aab5fcba6f5">mdt</a>);</div>
+<div class="line"><span class="lineno">   79</span>  };</div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#aea80df11992ca2c7ff915aab5fcba6f5">mdt</a>, <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#aeb40f4223a8ee73e79f9af065372a757">mt0</a>, and <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">nsamp</a>.</p>
 
@@ -466,10 +468,10 @@ double&#160;</td><td class="memItemRight" valign="bottom"><b>t0shift</b></td></t
   </table>
   </dd>
 </dl>
-<div class="fragment"><div class="line"><span class="lineno">  121</span>    {</div>
-<div class="line"><span class="lineno">  122</span>        this-&gt;t0shift=t;</div>
-<div class="line"><span class="lineno">  123</span>        t0shift_is_valid=<span class="keyword">true</span>;</div>
-<div class="line"><span class="lineno">  124</span>    };</div>
+<div class="fragment"><div class="line"><span class="lineno">  109</span>                                      {</div>
+<div class="line"><span class="lineno">  110</span>    this-&gt;t0shift = t;</div>
+<div class="line"><span class="lineno">  111</span>    t0shift_is_valid = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  112</span>  };</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -496,9 +498,7 @@ double&#160;</td><td class="memItemRight" valign="bottom"><b>t0shift</b></td></t
 </table>
 </div><div class="memdoc">
 <p>Return the current value of the t0shift attribute - argument to restore to UTC </p>
-<div class="fragment"><div class="line"><span class="lineno">   94</span>  {</div>
-<div class="line"><span class="lineno">   95</span>    <span class="keywordflow">return</span> this-&gt;t0shift;</div>
-<div class="line"><span class="lineno">   96</span>  };</div>
+<div class="fragment"><div class="line"><span class="lineno">   85</span>{ <span class="keywordflow">return</span> this-&gt;t0shift; };</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -525,7 +525,7 @@ double&#160;</td><td class="memItemRight" valign="bottom"><b>t0shift</b></td></t
 </table>
 </div><div class="memdoc">
 <p>Mark these data bad. </p>
-<div class="fragment"><div class="line"><span class="lineno">  156</span>{this-&gt;<a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#a7b2e9b878959d376790f09194edc51d9">mlive</a>=<span class="keyword">false</span>;};</div>
+<div class="fragment"><div class="line"><span class="lineno">  147</span>{ this-&gt;<a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#a7b2e9b878959d376790f09194edc51d9">mlive</a> = <span class="keyword">false</span>; };</div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#a7b2e9b878959d376790f09194edc51d9">mlive</a>.</p>
 
@@ -555,7 +555,7 @@ double&#160;</td><td class="memItemRight" valign="bottom"><b>t0shift</b></td></t
 </div><div class="memdoc">
 <p>Returns true of data are marked valid (live). <br  />
  </p>
-<div class="fragment"><div class="line"><span class="lineno">  152</span>{<span class="keywordflow">return</span> this-&gt;<a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#a7b2e9b878959d376790f09194edc51d9">mlive</a>;};</div>
+<div class="fragment"><div class="line"><span class="lineno">  142</span>{ <span class="keywordflow">return</span> this-&gt;<a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#a7b2e9b878959d376790f09194edc51d9">mlive</a>; };</div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#a7b2e9b878959d376790f09194edc51d9">mlive</a>.</p>
 
@@ -584,7 +584,7 @@ double&#160;</td><td class="memItemRight" valign="bottom"><b>t0shift</b></td></t
 </table>
 </div><div class="memdoc">
 <p>Return the number of points in the data series. </p>
-<div class="fragment"><div class="line"><span class="lineno">  188</span>{<span class="keywordflow">return</span> <a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">nsamp</a>;};</div>
+<div class="fragment"><div class="line"><span class="lineno">  171</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">nsamp</a>; };</div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">nsamp</a>.</p>
 
@@ -606,19 +606,18 @@ double&#160;</td><td class="memItemRight" valign="bottom"><b>t0shift</b></td></t
       </table>
 </div><div class="memdoc">
 <p>Standard assignment operator. </p>
-<div class="fragment"><div class="line"><span class="lineno">   63</span>{</div>
-<div class="line"><span class="lineno">   64</span>    <span class="keywordflow">if</span> (<span class="keyword">this</span>!=&amp;parent)</div>
-<div class="line"><span class="lineno">   65</span>    {</div>
-<div class="line"><span class="lineno">   66</span>        <a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#aeb40f4223a8ee73e79f9af065372a757">mt0</a>=parent.mt0;</div>
-<div class="line"><span class="lineno">   67</span>        <a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#abb88ddef3bab3b3205dfe6c6cfdb91aa">tref</a>=parent.tref;</div>
-<div class="line"><span class="lineno">   68</span>        <a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#a7b2e9b878959d376790f09194edc51d9">mlive</a>=parent.mlive;</div>
-<div class="line"><span class="lineno">   69</span>        <a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#aea80df11992ca2c7ff915aab5fcba6f5">mdt</a>=parent.mdt;</div>
-<div class="line"><span class="lineno">   70</span>        <a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">nsamp</a>=parent.nsamp;</div>
-<div class="line"><span class="lineno">   71</span>        t0shift=parent.t0shift;</div>
-<div class="line"><span class="lineno">   72</span>        t0shift_is_valid=parent.t0shift_is_valid;</div>
-<div class="line"><span class="lineno">   73</span>    }</div>
-<div class="line"><span class="lineno">   74</span>    <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
-<div class="line"><span class="lineno">   75</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">   63</span>                                                                         {</div>
+<div class="line"><span class="lineno">   64</span>  <span class="keywordflow">if</span> (<span class="keyword">this</span> != &amp;parent) {</div>
+<div class="line"><span class="lineno">   65</span>    <a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#aeb40f4223a8ee73e79f9af065372a757">mt0</a> = parent.mt0;</div>
+<div class="line"><span class="lineno">   66</span>    <a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#abb88ddef3bab3b3205dfe6c6cfdb91aa">tref</a> = parent.tref;</div>
+<div class="line"><span class="lineno">   67</span>    <a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#a7b2e9b878959d376790f09194edc51d9">mlive</a> = parent.mlive;</div>
+<div class="line"><span class="lineno">   68</span>    <a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#aea80df11992ca2c7ff915aab5fcba6f5">mdt</a> = parent.mdt;</div>
+<div class="line"><span class="lineno">   69</span>    <a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">nsamp</a> = parent.nsamp;</div>
+<div class="line"><span class="lineno">   70</span>    t0shift = parent.t0shift;</div>
+<div class="line"><span class="lineno">   71</span>    t0shift_is_valid = parent.t0shift_is_valid;</div>
+<div class="line"><span class="lineno">   72</span>  }</div>
+<div class="line"><span class="lineno">   73</span>  <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
+<div class="line"><span class="lineno">   74</span>}</div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#aea80df11992ca2c7ff915aab5fcba6f5">mdt</a>, <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#a7b2e9b878959d376790f09194edc51d9">mlive</a>, <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#aeb40f4223a8ee73e79f9af065372a757">mt0</a>, <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">nsamp</a>, and <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#abb88ddef3bab3b3205dfe6c6cfdb91aa">tref</a>.</p>
 
@@ -650,25 +649,28 @@ double&#160;</td><td class="memItemRight" valign="bottom"><b>t0shift</b></td></t
 <p>This method returns data previously converted to relative back to UTC using the internally stored time shift attribute. </p>
 
 <p>Reimplemented in <a class="el" href="classmspass_1_1seismic_1_1_time_series_w_gaps.html#a51eefbc8e6a034148da8f36e21870fe2">mspass::seismic::TimeSeriesWGaps</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   22</span>{</div>
-<div class="line"><span class="lineno">   23</span>    <span class="comment">/* dead traces should to totally ignored */</span></div>
-<div class="line"><span class="lineno">   24</span>    <span class="keywordflow">if</span>(!(this-&gt;<a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#a7b2e9b878959d376790f09194edc51d9">mlive</a>)) <span class="keywordflow">return</span>;</div>
-<div class="line"><span class="lineno">   25</span>    <span class="keyword">const</span> <span class="keywordtype">string</span> base_error(<span class="stringliteral">&quot;BasicTimeSeries::rtoa() t0shift for conversion is not defined.&quot;</span>);</div>
-<div class="line"><span class="lineno">   26</span>    <span class="keywordflow">if</span>(<a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#abb88ddef3bab3b3205dfe6c6cfdb91aa">tref</a>==<a class="code hl_enumvalue" href="namespacemspass_1_1seismic.html#a0b8373068c66c7453bd012fe5367dbd2a9234324ddf6b4176b57d803a925b7961">TimeReferenceType::UTC</a>) <span class="keywordflow">return</span>;</div>
-<div class="line"><span class="lineno">   27</span>    <span class="comment">/* A rather odd test for a nonzero.   We use 100 s assuming no active</span></div>
-<div class="line"><span class="lineno">   28</span><span class="comment">     * source data would use a shift longer than that unless it really did</span></div>
-<div class="line"><span class="lineno">   29</span><span class="comment">     * have an UTC time standard. Also assumes we&#39;ll never use data from</span></div>
-<div class="line"><span class="lineno">   30</span><span class="comment">     * the first 2 minutes of 1960.*/</span></div>
-<div class="line"><span class="lineno">   31</span>    <span class="keywordflow">if</span>(t0shift_is_valid || (t0shift&gt;100.0) )</div>
-<div class="line"><span class="lineno">   32</span>    {</div>
-<div class="line"><span class="lineno">   33</span>        <a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#aeb40f4223a8ee73e79f9af065372a757">mt0</a> += t0shift;</div>
-<div class="line"><span class="lineno">   34</span>        <a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#abb88ddef3bab3b3205dfe6c6cfdb91aa">tref</a>=<a class="code hl_enumvalue" href="namespacemspass_1_1seismic.html#a0b8373068c66c7453bd012fe5367dbd2a9234324ddf6b4176b57d803a925b7961">TimeReferenceType::UTC</a>;</div>
-<div class="line"><span class="lineno">   35</span>        t0shift_is_valid=<span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">   36</span>    t0shift=0.0;</div>
-<div class="line"><span class="lineno">   37</span>    }</div>
-<div class="line"><span class="lineno">   38</span>    <span class="keywordflow">else</span></div>
-<div class="line"><span class="lineno">   39</span>        <span class="keywordflow">throw</span> MsPASSError(base_error + <span class="stringliteral">&quot;time shift to return to UTC time is not defined&quot;</span>,ErrorSeverity::Invalid);</div>
-<div class="line"><span class="lineno">   40</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">   22</span>                           {</div>
+<div class="line"><span class="lineno">   23</span>  <span class="comment">/* dead traces should to totally ignored */</span></div>
+<div class="line"><span class="lineno">   24</span>  <span class="keywordflow">if</span> (!(this-&gt;<a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#a7b2e9b878959d376790f09194edc51d9">mlive</a>))</div>
+<div class="line"><span class="lineno">   25</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">   26</span>  <span class="keyword">const</span> <span class="keywordtype">string</span> base_error(</div>
+<div class="line"><span class="lineno">   27</span>      <span class="stringliteral">&quot;BasicTimeSeries::rtoa() t0shift for conversion is not defined.&quot;</span>);</div>
+<div class="line"><span class="lineno">   28</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#abb88ddef3bab3b3205dfe6c6cfdb91aa">tref</a> == <a class="code hl_enumvalue" href="namespacemspass_1_1seismic.html#a0b8373068c66c7453bd012fe5367dbd2a9234324ddf6b4176b57d803a925b7961">TimeReferenceType::UTC</a>)</div>
+<div class="line"><span class="lineno">   29</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">   30</span>  <span class="comment">/* A rather odd test for a nonzero.   We use 100 s assuming no active</span></div>
+<div class="line"><span class="lineno">   31</span><span class="comment">   * source data would use a shift longer than that unless it really did</span></div>
+<div class="line"><span class="lineno">   32</span><span class="comment">   * have an UTC time standard. Also assumes we&#39;ll never use data from</span></div>
+<div class="line"><span class="lineno">   33</span><span class="comment">   * the first 2 minutes of 1960.*/</span></div>
+<div class="line"><span class="lineno">   34</span>  <span class="keywordflow">if</span> (t0shift_is_valid || (t0shift &gt; 100.0)) {</div>
+<div class="line"><span class="lineno">   35</span>    <a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#aeb40f4223a8ee73e79f9af065372a757">mt0</a> += t0shift;</div>
+<div class="line"><span class="lineno">   36</span>    <a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#abb88ddef3bab3b3205dfe6c6cfdb91aa">tref</a> = <a class="code hl_enumvalue" href="namespacemspass_1_1seismic.html#a0b8373068c66c7453bd012fe5367dbd2a9234324ddf6b4176b57d803a925b7961">TimeReferenceType::UTC</a>;</div>
+<div class="line"><span class="lineno">   37</span>    t0shift_is_valid = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">   38</span>    t0shift = 0.0;</div>
+<div class="line"><span class="lineno">   39</span>  } <span class="keywordflow">else</span></div>
+<div class="line"><span class="lineno">   40</span>    <span class="keywordflow">throw</span> MsPASSError(base_error +</div>
+<div class="line"><span class="lineno">   41</span>                          <span class="stringliteral">&quot;time shift to return to UTC time is not defined&quot;</span>,</div>
+<div class="line"><span class="lineno">   42</span>                      ErrorSeverity::Invalid);</div>
+<div class="line"><span class="lineno">   43</span>}</div>
 <div class="ttc" id="anamespacemspass_1_1seismic_html_a0b8373068c66c7453bd012fe5367dbd2a9234324ddf6b4176b57d803a925b7961"><div class="ttname"><a href="namespacemspass_1_1seismic.html#a0b8373068c66c7453bd012fe5367dbd2a9234324ddf6b4176b57d803a925b7961">mspass::seismic::TimeReferenceType::UTC</a></div><div class="ttdeci">@ UTC</div></div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#a7b2e9b878959d376790f09194edc51d9">mlive</a>, <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#aeb40f4223a8ee73e79f9af065372a757">mt0</a>, <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#abb88ddef3bab3b3205dfe6c6cfdb91aa">tref</a>, and <a class="el" href="namespacemspass_1_1seismic.html#a0b8373068c66c7453bd012fe5367dbd2a9234324ddf6b4176b57d803a925b7961">mspass::seismic::UTC</a>.</p>
@@ -699,9 +701,7 @@ double&#160;</td><td class="memItemRight" valign="bottom"><b>t0shift</b></td></t
 </table>
 </div><div class="memdoc">
 <p>Inverse of time function. That is, it returns the integer position of a given time t within a time series. The returned number is not tested for validity compared to the data range. This is the callers responsibility as this is a common error condition that should not require the overhead of an exception. </p>
-<div class="fragment"><div class="line"><span class="lineno">   75</span>        {</div>
-<div class="line"><span class="lineno">   76</span>            <span class="keywordflow">return</span>(round((t-<a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#aeb40f4223a8ee73e79f9af065372a757">mt0</a>)/<a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#aea80df11992ca2c7ff915aab5fcba6f5">mdt</a>));</div>
-<div class="line"><span class="lineno">   77</span>        };</div>
+<div class="fragment"><div class="line"><span class="lineno">   72</span>{ <span class="keywordflow">return</span> (round((t - <a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#aeb40f4223a8ee73e79f9af065372a757">mt0</a>) / <a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#aea80df11992ca2c7ff915aab5fcba6f5">mdt</a>)); };</div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#aea80df11992ca2c7ff915aab5fcba6f5">mdt</a>, and <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#aeb40f4223a8ee73e79f9af065372a757">mt0</a>.</p>
 
@@ -730,9 +730,7 @@ double&#160;</td><td class="memItemRight" valign="bottom"><b>t0shift</b></td></t
 </table>
 </div><div class="memdoc">
 <p>Return sample rate. </p>
-<div class="fragment"><div class="line"><span class="lineno">  184</span>    {</div>
-<div class="line"><span class="lineno">  185</span>        <span class="keywordflow">return</span> 1.0/<a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#aea80df11992ca2c7ff915aab5fcba6f5">mdt</a>;</div>
-<div class="line"><span class="lineno">  186</span>    }</div>
+<div class="fragment"><div class="line"><span class="lineno">  169</span>{ <span class="keywordflow">return</span> 1.0 / <a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#aea80df11992ca2c7ff915aab5fcba6f5">mdt</a>; }</div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#aea80df11992ca2c7ff915aab5fcba6f5">mdt</a>.</p>
 
@@ -772,9 +770,7 @@ double&#160;</td><td class="memItemRight" valign="bottom"><b>t0shift</b></td></t
 </dl>
 
 <p>Reimplemented in <a class="el" href="classmspass_1_1seismic_1_1_core_seismogram.html#a5e51c2c6d3a1aa02281ba242a1d15bf2">mspass::seismic::CoreSeismogram</a>, and <a class="el" href="classmspass_1_1seismic_1_1_core_time_series.html#a97ff6732aa816b0c327c5bf667ffe841">mspass::seismic::CoreTimeSeries</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  215</span>    {</div>
-<div class="line"><span class="lineno">  216</span>        <a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#aea80df11992ca2c7ff915aab5fcba6f5">mdt</a>=sample_interval;</div>
-<div class="line"><span class="lineno">  217</span>    };</div>
+<div class="fragment"><div class="line"><span class="lineno">  197</span>{ <a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#aea80df11992ca2c7ff915aab5fcba6f5">mdt</a> = sample_interval; };</div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#aea80df11992ca2c7ff915aab5fcba6f5">mdt</a>.</p>
 
@@ -803,7 +799,7 @@ double&#160;</td><td class="memItemRight" valign="bottom"><b>t0shift</b></td></t
 </table>
 </div><div class="memdoc">
 <p>Inverse of kill - marks data live overriding anything set before. Use to resurrect data improperly killed (useful only for interactive editing) or creating data pieces outside constructors. </p>
-<div class="fragment"><div class="line"><span class="lineno">  160</span>{this-&gt;<a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#a7b2e9b878959d376790f09194edc51d9">mlive</a>=<span class="keyword">true</span>;};</div>
+<div class="fragment"><div class="line"><span class="lineno">  151</span>{ this-&gt;<a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#a7b2e9b878959d376790f09194edc51d9">mlive</a> = <span class="keyword">true</span>; };</div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#a7b2e9b878959d376790f09194edc51d9">mlive</a>.</p>
 
@@ -843,10 +839,8 @@ double&#160;</td><td class="memItemRight" valign="bottom"><b>t0shift</b></td></t
 </dl>
 
 <p>Reimplemented in <a class="el" href="classmspass_1_1seismic_1_1_core_seismogram.html#ae94bac250fe5928ced41babc322c2c79">mspass::seismic::CoreSeismogram</a>, and <a class="el" href="classmspass_1_1seismic_1_1_core_time_series.html#ae538485ac0aed2f8691477dffce6cda8">mspass::seismic::CoreTimeSeries</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  230</span>    {</div>
-<div class="line"><span class="lineno">  231</span>        <a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">nsamp</a>=<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">npts</a>;</div>
-<div class="line"><span class="lineno">  232</span>    };</div>
-<div class="ttc" id="aclassmspass_1_1seismic_1_1_basic_time_series_html_a347b349bb4e1f0e65978dfcd45ae3472"><div class="ttname"><a href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">mspass::seismic::BasicTimeSeries::npts</a></div><div class="ttdeci">size_t npts() const</div><div class="ttdef"><b>Definition</b> BasicTimeSeries.h:188</div></div>
+<div class="fragment"><div class="line"><span class="lineno">  209</span>{ <a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">nsamp</a> = <a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">npts</a>; };</div>
+<div class="ttc" id="aclassmspass_1_1seismic_1_1_basic_time_series_html_a347b349bb4e1f0e65978dfcd45ae3472"><div class="ttname"><a href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">mspass::seismic::BasicTimeSeries::npts</a></div><div class="ttdeci">size_t npts() const</div><div class="ttdef"><b>Definition</b> BasicTimeSeries.h:171</div></div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">npts()</a>, and <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">nsamp</a>.</p>
 
@@ -886,9 +880,7 @@ double&#160;</td><td class="memItemRight" valign="bottom"><b>t0shift</b></td></t
 </dl>
 
 <p>Reimplemented in <a class="el" href="classmspass_1_1seismic_1_1_core_seismogram.html#a7724b7cfa40eebf0b15e0d2b39ae615e">mspass::seismic::CoreSeismogram</a>, and <a class="el" href="classmspass_1_1seismic_1_1_core_time_series.html#ae90b28cff0bc1997aa65a1693d8562d0">mspass::seismic::CoreTimeSeries</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  245</span>    {</div>
-<div class="line"><span class="lineno">  246</span>        <a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#aeb40f4223a8ee73e79f9af065372a757">mt0</a>=t0in;</div>
-<div class="line"><span class="lineno">  247</span>    };</div>
+<div class="fragment"><div class="line"><span class="lineno">  221</span>{ <a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#aeb40f4223a8ee73e79f9af065372a757">mt0</a> = t0in; };</div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#aeb40f4223a8ee73e79f9af065372a757">mt0</a>.</p>
 
@@ -926,9 +918,7 @@ double&#160;</td><td class="memItemRight" valign="bottom"><b>t0shift</b></td></t
   </table>
   </dd>
 </dl>
-<div class="fragment"><div class="line"><span class="lineno">  260</span>    {</div>
-<div class="line"><span class="lineno">  261</span>        <a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#abb88ddef3bab3b3205dfe6c6cfdb91aa">tref</a>=newtref;</div>
-<div class="line"><span class="lineno">  262</span>    };</div>
+<div class="fragment"><div class="line"><span class="lineno">  233</span>{ <a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#abb88ddef3bab3b3205dfe6c6cfdb91aa">tref</a> = newtref; };</div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#abb88ddef3bab3b3205dfe6c6cfdb91aa">tref</a>.</p>
 
@@ -961,18 +951,18 @@ double&#160;</td><td class="memItemRight" valign="bottom"><b>t0shift</b></td></t
 <p>Sometimes we need to shift the reference time t0. An example is a moveout correction. This method shifts the reference time by dt. Note a positive dt means data aligned to zero will be shifted left because relative time is t-t0. </p>
 
 <p>Reimplemented in <a class="el" href="classmspass_1_1seismic_1_1_time_series_w_gaps.html#a42f1e02964fb1b689e40bc6e4e3d2ac3">mspass::seismic::TimeSeriesWGaps</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   77</span>{</div>
-<div class="line"><span class="lineno">   78</span>    <span class="keywordflow">try</span> {</div>
-<div class="line"><span class="lineno">   79</span>        <span class="keywordtype">double</span> oldt0shift=t0shift;</div>
-<div class="line"><span class="lineno">   80</span>        this-&gt;<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#a21faa1455f1b3a0b723e7ee136ac4d2b">rtoa</a>();</div>
-<div class="line"><span class="lineno">   81</span>        this-&gt;<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#adfb9a7a1162b72d5d33e7e3430117611">ator</a>(oldt0shift+<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#af31c96c0e2173d7581e1c3a3f8bcfde8">dt</a>);</div>
-<div class="line"><span class="lineno">   82</span>    } <span class="keywordflow">catch</span>(...) {</div>
-<div class="line"><span class="lineno">   83</span>        <span class="keywordflow">throw</span>;</div>
-<div class="line"><span class="lineno">   84</span>    };</div>
-<div class="line"><span class="lineno">   85</span>}</div>
-<div class="ttc" id="aclassmspass_1_1seismic_1_1_basic_time_series_html_a21faa1455f1b3a0b723e7ee136ac4d2b"><div class="ttname"><a href="classmspass_1_1seismic_1_1_basic_time_series.html#a21faa1455f1b3a0b723e7ee136ac4d2b">mspass::seismic::BasicTimeSeries::rtoa</a></div><div class="ttdeci">virtual void rtoa()</div><div class="ttdef"><b>Definition</b> BasicTimeSeries.cc:21</div></div>
+<div class="fragment"><div class="line"><span class="lineno">   75</span>                                     {</div>
+<div class="line"><span class="lineno">   76</span>  <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">   77</span>    <span class="keywordtype">double</span> oldt0shift = t0shift;</div>
+<div class="line"><span class="lineno">   78</span>    this-&gt;<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#a21faa1455f1b3a0b723e7ee136ac4d2b">rtoa</a>();</div>
+<div class="line"><span class="lineno">   79</span>    this-&gt;<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#adfb9a7a1162b72d5d33e7e3430117611">ator</a>(oldt0shift + <a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#af31c96c0e2173d7581e1c3a3f8bcfde8">dt</a>);</div>
+<div class="line"><span class="lineno">   80</span>  } <span class="keywordflow">catch</span> (...) {</div>
+<div class="line"><span class="lineno">   81</span>    <span class="keywordflow">throw</span>;</div>
+<div class="line"><span class="lineno">   82</span>  };</div>
+<div class="line"><span class="lineno">   83</span>}</div>
+<div class="ttc" id="aclassmspass_1_1seismic_1_1_basic_time_series_html_a21faa1455f1b3a0b723e7ee136ac4d2b"><div class="ttname"><a href="classmspass_1_1seismic_1_1_basic_time_series.html#a21faa1455f1b3a0b723e7ee136ac4d2b">mspass::seismic::BasicTimeSeries::rtoa</a></div><div class="ttdeci">virtual void rtoa()</div><div class="ttdef"><b>Definition</b> BasicTimeSeries.cc:22</div></div>
 <div class="ttc" id="aclassmspass_1_1seismic_1_1_basic_time_series_html_adfb9a7a1162b72d5d33e7e3430117611"><div class="ttname"><a href="classmspass_1_1seismic_1_1_basic_time_series.html#adfb9a7a1162b72d5d33e7e3430117611">mspass::seismic::BasicTimeSeries::ator</a></div><div class="ttdeci">virtual void ator(const double tshift)</div><div class="ttdef"><b>Definition</b> BasicTimeSeries.cc:9</div></div>
-<div class="ttc" id="aclassmspass_1_1seismic_1_1_basic_time_series_html_af31c96c0e2173d7581e1c3a3f8bcfde8"><div class="ttname"><a href="classmspass_1_1seismic_1_1_basic_time_series.html#af31c96c0e2173d7581e1c3a3f8bcfde8">mspass::seismic::BasicTimeSeries::dt</a></div><div class="ttdeci">double dt() const</div><div class="ttdef"><b>Definition</b> BasicTimeSeries.h:162</div></div>
+<div class="ttc" id="aclassmspass_1_1seismic_1_1_basic_time_series_html_af31c96c0e2173d7581e1c3a3f8bcfde8"><div class="ttname"><a href="classmspass_1_1seismic_1_1_basic_time_series.html#af31c96c0e2173d7581e1c3a3f8bcfde8">mspass::seismic::BasicTimeSeries::dt</a></div><div class="ttdeci">double dt() const</div><div class="ttdef"><b>Definition</b> BasicTimeSeries.h:153</div></div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#adfb9a7a1162b72d5d33e7e3430117611">ator()</a>, <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#af31c96c0e2173d7581e1c3a3f8bcfde8">dt()</a>, and <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#a21faa1455f1b3a0b723e7ee136ac4d2b">rtoa()</a>.</p>
 
@@ -1001,9 +991,7 @@ double&#160;</td><td class="memItemRight" valign="bottom"><b>t0shift</b></td></t
 </table>
 </div><div class="memdoc">
 <p>Return true if a time shift has been applied to the data. Never true if data were never in an absolute time frame (i.e.UTC) </p>
-<div class="fragment"><div class="line"><span class="lineno">   89</span>    {</div>
-<div class="line"><span class="lineno">   90</span>        <span class="keywordflow">return</span> t0shift_is_valid;</div>
-<div class="line"><span class="lineno">   91</span>    };</div>
+<div class="fragment"><div class="line"><span class="lineno">   82</span>{ <span class="keywordflow">return</span> t0shift_is_valid; };</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1030,7 +1018,7 @@ double&#160;</td><td class="memItemRight" valign="bottom"><b>t0shift</b></td></t
 </table>
 </div><div class="memdoc">
 <p>Return time of first data sample. An epoch time or relative time depending on TimeReferenceType private variable tref </p>
-<div class="fragment"><div class="line"><span class="lineno">  191</span>{<span class="keywordflow">return</span> this-&gt;<a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#aeb40f4223a8ee73e79f9af065372a757">mt0</a>;};</div>
+<div class="fragment"><div class="line"><span class="lineno">  174</span>{ <span class="keywordflow">return</span> this-&gt;<a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#aeb40f4223a8ee73e79f9af065372a757">mt0</a>; };</div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#aeb40f4223a8ee73e79f9af065372a757">mt0</a>.</p>
 
@@ -1065,9 +1053,9 @@ double&#160;</td><td class="memItemRight" valign="bottom"><b>t0shift</b></td></t
   </table>
   </dd>
 </dl>
-<div class="fragment"><div class="line"><span class="lineno">   64</span>        {</div>
-<div class="line"><span class="lineno">   65</span>            <span class="keywordflow">return</span>(<a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#aeb40f4223a8ee73e79f9af065372a757">mt0</a>+<a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#aea80df11992ca2c7ff915aab5fcba6f5">mdt</a>*<span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(i));</div>
-<div class="line"><span class="lineno">   66</span>        };</div>
+<div class="fragment"><div class="line"><span class="lineno">   62</span>                                 {</div>
+<div class="line"><span class="lineno">   63</span>    <span class="keywordflow">return</span> (<a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#aeb40f4223a8ee73e79f9af065372a757">mt0</a> + <a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#aea80df11992ca2c7ff915aab5fcba6f5">mdt</a> * <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(i));</div>
+<div class="line"><span class="lineno">   64</span>  };</div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#aea80df11992ca2c7ff915aab5fcba6f5">mdt</a>, and <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#aeb40f4223a8ee73e79f9af065372a757">mt0</a>.</p>
 
@@ -1088,14 +1076,14 @@ double&#160;</td><td class="memItemRight" valign="bottom"><b>t0shift</b></td></t
       </table>
 </div><div class="memdoc">
 <p>Return a vector with the time of each sample.</p>
-<p>There are times when it is desirable to have a parallel vector to sample data that contains the actual times of each sample rather than using the implicit time t0+n*dt. A case in point is graphics where time is the x axis in a standard plot. This function returns an nsamp length std::vector of the time values of each sample. <br  />
- Note this is a base class method that makes sense only in subclasses that have data in a sample vector. </p>
-<div class="fragment"><div class="line"><span class="lineno">  102</span>{</div>
-<div class="line"><span class="lineno">  103</span>  std::vector&lt;double&gt; t;</div>
-<div class="line"><span class="lineno">  104</span>  t.reserve(this-&gt;<a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">nsamp</a>);</div>
-<div class="line"><span class="lineno">  105</span>  <span class="keywordflow">for</span>(<span class="keywordtype">int</span> i=0;i&lt;<a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">nsamp</a>;++i) t.push_back(<a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#aeb40f4223a8ee73e79f9af065372a757">mt0</a> + this-&gt;mdt*<span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(i));</div>
-<div class="line"><span class="lineno">  106</span>  <span class="keywordflow">return</span> t;</div>
-<div class="line"><span class="lineno">  107</span>}</div>
+<p>There are times when it is desirable to have a parallel vector to sample data that contains the actual times of each sample rather than using the implicit time t0+n*dt. A case in point is graphics where time is the x axis in a standard plot. This function returns an nsamp length std::vector of the time values of each sample. Note this is a base class method that makes sense only in subclasses that have data in a sample vector. </p>
+<div class="fragment"><div class="line"><span class="lineno">   98</span>                                                   {</div>
+<div class="line"><span class="lineno">   99</span>  std::vector&lt;double&gt; t;</div>
+<div class="line"><span class="lineno">  100</span>  t.reserve(this-&gt;<a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">nsamp</a>);</div>
+<div class="line"><span class="lineno">  101</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; <a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">nsamp</a>; ++i)</div>
+<div class="line"><span class="lineno">  102</span>    t.push_back(<a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#aeb40f4223a8ee73e79f9af065372a757">mt0</a> + this-&gt;mdt * <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(i));</div>
+<div class="line"><span class="lineno">  103</span>  <span class="keywordflow">return</span> t;</div>
+<div class="line"><span class="lineno">  104</span>}</div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#aeb40f4223a8ee73e79f9af065372a757">mt0</a>, and <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a">nsamp</a>.</p>
 
@@ -1123,12 +1111,12 @@ double&#160;</td><td class="memItemRight" valign="bottom"><b>t0shift</b></td></t
   </tr>
 </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  172</span>    {</div>
-<div class="line"><span class="lineno">  173</span>        <span class="keywordflow">if</span>(<a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#abb88ddef3bab3b3205dfe6c6cfdb91aa">tref</a>==<a class="code hl_enumvalue" href="namespacemspass_1_1seismic.html#a0b8373068c66c7453bd012fe5367dbd2a2ca9469819fb0fb61ff98e914a7ccca0">TimeReferenceType::Relative</a>)</div>
-<div class="line"><span class="lineno">  174</span>          <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><span class="lineno">  175</span>        <span class="keywordflow">else</span></div>
-<div class="line"><span class="lineno">  176</span>          <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">  177</span>    };</div>
+<div class="fragment"><div class="line"><span class="lineno">  161</span>                                {</div>
+<div class="line"><span class="lineno">  162</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#abb88ddef3bab3b3205dfe6c6cfdb91aa">tref</a> == <a class="code hl_enumvalue" href="namespacemspass_1_1seismic.html#a0b8373068c66c7453bd012fe5367dbd2a2ca9469819fb0fb61ff98e914a7ccca0">TimeReferenceType::Relative</a>)</div>
+<div class="line"><span class="lineno">  163</span>      <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  164</span>    <span class="keywordflow">else</span></div>
+<div class="line"><span class="lineno">  165</span>      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  166</span>  };</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1155,12 +1143,12 @@ double&#160;</td><td class="memItemRight" valign="bottom"><b>t0shift</b></td></t
 </table>
 </div><div class="memdoc">
 <p>Test if the time standard is UTC. </p>
-<div class="fragment"><div class="line"><span class="lineno">  165</span>    {</div>
-<div class="line"><span class="lineno">  166</span>        <span class="keywordflow">if</span>(<a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#abb88ddef3bab3b3205dfe6c6cfdb91aa">tref</a>==<a class="code hl_enumvalue" href="namespacemspass_1_1seismic.html#a0b8373068c66c7453bd012fe5367dbd2a9234324ddf6b4176b57d803a925b7961">TimeReferenceType::UTC</a>)</div>
-<div class="line"><span class="lineno">  167</span>          <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><span class="lineno">  168</span>        <span class="keywordflow">else</span></div>
-<div class="line"><span class="lineno">  169</span>          <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">  170</span>    };</div>
+<div class="fragment"><div class="line"><span class="lineno">  155</span>                           {</div>
+<div class="line"><span class="lineno">  156</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#abb88ddef3bab3b3205dfe6c6cfdb91aa">tref</a> == <a class="code hl_enumvalue" href="namespacemspass_1_1seismic.html#a0b8373068c66c7453bd012fe5367dbd2a9234324ddf6b4176b57d803a925b7961">TimeReferenceType::UTC</a>)</div>
+<div class="line"><span class="lineno">  157</span>      <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  158</span>    <span class="keywordflow">else</span></div>
+<div class="line"><span class="lineno">  159</span>      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  160</span>  };</div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#abb88ddef3bab3b3205dfe6c6cfdb91aa">tref</a>, and <a class="el" href="namespacemspass_1_1seismic.html#a0b8373068c66c7453bd012fe5367dbd2a9234324ddf6b4176b57d803a925b7961">mspass::seismic::UTC</a>.</p>
 
@@ -1188,20 +1176,20 @@ double&#160;</td><td class="memItemRight" valign="bottom"><b>t0shift</b></td></t
   </table>
   </dd>
 </dl>
-<div class="fragment"><div class="line"><span class="lineno">   87</span>{</div>
-<div class="line"><span class="lineno">   88</span>    <span class="keyword">const</span> <span class="keywordtype">string</span> base_error(<span class="stringliteral">&quot;BasicTimeSeries::time_reference method: &quot;</span>);</div>
-<div class="line"><span class="lineno">   89</span>    <span class="keywordflow">if</span>(<a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#abb88ddef3bab3b3205dfe6c6cfdb91aa">tref</a>==<a class="code hl_enumvalue" href="namespacemspass_1_1seismic.html#a0b8373068c66c7453bd012fe5367dbd2a9234324ddf6b4176b57d803a925b7961">TimeReferenceType::UTC</a>)</div>
-<div class="line"><span class="lineno">   90</span>        <span class="keywordflow">throw</span> MsPASSError(base_error</div>
-<div class="line"><span class="lineno">   91</span>                          + <span class="stringliteral">&quot;data have UTC time set so requesting the reference&quot;</span></div>
-<div class="line"><span class="lineno">   92</span>                          + <span class="stringliteral">&quot; time make no sense - likely a coding error&quot;</span>,</div>
-<div class="line"><span class="lineno">   93</span>                          ErrorSeverity::Fatal);</div>
-<div class="line"><span class="lineno">   94</span>    <span class="keywordflow">if</span>(t0shift_is_valid)</div>
-<div class="line"><span class="lineno">   95</span>        <span class="keywordflow">return</span>(t0shift);</div>
-<div class="line"><span class="lineno">   96</span>    <span class="keywordflow">else</span></div>
-<div class="line"><span class="lineno">   97</span>        <span class="keywordflow">throw</span> MsPASSError(base_error</div>
-<div class="line"><span class="lineno">   98</span>                          + <span class="stringliteral">&quot;cannot return time reference as it is marked invalid&quot;</span>,</div>
-<div class="line"><span class="lineno">   99</span>                          ErrorSeverity::Invalid);</div>
-<div class="line"><span class="lineno">  100</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">   84</span>                                             {</div>
+<div class="line"><span class="lineno">   85</span>  <span class="keyword">const</span> <span class="keywordtype">string</span> base_error(<span class="stringliteral">&quot;BasicTimeSeries::time_reference method: &quot;</span>);</div>
+<div class="line"><span class="lineno">   86</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#abb88ddef3bab3b3205dfe6c6cfdb91aa">tref</a> == <a class="code hl_enumvalue" href="namespacemspass_1_1seismic.html#a0b8373068c66c7453bd012fe5367dbd2a9234324ddf6b4176b57d803a925b7961">TimeReferenceType::UTC</a>)</div>
+<div class="line"><span class="lineno">   87</span>    <span class="keywordflow">throw</span> MsPASSError(base_error +</div>
+<div class="line"><span class="lineno">   88</span>                          <span class="stringliteral">&quot;data have UTC time set so requesting the reference&quot;</span> +</div>
+<div class="line"><span class="lineno">   89</span>                          <span class="stringliteral">&quot; time make no sense - likely a coding error&quot;</span>,</div>
+<div class="line"><span class="lineno">   90</span>                      ErrorSeverity::Fatal);</div>
+<div class="line"><span class="lineno">   91</span>  <span class="keywordflow">if</span> (t0shift_is_valid)</div>
+<div class="line"><span class="lineno">   92</span>    <span class="keywordflow">return</span> (t0shift);</div>
+<div class="line"><span class="lineno">   93</span>  <span class="keywordflow">else</span></div>
+<div class="line"><span class="lineno">   94</span>    <span class="keywordflow">throw</span> MsPASSError(</div>
+<div class="line"><span class="lineno">   95</span>        base_error + <span class="stringliteral">&quot;cannot return time reference as it is marked invalid&quot;</span>,</div>
+<div class="line"><span class="lineno">   96</span>        ErrorSeverity::Invalid);</div>
+<div class="line"><span class="lineno">   97</span>}</div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#abb88ddef3bab3b3205dfe6c6cfdb91aa">tref</a>, and <a class="el" href="namespacemspass_1_1seismic.html#a0b8373068c66c7453bd012fe5367dbd2a9234324ddf6b4176b57d803a925b7961">mspass::seismic::UTC</a>.</p>
 
@@ -1229,9 +1217,7 @@ double&#160;</td><td class="memItemRight" valign="bottom"><b>t0shift</b></td></t
   </tr>
 </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  179</span>    {</div>
-<div class="line"><span class="lineno">  180</span>        <span class="keywordflow">return</span> this-&gt;<a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#abb88ddef3bab3b3205dfe6c6cfdb91aa">tref</a>;</div>
-<div class="line"><span class="lineno">  181</span>    }</div>
+<div class="fragment"><div class="line"><span class="lineno">  167</span>{ <span class="keywordflow">return</span> this-&gt;<a class="code hl_variable" href="classmspass_1_1seismic_1_1_basic_time_series.html#abb88ddef3bab3b3205dfe6c6cfdb91aa">tref</a>; }</div>
 </div><!-- fragment -->
 </div>
 </div>

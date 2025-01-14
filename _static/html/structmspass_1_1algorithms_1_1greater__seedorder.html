@@ -130,49 +130,45 @@ Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   60</span>  {</div>
-<div class="line"><span class="lineno">   61</span>    <span class="keywordtype">int</span> retnet,retsta,retloc,retchan;</div>
-<div class="line"><span class="lineno">   62</span>    retnet=cautious_compare(x,y,<a class="code hl_function" href="namespacemspass_1_1seismic.html#a8585005cd5eddd7bc658b1c1bc901aa8">SEISMICMD_net</a>);</div>
-<div class="line"><span class="lineno">   63</span>    <span class="keywordflow">switch</span>(retnet)</div>
-<div class="line"><span class="lineno">   64</span>    {</div>
-<div class="line"><span class="lineno">   65</span>      <span class="keywordflow">case</span> -1:</div>
-<div class="line"><span class="lineno">   66</span>        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">   67</span>      <span class="keywordflow">case</span> +1:</div>
-<div class="line"><span class="lineno">   68</span>        <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><span class="lineno">   69</span>      <span class="keywordflow">case</span> 0:</div>
-<div class="line"><span class="lineno">   70</span>      <span class="keywordflow">default</span>:</div>
-<div class="line"><span class="lineno">   71</span>        retsta=cautious_compare(x,y,<a class="code hl_function" href="namespacemspass_1_1seismic.html#ab8e65fa46b1de2e84418ed22a20cf522">SEISMICMD_sta</a>);</div>
-<div class="line"><span class="lineno">   72</span>        <span class="keywordflow">switch</span>(retsta)</div>
-<div class="line"><span class="lineno">   73</span>        {</div>
-<div class="line"><span class="lineno">   74</span>          <span class="keywordflow">case</span> -1:</div>
-<div class="line"><span class="lineno">   75</span>            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="fragment"><div class="line"><span class="lineno">   48</span>                                              {</div>
+<div class="line"><span class="lineno">   49</span>    <span class="keywordtype">int</span> retnet, retsta, retloc, retchan;</div>
+<div class="line"><span class="lineno">   50</span>    retnet = cautious_compare(x, y, <a class="code hl_function" href="namespacemspass_1_1seismic.html#a8585005cd5eddd7bc658b1c1bc901aa8">SEISMICMD_net</a>);</div>
+<div class="line"><span class="lineno">   51</span>    <span class="keywordflow">switch</span> (retnet) {</div>
+<div class="line"><span class="lineno">   52</span>    <span class="keywordflow">case</span> -1:</div>
+<div class="line"><span class="lineno">   53</span>      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">   54</span>    <span class="keywordflow">case</span> +1:</div>
+<div class="line"><span class="lineno">   55</span>      <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">   56</span>    <span class="keywordflow">case</span> 0:</div>
+<div class="line"><span class="lineno">   57</span>    <span class="keywordflow">default</span>:</div>
+<div class="line"><span class="lineno">   58</span>      retsta = cautious_compare(x, y, <a class="code hl_function" href="namespacemspass_1_1seismic.html#ab8e65fa46b1de2e84418ed22a20cf522">SEISMICMD_sta</a>);</div>
+<div class="line"><span class="lineno">   59</span>      <span class="keywordflow">switch</span> (retsta) {</div>
+<div class="line"><span class="lineno">   60</span>      <span class="keywordflow">case</span> -1:</div>
+<div class="line"><span class="lineno">   61</span>        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">   62</span>      <span class="keywordflow">case</span> +1:</div>
+<div class="line"><span class="lineno">   63</span>        <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">   64</span>      <span class="keywordflow">case</span> 0:</div>
+<div class="line"><span class="lineno">   65</span>      <span class="keywordflow">default</span>:</div>
+<div class="line"><span class="lineno">   66</span>        retloc = cautious_compare(x, y, <a class="code hl_function" href="namespacemspass_1_1seismic.html#a9bb3e908c48498c194aad416262578f4">SEISMICMD_loc</a>);</div>
+<div class="line"><span class="lineno">   67</span>        <span class="keywordflow">switch</span> (retloc) {</div>
+<div class="line"><span class="lineno">   68</span>        <span class="keywordflow">case</span> -1:</div>
+<div class="line"><span class="lineno">   69</span>          <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">   70</span>        <span class="keywordflow">case</span> +1:</div>
+<div class="line"><span class="lineno">   71</span>          <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">   72</span>        <span class="keywordflow">case</span> 0:</div>
+<div class="line"><span class="lineno">   73</span>        <span class="keywordflow">default</span>:</div>
+<div class="line"><span class="lineno">   74</span>          retchan = cautious_compare(x, y, <a class="code hl_function" href="namespacemspass_1_1seismic.html#ae39181fd7e5305ad63c7d50bcb082d47">SEISMICMD_chan</a>);</div>
+<div class="line"><span class="lineno">   75</span>          <span class="keywordflow">switch</span> (retchan) {</div>
 <div class="line"><span class="lineno">   76</span>          <span class="keywordflow">case</span> +1:</div>
 <div class="line"><span class="lineno">   77</span>            <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><span class="lineno">   78</span>          <span class="keywordflow">case</span> 0:</div>
-<div class="line"><span class="lineno">   79</span>          <span class="keywordflow">default</span>:</div>
-<div class="line"><span class="lineno">   80</span>            retloc=cautious_compare(x,y,<a class="code hl_function" href="namespacemspass_1_1seismic.html#a9bb3e908c48498c194aad416262578f4">SEISMICMD_loc</a>);</div>
-<div class="line"><span class="lineno">   81</span>            <span class="keywordflow">switch</span>(retloc)</div>
-<div class="line"><span class="lineno">   82</span>            {</div>
-<div class="line"><span class="lineno">   83</span>              <span class="keywordflow">case</span> -1:</div>
-<div class="line"><span class="lineno">   84</span>                <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">   85</span>              <span class="keywordflow">case</span> +1:</div>
-<div class="line"><span class="lineno">   86</span>                <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><span class="lineno">   87</span>              <span class="keywordflow">case</span> 0:</div>
-<div class="line"><span class="lineno">   88</span>              <span class="keywordflow">default</span>:</div>
-<div class="line"><span class="lineno">   89</span>                retchan=cautious_compare(x,y,<a class="code hl_function" href="namespacemspass_1_1seismic.html#ae39181fd7e5305ad63c7d50bcb082d47">SEISMICMD_chan</a>);</div>
-<div class="line"><span class="lineno">   90</span>                <span class="keywordflow">switch</span>(retchan)</div>
-<div class="line"><span class="lineno">   91</span>                {</div>
-<div class="line"><span class="lineno">   92</span>                  <span class="keywordflow">case</span> +1:</div>
-<div class="line"><span class="lineno">   93</span>                    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><span class="lineno">   94</span>                  <span class="keywordflow">default</span>:</div>
-<div class="line"><span class="lineno">   95</span>                    <span class="comment">/* Weak order as the final condition is strictly &gt; so</span></div>
-<div class="line"><span class="lineno">   96</span><span class="comment">                    equal case only here returns false */</span></div>
-<div class="line"><span class="lineno">   97</span>                    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">   98</span>                };</div>
-<div class="line"><span class="lineno">   99</span>            };</div>
-<div class="line"><span class="lineno">  100</span>        };</div>
-<div class="line"><span class="lineno">  101</span>    };</div>
-<div class="line"><span class="lineno">  102</span>  };</div>
+<div class="line"><span class="lineno">   78</span>          <span class="keywordflow">default</span>:</div>
+<div class="line"><span class="lineno">   79</span>            <span class="comment">/* Weak order as the final condition is strictly &gt; so</span></div>
+<div class="line"><span class="lineno">   80</span><span class="comment">            equal case only here returns false */</span></div>
+<div class="line"><span class="lineno">   81</span>            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">   82</span>          };</div>
+<div class="line"><span class="lineno">   83</span>        };</div>
+<div class="line"><span class="lineno">   84</span>      };</div>
+<div class="line"><span class="lineno">   85</span>    };</div>
+<div class="line"><span class="lineno">   86</span>  };</div>
 <div class="ttc" id="anamespacemspass_1_1seismic_html_a8585005cd5eddd7bc658b1c1bc901aa8"><div class="ttname"><a href="namespacemspass_1_1seismic.html#a8585005cd5eddd7bc658b1c1bc901aa8">mspass::seismic::SEISMICMD_net</a></div><div class="ttdeci">const std::string SEISMICMD_net(&quot;net&quot;)</div></div>
 <div class="ttc" id="anamespacemspass_1_1seismic_html_a9bb3e908c48498c194aad416262578f4"><div class="ttname"><a href="namespacemspass_1_1seismic.html#a9bb3e908c48498c194aad416262578f4">mspass::seismic::SEISMICMD_loc</a></div><div class="ttdeci">const std::string SEISMICMD_loc(&quot;loc&quot;)</div></div>
 <div class="ttc" id="anamespacemspass_1_1seismic_html_ab8e65fa46b1de2e84418ed22a20cf522"><div class="ttname"><a href="namespacemspass_1_1seismic.html#ab8e65fa46b1de2e84418ed22a20cf522">mspass::seismic::SEISMICMD_sta</a></div><div class="ttdeci">const std::string SEISMICMD_sta(&quot;sta&quot;)</div></div>

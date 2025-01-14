@@ -234,26 +234,24 @@ gsl_fft_complex_workspace *&#160;</td><td class="memItemRight" valign="bottom"><
       </table>
 </div><div class="memdoc">
 <p>Default constructor. Puts operator in an invalid state. </p>
-<div class="fragment"><div class="line"><span class="lineno">   30</span>                       : FFTDeconOperator(),</div>
-<div class="line"><span class="lineno">   31</span>  signalengine(),waveletengine(),dnoise_engine(),wnoise_engine(),</div>
-<div class="line"><span class="lineno">   32</span>  shapingwavelet(),psnoise(),psnoise_data(),decondata(),wavelet()</div>
-<div class="line"><span class="lineno">   33</span>{</div>
-<div class="line"><span class="lineno">   34</span>  algorithm=CNR3C_algorithms::undefined;</div>
-<div class="line"><span class="lineno">   35</span>  operator_dt=1.0;</div>
-<div class="line"><span class="lineno">   36</span>  winlength=0;</div>
-<div class="line"><span class="lineno">   37</span>  processing_window=TimeWindow(0.0,1.0);</div>
-<div class="line"><span class="lineno">   38</span>  noise_window=TimeWindow(0.0,1.0);</div>
-<div class="line"><span class="lineno">   39</span>  damp=0.0;</div>
-<div class="line"><span class="lineno">   40</span>  noise_floor=0.0001;</div>
-<div class="line"><span class="lineno">   41</span>  snr_regularization_floor=1.5;</div>
-<div class="line"><span class="lineno">   42</span>  taper_data=<span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">   43</span>  fhs=2.0;   <span class="comment">// appropriate for teleseismic P wave data</span></div>
-<div class="line"><span class="lineno">   44</span>  <span class="keywordflow">for</span>(<span class="keywordtype">int</span> k=0;k&lt;3;++k)</div>
-<div class="line"><span class="lineno">   45</span>  {</div>
-<div class="line"><span class="lineno">   46</span>    signal_bandwidth_fraction[k]=0.0;</div>
-<div class="line"><span class="lineno">   47</span>    peak_snr[k]=0.0;</div>
-<div class="line"><span class="lineno">   48</span>  }</div>
-<div class="line"><span class="lineno">   49</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">   27</span>    : FFTDeconOperator(), signalengine(), waveletengine(), dnoise_engine(),</div>
+<div class="line"><span class="lineno">   28</span>      wnoise_engine(), shapingwavelet(), psnoise(), psnoise_data(), decondata(),</div>
+<div class="line"><span class="lineno">   29</span>      wavelet() {</div>
+<div class="line"><span class="lineno">   30</span>  algorithm = CNR3C_algorithms::undefined;</div>
+<div class="line"><span class="lineno">   31</span>  operator_dt = 1.0;</div>
+<div class="line"><span class="lineno">   32</span>  winlength = 0;</div>
+<div class="line"><span class="lineno">   33</span>  processing_window = TimeWindow(0.0, 1.0);</div>
+<div class="line"><span class="lineno">   34</span>  noise_window = TimeWindow(0.0, 1.0);</div>
+<div class="line"><span class="lineno">   35</span>  damp = 0.0;</div>
+<div class="line"><span class="lineno">   36</span>  noise_floor = 0.0001;</div>
+<div class="line"><span class="lineno">   37</span>  snr_regularization_floor = 1.5;</div>
+<div class="line"><span class="lineno">   38</span>  taper_data = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">   39</span>  fhs = 2.0; <span class="comment">// appropriate for teleseismic P wave data</span></div>
+<div class="line"><span class="lineno">   40</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> k = 0; k &lt; 3; ++k) {</div>
+<div class="line"><span class="lineno">   41</span>    signal_bandwidth_fraction[k] = 0.0;</div>
+<div class="line"><span class="lineno">   42</span>    peak_snr[k] = 0.0;</div>
+<div class="line"><span class="lineno">   43</span>  }</div>
+<div class="line"><span class="lineno">   44</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -275,14 +273,13 @@ gsl_fft_complex_workspace *&#160;</td><td class="memItemRight" valign="bottom"><
 
 <p>Construct from a tree of parameters loaded into an AntelopePf object. </p>
 <p>There number of inputs to construct this operator are quite large. An AntelelopePf is one way to store this information and the format assumed by this constructor. Note this object could be constructed from a yaml or xml file, in principle, but for the present we use Antelope's pf file \ format. i.e. a typical program would read a pf file and to construct the object passed as pf. </p>
-<div class="fragment"><div class="line"><span class="lineno">   51</span>   : FFTDeconOperator(pf),signalengine(),waveletengine(),</div>
-<div class="line"><span class="lineno">   52</span>      dnoise_engine(),wnoise_engine(),shapingwavelet(pf),psnoise(),</div>
-<div class="line"><span class="lineno">   53</span>      psnoise_data(),decondata(),wavelet()</div>
-<div class="line"><span class="lineno">   54</span>{</div>
-<div class="line"><span class="lineno">   55</span><span class="comment">//DEBUG</span></div>
-<div class="line"><span class="lineno">   56</span><span class="comment">//cout &lt;&lt; &quot;Entering pf constructor&quot;&lt;&lt;endl;</span></div>
-<div class="line"><span class="lineno">   57</span>  this-&gt;read_parameters(pf);</div>
-<div class="line"><span class="lineno">   58</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">   46</span>    : FFTDeconOperator(pf), signalengine(), waveletengine(), dnoise_engine(),</div>
+<div class="line"><span class="lineno">   47</span>      wnoise_engine(), shapingwavelet(pf), psnoise(), psnoise_data(),</div>
+<div class="line"><span class="lineno">   48</span>      decondata(), wavelet() {</div>
+<div class="line"><span class="lineno">   49</span>  <span class="comment">// DEBUG</span></div>
+<div class="line"><span class="lineno">   50</span>  <span class="comment">// cout &lt;&lt; &quot;Entering pf constructor&quot;&lt;&lt;endl;</span></div>
+<div class="line"><span class="lineno">   51</span>  this-&gt;read_parameters(pf);</div>
+<div class="line"><span class="lineno">   52</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -302,46 +299,36 @@ gsl_fft_complex_workspace *&#160;</td><td class="memItemRight" valign="bottom"><
       </table>
 </div><div class="memdoc">
 <p>Standard copy constructor. </p>
-<div class="fragment"><div class="line"><span class="lineno">  220</span>                                               :</div>
-<div class="line"><span class="lineno">  221</span>  processing_window(parent.processing_window),</div>
-<div class="line"><span class="lineno">  222</span>  noise_window(parent.noise_window),</div>
-<div class="line"><span class="lineno">  223</span>  signalengine(parent.signalengine),</div>
-<div class="line"><span class="lineno">  224</span>  waveletengine(parent.waveletengine),</div>
-<div class="line"><span class="lineno">  225</span>  dnoise_engine(parent.dnoise_engine),</div>
-<div class="line"><span class="lineno">  226</span>  wnoise_engine(parent.wnoise_engine),</div>
-<div class="line"><span class="lineno">  227</span>  shapingwavelet(parent.shapingwavelet),</div>
-<div class="line"><span class="lineno">  228</span>  psnoise(parent.psnoise),</div>
-<div class="line"><span class="lineno">  229</span>  psnoise_data(parent.psnoise_data),</div>
-<div class="line"><span class="lineno">  230</span>  pssignal(parent.pssignal),</div>
-<div class="line"><span class="lineno">  231</span>  pswavelet(parent.pswavelet),</div>
-<div class="line"><span class="lineno">  232</span>  decondata(parent.decondata),</div>
-<div class="line"><span class="lineno">  233</span>  wavelet(parent.wavelet),</div>
-<div class="line"><span class="lineno">  234</span>  wavelet_taper(parent.wavelet_taper),</div>
-<div class="line"><span class="lineno">  235</span>  data_taper(parent.data_taper),</div>
-<div class="line"><span class="lineno">  236</span>  ao_fft(parent.ao_fft),</div>
-<div class="line"><span class="lineno">  237</span>  wavelet_bwd(parent.wavelet_bwd),</div>
-<div class="line"><span class="lineno">  238</span>  signal_bwd(parent.signal_bwd),</div>
-<div class="line"><span class="lineno">  239</span>  wavelet_snr(parent.wavelet_snr)</div>
-<div class="line"><span class="lineno">  240</span> </div>
-<div class="line"><span class="lineno">  241</span>{</div>
-<div class="line"><span class="lineno">  242</span>  algorithm=parent.algorithm;</div>
-<div class="line"><span class="lineno">  243</span>  taper_data=parent.taper_data;</div>
-<div class="line"><span class="lineno">  244</span>  operator_dt=parent.operator_dt;</div>
-<div class="line"><span class="lineno">  245</span>  winlength=parent.winlength;</div>
-<div class="line"><span class="lineno">  246</span>  damp=parent.damp;</div>
-<div class="line"><span class="lineno">  247</span>  noise_floor=parent.noise_floor;</div>
-<div class="line"><span class="lineno">  248</span>  snr_regularization_floor=parent.snr_regularization_floor;</div>
-<div class="line"><span class="lineno">  249</span>  snr_bandwidth=parent.snr_bandwidth;</div>
-<div class="line"><span class="lineno">  250</span>  band_snr_floor=parent.band_snr_floor;</div>
-<div class="line"><span class="lineno">  251</span>  regularization_bandwidth_fraction=parent.regularization_bandwidth_fraction;</div>
-<div class="line"><span class="lineno">  252</span>  decon_bandwidth_cutoff=parent.decon_bandwidth_cutoff;</div>
-<div class="line"><span class="lineno">  253</span>  fhs=parent.fhs;</div>
-<div class="line"><span class="lineno">  254</span>  <span class="keywordflow">for</span>(<span class="keywordtype">int</span> k=0;k&lt;3;++k)</div>
-<div class="line"><span class="lineno">  255</span>  {</div>
-<div class="line"><span class="lineno">  256</span>    signal_bandwidth_fraction[k]=parent.signal_bandwidth_fraction[k];</div>
-<div class="line"><span class="lineno">  257</span>    peak_snr[k]=parent.peak_snr[k];</div>
-<div class="line"><span class="lineno">  258</span>  }</div>
-<div class="line"><span class="lineno">  259</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  204</span>    : processing_window(parent.processing_window),</div>
+<div class="line"><span class="lineno">  205</span>      noise_window(parent.noise_window), signalengine(parent.signalengine),</div>
+<div class="line"><span class="lineno">  206</span>      waveletengine(parent.waveletengine), dnoise_engine(parent.dnoise_engine),</div>
+<div class="line"><span class="lineno">  207</span>      wnoise_engine(parent.wnoise_engine),</div>
+<div class="line"><span class="lineno">  208</span>      shapingwavelet(parent.shapingwavelet), psnoise(parent.psnoise),</div>
+<div class="line"><span class="lineno">  209</span>      psnoise_data(parent.psnoise_data), pssignal(parent.pssignal),</div>
+<div class="line"><span class="lineno">  210</span>      pswavelet(parent.pswavelet), decondata(parent.decondata),</div>
+<div class="line"><span class="lineno">  211</span>      wavelet(parent.wavelet), wavelet_taper(parent.wavelet_taper),</div>
+<div class="line"><span class="lineno">  212</span>      data_taper(parent.data_taper), ao_fft(parent.ao_fft),</div>
+<div class="line"><span class="lineno">  213</span>      wavelet_bwd(parent.wavelet_bwd), signal_bwd(parent.signal_bwd),</div>
+<div class="line"><span class="lineno">  214</span>      wavelet_snr(parent.wavelet_snr)</div>
+<div class="line"><span class="lineno">  215</span> </div>
+<div class="line"><span class="lineno">  216</span>{</div>
+<div class="line"><span class="lineno">  217</span>  algorithm = parent.algorithm;</div>
+<div class="line"><span class="lineno">  218</span>  taper_data = parent.taper_data;</div>
+<div class="line"><span class="lineno">  219</span>  operator_dt = parent.operator_dt;</div>
+<div class="line"><span class="lineno">  220</span>  winlength = parent.winlength;</div>
+<div class="line"><span class="lineno">  221</span>  damp = parent.damp;</div>
+<div class="line"><span class="lineno">  222</span>  noise_floor = parent.noise_floor;</div>
+<div class="line"><span class="lineno">  223</span>  snr_regularization_floor = parent.snr_regularization_floor;</div>
+<div class="line"><span class="lineno">  224</span>  snr_bandwidth = parent.snr_bandwidth;</div>
+<div class="line"><span class="lineno">  225</span>  band_snr_floor = parent.band_snr_floor;</div>
+<div class="line"><span class="lineno">  226</span>  regularization_bandwidth_fraction = parent.regularization_bandwidth_fraction;</div>
+<div class="line"><span class="lineno">  227</span>  decon_bandwidth_cutoff = parent.decon_bandwidth_cutoff;</div>
+<div class="line"><span class="lineno">  228</span>  fhs = parent.fhs;</div>
+<div class="line"><span class="lineno">  229</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> k = 0; k &lt; 3; ++k) {</div>
+<div class="line"><span class="lineno">  230</span>    signal_bandwidth_fraction[k] = parent.signal_bandwidth_fraction[k];</div>
+<div class="line"><span class="lineno">  231</span>    peak_snr[k] = parent.peak_snr[k];</div>
+<div class="line"><span class="lineno">  232</span>  }</div>
+<div class="line"><span class="lineno">  233</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -360,10 +347,10 @@ gsl_fft_complex_workspace *&#160;</td><td class="memItemRight" valign="bottom"><
       </table>
 </div><div class="memdoc">
 <p>Standard destructor. </p>
-<div class="fragment"><div class="line"><span class="lineno">  305</span>{</div>
-<div class="line"><span class="lineno">  306</span>  <span class="comment">//if(wavelet_taper!=NULL) delete wavelet_taper;</span></div>
-<div class="line"><span class="lineno">  307</span>  <span class="comment">//if(data_taper!=NULL) delete data_taper;</span></div>
-<div class="line"><span class="lineno">  308</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  275</span>                        {</div>
+<div class="line"><span class="lineno">  276</span>  <span class="comment">// if(wavelet_taper!=NULL) delete wavelet_taper;</span></div>
+<div class="line"><span class="lineno">  277</span>  <span class="comment">// if(data_taper!=NULL) delete data_taper;</span></div>
+<div class="line"><span class="lineno">  278</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -394,44 +381,49 @@ gsl_fft_complex_workspace *&#160;</td><td class="memItemRight" valign="bottom"><
 <p>The actual output is defined as w^-1*w and is compable to resolution kernels in linear inverse theory. Although not required we would normally expect this function to be peaked at 0. Offsets from 0 would imply a bias. </p>
 
 <p>Implements <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_base3_c_decon.html#aa7d5bfc6e1adfc1bd7af1606bebddf86">mspass::algorithms::deconvolution::Base3CDecon</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  919</span>{</div>
-<div class="line"><span class="lineno">  920</span>  <span class="keywordflow">try</span> {</div>
-<div class="line"><span class="lineno">  921</span>      ComplexArray W(FFTDeconOperator::nfft,&amp;(wavelet.<a class="code hl_variable" href="classmspass_1_1seismic_1_1_core_time_series.html#ab044edb3fe5fe734cb577a4434f390a2">s</a>[0]));</div>
-<div class="line"><span class="lineno">  922</span>      gsl_fft_complex_forward(W.ptr(),1,FFTDeconOperator::nfft,wavetable,workspace);</div>
-<div class="line"><span class="lineno">  923</span>      ComplexArray ao_fft;</div>
-<div class="line"><span class="lineno">  924</span>      ao_fft=winv*W;</div>
-<div class="line"><span class="lineno">  925</span>      <span class="comment">/* We always apply the shaping wavelet - this perhaps should be optional</span></div>
-<div class="line"><span class="lineno">  926</span><span class="comment">      but probably better done with a none option for the shaping wavelet */</span></div>
-<div class="line"><span class="lineno">  927</span>      ao_fft=(*shapingwavelet.<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html#ac922b603ff03a691075724bcd53e396f">wavelet</a>())*ao_fft;</div>
-<div class="line"><span class="lineno">  928</span>      gsl_fft_complex_inverse(ao_fft.ptr(),1,FFTDeconOperator::nfft,wavetable,workspace);</div>
-<div class="line"><span class="lineno">  929</span>      vector&lt;double&gt; ao;</div>
-<div class="line"><span class="lineno">  930</span>      ao.reserve(FFTDeconOperator::nfft);</div>
-<div class="line"><span class="lineno">  931</span>      <span class="keywordflow">for</span>(<span class="keywordtype">int</span> k=0; k&lt;ao_fft.size(); ++k) ao.push_back(ao_fft[k].real());</div>
-<div class="line"><span class="lineno">  932</span>      <span class="comment">/* We always shift this wavelet to the center of the data vector.</span></div>
-<div class="line"><span class="lineno">  933</span><span class="comment">      We handle the time through the CoreTimeSeries object. */</span></div>
-<div class="line"><span class="lineno">  934</span>      <span class="keywordtype">int</span> i0=FFTDeconOperator::nfft/2;</div>
-<div class="line"><span class="lineno">  935</span>      ao=circular_shift(ao,i0);</div>
-<div class="line"><span class="lineno">  936</span>      TimeSeries result(wavelet);  <span class="comment">// Use this to clone metadata and elog from wavelet</span></div>
-<div class="line"><span class="lineno">  937</span>      result.set_npts(FFTDeconOperator::nfft);</div>
-<div class="line"><span class="lineno">  938</span>      <span class="comment">/* Force these even though they are likely already defined as</span></div>
-<div class="line"><span class="lineno">  939</span><span class="comment">      in the parent wavelet TimeSeries. */</span></div>
-<div class="line"><span class="lineno">  940</span>      result.set_live();</div>
-<div class="line"><span class="lineno">  941</span>      <span class="comment">//result.s=ao;</span></div>
-<div class="line"><span class="lineno">  942</span>      result.set_t0(operator_dt*(-(<span class="keywordtype">double</span>)i0));</div>
-<div class="line"><span class="lineno">  943</span>      result.set_dt(this-&gt;operator_dt);</div>
-<div class="line"><span class="lineno">  944</span>      result.set_tref(TimeReferenceType::Relative);</div>
-<div class="line"><span class="lineno">  945</span>      <span class="comment">/* set_npts always initializes the s buffer so it is more efficient to</span></div>
-<div class="line"><span class="lineno">  946</span><span class="comment">      copy ao elements rather than what was here before:</span></div>
-<div class="line"><span class="lineno">  947</span><span class="comment">        result.s=ao;</span></div>
-<div class="line"><span class="lineno">  948</span><span class="comment">        */</span></div>
-<div class="line"><span class="lineno">  949</span>      <span class="keywordflow">for</span>(<span class="keywordtype">int</span> k=0;k&lt;FFTDeconOperator::nfft;++k) result.s[k]=ao[k];</div>
-<div class="line"><span class="lineno">  950</span>      <span class="keywordflow">return</span> result;</div>
-<div class="line"><span class="lineno">  951</span>  } <span class="keywordflow">catch</span>(...) {</div>
-<div class="line"><span class="lineno">  952</span>      <span class="keywordflow">throw</span>;</div>
-<div class="line"><span class="lineno">  953</span>  };</div>
-<div class="line"><span class="lineno">  954</span>}</div>
-<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet_html_ac922b603ff03a691075724bcd53e396f"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html#ac922b603ff03a691075724bcd53e396f">mspass::algorithms::deconvolution::ShapingWavelet::wavelet</a></div><div class="ttdeci">ComplexArray * wavelet()</div><div class="ttdef"><b>Definition</b> ShapingWavelet.h:77</div></div>
-<div class="ttc" id="aclassmspass_1_1seismic_1_1_core_time_series_html_ab044edb3fe5fe734cb577a4434f390a2"><div class="ttname"><a href="classmspass_1_1seismic_1_1_core_time_series.html#ab044edb3fe5fe734cb577a4434f390a2">mspass::seismic::CoreTimeSeries::s</a></div><div class="ttdeci">std::vector&lt; double &gt; s</div><div class="ttdef"><b>Definition</b> CoreTimeSeries.h:28</div></div>
+<div class="fragment"><div class="line"><span class="lineno">  911</span>                                     {</div>
+<div class="line"><span class="lineno">  912</span>  <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">  913</span>    ComplexArray W(FFTDeconOperator::nfft, &amp;(wavelet.<a class="code hl_variable" href="classmspass_1_1seismic_1_1_core_time_series.html#ab044edb3fe5fe734cb577a4434f390a2">s</a>[0]));</div>
+<div class="line"><span class="lineno">  914</span>    gsl_fft_complex_forward(W.ptr(), 1, FFTDeconOperator::nfft, wavetable,</div>
+<div class="line"><span class="lineno">  915</span>                            workspace);</div>
+<div class="line"><span class="lineno">  916</span>    ComplexArray ao_fft;</div>
+<div class="line"><span class="lineno">  917</span>    ao_fft = winv * W;</div>
+<div class="line"><span class="lineno">  918</span>    <span class="comment">/* We always apply the shaping wavelet - this perhaps should be optional</span></div>
+<div class="line"><span class="lineno">  919</span><span class="comment">    but probably better done with a none option for the shaping wavelet */</span></div>
+<div class="line"><span class="lineno">  920</span>    ao_fft = (*shapingwavelet.<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html#ac922b603ff03a691075724bcd53e396f">wavelet</a>()) * ao_fft;</div>
+<div class="line"><span class="lineno">  921</span>    gsl_fft_complex_inverse(ao_fft.ptr(), 1, FFTDeconOperator::nfft, wavetable,</div>
+<div class="line"><span class="lineno">  922</span>                            workspace);</div>
+<div class="line"><span class="lineno">  923</span>    vector&lt;double&gt; ao;</div>
+<div class="line"><span class="lineno">  924</span>    ao.reserve(FFTDeconOperator::nfft);</div>
+<div class="line"><span class="lineno">  925</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> k = 0; k &lt; ao_fft.size(); ++k)</div>
+<div class="line"><span class="lineno">  926</span>      ao.push_back(ao_fft[k].real());</div>
+<div class="line"><span class="lineno">  927</span>    <span class="comment">/* We always shift this wavelet to the center of the data vector.</span></div>
+<div class="line"><span class="lineno">  928</span><span class="comment">    We handle the time through the CoreTimeSeries object. */</span></div>
+<div class="line"><span class="lineno">  929</span>    <span class="keywordtype">int</span> i0 = FFTDeconOperator::nfft / 2;</div>
+<div class="line"><span class="lineno">  930</span>    ao = circular_shift(ao, i0);</div>
+<div class="line"><span class="lineno">  931</span>    TimeSeries result(</div>
+<div class="line"><span class="lineno">  932</span>        wavelet); <span class="comment">// Use this to clone metadata and elog from wavelet</span></div>
+<div class="line"><span class="lineno">  933</span>    result.set_npts(FFTDeconOperator::nfft);</div>
+<div class="line"><span class="lineno">  934</span>    <span class="comment">/* Force these even though they are likely already defined as</span></div>
+<div class="line"><span class="lineno">  935</span><span class="comment">    in the parent wavelet TimeSeries. */</span></div>
+<div class="line"><span class="lineno">  936</span>    result.set_live();</div>
+<div class="line"><span class="lineno">  937</span>    <span class="comment">// result.s=ao;</span></div>
+<div class="line"><span class="lineno">  938</span>    result.set_t0(operator_dt * (-(<span class="keywordtype">double</span>)i0));</div>
+<div class="line"><span class="lineno">  939</span>    result.set_dt(this-&gt;operator_dt);</div>
+<div class="line"><span class="lineno">  940</span>    result.set_tref(TimeReferenceType::Relative);</div>
+<div class="line"><span class="lineno">  941</span>    <span class="comment">/* set_npts always initializes the s buffer so it is more efficient to</span></div>
+<div class="line"><span class="lineno">  942</span><span class="comment">    copy ao elements rather than what was here before:</span></div>
+<div class="line"><span class="lineno">  943</span><span class="comment">      result.s=ao;</span></div>
+<div class="line"><span class="lineno">  944</span><span class="comment">      */</span></div>
+<div class="line"><span class="lineno">  945</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> k = 0; k &lt; FFTDeconOperator::nfft; ++k)</div>
+<div class="line"><span class="lineno">  946</span>      result.s[k] = ao[k];</div>
+<div class="line"><span class="lineno">  947</span>    <span class="keywordflow">return</span> result;</div>
+<div class="line"><span class="lineno">  948</span>  } <span class="keywordflow">catch</span> (...) {</div>
+<div class="line"><span class="lineno">  949</span>    <span class="keywordflow">throw</span>;</div>
+<div class="line"><span class="lineno">  950</span>  };</div>
+<div class="line"><span class="lineno">  951</span>}</div>
+<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet_html_ac922b603ff03a691075724bcd53e396f"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html#ac922b603ff03a691075724bcd53e396f">mspass::algorithms::deconvolution::ShapingWavelet::wavelet</a></div><div class="ttdeci">ComplexArray * wavelet()</div><div class="ttdef"><b>Definition</b> ShapingWavelet.h:75</div></div>
+<div class="ttc" id="aclassmspass_1_1seismic_1_1_core_time_series_html_ab044edb3fe5fe734cb577a4434f390a2"><div class="ttname"><a href="classmspass_1_1seismic_1_1_core_time_series.html#ab044edb3fe5fe734cb577a4434f390a2">mspass::seismic::CoreTimeSeries::s</a></div><div class="ttdeci">std::vector&lt; double &gt; s</div><div class="ttdef"><b>Definition</b> CoreTimeSeries.h:27</div></div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_core_time_series.html#ab044edb3fe5fe734cb577a4434f390a2">mspass::seismic::CoreTimeSeries::s</a>, <a class="el" href="classmspass_1_1seismic_1_1_core_time_series.html#a97ff6732aa816b0c327c5bf667ffe841">mspass::seismic::CoreTimeSeries::set_dt()</a>, <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#a1ca7ba8bcd8337bd49d438664e74966d">mspass::seismic::BasicTimeSeries::set_live()</a>, <a class="el" href="classmspass_1_1seismic_1_1_core_time_series.html#ae538485ac0aed2f8691477dffce6cda8">mspass::seismic::CoreTimeSeries::set_npts()</a>, <a class="el" href="classmspass_1_1seismic_1_1_core_time_series.html#ae90b28cff0bc1997aa65a1693d8562d0">mspass::seismic::CoreTimeSeries::set_t0()</a>, <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#ac3f8c8200710fe0d3ef211c7c758e864">mspass::seismic::BasicTimeSeries::set_tref()</a>, and <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html#ac922b603ff03a691075724bcd53e396f">mspass::algorithms::deconvolution::ShapingWavelet::wavelet()</a>.</p>
 
@@ -455,12 +447,14 @@ gsl_fft_complex_workspace *&#160;</td><td class="memItemRight" valign="bottom"><
 
 <p>Change the setup of the operator on the fly. </p>
 <p>Sometimes an operator needs to have it's properties adjusted on the fly. this method can be used to redefine its operational properties instead of creating a new instance with the constructor. Use this method with care as it requires the same set of parameters as the AntelopePf constructor. The data are actually passed through the base class for an AntelopePF but currently it is implicitly expected to be data compatible with the pf constructor. </p>
-<div class="fragment"><div class="line"><span class="lineno">   61</span>{</div>
-<div class="line"><span class="lineno">   62</span>    <span class="keywordflow">try</span>{</div>
-<div class="line"><span class="lineno">   63</span>      AntelopePf pf=<span class="keyword">dynamic_cast&lt;</span><span class="keyword">const </span>AntelopePf&amp;<span class="keyword">&gt;</span>(basemd);</div>
-<div class="line"><span class="lineno">   64</span>      this-&gt;read_parameters(pf);</div>
-<div class="line"><span class="lineno">   65</span>    }<span class="keywordflow">catch</span>(...){<span class="keywordflow">throw</span>;};</div>
-<div class="line"><span class="lineno">   66</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">   54</span>                                                              {</div>
+<div class="line"><span class="lineno">   55</span>  <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">   56</span>    AntelopePf pf = <span class="keyword">dynamic_cast&lt;</span><span class="keyword">const </span>AntelopePf &amp;<span class="keyword">&gt;</span>(basemd);</div>
+<div class="line"><span class="lineno">   57</span>    this-&gt;read_parameters(pf);</div>
+<div class="line"><span class="lineno">   58</span>  } <span class="keywordflow">catch</span> (...) {</div>
+<div class="line"><span class="lineno">   59</span>    <span class="keywordflow">throw</span>;</div>
+<div class="line"><span class="lineno">   60</span>  };</div>
+<div class="line"><span class="lineno">   61</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -487,9 +481,7 @@ gsl_fft_complex_workspace *&#160;</td><td class="memItemRight" valign="bottom"><
 </table>
 </div><div class="memdoc">
 <p>Return the average 3C power spectrum for the latest loaded noise data. </p>
-<div class="fragment"><div class="line"><span class="lineno">  281</span>  {</div>
-<div class="line"><span class="lineno">  282</span>    <span class="keywordflow">return</span> psnoise_data;</div>
-<div class="line"><span class="lineno">  283</span>  };</div>
+<div class="fragment"><div class="line"><span class="lineno">  283</span>{ <span class="keywordflow">return</span> psnoise_data; };</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -516,9 +508,7 @@ gsl_fft_complex_workspace *&#160;</td><td class="memItemRight" valign="bottom"><
 </table>
 </div><div class="memdoc">
 <p>Return the power spectrum of the signal loaded for deconvolution. </p>
-<div class="fragment"><div class="line"><span class="lineno">  291</span>  {</div>
-<div class="line"><span class="lineno">  292</span>    <span class="keywordflow">return</span> pssignal;</div>
-<div class="line"><span class="lineno">  293</span>  };</div>
+<div class="fragment"><div class="line"><span class="lineno">  287</span>{ <span class="keywordflow">return</span> pssignal; };</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -536,13 +526,15 @@ gsl_fft_complex_workspace *&#160;</td><td class="memItemRight" valign="bottom"><
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  912</span>{</div>
-<div class="line"><span class="lineno">  913</span>  <span class="keywordflow">try</span>{</div>
-<div class="line"><span class="lineno">  914</span>    CoreTimeSeries ideal_tmp=this-&gt;shapingwavelet.<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html#a5d213e187ff91de27d96e65b643bd71b">impulse_response</a>();</div>
-<div class="line"><span class="lineno">  915</span>    <span class="keywordflow">return</span> TimeSeries(ideal_tmp,<span class="stringliteral">&quot;Invalid&quot;</span>);</div>
-<div class="line"><span class="lineno">  916</span>  }<span class="keywordflow">catch</span>(...){<span class="keywordflow">throw</span>;};</div>
-<div class="line"><span class="lineno">  917</span>}</div>
-<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet_html_a5d213e187ff91de27d96e65b643bd71b"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html#a5d213e187ff91de27d96e65b643bd71b">mspass::algorithms::deconvolution::ShapingWavelet::impulse_response</a></div><div class="ttdeci">mspass::seismic::CoreTimeSeries impulse_response()</div><div class="ttdef"><b>Definition</b> ShapingWavelet.cc:271</div></div>
+<div class="fragment"><div class="line"><span class="lineno">  903</span>                                    {</div>
+<div class="line"><span class="lineno">  904</span>  <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">  905</span>    CoreTimeSeries ideal_tmp = this-&gt;shapingwavelet.<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html#a5d213e187ff91de27d96e65b643bd71b">impulse_response</a>();</div>
+<div class="line"><span class="lineno">  906</span>    <span class="keywordflow">return</span> TimeSeries(ideal_tmp, <span class="stringliteral">&quot;Invalid&quot;</span>);</div>
+<div class="line"><span class="lineno">  907</span>  } <span class="keywordflow">catch</span> (...) {</div>
+<div class="line"><span class="lineno">  908</span>    <span class="keywordflow">throw</span>;</div>
+<div class="line"><span class="lineno">  909</span>  };</div>
+<div class="line"><span class="lineno">  910</span>}</div>
+<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet_html_a5d213e187ff91de27d96e65b643bd71b"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html#a5d213e187ff91de27d96e65b643bd71b">mspass::algorithms::deconvolution::ShapingWavelet::impulse_response</a></div><div class="ttdeci">mspass::seismic::CoreTimeSeries impulse_response()</div><div class="ttdef"><b>Definition</b> ShapingWavelet.cc:265</div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -575,31 +567,31 @@ gsl_fft_complex_workspace *&#160;</td><td class="memItemRight" valign="bottom"><
  </p>
 
 <p>Implements <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_base3_c_decon.html#a8c73971b2670ad41a345a917abb5ef09">mspass::algorithms::deconvolution::Base3CDecon</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  956</span>{</div>
-<div class="line"><span class="lineno">  957</span>  <span class="keywordflow">try</span> {</div>
-<div class="line"><span class="lineno">  958</span>    <span class="comment">/* Using the time shift of wavelet.t0() may be a bad idea here.  Will</span></div>
-<div class="line"><span class="lineno">  959</span><span class="comment">    need to sort that out in debugging behaviour*/</span></div>
-<div class="line"><span class="lineno">  960</span>    <span class="keywordtype">double</span> timeshift(tshift0);</div>
-<div class="line"><span class="lineno">  961</span>    timeshift+=wavelet.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#a472074f3074d59f794d18017b010ab81">t0</a>();</div>
-<div class="line"><span class="lineno">  962</span>    <span class="comment">//cout &lt;&lt; &quot;wavelet t0=&quot;&lt;&lt;wavelet.t0()&lt;&lt;endl;</span></div>
-<div class="line"><span class="lineno">  963</span>    timeshift -= operator_dt*((double)winlength);</div>
-<div class="line"><span class="lineno">  964</span>    <span class="comment">//Debug</span></div>
-<div class="line"><span class="lineno">  965</span>    <span class="comment">//cout &lt;&lt; &quot;inverse_wavelet - applying time shift=&quot;&lt;&lt;timeshift&lt;&lt;endl;</span></div>
-<div class="line"><span class="lineno">  966</span>    CoreTimeSeries invcore(this-&gt;<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a3473dc7f359332dbf5a685efe30a684b">FFTDeconOperator::FourierInverse</a>(this-&gt;winv,</div>
-<div class="line"><span class="lineno">  967</span>        *shapingwavelet.<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html#ac922b603ff03a691075724bcd53e396f">wavelet</a>(),operator_dt,timeshift));</div>
-<div class="line"><span class="lineno">  968</span>    TimeSeries result(invcore,<span class="stringliteral">&quot;Invalid&quot;</span>);</div>
-<div class="line"><span class="lineno">  969</span>    <span class="comment">/* Copy the error log from wavelet and post some information parameters</span></div>
-<div class="line"><span class="lineno">  970</span><span class="comment">    to metadata */</span></div>
-<div class="line"><span class="lineno">  971</span>    result.elog=wavelet.elog;</div>
-<div class="line"><span class="lineno">  972</span>    result.put(<span class="stringliteral">&quot;waveform_type&quot;</span>,<span class="stringliteral">&quot;deconvolution_inverse_wavelet&quot;</span>);</div>
-<div class="line"><span class="lineno">  973</span>    result.put(<span class="stringliteral">&quot;decon_type&quot;</span>,<span class="stringliteral">&quot;CNR3CDecon&quot;</span>);</div>
-<div class="line"><span class="lineno">  974</span>    <span class="keywordflow">return</span> result;</div>
-<div class="line"><span class="lineno">  975</span>  } <span class="keywordflow">catch</span>(...) {</div>
-<div class="line"><span class="lineno">  976</span>      <span class="keywordflow">throw</span>;</div>
-<div class="line"><span class="lineno">  977</span>  };</div>
-<div class="line"><span class="lineno">  978</span>}</div>
-<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_html_a3473dc7f359332dbf5a685efe30a684b"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a3473dc7f359332dbf5a685efe30a684b">mspass::algorithms::deconvolution::FFTDeconOperator::FourierInverse</a></div><div class="ttdeci">mspass::seismic::CoreTimeSeries FourierInverse(const ComplexArray &amp;winv, const ComplexArray &amp;sw, const double dt, const double t0parent)</div><div class="ttdoc">Return inverse wavelet for Fourier methods.</div><div class="ttdef"><b>Definition</b> FFTDeconOperator.cc:119</div></div>
-<div class="ttc" id="aclassmspass_1_1seismic_1_1_basic_time_series_html_a472074f3074d59f794d18017b010ab81"><div class="ttname"><a href="classmspass_1_1seismic_1_1_basic_time_series.html#a472074f3074d59f794d18017b010ab81">mspass::seismic::BasicTimeSeries::t0</a></div><div class="ttdeci">double t0() const</div><div class="ttdef"><b>Definition</b> BasicTimeSeries.h:191</div></div>
+<div class="fragment"><div class="line"><span class="lineno">  952</span>                                                     {</div>
+<div class="line"><span class="lineno">  953</span>  <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">  954</span>    <span class="comment">/* Using the time shift of wavelet.t0() may be a bad idea here.  Will</span></div>
+<div class="line"><span class="lineno">  955</span><span class="comment">    need to sort that out in debugging behaviour*/</span></div>
+<div class="line"><span class="lineno">  956</span>    <span class="keywordtype">double</span> timeshift(tshift0);</div>
+<div class="line"><span class="lineno">  957</span>    timeshift += wavelet.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#a472074f3074d59f794d18017b010ab81">t0</a>();</div>
+<div class="line"><span class="lineno">  958</span>    <span class="comment">// cout &lt;&lt; &quot;wavelet t0=&quot;&lt;&lt;wavelet.t0()&lt;&lt;endl;</span></div>
+<div class="line"><span class="lineno">  959</span>    timeshift -= operator_dt * ((double)winlength);</div>
+<div class="line"><span class="lineno">  960</span>    <span class="comment">// Debug</span></div>
+<div class="line"><span class="lineno">  961</span>    <span class="comment">// cout &lt;&lt; &quot;inverse_wavelet - applying time shift=&quot;&lt;&lt;timeshift&lt;&lt;endl;</span></div>
+<div class="line"><span class="lineno">  962</span>    CoreTimeSeries invcore(this-&gt;<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a3473dc7f359332dbf5a685efe30a684b">FFTDeconOperator::FourierInverse</a>(</div>
+<div class="line"><span class="lineno">  963</span>        this-&gt;winv, *shapingwavelet.<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html#ac922b603ff03a691075724bcd53e396f">wavelet</a>(), operator_dt, timeshift));</div>
+<div class="line"><span class="lineno">  964</span>    TimeSeries result(invcore, <span class="stringliteral">&quot;Invalid&quot;</span>);</div>
+<div class="line"><span class="lineno">  965</span>    <span class="comment">/* Copy the error log from wavelet and post some information parameters</span></div>
+<div class="line"><span class="lineno">  966</span><span class="comment">    to metadata */</span></div>
+<div class="line"><span class="lineno">  967</span>    result.elog = wavelet.elog;</div>
+<div class="line"><span class="lineno">  968</span>    result.put(<span class="stringliteral">&quot;waveform_type&quot;</span>, <span class="stringliteral">&quot;deconvolution_inverse_wavelet&quot;</span>);</div>
+<div class="line"><span class="lineno">  969</span>    result.put(<span class="stringliteral">&quot;decon_type&quot;</span>, <span class="stringliteral">&quot;CNR3CDecon&quot;</span>);</div>
+<div class="line"><span class="lineno">  970</span>    <span class="keywordflow">return</span> result;</div>
+<div class="line"><span class="lineno">  971</span>  } <span class="keywordflow">catch</span> (...) {</div>
+<div class="line"><span class="lineno">  972</span>    <span class="keywordflow">throw</span>;</div>
+<div class="line"><span class="lineno">  973</span>  };</div>
+<div class="line"><span class="lineno">  974</span>}</div>
+<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_html_a3473dc7f359332dbf5a685efe30a684b"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a3473dc7f359332dbf5a685efe30a684b">mspass::algorithms::deconvolution::FFTDeconOperator::FourierInverse</a></div><div class="ttdeci">mspass::seismic::CoreTimeSeries FourierInverse(const ComplexArray &amp;winv, const ComplexArray &amp;sw, const double dt, const double t0parent)</div><div class="ttdoc">Return inverse wavelet for Fourier methods.</div><div class="ttdef"><b>Definition</b> FFTDeconOperator.cc:115</div></div>
+<div class="ttc" id="aclassmspass_1_1seismic_1_1_basic_time_series_html_a472074f3074d59f794d18017b010ab81"><div class="ttname"><a href="classmspass_1_1seismic_1_1_basic_time_series.html#a472074f3074d59f794d18017b010ab81">mspass::seismic::BasicTimeSeries::t0</a></div><div class="ttdeci">double t0() const</div><div class="ttdef"><b>Definition</b> BasicTimeSeries.h:174</div></div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a3473dc7f359332dbf5a685efe30a684b">mspass::algorithms::deconvolution::FFTDeconOperator::FourierInverse()</a>, <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#a472074f3074d59f794d18017b010ab81">mspass::seismic::BasicTimeSeries::t0()</a>, and <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html#ac922b603ff03a691075724bcd53e396f">mspass::algorithms::deconvolution::ShapingWavelet::wavelet()</a>.</p>
 
@@ -646,87 +638,88 @@ gsl_fft_complex_workspace *&#160;</td><td class="memItemRight" valign="bottom"><
   </table>
   </dd>
 </dl>
-<div class="fragment"><div class="line"><span class="lineno">  395</span>{</div>
-<div class="line"><span class="lineno">  396</span>  <span class="keywordflow">if</span>(d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#aa96e795f96b5050996d791f5b6f3867d">dead</a>()) <span class="keywordflow">throw</span> MsPASSError(<span class="stringliteral">&quot;CNR3CDecon::loaddata method received data marked dead&quot;</span>,</div>
-<div class="line"><span class="lineno">  397</span>            ErrorSeverity::Invalid);</div>
-<div class="line"><span class="lineno">  398</span>  <span class="keywordflow">try</span>{</div>
-<div class="line"><span class="lineno">  399</span>    <span class="keywordtype">int</span> errcount;</div>
-<div class="line"><span class="lineno">  400</span>    <span class="comment">/* The -9999 is a magic number used to signal the test is</span></div>
-<div class="line"><span class="lineno">  401</span><span class="comment">    coming from this variant*/</span></div>
-<div class="line"><span class="lineno">  402</span>    errcount=TestSeismogramInput(d,-9999,nload);</div>
-<div class="line"><span class="lineno">  403</span>    <span class="keywordflow">if</span>(errcount&gt;0)</div>
-<div class="line"><span class="lineno">  404</span>    {</div>
-<div class="line"><span class="lineno">  405</span>      stringstream ss;</div>
-<div class="line"><span class="lineno">  406</span>      ss&lt;&lt;<span class="stringliteral">&quot;CNR3CDecon::loaddata:  &quot;</span>&lt;&lt;errcount&lt;&lt;<span class="stringliteral">&quot; errors were detected in this call&quot;</span></div>
-<div class="line"><span class="lineno">  407</span>        &lt;&lt;endl&lt;&lt;<span class="stringliteral">&quot;Check error log of input Seismogram for detailed error messages&quot;</span>&lt;&lt;endl</div>
-<div class="line"><span class="lineno">  408</span>        &lt;&lt; <span class="stringliteral">&quot;Operator does not contain valid data for processing&quot;</span>&lt;&lt;endl;</div>
-<div class="line"><span class="lineno">  409</span>      <span class="keywordflow">throw</span> MsPASSError(ss.str(),ErrorSeverity::Invalid);</div>
-<div class="line"><span class="lineno">  410</span>    }</div>
-<div class="line"><span class="lineno">  411</span>    CoreSeismogram dtmp(WindowData(d,this-&gt;processing_window));</div>
-<div class="line"><span class="lineno">  412</span>    this-&gt;decondata=Seismogram(dtmp,<span class="keywordtype">string</span>(<span class="stringliteral">&quot;invalid&quot;</span>));</div>
-<div class="line"><span class="lineno">  413</span>    <span class="keywordflow">if</span>(FFTDeconOperator::nfft&lt;(2*this-&gt;winlength))</div>
-<div class="line"><span class="lineno">  414</span>    {</div>
-<div class="line"><span class="lineno">  415</span>      cerr &lt;&lt; <span class="stringliteral">&quot;CNR3CDecon:  coding error in loaddata method&quot;</span>&lt;&lt;endl</div>
-<div class="line"><span class="lineno">  416</span>          &lt;&lt; <span class="stringliteral">&quot;fft buffer size=&quot;</span>&lt;&lt;FFTDeconOperator::nfft&lt;&lt;endl</div>
-<div class="line"><span class="lineno">  417</span>          &lt;&lt; <span class="stringliteral">&quot;winlength is only &quot;</span>&lt;&lt;this-&gt;winlength&lt;&lt;endl</div>
-<div class="line"><span class="lineno">  418</span>          &lt;&lt; <span class="stringliteral">&quot;fft length is required to be at least twice winlength&quot;</span>&lt;&lt;endl</div>
-<div class="line"><span class="lineno">  419</span>          &lt;&lt; <span class="stringliteral">&quot;Debug exit to avoid seg fault&quot;</span>&lt;&lt;endl;</div>
-<div class="line"><span class="lineno">  420</span>      exit(-1);</div>
-<div class="line"><span class="lineno">  421</span>    }</div>
-<div class="line"><span class="lineno">  422</span>    <span class="comment">/* In the old api this was necessary - no longer so because set_npts does</span></div>
-<div class="line"><span class="lineno">  423</span><span class="comment">    this operation</span></div>
-<div class="line"><span class="lineno">  424</span><span class="comment">    decondata.u=dmatrix(3,FFTDeconOperator::nfft);</span></div>
-<div class="line"><span class="lineno">  425</span><span class="comment">    decondata.u.zero();</span></div>
+<div class="fragment"><div class="line"><span class="lineno">  369</span>                                                         {</div>
+<div class="line"><span class="lineno">  370</span>  <span class="keywordflow">if</span> (d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#aa96e795f96b5050996d791f5b6f3867d">dead</a>())</div>
+<div class="line"><span class="lineno">  371</span>    <span class="keywordflow">throw</span> MsPASSError(<span class="stringliteral">&quot;CNR3CDecon::loaddata method received data marked dead&quot;</span>,</div>
+<div class="line"><span class="lineno">  372</span>                      ErrorSeverity::Invalid);</div>
+<div class="line"><span class="lineno">  373</span>  <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">  374</span>    <span class="keywordtype">int</span> errcount;</div>
+<div class="line"><span class="lineno">  375</span>    <span class="comment">/* The -9999 is a magic number used to signal the test is</span></div>
+<div class="line"><span class="lineno">  376</span><span class="comment">    coming from this variant*/</span></div>
+<div class="line"><span class="lineno">  377</span>    errcount = TestSeismogramInput(d, -9999, nload);</div>
+<div class="line"><span class="lineno">  378</span>    <span class="keywordflow">if</span> (errcount &gt; 0) {</div>
+<div class="line"><span class="lineno">  379</span>      stringstream ss;</div>
+<div class="line"><span class="lineno">  380</span>      ss &lt;&lt; <span class="stringliteral">&quot;CNR3CDecon::loaddata:  &quot;</span> &lt;&lt; errcount</div>
+<div class="line"><span class="lineno">  381</span>         &lt;&lt; <span class="stringliteral">&quot; errors were detected in this call&quot;</span> &lt;&lt; endl</div>
+<div class="line"><span class="lineno">  382</span>         &lt;&lt; <span class="stringliteral">&quot;Check error log of input Seismogram for detailed error messages&quot;</span></div>
+<div class="line"><span class="lineno">  383</span>         &lt;&lt; endl</div>
+<div class="line"><span class="lineno">  384</span>         &lt;&lt; <span class="stringliteral">&quot;Operator does not contain valid data for processing&quot;</span> &lt;&lt; endl;</div>
+<div class="line"><span class="lineno">  385</span>      <span class="keywordflow">throw</span> MsPASSError(ss.str(), ErrorSeverity::Invalid);</div>
+<div class="line"><span class="lineno">  386</span>    }</div>
+<div class="line"><span class="lineno">  387</span>    CoreSeismogram dtmp(WindowData(d, this-&gt;processing_window));</div>
+<div class="line"><span class="lineno">  388</span>    this-&gt;decondata = Seismogram(dtmp, <span class="keywordtype">string</span>(<span class="stringliteral">&quot;invalid&quot;</span>));</div>
+<div class="line"><span class="lineno">  389</span>    <span class="keywordflow">if</span> (FFTDeconOperator::nfft &lt; (2 * this-&gt;winlength)) {</div>
+<div class="line"><span class="lineno">  390</span>      cerr &lt;&lt; <span class="stringliteral">&quot;CNR3CDecon:  coding error in loaddata method&quot;</span> &lt;&lt; endl</div>
+<div class="line"><span class="lineno">  391</span>           &lt;&lt; <span class="stringliteral">&quot;fft buffer size=&quot;</span> &lt;&lt; FFTDeconOperator::nfft &lt;&lt; endl</div>
+<div class="line"><span class="lineno">  392</span>           &lt;&lt; <span class="stringliteral">&quot;winlength is only &quot;</span> &lt;&lt; this-&gt;winlength &lt;&lt; endl</div>
+<div class="line"><span class="lineno">  393</span>           &lt;&lt; <span class="stringliteral">&quot;fft length is required to be at least twice winlength&quot;</span> &lt;&lt; endl</div>
+<div class="line"><span class="lineno">  394</span>           &lt;&lt; <span class="stringliteral">&quot;Debug exit to avoid seg fault&quot;</span> &lt;&lt; endl;</div>
+<div class="line"><span class="lineno">  395</span>      exit(-1);</div>
+<div class="line"><span class="lineno">  396</span>    }</div>
+<div class="line"><span class="lineno">  397</span>    <span class="comment">/* In the old api this was necessary - no longer so because set_npts does</span></div>
+<div class="line"><span class="lineno">  398</span><span class="comment">    this operation</span></div>
+<div class="line"><span class="lineno">  399</span><span class="comment">    decondata.u=dmatrix(3,FFTDeconOperator::nfft);</span></div>
+<div class="line"><span class="lineno">  400</span><span class="comment">    decondata.u.zero();</span></div>
+<div class="line"><span class="lineno">  401</span><span class="comment">    */</span></div>
+<div class="line"><span class="lineno">  402</span>    decondata.<a class="code hl_function" href="classmspass_1_1seismic_1_1_core_seismogram.html#ae94bac250fe5928ced41babc322c2c79">set_npts</a>(FFTDeconOperator::nfft);</div>
+<div class="line"><span class="lineno">  403</span>    <span class="keywordtype">double</span> newt0 = (-operator_dt * <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(winlength));</div>
+<div class="line"><span class="lineno">  404</span>    decondata.<a class="code hl_function" href="classmspass_1_1seismic_1_1_core_seismogram.html#a7724b7cfa40eebf0b15e0d2b39ae615e">set_t0</a>(newt0);</div>
+<div class="line"><span class="lineno">  405</span>    <span class="keywordtype">int</span> k, i, ii;</div>
+<div class="line"><span class="lineno">  406</span>    <span class="keywordflow">for</span> (i = 0; i &lt; dtmp.npts(); ++i) {</div>
+<div class="line"><span class="lineno">  407</span>      ii = decondata.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#abe28ca2812a2ac21dd2196385ad106ab">sample_number</a>(dtmp.time(i));</div>
+<div class="line"><span class="lineno">  408</span>      <span class="keywordflow">if</span> ((ii &gt;= 0) &amp;&amp; (ii &lt; decondata.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">npts</a>())) {</div>
+<div class="line"><span class="lineno">  409</span>        <span class="keywordflow">for</span> (k = 0; k &lt; 3; ++k)</div>
+<div class="line"><span class="lineno">  410</span>          decondata.<a class="code hl_variable" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>(k, ii) = dtmp.u(k, i);</div>
+<div class="line"><span class="lineno">  411</span>      }</div>
+<div class="line"><span class="lineno">  412</span>    }</div>
+<div class="line"><span class="lineno">  413</span> </div>
+<div class="line"><span class="lineno">  414</span>    <span class="comment">/* This was the old code</span></div>
+<div class="line"><span class="lineno">  415</span><span class="comment">    int k,i,ii;</span></div>
+<div class="line"><span class="lineno">  416</span><span class="comment">    for(k=0;k&lt;3;++k)</span></div>
+<div class="line"><span class="lineno">  417</span><span class="comment">        for(i=0,ii=(this-&gt;winlength);i&lt;(this-&gt;winlength);++i,++ii)</span></div>
+<div class="line"><span class="lineno">  418</span><span class="comment">        {</span></div>
+<div class="line"><span class="lineno">  419</span><span class="comment">            decondata.u(k,ii)=dtmp.u(k,i);</span></div>
+<div class="line"><span class="lineno">  420</span><span class="comment">        }</span></div>
+<div class="line"><span class="lineno">  421</span><span class="comment">    double newt0=decondata.t0() - operator_dt*static_cast&lt;double&gt;(winlength);</span></div>
+<div class="line"><span class="lineno">  422</span><span class="comment">    //Debug</span></div>
+<div class="line"><span class="lineno">  423</span><span class="comment">    cout &lt;&lt; &quot;in loaddata; initial t0=&quot;&lt;&lt;decondata.t0()&lt;&lt;endl</span></div>
+<div class="line"><span class="lineno">  424</span><span class="comment">      &lt;&lt; &quot;Changed to &quot;&lt;&lt;newt0&lt;&lt;endl;</span></div>
+<div class="line"><span class="lineno">  425</span><span class="comment">    decondata.set_t0(newt0);</span></div>
 <div class="line"><span class="lineno">  426</span><span class="comment">    */</span></div>
-<div class="line"><span class="lineno">  427</span>    decondata.<a class="code hl_function" href="classmspass_1_1seismic_1_1_core_seismogram.html#ae94bac250fe5928ced41babc322c2c79">set_npts</a>(FFTDeconOperator::nfft);</div>
-<div class="line"><span class="lineno">  428</span>    <span class="keywordtype">double</span> newt0= (-operator_dt*<span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(winlength));</div>
-<div class="line"><span class="lineno">  429</span>    decondata.<a class="code hl_function" href="classmspass_1_1seismic_1_1_core_seismogram.html#a7724b7cfa40eebf0b15e0d2b39ae615e">set_t0</a>(newt0);</div>
-<div class="line"><span class="lineno">  430</span>    <span class="keywordtype">int</span> k,i,ii;</div>
-<div class="line"><span class="lineno">  431</span>    <span class="keywordflow">for</span>(i=0;i&lt;dtmp.npts();++i)</div>
-<div class="line"><span class="lineno">  432</span>    {</div>
-<div class="line"><span class="lineno">  433</span>      ii=decondata.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#abe28ca2812a2ac21dd2196385ad106ab">sample_number</a>(dtmp.time(i));</div>
-<div class="line"><span class="lineno">  434</span>      <span class="keywordflow">if</span>( (ii &gt;=0) &amp;&amp; (ii&lt;decondata.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">npts</a>()) )</div>
-<div class="line"><span class="lineno">  435</span>      {</div>
-<div class="line"><span class="lineno">  436</span>        <span class="keywordflow">for</span>(k=0;k&lt;3;++k)decondata.<a class="code hl_variable" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>(k,ii)=dtmp.u(k,i);</div>
-<div class="line"><span class="lineno">  437</span>      }</div>
-<div class="line"><span class="lineno">  438</span>    }</div>
-<div class="line"><span class="lineno">  439</span> </div>
-<div class="line"><span class="lineno">  440</span>    <span class="comment">/* This was the old code</span></div>
-<div class="line"><span class="lineno">  441</span><span class="comment">    int k,i,ii;</span></div>
-<div class="line"><span class="lineno">  442</span><span class="comment">    for(k=0;k&lt;3;++k)</span></div>
-<div class="line"><span class="lineno">  443</span><span class="comment">        for(i=0,ii=(this-&gt;winlength);i&lt;(this-&gt;winlength);++i,++ii)</span></div>
-<div class="line"><span class="lineno">  444</span><span class="comment">        {</span></div>
-<div class="line"><span class="lineno">  445</span><span class="comment">            decondata.u(k,ii)=dtmp.u(k,i);</span></div>
-<div class="line"><span class="lineno">  446</span><span class="comment">        }</span></div>
-<div class="line"><span class="lineno">  447</span><span class="comment">    double newt0=decondata.t0() - operator_dt*static_cast&lt;double&gt;(winlength);</span></div>
-<div class="line"><span class="lineno">  448</span><span class="comment">    //Debug</span></div>
-<div class="line"><span class="lineno">  449</span><span class="comment">    cout &lt;&lt; &quot;in loaddata; initial t0=&quot;&lt;&lt;decondata.t0()&lt;&lt;endl</span></div>
-<div class="line"><span class="lineno">  450</span><span class="comment">      &lt;&lt; &quot;Changed to &quot;&lt;&lt;newt0&lt;&lt;endl;</span></div>
-<div class="line"><span class="lineno">  451</span><span class="comment">    decondata.set_t0(newt0);</span></div>
-<div class="line"><span class="lineno">  452</span><span class="comment">    */</span></div>
-<div class="line"><span class="lineno">  453</span>    <span class="comment">/* We need to compute the power spectrum of the signal here.  It is used</span></div>
-<div class="line"><span class="lineno">  454</span><span class="comment">    to compute the bandwidth of the shaping wavelet in process.   This is the</span></div>
-<div class="line"><span class="lineno">  455</span><span class="comment">    ONLY place right now this is computed.  Caution in order if there are</span></div>
-<div class="line"><span class="lineno">  456</span><span class="comment">    changes in implementation later. */</span></div>
-<div class="line"><span class="lineno">  457</span>    this-&gt;pssignal=this-&gt;ThreeCPower(dtmp);</div>
-<div class="line"><span class="lineno">  458</span>    <span class="keywordflow">if</span>(nload)</div>
-<div class="line"><span class="lineno">  459</span>    {</div>
-<div class="line"><span class="lineno">  460</span>      Seismogram ntmp(WindowData(d,this-&gt;noise_window),<span class="keywordtype">string</span>(<span class="stringliteral">&quot;Invalid&quot;</span>));</div>
-<div class="line"><span class="lineno">  461</span>      this-&gt;<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon.html#a9d050c0940ada32cc3ddfecff9cade4a">loadnoise_data</a>(ntmp);</div>
-<div class="line"><span class="lineno">  462</span>    }</div>
-<div class="line"><span class="lineno">  463</span>    signal_bwd=EstimateBandwidth(FFTDeconOperator::df(this-&gt;operator_dt),</div>
-<div class="line"><span class="lineno">  464</span>        pssignal,psnoise_data,snr_bandwidth,</div>
-<div class="line"><span class="lineno">  465</span>          signalengine.<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#accf94d6d1dff859884d9c0aa1719994a">time_bandwidth_product</a>(),this-&gt;fhs);</div>
-<div class="line"><span class="lineno">  466</span>  }<span class="keywordflow">catch</span>(...){<span class="keywordflow">throw</span>;};</div>
-<div class="line"><span class="lineno">  467</span>}</div>
-<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_html_a9d050c0940ada32cc3ddfecff9cade4a"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon.html#a9d050c0940ada32cc3ddfecff9cade4a">mspass::algorithms::deconvolution::CNR3CDecon::loadnoise_data</a></div><div class="ttdeci">void loadnoise_data(const mspass::seismic::Seismogram &amp;n)</div><div class="ttdoc">Load noise data directly.</div><div class="ttdef"><b>Definition</b> CNR3CDecon.cc:562</div></div>
-<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_html_accf94d6d1dff859884d9c0aa1719994a"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#accf94d6d1dff859884d9c0aa1719994a">mspass::algorithms::deconvolution::MTPowerSpectrumEngine::time_bandwidth_product</a></div><div class="ttdeci">double time_bandwidth_product() const</div><div class="ttdef"><b>Definition</b> MTPowerSpectrumEngine.h:101</div></div>
-<div class="ttc" id="aclassmspass_1_1seismic_1_1_basic_time_series_html_a347b349bb4e1f0e65978dfcd45ae3472"><div class="ttname"><a href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">mspass::seismic::BasicTimeSeries::npts</a></div><div class="ttdeci">size_t npts() const</div><div class="ttdef"><b>Definition</b> BasicTimeSeries.h:188</div></div>
-<div class="ttc" id="aclassmspass_1_1seismic_1_1_basic_time_series_html_aa96e795f96b5050996d791f5b6f3867d"><div class="ttname"><a href="classmspass_1_1seismic_1_1_basic_time_series.html#aa96e795f96b5050996d791f5b6f3867d">mspass::seismic::BasicTimeSeries::dead</a></div><div class="ttdeci">bool dead() const</div><div class="ttdef"><b>Definition</b> BasicTimeSeries.h:154</div></div>
-<div class="ttc" id="aclassmspass_1_1seismic_1_1_basic_time_series_html_abe28ca2812a2ac21dd2196385ad106ab"><div class="ttname"><a href="classmspass_1_1seismic_1_1_basic_time_series.html#abe28ca2812a2ac21dd2196385ad106ab">mspass::seismic::BasicTimeSeries::sample_number</a></div><div class="ttdeci">int sample_number(double t) const</div><div class="ttdef"><b>Definition</b> BasicTimeSeries.h:74</div></div>
-<div class="ttc" id="aclassmspass_1_1seismic_1_1_core_seismogram_html_a7724b7cfa40eebf0b15e0d2b39ae615e"><div class="ttname"><a href="classmspass_1_1seismic_1_1_core_seismogram.html#a7724b7cfa40eebf0b15e0d2b39ae615e">mspass::seismic::CoreSeismogram::set_t0</a></div><div class="ttdeci">void set_t0(const double t0in)</div><div class="ttdoc">Set the data start time.</div><div class="ttdef"><b>Definition</b> CoreSeismogram.cc:1047</div></div>
-<div class="ttc" id="aclassmspass_1_1seismic_1_1_core_seismogram_html_a9ac5c7c060d582b1a399fb066d06779f"><div class="ttname"><a href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">mspass::seismic::CoreSeismogram::u</a></div><div class="ttdeci">mspass::utility::dmatrix u</div><div class="ttdef"><b>Definition</b> CoreSeismogram.h:53</div></div>
-<div class="ttc" id="aclassmspass_1_1seismic_1_1_core_seismogram_html_ae94bac250fe5928ced41babc322c2c79"><div class="ttname"><a href="classmspass_1_1seismic_1_1_core_seismogram.html#ae94bac250fe5928ced41babc322c2c79">mspass::seismic::CoreSeismogram::set_npts</a></div><div class="ttdeci">void set_npts(const size_t npts)</div><div class="ttdoc">Set the number of samples attribute for data.</div><div class="ttdef"><b>Definition</b> CoreSeismogram.cc:1067</div></div>
+<div class="line"><span class="lineno">  427</span>    <span class="comment">/* We need to compute the power spectrum of the signal here.  It is used</span></div>
+<div class="line"><span class="lineno">  428</span><span class="comment">    to compute the bandwidth of the shaping wavelet in process.   This is the</span></div>
+<div class="line"><span class="lineno">  429</span><span class="comment">    ONLY place right now this is computed.  Caution in order if there are</span></div>
+<div class="line"><span class="lineno">  430</span><span class="comment">    changes in implementation later. */</span></div>
+<div class="line"><span class="lineno">  431</span>    this-&gt;pssignal = this-&gt;ThreeCPower(dtmp);</div>
+<div class="line"><span class="lineno">  432</span>    <span class="keywordflow">if</span> (nload) {</div>
+<div class="line"><span class="lineno">  433</span>      Seismogram ntmp(WindowData(d, this-&gt;noise_window), <span class="keywordtype">string</span>(<span class="stringliteral">&quot;Invalid&quot;</span>));</div>
+<div class="line"><span class="lineno">  434</span>      this-&gt;<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon.html#a9d050c0940ada32cc3ddfecff9cade4a">loadnoise_data</a>(ntmp);</div>
+<div class="line"><span class="lineno">  435</span>    }</div>
+<div class="line"><span class="lineno">  436</span>    signal_bwd = EstimateBandwidth(</div>
+<div class="line"><span class="lineno">  437</span>        FFTDeconOperator::df(this-&gt;operator_dt), pssignal, psnoise_data,</div>
+<div class="line"><span class="lineno">  438</span>        snr_bandwidth, signalengine.<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#accf94d6d1dff859884d9c0aa1719994a">time_bandwidth_product</a>(), this-&gt;fhs);</div>
+<div class="line"><span class="lineno">  439</span>  } <span class="keywordflow">catch</span> (...) {</div>
+<div class="line"><span class="lineno">  440</span>    <span class="keywordflow">throw</span>;</div>
+<div class="line"><span class="lineno">  441</span>  };</div>
+<div class="line"><span class="lineno">  442</span>}</div>
+<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_html_a9d050c0940ada32cc3ddfecff9cade4a"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon.html#a9d050c0940ada32cc3ddfecff9cade4a">mspass::algorithms::deconvolution::CNR3CDecon::loadnoise_data</a></div><div class="ttdeci">void loadnoise_data(const mspass::seismic::Seismogram &amp;n)</div><div class="ttdoc">Load noise data directly.</div><div class="ttdef"><b>Definition</b> CNR3CDecon.cc:544</div></div>
+<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_html_accf94d6d1dff859884d9c0aa1719994a"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#accf94d6d1dff859884d9c0aa1719994a">mspass::algorithms::deconvolution::MTPowerSpectrumEngine::time_bandwidth_product</a></div><div class="ttdeci">double time_bandwidth_product() const</div><div class="ttdef"><b>Definition</b> MTPowerSpectrumEngine.h:99</div></div>
+<div class="ttc" id="aclassmspass_1_1seismic_1_1_basic_time_series_html_a347b349bb4e1f0e65978dfcd45ae3472"><div class="ttname"><a href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">mspass::seismic::BasicTimeSeries::npts</a></div><div class="ttdeci">size_t npts() const</div><div class="ttdef"><b>Definition</b> BasicTimeSeries.h:171</div></div>
+<div class="ttc" id="aclassmspass_1_1seismic_1_1_basic_time_series_html_aa96e795f96b5050996d791f5b6f3867d"><div class="ttname"><a href="classmspass_1_1seismic_1_1_basic_time_series.html#aa96e795f96b5050996d791f5b6f3867d">mspass::seismic::BasicTimeSeries::dead</a></div><div class="ttdeci">bool dead() const</div><div class="ttdef"><b>Definition</b> BasicTimeSeries.h:145</div></div>
+<div class="ttc" id="aclassmspass_1_1seismic_1_1_basic_time_series_html_abe28ca2812a2ac21dd2196385ad106ab"><div class="ttname"><a href="classmspass_1_1seismic_1_1_basic_time_series.html#abe28ca2812a2ac21dd2196385ad106ab">mspass::seismic::BasicTimeSeries::sample_number</a></div><div class="ttdeci">int sample_number(double t) const</div><div class="ttdef"><b>Definition</b> BasicTimeSeries.h:72</div></div>
+<div class="ttc" id="aclassmspass_1_1seismic_1_1_core_seismogram_html_a7724b7cfa40eebf0b15e0d2b39ae615e"><div class="ttname"><a href="classmspass_1_1seismic_1_1_core_seismogram.html#a7724b7cfa40eebf0b15e0d2b39ae615e">mspass::seismic::CoreSeismogram::set_t0</a></div><div class="ttdeci">void set_t0(const double t0in)</div><div class="ttdoc">Set the data start time.</div><div class="ttdef"><b>Definition</b> CoreSeismogram.cc:1022</div></div>
+<div class="ttc" id="aclassmspass_1_1seismic_1_1_core_seismogram_html_a9ac5c7c060d582b1a399fb066d06779f"><div class="ttname"><a href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">mspass::seismic::CoreSeismogram::u</a></div><div class="ttdeci">mspass::utility::dmatrix u</div><div class="ttdef"><b>Definition</b> CoreSeismogram.h:52</div></div>
+<div class="ttc" id="aclassmspass_1_1seismic_1_1_core_seismogram_html_ae94bac250fe5928ced41babc322c2c79"><div class="ttname"><a href="classmspass_1_1seismic_1_1_core_seismogram.html#ae94bac250fe5928ced41babc322c2c79">mspass::seismic::CoreSeismogram::set_npts</a></div><div class="ttdeci">void set_npts(const size_t npts)</div><div class="ttdoc">Set the number of samples attribute for data.</div><div class="ttdef"><b>Definition</b> CoreSeismogram.cc:1039</div></div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#aa96e795f96b5050996d791f5b6f3867d">mspass::seismic::BasicTimeSeries::dead()</a>, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon.html#a9d050c0940ada32cc3ddfecff9cade4a">loadnoise_data()</a>, <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">mspass::seismic::BasicTimeSeries::npts()</a>, <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#abe28ca2812a2ac21dd2196385ad106ab">mspass::seismic::BasicTimeSeries::sample_number()</a>, <a class="el" href="classmspass_1_1seismic_1_1_core_seismogram.html#ae94bac250fe5928ced41babc322c2c79">mspass::seismic::CoreSeismogram::set_npts()</a>, <a class="el" href="classmspass_1_1seismic_1_1_core_seismogram.html#a7724b7cfa40eebf0b15e0d2b39ae615e">mspass::seismic::CoreSeismogram::set_t0()</a>, <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#a438b4f6453a4ff2a46de53dfdf3599c2">mspass::seismic::BasicTimeSeries::time()</a>, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#accf94d6d1dff859884d9c0aa1719994a">mspass::algorithms::deconvolution::MTPowerSpectrumEngine::time_bandwidth_product()</a>, and <a class="el" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">mspass::seismic::CoreSeismogram::u</a>.</p>
 
@@ -780,27 +773,30 @@ gsl_fft_complex_workspace *&#160;</td><td class="memItemRight" valign="bottom"><
   </table>
   </dd>
 </dl>
-<div class="fragment"><div class="line"><span class="lineno">  375</span>{</div>
-<div class="line"><span class="lineno">  376</span><span class="comment">//DEBUG</span></div>
-<div class="line"><span class="lineno">  377</span><span class="comment">//cout &lt;&lt; &quot;entering loaddata&quot;&lt;&lt;endl;</span></div>
-<div class="line"><span class="lineno">  378</span>  <span class="keywordflow">try</span>{</div>
-<div class="line"><span class="lineno">  379</span>    <span class="keywordflow">if</span>(d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#aa96e795f96b5050996d791f5b6f3867d">dead</a>()) <span class="keywordflow">throw</span> MsPASSError(<span class="stringliteral">&quot;CNR3CDecon::loaddata method received data marked dead&quot;</span>,</div>
-<div class="line"><span class="lineno">  380</span>            ErrorSeverity::Invalid);</div>
-<div class="line"><span class="lineno">  381</span>    <span class="comment">/* This does everything except load the wavelet from wcomp so we just</span></div>
-<div class="line"><span class="lineno">  382</span><span class="comment">     * invoke it here. */</span></div>
-<div class="line"><span class="lineno">  383</span>    this-&gt;<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon.html#a88d7fe1143e6459d7accf40e00f8cab2">loaddata</a>(d,loadnoise);</div>
-<div class="line"><span class="lineno">  384</span>    <span class="comment">/* We need to pull wcomp now because we alter the decondata matrix with</span></div>
-<div class="line"><span class="lineno">  385</span><span class="comment">     * padding next.  We don&#39;t want that for the wavelet at this stage as</span></div>
-<div class="line"><span class="lineno">  386</span><span class="comment">     * the loadwavelet method handles the padding stuff and we call it after</span></div>
-<div class="line"><span class="lineno">  387</span><span class="comment">     * windowing*/</span></div>
-<div class="line"><span class="lineno">  388</span>    CoreTimeSeries wtmp(ExtractComponent(decondata,wcomp));</div>
-<div class="line"><span class="lineno">  389</span>    wtmp=WindowData(wtmp,this-&gt;processing_window);</div>
-<div class="line"><span class="lineno">  390</span>    TimeSeries wtmp2(wtmp,<span class="stringliteral">&quot;Invalid&quot;</span>);</div>
-<div class="line"><span class="lineno">  391</span>    this-&gt;<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon.html#a8f0b6ab1ffaf2b0f514341be81b21d7e">loadwavelet</a>(wtmp2);</div>
-<div class="line"><span class="lineno">  392</span>  }<span class="keywordflow">catch</span>(...){<span class="keywordflow">throw</span>;};</div>
-<div class="line"><span class="lineno">  393</span>}</div>
-<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_html_a88d7fe1143e6459d7accf40e00f8cab2"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon.html#a88d7fe1143e6459d7accf40e00f8cab2">mspass::algorithms::deconvolution::CNR3CDecon::loaddata</a></div><div class="ttdeci">void loaddata(mspass::seismic::Seismogram &amp;d, const int wcomp, const bool loadnoise=false)</div><div class="ttdoc">Load data with one component used as wavelet estimate.</div><div class="ttdef"><b>Definition</b> CNR3CDecon.cc:374</div></div>
-<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_html_a8f0b6ab1ffaf2b0f514341be81b21d7e"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon.html#a8f0b6ab1ffaf2b0f514341be81b21d7e">mspass::algorithms::deconvolution::CNR3CDecon::loadwavelet</a></div><div class="ttdeci">void loadwavelet(const mspass::seismic::TimeSeries &amp;w)</div><div class="ttdoc">Load data defining the wavelet to use for deconvolution.</div><div class="ttdef"><b>Definition</b> CNR3CDecon.cc:471</div></div>
+<div class="fragment"><div class="line"><span class="lineno">  347</span>                                                {</div>
+<div class="line"><span class="lineno">  348</span>  <span class="comment">// DEBUG</span></div>
+<div class="line"><span class="lineno">  349</span>  <span class="comment">// cout &lt;&lt; &quot;entering loaddata&quot;&lt;&lt;endl;</span></div>
+<div class="line"><span class="lineno">  350</span>  <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">  351</span>    <span class="keywordflow">if</span> (d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#aa96e795f96b5050996d791f5b6f3867d">dead</a>())</div>
+<div class="line"><span class="lineno">  352</span>      <span class="keywordflow">throw</span> MsPASSError(<span class="stringliteral">&quot;CNR3CDecon::loaddata method received data marked dead&quot;</span>,</div>
+<div class="line"><span class="lineno">  353</span>                        ErrorSeverity::Invalid);</div>
+<div class="line"><span class="lineno">  354</span>    <span class="comment">/* This does everything except load the wavelet from wcomp so we just</span></div>
+<div class="line"><span class="lineno">  355</span><span class="comment">     * invoke it here. */</span></div>
+<div class="line"><span class="lineno">  356</span>    this-&gt;<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon.html#a88d7fe1143e6459d7accf40e00f8cab2">loaddata</a>(d, loadnoise);</div>
+<div class="line"><span class="lineno">  357</span>    <span class="comment">/* We need to pull wcomp now because we alter the decondata matrix with</span></div>
+<div class="line"><span class="lineno">  358</span><span class="comment">     * padding next.  We don&#39;t want that for the wavelet at this stage as</span></div>
+<div class="line"><span class="lineno">  359</span><span class="comment">     * the loadwavelet method handles the padding stuff and we call it after</span></div>
+<div class="line"><span class="lineno">  360</span><span class="comment">     * windowing*/</span></div>
+<div class="line"><span class="lineno">  361</span>    CoreTimeSeries wtmp(ExtractComponent(decondata, wcomp));</div>
+<div class="line"><span class="lineno">  362</span>    wtmp = WindowData(wtmp, this-&gt;processing_window);</div>
+<div class="line"><span class="lineno">  363</span>    TimeSeries wtmp2(wtmp, <span class="stringliteral">&quot;Invalid&quot;</span>);</div>
+<div class="line"><span class="lineno">  364</span>    this-&gt;<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon.html#a8f0b6ab1ffaf2b0f514341be81b21d7e">loadwavelet</a>(wtmp2);</div>
+<div class="line"><span class="lineno">  365</span>  } <span class="keywordflow">catch</span> (...) {</div>
+<div class="line"><span class="lineno">  366</span>    <span class="keywordflow">throw</span>;</div>
+<div class="line"><span class="lineno">  367</span>  };</div>
+<div class="line"><span class="lineno">  368</span>}</div>
+<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_html_a88d7fe1143e6459d7accf40e00f8cab2"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon.html#a88d7fe1143e6459d7accf40e00f8cab2">mspass::algorithms::deconvolution::CNR3CDecon::loaddata</a></div><div class="ttdeci">void loaddata(mspass::seismic::Seismogram &amp;d, const int wcomp, const bool loadnoise=false)</div><div class="ttdoc">Load data with one component used as wavelet estimate.</div><div class="ttdef"><b>Definition</b> CNR3CDecon.cc:346</div></div>
+<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_html_a8f0b6ab1ffaf2b0f514341be81b21d7e"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon.html#a8f0b6ab1ffaf2b0f514341be81b21d7e">mspass::algorithms::deconvolution::CNR3CDecon::loadwavelet</a></div><div class="ttdeci">void loadwavelet(const mspass::seismic::TimeSeries &amp;w)</div><div class="ttdoc">Load data defining the wavelet to use for deconvolution.</div><div class="ttdef"><b>Definition</b> CNR3CDecon.cc:447</div></div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#aa96e795f96b5050996d791f5b6f3867d">mspass::seismic::BasicTimeSeries::dead()</a>, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon.html#a88d7fe1143e6459d7accf40e00f8cab2">loaddata()</a>, and <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon.html#a8f0b6ab1ffaf2b0f514341be81b21d7e">loadwavelet()</a>.</p>
 
@@ -824,11 +820,13 @@ gsl_fft_complex_workspace *&#160;</td><td class="memItemRight" valign="bottom"><
 
 <p>Load noise estimate directly as a PowerSpectrum object. </p>
 <p>The actual noise regularization is computed by this algorithm from an internally stored PowerSpectrum object. This method allows the power spectrum to be computed by some other method or using previously computed estimates rather than computing it through loadnoise. For instance, one might want to use a robust form of Welch's method to estimate preevent noise that would be immune to spikes and sporatic noise bursts. </p>
-<div class="fragment"><div class="line"><span class="lineno">  571</span>{</div>
-<div class="line"><span class="lineno">  572</span>  <span class="keywordflow">try</span>{</div>
-<div class="line"><span class="lineno">  573</span>    psnoise_data=d;</div>
-<div class="line"><span class="lineno">  574</span>  }<span class="keywordflow">catch</span>(...){<span class="keywordflow">throw</span>;};</div>
-<div class="line"><span class="lineno">  575</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  555</span>                                                      {</div>
+<div class="line"><span class="lineno">  556</span>  <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">  557</span>    psnoise_data = d;</div>
+<div class="line"><span class="lineno">  558</span>  } <span class="keywordflow">catch</span> (...) {</div>
+<div class="line"><span class="lineno">  559</span>    <span class="keywordflow">throw</span>;</div>
+<div class="line"><span class="lineno">  560</span>  };</div>
+<div class="line"><span class="lineno">  561</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -850,13 +848,17 @@ gsl_fft_complex_workspace *&#160;</td><td class="memItemRight" valign="bottom"><
 
 <p>Load noise data directly. </p>
 <p>This method can be used to load noise to be used to compute signal to noise related metrics. The spectrum of the noise is computed from a mutlitaper spectral estimator for the data passed as n. Best results will be obtain if the length of n is larger than the operator size defined by it's internal noise window (defined in constructor by noise_window_start and and parameters). Note for this constructor the actual time of the noise window passed is ignored, but the length it defines is used to define the length of the computed spectrum. It is better to have the input noise slightly larger than the operator length to be consistent with the expectations of the multitaper method. If the noise window is short the spectrum is computed but will be biased to lower amplitudes because of zero padding. That happens because the operator will not recompute Slepian tapers if the data are short. </p>
-<div class="fragment"><div class="line"><span class="lineno">  563</span>{</div>
-<div class="line"><span class="lineno">  564</span>  <span class="keywordflow">if</span>(n.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#aa96e795f96b5050996d791f5b6f3867d">dead</a>()) <span class="keywordflow">throw</span> MsPASSError(<span class="stringliteral">&quot;CNR3CDecon::loadnoise_data method received data marked dead&quot;</span>,</div>
-<div class="line"><span class="lineno">  565</span>            ErrorSeverity::Invalid);</div>
-<div class="line"><span class="lineno">  566</span>  <span class="keywordflow">try</span>{</div>
-<div class="line"><span class="lineno">  567</span>    this-&gt;psnoise_data=this-&gt;ThreeCPower(n);</div>
-<div class="line"><span class="lineno">  568</span>  }<span class="keywordflow">catch</span>(...){<span class="keywordflow">throw</span>;};</div>
-<div class="line"><span class="lineno">  569</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  544</span>                                                   {</div>
+<div class="line"><span class="lineno">  545</span>  <span class="keywordflow">if</span> (n.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#aa96e795f96b5050996d791f5b6f3867d">dead</a>())</div>
+<div class="line"><span class="lineno">  546</span>    <span class="keywordflow">throw</span> MsPASSError(</div>
+<div class="line"><span class="lineno">  547</span>        <span class="stringliteral">&quot;CNR3CDecon::loadnoise_data method received data marked dead&quot;</span>,</div>
+<div class="line"><span class="lineno">  548</span>        ErrorSeverity::Invalid);</div>
+<div class="line"><span class="lineno">  549</span>  <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">  550</span>    this-&gt;psnoise_data = this-&gt;ThreeCPower(n);</div>
+<div class="line"><span class="lineno">  551</span>  } <span class="keywordflow">catch</span> (...) {</div>
+<div class="line"><span class="lineno">  552</span>    <span class="keywordflow">throw</span>;</div>
+<div class="line"><span class="lineno">  553</span>  };</div>
+<div class="line"><span class="lineno">  554</span>}</div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#aa96e795f96b5050996d791f5b6f3867d">mspass::seismic::BasicTimeSeries::dead()</a>.</p>
 
@@ -880,11 +882,13 @@ gsl_fft_complex_workspace *&#160;</td><td class="memItemRight" valign="bottom"><
 
 <p>Load noise estimate for wavelet signal directly as a PowerSpectrum object. </p>
 <p>The actual noise regularization is computed by this algorithm from an internally stored PowerSpectrum object. This method allows the power spectrum to be computed by some other method or using previously computed estimates rather than computing it through loadnoise. </p>
-<div class="fragment"><div class="line"><span class="lineno">  595</span>{</div>
-<div class="line"><span class="lineno">  596</span>  <span class="keywordflow">try</span>{</div>
-<div class="line"><span class="lineno">  597</span>    psnoise=d;</div>
-<div class="line"><span class="lineno">  598</span>  }<span class="keywordflow">catch</span>(...){<span class="keywordflow">throw</span>;};</div>
-<div class="line"><span class="lineno">  599</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  586</span>                                                         {</div>
+<div class="line"><span class="lineno">  587</span>  <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">  588</span>    psnoise = d;</div>
+<div class="line"><span class="lineno">  589</span>  } <span class="keywordflow">catch</span> (...) {</div>
+<div class="line"><span class="lineno">  590</span>    <span class="keywordflow">throw</span>;</div>
+<div class="line"><span class="lineno">  591</span>  };</div>
+<div class="line"><span class="lineno">  592</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -906,24 +910,31 @@ gsl_fft_complex_workspace *&#160;</td><td class="memItemRight" valign="bottom"><
 
 <p>Load noise data for wavelet directly. </p>
 <p>This method can be used to load noise to be used for regularization from an arbitrary time window. The spectrum of the noise is computed from a mutlitaper spectral estimator for the data passed as n. Best results will be obtain if the length of n is larger than the operator size defined by it's internal noise window (defined in constructor by noise_window_start and and parameters). Note for this constructor the actual time of the noise window passed is ignored, but the length it defines is used to define the length of the computed spectrum. It is better to have the input noise slightly larger than the operator length to be consistent with the expectations of the multitaper method. If the noise window is short the spectrum is computed but will be biased to lower amplitudes because of zero padding. That happens because the operator will not recompute Slepian tapers if the data are short. </p>
-<div class="fragment"><div class="line"><span class="lineno">  578</span>{</div>
-<div class="line"><span class="lineno">  579</span><span class="comment">//DEBUG</span></div>
-<div class="line"><span class="lineno">  580</span><span class="comment">//cout &lt;&lt; &quot;Entering loadnoise_wavelet&quot;&lt;&lt;endl;</span></div>
-<div class="line"><span class="lineno">  581</span>  <span class="keywordflow">if</span>(n.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#aa96e795f96b5050996d791f5b6f3867d">dead</a>()) <span class="keywordflow">throw</span> MsPASSError(<span class="stringliteral">&quot;CNR3CDecon::loadnoise_wavelet method received data marked dead&quot;</span>,</div>
-<div class="line"><span class="lineno">  582</span>            ErrorSeverity::Invalid);</div>
-<div class="line"><span class="lineno">  583</span>  <span class="keywordflow">if</span>(n.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">npts</a>()&lt;=0) <span class="keywordflow">throw</span> MsPASSError(<span class="stringliteral">&quot;CNR3CDecon::loadnoise_wavelet method received an empty data vector.&quot;</span>,ErrorSeverity::Invalid);</div>
-<div class="line"><span class="lineno">  584</span>  <span class="keywordflow">try</span>{</div>
-<div class="line"><span class="lineno">  585</span>    <span class="keywordflow">if</span>(n.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">npts</a>()!=wnoise_engine.<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#a114db709279ea8ab275ba69fbdcbec13">taper_length</a>())</div>
-<div class="line"><span class="lineno">  586</span>    {</div>
-<div class="line"><span class="lineno">  587</span>      wnoise_engine=MTPowerSpectrumEngine(n.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">npts</a>(),</div>
-<div class="line"><span class="lineno">  588</span>        wnoise_engine.<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#accf94d6d1dff859884d9c0aa1719994a">time_bandwidth_product</a>(),wnoise_engine.<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#a10d4b650fdedd815652c1e4e86a0e715">number_tapers</a>());</div>
-<div class="line"><span class="lineno">  589</span>    }</div>
-<div class="line"><span class="lineno">  590</span>    psnoise=this-&gt;wnoise_engine.<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#aa3c10c25ea2c6b82cf8bbe2991f16bfe">apply</a>(n);</div>
-<div class="line"><span class="lineno">  591</span>  }<span class="keywordflow">catch</span>(...){<span class="keywordflow">throw</span>;};</div>
-<div class="line"><span class="lineno">  592</span>}</div>
-<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_html_a10d4b650fdedd815652c1e4e86a0e715"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#a10d4b650fdedd815652c1e4e86a0e715">mspass::algorithms::deconvolution::MTPowerSpectrumEngine::number_tapers</a></div><div class="ttdeci">int number_tapers() const</div><div class="ttdef"><b>Definition</b> MTPowerSpectrumEngine.h:106</div></div>
-<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_html_a114db709279ea8ab275ba69fbdcbec13"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#a114db709279ea8ab275ba69fbdcbec13">mspass::algorithms::deconvolution::MTPowerSpectrumEngine::taper_length</a></div><div class="ttdeci">int taper_length() const</div><div class="ttdef"><b>Definition</b> MTPowerSpectrumEngine.h:96</div></div>
-<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_html_aa3c10c25ea2c6b82cf8bbe2991f16bfe"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#aa3c10c25ea2c6b82cf8bbe2991f16bfe">mspass::algorithms::deconvolution::MTPowerSpectrumEngine::apply</a></div><div class="ttdeci">mspass::seismic::PowerSpectrum apply(const mspass::seismic::TimeSeries &amp;d)</div><div class="ttdef"><b>Definition</b> MTPowerSpectrumEngine.cc:124</div></div>
+<div class="fragment"><div class="line"><span class="lineno">  563</span>                                                      {</div>
+<div class="line"><span class="lineno">  564</span>  <span class="comment">// DEBUG</span></div>
+<div class="line"><span class="lineno">  565</span>  <span class="comment">// cout &lt;&lt; &quot;Entering loadnoise_wavelet&quot;&lt;&lt;endl;</span></div>
+<div class="line"><span class="lineno">  566</span>  <span class="keywordflow">if</span> (n.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#aa96e795f96b5050996d791f5b6f3867d">dead</a>())</div>
+<div class="line"><span class="lineno">  567</span>    <span class="keywordflow">throw</span> MsPASSError(</div>
+<div class="line"><span class="lineno">  568</span>        <span class="stringliteral">&quot;CNR3CDecon::loadnoise_wavelet method received data marked dead&quot;</span>,</div>
+<div class="line"><span class="lineno">  569</span>        ErrorSeverity::Invalid);</div>
+<div class="line"><span class="lineno">  570</span>  <span class="keywordflow">if</span> (n.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">npts</a>() &lt;= 0)</div>
+<div class="line"><span class="lineno">  571</span>    <span class="keywordflow">throw</span> MsPASSError(</div>
+<div class="line"><span class="lineno">  572</span>        <span class="stringliteral">&quot;CNR3CDecon::loadnoise_wavelet method received an empty data vector.&quot;</span>,</div>
+<div class="line"><span class="lineno">  573</span>        ErrorSeverity::Invalid);</div>
+<div class="line"><span class="lineno">  574</span>  <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">  575</span>    <span class="keywordflow">if</span> (n.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">npts</a>() != wnoise_engine.<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#a114db709279ea8ab275ba69fbdcbec13">taper_length</a>()) {</div>
+<div class="line"><span class="lineno">  576</span>      wnoise_engine = MTPowerSpectrumEngine(</div>
+<div class="line"><span class="lineno">  577</span>          n.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">npts</a>(), wnoise_engine.<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#accf94d6d1dff859884d9c0aa1719994a">time_bandwidth_product</a>(),</div>
+<div class="line"><span class="lineno">  578</span>          wnoise_engine.<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#a10d4b650fdedd815652c1e4e86a0e715">number_tapers</a>());</div>
+<div class="line"><span class="lineno">  579</span>    }</div>
+<div class="line"><span class="lineno">  580</span>    psnoise = this-&gt;wnoise_engine.<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#aa3c10c25ea2c6b82cf8bbe2991f16bfe">apply</a>(n);</div>
+<div class="line"><span class="lineno">  581</span>  } <span class="keywordflow">catch</span> (...) {</div>
+<div class="line"><span class="lineno">  582</span>    <span class="keywordflow">throw</span>;</div>
+<div class="line"><span class="lineno">  583</span>  };</div>
+<div class="line"><span class="lineno">  584</span>}</div>
+<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_html_a10d4b650fdedd815652c1e4e86a0e715"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#a10d4b650fdedd815652c1e4e86a0e715">mspass::algorithms::deconvolution::MTPowerSpectrumEngine::number_tapers</a></div><div class="ttdeci">int number_tapers() const</div><div class="ttdef"><b>Definition</b> MTPowerSpectrumEngine.h:101</div></div>
+<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_html_a114db709279ea8ab275ba69fbdcbec13"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#a114db709279ea8ab275ba69fbdcbec13">mspass::algorithms::deconvolution::MTPowerSpectrumEngine::taper_length</a></div><div class="ttdeci">int taper_length() const</div><div class="ttdef"><b>Definition</b> MTPowerSpectrumEngine.h:97</div></div>
+<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_html_aa3c10c25ea2c6b82cf8bbe2991f16bfe"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#aa3c10c25ea2c6b82cf8bbe2991f16bfe">mspass::algorithms::deconvolution::MTPowerSpectrumEngine::apply</a></div><div class="ttdeci">mspass::seismic::PowerSpectrum apply(const mspass::seismic::TimeSeries &amp;d)</div><div class="ttdef"><b>Definition</b> MTPowerSpectrumEngine.cc:116</div></div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#aa3c10c25ea2c6b82cf8bbe2991f16bfe">mspass::algorithms::deconvolution::MTPowerSpectrumEngine::apply()</a>, <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#aa96e795f96b5050996d791f5b6f3867d">mspass::seismic::BasicTimeSeries::dead()</a>, <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">mspass::seismic::BasicTimeSeries::npts()</a>, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#a10d4b650fdedd815652c1e4e86a0e715">mspass::algorithms::deconvolution::MTPowerSpectrumEngine::number_tapers()</a>, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#a114db709279ea8ab275ba69fbdcbec13">mspass::algorithms::deconvolution::MTPowerSpectrumEngine::taper_length()</a>, and <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#accf94d6d1dff859884d9c0aa1719994a">mspass::algorithms::deconvolution::MTPowerSpectrumEngine::time_bandwidth_product()</a>.</p>
 
@@ -954,100 +965,107 @@ gsl_fft_complex_workspace *&#160;</td><td class="memItemRight" valign="bottom"><
   </table>
   </dd>
 </dl>
-<div class="fragment"><div class="line"><span class="lineno">  472</span>{</div>
-<div class="line"><span class="lineno">  473</span>  <span class="keywordflow">if</span>(w.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#aa96e795f96b5050996d791f5b6f3867d">dead</a>()) <span class="keywordflow">throw</span> MsPASSError(<span class="stringliteral">&quot;CNR3CDecon::loadwavelet method received data marked dead&quot;</span>,</div>
-<div class="line"><span class="lineno">  474</span>            ErrorSeverity::Invalid);</div>
-<div class="line"><span class="lineno">  475</span>  <span class="keywordflow">if</span>(w.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">npts</a>()&lt;=0) <span class="keywordflow">throw</span> MsPASSError(<span class="stringliteral">&quot;CNR3CDecon::loadwavelet method received an empty TimeSeries (number samples &lt;=0)&quot;</span>,</div>
-<div class="line"><span class="lineno">  476</span>          ErrorSeverity::Invalid);</div>
-<div class="line"><span class="lineno">  477</span>  <span class="keywordflow">try</span>{</div>
-<div class="line"><span class="lineno">  478</span>    <span class="comment">/* Automatically and silently adjust the window size if input wavelet</span></div>
-<div class="line"><span class="lineno">  479</span><span class="comment">    length changes.   We always compute the wavelet spectrum from the full</span></div>
-<div class="line"><span class="lineno">  480</span><span class="comment">    signal loaded.   */</span></div>
-<div class="line"><span class="lineno">  481</span>    <span class="keywordflow">if</span>(this-&gt;waveletengine.<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#a114db709279ea8ab275ba69fbdcbec13">taper_length</a>()!=(w.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">npts</a>()))</div>
-<div class="line"><span class="lineno">  482</span>    {</div>
-<div class="line"><span class="lineno">  483</span>      this-&gt;waveletengine=MTPowerSpectrumEngine(w.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">npts</a>(),</div>
-<div class="line"><span class="lineno">  484</span>          this-&gt;waveletengine.time_bandwidth_product(),</div>
-<div class="line"><span class="lineno">  485</span>          this-&gt;waveletengine.number_tapers());</div>
-<div class="line"><span class="lineno">  486</span>    }</div>
-<div class="line"><span class="lineno">  487</span>    this-&gt;pswavelet=this-&gt;waveletengine.<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#aa3c10c25ea2c6b82cf8bbe2991f16bfe">apply</a>(w);</div>
-<div class="line"><span class="lineno">  488</span>    <span class="comment">/* for now use the same snr floor as regularization - may need to be an</span></div>
-<div class="line"><span class="lineno">  489</span><span class="comment">    independent parameter */</span></div>
-<div class="line"><span class="lineno">  490</span>    this-&gt;wavelet_bwd=EstimateBandwidth(FFTDeconOperator::df(this-&gt;operator_dt),pswavelet,</div>
-<div class="line"><span class="lineno">  491</span>      psnoise,snr_bandwidth,waveletengine.<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#accf94d6d1dff859884d9c0aa1719994a">time_bandwidth_product</a>(),this-&gt;fhs);</div>
-<div class="line"><span class="lineno">  492</span>    <span class="comment">/* Now load the wavelet into the fft buffer area - there are some tricky</span></div>
-<div class="line"><span class="lineno">  493</span><span class="comment">    things to do here to align the data correctly using the relative time</span></div>
-<div class="line"><span class="lineno">  494</span><span class="comment">    reference t0 stored with the TimeSeries data */</span></div>
-<div class="line"><span class="lineno">  495</span>    <span class="keywordtype">int</span> k,kk;</div>
-<div class="line"><span class="lineno">  496</span>    <span class="keywordtype">int</span> ns_to_copy,ntest;</div>
-<div class="line"><span class="lineno">  497</span>    this-&gt;wavelet=w;</div>
-<div class="line"><span class="lineno">  498</span>    ntest=w.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">npts</a>()-w.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#abe28ca2812a2ac21dd2196385ad106ab">sample_number</a>(0.0);</div>
-<div class="line"><span class="lineno">  499</span>    <span class="keywordflow">if</span>(ntest&gt;(this-&gt;winlength))</div>
-<div class="line"><span class="lineno">  500</span>    {</div>
-<div class="line"><span class="lineno">  501</span>      ns_to_copy=this-&gt;winlength;</div>
-<div class="line"><span class="lineno">  502</span>      stringstream ss;</div>
-<div class="line"><span class="lineno">  503</span>      ss&lt;&lt;<span class="stringliteral">&quot;loadwavelet method:  size mismatch.  Wavelet received has &quot;</span>&lt;&lt;ntest</div>
-<div class="line"><span class="lineno">  504</span>            &lt;&lt;<span class="stringliteral">&quot; samples with time&gt;0.0&quot;</span>&lt;&lt;endl</div>
-<div class="line"><span class="lineno">  505</span>          &lt;&lt; <span class="stringliteral">&quot;This is larger than the processing window length of &quot;</span>&lt;&lt;this-&gt;winlength&lt;&lt;endl</div>
-<div class="line"><span class="lineno">  506</span>          &lt;&lt; <span class="stringliteral">&quot;Wavelet must be contained in the processing window size&quot;</span>&lt;&lt;endl</div>
-<div class="line"><span class="lineno">  507</span>          &lt;&lt; <span class="stringliteral">&quot;Truncated on the right to processing window length - results may be invalid&quot;</span></div>
-<div class="line"><span class="lineno">  508</span>          &lt;&lt;endl;</div>
-<div class="line"><span class="lineno">  509</span>      wavelet.elog.<a class="code hl_function" href="classmspass_1_1utility_1_1_error_logger.html#aa69873ba0aebf67e9ba24d01992c0bcf">log_error</a>(<span class="stringliteral">&quot;CNR3CDecon&quot;</span>,ss.str(),ErrorSeverity::Complaint);</div>
-<div class="line"><span class="lineno">  510</span>    }</div>
-<div class="line"><span class="lineno">  511</span>    <span class="keywordflow">else</span></div>
-<div class="line"><span class="lineno">  512</span>      ns_to_copy=w.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">npts</a>();</div>
-<div class="line"><span class="lineno">  513</span>    <span class="comment">/* These were in the old api but are no longer needed because set_npts</span></div>
-<div class="line"><span class="lineno">  514</span><span class="comment">    does this operation</span></div>
-<div class="line"><span class="lineno">  515</span><span class="comment">    this-&gt;wavelet.s.clear();</span></div>
-<div class="line"><span class="lineno">  516</span><span class="comment">    this-&gt;wavelet.s.reserve(FFTDeconOperator::nfft);</span></div>
-<div class="line"><span class="lineno">  517</span><span class="comment">    for(k=0;k&lt;FFTDeconOperator::nfft;++k)this-&gt;wavelet.s.push_back(0.0);</span></div>
-<div class="line"><span class="lineno">  518</span><span class="comment">    */</span></div>
-<div class="line"><span class="lineno">  519</span>    this-&gt;wavelet.<a class="code hl_function" href="classmspass_1_1seismic_1_1_core_time_series.html#ae538485ac0aed2f8691477dffce6cda8">set_npts</a>(FFTDeconOperator::nfft);</div>
-<div class="line"><span class="lineno">  520</span>    this-&gt;wavelet.<a class="code hl_function" href="classmspass_1_1seismic_1_1_core_time_series.html#ae90b28cff0bc1997aa65a1693d8562d0">set_t0</a>(-(this-&gt;winlength)*(this-&gt;operator_dt));</div>
-<div class="line"><span class="lineno">  521</span><span class="comment">//DEBUG</span></div>
-<div class="line"><span class="lineno">  522</span><span class="comment">//cout &lt;&lt; &quot;t0 of wavelet stored now wavelet data objec=&quot;&lt;&lt;wavelet.t0()&lt;&lt;endl;</span></div>
-<div class="line"><span class="lineno">  523</span>    <span class="comment">/* We recycle the variable ntest defined above here for convenience only */</span></div>
-<div class="line"><span class="lineno">  524</span>    <span class="keywordflow">for</span>(k=0,ntest=0;k&lt;w.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">npts</a>();++k)</div>
-<div class="line"><span class="lineno">  525</span>    {</div>
-<div class="line"><span class="lineno">  526</span>      <span class="keywordtype">double</span> t=w.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#a438b4f6453a4ff2a46de53dfdf3599c2">time</a>(k);</div>
-<div class="line"><span class="lineno">  527</span>      <span class="keywordflow">if</span>(t&gt;=0.0)++ntest;</div>
-<div class="line"><span class="lineno">  528</span>      <span class="keywordflow">if</span>(ntest&gt;ns_to_copy) <span class="keywordflow">break</span>;</div>
-<div class="line"><span class="lineno">  529</span>      kk=this-&gt;wavelet.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#abe28ca2812a2ac21dd2196385ad106ab">sample_number</a>(t);</div>
-<div class="line"><span class="lineno">  530</span>      <span class="keywordflow">if</span>( (kk&gt;=0) &amp;&amp; (kk&lt;this-&gt;wavelet.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">npts</a>()) )</div>
-<div class="line"><span class="lineno">  531</span>        this-&gt;wavelet.<a class="code hl_variable" href="classmspass_1_1seismic_1_1_core_time_series.html#ab044edb3fe5fe734cb577a4434f390a2">s</a>[kk]=w.<a class="code hl_variable" href="classmspass_1_1seismic_1_1_core_time_series.html#ab044edb3fe5fe734cb577a4434f390a2">s</a>[k];</div>
-<div class="line"><span class="lineno">  532</span>    }</div>
-<div class="line"><span class="lineno">  533</span>    <span class="comment">/* This was the old code fixed Dec 2020 - remove when revision is know to work</span></div>
-<div class="line"><span class="lineno">  534</span><span class="comment">    for(k=0,kk=this-&gt;winlength;k&lt;ns_to_copy;++k,++kk)this-&gt;wavelet.s[kk]=w.s[k];</span></div>
-<div class="line"><span class="lineno">  535</span><span class="comment">    */</span></div>
-<div class="line"><span class="lineno">  536</span>    <span class="comment">//this-&gt;wavelet.t0 -= operator_dt*static_cast&lt;double&gt;(winlength);</span></div>
-<div class="line"><span class="lineno">  537</span>    <span class="comment">//this-&gt;wavelet.ns=FFTDeconOperator::nfft;</span></div>
-<div class="line"><span class="lineno">  538</span>    <span class="comment">//double newt0;</span></div>
-<div class="line"><span class="lineno">  539</span>    <span class="comment">//newt0=this-&gt;wavelet.t0() - operator_dt*static_cast&lt;double&gt;(winlength);</span></div>
-<div class="line"><span class="lineno">  540</span>    <span class="comment">//this-&gt;wavelet.set_t0(newt0);</span></div>
-<div class="line"><span class="lineno">  541</span> </div>
-<div class="line"><span class="lineno">  542</span> </div>
-<div class="line"><span class="lineno">  543</span>    <span class="comment">//debug</span></div>
-<div class="line"><span class="lineno">  544</span>    <span class="comment">/*cout &lt;&lt; &quot;Wavelet t, data&quot;&lt;&lt;endl;</span></div>
-<div class="line"><span class="lineno">  545</span><span class="comment">    for(auto kw=0;kw&lt;FFTDeconOperator::nfft;++kw)</span></div>
-<div class="line"><span class="lineno">  546</span><span class="comment">      cout &lt;&lt; wavelet.time(kw)&lt;&lt;&quot; &quot;&lt;&lt;wavelet.s[kw]&lt;&lt;endl;</span></div>
-<div class="line"><span class="lineno">  547</span><span class="comment">*/</span></div>
-<div class="line"><span class="lineno">  548</span>    <span class="keywordflow">switch</span>(algorithm)</div>
-<div class="line"><span class="lineno">  549</span>    {</div>
-<div class="line"><span class="lineno">  550</span>      <span class="comment">/* Note all the algorithms here alter wavelet by applying a taper */</span></div>
-<div class="line"><span class="lineno">  551</span>      <span class="keywordflow">case</span> CNR3C_algorithms::generalized_water_level:</div>
-<div class="line"><span class="lineno">  552</span>        compute_gwl_inverse();</div>
-<div class="line"><span class="lineno">  553</span>        <span class="keywordflow">break</span>;</div>
-<div class="line"><span class="lineno">  554</span>      <span class="keywordflow">case</span> CNR3C_algorithms::colored_noise_damping:</div>
-<div class="line"><span class="lineno">  555</span>      <span class="keywordflow">default</span>:</div>
-<div class="line"><span class="lineno">  556</span>        compute_gdamp_inverse();</div>
-<div class="line"><span class="lineno">  557</span>    };</div>
-<div class="line"><span class="lineno">  558</span><span class="comment">//DEBUG</span></div>
-<div class="line"><span class="lineno">  559</span><span class="comment">//cout &lt;&lt; &quot;Exiting loadwavelet&quot;&lt;&lt;endl;</span></div>
-<div class="line"><span class="lineno">  560</span>  }<span class="keywordflow">catch</span>(...){<span class="keywordflow">throw</span>;};</div>
-<div class="line"><span class="lineno">  561</span>}</div>
-<div class="ttc" id="aclassmspass_1_1seismic_1_1_basic_time_series_html_a438b4f6453a4ff2a46de53dfdf3599c2"><div class="ttname"><a href="classmspass_1_1seismic_1_1_basic_time_series.html#a438b4f6453a4ff2a46de53dfdf3599c2">mspass::seismic::BasicTimeSeries::time</a></div><div class="ttdeci">double time(const int i) const</div><div class="ttdef"><b>Definition</b> BasicTimeSeries.h:63</div></div>
-<div class="ttc" id="aclassmspass_1_1seismic_1_1_core_time_series_html_ae538485ac0aed2f8691477dffce6cda8"><div class="ttname"><a href="classmspass_1_1seismic_1_1_core_time_series.html#ae538485ac0aed2f8691477dffce6cda8">mspass::seismic::CoreTimeSeries::set_npts</a></div><div class="ttdeci">void set_npts(const size_t npts)</div><div class="ttdoc">Set the number of samples attribute for data.</div><div class="ttdef"><b>Definition</b> CoreTimeSeries.cc:222</div></div>
-<div class="ttc" id="aclassmspass_1_1seismic_1_1_core_time_series_html_ae90b28cff0bc1997aa65a1693d8562d0"><div class="ttname"><a href="classmspass_1_1seismic_1_1_core_time_series.html#ae90b28cff0bc1997aa65a1693d8562d0">mspass::seismic::CoreTimeSeries::set_t0</a></div><div class="ttdeci">void set_t0(const double t0in)</div><div class="ttdoc">Set the data start time.</div><div class="ttdef"><b>Definition</b> CoreTimeSeries.cc:203</div></div>
-<div class="ttc" id="aclassmspass_1_1utility_1_1_error_logger_html_aa69873ba0aebf67e9ba24d01992c0bcf"><div class="ttname"><a href="classmspass_1_1utility_1_1_error_logger.html#aa69873ba0aebf67e9ba24d01992c0bcf">mspass::utility::ErrorLogger::log_error</a></div><div class="ttdeci">int log_error(const mspass::utility::MsPASSError &amp;merr)</div><div class="ttdef"><b>Definition</b> ErrorLogger.cc:81</div></div>
+<div class="fragment"><div class="line"><span class="lineno">  447</span>                                                {</div>
+<div class="line"><span class="lineno">  448</span>  <span class="keywordflow">if</span> (w.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#aa96e795f96b5050996d791f5b6f3867d">dead</a>())</div>
+<div class="line"><span class="lineno">  449</span>    <span class="keywordflow">throw</span> MsPASSError(</div>
+<div class="line"><span class="lineno">  450</span>        <span class="stringliteral">&quot;CNR3CDecon::loadwavelet method received data marked dead&quot;</span>,</div>
+<div class="line"><span class="lineno">  451</span>        ErrorSeverity::Invalid);</div>
+<div class="line"><span class="lineno">  452</span>  <span class="keywordflow">if</span> (w.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">npts</a>() &lt;= 0)</div>
+<div class="line"><span class="lineno">  453</span>    <span class="keywordflow">throw</span> MsPASSError(<span class="stringliteral">&quot;CNR3CDecon::loadwavelet method received an empty &quot;</span></div>
+<div class="line"><span class="lineno">  454</span>                      <span class="stringliteral">&quot;TimeSeries (number samples &lt;=0)&quot;</span>,</div>
+<div class="line"><span class="lineno">  455</span>                      ErrorSeverity::Invalid);</div>
+<div class="line"><span class="lineno">  456</span>  <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">  457</span>    <span class="comment">/* Automatically and silently adjust the window size if input wavelet</span></div>
+<div class="line"><span class="lineno">  458</span><span class="comment">    length changes.   We always compute the wavelet spectrum from the full</span></div>
+<div class="line"><span class="lineno">  459</span><span class="comment">    signal loaded.   */</span></div>
+<div class="line"><span class="lineno">  460</span>    <span class="keywordflow">if</span> (this-&gt;waveletengine.<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#a114db709279ea8ab275ba69fbdcbec13">taper_length</a>() != (w.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">npts</a>())) {</div>
+<div class="line"><span class="lineno">  461</span>      this-&gt;waveletengine = MTPowerSpectrumEngine(</div>
+<div class="line"><span class="lineno">  462</span>          w.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">npts</a>(), this-&gt;waveletengine.time_bandwidth_product(),</div>
+<div class="line"><span class="lineno">  463</span>          this-&gt;waveletengine.number_tapers());</div>
+<div class="line"><span class="lineno">  464</span>    }</div>
+<div class="line"><span class="lineno">  465</span>    this-&gt;pswavelet = this-&gt;waveletengine.<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#aa3c10c25ea2c6b82cf8bbe2991f16bfe">apply</a>(w);</div>
+<div class="line"><span class="lineno">  466</span>    <span class="comment">/* for now use the same snr floor as regularization - may need to be an</span></div>
+<div class="line"><span class="lineno">  467</span><span class="comment">    independent parameter */</span></div>
+<div class="line"><span class="lineno">  468</span>    this-&gt;wavelet_bwd = EstimateBandwidth(</div>
+<div class="line"><span class="lineno">  469</span>        FFTDeconOperator::df(this-&gt;operator_dt), pswavelet, psnoise,</div>
+<div class="line"><span class="lineno">  470</span>        snr_bandwidth, waveletengine.<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#accf94d6d1dff859884d9c0aa1719994a">time_bandwidth_product</a>(), this-&gt;fhs);</div>
+<div class="line"><span class="lineno">  471</span>    <span class="comment">/* Now load the wavelet into the fft buffer area - there are some tricky</span></div>
+<div class="line"><span class="lineno">  472</span><span class="comment">    things to do here to align the data correctly using the relative time</span></div>
+<div class="line"><span class="lineno">  473</span><span class="comment">    reference t0 stored with the TimeSeries data */</span></div>
+<div class="line"><span class="lineno">  474</span>    <span class="keywordtype">int</span> k, kk;</div>
+<div class="line"><span class="lineno">  475</span>    <span class="keywordtype">int</span> ns_to_copy, ntest;</div>
+<div class="line"><span class="lineno">  476</span>    this-&gt;wavelet = w;</div>
+<div class="line"><span class="lineno">  477</span>    ntest = w.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">npts</a>() - w.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#abe28ca2812a2ac21dd2196385ad106ab">sample_number</a>(0.0);</div>
+<div class="line"><span class="lineno">  478</span>    <span class="keywordflow">if</span> (ntest &gt; (this-&gt;winlength)) {</div>
+<div class="line"><span class="lineno">  479</span>      ns_to_copy = this-&gt;winlength;</div>
+<div class="line"><span class="lineno">  480</span>      stringstream ss;</div>
+<div class="line"><span class="lineno">  481</span>      ss &lt;&lt; <span class="stringliteral">&quot;loadwavelet method:  size mismatch.  Wavelet received has &quot;</span></div>
+<div class="line"><span class="lineno">  482</span>         &lt;&lt; ntest &lt;&lt; <span class="stringliteral">&quot; samples with time&gt;0.0&quot;</span> &lt;&lt; endl</div>
+<div class="line"><span class="lineno">  483</span>         &lt;&lt; <span class="stringliteral">&quot;This is larger than the processing window length of &quot;</span></div>
+<div class="line"><span class="lineno">  484</span>         &lt;&lt; this-&gt;winlength &lt;&lt; endl</div>
+<div class="line"><span class="lineno">  485</span>         &lt;&lt; <span class="stringliteral">&quot;Wavelet must be contained in the processing window size&quot;</span> &lt;&lt; endl</div>
+<div class="line"><span class="lineno">  486</span>         &lt;&lt; <span class="stringliteral">&quot;Truncated on the right to processing window length - results may &quot;</span></div>
+<div class="line"><span class="lineno">  487</span>            <span class="stringliteral">&quot;be invalid&quot;</span></div>
+<div class="line"><span class="lineno">  488</span>         &lt;&lt; endl;</div>
+<div class="line"><span class="lineno">  489</span>      wavelet.elog.<a class="code hl_function" href="classmspass_1_1utility_1_1_error_logger.html#aa69873ba0aebf67e9ba24d01992c0bcf">log_error</a>(<span class="stringliteral">&quot;CNR3CDecon&quot;</span>, ss.str(), ErrorSeverity::Complaint);</div>
+<div class="line"><span class="lineno">  490</span>    } <span class="keywordflow">else</span></div>
+<div class="line"><span class="lineno">  491</span>      ns_to_copy = w.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">npts</a>();</div>
+<div class="line"><span class="lineno">  492</span>    <span class="comment">/* These were in the old api but are no longer needed because set_npts</span></div>
+<div class="line"><span class="lineno">  493</span><span class="comment">    does this operation</span></div>
+<div class="line"><span class="lineno">  494</span><span class="comment">    this-&gt;wavelet.s.clear();</span></div>
+<div class="line"><span class="lineno">  495</span><span class="comment">    this-&gt;wavelet.s.reserve(FFTDeconOperator::nfft);</span></div>
+<div class="line"><span class="lineno">  496</span><span class="comment">    for(k=0;k&lt;FFTDeconOperator::nfft;++k)this-&gt;wavelet.s.push_back(0.0);</span></div>
+<div class="line"><span class="lineno">  497</span><span class="comment">    */</span></div>
+<div class="line"><span class="lineno">  498</span>    this-&gt;wavelet.<a class="code hl_function" href="classmspass_1_1seismic_1_1_core_time_series.html#ae538485ac0aed2f8691477dffce6cda8">set_npts</a>(FFTDeconOperator::nfft);</div>
+<div class="line"><span class="lineno">  499</span>    this-&gt;wavelet.<a class="code hl_function" href="classmspass_1_1seismic_1_1_core_time_series.html#ae90b28cff0bc1997aa65a1693d8562d0">set_t0</a>(-(this-&gt;winlength) * (this-&gt;operator_dt));</div>
+<div class="line"><span class="lineno">  500</span>    <span class="comment">// DEBUG</span></div>
+<div class="line"><span class="lineno">  501</span>    <span class="comment">// cout &lt;&lt; &quot;t0 of wavelet stored now wavelet data</span></div>
+<div class="line"><span class="lineno">  502</span>    <span class="comment">// objec=&quot;&lt;&lt;wavelet.t0()&lt;&lt;endl;</span></div>
+<div class="line"><span class="lineno">  503</span>    <span class="comment">/* We recycle the variable ntest defined above here for convenience only */</span></div>
+<div class="line"><span class="lineno">  504</span>    <span class="keywordflow">for</span> (k = 0, ntest = 0; k &lt; w.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">npts</a>(); ++k) {</div>
+<div class="line"><span class="lineno">  505</span>      <span class="keywordtype">double</span> t = w.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#a438b4f6453a4ff2a46de53dfdf3599c2">time</a>(k);</div>
+<div class="line"><span class="lineno">  506</span>      <span class="keywordflow">if</span> (t &gt;= 0.0)</div>
+<div class="line"><span class="lineno">  507</span>        ++ntest;</div>
+<div class="line"><span class="lineno">  508</span>      <span class="keywordflow">if</span> (ntest &gt; ns_to_copy)</div>
+<div class="line"><span class="lineno">  509</span>        <span class="keywordflow">break</span>;</div>
+<div class="line"><span class="lineno">  510</span>      kk = this-&gt;wavelet.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#abe28ca2812a2ac21dd2196385ad106ab">sample_number</a>(t);</div>
+<div class="line"><span class="lineno">  511</span>      <span class="keywordflow">if</span> ((kk &gt;= 0) &amp;&amp; (kk &lt; this-&gt;wavelet.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">npts</a>()))</div>
+<div class="line"><span class="lineno">  512</span>        this-&gt;wavelet.<a class="code hl_variable" href="classmspass_1_1seismic_1_1_core_time_series.html#ab044edb3fe5fe734cb577a4434f390a2">s</a>[kk] = w.<a class="code hl_variable" href="classmspass_1_1seismic_1_1_core_time_series.html#ab044edb3fe5fe734cb577a4434f390a2">s</a>[k];</div>
+<div class="line"><span class="lineno">  513</span>    }</div>
+<div class="line"><span class="lineno">  514</span>    <span class="comment">/* This was the old code fixed Dec 2020 - remove when revision is know to</span></div>
+<div class="line"><span class="lineno">  515</span><span class="comment">    work</span></div>
+<div class="line"><span class="lineno">  516</span><span class="comment">    for(k=0,kk=this-&gt;winlength;k&lt;ns_to_copy;++k,++kk)this-&gt;wavelet.s[kk]=w.s[k];</span></div>
+<div class="line"><span class="lineno">  517</span><span class="comment">    */</span></div>
+<div class="line"><span class="lineno">  518</span>    <span class="comment">// this-&gt;wavelet.t0 -= operator_dt*static_cast&lt;double&gt;(winlength);</span></div>
+<div class="line"><span class="lineno">  519</span>    <span class="comment">// this-&gt;wavelet.ns=FFTDeconOperator::nfft;</span></div>
+<div class="line"><span class="lineno">  520</span>    <span class="comment">// double newt0;</span></div>
+<div class="line"><span class="lineno">  521</span>    <span class="comment">// newt0=this-&gt;wavelet.t0() - operator_dt*static_cast&lt;double&gt;(winlength);</span></div>
+<div class="line"><span class="lineno">  522</span>    <span class="comment">// this-&gt;wavelet.set_t0(newt0);</span></div>
+<div class="line"><span class="lineno">  523</span> </div>
+<div class="line"><span class="lineno">  524</span>    <span class="comment">// debug</span></div>
+<div class="line"><span class="lineno">  525</span>    <span class="comment">/*cout &lt;&lt; &quot;Wavelet t, data&quot;&lt;&lt;endl;</span></div>
+<div class="line"><span class="lineno">  526</span><span class="comment">    for(auto kw=0;kw&lt;FFTDeconOperator::nfft;++kw)</span></div>
+<div class="line"><span class="lineno">  527</span><span class="comment">      cout &lt;&lt; wavelet.time(kw)&lt;&lt;&quot; &quot;&lt;&lt;wavelet.s[kw]&lt;&lt;endl;</span></div>
+<div class="line"><span class="lineno">  528</span><span class="comment">*/</span></div>
+<div class="line"><span class="lineno">  529</span>    <span class="keywordflow">switch</span> (algorithm) {</div>
+<div class="line"><span class="lineno">  530</span>    <span class="comment">/* Note all the algorithms here alter wavelet by applying a taper */</span></div>
+<div class="line"><span class="lineno">  531</span>    <span class="keywordflow">case</span> CNR3C_algorithms::generalized_water_level:</div>
+<div class="line"><span class="lineno">  532</span>      compute_gwl_inverse();</div>
+<div class="line"><span class="lineno">  533</span>      <span class="keywordflow">break</span>;</div>
+<div class="line"><span class="lineno">  534</span>    <span class="keywordflow">case</span> CNR3C_algorithms::colored_noise_damping:</div>
+<div class="line"><span class="lineno">  535</span>    <span class="keywordflow">default</span>:</div>
+<div class="line"><span class="lineno">  536</span>      compute_gdamp_inverse();</div>
+<div class="line"><span class="lineno">  537</span>    };</div>
+<div class="line"><span class="lineno">  538</span>    <span class="comment">// DEBUG</span></div>
+<div class="line"><span class="lineno">  539</span>    <span class="comment">// cout &lt;&lt; &quot;Exiting loadwavelet&quot;&lt;&lt;endl;</span></div>
+<div class="line"><span class="lineno">  540</span>  } <span class="keywordflow">catch</span> (...) {</div>
+<div class="line"><span class="lineno">  541</span>    <span class="keywordflow">throw</span>;</div>
+<div class="line"><span class="lineno">  542</span>  };</div>
+<div class="line"><span class="lineno">  543</span>}</div>
+<div class="ttc" id="aclassmspass_1_1seismic_1_1_basic_time_series_html_a438b4f6453a4ff2a46de53dfdf3599c2"><div class="ttname"><a href="classmspass_1_1seismic_1_1_basic_time_series.html#a438b4f6453a4ff2a46de53dfdf3599c2">mspass::seismic::BasicTimeSeries::time</a></div><div class="ttdeci">double time(const int i) const</div><div class="ttdef"><b>Definition</b> BasicTimeSeries.h:62</div></div>
+<div class="ttc" id="aclassmspass_1_1seismic_1_1_core_time_series_html_ae538485ac0aed2f8691477dffce6cda8"><div class="ttname"><a href="classmspass_1_1seismic_1_1_core_time_series.html#ae538485ac0aed2f8691477dffce6cda8">mspass::seismic::CoreTimeSeries::set_npts</a></div><div class="ttdeci">void set_npts(const size_t npts)</div><div class="ttdoc">Set the number of samples attribute for data.</div><div class="ttdef"><b>Definition</b> CoreTimeSeries.cc:196</div></div>
+<div class="ttc" id="aclassmspass_1_1seismic_1_1_core_time_series_html_ae90b28cff0bc1997aa65a1693d8562d0"><div class="ttname"><a href="classmspass_1_1seismic_1_1_core_time_series.html#ae90b28cff0bc1997aa65a1693d8562d0">mspass::seismic::CoreTimeSeries::set_t0</a></div><div class="ttdeci">void set_t0(const double t0in)</div><div class="ttdoc">Set the data start time.</div><div class="ttdef"><b>Definition</b> CoreTimeSeries.cc:180</div></div>
+<div class="ttc" id="aclassmspass_1_1utility_1_1_error_logger_html_aa69873ba0aebf67e9ba24d01992c0bcf"><div class="ttname"><a href="classmspass_1_1utility_1_1_error_logger.html#aa69873ba0aebf67e9ba24d01992c0bcf">mspass::utility::ErrorLogger::log_error</a></div><div class="ttdeci">int log_error(const mspass::utility::MsPASSError &amp;merr)</div><div class="ttdef"><b>Definition</b> ErrorLogger.cc:72</div></div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#aa3c10c25ea2c6b82cf8bbe2991f16bfe">mspass::algorithms::deconvolution::MTPowerSpectrumEngine::apply()</a>, <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#aa96e795f96b5050996d791f5b6f3867d">mspass::seismic::BasicTimeSeries::dead()</a>, <a class="el" href="classmspass_1_1utility_1_1_error_logger.html#aa69873ba0aebf67e9ba24d01992c0bcf">mspass::utility::ErrorLogger::log_error()</a>, <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">mspass::seismic::BasicTimeSeries::npts()</a>, <a class="el" href="classmspass_1_1seismic_1_1_core_time_series.html#ab044edb3fe5fe734cb577a4434f390a2">mspass::seismic::CoreTimeSeries::s</a>, <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#abe28ca2812a2ac21dd2196385ad106ab">mspass::seismic::BasicTimeSeries::sample_number()</a>, <a class="el" href="classmspass_1_1seismic_1_1_core_time_series.html#ae538485ac0aed2f8691477dffce6cda8">mspass::seismic::CoreTimeSeries::set_npts()</a>, <a class="el" href="classmspass_1_1seismic_1_1_core_time_series.html#ae90b28cff0bc1997aa65a1693d8562d0">mspass::seismic::CoreTimeSeries::set_t0()</a>, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#a114db709279ea8ab275ba69fbdcbec13">mspass::algorithms::deconvolution::MTPowerSpectrumEngine::taper_length()</a>, <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#a438b4f6453a4ff2a46de53dfdf3599c2">mspass::seismic::BasicTimeSeries::time()</a>, and <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#accf94d6d1dff859884d9c0aa1719994a">mspass::algorithms::deconvolution::MTPowerSpectrumEngine::time_bandwidth_product()</a>.</p>
 
@@ -1068,49 +1086,47 @@ gsl_fft_complex_workspace *&#160;</td><td class="memItemRight" valign="bottom"><
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  261</span>{</div>
-<div class="line"><span class="lineno">  262</span>  <span class="keywordflow">if</span>(<span class="keyword">this</span>!=(&amp;parent))</div>
-<div class="line"><span class="lineno">  263</span>  {</div>
-<div class="line"><span class="lineno">  264</span>    algorithm=parent.algorithm;</div>
-<div class="line"><span class="lineno">  265</span>    processing_window=parent.processing_window;</div>
-<div class="line"><span class="lineno">  266</span>    noise_window=parent.noise_window;</div>
-<div class="line"><span class="lineno">  267</span>    signalengine=parent.signalengine;</div>
-<div class="line"><span class="lineno">  268</span>    waveletengine=parent.waveletengine;</div>
-<div class="line"><span class="lineno">  269</span>    dnoise_engine=parent.dnoise_engine;</div>
-<div class="line"><span class="lineno">  270</span>    wnoise_engine=parent.wnoise_engine;</div>
-<div class="line"><span class="lineno">  271</span>    psnoise=parent.psnoise;</div>
-<div class="line"><span class="lineno">  272</span>    psnoise_data=parent.psnoise_data;</div>
-<div class="line"><span class="lineno">  273</span>    pssignal=parent.pssignal;</div>
-<div class="line"><span class="lineno">  274</span>    pswavelet=parent.pswavelet;</div>
-<div class="line"><span class="lineno">  275</span>    decondata=parent.decondata;</div>
-<div class="line"><span class="lineno">  276</span>    wavelet=parent.wavelet;</div>
-<div class="line"><span class="lineno">  277</span>    shapingwavelet=parent.shapingwavelet;</div>
-<div class="line"><span class="lineno">  278</span>    ao_fft=parent.ao_fft;</div>
-<div class="line"><span class="lineno">  279</span>    wavelet_snr=parent.wavelet_snr;</div>
-<div class="line"><span class="lineno">  280</span>    taper_data=parent.taper_data;</div>
-<div class="line"><span class="lineno">  281</span>    operator_dt=parent.operator_dt;</div>
-<div class="line"><span class="lineno">  282</span>    winlength=parent.winlength;</div>
-<div class="line"><span class="lineno">  283</span>    damp=parent.damp;</div>
-<div class="line"><span class="lineno">  284</span>    noise_floor=parent.noise_floor;</div>
-<div class="line"><span class="lineno">  285</span>    snr_regularization_floor=parent.snr_regularization_floor;</div>
-<div class="line"><span class="lineno">  286</span>    snr_bandwidth=parent.snr_bandwidth;</div>
-<div class="line"><span class="lineno">  287</span>    band_snr_floor=parent.band_snr_floor;</div>
-<div class="line"><span class="lineno">  288</span>    regularization_bandwidth_fraction=parent.regularization_bandwidth_fraction;</div>
-<div class="line"><span class="lineno">  289</span>    decon_bandwidth_cutoff=parent.decon_bandwidth_cutoff;</div>
-<div class="line"><span class="lineno">  290</span>    fhs=parent.fhs;</div>
-<div class="line"><span class="lineno">  291</span>    wavelet_bwd=parent.wavelet_bwd;</div>
-<div class="line"><span class="lineno">  292</span>    signal_bwd=parent.signal_bwd;</div>
-<div class="line"><span class="lineno">  293</span>    <span class="keywordflow">for</span>(<span class="keywordtype">int</span> k=0;k&lt;3;++k)</div>
-<div class="line"><span class="lineno">  294</span>    {</div>
-<div class="line"><span class="lineno">  295</span>      signal_bandwidth_fraction[k]=parent.signal_bandwidth_fraction[k];</div>
-<div class="line"><span class="lineno">  296</span>      peak_snr[k]=parent.peak_snr[k];</div>
-<div class="line"><span class="lineno">  297</span>    }</div>
-<div class="line"><span class="lineno">  298</span>    wavelet_taper=parent.wavelet_taper;</div>
-<div class="line"><span class="lineno">  299</span>    data_taper=parent.data_taper;</div>
-<div class="line"><span class="lineno">  300</span> </div>
-<div class="line"><span class="lineno">  301</span>  }</div>
-<div class="line"><span class="lineno">  302</span>  <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
-<div class="line"><span class="lineno">  303</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  234</span>                                                          {</div>
+<div class="line"><span class="lineno">  235</span>  <span class="keywordflow">if</span> (<span class="keyword">this</span> != (&amp;parent)) {</div>
+<div class="line"><span class="lineno">  236</span>    algorithm = parent.algorithm;</div>
+<div class="line"><span class="lineno">  237</span>    processing_window = parent.processing_window;</div>
+<div class="line"><span class="lineno">  238</span>    noise_window = parent.noise_window;</div>
+<div class="line"><span class="lineno">  239</span>    signalengine = parent.signalengine;</div>
+<div class="line"><span class="lineno">  240</span>    waveletengine = parent.waveletengine;</div>
+<div class="line"><span class="lineno">  241</span>    dnoise_engine = parent.dnoise_engine;</div>
+<div class="line"><span class="lineno">  242</span>    wnoise_engine = parent.wnoise_engine;</div>
+<div class="line"><span class="lineno">  243</span>    psnoise = parent.psnoise;</div>
+<div class="line"><span class="lineno">  244</span>    psnoise_data = parent.psnoise_data;</div>
+<div class="line"><span class="lineno">  245</span>    pssignal = parent.pssignal;</div>
+<div class="line"><span class="lineno">  246</span>    pswavelet = parent.pswavelet;</div>
+<div class="line"><span class="lineno">  247</span>    decondata = parent.decondata;</div>
+<div class="line"><span class="lineno">  248</span>    wavelet = parent.wavelet;</div>
+<div class="line"><span class="lineno">  249</span>    shapingwavelet = parent.shapingwavelet;</div>
+<div class="line"><span class="lineno">  250</span>    ao_fft = parent.ao_fft;</div>
+<div class="line"><span class="lineno">  251</span>    wavelet_snr = parent.wavelet_snr;</div>
+<div class="line"><span class="lineno">  252</span>    taper_data = parent.taper_data;</div>
+<div class="line"><span class="lineno">  253</span>    operator_dt = parent.operator_dt;</div>
+<div class="line"><span class="lineno">  254</span>    winlength = parent.winlength;</div>
+<div class="line"><span class="lineno">  255</span>    damp = parent.damp;</div>
+<div class="line"><span class="lineno">  256</span>    noise_floor = parent.noise_floor;</div>
+<div class="line"><span class="lineno">  257</span>    snr_regularization_floor = parent.snr_regularization_floor;</div>
+<div class="line"><span class="lineno">  258</span>    snr_bandwidth = parent.snr_bandwidth;</div>
+<div class="line"><span class="lineno">  259</span>    band_snr_floor = parent.band_snr_floor;</div>
+<div class="line"><span class="lineno">  260</span>    regularization_bandwidth_fraction =</div>
+<div class="line"><span class="lineno">  261</span>        parent.regularization_bandwidth_fraction;</div>
+<div class="line"><span class="lineno">  262</span>    decon_bandwidth_cutoff = parent.decon_bandwidth_cutoff;</div>
+<div class="line"><span class="lineno">  263</span>    fhs = parent.fhs;</div>
+<div class="line"><span class="lineno">  264</span>    wavelet_bwd = parent.wavelet_bwd;</div>
+<div class="line"><span class="lineno">  265</span>    signal_bwd = parent.signal_bwd;</div>
+<div class="line"><span class="lineno">  266</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> k = 0; k &lt; 3; ++k) {</div>
+<div class="line"><span class="lineno">  267</span>      signal_bandwidth_fraction[k] = parent.signal_bandwidth_fraction[k];</div>
+<div class="line"><span class="lineno">  268</span>      peak_snr[k] = parent.peak_snr[k];</div>
+<div class="line"><span class="lineno">  269</span>    }</div>
+<div class="line"><span class="lineno">  270</span>    wavelet_taper = parent.wavelet_taper;</div>
+<div class="line"><span class="lineno">  271</span>    data_taper = parent.data_taper;</div>
+<div class="line"><span class="lineno">  272</span>  }</div>
+<div class="line"><span class="lineno">  273</span>  <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
+<div class="line"><span class="lineno">  274</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1138,131 +1154,140 @@ gsl_fft_complex_workspace *&#160;</td><td class="memItemRight" valign="bottom"><
 </div><div class="memdoc">
 
 <p>Implements <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_base3_c_decon.html">mspass::algorithms::deconvolution::Base3CDecon</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  788</span>{</div>
-<div class="line"><span class="lineno">  789</span><span class="comment">//DEBUG</span></div>
-<div class="line"><span class="lineno">  790</span><span class="comment">//cout &lt;&lt; &quot;Entering process method&quot;&lt;&lt;endl;</span></div>
-<div class="line"><span class="lineno">  791</span>  <span class="keyword">const</span> <span class="keywordtype">string</span> base_error(<span class="stringliteral">&quot;CNR3CDecon::process method:  &quot;</span>);</div>
-<div class="line"><span class="lineno">  792</span>  <span class="keywordtype">int</span> j,k;</div>
-<div class="line"><span class="lineno">  793</span>  <span class="keywordflow">try</span>{</div>
-<div class="line"><span class="lineno">  794</span>    <span class="comment">/* Immediately determine the data bandwidth for efficiency.</span></div>
-<div class="line"><span class="lineno">  795</span><span class="comment">    If the data have insufficient bandwith return a null Seismogram</span></div>
-<div class="line"><span class="lineno">  796</span><span class="comment">    with only Metadata and no data.   Do, however, post a mesage to</span></div>
-<div class="line"><span class="lineno">  797</span><span class="comment">    elog in that situation assuming it will be saved to database an</span></div>
-<div class="line"><span class="lineno">  798</span><span class="comment">    can be queried to tell what data were deleted for this reason.</span></div>
-<div class="line"><span class="lineno">  799</span><span class="comment">    Some of the tests here are more cautious than needed as load</span></div>
-<div class="line"><span class="lineno">  800</span><span class="comment">    functions should catch useless data before getting this far. */</span></div>
-<div class="line"><span class="lineno">  801</span>    BandwidthData bo;</div>
-<div class="line"><span class="lineno">  802</span>    bo=band_overlap(wavelet_bwd, signal_bwd);</div>
-<div class="line"><span class="lineno">  803</span>    <span class="comment">//DEBUG</span></div>
-<div class="line"><span class="lineno">  804</span>    cout &lt;&lt; <span class="stringliteral">&quot;Bandwidth data from wavelet&quot;</span>&lt;&lt;endl;</div>
-<div class="line"><span class="lineno">  805</span>    print_bwdata(wavelet_bwd);</div>
-<div class="line"><span class="lineno">  806</span>    cout &lt;&lt; <span class="stringliteral">&quot;Bandwidth data from 3D data&quot;</span>&lt;&lt;endl;</div>
-<div class="line"><span class="lineno">  807</span>    print_bwdata(signal_bwd);</div>
-<div class="line"><span class="lineno">  808</span>    cout &lt;&lt; <span class="stringliteral">&quot;Bandwidth data overlap &quot;</span>&lt;&lt;endl;</div>
-<div class="line"><span class="lineno">  809</span>    print_bwdata(bo);</div>
-<div class="line"><span class="lineno">  810</span>    <span class="comment">/* Note both of the quantities in this test must be in consistent</span></div>
-<div class="line"><span class="lineno">  811</span><span class="comment">    untis of dB */</span></div>
-<div class="line"><span class="lineno">  812</span>    <span class="keywordflow">if</span>(bo.bandwidth()&lt;(this-&gt;decon_bandwidth_cutoff))</div>
-<div class="line"><span class="lineno">  813</span>    {</div>
-<div class="line"><span class="lineno">  814</span>      <span class="comment">/* this is a bit inefficient to create this work space and immediately</span></div>
-<div class="line"><span class="lineno">  815</span><span class="comment">      destroy it but will do it this way until this proves to be a performance</span></div>
-<div class="line"><span class="lineno">  816</span><span class="comment">      problem. */</span></div>
-<div class="line"><span class="lineno">  817</span>      Seismogram no_can_do(decondata);</div>
-<div class="line"><span class="lineno">  818</span>      no_can_do.u=<a class="code hl_class" href="classmspass_1_1utility_1_1dmatrix.html">mspass::utility::dmatrix</a>(1,1);</div>
-<div class="line"><span class="lineno">  819</span>      <span class="comment">/* Be sure this is marked dead */</span></div>
-<div class="line"><span class="lineno">  820</span>      no_can_do.kill();</div>
-<div class="line"><span class="lineno">  821</span>      stringstream ss;</div>
-<div class="line"><span class="lineno">  822</span>      ss &lt;&lt; <span class="stringliteral">&quot;Killed because estimated bandwidth=&quot;</span>&lt;&lt;bo.bandwidth()</div>
-<div class="line"><span class="lineno">  823</span>         &lt;&lt; <span class="stringliteral">&quot; dB is below threshold of &quot;</span>&lt;&lt; this-&gt;decon_bandwidth_cutoff&lt;&lt;endl;</div>
-<div class="line"><span class="lineno">  824</span>      no_can_do.elog.log_error(<span class="stringliteral">&quot;CNR3CDecon&quot;</span>,ss.str(),ErrorSeverity::Invalid);</div>
-<div class="line"><span class="lineno">  825</span>      <span class="keywordflow">return</span> no_can_do;</div>
-<div class="line"><span class="lineno">  826</span>    }</div>
-<div class="line"><span class="lineno">  827</span>    this-&gt;update_shaping_wavelet(bo);</div>
-<div class="line"><span class="lineno">  828</span>    Seismogram rfest(decondata);</div>
-<div class="line"><span class="lineno">  829</span>    post_bandwidth_data(rfest,bo);</div>
-<div class="line"><span class="lineno">  830</span>    <span class="comment">/* This is used to apply a shift to the fft outputs to put signals</span></div>
-<div class="line"><span class="lineno">  831</span><span class="comment">    at relative time 0 */</span></div>
-<div class="line"><span class="lineno">  832</span>    <span class="keywordtype">int</span> t0_shift;</div>
-<div class="line"><span class="lineno">  833</span>    t0_shift= round((-rfest.t0())/rfest.dt());</div>
-<div class="line"><span class="lineno">  834</span>    <span class="comment">//DEBUG</span></div>
-<div class="line"><span class="lineno">  835</span>    <span class="comment">//cout &lt;&lt; &quot;time shift applied to output signal=&quot;&lt;&lt;t0_shift&lt;&lt;endl;</span></div>
-<div class="line"><span class="lineno">  836</span>    vector&lt;double&gt; wvec;</div>
-<div class="line"><span class="lineno">  837</span>    wvec.reserve(FFTDeconOperator::nfft);</div>
-<div class="line"><span class="lineno">  838</span>    <span class="comment">/* This is the proper mspass way to preserve history */</span></div>
-<div class="line"><span class="lineno">  839</span>    <span class="comment">//rfest.append_chain(&quot;process_sequence&quot;,&quot;CNR3CDecon&quot;);</span></div>
-<div class="line"><span class="lineno">  840</span>    <span class="keywordflow">if</span>(rfest.npts()!=FFTDeconOperator::nfft) rfest.u=dmatrix(3,FFTDeconOperator::nfft);</div>
-<div class="line"><span class="lineno">  841</span>    <span class="keywordtype">int</span> nhighsnr;</div>
-<div class="line"><span class="lineno">  842</span>    <span class="keywordtype">double</span> df;</div>
-<div class="line"><span class="lineno">  843</span>    df=1.0/(operator_dt*<span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(FFTDeconOperator::nfft));</div>
-<div class="line"><span class="lineno">  844</span>    <span class="keywordflow">for</span>(k=0;k&lt;3;++k)</div>
-<div class="line"><span class="lineno">  845</span>    {</div>
-<div class="line"><span class="lineno">  846</span>      TimeSeries work;</div>
-<div class="line"><span class="lineno">  847</span>      work=TimeSeries(ExtractComponent(decondata,k),<span class="stringliteral">&quot;Invalid&quot;</span>);</div>
-<div class="line"><span class="lineno">  848</span>      <span class="comment">/* Debug - temporarily remove taper</span></div>
-<div class="line"><span class="lineno">  849</span><span class="comment">      if(taper_data) data_taper-&gt;apply(work);</span></div>
-<div class="line"><span class="lineno">  850</span><span class="comment">      */</span></div>
-<div class="line"><span class="lineno">  851</span>      wvec.clear();</div>
-<div class="line"><span class="lineno">  852</span>      <span class="keywordtype">int</span> ntocopy=FFTDeconOperator::nfft;</div>
-<div class="line"><span class="lineno">  853</span>      <span class="keywordflow">if</span>(ntocopy&gt;work.npts()) ntocopy=work.npts();</div>
-<div class="line"><span class="lineno">  854</span>      <span class="keywordflow">for</span>(j=0;j&lt;ntocopy;++j) wvec.push_back(work.s[j]);</div>
-<div class="line"><span class="lineno">  855</span>      <span class="keywordflow">for</span>(j=ntocopy;j&lt;FFTDeconOperator::nfft;++j)</div>
-<div class="line"><span class="lineno">  856</span>                   wvec.push_back(0.0);</div>
-<div class="line"><span class="lineno">  857</span> </div>
-<div class="line"><span class="lineno">  858</span>      ComplexArray numerator(FFTDeconOperator::nfft,&amp;(wvec[0]));</div>
-<div class="line"><span class="lineno">  859</span>      <span class="comment">//Debug</span></div>
-<div class="line"><span class="lineno">  860</span>      <span class="comment">//cout &lt;&lt; &quot;numerator data after taper for component=&quot;&lt;&lt;k&lt;&lt;endl;</span></div>
-<div class="line"><span class="lineno">  861</span>      <span class="comment">//for(j=0;j&lt;FFTDeconOperator::nfft;++j)cout&lt;&lt;real(numerator[j])&lt;&lt;endl;</span></div>
-<div class="line"><span class="lineno">  862</span>      gsl_fft_complex_forward(numerator.ptr(),1,FFTDeconOperator::nfft,</div>
-<div class="line"><span class="lineno">  863</span>            wavetable,workspace);</div>
-<div class="line"><span class="lineno">  864</span>      <span class="comment">/* This loop computes QCMetrics of bandwidth fraction that</span></div>
-<div class="line"><span class="lineno">  865</span><span class="comment">      is above a defined snr floor - not necessarily the same as the</span></div>
-<div class="line"><span class="lineno">  866</span><span class="comment">      regularization floor used in computing the inverse */</span></div>
-<div class="line"><span class="lineno">  867</span>      <span class="keywordtype">double</span> snrmax;</div>
-<div class="line"><span class="lineno">  868</span>      snrmax=1.0;</div>
-<div class="line"><span class="lineno">  869</span>      nhighsnr=0;</div>
-<div class="line"><span class="lineno">  870</span>      <span class="comment">//debug</span></div>
-<div class="line"><span class="lineno">  871</span>      <span class="comment">//cout &lt;&lt; &quot;Spectrum f, signal, noise, snr&quot;&lt;&lt;endl;</span></div>
-<div class="line"><span class="lineno">  872</span>      <span class="keywordflow">for</span>(j=0;j&lt;FFTDeconOperator::nfft/2;++j)</div>
-<div class="line"><span class="lineno">  873</span>      {</div>
-<div class="line"><span class="lineno">  874</span>        <span class="keywordtype">double</span> f;</div>
-<div class="line"><span class="lineno">  875</span>        f=df*<span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(j);</div>
-<div class="line"><span class="lineno">  876</span>        Complex64 z=numerator[j];</div>
-<div class="line"><span class="lineno">  877</span>        <span class="keywordtype">double</span> sigamp=abs(z);</div>
-<div class="line"><span class="lineno">  878</span>        <span class="keywordtype">double</span> namp=sqrt(psnoise.<a class="code hl_function" href="classmspass_1_1seismic_1_1_power_spectrum.html#a3d1e72618b8e88c5929839c5e8885859">power</a>(f));</div>
-<div class="line"><span class="lineno">  879</span>        <span class="keywordtype">double</span> snr=sigamp/namp;</div>
-<div class="line"><span class="lineno">  880</span>        <span class="comment">//Debug</span></div>
-<div class="line"><span class="lineno">  881</span>        <span class="comment">//cout &lt;&lt;f&lt;&lt;&quot; &quot;&lt;&lt; sigamp&lt;&lt;&quot; &quot;&lt;&lt;namp&lt;&lt;&quot; &quot;&lt;&lt;snr&lt;&lt;endl;</span></div>
-<div class="line"><span class="lineno">  882</span> </div>
-<div class="line"><span class="lineno">  883</span>        <span class="keywordflow">if</span>(snr&gt;snrmax) snrmax=snr;</div>
-<div class="line"><span class="lineno">  884</span>        <span class="keywordflow">if</span>(snr&gt;band_snr_floor) ++nhighsnr;</div>
-<div class="line"><span class="lineno">  885</span>      }</div>
-<div class="line"><span class="lineno">  886</span>      signal_bandwidth_fraction[k]=<span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(nhighsnr)</div>
-<div class="line"><span class="lineno">  887</span>                  / <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(FFTDeconOperator::nfft/2);</div>
-<div class="line"><span class="lineno">  888</span>      peak_snr[k]=snrmax;</div>
-<div class="line"><span class="lineno">  889</span>      ComplexArray rftmp=numerator*winv;</div>
-<div class="line"><span class="lineno">  890</span>      rftmp=(*shapingwavelet.<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html#ac922b603ff03a691075724bcd53e396f">wavelet</a>())*rftmp;</div>
-<div class="line"><span class="lineno">  891</span>      gsl_fft_complex_inverse(rftmp.ptr(), 1, FFTDeconOperator::nfft,</div>
-<div class="line"><span class="lineno">  892</span>          wavetable, workspace);</div>
-<div class="line"><span class="lineno">  893</span>      wvec.clear();</div>
-<div class="line"><span class="lineno">  894</span>      <span class="keywordflow">for</span>(j=0;j&lt;FFTDeconOperator::nfft;++j) wvec.push_back(rftmp[j].real());</div>
-<div class="line"><span class="lineno">  895</span>      <span class="comment">//debug</span></div>
-<div class="line"><span class="lineno">  896</span>      <span class="comment">//cout &lt;&lt; &quot;Raw deconvolved data before time shift (re,im)&quot;&lt;&lt;endl;</span></div>
-<div class="line"><span class="lineno">  897</span>      <span class="comment">//for(j=0;j&lt;FFTDeconOperator::nfft;++j) cout &lt;&lt; wvec[j]&lt;&lt;&quot; &quot;&lt;&lt;rftmp[j].imag()&lt;&lt;endl;</span></div>
-<div class="line"><span class="lineno">  898</span>      <span class="comment">//cout &lt;&lt; &quot;Function output uses time shift=&quot;&lt;&lt;t0_shift&lt;&lt;endl;</span></div>
-<div class="line"><span class="lineno">  899</span>      <span class="comment">/* Note we used a time domain shift instead of using a linear phase</span></div>
-<div class="line"><span class="lineno">  900</span><span class="comment">      shift in the frequency domain because time domain operator has a lower</span></div>
-<div class="line"><span class="lineno">  901</span><span class="comment">      operation count than the frequency domain algorithm and is thus more</span></div>
-<div class="line"><span class="lineno">  902</span><span class="comment">      efficient.*/</span></div>
-<div class="line"><span class="lineno">  903</span>      <span class="comment">/* Debug - temporarily disable this shift*/</span></div>
-<div class="line"><span class="lineno">  904</span>      <span class="keywordflow">if</span>(t0_shift!=0)</div>
-<div class="line"><span class="lineno">  905</span>        wvec=circular_shift(wvec,-t0_shift);</div>
-<div class="line"><span class="lineno">  906</span>      <span class="keywordflow">for</span>(j=0;j&lt;FFTDeconOperator::nfft;++j)rfest.u(k,j)=wvec[j];</div>
-<div class="line"><span class="lineno">  907</span>    }</div>
-<div class="line"><span class="lineno">  908</span>    <span class="keywordflow">return</span> rfest;</div>
-<div class="line"><span class="lineno">  909</span>  }<span class="keywordflow">catch</span>(...){<span class="keywordflow">throw</span>;};</div>
-<div class="line"><span class="lineno">  910</span>}</div>
-<div class="ttc" id="aclassmspass_1_1seismic_1_1_power_spectrum_html_a3d1e72618b8e88c5929839c5e8885859"><div class="ttname"><a href="classmspass_1_1seismic_1_1_power_spectrum.html#a3d1e72618b8e88c5929839c5e8885859">mspass::seismic::PowerSpectrum::power</a></div><div class="ttdeci">double power(const double f) const</div><div class="ttdoc">power at a given frequency.</div><div class="ttdef"><b>Definition</b> PowerSpectrum.cc:90</div></div>
-<div class="ttc" id="aclassmspass_1_1utility_1_1dmatrix_html"><div class="ttname"><a href="classmspass_1_1utility_1_1dmatrix.html">mspass::utility::dmatrix</a></div><div class="ttdoc">Lightweight, simple matrix object.</div><div class="ttdef"><b>Definition</b> dmatrix.h:102</div></div>
+<div class="fragment"><div class="line"><span class="lineno">  771</span>                               {</div>
+<div class="line"><span class="lineno">  772</span>  <span class="comment">// DEBUG</span></div>
+<div class="line"><span class="lineno">  773</span>  <span class="comment">// cout &lt;&lt; &quot;Entering process method&quot;&lt;&lt;endl;</span></div>
+<div class="line"><span class="lineno">  774</span>  <span class="keyword">const</span> <span class="keywordtype">string</span> base_error(<span class="stringliteral">&quot;CNR3CDecon::process method:  &quot;</span>);</div>
+<div class="line"><span class="lineno">  775</span>  <span class="keywordtype">int</span> j, k;</div>
+<div class="line"><span class="lineno">  776</span>  <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">  777</span>    <span class="comment">/* Immediately determine the data bandwidth for efficiency.</span></div>
+<div class="line"><span class="lineno">  778</span><span class="comment">    If the data have insufficient bandwith return a null Seismogram</span></div>
+<div class="line"><span class="lineno">  779</span><span class="comment">    with only Metadata and no data.   Do, however, post a mesage to</span></div>
+<div class="line"><span class="lineno">  780</span><span class="comment">    elog in that situation assuming it will be saved to database an</span></div>
+<div class="line"><span class="lineno">  781</span><span class="comment">    can be queried to tell what data were deleted for this reason.</span></div>
+<div class="line"><span class="lineno">  782</span><span class="comment">    Some of the tests here are more cautious than needed as load</span></div>
+<div class="line"><span class="lineno">  783</span><span class="comment">    functions should catch useless data before getting this far. */</span></div>
+<div class="line"><span class="lineno">  784</span>    BandwidthData bo;</div>
+<div class="line"><span class="lineno">  785</span>    bo = band_overlap(wavelet_bwd, signal_bwd);</div>
+<div class="line"><span class="lineno">  786</span>    <span class="comment">// DEBUG</span></div>
+<div class="line"><span class="lineno">  787</span>    cout &lt;&lt; <span class="stringliteral">&quot;Bandwidth data from wavelet&quot;</span> &lt;&lt; endl;</div>
+<div class="line"><span class="lineno">  788</span>    print_bwdata(wavelet_bwd);</div>
+<div class="line"><span class="lineno">  789</span>    cout &lt;&lt; <span class="stringliteral">&quot;Bandwidth data from 3D data&quot;</span> &lt;&lt; endl;</div>
+<div class="line"><span class="lineno">  790</span>    print_bwdata(signal_bwd);</div>
+<div class="line"><span class="lineno">  791</span>    cout &lt;&lt; <span class="stringliteral">&quot;Bandwidth data overlap &quot;</span> &lt;&lt; endl;</div>
+<div class="line"><span class="lineno">  792</span>    print_bwdata(bo);</div>
+<div class="line"><span class="lineno">  793</span>    <span class="comment">/* Note both of the quantities in this test must be in consistent</span></div>
+<div class="line"><span class="lineno">  794</span><span class="comment">    untis of dB */</span></div>
+<div class="line"><span class="lineno">  795</span>    <span class="keywordflow">if</span> (bo.bandwidth() &lt; (this-&gt;decon_bandwidth_cutoff)) {</div>
+<div class="line"><span class="lineno">  796</span>      <span class="comment">/* this is a bit inefficient to create this work space and immediately</span></div>
+<div class="line"><span class="lineno">  797</span><span class="comment">      destroy it but will do it this way until this proves to be a performance</span></div>
+<div class="line"><span class="lineno">  798</span><span class="comment">      problem. */</span></div>
+<div class="line"><span class="lineno">  799</span>      Seismogram no_can_do(decondata);</div>
+<div class="line"><span class="lineno">  800</span>      no_can_do.u = <a class="code hl_class" href="classmspass_1_1utility_1_1dmatrix.html">mspass::utility::dmatrix</a>(1, 1);</div>
+<div class="line"><span class="lineno">  801</span>      <span class="comment">/* Be sure this is marked dead */</span></div>
+<div class="line"><span class="lineno">  802</span>      no_can_do.kill();</div>
+<div class="line"><span class="lineno">  803</span>      stringstream ss;</div>
+<div class="line"><span class="lineno">  804</span>      ss &lt;&lt; <span class="stringliteral">&quot;Killed because estimated bandwidth=&quot;</span> &lt;&lt; bo.bandwidth()</div>
+<div class="line"><span class="lineno">  805</span>         &lt;&lt; <span class="stringliteral">&quot; dB is below threshold of &quot;</span> &lt;&lt; this-&gt;decon_bandwidth_cutoff</div>
+<div class="line"><span class="lineno">  806</span>         &lt;&lt; endl;</div>
+<div class="line"><span class="lineno">  807</span>      no_can_do.elog.log_error(<span class="stringliteral">&quot;CNR3CDecon&quot;</span>, ss.str(), ErrorSeverity::Invalid);</div>
+<div class="line"><span class="lineno">  808</span>      <span class="keywordflow">return</span> no_can_do;</div>
+<div class="line"><span class="lineno">  809</span>    }</div>
+<div class="line"><span class="lineno">  810</span>    this-&gt;update_shaping_wavelet(bo);</div>
+<div class="line"><span class="lineno">  811</span>    Seismogram rfest(decondata);</div>
+<div class="line"><span class="lineno">  812</span>    post_bandwidth_data(rfest, bo);</div>
+<div class="line"><span class="lineno">  813</span>    <span class="comment">/* This is used to apply a shift to the fft outputs to put signals</span></div>
+<div class="line"><span class="lineno">  814</span><span class="comment">    at relative time 0 */</span></div>
+<div class="line"><span class="lineno">  815</span>    <span class="keywordtype">int</span> t0_shift;</div>
+<div class="line"><span class="lineno">  816</span>    t0_shift = round((-rfest.t0()) / rfest.dt());</div>
+<div class="line"><span class="lineno">  817</span>    <span class="comment">// DEBUG</span></div>
+<div class="line"><span class="lineno">  818</span>    <span class="comment">// cout &lt;&lt; &quot;time shift applied to output signal=&quot;&lt;&lt;t0_shift&lt;&lt;endl;</span></div>
+<div class="line"><span class="lineno">  819</span>    vector&lt;double&gt; wvec;</div>
+<div class="line"><span class="lineno">  820</span>    wvec.reserve(FFTDeconOperator::nfft);</div>
+<div class="line"><span class="lineno">  821</span>    <span class="comment">/* This is the proper mspass way to preserve history */</span></div>
+<div class="line"><span class="lineno">  822</span>    <span class="comment">// rfest.append_chain(&quot;process_sequence&quot;,&quot;CNR3CDecon&quot;);</span></div>
+<div class="line"><span class="lineno">  823</span>    <span class="keywordflow">if</span> (rfest.npts() != FFTDeconOperator::nfft)</div>
+<div class="line"><span class="lineno">  824</span>      rfest.u = dmatrix(3, FFTDeconOperator::nfft);</div>
+<div class="line"><span class="lineno">  825</span>    <span class="keywordtype">int</span> nhighsnr;</div>
+<div class="line"><span class="lineno">  826</span>    <span class="keywordtype">double</span> df;</div>
+<div class="line"><span class="lineno">  827</span>    df = 1.0 / (operator_dt * <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(FFTDeconOperator::nfft));</div>
+<div class="line"><span class="lineno">  828</span>    <span class="keywordflow">for</span> (k = 0; k &lt; 3; ++k) {</div>
+<div class="line"><span class="lineno">  829</span>      TimeSeries work;</div>
+<div class="line"><span class="lineno">  830</span>      work = TimeSeries(ExtractComponent(decondata, k), <span class="stringliteral">&quot;Invalid&quot;</span>);</div>
+<div class="line"><span class="lineno">  831</span>      <span class="comment">/* Debug - temporarily remove taper</span></div>
+<div class="line"><span class="lineno">  832</span><span class="comment">      if(taper_data) data_taper-&gt;apply(work);</span></div>
+<div class="line"><span class="lineno">  833</span><span class="comment">      */</span></div>
+<div class="line"><span class="lineno">  834</span>      wvec.clear();</div>
+<div class="line"><span class="lineno">  835</span>      <span class="keywordtype">int</span> ntocopy = FFTDeconOperator::nfft;</div>
+<div class="line"><span class="lineno">  836</span>      <span class="keywordflow">if</span> (ntocopy &gt; work.npts())</div>
+<div class="line"><span class="lineno">  837</span>        ntocopy = work.npts();</div>
+<div class="line"><span class="lineno">  838</span>      <span class="keywordflow">for</span> (j = 0; j &lt; ntocopy; ++j)</div>
+<div class="line"><span class="lineno">  839</span>        wvec.push_back(work.s[j]);</div>
+<div class="line"><span class="lineno">  840</span>      <span class="keywordflow">for</span> (j = ntocopy; j &lt; FFTDeconOperator::nfft; ++j)</div>
+<div class="line"><span class="lineno">  841</span>        wvec.push_back(0.0);</div>
+<div class="line"><span class="lineno">  842</span> </div>
+<div class="line"><span class="lineno">  843</span>      ComplexArray numerator(FFTDeconOperator::nfft, &amp;(wvec[0]));</div>
+<div class="line"><span class="lineno">  844</span>      <span class="comment">// Debug</span></div>
+<div class="line"><span class="lineno">  845</span>      <span class="comment">// cout &lt;&lt; &quot;numerator data after taper for component=&quot;&lt;&lt;k&lt;&lt;endl;</span></div>
+<div class="line"><span class="lineno">  846</span>      <span class="comment">// for(j=0;j&lt;FFTDeconOperator::nfft;++j)cout&lt;&lt;real(numerator[j])&lt;&lt;endl;</span></div>
+<div class="line"><span class="lineno">  847</span>      gsl_fft_complex_forward(numerator.ptr(), 1, FFTDeconOperator::nfft,</div>
+<div class="line"><span class="lineno">  848</span>                              wavetable, workspace);</div>
+<div class="line"><span class="lineno">  849</span>      <span class="comment">/* This loop computes QCMetrics of bandwidth fraction that</span></div>
+<div class="line"><span class="lineno">  850</span><span class="comment">      is above a defined snr floor - not necessarily the same as the</span></div>
+<div class="line"><span class="lineno">  851</span><span class="comment">      regularization floor used in computing the inverse */</span></div>
+<div class="line"><span class="lineno">  852</span>      <span class="keywordtype">double</span> snrmax;</div>
+<div class="line"><span class="lineno">  853</span>      snrmax = 1.0;</div>
+<div class="line"><span class="lineno">  854</span>      nhighsnr = 0;</div>
+<div class="line"><span class="lineno">  855</span>      <span class="comment">// debug</span></div>
+<div class="line"><span class="lineno">  856</span>      <span class="comment">// cout &lt;&lt; &quot;Spectrum f, signal, noise, snr&quot;&lt;&lt;endl;</span></div>
+<div class="line"><span class="lineno">  857</span>      <span class="keywordflow">for</span> (j = 0; j &lt; FFTDeconOperator::nfft / 2; ++j) {</div>
+<div class="line"><span class="lineno">  858</span>        <span class="keywordtype">double</span> f;</div>
+<div class="line"><span class="lineno">  859</span>        f = df * <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(j);</div>
+<div class="line"><span class="lineno">  860</span>        Complex64 z = numerator[j];</div>
+<div class="line"><span class="lineno">  861</span>        <span class="keywordtype">double</span> sigamp = abs(z);</div>
+<div class="line"><span class="lineno">  862</span>        <span class="keywordtype">double</span> namp = sqrt(psnoise.<a class="code hl_function" href="classmspass_1_1seismic_1_1_power_spectrum.html#a3d1e72618b8e88c5929839c5e8885859">power</a>(f));</div>
+<div class="line"><span class="lineno">  863</span>        <span class="keywordtype">double</span> snr = sigamp / namp;</div>
+<div class="line"><span class="lineno">  864</span>        <span class="comment">// Debug</span></div>
+<div class="line"><span class="lineno">  865</span>        <span class="comment">// cout &lt;&lt;f&lt;&lt;&quot; &quot;&lt;&lt; sigamp&lt;&lt;&quot; &quot;&lt;&lt;namp&lt;&lt;&quot; &quot;&lt;&lt;snr&lt;&lt;endl;</span></div>
+<div class="line"><span class="lineno">  866</span> </div>
+<div class="line"><span class="lineno">  867</span>        <span class="keywordflow">if</span> (snr &gt; snrmax)</div>
+<div class="line"><span class="lineno">  868</span>          snrmax = snr;</div>
+<div class="line"><span class="lineno">  869</span>        <span class="keywordflow">if</span> (snr &gt; band_snr_floor)</div>
+<div class="line"><span class="lineno">  870</span>          ++nhighsnr;</div>
+<div class="line"><span class="lineno">  871</span>      }</div>
+<div class="line"><span class="lineno">  872</span>      signal_bandwidth_fraction[k] =</div>
+<div class="line"><span class="lineno">  873</span>          <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(nhighsnr) /</div>
+<div class="line"><span class="lineno">  874</span>          <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(FFTDeconOperator::nfft / 2);</div>
+<div class="line"><span class="lineno">  875</span>      peak_snr[k] = snrmax;</div>
+<div class="line"><span class="lineno">  876</span>      ComplexArray rftmp = numerator * winv;</div>
+<div class="line"><span class="lineno">  877</span>      rftmp = (*shapingwavelet.<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html#ac922b603ff03a691075724bcd53e396f">wavelet</a>()) * rftmp;</div>
+<div class="line"><span class="lineno">  878</span>      gsl_fft_complex_inverse(rftmp.ptr(), 1, FFTDeconOperator::nfft, wavetable,</div>
+<div class="line"><span class="lineno">  879</span>                              workspace);</div>
+<div class="line"><span class="lineno">  880</span>      wvec.clear();</div>
+<div class="line"><span class="lineno">  881</span>      <span class="keywordflow">for</span> (j = 0; j &lt; FFTDeconOperator::nfft; ++j)</div>
+<div class="line"><span class="lineno">  882</span>        wvec.push_back(rftmp[j].real());</div>
+<div class="line"><span class="lineno">  883</span>      <span class="comment">// debug</span></div>
+<div class="line"><span class="lineno">  884</span>      <span class="comment">// cout &lt;&lt; &quot;Raw deconvolved data before time shift (re,im)&quot;&lt;&lt;endl;</span></div>
+<div class="line"><span class="lineno">  885</span>      <span class="comment">// for(j=0;j&lt;FFTDeconOperator::nfft;++j) cout &lt;&lt; wvec[j]&lt;&lt;&quot;</span></div>
+<div class="line"><span class="lineno">  886</span>      <span class="comment">// &quot;&lt;&lt;rftmp[j].imag()&lt;&lt;endl; cout &lt;&lt; &quot;Function output uses time</span></div>
+<div class="line"><span class="lineno">  887</span>      <span class="comment">// shift=&quot;&lt;&lt;t0_shift&lt;&lt;endl;</span></div>
+<div class="line"><span class="lineno">  888</span>      <span class="comment">/* Note we used a time domain shift instead of using a linear phase</span></div>
+<div class="line"><span class="lineno">  889</span><span class="comment">      shift in the frequency domain because time domain operator has a lower</span></div>
+<div class="line"><span class="lineno">  890</span><span class="comment">      operation count than the frequency domain algorithm and is thus more</span></div>
+<div class="line"><span class="lineno">  891</span><span class="comment">      efficient.*/</span></div>
+<div class="line"><span class="lineno">  892</span>      <span class="comment">/* Debug - temporarily disable this shift*/</span></div>
+<div class="line"><span class="lineno">  893</span>      <span class="keywordflow">if</span> (t0_shift != 0)</div>
+<div class="line"><span class="lineno">  894</span>        wvec = circular_shift(wvec, -t0_shift);</div>
+<div class="line"><span class="lineno">  895</span>      <span class="keywordflow">for</span> (j = 0; j &lt; FFTDeconOperator::nfft; ++j)</div>
+<div class="line"><span class="lineno">  896</span>        rfest.u(k, j) = wvec[j];</div>
+<div class="line"><span class="lineno">  897</span>    }</div>
+<div class="line"><span class="lineno">  898</span>    <span class="keywordflow">return</span> rfest;</div>
+<div class="line"><span class="lineno">  899</span>  } <span class="keywordflow">catch</span> (...) {</div>
+<div class="line"><span class="lineno">  900</span>    <span class="keywordflow">throw</span>;</div>
+<div class="line"><span class="lineno">  901</span>  };</div>
+<div class="line"><span class="lineno">  902</span>}</div>
+<div class="ttc" id="aclassmspass_1_1seismic_1_1_power_spectrum_html_a3d1e72618b8e88c5929839c5e8885859"><div class="ttname"><a href="classmspass_1_1seismic_1_1_power_spectrum.html#a3d1e72618b8e88c5929839c5e8885859">mspass::seismic::PowerSpectrum::power</a></div><div class="ttdeci">double power(const double f) const</div><div class="ttdoc">power at a given frequency.</div><div class="ttdef"><b>Definition</b> PowerSpectrum.cc:74</div></div>
+<div class="ttc" id="aclassmspass_1_1utility_1_1dmatrix_html"><div class="ttname"><a href="classmspass_1_1utility_1_1dmatrix.html">mspass::utility::dmatrix</a></div><div class="ttdoc">Lightweight, simple matrix object.</div><div class="ttdef"><b>Definition</b> dmatrix.h:104</div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1294,17 +1319,17 @@ gsl_fft_complex_workspace *&#160;</td><td class="memItemRight" valign="bottom"><
 <p>This function returns the following key-value pairs: waveletbf - bandwidth fraction for wavelet. maxsnr0,maxsnr1,maxsnr2 - maximum signal to noise ratio on each of the three components of the data being deconvolved. signalbf0,signalbf1,signalbf2 - bandwidth fraction for each of the three components of data deconvolved to produce the latest output. </p>
 
 <p>Implements <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_base3_c_decon.html#a46a3cc2e931b6d5409421237cf06356d">mspass::algorithms::deconvolution::Base3CDecon</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  980</span>{</div>
-<div class="line"><span class="lineno">  981</span>  Metadata result;</div>
-<div class="line"><span class="lineno">  982</span>  result.put(<span class="stringliteral">&quot;waveletbf&quot;</span>,regularization_bandwidth_fraction);</div>
-<div class="line"><span class="lineno">  983</span>  result.put(<span class="stringliteral">&quot;maxsnr0&quot;</span>,peak_snr[0]);</div>
-<div class="line"><span class="lineno">  984</span>  result.put(<span class="stringliteral">&quot;maxsnr1&quot;</span>,peak_snr[1]);</div>
-<div class="line"><span class="lineno">  985</span>  result.put(<span class="stringliteral">&quot;maxsnr2&quot;</span>,peak_snr[2]);</div>
-<div class="line"><span class="lineno">  986</span>  result.put(<span class="stringliteral">&quot;signalbf0&quot;</span>,signal_bandwidth_fraction[0]);</div>
-<div class="line"><span class="lineno">  987</span>  result.put(<span class="stringliteral">&quot;signalbf1&quot;</span>,signal_bandwidth_fraction[1]);</div>
-<div class="line"><span class="lineno">  988</span>  result.put(<span class="stringliteral">&quot;signalbf2&quot;</span>,signal_bandwidth_fraction[2]);</div>
-<div class="line"><span class="lineno">  989</span>  <span class="keywordflow">return</span> result;</div>
-<div class="line"><span class="lineno">  990</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  975</span>                               {</div>
+<div class="line"><span class="lineno">  976</span>  Metadata result;</div>
+<div class="line"><span class="lineno">  977</span>  result.put(<span class="stringliteral">&quot;waveletbf&quot;</span>, regularization_bandwidth_fraction);</div>
+<div class="line"><span class="lineno">  978</span>  result.put(<span class="stringliteral">&quot;maxsnr0&quot;</span>, peak_snr[0]);</div>
+<div class="line"><span class="lineno">  979</span>  result.put(<span class="stringliteral">&quot;maxsnr1&quot;</span>, peak_snr[1]);</div>
+<div class="line"><span class="lineno">  980</span>  result.put(<span class="stringliteral">&quot;maxsnr2&quot;</span>, peak_snr[2]);</div>
+<div class="line"><span class="lineno">  981</span>  result.put(<span class="stringliteral">&quot;signalbf0&quot;</span>, signal_bandwidth_fraction[0]);</div>
+<div class="line"><span class="lineno">  982</span>  result.put(<span class="stringliteral">&quot;signalbf1&quot;</span>, signal_bandwidth_fraction[1]);</div>
+<div class="line"><span class="lineno">  983</span>  result.put(<span class="stringliteral">&quot;signalbf2&quot;</span>, signal_bandwidth_fraction[2]);</div>
+<div class="line"><span class="lineno">  984</span>  <span class="keywordflow">return</span> result;</div>
+<div class="line"><span class="lineno">  985</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1331,9 +1356,7 @@ gsl_fft_complex_workspace *&#160;</td><td class="memItemRight" valign="bottom"><
 </table>
 </div><div class="memdoc">
 <p>Return the power spectrum estimate linked to the wavelet signal. </p>
-<div class="fragment"><div class="line"><span class="lineno">  276</span>  {</div>
-<div class="line"><span class="lineno">  277</span>    <span class="keywordflow">return</span> psnoise;</div>
-<div class="line"><span class="lineno">  278</span>  };</div>
+<div class="fragment"><div class="line"><span class="lineno">  281</span>{ <span class="keywordflow">return</span> psnoise; };</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1360,9 +1383,7 @@ gsl_fft_complex_workspace *&#160;</td><td class="memItemRight" valign="bottom"><
 </table>
 </div><div class="memdoc">
 <p>Return the power spectrum of the wavelet signal used for deconvolution. </p>
-<div class="fragment"><div class="line"><span class="lineno">  286</span>  {</div>
-<div class="line"><span class="lineno">  287</span>    <span class="keywordflow">return</span> pswavelet;</div>
-<div class="line"><span class="lineno">  288</span>  };</div>
+<div class="fragment"><div class="line"><span class="lineno">  285</span>{ <span class="keywordflow">return</span> pswavelet; };</div>
 </div><!-- fragment -->
 </div>
 </div>

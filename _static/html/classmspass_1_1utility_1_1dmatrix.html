@@ -182,8 +182,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>boost::serialization
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Lightweight, simple matrix object. </p>
-<p>This class defines a lightweight, simple double precision matrix. Provides basic matrix functionality. Note that elements of the matrix are stored internally in FORTRAN order but using C style indexing. That is, all indices begin at 0, not 1 and run to size - 1. Further, FORTRAN order means the elements are actually ordered in columns as in FORTRAN in a continuous, logical block of memory. This allow one to use the BLAS functions to access the elements of the matrix. As usual be warned this is useful for efficiency and speed, but completely circumvents the bounds checking used by methods in the object. <br  />
-</p>
+<p>This class defines a lightweight, simple double precision matrix. Provides basic matrix functionality. Note that elements of the matrix are stored internally in FORTRAN order but using C style indexing. That is, all indices begin at 0, not 1 and run to size - 1. Further, FORTRAN order means the elements are actually ordered in columns as in FORTRAN in a continuous, logical block of memory. This allow one to use the BLAS functions to access the elements of the matrix. As usual be warned this is useful for efficiency and speed, but completely circumvents the bounds checking used by methods in the object.</p>
 <dl class="section author"><dt>Author</dt><dd>Robert R and Gary L. Pavlis </dd></dl>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="ae6bfdbc8f954f4d5340baa7e02975fb1" name="ae6bfdbc8f954f4d5340baa7e02975fb1"></a>
@@ -201,12 +200,12 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>boost::serialization
       </table>
 </div><div class="memdoc">
 <p>Default constructor. Produces a 1x1 matrix as a place holder. </p>
-<div class="fragment"><div class="line"><span class="lineno">    9</span>{</div>
-<div class="line"><span class="lineno">   10</span>  nrr=0;</div>
-<div class="line"><span class="lineno">   11</span>  ncc=0;</div>
-<div class="line"><span class="lineno">   12</span>  length=0;</div>
-<div class="line"><span class="lineno">   13</span>  ary.reserve(0);</div>
-<div class="line"><span class="lineno">   14</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">    8</span>                 {</div>
+<div class="line"><span class="lineno">    9</span>  nrr = 0;</div>
+<div class="line"><span class="lineno">   10</span>  ncc = 0;</div>
+<div class="line"><span class="lineno">   11</span>  length = 0;</div>
+<div class="line"><span class="lineno">   12</span>  ary.reserve(0);</div>
+<div class="line"><span class="lineno">   13</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -243,21 +242,20 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>boost::serialization
   </table>
   </dd>
 </dl>
-<div class="fragment"><div class="line"><span class="lineno">   16</span>{</div>
-<div class="line"><span class="lineno">   17</span>  nrr=nr;</div>
-<div class="line"><span class="lineno">   18</span>  ncc=nc;</div>
-<div class="line"><span class="lineno">   19</span>  length=nr*nc;</div>
-<div class="line"><span class="lineno">   20</span>  <span class="keywordflow">if</span>(length&lt;1)</div>
-<div class="line"><span class="lineno">   21</span>  {</div>
-<div class="line"><span class="lineno">   22</span>      length=1;</div>
-<div class="line"><span class="lineno">   23</span>      nrr=ncc=0;</div>
-<div class="line"><span class="lineno">   24</span>  }</div>
-<div class="line"><span class="lineno">   25</span>  <span class="comment">/* This std::vector method allocates space so zero method can just</span></div>
-<div class="line"><span class="lineno">   26</span><span class="comment">   * use indexing. */</span></div>
-<div class="line"><span class="lineno">   27</span>  ary.resize(length);</div>
-<div class="line"><span class="lineno">   28</span>  this-&gt;<a class="code hl_function" href="classmspass_1_1utility_1_1dmatrix.html#ab9e34acc9b193854c5148e8c3d9650c2">zero</a>();</div>
-<div class="line"><span class="lineno">   29</span>}</div>
-<div class="ttc" id="aclassmspass_1_1utility_1_1dmatrix_html_ab9e34acc9b193854c5148e8c3d9650c2"><div class="ttname"><a href="classmspass_1_1utility_1_1dmatrix.html#ab9e34acc9b193854c5148e8c3d9650c2">mspass::utility::dmatrix::zero</a></div><div class="ttdeci">void zero()</div><div class="ttdef"><b>Definition</b> dmatrix.cc:215</div></div>
+<div class="fragment"><div class="line"><span class="lineno">   14</span>                                                 {</div>
+<div class="line"><span class="lineno">   15</span>  nrr = nr;</div>
+<div class="line"><span class="lineno">   16</span>  ncc = nc;</div>
+<div class="line"><span class="lineno">   17</span>  length = nr * nc;</div>
+<div class="line"><span class="lineno">   18</span>  <span class="keywordflow">if</span> (length &lt; 1) {</div>
+<div class="line"><span class="lineno">   19</span>    length = 1;</div>
+<div class="line"><span class="lineno">   20</span>    nrr = ncc = 0;</div>
+<div class="line"><span class="lineno">   21</span>  }</div>
+<div class="line"><span class="lineno">   22</span>  <span class="comment">/* This std::vector method allocates space so zero method can just</span></div>
+<div class="line"><span class="lineno">   23</span><span class="comment">   * use indexing. */</span></div>
+<div class="line"><span class="lineno">   24</span>  ary.resize(length);</div>
+<div class="line"><span class="lineno">   25</span>  this-&gt;<a class="code hl_function" href="classmspass_1_1utility_1_1dmatrix.html#ab9e34acc9b193854c5148e8c3d9650c2">zero</a>();</div>
+<div class="line"><span class="lineno">   26</span>}</div>
+<div class="ttc" id="aclassmspass_1_1utility_1_1dmatrix_html_ab9e34acc9b193854c5148e8c3d9650c2"><div class="ttname"><a href="classmspass_1_1utility_1_1dmatrix.html#ab9e34acc9b193854c5148e8c3d9650c2">mspass::utility::dmatrix::zero</a></div><div class="ttdeci">void zero()</div><div class="ttdef"><b>Definition</b> dmatrix.cc:203</div></div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1utility_1_1dmatrix.html#ab9e34acc9b193854c5148e8c3d9650c2">zero()</a>.</p>
 
@@ -280,12 +278,12 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>boost::serialization
 </div><div class="memdoc">
 <p>Standard copy constructor. <br  />
  </p>
-<div class="fragment"><div class="line"><span class="lineno">   32</span>  {</div>
-<div class="line"><span class="lineno">   33</span>  nrr=other.nrr;</div>
-<div class="line"><span class="lineno">   34</span>  ncc=other.ncc;</div>
-<div class="line"><span class="lineno">   35</span>  length=other.length;</div>
-<div class="line"><span class="lineno">   36</span>  ary=other.ary;</div>
-<div class="line"><span class="lineno">   37</span>  }</div>
+<div class="fragment"><div class="line"><span class="lineno">   28</span>                                     {</div>
+<div class="line"><span class="lineno">   29</span>  nrr = other.nrr;</div>
+<div class="line"><span class="lineno">   30</span>  ncc = other.ncc;</div>
+<div class="line"><span class="lineno">   31</span>  length = other.length;</div>
+<div class="line"><span class="lineno">   32</span>  ary = other.ary;</div>
+<div class="line"><span class="lineno">   33</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -304,9 +302,9 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>boost::serialization
       </table>
 </div><div class="memdoc">
 <p>Destructor - releases any matrix memory. </p>
-<div class="fragment"><div class="line"><span class="lineno">   40</span>{</div>
-<div class="line"><span class="lineno">   41</span><span class="comment">//if(ary!=NULL) delete [] ary;</span></div>
-<div class="line"><span class="lineno">   42</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">   35</span>                  {</div>
+<div class="line"><span class="lineno">   36</span>  <span class="comment">// if(ary!=NULL) delete [] ary;</span></div>
+<div class="line"><span class="lineno">   37</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -326,9 +324,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>boost::serialization
       </table>
 </div><div class="memdoc">
 <p>Return number of columns in this matrix. </p>
-<div class="fragment"><div class="line"><span class="lineno">  233</span>{</div>
-<div class="line"><span class="lineno">  234</span>    <span class="keywordflow">return</span>(ncc);</div>
-<div class="line"><span class="lineno">  235</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  216</span>{ <span class="keywordflow">return</span> (ncc); }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -357,22 +353,26 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>boost::serialization
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   72</span>{</div>
+<div class="fragment"><div class="line"><span class="lineno">   72</span>                                                                   {</div>
 <div class="line"><span class="lineno">   73</span>  <span class="keywordtype">double</span> *ptr;</div>
-<div class="line"><span class="lineno">   74</span>  <span class="keywordtype">int</span> out_of_range=0;</div>
-<div class="line"><span class="lineno">   75</span>  <span class="keywordflow">if</span> (rowindex&gt;=nrr) out_of_range=1;</div>
-<div class="line"><span class="lineno">   76</span>  <span class="keywordflow">if</span> (rowindex&lt;0) out_of_range=1;</div>
-<div class="line"><span class="lineno">   77</span>  <span class="keywordflow">if</span> (colindex&gt;=ncc) out_of_range=1;</div>
-<div class="line"><span class="lineno">   78</span>  <span class="keywordflow">if</span> (colindex&lt;0) out_of_range=1;</div>
-<div class="line"><span class="lineno">   79</span>  <span class="keywordflow">if</span> (out_of_range)</div>
-<div class="line"><span class="lineno">   80</span>        <span class="keywordflow">throw</span> dmatrix_index_error(nrr,ncc,rowindex,colindex);</div>
-<div class="line"><span class="lineno">   81</span>  <span class="comment">/* This is somewhat contradictory to the const qualifier of the method</span></div>
-<div class="line"><span class="lineno">   82</span><span class="comment">     but not really.  const in that position implies the method itself</span></div>
-<div class="line"><span class="lineno">   83</span><span class="comment">     does not alter the object, but a pointer that is not const is</span></div>
-<div class="line"><span class="lineno">   84</span><span class="comment">     always something that allows data to be changed*/</span></div>
-<div class="line"><span class="lineno">   85</span>  ptr=<span class="keyword">const_cast&lt;</span><span class="keywordtype">double</span> *<span class="keyword">&gt;</span>(&amp;(ary[rowindex+(nrr)*(colindex)]));</div>
-<div class="line"><span class="lineno">   86</span>  <span class="keywordflow">return</span>(ptr);</div>
-<div class="line"><span class="lineno">   87</span>}</div>
+<div class="line"><span class="lineno">   74</span>  <span class="keywordtype">int</span> out_of_range = 0;</div>
+<div class="line"><span class="lineno">   75</span>  <span class="keywordflow">if</span> (rowindex &gt;= nrr)</div>
+<div class="line"><span class="lineno">   76</span>    out_of_range = 1;</div>
+<div class="line"><span class="lineno">   77</span>  <span class="keywordflow">if</span> (rowindex &lt; 0)</div>
+<div class="line"><span class="lineno">   78</span>    out_of_range = 1;</div>
+<div class="line"><span class="lineno">   79</span>  <span class="keywordflow">if</span> (colindex &gt;= ncc)</div>
+<div class="line"><span class="lineno">   80</span>    out_of_range = 1;</div>
+<div class="line"><span class="lineno">   81</span>  <span class="keywordflow">if</span> (colindex &lt; 0)</div>
+<div class="line"><span class="lineno">   82</span>    out_of_range = 1;</div>
+<div class="line"><span class="lineno">   83</span>  <span class="keywordflow">if</span> (out_of_range)</div>
+<div class="line"><span class="lineno">   84</span>    <span class="keywordflow">throw</span> dmatrix_index_error(nrr, ncc, rowindex, colindex);</div>
+<div class="line"><span class="lineno">   85</span>  <span class="comment">/* This is somewhat contradictory to the const qualifier of the method</span></div>
+<div class="line"><span class="lineno">   86</span><span class="comment">     but not really.  const in that position implies the method itself</span></div>
+<div class="line"><span class="lineno">   87</span><span class="comment">     does not alter the object, but a pointer that is not const is</span></div>
+<div class="line"><span class="lineno">   88</span><span class="comment">     always something that allows data to be changed*/</span></div>
+<div class="line"><span class="lineno">   89</span>  ptr = <span class="keyword">const_cast&lt;</span><span class="keywordtype">double</span> *<span class="keyword">&gt;</span>(&amp;(ary[rowindex + (nrr) * (colindex)]));</div>
+<div class="line"><span class="lineno">   90</span>  <span class="keywordflow">return</span> (ptr);</div>
+<div class="line"><span class="lineno">   91</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -406,8 +406,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>boost::serialization
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">rowindex</td><td>row to fetch </td></tr>
-    <tr><td class="paramname">colindex</td><td>column to fetch. <br  />
- </td></tr>
+    <tr><td class="paramname">colindex</td><td>column to fetch. </td></tr>
   </table>
   </dd>
 </dl>
@@ -418,17 +417,21 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>boost::serialization
   </table>
   </dd>
 </dl>
-<div class="fragment"><div class="line"><span class="lineno">   45</span>{</div>
-<div class="line"><span class="lineno">   46</span>  <span class="keywordtype">int</span> out_of_range=0;</div>
-<div class="line"><span class="lineno">   47</span>  <span class="keywordflow">if</span> (rowindex&gt;=nrr) out_of_range=1;</div>
-<div class="line"><span class="lineno">   48</span>  <span class="keywordflow">if</span> (rowindex&lt;0) out_of_range=1;</div>
-<div class="line"><span class="lineno">   49</span>  <span class="keywordflow">if</span> (colindex&gt;=ncc) out_of_range=1;</div>
-<div class="line"><span class="lineno">   50</span>  <span class="keywordflow">if</span> (colindex&lt;0) out_of_range=1;</div>
-<div class="line"><span class="lineno">   51</span>  <span class="keywordflow">if</span> (out_of_range)</div>
-<div class="line"><span class="lineno">   52</span>    <span class="keywordflow">throw</span> dmatrix_index_error(nrr,ncc,rowindex,colindex);</div>
-<div class="line"><span class="lineno">   53</span>  <span class="keywordtype">double</span> result=ary[rowindex+(nrr)*(colindex)];</div>
-<div class="line"><span class="lineno">   54</span>  <span class="keywordflow">return</span> result;</div>
-<div class="line"><span class="lineno">   55</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">   39</span>                                                                             {</div>
+<div class="line"><span class="lineno">   40</span>  <span class="keywordtype">int</span> out_of_range = 0;</div>
+<div class="line"><span class="lineno">   41</span>  <span class="keywordflow">if</span> (rowindex &gt;= nrr)</div>
+<div class="line"><span class="lineno">   42</span>    out_of_range = 1;</div>
+<div class="line"><span class="lineno">   43</span>  <span class="keywordflow">if</span> (rowindex &lt; 0)</div>
+<div class="line"><span class="lineno">   44</span>    out_of_range = 1;</div>
+<div class="line"><span class="lineno">   45</span>  <span class="keywordflow">if</span> (colindex &gt;= ncc)</div>
+<div class="line"><span class="lineno">   46</span>    out_of_range = 1;</div>
+<div class="line"><span class="lineno">   47</span>  <span class="keywordflow">if</span> (colindex &lt; 0)</div>
+<div class="line"><span class="lineno">   48</span>    out_of_range = 1;</div>
+<div class="line"><span class="lineno">   49</span>  <span class="keywordflow">if</span> (out_of_range)</div>
+<div class="line"><span class="lineno">   50</span>    <span class="keywordflow">throw</span> dmatrix_index_error(nrr, ncc, rowindex, colindex);</div>
+<div class="line"><span class="lineno">   51</span>  <span class="keywordtype">double</span> result = ary[rowindex + (nrr) * (colindex)];</div>
+<div class="line"><span class="lineno">   52</span>  <span class="keywordflow">return</span> result;</div>
+<div class="line"><span class="lineno">   53</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -457,16 +460,20 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>boost::serialization
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   57</span>{</div>
-<div class="line"><span class="lineno">   58</span>  <span class="keywordtype">int</span> out_of_range=0;</div>
-<div class="line"><span class="lineno">   59</span>  <span class="keywordflow">if</span> (rowindex&gt;=nrr) out_of_range=1;</div>
-<div class="line"><span class="lineno">   60</span>  <span class="keywordflow">if</span> (rowindex&lt;0) out_of_range=1;</div>
-<div class="line"><span class="lineno">   61</span>  <span class="keywordflow">if</span> (colindex&gt;=ncc) out_of_range=1;</div>
-<div class="line"><span class="lineno">   62</span>  <span class="keywordflow">if</span> (colindex&lt;0) out_of_range=1;</div>
-<div class="line"><span class="lineno">   63</span>  <span class="keywordflow">if</span> (out_of_range)</div>
-<div class="line"><span class="lineno">   64</span>    <span class="keywordflow">throw</span> dmatrix_index_error(nrr,ncc,rowindex,colindex);</div>
-<div class="line"><span class="lineno">   65</span>  <span class="keywordflow">return</span> (ary[rowindex+(nrr)*(colindex)]);</div>
-<div class="line"><span class="lineno">   66</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">   54</span>                                                                        {</div>
+<div class="line"><span class="lineno">   55</span>  <span class="keywordtype">int</span> out_of_range = 0;</div>
+<div class="line"><span class="lineno">   56</span>  <span class="keywordflow">if</span> (rowindex &gt;= nrr)</div>
+<div class="line"><span class="lineno">   57</span>    out_of_range = 1;</div>
+<div class="line"><span class="lineno">   58</span>  <span class="keywordflow">if</span> (rowindex &lt; 0)</div>
+<div class="line"><span class="lineno">   59</span>    out_of_range = 1;</div>
+<div class="line"><span class="lineno">   60</span>  <span class="keywordflow">if</span> (colindex &gt;= ncc)</div>
+<div class="line"><span class="lineno">   61</span>    out_of_range = 1;</div>
+<div class="line"><span class="lineno">   62</span>  <span class="keywordflow">if</span> (colindex &lt; 0)</div>
+<div class="line"><span class="lineno">   63</span>    out_of_range = 1;</div>
+<div class="line"><span class="lineno">   64</span>  <span class="keywordflow">if</span> (out_of_range)</div>
+<div class="line"><span class="lineno">   65</span>    <span class="keywordflow">throw</span> dmatrix_index_error(nrr, ncc, rowindex, colindex);</div>
+<div class="line"><span class="lineno">   66</span>  <span class="keywordflow">return</span> (ary[rowindex + (nrr) * (colindex)]);</div>
+<div class="line"><span class="lineno">   67</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -493,13 +500,13 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>boost::serialization
   </tr>
 </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  179</span>{</div>
-<div class="line"><span class="lineno">  180</span>    <span class="keywordtype">double</span> *ptr;</div>
-<div class="line"><span class="lineno">  181</span>    <a class="code hl_function" href="classmspass_1_1utility_1_1dmatrix.html#ae6bfdbc8f954f4d5340baa7e02975fb1">dmatrix</a> result(*<span class="keyword">this</span>);</div>
-<div class="line"><span class="lineno">  182</span>    ptr=result.get_address(0,0);</div>
-<div class="line"><span class="lineno">  183</span>    dscal(length,x,ptr,1);</div>
-<div class="line"><span class="lineno">  184</span>    <span class="keywordflow">return</span> result;</div>
-<div class="line"><span class="lineno">  185</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  175</span>                                                  {</div>
+<div class="line"><span class="lineno">  176</span>  <span class="keywordtype">double</span> *ptr;</div>
+<div class="line"><span class="lineno">  177</span>  <a class="code hl_function" href="classmspass_1_1utility_1_1dmatrix.html#ae6bfdbc8f954f4d5340baa7e02975fb1">dmatrix</a> result(*<span class="keyword">this</span>);</div>
+<div class="line"><span class="lineno">  178</span>  ptr = result.get_address(0, 0);</div>
+<div class="line"><span class="lineno">  179</span>  dscal(length, x, ptr, 1);</div>
+<div class="line"><span class="lineno">  180</span>  <span class="keywordflow">return</span> result;</div>
+<div class="line"><span class="lineno">  181</span>}</div>
 <div class="ttc" id="aclassmspass_1_1utility_1_1dmatrix_html_ae6bfdbc8f954f4d5340baa7e02975fb1"><div class="ttname"><a href="classmspass_1_1utility_1_1dmatrix.html#ae6bfdbc8f954f4d5340baa7e02975fb1">mspass::utility::dmatrix::dmatrix</a></div><div class="ttdeci">dmatrix()</div><div class="ttdef"><b>Definition</b> dmatrix.cc:8</div></div>
 </div><!-- fragment -->
 </div>
@@ -533,13 +540,15 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>boost::serialization
   </table>
   </dd>
 </dl>
-<div class="fragment"><div class="line"><span class="lineno">  122</span>{</div>
-<div class="line"><span class="lineno">  123</span>    <span class="keywordflow">try</span>{</div>
-<div class="line"><span class="lineno">  124</span>        <a class="code hl_function" href="classmspass_1_1utility_1_1dmatrix.html#ae6bfdbc8f954f4d5340baa7e02975fb1">dmatrix</a> result(*<span class="keyword">this</span>);</div>
-<div class="line"><span class="lineno">  125</span>        result += other;</div>
-<div class="line"><span class="lineno">  126</span>        <span class="keywordflow">return</span> result;</div>
-<div class="line"><span class="lineno">  127</span>    }<span class="keywordflow">catch</span>(...){<span class="keywordflow">throw</span>;};</div>
-<div class="line"><span class="lineno">  128</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  121</span>                                                     {</div>
+<div class="line"><span class="lineno">  122</span>  <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">  123</span>    <a class="code hl_function" href="classmspass_1_1utility_1_1dmatrix.html#ae6bfdbc8f954f4d5340baa7e02975fb1">dmatrix</a> result(*<span class="keyword">this</span>);</div>
+<div class="line"><span class="lineno">  124</span>    result += other;</div>
+<div class="line"><span class="lineno">  125</span>    <span class="keywordflow">return</span> result;</div>
+<div class="line"><span class="lineno">  126</span>  } <span class="keywordflow">catch</span> (...) {</div>
+<div class="line"><span class="lineno">  127</span>    <span class="keywordflow">throw</span>;</div>
+<div class="line"><span class="lineno">  128</span>  };</div>
+<div class="line"><span class="lineno">  129</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -560,8 +569,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>boost::serialization
 </div><div class="memdoc">
 
 <p>Add one matrix to another. </p>
-<p>Matrix addition is a standard operation but demands the two matrices to be added are the same size. Hence, an exception will happen if you use this operator with a size mismatch. <br  />
-</p>
+<p>Matrix addition is a standard operation but demands the two matrices to be added are the same size. Hence, an exception will happen if you use this operator with a size mismatch.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">A</td><td>is the matrix to be added to this. </td></tr>
@@ -574,14 +582,14 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>boost::serialization
   </table>
   </dd>
 </dl>
-<div class="fragment"><div class="line"><span class="lineno">  102</span>{</div>
-<div class="line"><span class="lineno">  103</span>  <span class="keywordtype">size_t</span> i;</div>
-<div class="line"><span class="lineno">  104</span>  <span class="keywordflow">if</span> ((nrr!=other.nrr)||(length!=other.length))</div>
-<div class="line"><span class="lineno">  105</span>    <span class="keywordflow">throw</span> dmatrix_size_error(nrr, ncc, other.nrr, other.length);</div>
-<div class="line"><span class="lineno">  106</span>  <span class="keywordflow">for</span>(i=0;i&lt;length;i++)</div>
-<div class="line"><span class="lineno">  107</span>    ary[i]+=other.ary[i];</div>
-<div class="line"><span class="lineno">  108</span>  <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
-<div class="line"><span class="lineno">  109</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  103</span>                                                 {</div>
+<div class="line"><span class="lineno">  104</span>  <span class="keywordtype">size_t</span> i;</div>
+<div class="line"><span class="lineno">  105</span>  <span class="keywordflow">if</span> ((nrr != other.nrr) || (length != other.length))</div>
+<div class="line"><span class="lineno">  106</span>    <span class="keywordflow">throw</span> dmatrix_size_error(nrr, ncc, other.nrr, other.length);</div>
+<div class="line"><span class="lineno">  107</span>  <span class="keywordflow">for</span> (i = 0; i &lt; length; i++)</div>
+<div class="line"><span class="lineno">  108</span>    ary[i] += other.ary[i];</div>
+<div class="line"><span class="lineno">  109</span>  <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
+<div class="line"><span class="lineno">  110</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -614,13 +622,15 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>boost::serialization
   </table>
   </dd>
 </dl>
-<div class="fragment"><div class="line"><span class="lineno">  130</span>{</div>
-<div class="line"><span class="lineno">  131</span>    <span class="keywordflow">try</span>{</div>
-<div class="line"><span class="lineno">  132</span>        <a class="code hl_function" href="classmspass_1_1utility_1_1dmatrix.html#ae6bfdbc8f954f4d5340baa7e02975fb1">dmatrix</a> result(*<span class="keyword">this</span>);</div>
-<div class="line"><span class="lineno">  133</span>        result -= other;</div>
-<div class="line"><span class="lineno">  134</span>        <span class="keywordflow">return</span> result;</div>
-<div class="line"><span class="lineno">  135</span>    }<span class="keywordflow">catch</span>(...){<span class="keywordflow">throw</span>;};</div>
-<div class="line"><span class="lineno">  136</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  130</span>                                                     {</div>
+<div class="line"><span class="lineno">  131</span>  <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">  132</span>    <a class="code hl_function" href="classmspass_1_1utility_1_1dmatrix.html#ae6bfdbc8f954f4d5340baa7e02975fb1">dmatrix</a> result(*<span class="keyword">this</span>);</div>
+<div class="line"><span class="lineno">  133</span>    result -= other;</div>
+<div class="line"><span class="lineno">  134</span>    <span class="keywordflow">return</span> result;</div>
+<div class="line"><span class="lineno">  135</span>  } <span class="keywordflow">catch</span> (...) {</div>
+<div class="line"><span class="lineno">  136</span>    <span class="keywordflow">throw</span>;</div>
+<div class="line"><span class="lineno">  137</span>  };</div>
+<div class="line"><span class="lineno">  138</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -641,8 +651,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>boost::serialization
 </div><div class="memdoc">
 
 <p>Subtract one matrix to another. </p>
-<p>Matrix subtraction is a standard operation but demands the two matrices to be added are the same size. Hence, an exception will happen if you use this operator with a size mismatch. <br  />
-</p>
+<p>Matrix subtraction is a standard operation but demands the two matrices to be added are the same size. Hence, an exception will happen if you use this operator with a size mismatch.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">other</td><td>is the matrix to be subracted from to this. </td></tr>
@@ -655,12 +664,12 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>boost::serialization
   </table>
   </dd>
 </dl>
-<div class="fragment"><div class="line"><span class="lineno">  112</span>{</div>
+<div class="fragment"><div class="line"><span class="lineno">  112</span>                                                 {</div>
 <div class="line"><span class="lineno">  113</span>  <span class="keywordtype">size_t</span> i;</div>
-<div class="line"><span class="lineno">  114</span>  <span class="keywordflow">if</span> ((nrr!=other.nrr)||(length!=other.length))</div>
+<div class="line"><span class="lineno">  114</span>  <span class="keywordflow">if</span> ((nrr != other.nrr) || (length != other.length))</div>
 <div class="line"><span class="lineno">  115</span>    <span class="keywordflow">throw</span> dmatrix_size_error(nrr, ncc, other.nrr, other.length);</div>
-<div class="line"><span class="lineno">  116</span>  <span class="keywordflow">for</span>(i=0;i&lt;length;i++)</div>
-<div class="line"><span class="lineno">  117</span>    ary[i]-=other.ary[i];</div>
+<div class="line"><span class="lineno">  116</span>  <span class="keywordflow">for</span> (i = 0; i &lt; length; i++)</div>
+<div class="line"><span class="lineno">  117</span>    ary[i] -= other.ary[i];</div>
 <div class="line"><span class="lineno">  118</span>  <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
 <div class="line"><span class="lineno">  119</span>}</div>
 </div><!-- fragment -->
@@ -682,16 +691,15 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>boost::serialization
       </table>
 </div><div class="memdoc">
 <p>Standard assignment operator </p>
-<div class="fragment"><div class="line"><span class="lineno">   90</span>{</div>
-<div class="line"><span class="lineno">   91</span>    <span class="keywordflow">if</span>(&amp;other!=<span class="keyword">this</span>) </div>
-<div class="line"><span class="lineno">   92</span>    {</div>
-<div class="line"><span class="lineno">   93</span>    ncc=other.ncc;</div>
-<div class="line"><span class="lineno">   94</span>    nrr=other.nrr;</div>
-<div class="line"><span class="lineno">   95</span>    length=other.length;</div>
-<div class="line"><span class="lineno">   96</span>        ary=other.ary;</div>
-<div class="line"><span class="lineno">   97</span>    } </div>
-<div class="line"><span class="lineno">   98</span>    <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
-<div class="line"><span class="lineno">   99</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">   93</span>                                                {</div>
+<div class="line"><span class="lineno">   94</span>  <span class="keywordflow">if</span> (&amp;other != <span class="keyword">this</span>) {</div>
+<div class="line"><span class="lineno">   95</span>    ncc = other.ncc;</div>
+<div class="line"><span class="lineno">   96</span>    nrr = other.nrr;</div>
+<div class="line"><span class="lineno">   97</span>    length = other.length;</div>
+<div class="line"><span class="lineno">   98</span>    ary = other.ary;</div>
+<div class="line"><span class="lineno">   99</span>  }</div>
+<div class="line"><span class="lineno">  100</span>  <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
+<div class="line"><span class="lineno">  101</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -710,9 +718,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>boost::serialization
       </table>
 </div><div class="memdoc">
 <p>Return number of rows in this matrix. </p>
-<div class="fragment"><div class="line"><span class="lineno">  229</span>{</div>
-<div class="line"><span class="lineno">  230</span>    <span class="keywordflow">return</span>(nrr);</div>
-<div class="line"><span class="lineno">  231</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  215</span>{ <span class="keywordflow">return</span> (nrr); }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -733,12 +739,12 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>boost::serialization
 
 <p>Return a vector with 2 elements giving the size. </p>
 <p>This function returns an std::vector with 2 elements with size information. first component is rows, second is columns. This simulates the matlab size function. </p>
-<div class="fragment"><div class="line"><span class="lineno">  220</span>{</div>
-<div class="line"><span class="lineno">  221</span>    vector&lt;size_t&gt; sz;</div>
-<div class="line"><span class="lineno">  222</span>  sz.push_back(nrr);</div>
-<div class="line"><span class="lineno">  223</span>  sz.push_back(ncc);</div>
-<div class="line"><span class="lineno">  224</span>    <span class="keywordflow">return</span>(sz);</div>
-<div class="line"><span class="lineno">  225</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  207</span>                                   {</div>
+<div class="line"><span class="lineno">  208</span>  vector&lt;size_t&gt; sz;</div>
+<div class="line"><span class="lineno">  209</span>  sz.push_back(nrr);</div>
+<div class="line"><span class="lineno">  210</span>  sz.push_back(ncc);</div>
+<div class="line"><span class="lineno">  211</span>  <span class="keywordflow">return</span> (sz);</div>
+<div class="line"><span class="lineno">  212</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -757,9 +763,10 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>boost::serialization
       </table>
 </div><div class="memdoc">
 <p>Initialize a matrix to all zeros. </p>
-<div class="fragment"><div class="line"><span class="lineno">  216</span>{</div>
-<div class="line"><span class="lineno">  217</span>    <span class="keywordflow">for</span>(<span class="keywordtype">size_t</span> i=0;i&lt;length;++i) ary[i]=0.0;</div>
-<div class="line"><span class="lineno">  218</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  203</span>                   {</div>
+<div class="line"><span class="lineno">  204</span>  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; length; ++i)</div>
+<div class="line"><span class="lineno">  205</span>    ary[i] = 0.0;</div>
+<div class="line"><span class="lineno">  206</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -813,26 +820,25 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>boost::serialization
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A*B </dd></dl>
-<div class="fragment"><div class="line"><span class="lineno">  140</span>{</div>
-<div class="line"><span class="lineno">  141</span>    <span class="keywordtype">size_t</span> i,j;</div>
-<div class="line"><span class="lineno">  142</span>        <span class="comment">/* The computed length in last arg to the error object is a relic*/</span></div>
-<div class="line"><span class="lineno">  143</span>    <span class="keywordflow">if</span>(x1.columns()!=b.rows())</div>
-<div class="line"><span class="lineno">  144</span>        <span class="keywordflow">throw</span> dmatrix_size_error(x1.rows(), x1.columns(), </div>
-<div class="line"><span class="lineno">  145</span>                        b.rows(), b.rows()*b.columns());</div>
-<div class="line"><span class="lineno">  146</span>    <a class="code hl_function" href="classmspass_1_1utility_1_1dmatrix.html#ae6bfdbc8f954f4d5340baa7e02975fb1">dmatrix</a> prod(x1.rows(),b.columns());</div>
-<div class="line"><span class="lineno">  147</span>    <span class="keywordflow">for</span>(i=0;i&lt;x1.rows();i++)</div>
-<div class="line"><span class="lineno">  148</span>      <span class="keywordflow">for</span>(j=0;j&lt;b.columns();j++)</div>
-<div class="line"><span class="lineno">  149</span>      {</div>
-<div class="line"><span class="lineno">  150</span>              <span class="keywordtype">double</span> *x1ptr,*bptr;</div>
-<div class="line"><span class="lineno">  151</span>              x1ptr=<span class="keyword">const_cast&lt;</span><a class="code hl_function" href="classmspass_1_1utility_1_1dmatrix.html#ae6bfdbc8f954f4d5340baa7e02975fb1">dmatrix</a>&amp;<span class="keyword">&gt;</span>(x1).get_address(i,0);</div>
-<div class="line"><span class="lineno">  152</span>              bptr=<span class="keyword">const_cast&lt;</span><a class="code hl_function" href="classmspass_1_1utility_1_1dmatrix.html#ae6bfdbc8f954f4d5340baa7e02975fb1">dmatrix</a>&amp;<span class="keyword">&gt;</span>(b).get_address(0,j);</div>
-<div class="line"><span class="lineno">  153</span>              <span class="comment">/* This temporary seems necessary */</span></div>
-<div class="line"><span class="lineno">  154</span>              <span class="keywordtype">double</span> *dptr;</div>
-<div class="line"><span class="lineno">  155</span>              dptr=prod.get_address(i,j);</div>
-<div class="line"><span class="lineno">  156</span>              *dptr=ddot(x1.columns(),x1ptr,x1.rows(),bptr,1);</div>
-<div class="line"><span class="lineno">  157</span>      }</div>
-<div class="line"><span class="lineno">  158</span>    <span class="keywordflow">return</span> prod;</div>
-<div class="line"><span class="lineno">  159</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  140</span>                                                       {</div>
+<div class="line"><span class="lineno">  141</span>  <span class="keywordtype">size_t</span> i, j;</div>
+<div class="line"><span class="lineno">  142</span>  <span class="comment">/* The computed length in last arg to the error object is a relic*/</span></div>
+<div class="line"><span class="lineno">  143</span>  <span class="keywordflow">if</span> (x1.columns() != b.rows())</div>
+<div class="line"><span class="lineno">  144</span>    <span class="keywordflow">throw</span> dmatrix_size_error(x1.rows(), x1.columns(), b.rows(),</div>
+<div class="line"><span class="lineno">  145</span>                             b.rows() * b.columns());</div>
+<div class="line"><span class="lineno">  146</span>  <a class="code hl_function" href="classmspass_1_1utility_1_1dmatrix.html#ae6bfdbc8f954f4d5340baa7e02975fb1">dmatrix</a> prod(x1.rows(), b.columns());</div>
+<div class="line"><span class="lineno">  147</span>  <span class="keywordflow">for</span> (i = 0; i &lt; x1.rows(); i++)</div>
+<div class="line"><span class="lineno">  148</span>    <span class="keywordflow">for</span> (j = 0; j &lt; b.columns(); j++) {</div>
+<div class="line"><span class="lineno">  149</span>      <span class="keywordtype">double</span> *x1ptr, *bptr;</div>
+<div class="line"><span class="lineno">  150</span>      x1ptr = <span class="keyword">const_cast&lt;</span><a class="code hl_function" href="classmspass_1_1utility_1_1dmatrix.html#ae6bfdbc8f954f4d5340baa7e02975fb1">dmatrix</a> &amp;<span class="keyword">&gt;</span>(x1).get_address(i, 0);</div>
+<div class="line"><span class="lineno">  151</span>      bptr = <span class="keyword">const_cast&lt;</span><a class="code hl_function" href="classmspass_1_1utility_1_1dmatrix.html#ae6bfdbc8f954f4d5340baa7e02975fb1">dmatrix</a> &amp;<span class="keyword">&gt;</span>(b).get_address(0, j);</div>
+<div class="line"><span class="lineno">  152</span>      <span class="comment">/* This temporary seems necessary */</span></div>
+<div class="line"><span class="lineno">  153</span>      <span class="keywordtype">double</span> *dptr;</div>
+<div class="line"><span class="lineno">  154</span>      dptr = prod.get_address(i, j);</div>
+<div class="line"><span class="lineno">  155</span>      *dptr = ddot(x1.columns(), x1ptr, x1.rows(), bptr, 1);</div>
+<div class="line"><span class="lineno">  156</span>    }</div>
+<div class="line"><span class="lineno">  157</span>  <span class="keywordflow">return</span> prod;</div>
+<div class="line"><span class="lineno">  158</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -871,8 +877,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>boost::serialization
 </div><div class="memdoc">
 
 <p>Scale a matrix by a constant. </p>
-<p>This procedure will multiply all elements of a matrix by a constant. The linear algebra concept of scaling a matrix. <br  />
-</p>
+<p>This procedure will multiply all elements of a matrix by a constant. The linear algebra concept of scaling a matrix.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">s</td><td>is the scaling factor </td></tr>
@@ -881,21 +886,20 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>boost::serialization
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>sA </dd></dl>
-<div class="fragment"><div class="line"><span class="lineno">  162</span>{</div>
-<div class="line"><span class="lineno">  163</span>  <span class="keywordtype">size_t</span> i;</div>
-<div class="line"><span class="lineno">  164</span>  <a class="code hl_function" href="classmspass_1_1utility_1_1dmatrix.html#ae6bfdbc8f954f4d5340baa7e02975fb1">dmatrix</a> tempmat(zx.rows(),zx.columns());</div>
-<div class="line"><span class="lineno">  165</span>  <span class="keywordtype">size_t</span> lenary=zx.rows()*zx.columns();</div>
-<div class="line"><span class="lineno">  166</span>  <span class="keywordtype">double</span> *zptr,*dptr;</div>
-<div class="line"><span class="lineno">  167</span>  zptr=<span class="keyword">const_cast&lt;</span><a class="code hl_function" href="classmspass_1_1utility_1_1dmatrix.html#ae6bfdbc8f954f4d5340baa7e02975fb1">dmatrix</a>&amp;<span class="keyword">&gt;</span>(zx).get_address(0,0);</div>
-<div class="line"><span class="lineno">  168</span>  dptr=tempmat.get_address(0,0);</div>
-<div class="line"><span class="lineno">  169</span>  <span class="keywordflow">for</span>(i=0;i&lt;lenary;++i)</div>
-<div class="line"><span class="lineno">  170</span>  {</div>
-<div class="line"><span class="lineno">  171</span>      (*dptr)=x*(*zptr);</div>
-<div class="line"><span class="lineno">  172</span>      ++dptr;</div>
-<div class="line"><span class="lineno">  173</span>      ++zptr;</div>
-<div class="line"><span class="lineno">  174</span>  }</div>
-<div class="line"><span class="lineno">  175</span>  <span class="keywordflow">return</span> tempmat;</div>
-<div class="line"><span class="lineno">  176</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  160</span>                                                               {</div>
+<div class="line"><span class="lineno">  161</span>  <span class="keywordtype">size_t</span> i;</div>
+<div class="line"><span class="lineno">  162</span>  <a class="code hl_function" href="classmspass_1_1utility_1_1dmatrix.html#ae6bfdbc8f954f4d5340baa7e02975fb1">dmatrix</a> tempmat(zx.rows(), zx.columns());</div>
+<div class="line"><span class="lineno">  163</span>  <span class="keywordtype">size_t</span> lenary = zx.rows() * zx.columns();</div>
+<div class="line"><span class="lineno">  164</span>  <span class="keywordtype">double</span> *zptr, *dptr;</div>
+<div class="line"><span class="lineno">  165</span>  zptr = <span class="keyword">const_cast&lt;</span><a class="code hl_function" href="classmspass_1_1utility_1_1dmatrix.html#ae6bfdbc8f954f4d5340baa7e02975fb1">dmatrix</a> &amp;<span class="keyword">&gt;</span>(zx).get_address(0, 0);</div>
+<div class="line"><span class="lineno">  166</span>  dptr = tempmat.get_address(0, 0);</div>
+<div class="line"><span class="lineno">  167</span>  <span class="keywordflow">for</span> (i = 0; i &lt; lenary; ++i) {</div>
+<div class="line"><span class="lineno">  168</span>    (*dptr) = x * (*zptr);</div>
+<div class="line"><span class="lineno">  169</span>    ++dptr;</div>
+<div class="line"><span class="lineno">  170</span>    ++zptr;</div>
+<div class="line"><span class="lineno">  171</span>  }</div>
+<div class="line"><span class="lineno">  172</span>  <span class="keywordflow">return</span> tempmat;</div>
+<div class="line"><span class="lineno">  173</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -969,8 +973,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>boost::serialization
 </div><div class="memdoc">
 
 <p>Transpose a matrix. </p>
-<p>A standard matrix operation is to transpose a matrix (reversing rows and columns). This takes input A and returns A^T. <br  />
-</p>
+<p>A standard matrix operation is to transpose a matrix (reversing rows and columns). This takes input A and returns A^T.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">A</td><td>- matrix to transpose. </td></tr>
@@ -978,16 +981,15 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>boost::serialization
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A transposed </dd></dl>
-<div class="fragment"><div class="line"><span class="lineno">  191</span>{</div>
-<div class="line"><span class="lineno">  192</span>  <span class="keywordtype">size_t</span> i,j;</div>
-<div class="line"><span class="lineno">  193</span>  <a class="code hl_function" href="classmspass_1_1utility_1_1dmatrix.html#ae6bfdbc8f954f4d5340baa7e02975fb1">dmatrix</a> temp(x1.columns(),x1.rows());</div>
-<div class="line"><span class="lineno">  194</span>  <span class="keywordflow">for</span>(i=0; i&lt;x1.rows(); i++)</div>
-<div class="line"><span class="lineno">  195</span>     <span class="keywordflow">for</span>(j=0; j&lt;x1.columns();j++)</div>
-<div class="line"><span class="lineno">  196</span>     {</div>
-<div class="line"><span class="lineno">  197</span>    temp(j,i)=x1(i,j);</div>
-<div class="line"><span class="lineno">  198</span>     }</div>
-<div class="line"><span class="lineno">  199</span>  <span class="keywordflow">return</span> temp;</div>
-<div class="line"><span class="lineno">  200</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  183</span>                                       {</div>
+<div class="line"><span class="lineno">  184</span>  <span class="keywordtype">size_t</span> i, j;</div>
+<div class="line"><span class="lineno">  185</span>  <a class="code hl_function" href="classmspass_1_1utility_1_1dmatrix.html#ae6bfdbc8f954f4d5340baa7e02975fb1">dmatrix</a> temp(x1.columns(), x1.rows());</div>
+<div class="line"><span class="lineno">  186</span>  <span class="keywordflow">for</span> (i = 0; i &lt; x1.rows(); i++)</div>
+<div class="line"><span class="lineno">  187</span>    <span class="keywordflow">for</span> (j = 0; j &lt; x1.columns(); j++) {</div>
+<div class="line"><span class="lineno">  188</span>      temp(j, i) = x1(i, j);</div>
+<div class="line"><span class="lineno">  189</span>    }</div>
+<div class="line"><span class="lineno">  190</span>  <span class="keywordflow">return</span> temp;</div>
+<div class="line"><span class="lineno">  191</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>

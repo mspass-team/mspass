@@ -7,11 +7,9 @@
       <node id="2">
         <label>mspass/utility/ErrorLogger.h</label>
         <link refid="_error_logger_8h_source"/>
+        <childnode refid="2" relation="include">
+        </childnode>
         <childnode refid="3" relation="include">
-        </childnode>
-        <childnode refid="4" relation="include">
-        </childnode>
-        <childnode refid="5" relation="include">
         </childnode>
         <childnode refid="6" relation="include">
         </childnode>
@@ -23,15 +21,17 @@
         </childnode>
         <childnode refid="10" relation="include">
         </childnode>
-        <childnode refid="2" relation="include">
-        </childnode>
-      </node>
-      <node id="10">
-        <label>mspass/utility/MsPASSError.h</label>
-        <link refid="_ms_p_a_s_s_error_8h_source"/>
         <childnode refid="11" relation="include">
         </childnode>
         <childnode refid="12" relation="include">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>mspass/utility/MsPASSError.h</label>
+        <link refid="_ms_p_a_s_s_error_8h_source"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
         </childnode>
       </node>
       <node id="1">
@@ -40,31 +40,31 @@
         <childnode refid="2" relation="include">
         </childnode>
       </node>
-      <node id="5">
+      <node id="6">
         <label>boost/archive/basic_archive.hpp</label>
       </node>
-      <node id="6">
+      <node id="7">
         <label>boost/archive/text_iarchive.hpp</label>
       </node>
-      <node id="7">
+      <node id="8">
         <label>boost/archive/text_oarchive.hpp</label>
       </node>
       <node id="9">
         <label>boost/serialization/list.hpp</label>
       </node>
-      <node id="8">
+      <node id="10">
         <label>boost/serialization/serialization.hpp</label>
       </node>
-      <node id="12">
+      <node id="4">
         <label>exception</label>
       </node>
-      <node id="11">
+      <node id="5">
         <label>iostream</label>
       </node>
-      <node id="4">
+      <node id="11">
         <label>list</label>
       </node>
-      <node id="3">
+      <node id="12">
         <label>unistd.h</label>
       </node>
     </incdepgraph>
@@ -77,148 +77,140 @@
     <programlisting>
 <codeline lineno="1"><highlight class="preprocessor">#include<sp/>&quot;mspass/utility/ErrorLogger.h&quot;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="2"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal">mspass::utility;</highlight></codeline>
-<codeline lineno="3"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">mspass::utility</highlight></codeline>
-<codeline lineno="4"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="5"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal">std;</highlight></codeline>
-<codeline lineno="6"><highlight class="normal"></highlight></codeline>
-<codeline lineno="7"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>First<sp/>code<sp/>for<sp/>the<sp/>LogData<sp/>class<sp/>that<sp/>are<sp/>too<sp/>long<sp/>for<sp/>inline<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="8" refid="classmspass_1_1utility_1_1_log_data_1adc3c00e5dc191b90cfc32cb0b148f6bb" refkind="member"><highlight class="normal">LogData::LogData(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>jid,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>alg,</highlight></codeline>
-<codeline lineno="9"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" kindref="compound">mspass::utility::MsPASSError</ref>&amp;<sp/>merr)</highlight></codeline>
-<codeline lineno="10"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="11"><highlight class="normal"><sp/><sp/>job_id=jid;</highlight></codeline>
-<codeline lineno="12"><highlight class="normal"><sp/><sp/>p_id=getpid();</highlight></codeline>
-<codeline lineno="13"><highlight class="normal"><sp/><sp/>algorithm=alg;</highlight></codeline>
-<codeline lineno="14"><highlight class="normal"><sp/><sp/>message=merr.<ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1a1dd30086a986a3a0669cd974e65bd563" kindref="member">what</ref>();</highlight></codeline>
-<codeline lineno="15"><highlight class="normal"><sp/><sp/>badness=merr.<ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1a3393c3878bee1728628fd3e063640d94" kindref="member">severity</ref>();</highlight></codeline>
-<codeline lineno="16"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="17" refid="classmspass_1_1utility_1_1_log_data_1a672a6557b891cb6b8ce736edc2b30b2b" refkind="member"><highlight class="normal">LogData::LogData(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>jid,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>alg,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>msg,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>mspass::utility::ErrorSeverity<sp/>lvl)</highlight></codeline>
-<codeline lineno="18"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="19"><highlight class="normal"><sp/><sp/>job_id=jid;</highlight></codeline>
-<codeline lineno="20"><highlight class="normal"><sp/><sp/>p_id=getpid();</highlight></codeline>
-<codeline lineno="21"><highlight class="normal"><sp/><sp/>algorithm=alg;</highlight></codeline>
-<codeline lineno="22"><highlight class="normal"><sp/><sp/>message=msg;</highlight></codeline>
-<codeline lineno="23"><highlight class="normal"><sp/><sp/>badness=lvl;</highlight></codeline>
-<codeline lineno="24"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="25"><highlight class="normal">ostream&amp;<sp/>operator&lt;&lt;(ostream&amp;<sp/>ofs,<sp/><ref refid="classmspass_1_1utility_1_1_log_data" kindref="compound">LogData</ref>&amp;<sp/>ld)</highlight></codeline>
-<codeline lineno="26"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="27"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">switch</highlight><highlight class="normal">(ld.badness)</highlight></codeline>
-<codeline lineno="28"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
-<codeline lineno="29"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/>ErrorSeverity::Fatal:</highlight></codeline>
-<codeline lineno="30"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ofs&lt;&lt;</highlight><highlight class="stringliteral">&quot;Fatal<sp/>&quot;</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="31"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">break</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="32"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/>ErrorSeverity::Invalid:</highlight></codeline>
-<codeline lineno="33"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ofs&lt;&lt;</highlight><highlight class="stringliteral">&quot;Invalid<sp/>&quot;</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="34"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">break</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="35"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/>ErrorSeverity::Complaint:</highlight></codeline>
-<codeline lineno="36"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ofs&lt;&lt;</highlight><highlight class="stringliteral">&quot;Complaint<sp/>&quot;</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="37"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">break</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="38"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/>ErrorSeverity::Debug:</highlight></codeline>
-<codeline lineno="39"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ofs&lt;&lt;</highlight><highlight class="stringliteral">&quot;Debug<sp/>&quot;</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="40"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">break</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/>ErrorSeverity::Informational:</highlight></codeline>
-<codeline lineno="42"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ofs&lt;&lt;</highlight><highlight class="stringliteral">&quot;Informational<sp/>&quot;</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">break</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">:</highlight></codeline>
-<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ofs&lt;&lt;</highlight><highlight class="stringliteral">&quot;Undefined&quot;</highlight><highlight class="normal">&lt;&lt;endl;</highlight></codeline>
-<codeline lineno="46"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
-<codeline lineno="47"><highlight class="normal"><sp/><sp/>ofs&lt;&lt;ld.job_id&lt;&lt;</highlight><highlight class="stringliteral">&quot;<sp/>&quot;</highlight><highlight class="normal">&lt;&lt;ld.p_id&lt;&lt;</highlight><highlight class="stringliteral">&quot;<sp/>&quot;</highlight><highlight class="normal">&lt;&lt;ld.algorithm</highlight></codeline>
-<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>&lt;&lt;</highlight><highlight class="stringliteral">&quot;<sp/>&quot;</highlight><highlight class="normal">&lt;&lt;ld.message&lt;&lt;endl;</highlight></codeline>
-<codeline lineno="49"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>ofs;</highlight></codeline>
-<codeline lineno="50"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="51"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>Now<sp/>the<sp/>code<sp/>for<sp/>the<sp/>ErrorLogger<sp/>class<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="52"><highlight class="normal">ErrorLogger::ErrorLogger(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_error_logger" kindref="compound">ErrorLogger</ref>&amp;<sp/>parent)</highlight></codeline>
-<codeline lineno="53"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="54"><highlight class="normal"><sp/><sp/>job_id=parent.job_id;</highlight></codeline>
-<codeline lineno="55"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>Just<sp/>copy<sp/>this.<sp/><sp/>Could<sp/>call<sp/>getpid<sp/>every<sp/>time,<sp/>but<sp/>the<sp/>only<sp/>way<sp/>I<sp/>can</highlight></codeline>
-<codeline lineno="56"><highlight class="comment"><sp/><sp/>conceive<sp/>that<sp/>would<sp/>be<sp/>an<sp/>issue<sp/>is<sp/>if<sp/>the<sp/>entry<sp/>were<sp/>serialized<sp/>and<sp/>sent</highlight></codeline>
-<codeline lineno="57"><highlight class="comment"><sp/><sp/>somewhere<sp/>through<sp/>something<sp/>like<sp/>mpi.<sp/><sp/><sp/>A<sp/>copy<sp/>is<sp/>a<sp/>copy<sp/>so<sp/>seems<sp/>best<sp/>to</highlight></codeline>
-<codeline lineno="58"><highlight class="comment"><sp/><sp/>clone<sp/>this<sp/>not<sp/>ask<sp/>for<sp/>confusion.<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="59"><highlight class="normal"><sp/><sp/>allmessages=parent.allmessages;</highlight></codeline>
-<codeline lineno="60"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="61"><highlight class="normal"><ref refid="classmspass_1_1utility_1_1_error_logger" kindref="compound">ErrorLogger</ref>&amp;<sp/>ErrorLogger::operator=(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_error_logger" kindref="compound">ErrorLogger</ref>&amp;<sp/>parent)</highlight></codeline>
-<codeline lineno="62"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="63"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(</highlight><highlight class="keyword">this</highlight><highlight class="normal">!=&amp;parent)</highlight></codeline>
-<codeline lineno="64"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
-<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/>job_id=parent.job_id;</highlight></codeline>
-<codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/>allmessages=parent.allmessages;</highlight></codeline>
-<codeline lineno="67"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
-<codeline lineno="68"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>*</highlight><highlight class="keyword">this</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="69"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="70" refid="classmspass_1_1utility_1_1_error_logger_1a4c0ac6e0e59fa842e3ce065352edb82e" refkind="member"><highlight class="normal"><ref refid="classmspass_1_1utility_1_1_error_logger" kindref="compound">ErrorLogger</ref>&amp;<sp/><ref refid="classmspass_1_1utility_1_1_error_logger_1a4c0ac6e0e59fa842e3ce065352edb82e" kindref="member">ErrorLogger::operator+=</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_error_logger" kindref="compound">ErrorLogger</ref>&amp;<sp/>other)</highlight></codeline>
-<codeline lineno="71"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="72"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(</highlight><highlight class="keyword">this</highlight><highlight class="normal">!=&amp;other)</highlight></codeline>
-<codeline lineno="73"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
-<codeline lineno="74"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal">(</highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>lptr=other.allmessages.begin();lptr!=other.allmessages.end();++lptr)</highlight></codeline>
-<codeline lineno="75"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
-<codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>this-&gt;allmessages.push_back(*lptr);</highlight></codeline>
-<codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="78"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
-<codeline lineno="79"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>*</highlight><highlight class="keyword">this</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="80"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="81" refid="classmspass_1_1utility_1_1_error_logger_1aa69873ba0aebf67e9ba24d01992c0bcf" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_error_logger_1aa69873ba0aebf67e9ba24d01992c0bcf" kindref="member">ErrorLogger::log_error</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" kindref="compound">mspass::utility::MsPASSError</ref>&amp;<sp/>merr)</highlight></codeline>
-<codeline lineno="82"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="83"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1utility_1_1_log_data" kindref="compound">LogData</ref><sp/>thislog(this-&gt;job_id,</highlight><highlight class="keywordtype">string</highlight><highlight class="normal">(</highlight><highlight class="stringliteral">&quot;MsPASSError&quot;</highlight><highlight class="normal">),merr);</highlight></codeline>
-<codeline lineno="84"><highlight class="normal"><sp/><sp/>allmessages.push_back(thislog);</highlight></codeline>
-<codeline lineno="85"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>allmessages.size();</highlight></codeline>
-<codeline lineno="86"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="87" refid="classmspass_1_1utility_1_1_error_logger_1a51545bad29895f7c1393ccbfed6e2aa2" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_error_logger_1aa69873ba0aebf67e9ba24d01992c0bcf" kindref="member">ErrorLogger::log_error</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>alg,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>mess,</highlight></codeline>
-<codeline lineno="88"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>mspass::utility::ErrorSeverity<sp/>level=ErrorSeverity::Invalid)</highlight></codeline>
-<codeline lineno="89"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="90"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1utility_1_1_log_data" kindref="compound">LogData</ref><sp/>thislog(this-&gt;job_id,alg,mess,level);</highlight></codeline>
-<codeline lineno="91"><highlight class="normal"><sp/><sp/>allmessages.push_back(thislog);</highlight></codeline>
-<codeline lineno="92"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>allmessages.size();</highlight></codeline>
-<codeline lineno="93"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="94" refid="classmspass_1_1utility_1_1_error_logger_1a570cc3c845bd18dd0417e84a8cafe05f" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_error_logger_1a570cc3c845bd18dd0417e84a8cafe05f" kindref="member">ErrorLogger::log_verbose</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/><sp/>alg,</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>mess)</highlight></codeline>
-<codeline lineno="95"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="96"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>count;</highlight></codeline>
-<codeline lineno="97"><highlight class="normal"><sp/><sp/>count=this-&gt;<ref refid="classmspass_1_1utility_1_1_error_logger_1aa69873ba0aebf67e9ba24d01992c0bcf" kindref="member">log_error</ref>(alg,mess,ErrorSeverity::Informational);</highlight></codeline>
-<codeline lineno="98"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>count;</highlight></codeline>
-<codeline lineno="99"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="100"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>This<sp/>method<sp/>needs<sp/>to<sp/>return<sp/>a<sp/>list<sp/>of<sp/>the<sp/>highest<sp/>ranking</highlight></codeline>
-<codeline lineno="101"><highlight class="comment">errors<sp/>in<sp/>the<sp/>log.<sp/><sp/><sp/>This<sp/>is<sp/>a<sp/>bit<sp/>tricky<sp/>because<sp/>we<sp/>specify<sp/>badness<sp/>with</highlight></codeline>
-<codeline lineno="102"><highlight class="comment">an<sp/>enum.<sp/><sp/><sp/>It<sp/>seems<sp/>dangerous<sp/>to<sp/>depend<sp/>upon<sp/>the<sp/>old<sp/>(I<sp/>think<sp/>depricated)</highlight></codeline>
-<codeline lineno="103"><highlight class="comment">equivalence<sp/>of<sp/>an<sp/>enum<sp/>with<sp/>an<sp/>ordered<sp/>list<sp/>of<sp/>ints.<sp/><sp/><sp/>Hence,<sp/>we<sp/>have<sp/>a</highlight></codeline>
-<codeline lineno="104"><highlight class="comment">bit<sp/>of<sp/>an<sp/>ugly<sp/>algorithm<sp/>here.<sp/><sp/>The<sp/>algorithm<sp/>is<sp/>a<sp/>memory<sp/>hog<sp/>and<sp/>would<sp/>be</highlight></codeline>
-<codeline lineno="105"><highlight class="comment">a<sp/>bad<sp/>idea<sp/>if<sp/>the<sp/>log<sp/>got<sp/>huge,<sp/>but<sp/>for<sp/>the<sp/>indended<sp/>use<sp/>in<sp/>mspass<sp/>that</highlight></codeline>
-<codeline lineno="106"><highlight class="comment">should<sp/>never<sp/>happen.<sp/><sp/>User<sp/>beware<sp/>if<sp/>transported<sp/>though<sp/>-<sp/>glp<sp/>9/28/2019.*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="107" refid="classmspass_1_1utility_1_1_error_logger_1a78cd3444e267065b7e9858cc27a36103" refkind="member"><highlight class="normal">list&lt;LogData&gt;<sp/><ref refid="classmspass_1_1utility_1_1_error_logger_1a78cd3444e267065b7e9858cc27a36103" kindref="member">ErrorLogger::worst_errors</ref>()</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
-<codeline lineno="108"><highlight class="keyword"></highlight><highlight class="normal">{</highlight></codeline>
-<codeline lineno="109"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>Return<sp/>immediately<sp/>if<sp/>the<sp/>messages<sp/>container<sp/>is<sp/>empty.<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="110"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(allmessages.size()&lt;=0)<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>allmessages;</highlight></codeline>
-<codeline lineno="111"><highlight class="normal"><sp/><sp/>list&lt;LogData&gt;<sp/>flist,ivlist,slist,clist,dlist,ilist;</highlight></codeline>
-<codeline lineno="112"><highlight class="normal"><sp/><sp/>list&lt;LogData&gt;::const_iterator<sp/>aptr;</highlight></codeline>
-<codeline lineno="113"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal">(aptr=allmessages.begin();aptr!=allmessages.end();++aptr)</highlight></codeline>
-<codeline lineno="114"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
-<codeline lineno="115"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">switch</highlight><highlight class="normal">(aptr-&gt;badness)</highlight></codeline>
-<codeline lineno="116"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
-<codeline lineno="117"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/>ErrorSeverity::Fatal:</highlight></codeline>
-<codeline lineno="118"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>flist.push_back(*aptr);</highlight></codeline>
-<codeline lineno="119"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">break</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="120"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/>ErrorSeverity::Invalid:</highlight></codeline>
-<codeline lineno="121"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ivlist.push_back(*aptr);</highlight></codeline>
-<codeline lineno="122"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">break</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="123"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/>ErrorSeverity::Suspect:</highlight></codeline>
-<codeline lineno="124"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>slist.push_back(*aptr);</highlight></codeline>
-<codeline lineno="125"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">break</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="126"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/>ErrorSeverity::Complaint:</highlight></codeline>
-<codeline lineno="127"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>clist.push_back(*aptr);</highlight></codeline>
-<codeline lineno="128"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">break</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="129"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/>ErrorSeverity::Debug:</highlight></codeline>
-<codeline lineno="130"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>dlist.push_back(*aptr);</highlight></codeline>
-<codeline lineno="131"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">break</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="132"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/>ErrorSeverity::Informational:</highlight></codeline>
-<codeline lineno="133"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">:</highlight></codeline>
-<codeline lineno="134"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ilist.push_back(*aptr);</highlight></codeline>
-<codeline lineno="135"><highlight class="normal"><sp/><sp/><sp/><sp/>};</highlight></codeline>
-<codeline lineno="136"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
-<codeline lineno="137"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(flist.size()&gt;0)<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>flist;</highlight></codeline>
-<codeline lineno="138"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(ivlist.size()&gt;0)<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>ivlist;</highlight></codeline>
-<codeline lineno="139"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(slist.size()&gt;0)<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>slist;</highlight></codeline>
-<codeline lineno="140"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(clist.size()&gt;0)<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>clist;</highlight></codeline>
-<codeline lineno="141"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(dlist.size()&gt;0)<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>dlist;</highlight></codeline>
-<codeline lineno="142"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>ilist;</highlight></codeline>
-<codeline lineno="143"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="144"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">mspass::utility<sp/>{</highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal">std;</highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>First<sp/>code<sp/>for<sp/>the<sp/>LogData<sp/>class<sp/>that<sp/>are<sp/>too<sp/>long<sp/>for<sp/>inline<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7" refid="classmspass_1_1utility_1_1_log_data_1adc3c00e5dc191b90cfc32cb0b148f6bb" refkind="member"><highlight class="normal">LogData::LogData(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>jid,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>alg,</highlight></codeline>
+<codeline lineno="8"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" kindref="compound">mspass::utility::MsPASSError</ref><sp/>&amp;merr)<sp/>{</highlight></codeline>
+<codeline lineno="9"><highlight class="normal"><sp/><sp/>job_id<sp/>=<sp/>jid;</highlight></codeline>
+<codeline lineno="10"><highlight class="normal"><sp/><sp/>p_id<sp/>=<sp/>getpid();</highlight></codeline>
+<codeline lineno="11"><highlight class="normal"><sp/><sp/>algorithm<sp/>=<sp/>alg;</highlight></codeline>
+<codeline lineno="12"><highlight class="normal"><sp/><sp/>message<sp/>=<sp/>merr.<ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1a1dd30086a986a3a0669cd974e65bd563" kindref="member">what</ref>();</highlight></codeline>
+<codeline lineno="13"><highlight class="normal"><sp/><sp/>badness<sp/>=<sp/>merr.<ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1a3393c3878bee1728628fd3e063640d94" kindref="member">severity</ref>();</highlight></codeline>
+<codeline lineno="14"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="15" refid="classmspass_1_1utility_1_1_log_data_1a672a6557b891cb6b8ce736edc2b30b2b" refkind="member"><highlight class="normal">LogData::LogData(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>jid,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>alg,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>msg,</highlight></codeline>
+<codeline lineno="16"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>mspass::utility::ErrorSeverity<sp/>lvl)<sp/>{</highlight></codeline>
+<codeline lineno="17"><highlight class="normal"><sp/><sp/>job_id<sp/>=<sp/>jid;</highlight></codeline>
+<codeline lineno="18"><highlight class="normal"><sp/><sp/>p_id<sp/>=<sp/>getpid();</highlight></codeline>
+<codeline lineno="19"><highlight class="normal"><sp/><sp/>algorithm<sp/>=<sp/>alg;</highlight></codeline>
+<codeline lineno="20"><highlight class="normal"><sp/><sp/>message<sp/>=<sp/>msg;</highlight></codeline>
+<codeline lineno="21"><highlight class="normal"><sp/><sp/>badness<sp/>=<sp/>lvl;</highlight></codeline>
+<codeline lineno="22"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="23"><highlight class="normal">ostream<sp/>&amp;operator&lt;&lt;(ostream<sp/>&amp;ofs,<sp/><ref refid="classmspass_1_1utility_1_1_log_data" kindref="compound">LogData</ref><sp/>&amp;ld)<sp/>{</highlight></codeline>
+<codeline lineno="24"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">switch</highlight><highlight class="normal"><sp/>(ld.badness)<sp/>{</highlight></codeline>
+<codeline lineno="25"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/>ErrorSeverity::Fatal:</highlight></codeline>
+<codeline lineno="26"><highlight class="normal"><sp/><sp/><sp/><sp/>ofs<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;Fatal<sp/>&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="27"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">break</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="28"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/>ErrorSeverity::Invalid:</highlight></codeline>
+<codeline lineno="29"><highlight class="normal"><sp/><sp/><sp/><sp/>ofs<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;Invalid<sp/>&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="30"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">break</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="31"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/>ErrorSeverity::Complaint:</highlight></codeline>
+<codeline lineno="32"><highlight class="normal"><sp/><sp/><sp/><sp/>ofs<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;Complaint<sp/>&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="33"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">break</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/>ErrorSeverity::Debug:</highlight></codeline>
+<codeline lineno="35"><highlight class="normal"><sp/><sp/><sp/><sp/>ofs<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;Debug<sp/>&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">break</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="37"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/>ErrorSeverity::Informational:</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"><sp/><sp/><sp/><sp/>ofs<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;Informational<sp/>&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">break</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/>ofs<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;Undefined&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/>endl;</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/>ofs<sp/>&lt;&lt;<sp/>ld.job_id<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;<sp/>&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/>ld.p_id<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;<sp/>&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/>ld.algorithm<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;<sp/>&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/>ld.message</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>&lt;&lt;<sp/>endl;</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>ofs;</highlight></codeline>
+<codeline lineno="46"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>Now<sp/>the<sp/>code<sp/>for<sp/>the<sp/>ErrorLogger<sp/>class<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="48"><highlight class="normal">ErrorLogger::ErrorLogger(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_error_logger" kindref="compound">ErrorLogger</ref><sp/>&amp;parent)<sp/>{</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/>job_id<sp/>=<sp/>parent.job_id;</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>Just<sp/>copy<sp/>this.<sp/><sp/>Could<sp/>call<sp/>getpid<sp/>every<sp/>time,<sp/>but<sp/>the<sp/>only<sp/>way<sp/>I<sp/>can</highlight></codeline>
+<codeline lineno="51"><highlight class="comment"><sp/><sp/>conceive<sp/>that<sp/>would<sp/>be<sp/>an<sp/>issue<sp/>is<sp/>if<sp/>the<sp/>entry<sp/>were<sp/>serialized<sp/>and<sp/>sent</highlight></codeline>
+<codeline lineno="52"><highlight class="comment"><sp/><sp/>somewhere<sp/>through<sp/>something<sp/>like<sp/>mpi.<sp/><sp/><sp/>A<sp/>copy<sp/>is<sp/>a<sp/>copy<sp/>so<sp/>seems<sp/>best<sp/>to</highlight></codeline>
+<codeline lineno="53"><highlight class="comment"><sp/><sp/>clone<sp/>this<sp/>not<sp/>ask<sp/>for<sp/>confusion.<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/>allmessages<sp/>=<sp/>parent.allmessages;</highlight></codeline>
+<codeline lineno="55"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><ref refid="classmspass_1_1utility_1_1_error_logger" kindref="compound">ErrorLogger</ref><sp/>&amp;ErrorLogger::operator=(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_error_logger" kindref="compound">ErrorLogger</ref><sp/>&amp;parent)<sp/>{</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keyword">this</highlight><highlight class="normal"><sp/>!=<sp/>&amp;parent)<sp/>{</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/>job_id<sp/>=<sp/>parent.job_id;</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/>allmessages<sp/>=<sp/>parent.allmessages;</highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>*</highlight><highlight class="keyword">this</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="62"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="63" refid="classmspass_1_1utility_1_1_error_logger_1a4c0ac6e0e59fa842e3ce065352edb82e" refkind="member"><highlight class="normal"><ref refid="classmspass_1_1utility_1_1_error_logger" kindref="compound">ErrorLogger</ref><sp/>&amp;<ref refid="classmspass_1_1utility_1_1_error_logger_1a4c0ac6e0e59fa842e3ce065352edb82e" kindref="member">ErrorLogger::operator+=</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_error_logger" kindref="compound">ErrorLogger</ref><sp/>&amp;other)<sp/>{</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keyword">this</highlight><highlight class="normal"><sp/>!=<sp/>&amp;other)<sp/>{</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>lptr<sp/>=<sp/>other.allmessages.begin();<sp/>lptr<sp/>!=<sp/>other.allmessages.end();</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>++lptr)<sp/>{</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>this-&gt;allmessages.push_back(*lptr);</highlight></codeline>
+<codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="70"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>*</highlight><highlight class="keyword">this</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="71"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="72" refid="classmspass_1_1utility_1_1_error_logger_1aa69873ba0aebf67e9ba24d01992c0bcf" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_error_logger_1aa69873ba0aebf67e9ba24d01992c0bcf" kindref="member">ErrorLogger::log_error</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" kindref="compound">mspass::utility::MsPASSError</ref><sp/>&amp;merr)<sp/>{</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1utility_1_1_log_data" kindref="compound">LogData</ref><sp/>thislog(this-&gt;job_id,<sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal">(</highlight><highlight class="stringliteral">&quot;MsPASSError&quot;</highlight><highlight class="normal">),<sp/>merr);</highlight></codeline>
+<codeline lineno="74"><highlight class="normal"><sp/><sp/>allmessages.push_back(thislog);</highlight></codeline>
+<codeline lineno="75"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>allmessages.size();</highlight></codeline>
+<codeline lineno="76"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="77" refid="classmspass_1_1utility_1_1_error_logger_1a51545bad29895f7c1393ccbfed6e2aa2" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_error_logger_1aa69873ba0aebf67e9ba24d01992c0bcf" kindref="member">ErrorLogger::log_error</ref>(</highlight></codeline>
+<codeline lineno="78"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>alg,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>mess,</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>mspass::utility::ErrorSeverity<sp/>level<sp/>=<sp/>ErrorSeverity::Invalid)<sp/>{</highlight></codeline>
+<codeline lineno="80"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1utility_1_1_log_data" kindref="compound">LogData</ref><sp/>thislog(this-&gt;job_id,<sp/>alg,<sp/>mess,<sp/>level);</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"><sp/><sp/>allmessages.push_back(thislog);</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>allmessages.size();</highlight></codeline>
+<codeline lineno="83"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="84" refid="classmspass_1_1utility_1_1_error_logger_1a570cc3c845bd18dd0417e84a8cafe05f" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_error_logger_1a570cc3c845bd18dd0417e84a8cafe05f" kindref="member">ErrorLogger::log_verbose</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>alg,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>mess)<sp/>{</highlight></codeline>
+<codeline lineno="85"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>count;</highlight></codeline>
+<codeline lineno="86"><highlight class="normal"><sp/><sp/>count<sp/>=<sp/>this-&gt;<ref refid="classmspass_1_1utility_1_1_error_logger_1aa69873ba0aebf67e9ba24d01992c0bcf" kindref="member">log_error</ref>(alg,<sp/>mess,<sp/>ErrorSeverity::Informational);</highlight></codeline>
+<codeline lineno="87"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>count;</highlight></codeline>
+<codeline lineno="88"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="89"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>This<sp/>method<sp/>needs<sp/>to<sp/>return<sp/>a<sp/>list<sp/>of<sp/>the<sp/>highest<sp/>ranking</highlight></codeline>
+<codeline lineno="90"><highlight class="comment">errors<sp/>in<sp/>the<sp/>log.<sp/><sp/><sp/>This<sp/>is<sp/>a<sp/>bit<sp/>tricky<sp/>because<sp/>we<sp/>specify<sp/>badness<sp/>with</highlight></codeline>
+<codeline lineno="91"><highlight class="comment">an<sp/>enum.<sp/><sp/><sp/>It<sp/>seems<sp/>dangerous<sp/>to<sp/>depend<sp/>upon<sp/>the<sp/>old<sp/>(I<sp/>think<sp/>depricated)</highlight></codeline>
+<codeline lineno="92"><highlight class="comment">equivalence<sp/>of<sp/>an<sp/>enum<sp/>with<sp/>an<sp/>ordered<sp/>list<sp/>of<sp/>ints.<sp/><sp/><sp/>Hence,<sp/>we<sp/>have<sp/>a</highlight></codeline>
+<codeline lineno="93"><highlight class="comment">bit<sp/>of<sp/>an<sp/>ugly<sp/>algorithm<sp/>here.<sp/><sp/>The<sp/>algorithm<sp/>is<sp/>a<sp/>memory<sp/>hog<sp/>and<sp/>would<sp/>be</highlight></codeline>
+<codeline lineno="94"><highlight class="comment">a<sp/>bad<sp/>idea<sp/>if<sp/>the<sp/>log<sp/>got<sp/>huge,<sp/>but<sp/>for<sp/>the<sp/>indended<sp/>use<sp/>in<sp/>mspass<sp/>that</highlight></codeline>
+<codeline lineno="95"><highlight class="comment">should<sp/>never<sp/>happen.<sp/><sp/>User<sp/>beware<sp/>if<sp/>transported<sp/>though<sp/>-<sp/>glp<sp/>9/28/2019.*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="96" refid="classmspass_1_1utility_1_1_error_logger_1a78cd3444e267065b7e9858cc27a36103" refkind="member"><highlight class="normal">list&lt;LogData&gt;<sp/><ref refid="classmspass_1_1utility_1_1_error_logger_1a78cd3444e267065b7e9858cc27a36103" kindref="member">ErrorLogger::worst_errors</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="97"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>Return<sp/>immediately<sp/>if<sp/>the<sp/>messages<sp/>container<sp/>is<sp/>empty.<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="98"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(allmessages.size()<sp/>&lt;=<sp/>0)</highlight></codeline>
+<codeline lineno="99"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>allmessages;</highlight></codeline>
+<codeline lineno="100"><highlight class="normal"><sp/><sp/>list&lt;LogData&gt;<sp/>flist,<sp/>ivlist,<sp/>slist,<sp/>clist,<sp/>dlist,<sp/>ilist;</highlight></codeline>
+<codeline lineno="101"><highlight class="normal"><sp/><sp/>list&lt;LogData&gt;::const_iterator<sp/>aptr;</highlight></codeline>
+<codeline lineno="102"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(aptr<sp/>=<sp/>allmessages.begin();<sp/>aptr<sp/>!=<sp/>allmessages.end();<sp/>++aptr)<sp/>{</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">switch</highlight><highlight class="normal"><sp/>(aptr-&gt;badness)<sp/>{</highlight></codeline>
+<codeline lineno="104"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/>ErrorSeverity::Fatal:</highlight></codeline>
+<codeline lineno="105"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>flist.push_back(*aptr);</highlight></codeline>
+<codeline lineno="106"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">break</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="107"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/>ErrorSeverity::Invalid:</highlight></codeline>
+<codeline lineno="108"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ivlist.push_back(*aptr);</highlight></codeline>
+<codeline lineno="109"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">break</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="110"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/>ErrorSeverity::Suspect:</highlight></codeline>
+<codeline lineno="111"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>slist.push_back(*aptr);</highlight></codeline>
+<codeline lineno="112"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">break</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="113"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/>ErrorSeverity::Complaint:</highlight></codeline>
+<codeline lineno="114"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>clist.push_back(*aptr);</highlight></codeline>
+<codeline lineno="115"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">break</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="116"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/>ErrorSeverity::Debug:</highlight></codeline>
+<codeline lineno="117"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>dlist.push_back(*aptr);</highlight></codeline>
+<codeline lineno="118"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">break</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="119"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/>ErrorSeverity::Informational:</highlight></codeline>
+<codeline lineno="120"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="121"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ilist.push_back(*aptr);</highlight></codeline>
+<codeline lineno="122"><highlight class="normal"><sp/><sp/><sp/><sp/>};</highlight></codeline>
+<codeline lineno="123"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="124"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(flist.size()<sp/>&gt;<sp/>0)</highlight></codeline>
+<codeline lineno="125"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>flist;</highlight></codeline>
+<codeline lineno="126"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(ivlist.size()<sp/>&gt;<sp/>0)</highlight></codeline>
+<codeline lineno="127"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>ivlist;</highlight></codeline>
+<codeline lineno="128"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(slist.size()<sp/>&gt;<sp/>0)</highlight></codeline>
+<codeline lineno="129"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>slist;</highlight></codeline>
+<codeline lineno="130"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(clist.size()<sp/>&gt;<sp/>0)</highlight></codeline>
+<codeline lineno="131"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>clist;</highlight></codeline>
+<codeline lineno="132"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(dlist.size()<sp/>&gt;<sp/>0)</highlight></codeline>
+<codeline lineno="133"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>dlist;</highlight></codeline>
+<codeline lineno="134"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>ilist;</highlight></codeline>
+<codeline lineno="135"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="136"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>mspass::utility</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="/home/runner/work/mspass/mspass/cxx/src/lib/utility/ErrorLogger.cc"/>
   </compounddef>

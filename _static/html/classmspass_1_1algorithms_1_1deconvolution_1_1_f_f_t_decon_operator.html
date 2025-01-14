@@ -176,12 +176,12 @@ gsl_fft_complex_workspace *&#160;</td><td class="memItemRight" valign="bottom"><
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   12</span>{</div>
-<div class="line"><span class="lineno">   13</span>    nfft=0;</div>
-<div class="line"><span class="lineno">   14</span>    sample_shift=0;</div>
-<div class="line"><span class="lineno">   15</span>    wavetable=NULL;</div>
-<div class="line"><span class="lineno">   16</span>    workspace=NULL;</div>
-<div class="line"><span class="lineno">   17</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">   10</span>                                   {</div>
+<div class="line"><span class="lineno">   11</span>  nfft = 0;</div>
+<div class="line"><span class="lineno">   12</span>  sample_shift = 0;</div>
+<div class="line"><span class="lineno">   13</span>  wavetable = NULL;</div>
+<div class="line"><span class="lineno">   14</span>  workspace = NULL;</div>
+<div class="line"><span class="lineno">   15</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -200,38 +200,39 @@ gsl_fft_complex_workspace *&#160;</td><td class="memItemRight" valign="bottom"><
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   19</span>{</div>
-<div class="line"><span class="lineno">   20</span>  <span class="keywordflow">try</span> {</div>
-<div class="line"><span class="lineno">   21</span>    <span class="keyword">const</span> <span class="keywordtype">string</span> base_error(<span class="stringliteral">&quot;FFTDeconOperator Metadata constructor:  &quot;</span>);</div>
-<div class="line"><span class="lineno">   22</span>    <span class="keywordtype">int</span> nfftpf=md.<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#a78f3a01e1b1deccd84a0833bea4ef462">get_int</a>(<span class="stringliteral">&quot;operator_nfft&quot;</span>);</div>
-<div class="line"><span class="lineno">   23</span>    <span class="comment">/* We force a power of 2 algorithm for efficiency and always round up*/</span></div>
-<div class="line"><span class="lineno">   24</span>    this-&gt;nfft=nextPowerOf2(nfftpf);</div>
-<div class="line"><span class="lineno">   25</span>    <span class="comment">/* We compute the sample shift from the window start time and dt.  This assures</span></div>
-<div class="line"><span class="lineno">   26</span><span class="comment">     * the output will be phase shifted so zero lag is at the zero position of the</span></div>
-<div class="line"><span class="lineno">   27</span><span class="comment">     * array.   Necessary because operators using this object internally only return</span></div>
-<div class="line"><span class="lineno">   28</span><span class="comment">     * a raw vector of samples not a child of BasicTimeSeries. */</span></div>
-<div class="line"><span class="lineno">   29</span>      <span class="keywordtype">double</span> dt_to_use=md.<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#ad69a5786d997104df560775f4f688b02">get_double</a>(<span class="stringliteral">&quot;target_sample_interval&quot;</span>);</div>
-<div class="line"><span class="lineno">   30</span>      <span class="keywordtype">double</span> dwinstart=md.<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#ad69a5786d997104df560775f4f688b02">get_double</a>(<span class="stringliteral">&quot;deconvolution_data_window_start&quot;</span>);</div>
-<div class="line"><span class="lineno">   31</span>      <span class="keywordtype">int</span> i0=round(dwinstart/dt_to_use);</div>
-<div class="line"><span class="lineno">   32</span>         <span class="comment">/* sample shift is positive for a negative i0 */</span></div>
-<div class="line"><span class="lineno">   33</span>      this-&gt;sample_shift = (-i0);</div>
-<div class="line"><span class="lineno">   34</span>    <span class="keywordflow">if</span>(this-&gt;sample_shift&lt;0)</div>
-<div class="line"><span class="lineno">   35</span>            <span class="keywordflow">throw</span> MsPASSError(base_error</div>
-<div class="line"><span class="lineno">   36</span>                + <span class="stringliteral">&quot;illegal sample_shift parameter - must be ge 0&quot;</span>,</div>
-<div class="line"><span class="lineno">   37</span>                ErrorSeverity::Invalid);</div>
-<div class="line"><span class="lineno">   38</span>    <span class="keywordflow">if</span>((this-&gt;sample_shift)&gt;nfft)</div>
-<div class="line"><span class="lineno">   39</span>        <span class="keywordflow">throw</span> MsPASSError(base_error</div>
-<div class="line"><span class="lineno">   40</span>            + <span class="stringliteral">&quot;Computed shift parameter exceeds length of fft\n&quot;</span></div>
-<div class="line"><span class="lineno">   41</span>            + <span class="stringliteral">&quot;Deconvolution data window parameters are probably nonsense&quot;</span>,</div>
-<div class="line"><span class="lineno">   42</span>         ErrorSeverity::Invalid);</div>
-<div class="line"><span class="lineno">   43</span>    wavetable = gsl_fft_complex_wavetable_alloc (nfft);</div>
-<div class="line"><span class="lineno">   44</span>    workspace = gsl_fft_complex_workspace_alloc (nfft);</div>
-<div class="line"><span class="lineno">   45</span>  } <span class="keywordflow">catch</span>(...) {</div>
-<div class="line"><span class="lineno">   46</span>        <span class="keywordflow">throw</span>;</div>
-<div class="line"><span class="lineno">   47</span>    };</div>
-<div class="line"><span class="lineno">   48</span>}</div>
-<div class="ttc" id="aclassmspass_1_1utility_1_1_metadata_html_a78f3a01e1b1deccd84a0833bea4ef462"><div class="ttname"><a href="classmspass_1_1utility_1_1_metadata.html#a78f3a01e1b1deccd84a0833bea4ef462">mspass::utility::Metadata::get_int</a></div><div class="ttdeci">int get_int(const std::string key) const override</div><div class="ttdef"><b>Definition</b> Metadata.h:159</div></div>
-<div class="ttc" id="aclassmspass_1_1utility_1_1_metadata_html_ad69a5786d997104df560775f4f688b02"><div class="ttname"><a href="classmspass_1_1utility_1_1_metadata.html#ad69a5786d997104df560775f4f688b02">mspass::utility::Metadata::get_double</a></div><div class="ttdeci">double get_double(const std::string key) const override</div><div class="ttdef"><b>Definition</b> Metadata.h:135</div></div>
+<div class="fragment"><div class="line"><span class="lineno">   16</span>                                                     {</div>
+<div class="line"><span class="lineno">   17</span>  <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">   18</span>    <span class="keyword">const</span> <span class="keywordtype">string</span> base_error(<span class="stringliteral">&quot;FFTDeconOperator Metadata constructor:  &quot;</span>);</div>
+<div class="line"><span class="lineno">   19</span>    <span class="keywordtype">int</span> nfftpf = md.<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#a78f3a01e1b1deccd84a0833bea4ef462">get_int</a>(<span class="stringliteral">&quot;operator_nfft&quot;</span>);</div>
+<div class="line"><span class="lineno">   20</span>    <span class="comment">/* We force a power of 2 algorithm for efficiency and always round up*/</span></div>
+<div class="line"><span class="lineno">   21</span>    this-&gt;nfft = nextPowerOf2(nfftpf);</div>
+<div class="line"><span class="lineno">   22</span>    <span class="comment">/* We compute the sample shift from the window start time and dt.  This</span></div>
+<div class="line"><span class="lineno">   23</span><span class="comment">     * assures the output will be phase shifted so zero lag is at the zero</span></div>
+<div class="line"><span class="lineno">   24</span><span class="comment">     * position of the array.   Necessary because operators using this object</span></div>
+<div class="line"><span class="lineno">   25</span><span class="comment">     * internally only return a raw vector of samples not a child of</span></div>
+<div class="line"><span class="lineno">   26</span><span class="comment">     * BasicTimeSeries. */</span></div>
+<div class="line"><span class="lineno">   27</span>    <span class="keywordtype">double</span> dt_to_use = md.<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#ad69a5786d997104df560775f4f688b02">get_double</a>(<span class="stringliteral">&quot;target_sample_interval&quot;</span>);</div>
+<div class="line"><span class="lineno">   28</span>    <span class="keywordtype">double</span> dwinstart = md.<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#ad69a5786d997104df560775f4f688b02">get_double</a>(<span class="stringliteral">&quot;deconvolution_data_window_start&quot;</span>);</div>
+<div class="line"><span class="lineno">   29</span>    <span class="keywordtype">int</span> i0 = round(dwinstart / dt_to_use);</div>
+<div class="line"><span class="lineno">   30</span>    <span class="comment">/* sample shift is positive for a negative i0 */</span></div>
+<div class="line"><span class="lineno">   31</span>    this-&gt;sample_shift = (-i0);</div>
+<div class="line"><span class="lineno">   32</span>    <span class="keywordflow">if</span> (this-&gt;sample_shift &lt; 0)</div>
+<div class="line"><span class="lineno">   33</span>      <span class="keywordflow">throw</span> MsPASSError(base_error +</div>
+<div class="line"><span class="lineno">   34</span>                            <span class="stringliteral">&quot;illegal sample_shift parameter - must be ge 0&quot;</span>,</div>
+<div class="line"><span class="lineno">   35</span>                        ErrorSeverity::Invalid);</div>
+<div class="line"><span class="lineno">   36</span>    <span class="keywordflow">if</span> ((this-&gt;sample_shift) &gt; nfft)</div>
+<div class="line"><span class="lineno">   37</span>      <span class="keywordflow">throw</span> MsPASSError(</div>
+<div class="line"><span class="lineno">   38</span>          base_error + <span class="stringliteral">&quot;Computed shift parameter exceeds length of fft\n&quot;</span> +</div>
+<div class="line"><span class="lineno">   39</span>              <span class="stringliteral">&quot;Deconvolution data window parameters are probably nonsense&quot;</span>,</div>
+<div class="line"><span class="lineno">   40</span>          ErrorSeverity::Invalid);</div>
+<div class="line"><span class="lineno">   41</span>    wavetable = gsl_fft_complex_wavetable_alloc(nfft);</div>
+<div class="line"><span class="lineno">   42</span>    workspace = gsl_fft_complex_workspace_alloc(nfft);</div>
+<div class="line"><span class="lineno">   43</span>  } <span class="keywordflow">catch</span> (...) {</div>
+<div class="line"><span class="lineno">   44</span>    <span class="keywordflow">throw</span>;</div>
+<div class="line"><span class="lineno">   45</span>  };</div>
+<div class="line"><span class="lineno">   46</span>}</div>
+<div class="ttc" id="aclassmspass_1_1utility_1_1_metadata_html_a78f3a01e1b1deccd84a0833bea4ef462"><div class="ttname"><a href="classmspass_1_1utility_1_1_metadata.html#a78f3a01e1b1deccd84a0833bea4ef462">mspass::utility::Metadata::get_int</a></div><div class="ttdeci">int get_int(const std::string key) const override</div><div class="ttdef"><b>Definition</b> Metadata.h:154</div></div>
+<div class="ttc" id="aclassmspass_1_1utility_1_1_metadata_html_ad69a5786d997104df560775f4f688b02"><div class="ttname"><a href="classmspass_1_1utility_1_1_metadata.html#ad69a5786d997104df560775f4f688b02">mspass::utility::Metadata::get_double</a></div><div class="ttdeci">double get_double(const std::string key) const override</div><div class="ttdef"><b>Definition</b> Metadata.h:131</div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -250,13 +251,13 @@ gsl_fft_complex_workspace *&#160;</td><td class="memItemRight" valign="bottom"><
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   50</span>{</div>
-<div class="line"><span class="lineno">   51</span>    nfft=parent.nfft;</div>
-<div class="line"><span class="lineno">   52</span>    sample_shift=parent.sample_shift;</div>
-<div class="line"><span class="lineno">   53</span>    <span class="comment">/* copies need their own work space */</span></div>
-<div class="line"><span class="lineno">   54</span>    wavetable = gsl_fft_complex_wavetable_alloc (nfft);</div>
-<div class="line"><span class="lineno">   55</span>    workspace = gsl_fft_complex_workspace_alloc (nfft);</div>
-<div class="line"><span class="lineno">   56</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">   47</span>                                                                 {</div>
+<div class="line"><span class="lineno">   48</span>  nfft = parent.nfft;</div>
+<div class="line"><span class="lineno">   49</span>  sample_shift = parent.sample_shift;</div>
+<div class="line"><span class="lineno">   50</span>  <span class="comment">/* copies need their own work space */</span></div>
+<div class="line"><span class="lineno">   51</span>  wavetable = gsl_fft_complex_wavetable_alloc(nfft);</div>
+<div class="line"><span class="lineno">   52</span>  workspace = gsl_fft_complex_workspace_alloc(nfft);</div>
+<div class="line"><span class="lineno">   53</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -274,10 +275,12 @@ gsl_fft_complex_workspace *&#160;</td><td class="memItemRight" valign="bottom"><
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   58</span>{</div>
-<div class="line"><span class="lineno">   59</span>    <span class="keywordflow">if</span>(wavetable!=NULL) gsl_fft_complex_wavetable_free (wavetable);</div>
-<div class="line"><span class="lineno">   60</span>    <span class="keywordflow">if</span>(workspace!=NULL) gsl_fft_complex_workspace_free (workspace);</div>
-<div class="line"><span class="lineno">   61</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">   54</span>                                    {</div>
+<div class="line"><span class="lineno">   55</span>  <span class="keywordflow">if</span> (wavetable != NULL)</div>
+<div class="line"><span class="lineno">   56</span>    gsl_fft_complex_wavetable_free(wavetable);</div>
+<div class="line"><span class="lineno">   57</span>  <span class="keywordflow">if</span> (workspace != NULL)</div>
+<div class="line"><span class="lineno">   58</span>    gsl_fft_complex_workspace_free(workspace);</div>
+<div class="line"><span class="lineno">   59</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -305,9 +308,7 @@ gsl_fft_complex_workspace *&#160;</td><td class="memItemRight" valign="bottom"><
   </tr>
 </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   30</span>                                       {</div>
-<div class="line"><span class="lineno">   31</span>        sample_shift=shift;</div>
-<div class="line"><span class="lineno">   32</span>    };</div>
+<div class="fragment"><div class="line"><span class="lineno">   29</span>{ sample_shift = shift; };</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -326,20 +327,21 @@ gsl_fft_complex_workspace *&#160;</td><td class="memItemRight" valign="bottom"><
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   96</span>{</div>
-<div class="line"><span class="lineno">   97</span>    <span class="keywordflow">try</span> {</div>
-<div class="line"><span class="lineno">   98</span>        <span class="keywordflow">if</span>(nfft!=0)</div>
-<div class="line"><span class="lineno">   99</span>        {</div>
-<div class="line"><span class="lineno">  100</span>            <span class="keywordflow">if</span>(wavetable!=NULL) gsl_fft_complex_wavetable_free (wavetable);</div>
-<div class="line"><span class="lineno">  101</span>            <span class="keywordflow">if</span>(workspace!=NULL) gsl_fft_complex_workspace_free (workspace);</div>
-<div class="line"><span class="lineno">  102</span>        }</div>
-<div class="line"><span class="lineno">  103</span>        nfft=n;</div>
-<div class="line"><span class="lineno">  104</span>        wavetable = gsl_fft_complex_wavetable_alloc (nfft);</div>
-<div class="line"><span class="lineno">  105</span>        workspace = gsl_fft_complex_workspace_alloc (nfft);</div>
-<div class="line"><span class="lineno">  106</span>    } <span class="keywordflow">catch</span>(...) {</div>
-<div class="line"><span class="lineno">  107</span>        <span class="keywordflow">throw</span>;</div>
-<div class="line"><span class="lineno">  108</span>    };</div>
-<div class="line"><span class="lineno">  109</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">   91</span>                                              {</div>
+<div class="line"><span class="lineno">   92</span>  <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">   93</span>    <span class="keywordflow">if</span> (nfft != 0) {</div>
+<div class="line"><span class="lineno">   94</span>      <span class="keywordflow">if</span> (wavetable != NULL)</div>
+<div class="line"><span class="lineno">   95</span>        gsl_fft_complex_wavetable_free(wavetable);</div>
+<div class="line"><span class="lineno">   96</span>      <span class="keywordflow">if</span> (workspace != NULL)</div>
+<div class="line"><span class="lineno">   97</span>        gsl_fft_complex_workspace_free(workspace);</div>
+<div class="line"><span class="lineno">   98</span>    }</div>
+<div class="line"><span class="lineno">   99</span>    nfft = n;</div>
+<div class="line"><span class="lineno">  100</span>    wavetable = gsl_fft_complex_wavetable_alloc(nfft);</div>
+<div class="line"><span class="lineno">  101</span>    workspace = gsl_fft_complex_workspace_alloc(nfft);</div>
+<div class="line"><span class="lineno">  102</span>  } <span class="keywordflow">catch</span> (...) {</div>
+<div class="line"><span class="lineno">  103</span>    <span class="keywordflow">throw</span>;</div>
+<div class="line"><span class="lineno">  104</span>  };</div>
+<div class="line"><span class="lineno">  105</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -358,26 +360,27 @@ gsl_fft_complex_workspace *&#160;</td><td class="memItemRight" valign="bottom"><
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   75</span>{</div>
-<div class="line"><span class="lineno">   76</span>    <span class="keywordflow">try</span> {</div>
-<div class="line"><span class="lineno">   77</span>        <span class="keywordtype">size_t</span> nfft_test=md.<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#a78f3a01e1b1deccd84a0833bea4ef462">get_int</a>(<span class="stringliteral">&quot;operator_nfft&quot;</span>);</div>
-<div class="line"><span class="lineno">   78</span>        <span class="keywordflow">if</span>(nfft_test != nfft)</div>
-<div class="line"><span class="lineno">   79</span>        {</div>
-<div class="line"><span class="lineno">   80</span>            nfft=nfft_test;</div>
-<div class="line"><span class="lineno">   81</span>            <span class="keywordflow">if</span>(wavetable!=NULL) gsl_fft_complex_wavetable_free (wavetable);</div>
-<div class="line"><span class="lineno">   82</span>            <span class="keywordflow">if</span>(workspace!=NULL) gsl_fft_complex_workspace_free (workspace);</div>
-<div class="line"><span class="lineno">   83</span>            wavetable = gsl_fft_complex_wavetable_alloc (nfft);</div>
-<div class="line"><span class="lineno">   84</span>            workspace = gsl_fft_complex_workspace_alloc (nfft);</div>
-<div class="line"><span class="lineno">   85</span>        }</div>
-<div class="line"><span class="lineno">   86</span>        sample_shift=md.<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#a78f3a01e1b1deccd84a0833bea4ef462">get_int</a>(<span class="stringliteral">&quot;sample_shift&quot;</span>);</div>
-<div class="line"><span class="lineno">   87</span>        <span class="keywordflow">if</span>(sample_shift&lt;0)</div>
-<div class="line"><span class="lineno">   88</span>            <span class="keywordflow">throw</span> MsPASSError(<span class="keywordtype">string</span>(<span class="stringliteral">&quot;FFTDeconOperator::changeparameter:  &quot;</span>)</div>
-<div class="line"><span class="lineno">   89</span>                    + <span class="stringliteral">&quot;illegal sample_shift parameter - must be ge 0&quot;</span>,</div>
-<div class="line"><span class="lineno">   90</span>                  ErrorSeverity::Invalid);</div>
-<div class="line"><span class="lineno">   91</span>    } <span class="keywordflow">catch</span>(...) {</div>
-<div class="line"><span class="lineno">   92</span>        <span class="keywordflow">throw</span>;</div>
-<div class="line"><span class="lineno">   93</span>    };</div>
-<div class="line"><span class="lineno">   94</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">   70</span>                                                         {</div>
+<div class="line"><span class="lineno">   71</span>  <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">   72</span>    <span class="keywordtype">size_t</span> nfft_test = md.<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#a78f3a01e1b1deccd84a0833bea4ef462">get_int</a>(<span class="stringliteral">&quot;operator_nfft&quot;</span>);</div>
+<div class="line"><span class="lineno">   73</span>    <span class="keywordflow">if</span> (nfft_test != nfft) {</div>
+<div class="line"><span class="lineno">   74</span>      nfft = nfft_test;</div>
+<div class="line"><span class="lineno">   75</span>      <span class="keywordflow">if</span> (wavetable != NULL)</div>
+<div class="line"><span class="lineno">   76</span>        gsl_fft_complex_wavetable_free(wavetable);</div>
+<div class="line"><span class="lineno">   77</span>      <span class="keywordflow">if</span> (workspace != NULL)</div>
+<div class="line"><span class="lineno">   78</span>        gsl_fft_complex_workspace_free(workspace);</div>
+<div class="line"><span class="lineno">   79</span>      wavetable = gsl_fft_complex_wavetable_alloc(nfft);</div>
+<div class="line"><span class="lineno">   80</span>      workspace = gsl_fft_complex_workspace_alloc(nfft);</div>
+<div class="line"><span class="lineno">   81</span>    }</div>
+<div class="line"><span class="lineno">   82</span>    sample_shift = md.<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#a78f3a01e1b1deccd84a0833bea4ef462">get_int</a>(<span class="stringliteral">&quot;sample_shift&quot;</span>);</div>
+<div class="line"><span class="lineno">   83</span>    <span class="keywordflow">if</span> (sample_shift &lt; 0)</div>
+<div class="line"><span class="lineno">   84</span>      <span class="keywordflow">throw</span> MsPASSError(<span class="keywordtype">string</span>(<span class="stringliteral">&quot;FFTDeconOperator::changeparameter:  &quot;</span>) +</div>
+<div class="line"><span class="lineno">   85</span>                            <span class="stringliteral">&quot;illegal sample_shift parameter - must be ge 0&quot;</span>,</div>
+<div class="line"><span class="lineno">   86</span>                        ErrorSeverity::Invalid);</div>
+<div class="line"><span class="lineno">   87</span>  } <span class="keywordflow">catch</span> (...) {</div>
+<div class="line"><span class="lineno">   88</span>    <span class="keywordflow">throw</span>;</div>
+<div class="line"><span class="lineno">   89</span>  };</div>
+<div class="line"><span class="lineno">   90</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -404,11 +407,11 @@ gsl_fft_complex_workspace *&#160;</td><td class="memItemRight" valign="bottom"><
   </tr>
 </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   41</span>                              {</div>
-<div class="line"><span class="lineno">   42</span>        <span class="keywordtype">double</span> period;</div>
-<div class="line"><span class="lineno">   43</span>        period=<span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(nfft)*dt;</div>
-<div class="line"><span class="lineno">   44</span>        <span class="keywordflow">return</span> 1.0/period;</div>
-<div class="line"><span class="lineno">   45</span>    };</div>
+<div class="fragment"><div class="line"><span class="lineno">   34</span>                             {</div>
+<div class="line"><span class="lineno">   35</span>    <span class="keywordtype">double</span> period;</div>
+<div class="line"><span class="lineno">   36</span>    period = <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(nfft) * dt;</div>
+<div class="line"><span class="lineno">   37</span>    <span class="keywordflow">return</span> 1.0 / period;</div>
+<div class="line"><span class="lineno">   38</span>  };</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -453,39 +456,46 @@ gsl_fft_complex_workspace *&#160;</td><td class="memItemRight" valign="bottom"><
 <p>Return inverse wavelet for Fourier methods. </p>
 <p>This is a helper to be used by the inverse_wavelet method for all Fourier based deconvolution methods. It avoids repetitious code that would be required otherwise. inverse_wavelet methods are only wrappers for this generic method. See documentation for inverse_wavelet for description of tshift and t0parent. <br  />
  </p>
-<div class="fragment"><div class="line"><span class="lineno">  121</span>{</div>
-<div class="line"><span class="lineno">  122</span>  <span class="keywordflow">try</span>{</div>
-<div class="line"><span class="lineno">  123</span>    <span class="keyword">const</span> <span class="keywordtype">string</span> base_error(<span class="stringliteral">&quot;FFTDeconOperator::FourierInverse:  &quot;</span>);</div>
-<div class="line"><span class="lineno">  124</span>    <span class="comment">/* Compute wrap point for circular shift operator - note negative</span></div>
-<div class="line"><span class="lineno">  125</span><span class="comment">    because a positive t0 is requires wrapping at a point i0 to the left</span></div>
-<div class="line"><span class="lineno">  126</span><span class="comment">    of the original zero point*/</span></div>
-<div class="line"><span class="lineno">  127</span>    <span class="comment">/* Testing with matlab prototypes showed Fourier inverse filters</span></div>
-<div class="line"><span class="lineno">  128</span><span class="comment">     * showed they created valid results only if the filter used a</span></div>
-<div class="line"><span class="lineno">  129</span><span class="comment">     * circular shift of nfft/2.   This sets that as a requirement here. */</span></div>
-<div class="line"><span class="lineno">  130</span>    <span class="keywordtype">int</span> ntest;</div>
-<div class="line"><span class="lineno">  131</span>    ntest=winv.size();</div>
-<div class="line"><span class="lineno">  132</span>    <span class="keywordflow">if</span>(ntest != nfft) <span class="keywordflow">throw</span> MsPASSError(base_error</div>
-<div class="line"><span class="lineno">  133</span>      + <span class="stringliteral">&quot;wavelet inverse fourier array size mismatch with operator&quot;</span>,</div>
-<div class="line"><span class="lineno">  134</span>      ErrorSeverity::Invalid);</div>
-<div class="line"><span class="lineno">  135</span>    <span class="keywordflow">if</span>(sw.size() != nfft) <span class="keywordflow">throw</span> MsPASSError(base_error</div>
-<div class="line"><span class="lineno">  136</span>      + <span class="stringliteral">&quot;shaping wavelet fourier array size mismatch with operator&quot;</span>,</div>
-<div class="line"><span class="lineno">  137</span>       ErrorSeverity::Invalid);</div>
-<div class="line"><span class="lineno">  138</span>    ComplexArray winv_work(winv);</div>
-<div class="line"><span class="lineno">  139</span>    <span class="comment">/* This applies the shaping wavelet*/</span></div>
-<div class="line"><span class="lineno">  140</span>    winv_work *= sw;</div>
-<div class="line"><span class="lineno">  141</span>    gsl_fft_complex_inverse(winv_work.ptr(),1,nfft,wavetable,workspace);</div>
-<div class="line"><span class="lineno">  142</span>    CoreTimeSeries result;</div>
-<div class="line"><span class="lineno">  143</span>    result.set_t0(t0parent);</div>
-<div class="line"><span class="lineno">  144</span>    result.set_dt(dt);</div>
-<div class="line"><span class="lineno">  145</span>    result.set_live();</div>
-<div class="line"><span class="lineno">  146</span>    <span class="comment">/* Note this new api method initializes s all zeros so we need only set</span></div>
-<div class="line"><span class="lineno">  147</span><span class="comment">    the values not use push back below */</span></div>
-<div class="line"><span class="lineno">  148</span>    result.set_npts(nfft);</div>
-<div class="line"><span class="lineno">  149</span>    result.set_tref(TimeReferenceType::Relative);</div>
-<div class="line"><span class="lineno">  150</span>    <span class="keywordflow">for</span>(<span class="keywordtype">int</span> k=0; k&lt;winv_work.size(); ++k) result.s[k]=winv_work[k].real();</div>
-<div class="line"><span class="lineno">  151</span>    <span class="keywordflow">return</span> result;</div>
-<div class="line"><span class="lineno">  152</span>  }<span class="keywordflow">catch</span>(...){<span class="keywordflow">throw</span>;};</div>
-<div class="line"><span class="lineno">  153</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  118</span>                                                                       {</div>
+<div class="line"><span class="lineno">  119</span>  <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">  120</span>    <span class="keyword">const</span> <span class="keywordtype">string</span> base_error(<span class="stringliteral">&quot;FFTDeconOperator::FourierInverse:  &quot;</span>);</div>
+<div class="line"><span class="lineno">  121</span>    <span class="comment">/* Compute wrap point for circular shift operator - note negative</span></div>
+<div class="line"><span class="lineno">  122</span><span class="comment">    because a positive t0 is requires wrapping at a point i0 to the left</span></div>
+<div class="line"><span class="lineno">  123</span><span class="comment">    of the original zero point*/</span></div>
+<div class="line"><span class="lineno">  124</span>    <span class="comment">/* Testing with matlab prototypes showed Fourier inverse filters</span></div>
+<div class="line"><span class="lineno">  125</span><span class="comment">     * showed they created valid results only if the filter used a</span></div>
+<div class="line"><span class="lineno">  126</span><span class="comment">     * circular shift of nfft/2.   This sets that as a requirement here. */</span></div>
+<div class="line"><span class="lineno">  127</span>    <span class="keywordtype">int</span> ntest;</div>
+<div class="line"><span class="lineno">  128</span>    ntest = winv.size();</div>
+<div class="line"><span class="lineno">  129</span>    <span class="keywordflow">if</span> (ntest != nfft)</div>
+<div class="line"><span class="lineno">  130</span>      <span class="keywordflow">throw</span> MsPASSError(</div>
+<div class="line"><span class="lineno">  131</span>          base_error +</div>
+<div class="line"><span class="lineno">  132</span>              <span class="stringliteral">&quot;wavelet inverse fourier array size mismatch with operator&quot;</span>,</div>
+<div class="line"><span class="lineno">  133</span>          ErrorSeverity::Invalid);</div>
+<div class="line"><span class="lineno">  134</span>    <span class="keywordflow">if</span> (sw.size() != nfft)</div>
+<div class="line"><span class="lineno">  135</span>      <span class="keywordflow">throw</span> MsPASSError(</div>
+<div class="line"><span class="lineno">  136</span>          base_error +</div>
+<div class="line"><span class="lineno">  137</span>              <span class="stringliteral">&quot;shaping wavelet fourier array size mismatch with operator&quot;</span>,</div>
+<div class="line"><span class="lineno">  138</span>          ErrorSeverity::Invalid);</div>
+<div class="line"><span class="lineno">  139</span>    ComplexArray winv_work(winv);</div>
+<div class="line"><span class="lineno">  140</span>    <span class="comment">/* This applies the shaping wavelet*/</span></div>
+<div class="line"><span class="lineno">  141</span>    winv_work *= sw;</div>
+<div class="line"><span class="lineno">  142</span>    gsl_fft_complex_inverse(winv_work.ptr(), 1, nfft, wavetable, workspace);</div>
+<div class="line"><span class="lineno">  143</span>    CoreTimeSeries result;</div>
+<div class="line"><span class="lineno">  144</span>    result.set_t0(t0parent);</div>
+<div class="line"><span class="lineno">  145</span>    result.set_dt(dt);</div>
+<div class="line"><span class="lineno">  146</span>    result.set_live();</div>
+<div class="line"><span class="lineno">  147</span>    <span class="comment">/* Note this new api method initializes s all zeros so we need only set</span></div>
+<div class="line"><span class="lineno">  148</span><span class="comment">    the values not use push back below */</span></div>
+<div class="line"><span class="lineno">  149</span>    result.set_npts(nfft);</div>
+<div class="line"><span class="lineno">  150</span>    result.set_tref(TimeReferenceType::Relative);</div>
+<div class="line"><span class="lineno">  151</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> k = 0; k &lt; winv_work.size(); ++k)</div>
+<div class="line"><span class="lineno">  152</span>      result.s[k] = winv_work[k].real();</div>
+<div class="line"><span class="lineno">  153</span>    <span class="keywordflow">return</span> result;</div>
+<div class="line"><span class="lineno">  154</span>  } <span class="keywordflow">catch</span> (...) {</div>
+<div class="line"><span class="lineno">  155</span>    <span class="keywordflow">throw</span>;</div>
+<div class="line"><span class="lineno">  156</span>  };</div>
+<div class="line"><span class="lineno">  157</span>}</div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_core_time_series.html#ab044edb3fe5fe734cb577a4434f390a2">mspass::seismic::CoreTimeSeries::s</a>, <a class="el" href="classmspass_1_1seismic_1_1_core_time_series.html#a97ff6732aa816b0c327c5bf667ffe841">mspass::seismic::CoreTimeSeries::set_dt()</a>, <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#a1ca7ba8bcd8337bd49d438664e74966d">mspass::seismic::BasicTimeSeries::set_live()</a>, <a class="el" href="classmspass_1_1seismic_1_1_core_time_series.html#ae538485ac0aed2f8691477dffce6cda8">mspass::seismic::CoreTimeSeries::set_npts()</a>, <a class="el" href="classmspass_1_1seismic_1_1_core_time_series.html#ae90b28cff0bc1997aa65a1693d8562d0">mspass::seismic::CoreTimeSeries::set_t0()</a>, and <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#ac3f8c8200710fe0d3ef211c7c758e864">mspass::seismic::BasicTimeSeries::set_tref()</a>.</p>
 
@@ -513,7 +523,7 @@ gsl_fft_complex_workspace *&#160;</td><td class="memItemRight" valign="bottom"><
   </tr>
 </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   34</span>{<span class="keywordflow">return</span> sample_shift;};</div>
+<div class="fragment"><div class="line"><span class="lineno">   31</span>{ <span class="keywordflow">return</span> sample_shift; };</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -539,7 +549,7 @@ gsl_fft_complex_workspace *&#160;</td><td class="memItemRight" valign="bottom"><
   </tr>
 </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   33</span>{<span class="keywordflow">return</span> nfft;};</div>
+<div class="fragment"><div class="line"><span class="lineno">   30</span>{ <span class="keywordflow">return</span> nfft; };</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -558,17 +568,16 @@ gsl_fft_complex_workspace *&#160;</td><td class="memItemRight" valign="bottom"><
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   63</span>{</div>
-<div class="line"><span class="lineno">   64</span>    <span class="keywordflow">if</span>(<span class="keyword">this</span> != &amp;parent)</div>
-<div class="line"><span class="lineno">   65</span>    {</div>
-<div class="line"><span class="lineno">   66</span>        nfft=parent.nfft;</div>
-<div class="line"><span class="lineno">   67</span>        sample_shift=parent.sample_shift;</div>
-<div class="line"><span class="lineno">   68</span>        <span class="comment">/* copies need their own work space */</span></div>
-<div class="line"><span class="lineno">   69</span>        wavetable = gsl_fft_complex_wavetable_alloc (nfft);</div>
-<div class="line"><span class="lineno">   70</span>        workspace = gsl_fft_complex_workspace_alloc (nfft);</div>
-<div class="line"><span class="lineno">   71</span>    }</div>
-<div class="line"><span class="lineno">   72</span>    <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
-<div class="line"><span class="lineno">   73</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">   60</span>                                                                            {</div>
+<div class="line"><span class="lineno">   61</span>  <span class="keywordflow">if</span> (<span class="keyword">this</span> != &amp;parent) {</div>
+<div class="line"><span class="lineno">   62</span>    nfft = parent.nfft;</div>
+<div class="line"><span class="lineno">   63</span>    sample_shift = parent.sample_shift;</div>
+<div class="line"><span class="lineno">   64</span>    <span class="comment">/* copies need their own work space */</span></div>
+<div class="line"><span class="lineno">   65</span>    wavetable = gsl_fft_complex_wavetable_alloc(nfft);</div>
+<div class="line"><span class="lineno">   66</span>    workspace = gsl_fft_complex_workspace_alloc(nfft);</div>
+<div class="line"><span class="lineno">   67</span>  }</div>
+<div class="line"><span class="lineno">   68</span>  <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
+<div class="line"><span class="lineno">   69</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -594,9 +603,7 @@ gsl_fft_complex_workspace *&#160;</td><td class="memItemRight" valign="bottom"><
   </tr>
 </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   38</span>                         {</div>
-<div class="line"><span class="lineno">   39</span>        <span class="keywordflow">return</span> sample_shift;</div>
-<div class="line"><span class="lineno">   40</span>    };</div>
+<div class="fragment"><div class="line"><span class="lineno">   33</span>{ <span class="keywordflow">return</span> sample_shift; };</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -622,9 +629,7 @@ gsl_fft_complex_workspace *&#160;</td><td class="memItemRight" valign="bottom"><
   </tr>
 </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   35</span>                        {</div>
-<div class="line"><span class="lineno">   36</span>        <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(nfft);</div>
-<div class="line"><span class="lineno">   37</span>    };</div>
+<div class="fragment"><div class="line"><span class="lineno">   32</span>{ <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(nfft); };</div>
 </div><!-- fragment -->
 </div>
 </div>

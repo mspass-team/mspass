@@ -5,9 +5,9 @@
     <innerclass refid="classmspass_1_1io_1_1mseed__index" prot="public">mspass::io::mseed_index</innerclass>
     <innerclass refid="classmspass_1_1io_1_1_m_s_e_e_d__sid" prot="public">mspass::io::MSEED_sid</innerclass>
     <sectiondef kind="typedef">
-      <memberdef kind="typedef" id="mseed__file__indexer_8cc_1aa275d5cdd02cce12a851eb9db14e0fee" prot="public" static="no">
+      <memberdef kind="typedef" id="mseed__file__indexer_8cc_1ae0e7bdb1ae7894c3385fe229039b3ac1" prot="public" static="no">
         <type>std::pair&lt; std::vector&lt; <ref refid="classmspass_1_1io_1_1mseed__index" kindref="compound">mseed_index</ref> &gt;, <ref refid="classmspass_1_1utility_1_1_error_logger" kindref="compound">mspass::utility::ErrorLogger</ref> &gt;</type>
-        <definition>typedef std::pair&lt;std::vector&lt;mseed_index&gt;,mspass::utility::ErrorLogger&gt; mspass::io::MSDINDEX_returntype</definition>
+        <definition>typedef std::pair&lt;std::vector&lt;mseed_index&gt;, mspass::utility::ErrorLogger&gt; mspass::io::MSDINDEX_returntype</definition>
         <argsstring></argsstring>
         <name>MSDINDEX_returntype</name>
         <qualifiedname>mspass::io::MSDINDEX_returntype</qualifiedname>
@@ -17,7 +17,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" line="104" column="19" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" bodystart="104" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" line="90" column="5" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" bodystart="90" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="var">
@@ -33,7 +33,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" line="105" column="26" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" bodystart="105" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" line="91" column="26" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" bodystart="91" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="func">
@@ -235,7 +235,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" line="118" column="13" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" bodystart="118" bodyend="171" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/io/fileio.h" declline="107" declcolumn="13"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" line="127" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" bodystart="127" bodyend="185" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/io/fileio.h" declline="108" declcolumn="1"/>
       </memberdef>
       <memberdef kind="function" id="fileio_8h_1a176b9e19269b90d1fa7c42f340dbb95d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::vector&lt; long int &gt;</type>
@@ -321,7 +321,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" line="188" column="13" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" bodystart="188" bodyend="237" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/io/fileio.h" declline="143" declcolumn="13"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" line="203" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" bodystart="203" bodyend="260" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/io/fileio.h" declline="145" declcolumn="1"/>
       </memberdef>
       <memberdef kind="function" id="fileio_8h_1aa271a69b12e7c945f1779b07c3157eb9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>size_t</type>
@@ -398,7 +398,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/io/fileio.h" line="175" column="8" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/io/fileio.h" declline="175" declcolumn="8"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/io/fileio.h" line="177" column="8" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/io/fileio.h" declline="177" declcolumn="8"/>
       </memberdef>
       <memberdef kind="function" id="fileio_8h_1acef153567669e5ea4f8d597ddfc1a947" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>size_t</type>
@@ -475,7 +475,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/io/fileio.h" line="207" column="8" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/io/fileio.h" declline="207" declcolumn="8"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/io/fileio.h" line="209" column="8" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/io/fileio.h" declline="209" declcolumn="8"/>
       </memberdef>
       <memberdef kind="function" id="fileio_8h_1ab6132d1426467179c06b7c94aef66a6c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>size_t</type>
@@ -553,8 +553,7 @@
 </parameterdescription>
 </parameteritem>
 </parameterlist>
-<simplesect kind="return"><para>total number of samples read for all TimeSeries objects. Note caller should test this value as a short read will not cause an error to be thrown. <linebreak/>
-</para>
+<simplesect kind="return"><para>total number of samples read for all TimeSeries objects. Note caller should test this value as a short read will not cause an error to be thrown.</para>
 </simplesect>
 <parameterlist kind="exception"><parameteritem>
 <parameternamelist>
@@ -569,7 +568,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" line="349" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" bodystart="349" bodyend="413" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/io/fileio.h" declline="240" declcolumn="8"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" line="371" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" bodystart="371" bodyend="433" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/io/fileio.h" declline="242" declcolumn="8"/>
       </memberdef>
       <memberdef kind="function" id="fileio_8h_1a20caa06868a6777ab05715499e81c7c1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>size_t</type>
@@ -647,8 +646,7 @@
 </parameterdescription>
 </parameteritem>
 </parameterlist>
-<simplesect kind="return"><para>total number of samples read for all Seismogram objects. Note caller should test this value as a short read will not cause an error to be thrown. <linebreak/>
-</para>
+<simplesect kind="return"><para>total number of samples read for all Seismogram objects. Note caller should test this value as a short read will not cause an error to be thrown.</para>
 </simplesect>
 <parameterlist kind="exception"><parameteritem>
 <parameternamelist>
@@ -663,7 +661,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" line="284" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" bodystart="284" bodyend="348" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/io/fileio.h" declline="273" declcolumn="8"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" line="309" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" bodystart="309" bodyend="370" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/io/fileio.h" declline="277" declcolumn="8"/>
       </memberdef>
       <memberdef kind="function" id="mseed__index_8h_1a07ef379bb63d712a15b356cfc57c8622" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::pair&lt; std::vector&lt; <ref refid="classmspass_1_1io_1_1mseed__index" kindref="compound">mseed_index</ref> &gt;, <ref refid="classmspass_1_1utility_1_1_error_logger" kindref="compound">mspass::utility::ErrorLogger</ref> &gt;</type>
@@ -709,8 +707,7 @@
 <parametername>Verbose</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>is a boolean largely controlling how time tears are or are not logged. That is, at present if this parameter is true any time the logic detects a time tear it is logged in the returned error log as an informational log message. If false only reading errors for things like garbled miniseed packets are logged. <linebreak/>
- </para>
+<para>is a boolean largely controlling how time tears are or are not logged. That is, at present if this parameter is true any time the logic detects a time tear it is logged in the returned error log as an informational log message. If false only reading errors for things like garbled miniseed packets are logged. </para>
 </parameterdescription>
 </parameteritem>
 <parameteritem>
@@ -726,7 +723,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/io/mseed_index.h" line="107" column="4" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/io/mseed_index.h" declline="107" declcolumn="4"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/io/mseed_index.h" line="102" column="1" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/io/mseed_index.h" declline="102" declcolumn="1"/>
       </memberdef>
       <memberdef kind="function" id="fileio_8cc_1a01039e857800708323e459f372d38d19" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>long int</type>
@@ -756,7 +753,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" line="30" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" bodystart="30" bodyend="59"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" line="29" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" bodystart="29" bodyend="63"/>
       </memberdef>
       <memberdef kind="function" id="fileio_8cc_1ae290073e53ca7d094d152e3a3ee65085" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>long int</type>
@@ -783,7 +780,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" line="64" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" bodystart="64" bodyend="79"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" line="68" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" bodystart="68" bodyend="85"/>
       </memberdef>
       <memberdef kind="function" id="fileio_8cc_1a5e6fc74e51d5bf9eb393d6abde3518d7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>long int</type>
@@ -811,7 +808,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" line="87" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" bodystart="87" bodyend="101"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" line="93" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" bodystart="93" bodyend="109"/>
       </memberdef>
       <memberdef kind="function" id="fileio_8cc_1aa6a536e819148eb66f735ed6ab002e11" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>size_t</type>
@@ -845,7 +842,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" line="239" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" bodystart="239" bodyend="265"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" line="262" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" bodystart="262" bodyend="287"/>
       </memberdef>
       <memberdef kind="function" id="fileio_8cc_1ae1f3e216145ee0c136324079ebd24b6e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>size_t</type>
@@ -875,7 +872,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" line="266" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" bodystart="266" bodyend="274"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" line="288" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" bodystart="288" bodyend="298"/>
       </memberdef>
       <memberdef kind="function" id="fileio_8cc_1acf03563760e97d0c44fa7f3262264ddf" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>size_t</type>
@@ -905,7 +902,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" line="275" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" bodystart="275" bodyend="283"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" line="299" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/fileio.cc" bodystart="299" bodyend="308"/>
       </memberdef>
       <memberdef kind="function" id="mseed__file__indexer_8cc_1ac470c9ed9b76ba66420a7eaf74f16bd8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::string</type>
@@ -924,7 +921,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" line="109" column="13" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" bodystart="109" bodyend="140"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" line="95" column="13" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" bodystart="95" bodyend="129"/>
       </memberdef>
       <memberdef kind="function" id="mseed__file__indexer_8cc_1afe2800b7fa24249de92f7ff6ec6db65b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>MSDINDEX_returntype</type>
@@ -948,14 +945,12 @@
 <para>Indexing function using libmseed low level function ms3_readmsr_r. </para>
         </briefdescription>
         <detaileddescription>
-<para>This function uses what has become the standard reader for miniseed from IRIS DMC called libmseed. It uses the low level C function ms3_readmsr_r to read an input file one packet at a time. It uses the version that is claimed to be thread safe. <linebreak/>
-</para>
+<para>This function uses what has become the standard reader for miniseed from IRIS DMC called libmseed. It uses the low level C function ms3_readmsr_r to read an input file one packet at a time. It uses the version that is claimed to be thread safe.</para>
 <para>The complexities of seed can cause a number of problems. This version tries to deal these complexities:<orderedlist>
 <listitem><para>miniseed files are often produced by concatenation of data form multiple channel. Any change in station id returned by the function triggers a new index entry.</para>
 </listitem><listitem><para>Packet errors will force a new segment.</para>
 </listitem><listitem><para>Time tears defined by either a jump or accumulated time mismatch of more than 1/2 sample will trigger a new segments.</para>
-</listitem><listitem><para>Changes in sample interval trigger a new segments. That is actually implicit in point 1 with the &quot;sid&quot; because of the seed channel code naming convention. <simplesect kind="return"><para>std::pair first is a vector of index data. second is an ErrorLogger object. Caller should test for empty vector that is a signal for a open failure or a file that probably isn&apos;t miniseed. The content of elog should always be tested as any errors there should be inspected/handled. <linebreak/>
- </para>
+</listitem><listitem><para>Changes in sample interval trigger a new segments. That is actually implicit in point 1 with the &quot;sid&quot; because of the seed channel code naming convention. <simplesect kind="return"><para>std::pair first is a vector of index data. second is an ErrorLogger object. Caller should test for empty vector that is a signal for a open failure or a file that probably isn&apos;t miniseed. The content of elog should always be tested as any errors there should be inspected/handled. </para>
 </simplesect>
 </para>
 </listitem></orderedlist>
@@ -963,7 +958,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" line="165" column="23" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" bodystart="165" bodyend="401"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" line="154" column="21" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" bodystart="154" bodyend="383"/>
       </memberdef>
       <memberdef kind="function" id="mseed__index_8cc_1a60a85760a0207ee75e54b84f6db82954" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::ostringstream &amp;</type>
@@ -985,13 +980,13 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_index.cc" line="7" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_index.cc" bodystart="7" bodyend="25"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_index.cc" line="6" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_index.cc" bodystart="6" bodyend="16"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/io/fileio.h" line="6" column="1"/>
+    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/io/fileio.h" line="7" column="1"/>
   </compounddef>
 </doxygen>

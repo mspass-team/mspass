@@ -2,82 +2,82 @@
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="_c_n_r3_c_decon_8h" kind="file" language="C++">
     <compoundname>CNR3CDecon.h</compoundname>
-    <includes local="no">vector</includes>
-    <includes local="no">math.h</includes>
-    <includes refid="_antelope_pf_8h" local="yes">mspass/utility/AntelopePf.h</includes>
-    <includes refid="_f_f_t_decon_operator_8h" local="yes">mspass/algorithms/deconvolution/FFTDeconOperator.h</includes>
-    <includes refid="_shaping_wavelet_8h" local="yes">mspass/algorithms/deconvolution/ShapingWavelet.h</includes>
-    <includes refid="_m_t_power_spectrum_engine_8h" local="yes">mspass/algorithms/deconvolution/MTPowerSpectrumEngine.h</includes>
-    <includes refid="amplitudes_8h" local="yes">mspass/algorithms/amplitudes.h</includes>
     <includes refid="_taper_8h" local="yes">mspass/algorithms/Taper.h</includes>
     <includes refid="_time_window_8h" local="yes">mspass/algorithms/TimeWindow.h</includes>
+    <includes refid="amplitudes_8h" local="yes">mspass/algorithms/amplitudes.h</includes>
+    <includes refid="_f_f_t_decon_operator_8h" local="yes">mspass/algorithms/deconvolution/FFTDeconOperator.h</includes>
+    <includes refid="_m_t_power_spectrum_engine_8h" local="yes">mspass/algorithms/deconvolution/MTPowerSpectrumEngine.h</includes>
+    <includes refid="_shaping_wavelet_8h" local="yes">mspass/algorithms/deconvolution/ShapingWavelet.h</includes>
     <includes refid="_power_spectrum_8h" local="yes">mspass/seismic/PowerSpectrum.h</includes>
-    <includes refid="_time_series_8h" local="yes">mspass/seismic/TimeSeries.h</includes>
     <includes refid="_seismogram_8h" local="yes">mspass/seismic/Seismogram.h</includes>
+    <includes refid="_time_series_8h" local="yes">mspass/seismic/TimeSeries.h</includes>
+    <includes refid="_antelope_pf_8h" local="yes">mspass/utility/AntelopePf.h</includes>
+    <includes local="no">math.h</includes>
+    <includes local="no">vector</includes>
     <includedby refid="_c_n_r3_c_decon_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/CNR3CDecon.cc</includedby>
     <incdepgraph>
-      <node id="63">
+      <node id="2">
         <label>mspass/algorithms/Taper.h</label>
         <link refid="_taper_8h_source"/>
-        <childnode refid="2" relation="include">
+        <childnode refid="3" relation="include">
         </childnode>
-        <childnode refid="33" relation="include">
+        <childnode refid="4" relation="include">
         </childnode>
-        <childnode refid="23" relation="include">
+        <childnode refid="5" relation="include">
         </childnode>
-        <childnode refid="22" relation="include">
-        </childnode>
-        <childnode refid="64" relation="include">
-        </childnode>
-        <childnode refid="31" relation="include">
-        </childnode>
-        <childnode refid="29" relation="include">
-        </childnode>
-        <childnode refid="34" relation="include">
-        </childnode>
-        <childnode refid="52" relation="include">
-        </childnode>
-      </node>
-      <node id="26">
-        <label>mspass/algorithms/TimeWindow.h</label>
-        <link refid="_time_window_8h_source"/>
-      </node>
-      <node id="60">
-        <label>mspass/algorithms/algorithms.h</label>
-        <link refid="algorithms_8h_source"/>
-        <childnode refid="26" relation="include">
-        </childnode>
-        <childnode refid="52" relation="include">
-        </childnode>
-        <childnode refid="34" relation="include">
-        </childnode>
-        <childnode refid="56" relation="include">
-        </childnode>
-        <childnode refid="61" relation="include">
-        </childnode>
-      </node>
-      <node id="51">
-        <label>mspass/algorithms/amplitudes.h</label>
-        <link refid="amplitudes_8h_source"/>
-        <childnode refid="13" relation="include">
-        </childnode>
-        <childnode refid="16" relation="include">
-        </childnode>
-        <childnode refid="34" relation="include">
-        </childnode>
-        <childnode refid="52" relation="include">
-        </childnode>
-        <childnode refid="56" relation="include">
-        </childnode>
-        <childnode refid="49" relation="include">
-        </childnode>
-        <childnode refid="58" relation="include">
+        <childnode refid="6" relation="include">
         </childnode>
         <childnode refid="7" relation="include">
         </childnode>
-        <childnode refid="26" relation="include">
+        <childnode refid="8" relation="include">
         </childnode>
-        <childnode refid="60" relation="include">
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="45" relation="include">
+        </childnode>
+      </node>
+      <node id="46">
+        <label>mspass/algorithms/TimeWindow.h</label>
+        <link refid="_time_window_8h_source"/>
+      </node>
+      <node id="48">
+        <label>mspass/algorithms/algorithms.h</label>
+        <link refid="algorithms_8h_source"/>
+        <childnode refid="46" relation="include">
+        </childnode>
+        <childnode refid="49" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="45" relation="include">
+        </childnode>
+        <childnode refid="51" relation="include">
+        </childnode>
+      </node>
+      <node id="47">
+        <label>mspass/algorithms/amplitudes.h</label>
+        <link refid="amplitudes_8h_source"/>
+        <childnode refid="46" relation="include">
+        </childnode>
+        <childnode refid="48" relation="include">
+        </childnode>
+        <childnode refid="49" relation="include">
+        </childnode>
+        <childnode refid="53" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="45" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="55" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
         </childnode>
       </node>
       <node id="1">
@@ -85,473 +85,473 @@
         <link refid="_c_n_r3_c_decon_8h"/>
         <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="3" relation="include">
-        </childnode>
-        <childnode refid="4" relation="include">
-        </childnode>
-        <childnode refid="19" relation="include">
-        </childnode>
-        <childnode refid="30" relation="include">
-        </childnode>
-        <childnode refid="32" relation="include">
-        </childnode>
-        <childnode refid="51" relation="include">
-        </childnode>
-        <childnode refid="63" relation="include">
-        </childnode>
-        <childnode refid="26" relation="include">
-        </childnode>
-        <childnode refid="49" relation="include">
-        </childnode>
-        <childnode refid="34" relation="include">
-        </childnode>
-        <childnode refid="52" relation="include">
-        </childnode>
-      </node>
-      <node id="27">
-        <label>mspass/algorithms/deconvolution/ComplexArray.h</label>
-        <link refid="_complex_array_8h_source"/>
-        <childnode refid="28" relation="include">
-        </childnode>
-        <childnode refid="2" relation="include">
-        </childnode>
-        <childnode refid="11" relation="include">
-        </childnode>
-        <childnode refid="20" relation="include">
-        </childnode>
-        <childnode refid="21" relation="include">
-        </childnode>
-        <childnode refid="22" relation="include">
-        </childnode>
-        <childnode refid="23" relation="include">
-        </childnode>
-        <childnode refid="29" relation="include">
-        </childnode>
-      </node>
-      <node id="19">
-        <label>mspass/algorithms/deconvolution/FFTDeconOperator.h</label>
-        <link refid="_f_f_t_decon_operator_8h_source"/>
-        <childnode refid="6" relation="include">
-        </childnode>
-        <childnode refid="20" relation="include">
-        </childnode>
-        <childnode refid="21" relation="include">
-        </childnode>
-        <childnode refid="22" relation="include">
-        </childnode>
-        <childnode refid="23" relation="include">
-        </childnode>
-        <childnode refid="7" relation="include">
-        </childnode>
-        <childnode refid="24" relation="include">
-        </childnode>
-        <childnode refid="26" relation="include">
-        </childnode>
-        <childnode refid="27" relation="include">
-        </childnode>
-      </node>
-      <node id="32">
-        <label>mspass/algorithms/deconvolution/MTPowerSpectrumEngine.h</label>
-        <link refid="_m_t_power_spectrum_engine_8h_source"/>
-        <childnode refid="33" relation="include">
-        </childnode>
-        <childnode refid="2" relation="include">
-        </childnode>
-        <childnode refid="20" relation="include">
-        </childnode>
-        <childnode refid="21" relation="include">
-        </childnode>
-        <childnode refid="22" relation="include">
-        </childnode>
-        <childnode refid="23" relation="include">
-        </childnode>
-        <childnode refid="34" relation="include">
-        </childnode>
         <childnode refid="46" relation="include">
         </childnode>
-        <childnode refid="49" relation="include">
-        </childnode>
-      </node>
-      <node id="30">
-        <label>mspass/algorithms/deconvolution/ShapingWavelet.h</label>
-        <link refid="_shaping_wavelet_8h_source"/>
-        <childnode refid="7" relation="include">
-        </childnode>
-        <childnode refid="27" relation="include">
-        </childnode>
-        <childnode refid="24" relation="include">
-        </childnode>
-        <childnode refid="22" relation="include">
-        </childnode>
-        <childnode refid="23" relation="include">
-        </childnode>
-        <childnode refid="31" relation="include">
-        </childnode>
-      </node>
-      <node id="50">
-        <label>mspass/seismic/BasicSpectrum.h</label>
-        <link refid="_basic_spectrum_8h_source"/>
-        <childnode refid="2" relation="include">
-        </childnode>
-        <childnode refid="3" relation="include">
-        </childnode>
-        <childnode refid="16" relation="include">
-        </childnode>
-      </node>
-      <node id="25">
-        <label>mspass/seismic/BasicTimeSeries.h</label>
-        <link refid="_basic_time_series_8h_source"/>
-        <childnode refid="3" relation="include">
-        </childnode>
-        <childnode refid="22" relation="include">
-        </childnode>
-        <childnode refid="23" relation="include">
-        </childnode>
-      </node>
-      <node id="53">
-        <label>mspass/seismic/CoreSeismogram.h</label>
-        <link refid="_core_seismogram_8h_source"/>
-        <childnode refid="33" relation="include">
-        </childnode>
-        <childnode refid="2" relation="include">
-        </childnode>
-        <childnode refid="7" relation="include">
-        </childnode>
-        <childnode refid="46" relation="include">
-        </childnode>
-        <childnode refid="25" relation="include">
-        </childnode>
-        <childnode refid="24" relation="include">
-        </childnode>
-        <childnode refid="54" relation="include">
-        </childnode>
-        <childnode refid="55" relation="include">
-        </childnode>
-      </node>
-      <node id="24">
-        <label>mspass/seismic/CoreTimeSeries.h</label>
-        <link refid="_core_time_series_8h_source"/>
-        <childnode refid="2" relation="include">
-        </childnode>
-        <childnode refid="25" relation="include">
-        </childnode>
-        <childnode refid="7" relation="include">
-        </childnode>
-      </node>
-      <node id="62">
-        <label>mspass/seismic/DataGap.h</label>
-        <link refid="_data_gap_8h_source"/>
-        <childnode refid="10" relation="include">
-        </childnode>
-        <childnode refid="5" relation="include">
-        </childnode>
-        <childnode refid="26" relation="include">
-        </childnode>
-      </node>
-      <node id="56">
-        <label>mspass/seismic/Ensemble.h</label>
-        <link refid="_ensemble_8h_source"/>
-        <childnode refid="2" relation="include">
-        </childnode>
-        <childnode refid="34" relation="include">
-        </childnode>
-        <childnode refid="52" relation="include">
+        <childnode refid="47" relation="include">
         </childnode>
         <childnode refid="57" relation="include">
         </childnode>
-      </node>
-      <node id="49">
-        <label>mspass/seismic/PowerSpectrum.h</label>
-        <link refid="_power_spectrum_8h_source"/>
-        <childnode refid="2" relation="include">
-        </childnode>
-        <childnode refid="7" relation="include">
-        </childnode>
-        <childnode refid="16" relation="include">
-        </childnode>
-        <childnode refid="42" relation="include">
-        </childnode>
-        <childnode refid="50" relation="include">
-        </childnode>
-      </node>
-      <node id="52">
-        <label>mspass/seismic/Seismogram.h</label>
-        <link refid="_seismogram_8h_source"/>
-        <childnode refid="53" relation="include">
-        </childnode>
-        <childnode refid="35" relation="include">
-        </childnode>
-        <childnode refid="42" relation="include">
-        </childnode>
-      </node>
-      <node id="55">
-        <label>mspass/seismic/SlownessVector.h</label>
-        <link refid="_slowness_vector_8h_source"/>
-        <childnode refid="6" relation="include">
-        </childnode>
-        <childnode refid="22" relation="include">
-        </childnode>
-        <childnode refid="23" relation="include">
-        </childnode>
-      </node>
-      <node id="34">
-        <label>mspass/seismic/TimeSeries.h</label>
-        <link refid="_time_series_8h_source"/>
-        <childnode refid="24" relation="include">
-        </childnode>
-        <childnode refid="35" relation="include">
-        </childnode>
-        <childnode refid="42" relation="include">
-        </childnode>
-      </node>
-      <node id="61">
-        <label>mspass/seismic/TimeSeriesWGaps.h</label>
-        <link refid="_time_series_w_gaps_8h_source"/>
-        <childnode refid="34" relation="include">
-        </childnode>
         <childnode refid="62" relation="include">
         </childnode>
-      </node>
-      <node id="4">
-        <label>mspass/utility/AntelopePf.h</label>
-        <link refid="_antelope_pf_8h_source"/>
-        <childnode refid="5" relation="include">
+        <childnode refid="63" relation="include">
         </childnode>
-        <childnode refid="6" relation="include">
-        </childnode>
-        <childnode refid="7" relation="include">
-        </childnode>
-      </node>
-      <node id="18">
-        <label>mspass/utility/BasicMetadata.h</label>
-        <link refid="_basic_metadata_8h_source"/>
-        <childnode refid="6" relation="include">
-        </childnode>
-      </node>
-      <node id="42">
-        <label>mspass/utility/ErrorLogger.h</label>
-        <link refid="_error_logger_8h_source"/>
-        <childnode refid="43" relation="include">
-        </childnode>
-        <childnode refid="5" relation="include">
-        </childnode>
-        <childnode refid="44" relation="include">
-        </childnode>
-        <childnode refid="22" relation="include">
-        </childnode>
-        <childnode refid="23" relation="include">
-        </childnode>
-        <childnode refid="37" relation="include">
-        </childnode>
-        <childnode refid="45" relation="include">
-        </childnode>
-        <childnode refid="16" relation="include">
-        </childnode>
-        <childnode refid="42" relation="include">
-        </childnode>
-      </node>
-      <node id="7">
-        <label>mspass/utility/Metadata.h</label>
-        <link refid="_metadata_8h_source"/>
-        <childnode refid="8" relation="include">
-        </childnode>
-        <childnode refid="9" relation="include">
+        <childnode refid="53" relation="include">
         </childnode>
         <childnode refid="10" relation="include">
         </childnode>
-        <childnode refid="5" relation="include">
+        <childnode refid="45" relation="include">
         </childnode>
-        <childnode refid="11" relation="include">
-        </childnode>
-        <childnode refid="12" relation="include">
+        <childnode refid="64" relation="include">
         </childnode>
         <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="58">
+        <label>mspass/algorithms/deconvolution/ComplexArray.h</label>
+        <link refid="_complex_array_8h_source"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="59" relation="include">
+        </childnode>
+        <childnode refid="60" relation="include">
+        </childnode>
+        <childnode refid="61" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="57">
+        <label>mspass/algorithms/deconvolution/FFTDeconOperator.h</label>
+        <link refid="_f_f_t_decon_operator_8h_source"/>
+        <childnode refid="46" relation="include">
+        </childnode>
+        <childnode refid="58" relation="include">
         </childnode>
         <childnode refid="14" relation="include">
         </childnode>
         <childnode refid="15" relation="include">
         </childnode>
-        <childnode refid="16" relation="include">
+        <childnode refid="5" relation="include">
         </childnode>
-        <childnode refid="18" relation="include">
+        <childnode refid="6" relation="include">
         </childnode>
-      </node>
-      <node id="16">
-        <label>mspass/utility/MsPASSError.h</label>
-        <link refid="_ms_p_a_s_s_error_8h_source"/>
-        <childnode refid="11" relation="include">
+        <childnode refid="60" relation="include">
+        </childnode>
+        <childnode refid="61" relation="include">
         </childnode>
         <childnode refid="17" relation="include">
         </childnode>
       </node>
-      <node id="35">
-        <label>mspass/utility/ProcessingHistory.h</label>
-        <link refid="_processing_history_8h_source"/>
-        <childnode refid="6" relation="include">
+      <node id="62">
+        <label>mspass/algorithms/deconvolution/MTPowerSpectrumEngine.h</label>
+        <link refid="_m_t_power_spectrum_engine_8h_source"/>
+        <childnode refid="53" relation="include">
+        </childnode>
+        <childnode refid="45" relation="include">
+        </childnode>
+        <childnode refid="31" relation="include">
         </childnode>
         <childnode refid="5" relation="include">
         </childnode>
-        <childnode refid="2" relation="include">
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="60" relation="include">
+        </childnode>
+        <childnode refid="61" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="63">
+        <label>mspass/algorithms/deconvolution/ShapingWavelet.h</label>
+        <link refid="_shaping_wavelet_8h_source"/>
+        <childnode refid="58" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
         </childnode>
         <childnode refid="9" relation="include">
+        </childnode>
+      </node>
+      <node id="54">
+        <label>mspass/seismic/BasicSpectrum.h</label>
+        <link refid="_basic_spectrum_8h_source"/>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="12">
+        <label>mspass/seismic/BasicTimeSeries.h</label>
+        <link refid="_basic_time_series_8h_source"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+      </node>
+      <node id="11">
+        <label>mspass/seismic/CoreSeismogram.h</label>
+        <link refid="_core_seismogram_8h_source"/>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="29" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="30" relation="include">
+        </childnode>
+        <childnode refid="31" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="14">
+        <label>mspass/seismic/CoreTimeSeries.h</label>
+        <link refid="_core_time_series_8h_source"/>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="52">
+        <label>mspass/seismic/DataGap.h</label>
+        <link refid="_data_gap_8h_source"/>
+        <childnode refid="46" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+      </node>
+      <node id="49">
+        <label>mspass/seismic/Ensemble.h</label>
+        <link refid="_ensemble_8h_source"/>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="45" relation="include">
+        </childnode>
+        <childnode refid="50" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="53">
+        <label>mspass/seismic/PowerSpectrum.h</label>
+        <link refid="_power_spectrum_8h_source"/>
+        <childnode refid="54" relation="include">
+        </childnode>
+        <childnode refid="34" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="10">
+        <label>mspass/seismic/Seismogram.h</label>
+        <link refid="_seismogram_8h_source"/>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="34" relation="include">
+        </childnode>
+        <childnode refid="39" relation="include">
+        </childnode>
+      </node>
+      <node id="29">
+        <label>mspass/seismic/SlownessVector.h</label>
+        <link refid="_slowness_vector_8h_source"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+      </node>
+      <node id="45">
+        <label>mspass/seismic/TimeSeries.h</label>
+        <link refid="_time_series_8h_source"/>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="34" relation="include">
+        </childnode>
+        <childnode refid="39" relation="include">
+        </childnode>
+      </node>
+      <node id="51">
+        <label>mspass/seismic/TimeSeriesWGaps.h</label>
+        <link refid="_time_series_w_gaps_8h_source"/>
+        <childnode refid="52" relation="include">
+        </childnode>
+        <childnode refid="45" relation="include">
+        </childnode>
+      </node>
+      <node id="64">
+        <label>mspass/utility/AntelopePf.h</label>
+        <link refid="_antelope_pf_8h_source"/>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+      </node>
+      <node id="16">
+        <label>mspass/utility/BasicMetadata.h</label>
+        <link refid="_basic_metadata_8h_source"/>
+        <childnode refid="17" relation="include">
+        </childnode>
+      </node>
+      <node id="34">
+        <label>mspass/utility/ErrorLogger.h</label>
+        <link refid="_error_logger_8h_source"/>
+        <childnode refid="34" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="35" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
         </childnode>
         <childnode refid="36" relation="include">
         </childnode>
         <childnode refid="37" relation="include">
         </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
         <childnode refid="38" relation="include">
         </childnode>
-        <childnode refid="39" relation="include">
+      </node>
+      <node id="15">
+        <label>mspass/utility/Metadata.h</label>
+        <link refid="_metadata_8h_source"/>
+        <childnode refid="16" relation="include">
         </childnode>
-        <childnode refid="40" relation="include">
+        <childnode refid="18" relation="include">
         </childnode>
-        <childnode refid="41" relation="include">
+        <childnode refid="21" relation="include">
         </childnode>
         <childnode refid="22" relation="include">
         </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
         <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+        <childnode refid="28" relation="include">
+        </childnode>
+      </node>
+      <node id="18">
+        <label>mspass/utility/MsPASSError.h</label>
+        <link refid="_ms_p_a_s_s_error_8h_source"/>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+      </node>
+      <node id="39">
+        <label>mspass/utility/ProcessingHistory.h</label>
+        <link refid="_processing_history_8h_source"/>
+        <childnode refid="34" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="40" relation="include">
+        </childnode>
+        <childnode refid="37" relation="include">
+        </childnode>
+        <childnode refid="41" relation="include">
         </childnode>
         <childnode refid="42" relation="include">
         </childnode>
+        <childnode refid="43" relation="include">
+        </childnode>
+        <childnode refid="44" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
       </node>
-      <node id="54">
+      <node id="30">
         <label>mspass/utility/SphericalCoordinate.h</label>
         <link refid="_spherical_coordinate_8h_source"/>
       </node>
-      <node id="58">
+      <node id="55">
         <label>mspass/utility/VectorStatistics.h</label>
         <link refid="_vector_statistics_8h_source"/>
-        <childnode refid="2" relation="include">
+        <childnode refid="18" relation="include">
         </childnode>
-        <childnode refid="59" relation="include">
+        <childnode refid="56" relation="include">
         </childnode>
-        <childnode refid="16" relation="include">
+        <childnode refid="4" relation="include">
         </childnode>
       </node>
-      <node id="46">
+      <node id="31">
         <label>mspass/utility/dmatrix.h</label>
         <link refid="dmatrix_8h_source"/>
-        <childnode refid="6" relation="include">
+        <childnode refid="20" relation="include">
         </childnode>
-        <childnode refid="11" relation="include">
+        <childnode refid="27" relation="include">
         </childnode>
-        <childnode refid="13" relation="include">
+        <childnode refid="17" relation="include">
         </childnode>
-        <childnode refid="2" relation="include">
+        <childnode refid="4" relation="include">
         </childnode>
-        <childnode refid="31" relation="include">
+        <childnode refid="18" relation="include">
         </childnode>
-        <childnode refid="47" relation="include">
+        <childnode refid="32" relation="include">
         </childnode>
-        <childnode refid="48" relation="include">
+        <childnode refid="33" relation="include">
         </childnode>
-        <childnode refid="16" relation="include">
+        <childnode refid="9" relation="include">
         </childnode>
       </node>
-      <node id="57">
+      <node id="50">
         <label>mspass/utility/memory_constants.h</label>
         <link refid="memory__constants_8h_source"/>
       </node>
-      <node id="59">
+      <node id="56">
         <label>algorithm</label>
       </node>
-      <node id="14">
+      <node id="21">
         <label>boost/any.hpp</label>
       </node>
-      <node id="44">
+      <node id="35">
         <label>boost/archive/basic_archive.hpp</label>
       </node>
-      <node id="48">
+      <node id="32">
         <label>boost/archive/binary_iarchive.hpp</label>
       </node>
-      <node id="47">
+      <node id="33">
         <label>boost/archive/binary_oarchive.hpp</label>
       </node>
-      <node id="22">
+      <node id="5">
         <label>boost/archive/text_iarchive.hpp</label>
       </node>
-      <node id="23">
+      <node id="6">
         <label>boost/archive/text_oarchive.hpp</label>
       </node>
-      <node id="64">
+      <node id="7">
         <label>boost/serialization/base_object.hpp</label>
       </node>
-      <node id="45">
+      <node id="36">
         <label>boost/serialization/list.hpp</label>
       </node>
-      <node id="36">
+      <node id="40">
         <label>boost/serialization/map.hpp</label>
       </node>
       <node id="37">
         <label>boost/serialization/serialization.hpp</label>
       </node>
-      <node id="29">
+      <node id="8">
         <label>boost/serialization/shared_ptr.hpp</label>
       </node>
-      <node id="31">
+      <node id="9">
         <label>boost/serialization/vector.hpp</label>
       </node>
-      <node id="38">
+      <node id="41">
         <label>boost/uuid/uuid.hpp</label>
       </node>
-      <node id="39">
+      <node id="42">
         <label>boost/uuid/uuid_generators.hpp</label>
       </node>
-      <node id="40">
+      <node id="43">
         <label>boost/uuid/uuid_io.hpp</label>
       </node>
-      <node id="41">
+      <node id="44">
         <label>boost/uuid/uuid_serialize.hpp</label>
       </node>
-      <node id="28">
+      <node id="59">
         <label>complex</label>
       </node>
-      <node id="17">
+      <node id="19">
         <label>exception</label>
       </node>
-      <node id="12">
+      <node id="22">
         <label>fstream</label>
       </node>
-      <node id="20">
+      <node id="60">
         <label>gsl/gsl_errno.h</label>
       </node>
-      <node id="21">
+      <node id="61">
         <label>gsl/gsl_fft_complex.h</label>
       </node>
-      <node id="11">
+      <node id="20">
         <label>iostream</label>
       </node>
-      <node id="5">
+      <node id="23">
         <label>list</label>
       </node>
-      <node id="9">
+      <node id="24">
         <label>map</label>
       </node>
-      <node id="3">
+      <node id="13">
         <label>math.h</label>
       </node>
-      <node id="33">
+      <node id="3">
         <label>memory</label>
       </node>
-      <node id="15">
+      <node id="25">
         <label>pybind11/pybind11.h</label>
       </node>
-      <node id="10">
+      <node id="26">
         <label>set</label>
       </node>
-      <node id="13">
+      <node id="27">
         <label>sstream</label>
       </node>
-      <node id="6">
+      <node id="17">
         <label>string</label>
       </node>
-      <node id="8">
+      <node id="28">
         <label>typeinfo</label>
       </node>
-      <node id="43">
+      <node id="38">
         <label>unistd.h</label>
       </node>
-      <node id="2">
+      <node id="4">
         <label>vector</label>
       </node>
     </incdepgraph>
@@ -567,188 +567,179 @@
     <programlisting>
 <codeline lineno="1"><highlight class="preprocessor">#ifndef<sp/>__CNR3C_DECON_H__</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="2"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>__CNR3C_DECON_H__</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="3"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;vector&gt;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="4"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;math.h&gt;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/utility/AntelopePf.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/algorithms/Taper.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/algorithms/TimeWindow.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/algorithms/amplitudes.h&quot;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="6"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/algorithms/deconvolution/FFTDeconOperator.h&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="7"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/algorithms/deconvolution/ShapingWavelet.h&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="8"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/algorithms/deconvolution/MTPowerSpectrumEngine.h&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="9"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/algorithms/amplitudes.h&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="10"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/algorithms/Taper.h&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="11"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/algorithms/TimeWindow.h&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="12"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/seismic/PowerSpectrum.h&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="13"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/seismic/TimeSeries.h&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="14"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/seismic/Seismogram.h&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="15"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">mspass::algorithms::deconvolution{</highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/algorithms/deconvolution/MTPowerSpectrumEngine.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/algorithms/deconvolution/ShapingWavelet.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/seismic/PowerSpectrum.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/seismic/Seismogram.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/seismic/TimeSeries.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/utility/AntelopePf.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;math.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;vector&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">mspass::algorithms::deconvolution<sp/>{</highlight></codeline>
 <codeline lineno="16"><highlight class="normal"></highlight></codeline>
-<codeline lineno="19" refid="classmspass_1_1algorithms_1_1deconvolution_1_1_base3_c_decon" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_base3_c_decon" kindref="compound">Base3CDecon</ref></highlight></codeline>
-<codeline lineno="20"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="21"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
-<codeline lineno="22"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_base3_c_decon" kindref="compound">~Base3CDecon</ref>()<sp/>{};</highlight></codeline>
-<codeline lineno="23"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*</highlight></codeline>
-<codeline lineno="24"><highlight class="comment"><sp/><sp/><sp/><sp/>virtual<sp/>void<sp/>change_parameters(const<sp/>mspass::BasicMetadata<sp/>&amp;md)=0;</highlight></codeline>
-<codeline lineno="25"><highlight class="comment"><sp/><sp/><sp/><sp/>virtual<sp/>void<sp/>loaddata(mspass::Seismogram&amp;<sp/>d,const<sp/>int<sp/>comp)=0;</highlight></codeline>
-<codeline lineno="26"><highlight class="comment"><sp/><sp/><sp/><sp/>virtual<sp/>void<sp/>loadwavelet(const<sp/>mspass::TimeSeries&amp;<sp/>w)=0;</highlight></codeline>
-<codeline lineno="27"><highlight class="comment"><sp/><sp/><sp/><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="28"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>\brief<sp/>Return<sp/>the<sp/>ideal<sp/>output<sp/>of<sp/>the<sp/>deconvolution<sp/>operator.</highlight></codeline>
-<codeline lineno="29"><highlight class="comment"></highlight></codeline>
-<codeline lineno="30"><highlight class="comment"><sp/><sp/><sp/><sp/>All<sp/>deconvolution<sp/>operators<sp/>have<sp/>a<sp/>implicit<sp/>or<sp/>explicit<sp/>ideal<sp/>output</highlight></codeline>
-<codeline lineno="31"><highlight class="comment"><sp/><sp/><sp/><sp/>signal.<sp/>e.g.<sp/>for<sp/>a<sp/>spiking<sp/>Wiener<sp/>filter<sp/>it<sp/>is<sp/>a<sp/>delta<sp/>function<sp/>with<sp/>or</highlight></codeline>
-<codeline lineno="32"><highlight class="comment"><sp/><sp/><sp/><sp/>without<sp/>a<sp/>lag.<sp/><sp/>For<sp/>a<sp/>shaping<sp/>wavelt<sp/>it<sp/>is<sp/>the<sp/>time<sp/>domain<sp/>version<sp/>of<sp/>the</highlight></codeline>
-<codeline lineno="33"><highlight class="comment"><sp/><sp/><sp/><sp/>wavelet.<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="34"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref><sp/>process()=0;</highlight></codeline>
-<codeline lineno="41" refid="classmspass_1_1algorithms_1_1deconvolution_1_1_base3_c_decon_1aa7d5bfc6e1adfc1bd7af1606bebddf86" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_base3_c_decon_1aa7d5bfc6e1adfc1bd7af1606bebddf86" kindref="member">actual_output</ref>()=0;</highlight></codeline>
-<codeline lineno="42"><highlight class="normal"></highlight></codeline>
-<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//virtual<sp/>mspass::TimeSeries<sp/>inverse_wavelet()<sp/>=<sp/>0;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="48" refid="classmspass_1_1algorithms_1_1deconvolution_1_1_base3_c_decon_1a8c73971b2670ad41a345a917abb5ef09" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_base3_c_decon_1a8c73971b2670ad41a345a917abb5ef09" kindref="member">inverse_wavelet</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal">)<sp/>=<sp/>0;</highlight></codeline>
-<codeline lineno="53" refid="classmspass_1_1algorithms_1_1deconvolution_1_1_base3_c_decon_1a46a3cc2e931b6d5409421237cf06356d" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">mspass::utility::Metadata</ref><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_base3_c_decon_1a46a3cc2e931b6d5409421237cf06356d" kindref="member">QCMetrics</ref>()=0;</highlight></codeline>
-<codeline lineno="54"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="55"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>This<sp/>enum<sp/>is<sp/>used<sp/>internally<sp/>to<sp/>define<sp/>the<sp/>algorithm<sp/>the<sp/>processor<sp/>is<sp/>to<sp/>run.</highlight></codeline>
-<codeline lineno="56"><highlight class="comment">I<sp/>(glp)<sp/>chose<sp/>that<sp/>approach<sp/>over<sp/>the<sp/>inheritance<sp/>approach<sp/>used<sp/>in<sp/>the<sp/>scalar</highlight></codeline>
-<codeline lineno="57"><highlight class="comment">methods<sp/>as<sp/>an<sp/>artistic<sp/>choice.<sp/><sp/><sp/>It<sp/>is<sp/>a<sp/>matter<sp/>of<sp/>opinion<sp/>which<sp/>approach</highlight></codeline>
-<codeline lineno="58"><highlight class="comment">is<sp/>better.<sp/><sp/>This<sp/>makes<sp/>one<sp/>symbol<sp/>do<sp/>multiple<sp/>things<sp/>with<sp/>changes<sp/>done<sp/>in</highlight></codeline>
-<codeline lineno="59"><highlight class="comment">the<sp/>parameter<sp/>setup<sp/>as<sp/>opposed<sp/>to<sp/>having<sp/>to<sp/>select<sp/>the<sp/>right<sp/>symbolic<sp/>name</highlight></codeline>
-<codeline lineno="60"><highlight class="comment">to<sp/>construct.<sp/><sp/>The<sp/>main<sp/>difference<sp/>is<sp/>it<sp/>avoids<sp/>the<sp/>messy<sp/>trampoline<sp/>class</highlight></codeline>
-<codeline lineno="61"><highlight class="comment">needed<sp/>with<sp/>pybind11<sp/>to<sp/>create<sp/>wrappers<sp/>for<sp/>the<sp/>python<sp/>bindings.</highlight></codeline>
-<codeline lineno="62"><highlight class="comment">This<sp/>enum<sp/>will<sp/>not<sp/>be<sp/>exposed<sp/>to<sp/>python<sp/>as<sp/>it<sp/>is<sp/>totally<sp/>internal<sp/>to<sp/>the</highlight></codeline>
-<codeline lineno="63"><highlight class="comment">CNR3CDecon<sp/>class.</highlight></codeline>
-<codeline lineno="64"><highlight class="comment">*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="65"><highlight class="normal"></highlight><highlight class="keyword">enum<sp/>class</highlight><highlight class="normal"><sp/>CNR3C_algorithms{</highlight></codeline>
-<codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/>generalized_water_level,</highlight></codeline>
-<codeline lineno="67"><highlight class="normal"><sp/><sp/><sp/><sp/>colored_noise_damping,</highlight></codeline>
-<codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/>undefined</highlight></codeline>
-<codeline lineno="69"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="96"><highlight class="normal"></highlight><highlight class="comment">//class<sp/>CNR3CDecon<sp/>:<sp/>public<sp/>mspass::FFTDeconOperator</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="97" refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon" kindref="compound">CNR3CDecon</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_base3_c_decon" kindref="compound">Base3CDecon</ref>,<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator" kindref="compound">FFTDeconOperator</ref></highlight></codeline>
-<codeline lineno="98"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="99"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
-<codeline lineno="101"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1ac6c9860a5492d4a526172b9df3bbcffa" kindref="member">CNR3CDecon</ref>();</highlight></codeline>
-<codeline lineno="110"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1ac6c9860a5492d4a526172b9df3bbcffa" kindref="member">CNR3CDecon</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_antelope_pf" kindref="compound">mspass::utility::AntelopePf</ref>&amp;<sp/>pf);</highlight></codeline>
-<codeline lineno="112"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1ac6c9860a5492d4a526172b9df3bbcffa" kindref="member">CNR3CDecon</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon" kindref="compound">CNR3CDecon</ref>&amp;<sp/>parent);</highlight></codeline>
-<codeline lineno="114"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a0892388be3850c342df4792c662751f5" kindref="member">~CNR3CDecon</ref>();</highlight></codeline>
-<codeline lineno="115"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon" kindref="compound">CNR3CDecon</ref>&amp;<sp/>operator=(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon" kindref="compound">CNR3CDecon</ref>&amp;<sp/>parent);</highlight></codeline>
-<codeline lineno="126"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1ab14420b7e2766c58d2846cdc112fabad" kindref="member">change_parameters</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_basic_metadata" kindref="compound">mspass::utility::BasicMetadata</ref>&amp;<sp/>md);</highlight></codeline>
-<codeline lineno="147"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a88d7fe1143e6459d7accf40e00f8cab2" kindref="member">loaddata</ref>(<ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref>&amp;<sp/>d,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>wcomp,</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>loadnoise=</highlight><highlight class="keyword">false</highlight><highlight class="normal">);</highlight></codeline>
-<codeline lineno="162"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a88d7fe1143e6459d7accf40e00f8cab2" kindref="member">loaddata</ref>(<ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref>&amp;<sp/>d,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>loadnoise=</highlight><highlight class="keyword">false</highlight><highlight class="normal">);</highlight></codeline>
-<codeline lineno="179"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a9d050c0940ada32cc3ddfecff9cade4a" kindref="member">loadnoise_data</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref>&amp;<sp/>n);</highlight></codeline>
-<codeline lineno="190"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a9d050c0940ada32cc3ddfecff9cade4a" kindref="member">loadnoise_data</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_power_spectrum" kindref="compound">mspass::seismic::PowerSpectrum</ref>&amp;<sp/>n);</highlight></codeline>
-<codeline lineno="207"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a8f0b6ab1ffaf2b0f514341be81b21d7e" kindref="member">loadwavelet</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref>&amp;<sp/>w);</highlight></codeline>
-<codeline lineno="224"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a3fc0dadf9ce17343244d45e30e14519e" kindref="member">loadnoise_wavelet</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref>&amp;<sp/>n);</highlight></codeline>
-<codeline lineno="233"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a3fc0dadf9ce17343244d45e30e14519e" kindref="member">loadnoise_wavelet</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_power_spectrum" kindref="compound">mspass::seismic::PowerSpectrum</ref>&amp;<sp/>n);</highlight></codeline>
-<codeline lineno="234"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>These<sp/>same<sp/>names<sp/>are<sp/>used<sp/>in<sp/>ScalarDecon<sp/>but<sp/>we<sp/>don&apos;t<sp/>inherit<sp/>them</highlight></codeline>
-<codeline lineno="235"><highlight class="comment"><sp/><sp/>here<sp/>because<sp/>this<sp/>algorithm<sp/>is<sp/>3C<sp/>data<sp/>centric<sp/>there<sp/>is<sp/>a<sp/>collision</highlight></codeline>
-<codeline lineno="236"><highlight class="comment"><sp/><sp/>with<sp/>the<sp/>ScalarDecon<sp/>api<sp/>because<sp/>of<sp/>it.<sp/><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="237"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref><sp/>process();</highlight></codeline>
-<codeline lineno="238"><highlight class="normal"></highlight></codeline>
-<codeline lineno="239"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>\brief<sp/>Return<sp/>the<sp/>ideal<sp/>output<sp/>of<sp/>the<sp/>deconvolution<sp/>operator.</highlight></codeline>
-<codeline lineno="240"><highlight class="comment"></highlight></codeline>
-<codeline lineno="241"><highlight class="comment"><sp/><sp/>All<sp/>deconvolution<sp/>operators<sp/>have<sp/>a<sp/>implicit<sp/>or<sp/>explicit<sp/>ideal<sp/>output</highlight></codeline>
-<codeline lineno="242"><highlight class="comment"><sp/><sp/>signal.<sp/>e.g.<sp/>for<sp/>a<sp/>spiking<sp/>Wiener<sp/>filter<sp/>it<sp/>is<sp/>a<sp/>delta<sp/>function<sp/>with<sp/>or</highlight></codeline>
-<codeline lineno="243"><highlight class="comment"><sp/><sp/>without<sp/>a<sp/>lag.<sp/><sp/>For<sp/>a<sp/>shaping<sp/>wavelt<sp/>it<sp/>is<sp/>the<sp/>time<sp/>domain<sp/>version<sp/>of<sp/>the</highlight></codeline>
-<codeline lineno="244"><highlight class="comment"><sp/><sp/>wavelet.<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="245"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref><sp/>ideal_output();</highlight></codeline>
-<codeline lineno="252"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a0b7f51d901d32ef5a08e8d0de69f666c" kindref="member">actual_output</ref>();</highlight></codeline>
-<codeline lineno="253"><highlight class="normal"></highlight></codeline>
-<codeline lineno="258"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a1b2f893beb6c678f31d42ca579d539f3" kindref="member">inverse_wavelet</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>tshift);</highlight></codeline>
-<codeline lineno="273"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">mspass::utility::Metadata</ref><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a250882407c9755fc4e3f822833b93ea0" kindref="member">QCMetrics</ref>();</highlight></codeline>
-<codeline lineno="275" refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1ab4ec1e4c89908b92369acc64f8d95197" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_power_spectrum" kindref="compound">mspass::seismic::PowerSpectrum</ref><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1ab4ec1e4c89908b92369acc64f8d95197" kindref="member">wavelet_noise_spectrum</ref>()</highlight></codeline>
-<codeline lineno="276"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
-<codeline lineno="277"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>psnoise;</highlight></codeline>
-<codeline lineno="278"><highlight class="normal"><sp/><sp/>};</highlight></codeline>
-<codeline lineno="280" refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a3db168e04d8869485f1b9b9307a016e1" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_power_spectrum" kindref="compound">mspass::seismic::PowerSpectrum</ref><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a3db168e04d8869485f1b9b9307a016e1" kindref="member">data_noise_spectrum</ref>()</highlight></codeline>
-<codeline lineno="281"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
-<codeline lineno="282"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>psnoise_data;</highlight></codeline>
-<codeline lineno="283"><highlight class="normal"><sp/><sp/>};</highlight></codeline>
-<codeline lineno="285" refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a5615a2e7adc3f4a49e69362031aa5f83" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_power_spectrum" kindref="compound">mspass::seismic::PowerSpectrum</ref><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a5615a2e7adc3f4a49e69362031aa5f83" kindref="member">wavelet_spectrum</ref>()</highlight></codeline>
-<codeline lineno="286"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
-<codeline lineno="287"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>pswavelet;</highlight></codeline>
-<codeline lineno="288"><highlight class="normal"><sp/><sp/>};</highlight></codeline>
-<codeline lineno="290" refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a15a1bb3390af0283e0a57949248f971c" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_power_spectrum" kindref="compound">mspass::seismic::PowerSpectrum</ref><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a15a1bb3390af0283e0a57949248f971c" kindref="member">data_spectrum</ref>()</highlight></codeline>
-<codeline lineno="291"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
-<codeline lineno="292"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>pssignal;</highlight></codeline>
-<codeline lineno="293"><highlight class="normal"><sp/><sp/>};</highlight></codeline>
-<codeline lineno="294"><highlight class="normal"></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
-<codeline lineno="295"><highlight class="normal"><sp/><sp/>CNR3C_algorithms<sp/>algorithm;</highlight></codeline>
-<codeline lineno="296"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>taper_data;<sp/><sp/></highlight><highlight class="comment">//Set<sp/>false<sp/>only<sp/>if<sp/>none<sp/>specified</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="297"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>operator_dt;<sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Data<sp/>must<sp/>match<sp/>this<sp/>sample<sp/>interval</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="298"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>Expected<sp/>time<sp/>window<sp/>size<sp/>in<sp/>samples</highlight></codeline>
-<codeline lineno="299"><highlight class="comment"><sp/><sp/>(computed<sp/>from<sp/>processing_window<sp/>and<sp/>operator<sp/>dt)*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="300"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>winlength;</highlight></codeline>
-<codeline lineno="301"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>decon_bandwidth_cutoff;</highlight></codeline>
-<codeline lineno="302"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>Added<sp/>Dec<sp/>2021<sp/>-<sp/>this<sp/>defines<sp/>the<sp/>upper<sp/>starting<sp/>frequency<sp/>used<sp/>for</highlight></codeline>
-<codeline lineno="303"><highlight class="comment"><sp/><sp/>the<sp/>EstimateBandwith<sp/>function.<sp/><sp/><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="304"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>fhs;</highlight></codeline>
-<codeline lineno="305"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>Defines<sp/>relative<sp/>time<sp/>time<sp/>window<sp/>-<sp/>ignored<sp/>if<sp/>length<sp/>of<sp/>input<sp/>is</highlight></codeline>
-<codeline lineno="306"><highlight class="comment"><sp/><sp/>consistent<sp/>with<sp/>number<sp/>of<sp/>samples<sp/>expected<sp/>in<sp/>this<sp/>window<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="307"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1_time_window" kindref="compound">mspass::algorithms::TimeWindow</ref><sp/>processing_window;</highlight></codeline>
-<codeline lineno="308"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1_time_window" kindref="compound">mspass::algorithms::TimeWindow</ref><sp/>noise_window;</highlight></codeline>
-<codeline lineno="311"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine" kindref="compound">MTPowerSpectrumEngine</ref><sp/>signalengine,waveletengine;</highlight></codeline>
-<codeline lineno="312"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine" kindref="compound">MTPowerSpectrumEngine</ref><sp/>dnoise_engine,<sp/>wnoise_engine;</highlight></codeline>
-<codeline lineno="313"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet" kindref="compound">ShapingWavelet</ref><sp/>shapingwavelet;</highlight></codeline>
-<codeline lineno="314"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>This<sp/>contains<sp/>the<sp/>noise<sp/>power<sp/>spectrum<sp/>to<sp/>use<sp/>for<sp/>regularization</highlight></codeline>
-<codeline lineno="315"><highlight class="comment"><sp/><sp/>of<sp/>the<sp/>inverse.<sp/><sp/>It<sp/>should<sp/>normally<sp/>be<sp/>created<sp/>from<sp/>a<sp/>longer<sp/>window</highlight></codeline>
-<codeline lineno="316"><highlight class="comment"><sp/><sp/>than<sp/>the<sp/>data.</highlight></codeline>
+<codeline lineno="19" refid="classmspass_1_1algorithms_1_1deconvolution_1_1_base3_c_decon" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_base3_c_decon" kindref="compound">Base3CDecon</ref><sp/>{</highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="21"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_base3_c_decon" kindref="compound">~Base3CDecon</ref>()<sp/>{};</highlight></codeline>
+<codeline lineno="22"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*</highlight></codeline>
+<codeline lineno="23"><highlight class="comment"><sp/><sp/>virtual<sp/>void<sp/>change_parameters(const<sp/>mspass::BasicMetadata<sp/>&amp;md)=0;</highlight></codeline>
+<codeline lineno="24"><highlight class="comment"><sp/><sp/>virtual<sp/>void<sp/>loaddata(mspass::Seismogram&amp;<sp/>d,const<sp/>int<sp/>comp)=0;</highlight></codeline>
+<codeline lineno="25"><highlight class="comment"><sp/><sp/>virtual<sp/>void<sp/>loadwavelet(const<sp/>mspass::TimeSeries&amp;<sp/>w)=0;</highlight></codeline>
+<codeline lineno="26"><highlight class="comment"><sp/><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="27"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>\brief<sp/>Return<sp/>the<sp/>ideal<sp/>output<sp/>of<sp/>the<sp/>deconvolution<sp/>operator.</highlight></codeline>
+<codeline lineno="28"><highlight class="comment"></highlight></codeline>
+<codeline lineno="29"><highlight class="comment"><sp/><sp/>All<sp/>deconvolution<sp/>operators<sp/>have<sp/>a<sp/>implicit<sp/>or<sp/>explicit<sp/>ideal<sp/>output</highlight></codeline>
+<codeline lineno="30"><highlight class="comment"><sp/><sp/>signal.<sp/>e.g.<sp/>for<sp/>a<sp/>spiking<sp/>Wiener<sp/>filter<sp/>it<sp/>is<sp/>a<sp/>delta<sp/>function<sp/>with<sp/>or</highlight></codeline>
+<codeline lineno="31"><highlight class="comment"><sp/><sp/>without<sp/>a<sp/>lag.<sp/><sp/>For<sp/>a<sp/>shaping<sp/>wavelt<sp/>it<sp/>is<sp/>the<sp/>time<sp/>domain<sp/>version<sp/>of<sp/>the</highlight></codeline>
+<codeline lineno="32"><highlight class="comment"><sp/><sp/>wavelet.<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="33"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref><sp/>process()<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="40" refid="classmspass_1_1algorithms_1_1deconvolution_1_1_base3_c_decon_1aa7d5bfc6e1adfc1bd7af1606bebddf86" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_base3_c_decon_1aa7d5bfc6e1adfc1bd7af1606bebddf86" kindref="member">actual_output</ref>()<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"></highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>virtual<sp/>mspass::TimeSeries<sp/>inverse_wavelet()<sp/>=<sp/>0;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="47" refid="classmspass_1_1algorithms_1_1deconvolution_1_1_base3_c_decon_1a8c73971b2670ad41a345a917abb5ef09" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_base3_c_decon_1a8c73971b2670ad41a345a917abb5ef09" kindref="member">inverse_wavelet</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal">)<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="52" refid="classmspass_1_1algorithms_1_1deconvolution_1_1_base3_c_decon_1a46a3cc2e931b6d5409421237cf06356d" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">mspass::utility::Metadata</ref><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_base3_c_decon_1a46a3cc2e931b6d5409421237cf06356d" kindref="member">QCMetrics</ref>()<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="53"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>This<sp/>enum<sp/>is<sp/>used<sp/>internally<sp/>to<sp/>define<sp/>the<sp/>algorithm<sp/>the<sp/>processor<sp/>is<sp/>to<sp/>run.</highlight></codeline>
+<codeline lineno="55"><highlight class="comment">I<sp/>(glp)<sp/>chose<sp/>that<sp/>approach<sp/>over<sp/>the<sp/>inheritance<sp/>approach<sp/>used<sp/>in<sp/>the<sp/>scalar</highlight></codeline>
+<codeline lineno="56"><highlight class="comment">methods<sp/>as<sp/>an<sp/>artistic<sp/>choice.<sp/><sp/><sp/>It<sp/>is<sp/>a<sp/>matter<sp/>of<sp/>opinion<sp/>which<sp/>approach</highlight></codeline>
+<codeline lineno="57"><highlight class="comment">is<sp/>better.<sp/><sp/>This<sp/>makes<sp/>one<sp/>symbol<sp/>do<sp/>multiple<sp/>things<sp/>with<sp/>changes<sp/>done<sp/>in</highlight></codeline>
+<codeline lineno="58"><highlight class="comment">the<sp/>parameter<sp/>setup<sp/>as<sp/>opposed<sp/>to<sp/>having<sp/>to<sp/>select<sp/>the<sp/>right<sp/>symbolic<sp/>name</highlight></codeline>
+<codeline lineno="59"><highlight class="comment">to<sp/>construct.<sp/><sp/>The<sp/>main<sp/>difference<sp/>is<sp/>it<sp/>avoids<sp/>the<sp/>messy<sp/>trampoline<sp/>class</highlight></codeline>
+<codeline lineno="60"><highlight class="comment">needed<sp/>with<sp/>pybind11<sp/>to<sp/>create<sp/>wrappers<sp/>for<sp/>the<sp/>python<sp/>bindings.</highlight></codeline>
+<codeline lineno="61"><highlight class="comment">This<sp/>enum<sp/>will<sp/>not<sp/>be<sp/>exposed<sp/>to<sp/>python<sp/>as<sp/>it<sp/>is<sp/>totally<sp/>internal<sp/>to<sp/>the</highlight></codeline>
+<codeline lineno="62"><highlight class="comment">CNR3CDecon<sp/>class.</highlight></codeline>
+<codeline lineno="63"><highlight class="comment">*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="64"><highlight class="normal"></highlight><highlight class="keyword">enum<sp/>class</highlight><highlight class="normal"><sp/>CNR3C_algorithms<sp/>{</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/>generalized_water_level,</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/>colored_noise_damping,</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"><sp/><sp/>undefined</highlight></codeline>
+<codeline lineno="68"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="95"><highlight class="normal"></highlight><highlight class="comment">//<sp/>class<sp/>CNR3CDecon<sp/>:<sp/>public<sp/>mspass::FFTDeconOperator</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="96" refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon" kindref="compound">CNR3CDecon</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_base3_c_decon" kindref="compound">Base3CDecon</ref>,<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator" kindref="compound">FFTDeconOperator</ref><sp/>{</highlight></codeline>
+<codeline lineno="97"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="99"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1ac6c9860a5492d4a526172b9df3bbcffa" kindref="member">CNR3CDecon</ref>();</highlight></codeline>
+<codeline lineno="109"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1ac6c9860a5492d4a526172b9df3bbcffa" kindref="member">CNR3CDecon</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_antelope_pf" kindref="compound">mspass::utility::AntelopePf</ref><sp/>&amp;pf);</highlight></codeline>
+<codeline lineno="111"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1ac6c9860a5492d4a526172b9df3bbcffa" kindref="member">CNR3CDecon</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon" kindref="compound">CNR3CDecon</ref><sp/>&amp;parent);</highlight></codeline>
+<codeline lineno="113"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a0892388be3850c342df4792c662751f5" kindref="member">~CNR3CDecon</ref>();</highlight></codeline>
+<codeline lineno="114"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon" kindref="compound">CNR3CDecon</ref><sp/>&amp;operator=(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon" kindref="compound">CNR3CDecon</ref><sp/>&amp;parent);</highlight></codeline>
+<codeline lineno="125"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1ab14420b7e2766c58d2846cdc112fabad" kindref="member">change_parameters</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_basic_metadata" kindref="compound">mspass::utility::BasicMetadata</ref><sp/>&amp;md);</highlight></codeline>
+<codeline lineno="146"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a88d7fe1143e6459d7accf40e00f8cab2" kindref="member">loaddata</ref>(<ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref><sp/>&amp;d,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>wcomp,</highlight></codeline>
+<codeline lineno="147"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>loadnoise<sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="164"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a88d7fe1143e6459d7accf40e00f8cab2" kindref="member">loaddata</ref>(<ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref><sp/>&amp;d,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>loadnoise<sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="181"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a9d050c0940ada32cc3ddfecff9cade4a" kindref="member">loadnoise_data</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref><sp/>&amp;n);</highlight></codeline>
+<codeline lineno="192"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a9d050c0940ada32cc3ddfecff9cade4a" kindref="member">loadnoise_data</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_power_spectrum" kindref="compound">mspass::seismic::PowerSpectrum</ref><sp/>&amp;n);</highlight></codeline>
+<codeline lineno="212"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a8f0b6ab1ffaf2b0f514341be81b21d7e" kindref="member">loadwavelet</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref><sp/>&amp;w);</highlight></codeline>
+<codeline lineno="229"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a3fc0dadf9ce17343244d45e30e14519e" kindref="member">loadnoise_wavelet</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref><sp/>&amp;n);</highlight></codeline>
+<codeline lineno="239"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a3fc0dadf9ce17343244d45e30e14519e" kindref="member">loadnoise_wavelet</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_power_spectrum" kindref="compound">mspass::seismic::PowerSpectrum</ref><sp/>&amp;n);</highlight></codeline>
+<codeline lineno="240"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>These<sp/>same<sp/>names<sp/>are<sp/>used<sp/>in<sp/>ScalarDecon<sp/>but<sp/>we<sp/>don&apos;t<sp/>inherit<sp/>them</highlight></codeline>
+<codeline lineno="241"><highlight class="comment"><sp/><sp/>here<sp/>because<sp/>this<sp/>algorithm<sp/>is<sp/>3C<sp/>data<sp/>centric<sp/>there<sp/>is<sp/>a<sp/>collision</highlight></codeline>
+<codeline lineno="242"><highlight class="comment"><sp/><sp/>with<sp/>the<sp/>ScalarDecon<sp/>api<sp/>because<sp/>of<sp/>it.<sp/><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="243"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref><sp/>process();</highlight></codeline>
+<codeline lineno="244"><highlight class="normal"></highlight></codeline>
+<codeline lineno="245"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>\brief<sp/>Return<sp/>the<sp/>ideal<sp/>output<sp/>of<sp/>the<sp/>deconvolution<sp/>operator.</highlight></codeline>
+<codeline lineno="246"><highlight class="comment"></highlight></codeline>
+<codeline lineno="247"><highlight class="comment"><sp/><sp/>All<sp/>deconvolution<sp/>operators<sp/>have<sp/>a<sp/>implicit<sp/>or<sp/>explicit<sp/>ideal<sp/>output</highlight></codeline>
+<codeline lineno="248"><highlight class="comment"><sp/><sp/>signal.<sp/>e.g.<sp/>for<sp/>a<sp/>spiking<sp/>Wiener<sp/>filter<sp/>it<sp/>is<sp/>a<sp/>delta<sp/>function<sp/>with<sp/>or</highlight></codeline>
+<codeline lineno="249"><highlight class="comment"><sp/><sp/>without<sp/>a<sp/>lag.<sp/><sp/>For<sp/>a<sp/>shaping<sp/>wavelt<sp/>it<sp/>is<sp/>the<sp/>time<sp/>domain<sp/>version<sp/>of<sp/>the</highlight></codeline>
+<codeline lineno="250"><highlight class="comment"><sp/><sp/>wavelet.<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="251"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref><sp/>ideal_output();</highlight></codeline>
+<codeline lineno="258"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a0b7f51d901d32ef5a08e8d0de69f666c" kindref="member">actual_output</ref>();</highlight></codeline>
+<codeline lineno="259"><highlight class="normal"></highlight></codeline>
+<codeline lineno="264"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a1b2f893beb6c678f31d42ca579d539f3" kindref="member">inverse_wavelet</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>tshift);</highlight></codeline>
+<codeline lineno="279"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">mspass::utility::Metadata</ref><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a250882407c9755fc4e3f822833b93ea0" kindref="member">QCMetrics</ref>();</highlight></codeline>
+<codeline lineno="281" refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1ab4ec1e4c89908b92369acc64f8d95197" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_power_spectrum" kindref="compound">mspass::seismic::PowerSpectrum</ref><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1ab4ec1e4c89908b92369acc64f8d95197" kindref="member">wavelet_noise_spectrum</ref>()<sp/>{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>psnoise;<sp/>};</highlight></codeline>
+<codeline lineno="283" refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a3db168e04d8869485f1b9b9307a016e1" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_power_spectrum" kindref="compound">mspass::seismic::PowerSpectrum</ref><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a3db168e04d8869485f1b9b9307a016e1" kindref="member">data_noise_spectrum</ref>()<sp/>{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>psnoise_data;<sp/>};</highlight></codeline>
+<codeline lineno="285" refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a5615a2e7adc3f4a49e69362031aa5f83" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_power_spectrum" kindref="compound">mspass::seismic::PowerSpectrum</ref><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a5615a2e7adc3f4a49e69362031aa5f83" kindref="member">wavelet_spectrum</ref>()<sp/>{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>pswavelet;<sp/>};</highlight></codeline>
+<codeline lineno="287" refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a15a1bb3390af0283e0a57949248f971c" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_power_spectrum" kindref="compound">mspass::seismic::PowerSpectrum</ref><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a15a1bb3390af0283e0a57949248f971c" kindref="member">data_spectrum</ref>()<sp/>{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>pssignal;<sp/>};</highlight></codeline>
+<codeline lineno="288"><highlight class="normal"></highlight></codeline>
+<codeline lineno="289"><highlight class="normal"></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="290"><highlight class="normal"><sp/><sp/>CNR3C_algorithms<sp/>algorithm;</highlight></codeline>
+<codeline lineno="291"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>taper_data;<sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Set<sp/>false<sp/>only<sp/>if<sp/>none<sp/>specified</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="292"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>operator_dt;<sp/></highlight><highlight class="comment">//<sp/>Data<sp/>must<sp/>match<sp/>this<sp/>sample<sp/>interval</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="293"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>Expected<sp/>time<sp/>window<sp/>size<sp/>in<sp/>samples</highlight></codeline>
+<codeline lineno="294"><highlight class="comment"><sp/><sp/>(computed<sp/>from<sp/>processing_window<sp/>and<sp/>operator<sp/>dt)*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="295"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>winlength;</highlight></codeline>
+<codeline lineno="296"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>decon_bandwidth_cutoff;</highlight></codeline>
+<codeline lineno="297"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>Added<sp/>Dec<sp/>2021<sp/>-<sp/>this<sp/>defines<sp/>the<sp/>upper<sp/>starting<sp/>frequency<sp/>used<sp/>for</highlight></codeline>
+<codeline lineno="298"><highlight class="comment"><sp/><sp/>the<sp/>EstimateBandwith<sp/>function.<sp/><sp/><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="299"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>fhs;</highlight></codeline>
+<codeline lineno="300"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>Defines<sp/>relative<sp/>time<sp/>time<sp/>window<sp/>-<sp/>ignored<sp/>if<sp/>length<sp/>of<sp/>input<sp/>is</highlight></codeline>
+<codeline lineno="301"><highlight class="comment"><sp/><sp/>consistent<sp/>with<sp/>number<sp/>of<sp/>samples<sp/>expected<sp/>in<sp/>this<sp/>window<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="302"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1_time_window" kindref="compound">mspass::algorithms::TimeWindow</ref><sp/>processing_window;</highlight></codeline>
+<codeline lineno="303"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1_time_window" kindref="compound">mspass::algorithms::TimeWindow</ref><sp/>noise_window;</highlight></codeline>
+<codeline lineno="306"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine" kindref="compound">MTPowerSpectrumEngine</ref><sp/>signalengine,<sp/>waveletengine;</highlight></codeline>
+<codeline lineno="307"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine" kindref="compound">MTPowerSpectrumEngine</ref><sp/>dnoise_engine,<sp/>wnoise_engine;</highlight></codeline>
+<codeline lineno="308"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet" kindref="compound">ShapingWavelet</ref><sp/>shapingwavelet;</highlight></codeline>
+<codeline lineno="309"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>This<sp/>contains<sp/>the<sp/>noise<sp/>power<sp/>spectrum<sp/>to<sp/>use<sp/>for<sp/>regularization</highlight></codeline>
+<codeline lineno="310"><highlight class="comment"><sp/><sp/>of<sp/>the<sp/>inverse.<sp/><sp/>It<sp/>should<sp/>normally<sp/>be<sp/>created<sp/>from<sp/>a<sp/>longer<sp/>window</highlight></codeline>
+<codeline lineno="311"><highlight class="comment"><sp/><sp/>than<sp/>the<sp/>data.</highlight></codeline>
+<codeline lineno="312"><highlight class="comment"><sp/><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="313"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_power_spectrum" kindref="compound">mspass::seismic::PowerSpectrum</ref><sp/>psnoise;</highlight></codeline>
+<codeline lineno="314"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>This<sp/>contains<sp/>the<sp/>power<sp/>spectrum<sp/>of<sp/>the<sp/>data<sp/>used<sp/>to<sp/>estimate</highlight></codeline>
+<codeline lineno="315"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>snr-based<sp/>QC<sp/>estimates.<sp/><sp/><sp/>It<sp/>can<sp/>be<sp/>the<sp/>same<sp/>as<sp/>the<sp/>data<sp/>but</highlight></codeline>
+<codeline lineno="316"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>not<sp/>necessarily.</highlight></codeline>
 <codeline lineno="317"><highlight class="comment"><sp/><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="318"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_power_spectrum" kindref="compound">mspass::seismic::PowerSpectrum</ref><sp/>psnoise;</highlight></codeline>
-<codeline lineno="319"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>This<sp/>contains<sp/>the<sp/>power<sp/>spectrum<sp/>of<sp/>the<sp/>data<sp/>used<sp/>to<sp/>estimate</highlight></codeline>
-<codeline lineno="320"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>snr-based<sp/>QC<sp/>estimates.<sp/><sp/><sp/>It<sp/>can<sp/>be<sp/>the<sp/>same<sp/>as<sp/>the<sp/>data<sp/>but</highlight></codeline>
-<codeline lineno="321"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>not<sp/>necessarily.</highlight></codeline>
-<codeline lineno="322"><highlight class="comment"><sp/><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="323"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_power_spectrum" kindref="compound">mspass::seismic::PowerSpectrum</ref><sp/>psnoise_data;</highlight></codeline>
-<codeline lineno="324"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>Because<sp/>of<sp/>the<sp/>design<sp/>of<sp/>the<sp/>algorithm<sp/>we<sp/>also<sp/>have<sp/>to<sp/>save<sp/>a<sp/>power</highlight></codeline>
-<codeline lineno="325"><highlight class="comment"><sp/><sp/>spectral<sp/>estimate<sp/>for<sp/>the<sp/>wavelet<sp/>and<sp/>data<sp/>signals.<sp/><sp/>We<sp/>use<sp/>those<sp/>when</highlight></codeline>
-<codeline lineno="326"><highlight class="comment"><sp/><sp/>automatic<sp/>bandwidth<sp/>adjustment<sp/>is<sp/>enabled.*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="327"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_power_spectrum" kindref="compound">mspass::seismic::PowerSpectrum</ref><sp/>pssignal;</highlight></codeline>
-<codeline lineno="328"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_power_spectrum" kindref="compound">mspass::seismic::PowerSpectrum</ref><sp/>pswavelet;</highlight></codeline>
-<codeline lineno="329"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>Cached<sp/>data<sp/>to<sp/>be<sp/>deconvolved<sp/>-<sp/>result<sp/>of<sp/>loaddata<sp/>methds*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="330"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref><sp/>decondata;</highlight></codeline>
-<codeline lineno="331"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>Cached<sp/>wavelet<sp/>for<sp/>deconvolution<sp/>-<sp/>result<sp/>of<sp/>loadwavelet*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="332"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref><sp/>wavelet;</highlight></codeline>
-<codeline lineno="333"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>As<sp/>the<sp/>name<sp/>suggest<sp/>we<sp/>allow<sp/>different<sp/>tapers<sp/>for<sp/>data<sp/>and<sp/>wavelet<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="334"><highlight class="normal"><sp/><sp/>std::shared_ptr&lt;mspass::algorithms::BasicTaper&gt;<sp/>wavelet_taper;</highlight></codeline>
-<codeline lineno="335"><highlight class="normal"><sp/><sp/>std::shared_ptr&lt;mspass::algorithms::BasicTaper&gt;<sp/>data_taper;</highlight></codeline>
-<codeline lineno="336"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>For<sp/>the<sp/>colored<sp/>noise<sp/>damping<sp/>algorithm<sp/>the<sp/>damper<sp/>is<sp/>frequency<sp/>dependent.</highlight></codeline>
-<codeline lineno="337"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>The<sp/>same<sp/>issue<sp/>in<sp/>water<sp/>level<sp/>that<sp/>requires<sp/>a<sp/>floor<sp/>on<sp/>the<sp/>water<sp/>level</highlight></codeline>
-<codeline lineno="338"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>applies<sp/>to<sp/>damping.<sp/><sp/><sp/>We<sp/>use<sp/>noise_floor<sp/>to<sp/>create<sp/>a<sp/>lower<sp/>bound<sp/>on</highlight></codeline>
-<codeline lineno="339"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>damper<sp/>values.<sp/><sp/><sp/>Note<sp/>the<sp/>damping<sp/>constant<sp/>at<sp/>each<sp/>frequency<sp/>is</highlight></codeline>
-<codeline lineno="340"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>damp*noise<sp/>except<sp/>where<sp/>noise<sp/>is<sp/>below<sp/>noise_floor<sp/>defined<sp/>relative<sp/>to</highlight></codeline>
-<codeline lineno="341"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>maximum<sp/>noise<sp/>value<sp/>where<sp/>it<sp/>is<sp/>set<sp/>to<sp/>n_peak*noise_floor*damp.<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="342"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>damp,<sp/>noise_floor;</highlight></codeline>
-<codeline lineno="343"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>This<sp/>algorithm<sp/>uses<sp/>a<sp/>mix<sp/>of<sp/>damping<sp/>and<sp/>water<sp/>level.<sp/><sp/><sp/>Above<sp/>this<sp/>floor,</highlight></codeline>
-<codeline lineno="344"><highlight class="comment"><sp/><sp/>which<sp/>acts<sp/>a<sp/>bit<sp/>like<sp/>a<sp/>water<sp/>level,<sp/>no<sp/>regularization<sp/>is<sp/>done.<sp/><sp/>If</highlight></codeline>
-<codeline lineno="345"><highlight class="comment"><sp/><sp/>snr<sp/>is<sp/>less<sp/>than<sp/>this<sp/>value<sp/>we<sp/>regularize<sp/>with<sp/>damp*noise_amplitude.</highlight></codeline>
-<codeline lineno="346"><highlight class="comment"><sp/><sp/>Note<sp/>the<sp/>noise_floor<sp/>parameter<sp/>puts<sp/>a<sp/>lower<sp/>bound<sp/>on<sp/>the<sp/>frequency<sp/>dependent</highlight></codeline>
-<codeline lineno="347"><highlight class="comment"><sp/><sp/>regularization.<sp/><sp/><sp/>If<sp/>noise<sp/>amplitude<sp/>(not<sp/>power)<sp/>is<sp/>less<sp/>than<sp/>noise_floor</highlight></codeline>
-<codeline lineno="348"><highlight class="comment"><sp/><sp/>the<sp/>floor<sp/>is<sp/>set<sp/>like<sp/>a<sp/>water<sp/>level<sp/>as<sp/>noise_max*noise_level.*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="349"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>snr_regularization_floor;</highlight></codeline>
-<codeline lineno="350"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>this<sp/>parameter<sp/>does<sp/>a<sp/>similar<sp/>thing<sp/>to<sp/>regularization<sp/>floor<sp/>but<sp/>is</highlight></codeline>
-<codeline lineno="351"><highlight class="comment"><sp/><sp/>by<sp/>the<sp/>bandwidth<sp/>estimation<sp/>algorithm<sp/>to<sp/>define<sp/>the<sp/>edge<sp/>of<sp/>the<sp/>working</highlight></codeline>
-<codeline lineno="352"><highlight class="comment"><sp/><sp/>frequency<sp/>band.<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="353"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>snr_bandwidth;</highlight></codeline>
-<codeline lineno="354"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//ComplexArray<sp/>winv;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="355"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>winv<sp/>is<sp/>in<sp/>FFTDeconOperator*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="356"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array" kindref="compound">ComplexArray</ref><sp/>ao_fft;</highlight></codeline>
-<codeline lineno="357"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data" kindref="compound">mspass::algorithms::amplitudes::BandwidthData</ref><sp/>wavelet_bwd;</highlight></codeline>
-<codeline lineno="358"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data" kindref="compound">mspass::algorithms::amplitudes::BandwidthData</ref><sp/>signal_bwd;</highlight></codeline>
-<codeline lineno="359"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>We<sp/>cache<sp/>wavelet<sp/>snr<sp/>time<sp/>series<sp/>as<sp/>it<sp/>is<sp/>more<sp/>efficiently<sp/>computed<sp/>during</highlight></codeline>
-<codeline lineno="360"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>the<sp/>process<sp/>routine<sp/>and<sp/>then<sp/>used<sp/>in<sp/>(optional)<sp/>qc<sp/>methods<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="361"><highlight class="normal"><sp/><sp/>std::vector&lt;double&gt;<sp/>wavelet_snr;</highlight></codeline>
-<codeline lineno="362"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>SNR<sp/>bandbwidth<sp/>estimates<sp/>count<sp/>frequencies<sp/>with<sp/>snr<sp/>above<sp/>this<sp/>value<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="363"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>band_snr_floor;</highlight></codeline>
-<codeline lineno="364"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>This<sp/>array<sp/>stores<sp/>snr<sp/>band<sp/>fractions<sp/>for<sp/>each<sp/>component.*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="365"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>signal_bandwidth_fraction[3];</highlight></codeline>
-<codeline lineno="366"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>peak_snr[3];</highlight></codeline>
-<codeline lineno="367"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>regularization_bandwidth_fraction;</highlight></codeline>
-<codeline lineno="368"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>read_parameters(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_antelope_pf" kindref="compound">mspass::utility::AntelopePf</ref>&amp;<sp/>pf);</highlight></codeline>
-<codeline lineno="369"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>TestSeismogramInput(<ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref>&amp;<sp/>d,</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>comp,</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a88d7fe1143e6459d7accf40e00f8cab2" kindref="member">loaddata</ref>);</highlight></codeline>
-<codeline lineno="370"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>compute_gwl_inverse();</highlight></codeline>
-<codeline lineno="371"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>compute_gdamp_inverse();</highlight></codeline>
-<codeline lineno="372"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_power_spectrum" kindref="compound">mspass::seismic::PowerSpectrum</ref><sp/>ThreeCPower(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref>&amp;<sp/>d);</highlight></codeline>
-<codeline lineno="373"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>update_shaping_wavelet(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data" kindref="compound">mspass::algorithms::amplitudes::BandwidthData</ref>&amp;<sp/>bwd);</highlight></codeline>
-<codeline lineno="374"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="375"><highlight class="normal">}<sp/><sp/></highlight><highlight class="comment">//<sp/>End<sp/>namespace</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="376"><highlight class="normal"></highlight></codeline>
-<codeline lineno="377"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
+<codeline lineno="318"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_power_spectrum" kindref="compound">mspass::seismic::PowerSpectrum</ref><sp/>psnoise_data;</highlight></codeline>
+<codeline lineno="319"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>Because<sp/>of<sp/>the<sp/>design<sp/>of<sp/>the<sp/>algorithm<sp/>we<sp/>also<sp/>have<sp/>to<sp/>save<sp/>a<sp/>power</highlight></codeline>
+<codeline lineno="320"><highlight class="comment"><sp/><sp/>spectral<sp/>estimate<sp/>for<sp/>the<sp/>wavelet<sp/>and<sp/>data<sp/>signals.<sp/><sp/>We<sp/>use<sp/>those<sp/>when</highlight></codeline>
+<codeline lineno="321"><highlight class="comment"><sp/><sp/>automatic<sp/>bandwidth<sp/>adjustment<sp/>is<sp/>enabled.*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="322"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_power_spectrum" kindref="compound">mspass::seismic::PowerSpectrum</ref><sp/>pssignal;</highlight></codeline>
+<codeline lineno="323"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_power_spectrum" kindref="compound">mspass::seismic::PowerSpectrum</ref><sp/>pswavelet;</highlight></codeline>
+<codeline lineno="324"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>Cached<sp/>data<sp/>to<sp/>be<sp/>deconvolved<sp/>-<sp/>result<sp/>of<sp/>loaddata<sp/>methds*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="325"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref><sp/>decondata;</highlight></codeline>
+<codeline lineno="326"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>Cached<sp/>wavelet<sp/>for<sp/>deconvolution<sp/>-<sp/>result<sp/>of<sp/>loadwavelet*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="327"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref><sp/>wavelet;</highlight></codeline>
+<codeline lineno="328"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>As<sp/>the<sp/>name<sp/>suggest<sp/>we<sp/>allow<sp/>different<sp/>tapers<sp/>for<sp/>data<sp/>and<sp/>wavelet<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="329"><highlight class="normal"><sp/><sp/>std::shared_ptr&lt;mspass::algorithms::BasicTaper&gt;<sp/>wavelet_taper;</highlight></codeline>
+<codeline lineno="330"><highlight class="normal"><sp/><sp/>std::shared_ptr&lt;mspass::algorithms::BasicTaper&gt;<sp/>data_taper;</highlight></codeline>
+<codeline lineno="331"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>For<sp/>the<sp/>colored<sp/>noise<sp/>damping<sp/>algorithm<sp/>the<sp/>damper<sp/>is<sp/>frequency<sp/>dependent.</highlight></codeline>
+<codeline lineno="332"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>The<sp/>same<sp/>issue<sp/>in<sp/>water<sp/>level<sp/>that<sp/>requires<sp/>a<sp/>floor<sp/>on<sp/>the<sp/>water<sp/>level</highlight></codeline>
+<codeline lineno="333"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>applies<sp/>to<sp/>damping.<sp/><sp/><sp/>We<sp/>use<sp/>noise_floor<sp/>to<sp/>create<sp/>a<sp/>lower<sp/>bound<sp/>on</highlight></codeline>
+<codeline lineno="334"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>damper<sp/>values.<sp/><sp/><sp/>Note<sp/>the<sp/>damping<sp/>constant<sp/>at<sp/>each<sp/>frequency<sp/>is</highlight></codeline>
+<codeline lineno="335"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>damp*noise<sp/>except<sp/>where<sp/>noise<sp/>is<sp/>below<sp/>noise_floor<sp/>defined<sp/>relative<sp/>to</highlight></codeline>
+<codeline lineno="336"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>maximum<sp/>noise<sp/>value<sp/>where<sp/>it<sp/>is<sp/>set<sp/>to<sp/>n_peak*noise_floor*damp.<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="337"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>damp,<sp/>noise_floor;</highlight></codeline>
+<codeline lineno="338"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>This<sp/>algorithm<sp/>uses<sp/>a<sp/>mix<sp/>of<sp/>damping<sp/>and<sp/>water<sp/>level.<sp/><sp/><sp/>Above<sp/>this<sp/>floor,</highlight></codeline>
+<codeline lineno="339"><highlight class="comment"><sp/><sp/>which<sp/>acts<sp/>a<sp/>bit<sp/>like<sp/>a<sp/>water<sp/>level,<sp/>no<sp/>regularization<sp/>is<sp/>done.<sp/><sp/>If</highlight></codeline>
+<codeline lineno="340"><highlight class="comment"><sp/><sp/>snr<sp/>is<sp/>less<sp/>than<sp/>this<sp/>value<sp/>we<sp/>regularize<sp/>with<sp/>damp*noise_amplitude.</highlight></codeline>
+<codeline lineno="341"><highlight class="comment"><sp/><sp/>Note<sp/>the<sp/>noise_floor<sp/>parameter<sp/>puts<sp/>a<sp/>lower<sp/>bound<sp/>on<sp/>the<sp/>frequency<sp/>dependent</highlight></codeline>
+<codeline lineno="342"><highlight class="comment"><sp/><sp/>regularization.<sp/><sp/><sp/>If<sp/>noise<sp/>amplitude<sp/>(not<sp/>power)<sp/>is<sp/>less<sp/>than<sp/>noise_floor</highlight></codeline>
+<codeline lineno="343"><highlight class="comment"><sp/><sp/>the<sp/>floor<sp/>is<sp/>set<sp/>like<sp/>a<sp/>water<sp/>level<sp/>as<sp/>noise_max*noise_level.*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="344"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>snr_regularization_floor;</highlight></codeline>
+<codeline lineno="345"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>this<sp/>parameter<sp/>does<sp/>a<sp/>similar<sp/>thing<sp/>to<sp/>regularization<sp/>floor<sp/>but<sp/>is</highlight></codeline>
+<codeline lineno="346"><highlight class="comment"><sp/><sp/>by<sp/>the<sp/>bandwidth<sp/>estimation<sp/>algorithm<sp/>to<sp/>define<sp/>the<sp/>edge<sp/>of<sp/>the<sp/>working</highlight></codeline>
+<codeline lineno="347"><highlight class="comment"><sp/><sp/>frequency<sp/>band.<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="348"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>snr_bandwidth;</highlight></codeline>
+<codeline lineno="349"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>ComplexArray<sp/>winv;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="350"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>winv<sp/>is<sp/>in<sp/>FFTDeconOperator*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="351"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array" kindref="compound">ComplexArray</ref><sp/>ao_fft;</highlight></codeline>
+<codeline lineno="352"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data" kindref="compound">mspass::algorithms::amplitudes::BandwidthData</ref><sp/>wavelet_bwd;</highlight></codeline>
+<codeline lineno="353"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data" kindref="compound">mspass::algorithms::amplitudes::BandwidthData</ref><sp/>signal_bwd;</highlight></codeline>
+<codeline lineno="354"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>We<sp/>cache<sp/>wavelet<sp/>snr<sp/>time<sp/>series<sp/>as<sp/>it<sp/>is<sp/>more<sp/>efficiently<sp/>computed<sp/>during</highlight></codeline>
+<codeline lineno="355"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>the<sp/>process<sp/>routine<sp/>and<sp/>then<sp/>used<sp/>in<sp/>(optional)<sp/>qc<sp/>methods<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="356"><highlight class="normal"><sp/><sp/>std::vector&lt;double&gt;<sp/>wavelet_snr;</highlight></codeline>
+<codeline lineno="357"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>SNR<sp/>bandbwidth<sp/>estimates<sp/>count<sp/>frequencies<sp/>with<sp/>snr<sp/>above<sp/>this<sp/>value<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="358"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>band_snr_floor;</highlight></codeline>
+<codeline lineno="359"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>This<sp/>array<sp/>stores<sp/>snr<sp/>band<sp/>fractions<sp/>for<sp/>each<sp/>component.*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="360"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>signal_bandwidth_fraction[3];</highlight></codeline>
+<codeline lineno="361"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>peak_snr[3];</highlight></codeline>
+<codeline lineno="362"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>regularization_bandwidth_fraction;</highlight></codeline>
+<codeline lineno="363"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>read_parameters(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_antelope_pf" kindref="compound">mspass::utility::AntelopePf</ref><sp/>&amp;pf);</highlight></codeline>
+<codeline lineno="364"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>TestSeismogramInput(<ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref><sp/>&amp;d,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>comp,</highlight></codeline>
+<codeline lineno="365"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a88d7fe1143e6459d7accf40e00f8cab2" kindref="member">loaddata</ref>);</highlight></codeline>
+<codeline lineno="366"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>compute_gwl_inverse();</highlight></codeline>
+<codeline lineno="367"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>compute_gdamp_inverse();</highlight></codeline>
+<codeline lineno="368"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_power_spectrum" kindref="compound">mspass::seismic::PowerSpectrum</ref></highlight></codeline>
+<codeline lineno="369"><highlight class="normal"><sp/><sp/>ThreeCPower(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref><sp/>&amp;d);</highlight></codeline>
+<codeline lineno="370"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>update_shaping_wavelet(</highlight></codeline>
+<codeline lineno="371"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data" kindref="compound">mspass::algorithms::amplitudes::BandwidthData</ref><sp/>&amp;bwd);</highlight></codeline>
+<codeline lineno="372"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="373"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>mspass::algorithms::deconvolution</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="374"><highlight class="normal"></highlight></codeline>
+<codeline lineno="375"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
     </programlisting>
     <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h"/>
   </compounddef>

@@ -15,7 +15,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessManager.h" line="160" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessManager.h" bodystart="160" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessManager.h" line="142" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessManager.h" bodystart="142" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classmspass_1_1utility_1_1_process_manager_1ac0b07c03a99d2d0cfbf1245f8a7924a4" prot="private" static="no" mutable="no">
         <type>boost::uuids::uuid</type>
@@ -29,7 +29,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessManager.h" line="161" column="22" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessManager.h" bodystart="161" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessManager.h" line="143" column="22" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessManager.h" bodystart="143" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classmspass_1_1utility_1_1_process_manager_1ab0ff389f8bdd8bd3d58a888d96412795" prot="private" static="no" mutable="no">
         <type>boost::uuids::random_generator</type>
@@ -43,11 +43,11 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessManager.h" line="162" column="34" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessManager.h" bodystart="162" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessManager.h" line="144" column="34" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessManager.h" bodystart="144" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="variable" id="classmspass_1_1utility_1_1_process_manager_1aad3d9df4ed6b972930c35638a85f5539" prot="private" static="no" mutable="no">
+      <memberdef kind="variable" id="classmspass_1_1utility_1_1_process_manager_1a1670b3d8a5a01449690733d06aa60ceb" prot="private" static="no" mutable="no">
         <type>std::map&lt; std::string, std::vector&lt; <ref refid="classmspass_1_1utility_1_1_algorithm_definition" kindref="compound">AlgorithmDefinition</ref> &gt; &gt;</type>
-        <definition>std::map&lt;std::string,std::vector&lt;AlgorithmDefinition&gt; &gt; mspass::utility::ProcessManager::algs</definition>
+        <definition>std::map&lt;std::string, std::vector&lt;AlgorithmDefinition&gt; &gt; mspass::utility::ProcessManager::algs</definition>
         <argsstring></argsstring>
         <name>algs</name>
         <qualifiedname>mspass::utility::ProcessManager::algs</qualifiedname>
@@ -57,7 +57,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessManager.h" line="163" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessManager.h" bodystart="163" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessManager.h" line="145" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessManager.h" bodystart="145" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
@@ -73,7 +73,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessManager.h" line="130" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/ProcessManager.cc" bodystart="10" bodyend="13"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessManager.h" line="118" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/ProcessManager.cc" bodystart="10" bodyend="10"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_process_manager_1af49b8b04b35a80ec0aeb79c353780b44" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -91,7 +91,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessManager.h" line="131" column="3"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessManager.h" line="119" column="3"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_process_manager_1aaa301ed833cabae45f586489b50f6a8a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1utility_1_1_algorithm_definition" kindref="compound">AlgorithmDefinition</ref></type>
@@ -114,7 +114,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessManager.h" line="132" column="23" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/ProcessManager.cc" bodystart="52" bodyend="81"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessManager.h" line="120" column="23" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/ProcessManager.cc" bodystart="46" bodyend="70"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_process_manager_1a4a05c8dd5ce8dd62b907a85a4e93c77e" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>std::string</type>
@@ -128,7 +128,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessManager.h" line="134" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessManager.h" bodystart="134" bodyend="137"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessManager.h" line="122" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessManager.h" bodystart="122" bodyend="122"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_process_manager_1a65e084c97224c230593b9e64b6afcf47" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>std::string</type>
@@ -142,7 +142,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessManager.h" line="138" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessManager.h" bodystart="138" bodyend="141"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessManager.h" line="123" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessManager.h" bodystart="123" bodyend="123"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_process_manager_1aa19241756ba1c486953668958fc2a21a" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>std::string</type>
@@ -161,7 +161,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessManager.h" line="153" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessManager.h" bodystart="153" bodyend="158"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessManager.h" line="135" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessManager.h" bodystart="135" bodyend="139"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="private-func">
@@ -190,17 +190,17 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessManager.h" line="166" column="11" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessManager.h" bodystart="166" bodyend="171"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessManager.h" line="148" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessManager.h" bodystart="148" bodyend="152"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessManager.h" line="127" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessManager.h" bodystart="128" bodyend="172"/>
+    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessManager.h" line="116" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessManager.h" bodystart="116" bodyend="153"/>
     <listofallmembers>
       <member refid="classmspass_1_1utility_1_1_process_manager_1aaa301ed833cabae45f586489b50f6a8a" prot="public" virt="non-virtual"><scope>mspass::utility::ProcessManager</scope><name>algorithm</name></member>
-      <member refid="classmspass_1_1utility_1_1_process_manager_1aad3d9df4ed6b972930c35638a85f5539" prot="private" virt="non-virtual"><scope>mspass::utility::ProcessManager</scope><name>algs</name></member>
+      <member refid="classmspass_1_1utility_1_1_process_manager_1a1670b3d8a5a01449690733d06aa60ceb" prot="private" virt="non-virtual"><scope>mspass::utility::ProcessManager</scope><name>algs</name></member>
       <member refid="classmspass_1_1utility_1_1_process_manager_1ab0ff389f8bdd8bd3d58a888d96412795" prot="private" virt="non-virtual"><scope>mspass::utility::ProcessManager</scope><name>gen</name></member>
       <member refid="classmspass_1_1utility_1_1_process_manager_1ac0b07c03a99d2d0cfbf1245f8a7924a4" prot="private" virt="non-virtual"><scope>mspass::utility::ProcessManager</scope><name>job_uuid</name></member>
       <member refid="classmspass_1_1utility_1_1_process_manager_1a65e084c97224c230593b9e64b6afcf47" prot="public" virt="non-virtual"><scope>mspass::utility::ProcessManager</scope><name>jobid</name></member>

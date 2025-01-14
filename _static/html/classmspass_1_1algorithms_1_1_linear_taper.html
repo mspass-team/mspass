@@ -174,11 +174,11 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>all</b></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">    9</span>{</div>
-<div class="line"><span class="lineno">   10</span>  head=<span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">   11</span>  tail=<span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">   12</span>  all=<span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">   13</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">    7</span>                         {</div>
+<div class="line"><span class="lineno">    8</span>  head = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">    9</span>  tail = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">   10</span>  all = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">   11</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -222,32 +222,34 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>all</b></td></tr>
 
 <p>primary constructor. </p>
 <p>Defines linear taper for front and/or back end of a time range. Zero times before t0head and after t0tail. Linear ramp between t0head and t1head and in opposite sense from t1tail to t0tail. Setting 0 value = 1 value should be used as a signal to disable. </p>
-<div class="fragment"><div class="line"><span class="lineno">   16</span>{</div>
-<div class="line"><span class="lineno">   17</span>  t0head=t0h;</div>
-<div class="line"><span class="lineno">   18</span>  t1head=t1h;</div>
-<div class="line"><span class="lineno">   19</span>  t0tail=t0t;</div>
-<div class="line"><span class="lineno">   20</span>  t1tail=t1t;</div>
-<div class="line"><span class="lineno">   21</span>  <span class="keywordflow">if</span>(t1head&gt;t0head)</div>
-<div class="line"><span class="lineno">   22</span>    head=<span class="keyword">true</span>;</div>
-<div class="line"><span class="lineno">   23</span>  <span class="keywordflow">else</span></div>
-<div class="line"><span class="lineno">   24</span>    head=<span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">   25</span>  <span class="keywordflow">if</span>(t1tail&lt;t0tail)</div>
-<div class="line"><span class="lineno">   26</span>    tail=<span class="keyword">true</span>;</div>
-<div class="line"><span class="lineno">   27</span>  <span class="keywordflow">else</span></div>
-<div class="line"><span class="lineno">   28</span>    tail=<span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">   29</span>  <span class="keywordflow">if</span>(head&amp;&amp;tail)</div>
-<div class="line"><span class="lineno">   30</span>    all=<span class="keyword">true</span>;</div>
-<div class="line"><span class="lineno">   31</span>  <span class="keywordflow">else</span></div>
-<div class="line"><span class="lineno">   32</span>    all=<span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">   33</span>  <span class="keywordflow">if</span>(!(head || tail))</div>
-<div class="line"><span class="lineno">   34</span>  {</div>
-<div class="line"><span class="lineno">   35</span>    stringstream ss;</div>
-<div class="line"><span class="lineno">   36</span>    ss &lt;&lt; <span class="stringliteral">&quot;LinearTaper constructor:  illegal input.  No valid taper parameters&quot;</span>&lt;&lt;endl</div>
-<div class="line"><span class="lineno">   37</span>       &lt;&lt; <span class="stringliteral">&quot;Input defines front end ramp defined as 0 at &quot;</span>&lt;&lt;t0h&lt;&lt;<span class="stringliteral">&quot; rising to 1 at &quot;</span>&lt;&lt;t1h&lt;&lt;endl</div>
-<div class="line"><span class="lineno">   38</span>       &lt;&lt; <span class="stringliteral">&quot;Tail end ramp defined with 1 at &quot;</span>&lt;&lt;t1t&lt;&lt;<span class="stringliteral">&quot; dropping to 0 at &quot;</span>&lt;&lt;t0t&lt;&lt;endl;</div>
-<div class="line"><span class="lineno">   39</span>    <span class="keywordflow">throw</span> MsPASSError(ss.str(),ErrorSeverity::Invalid);</div>
-<div class="line"><span class="lineno">   40</span>  }</div>
-<div class="line"><span class="lineno">   41</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">   13</span>                                           {</div>
+<div class="line"><span class="lineno">   14</span>  t0head = t0h;</div>
+<div class="line"><span class="lineno">   15</span>  t1head = t1h;</div>
+<div class="line"><span class="lineno">   16</span>  t0tail = t0t;</div>
+<div class="line"><span class="lineno">   17</span>  t1tail = t1t;</div>
+<div class="line"><span class="lineno">   18</span>  <span class="keywordflow">if</span> (t1head &gt; t0head)</div>
+<div class="line"><span class="lineno">   19</span>    head = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">   20</span>  <span class="keywordflow">else</span></div>
+<div class="line"><span class="lineno">   21</span>    head = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">   22</span>  <span class="keywordflow">if</span> (t1tail &lt; t0tail)</div>
+<div class="line"><span class="lineno">   23</span>    tail = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">   24</span>  <span class="keywordflow">else</span></div>
+<div class="line"><span class="lineno">   25</span>    tail = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">   26</span>  <span class="keywordflow">if</span> (head &amp;&amp; tail)</div>
+<div class="line"><span class="lineno">   27</span>    all = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">   28</span>  <span class="keywordflow">else</span></div>
+<div class="line"><span class="lineno">   29</span>    all = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">   30</span>  <span class="keywordflow">if</span> (!(head || tail)) {</div>
+<div class="line"><span class="lineno">   31</span>    stringstream ss;</div>
+<div class="line"><span class="lineno">   32</span>    ss &lt;&lt; <span class="stringliteral">&quot;LinearTaper constructor:  illegal input.  No valid taper parameters&quot;</span></div>
+<div class="line"><span class="lineno">   33</span>       &lt;&lt; endl</div>
+<div class="line"><span class="lineno">   34</span>       &lt;&lt; <span class="stringliteral">&quot;Input defines front end ramp defined as 0 at &quot;</span> &lt;&lt; t0h</div>
+<div class="line"><span class="lineno">   35</span>       &lt;&lt; <span class="stringliteral">&quot; rising to 1 at &quot;</span> &lt;&lt; t1h &lt;&lt; endl</div>
+<div class="line"><span class="lineno">   36</span>       &lt;&lt; <span class="stringliteral">&quot;Tail end ramp defined with 1 at &quot;</span> &lt;&lt; t1t &lt;&lt; <span class="stringliteral">&quot; dropping to 0 at &quot;</span></div>
+<div class="line"><span class="lineno">   37</span>       &lt;&lt; t0t &lt;&lt; endl;</div>
+<div class="line"><span class="lineno">   38</span>    <span class="keywordflow">throw</span> MsPASSError(ss.str(), ErrorSeverity::Invalid);</div>
+<div class="line"><span class="lineno">   39</span>  }</div>
+<div class="line"><span class="lineno">   40</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -277,83 +279,77 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>all</b></td></tr>
 </div><div class="memdoc">
 
 <p>Implements <a class="el" href="classmspass_1_1algorithms_1_1_basic_taper.html">mspass::algorithms::BasicTaper</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  106</span>{</div>
-<div class="line"><span class="lineno">  107</span>  <span class="keywordtype">int</span> k;</div>
-<div class="line"><span class="lineno">  108</span>  <span class="keywordtype">double</span> rampslope;</div>
-<div class="line"><span class="lineno">  109</span>  <span class="keywordflow">if</span>(head)</div>
-<div class="line"><span class="lineno">  110</span>  {</div>
-<div class="line"><span class="lineno">  111</span>    <span class="keywordflow">if</span>(d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_core_seismogram.html#ae043fa67b9d889965ae473da583a1eb4">endtime</a>()&lt;t0head)</div>
-<div class="line"><span class="lineno">  112</span>    {</div>
-<div class="line"><span class="lineno">  113</span>      stringstream ss;</div>
-<div class="line"><span class="lineno">  114</span>      ss&lt;&lt;<span class="stringliteral">&quot;LinearTaper::apply:  inconsistent head taper parameters&quot;</span>&lt;&lt;endl</div>
-<div class="line"><span class="lineno">  115</span>         &lt;&lt; <span class="stringliteral">&quot;Data endtime=&quot;</span>&lt;&lt;d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_core_seismogram.html#ae043fa67b9d889965ae473da583a1eb4">endtime</a>()&lt;&lt;<span class="stringliteral">&quot; which is earlier than start of head taper=&quot;</span></div>
-<div class="line"><span class="lineno">  116</span>         &lt;&lt; t0head&lt;&lt;endl&lt;&lt;<span class="stringliteral">&quot;Data vector was not altered&quot;</span>&lt;&lt;endl;</div>
-<div class="line"><span class="lineno">  117</span>      d.elog.<a class="code hl_function" href="classmspass_1_1utility_1_1_error_logger.html#aa69873ba0aebf67e9ba24d01992c0bcf">log_error</a>(<span class="stringliteral">&quot;LinearTaper&quot;</span>,ss.str(),ErrorSeverity::Complaint);</div>
-<div class="line"><span class="lineno">  118</span>      <span class="keywordflow">return</span> -1;</div>
-<div class="line"><span class="lineno">  119</span>    }</div>
-<div class="line"><span class="lineno">  120</span>    <span class="keywordtype">int</span> is;</div>
-<div class="line"><span class="lineno">  121</span>    <span class="keywordtype">double</span> t,wt;</div>
-<div class="line"><span class="lineno">  122</span>    <span class="keywordflow">for</span>(t=d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#a472074f3074d59f794d18017b010ab81">t0</a>();t&lt;t0head;t+=d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#af31c96c0e2173d7581e1c3a3f8bcfde8">dt</a>())</div>
-<div class="line"><span class="lineno">  123</span>    {</div>
-<div class="line"><span class="lineno">  124</span>      is=d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#abe28ca2812a2ac21dd2196385ad106ab">sample_number</a>(t);</div>
-<div class="line"><span class="lineno">  125</span>      <span class="keywordflow">if</span>(is&gt;=0 &amp;&amp; is&lt;d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">npts</a>())</div>
-<div class="line"><span class="lineno">  126</span>      {</div>
-<div class="line"><span class="lineno">  127</span>        <span class="keywordflow">for</span>(k=0;k&lt;3;++k)d.<a class="code hl_variable" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>(k,is)=0.0;</div>
-<div class="line"><span class="lineno">  128</span>      }</div>
-<div class="line"><span class="lineno">  129</span>    }</div>
-<div class="line"><span class="lineno">  130</span>    rampslope=1.0/(t1head-t0head);</div>
-<div class="line"><span class="lineno">  131</span>    <span class="keywordflow">for</span>(t=t0head;t&lt;t1head;t+=d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#af31c96c0e2173d7581e1c3a3f8bcfde8">dt</a>())</div>
-<div class="line"><span class="lineno">  132</span>    {</div>
-<div class="line"><span class="lineno">  133</span>      is=d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#abe28ca2812a2ac21dd2196385ad106ab">sample_number</a>(t);</div>
-<div class="line"><span class="lineno">  134</span>      <span class="keywordflow">if</span>(is&gt;=0)</div>
-<div class="line"><span class="lineno">  135</span>      {</div>
-<div class="line"><span class="lineno">  136</span>        wt=rampslope*(t-t0head);</div>
-<div class="line"><span class="lineno">  137</span>        <span class="keywordflow">for</span>(k=0;k&lt;3;++k)d.<a class="code hl_variable" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>(k,is)*=wt;</div>
-<div class="line"><span class="lineno">  138</span>      }</div>
+<div class="fragment"><div class="line"><span class="lineno">   97</span>                                    {</div>
+<div class="line"><span class="lineno">   98</span>  <span class="keywordtype">int</span> k;</div>
+<div class="line"><span class="lineno">   99</span>  <span class="keywordtype">double</span> rampslope;</div>
+<div class="line"><span class="lineno">  100</span>  <span class="keywordflow">if</span> (head) {</div>
+<div class="line"><span class="lineno">  101</span>    <span class="keywordflow">if</span> (d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_core_seismogram.html#ae043fa67b9d889965ae473da583a1eb4">endtime</a>() &lt; t0head) {</div>
+<div class="line"><span class="lineno">  102</span>      stringstream ss;</div>
+<div class="line"><span class="lineno">  103</span>      ss &lt;&lt; <span class="stringliteral">&quot;LinearTaper::apply:  inconsistent head taper parameters&quot;</span> &lt;&lt; endl</div>
+<div class="line"><span class="lineno">  104</span>         &lt;&lt; <span class="stringliteral">&quot;Data endtime=&quot;</span> &lt;&lt; d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_core_seismogram.html#ae043fa67b9d889965ae473da583a1eb4">endtime</a>()</div>
+<div class="line"><span class="lineno">  105</span>         &lt;&lt; <span class="stringliteral">&quot; which is earlier than start of head taper=&quot;</span> &lt;&lt; t0head &lt;&lt; endl</div>
+<div class="line"><span class="lineno">  106</span>         &lt;&lt; <span class="stringliteral">&quot;Data vector was not altered&quot;</span> &lt;&lt; endl;</div>
+<div class="line"><span class="lineno">  107</span>      d.elog.<a class="code hl_function" href="classmspass_1_1utility_1_1_error_logger.html#aa69873ba0aebf67e9ba24d01992c0bcf">log_error</a>(<span class="stringliteral">&quot;LinearTaper&quot;</span>, ss.str(), ErrorSeverity::Complaint);</div>
+<div class="line"><span class="lineno">  108</span>      <span class="keywordflow">return</span> -1;</div>
+<div class="line"><span class="lineno">  109</span>    }</div>
+<div class="line"><span class="lineno">  110</span>    <span class="keywordtype">int</span> is;</div>
+<div class="line"><span class="lineno">  111</span>    <span class="keywordtype">double</span> t, wt;</div>
+<div class="line"><span class="lineno">  112</span>    <span class="keywordflow">for</span> (t = d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#a472074f3074d59f794d18017b010ab81">t0</a>(); t &lt; t0head; t += d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#af31c96c0e2173d7581e1c3a3f8bcfde8">dt</a>()) {</div>
+<div class="line"><span class="lineno">  113</span>      is = d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#abe28ca2812a2ac21dd2196385ad106ab">sample_number</a>(t);</div>
+<div class="line"><span class="lineno">  114</span>      <span class="keywordflow">if</span> (is &gt;= 0 &amp;&amp; is &lt; d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">npts</a>()) {</div>
+<div class="line"><span class="lineno">  115</span>        <span class="keywordflow">for</span> (k = 0; k &lt; 3; ++k)</div>
+<div class="line"><span class="lineno">  116</span>          d.<a class="code hl_variable" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>(k, is) = 0.0;</div>
+<div class="line"><span class="lineno">  117</span>      }</div>
+<div class="line"><span class="lineno">  118</span>    }</div>
+<div class="line"><span class="lineno">  119</span>    rampslope = 1.0 / (t1head - t0head);</div>
+<div class="line"><span class="lineno">  120</span>    <span class="keywordflow">for</span> (t = t0head; t &lt; t1head; t += d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#af31c96c0e2173d7581e1c3a3f8bcfde8">dt</a>()) {</div>
+<div class="line"><span class="lineno">  121</span>      is = d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#abe28ca2812a2ac21dd2196385ad106ab">sample_number</a>(t);</div>
+<div class="line"><span class="lineno">  122</span>      <span class="keywordflow">if</span> (is &gt;= 0) {</div>
+<div class="line"><span class="lineno">  123</span>        wt = rampslope * (t - t0head);</div>
+<div class="line"><span class="lineno">  124</span>        <span class="keywordflow">for</span> (k = 0; k &lt; 3; ++k)</div>
+<div class="line"><span class="lineno">  125</span>          d.<a class="code hl_variable" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>(k, is) *= wt;</div>
+<div class="line"><span class="lineno">  126</span>      }</div>
+<div class="line"><span class="lineno">  127</span>    }</div>
+<div class="line"><span class="lineno">  128</span>  }</div>
+<div class="line"><span class="lineno">  129</span>  <span class="keywordflow">if</span> (tail) {</div>
+<div class="line"><span class="lineno">  130</span>    <span class="keywordflow">if</span> (d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#a472074f3074d59f794d18017b010ab81">t0</a>() &gt; t0tail) {</div>
+<div class="line"><span class="lineno">  131</span>      stringstream ss;</div>
+<div class="line"><span class="lineno">  132</span>      ss &lt;&lt; <span class="stringliteral">&quot;LinearTaper::apply:  inconsistent tail taper parameters&quot;</span> &lt;&lt; endl</div>
+<div class="line"><span class="lineno">  133</span>         &lt;&lt; <span class="stringliteral">&quot;Data start time=&quot;</span> &lt;&lt; d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#a472074f3074d59f794d18017b010ab81">t0</a>()</div>
+<div class="line"><span class="lineno">  134</span>         &lt;&lt; <span class="stringliteral">&quot; is after the end of the tail taper = &quot;</span> &lt;&lt; t0tail &lt;&lt; endl</div>
+<div class="line"><span class="lineno">  135</span>         &lt;&lt; <span class="stringliteral">&quot;Data vector was not altered&quot;</span> &lt;&lt; endl;</div>
+<div class="line"><span class="lineno">  136</span>      MsPASSError merr(ss.str(), ErrorSeverity::Complaint);</div>
+<div class="line"><span class="lineno">  137</span>      d.elog.<a class="code hl_function" href="classmspass_1_1utility_1_1_error_logger.html#aa69873ba0aebf67e9ba24d01992c0bcf">log_error</a>(<span class="stringliteral">&quot;LinearTaper&quot;</span>, ss.str(), ErrorSeverity::Complaint);</div>
+<div class="line"><span class="lineno">  138</span>      <span class="keywordflow">return</span> -1;</div>
 <div class="line"><span class="lineno">  139</span>    }</div>
-<div class="line"><span class="lineno">  140</span>  }</div>
-<div class="line"><span class="lineno">  141</span>  <span class="keywordflow">if</span>(tail)</div>
-<div class="line"><span class="lineno">  142</span>  {</div>
-<div class="line"><span class="lineno">  143</span>    <span class="keywordflow">if</span>(d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#a472074f3074d59f794d18017b010ab81">t0</a>()&gt;t0tail)</div>
-<div class="line"><span class="lineno">  144</span>    {</div>
-<div class="line"><span class="lineno">  145</span>      stringstream ss;</div>
-<div class="line"><span class="lineno">  146</span>      ss&lt;&lt;<span class="stringliteral">&quot;LinearTaper::apply:  inconsistent tail taper parameters&quot;</span>&lt;&lt;endl</div>
-<div class="line"><span class="lineno">  147</span>        &lt;&lt;<span class="stringliteral">&quot;Data start time=&quot;</span>&lt;&lt;d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#a472074f3074d59f794d18017b010ab81">t0</a>()&lt;&lt;<span class="stringliteral">&quot; is after the end of the tail taper = &quot;</span></div>
-<div class="line"><span class="lineno">  148</span>        &lt;&lt;t0tail&lt;&lt;endl&lt;&lt;<span class="stringliteral">&quot;Data vector was not altered&quot;</span>&lt;&lt;endl;</div>
-<div class="line"><span class="lineno">  149</span>      MsPASSError merr(ss.str(),ErrorSeverity::Complaint);</div>
-<div class="line"><span class="lineno">  150</span>      d.elog.<a class="code hl_function" href="classmspass_1_1utility_1_1_error_logger.html#aa69873ba0aebf67e9ba24d01992c0bcf">log_error</a>(<span class="stringliteral">&quot;LinearTaper&quot;</span>,ss.str(),ErrorSeverity::Complaint);</div>
-<div class="line"><span class="lineno">  151</span>      <span class="keywordflow">return</span> -1;</div>
-<div class="line"><span class="lineno">  152</span>    }</div>
-<div class="line"><span class="lineno">  153</span>    <span class="keywordtype">int</span> is;</div>
-<div class="line"><span class="lineno">  154</span>    <span class="keywordtype">double</span> t,wt;</div>
-<div class="line"><span class="lineno">  155</span>    <span class="keywordflow">for</span>(t=d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_core_seismogram.html#ae043fa67b9d889965ae473da583a1eb4">endtime</a>();t&gt;=t0tail;t-=d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#af31c96c0e2173d7581e1c3a3f8bcfde8">dt</a>())</div>
-<div class="line"><span class="lineno">  156</span>    {</div>
-<div class="line"><span class="lineno">  157</span>      is=d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#abe28ca2812a2ac21dd2196385ad106ab">sample_number</a>(t);</div>
-<div class="line"><span class="lineno">  158</span>      <span class="keywordflow">if</span>(is&gt;=0 &amp;&amp; is&lt;d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">npts</a>())</div>
-<div class="line"><span class="lineno">  159</span>      {</div>
-<div class="line"><span class="lineno">  160</span>        <span class="keywordflow">for</span>(k=0;k&lt;3;++k) d.<a class="code hl_variable" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>(k,is)=0.0;</div>
-<div class="line"><span class="lineno">  161</span>      }</div>
-<div class="line"><span class="lineno">  162</span>    }</div>
-<div class="line"><span class="lineno">  163</span>    rampslope=1.0/(t0tail-t1tail);</div>
-<div class="line"><span class="lineno">  164</span>    <span class="keywordflow">for</span>(t=t0tail;t&gt;=t1tail;t-=d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#af31c96c0e2173d7581e1c3a3f8bcfde8">dt</a>())</div>
-<div class="line"><span class="lineno">  165</span>    {</div>
-<div class="line"><span class="lineno">  166</span>      is=d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#abe28ca2812a2ac21dd2196385ad106ab">sample_number</a>(t);</div>
-<div class="line"><span class="lineno">  167</span>      <span class="keywordflow">if</span>(is&gt;=0)</div>
-<div class="line"><span class="lineno">  168</span>      {</div>
-<div class="line"><span class="lineno">  169</span>        wt=rampslope*(t-t1tail);</div>
-<div class="line"><span class="lineno">  170</span>        <span class="keywordflow">for</span>(k=0;k&lt;3;++k)d.<a class="code hl_variable" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>(k,is)*=wt;</div>
-<div class="line"><span class="lineno">  171</span>      }</div>
-<div class="line"><span class="lineno">  172</span>    }</div>
-<div class="line"><span class="lineno">  173</span>  }</div>
-<div class="line"><span class="lineno">  174</span>  <span class="keywordflow">return</span> 0;</div>
-<div class="line"><span class="lineno">  175</span>}</div>
-<div class="ttc" id="aclassmspass_1_1seismic_1_1_basic_time_series_html_a347b349bb4e1f0e65978dfcd45ae3472"><div class="ttname"><a href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">mspass::seismic::BasicTimeSeries::npts</a></div><div class="ttdeci">size_t npts() const</div><div class="ttdef"><b>Definition</b> BasicTimeSeries.h:188</div></div>
-<div class="ttc" id="aclassmspass_1_1seismic_1_1_basic_time_series_html_a472074f3074d59f794d18017b010ab81"><div class="ttname"><a href="classmspass_1_1seismic_1_1_basic_time_series.html#a472074f3074d59f794d18017b010ab81">mspass::seismic::BasicTimeSeries::t0</a></div><div class="ttdeci">double t0() const</div><div class="ttdef"><b>Definition</b> BasicTimeSeries.h:191</div></div>
-<div class="ttc" id="aclassmspass_1_1seismic_1_1_basic_time_series_html_abe28ca2812a2ac21dd2196385ad106ab"><div class="ttname"><a href="classmspass_1_1seismic_1_1_basic_time_series.html#abe28ca2812a2ac21dd2196385ad106ab">mspass::seismic::BasicTimeSeries::sample_number</a></div><div class="ttdeci">int sample_number(double t) const</div><div class="ttdef"><b>Definition</b> BasicTimeSeries.h:74</div></div>
-<div class="ttc" id="aclassmspass_1_1seismic_1_1_basic_time_series_html_af31c96c0e2173d7581e1c3a3f8bcfde8"><div class="ttname"><a href="classmspass_1_1seismic_1_1_basic_time_series.html#af31c96c0e2173d7581e1c3a3f8bcfde8">mspass::seismic::BasicTimeSeries::dt</a></div><div class="ttdeci">double dt() const</div><div class="ttdef"><b>Definition</b> BasicTimeSeries.h:162</div></div>
-<div class="ttc" id="aclassmspass_1_1seismic_1_1_core_seismogram_html_a9ac5c7c060d582b1a399fb066d06779f"><div class="ttname"><a href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">mspass::seismic::CoreSeismogram::u</a></div><div class="ttdeci">mspass::utility::dmatrix u</div><div class="ttdef"><b>Definition</b> CoreSeismogram.h:53</div></div>
-<div class="ttc" id="aclassmspass_1_1seismic_1_1_core_seismogram_html_ae043fa67b9d889965ae473da583a1eb4"><div class="ttname"><a href="classmspass_1_1seismic_1_1_core_seismogram.html#ae043fa67b9d889965ae473da583a1eb4">mspass::seismic::CoreSeismogram::endtime</a></div><div class="ttdeci">double endtime() const noexcept</div><div class="ttdef"><b>Definition</b> CoreSeismogram.h:486</div></div>
-<div class="ttc" id="aclassmspass_1_1utility_1_1_error_logger_html_aa69873ba0aebf67e9ba24d01992c0bcf"><div class="ttname"><a href="classmspass_1_1utility_1_1_error_logger.html#aa69873ba0aebf67e9ba24d01992c0bcf">mspass::utility::ErrorLogger::log_error</a></div><div class="ttdeci">int log_error(const mspass::utility::MsPASSError &amp;merr)</div><div class="ttdef"><b>Definition</b> ErrorLogger.cc:81</div></div>
+<div class="line"><span class="lineno">  140</span>    <span class="keywordtype">int</span> is;</div>
+<div class="line"><span class="lineno">  141</span>    <span class="keywordtype">double</span> t, wt;</div>
+<div class="line"><span class="lineno">  142</span>    <span class="keywordflow">for</span> (t = d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_core_seismogram.html#ae043fa67b9d889965ae473da583a1eb4">endtime</a>(); t &gt;= t0tail; t -= d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#af31c96c0e2173d7581e1c3a3f8bcfde8">dt</a>()) {</div>
+<div class="line"><span class="lineno">  143</span>      is = d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#abe28ca2812a2ac21dd2196385ad106ab">sample_number</a>(t);</div>
+<div class="line"><span class="lineno">  144</span>      <span class="keywordflow">if</span> (is &gt;= 0 &amp;&amp; is &lt; d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">npts</a>()) {</div>
+<div class="line"><span class="lineno">  145</span>        <span class="keywordflow">for</span> (k = 0; k &lt; 3; ++k)</div>
+<div class="line"><span class="lineno">  146</span>          d.<a class="code hl_variable" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>(k, is) = 0.0;</div>
+<div class="line"><span class="lineno">  147</span>      }</div>
+<div class="line"><span class="lineno">  148</span>    }</div>
+<div class="line"><span class="lineno">  149</span>    rampslope = 1.0 / (t0tail - t1tail);</div>
+<div class="line"><span class="lineno">  150</span>    <span class="keywordflow">for</span> (t = t0tail; t &gt;= t1tail; t -= d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#af31c96c0e2173d7581e1c3a3f8bcfde8">dt</a>()) {</div>
+<div class="line"><span class="lineno">  151</span>      is = d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#abe28ca2812a2ac21dd2196385ad106ab">sample_number</a>(t);</div>
+<div class="line"><span class="lineno">  152</span>      <span class="keywordflow">if</span> (is &gt;= 0) {</div>
+<div class="line"><span class="lineno">  153</span>        wt = rampslope * (t - t1tail);</div>
+<div class="line"><span class="lineno">  154</span>        <span class="keywordflow">for</span> (k = 0; k &lt; 3; ++k)</div>
+<div class="line"><span class="lineno">  155</span>          d.<a class="code hl_variable" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>(k, is) *= wt;</div>
+<div class="line"><span class="lineno">  156</span>      }</div>
+<div class="line"><span class="lineno">  157</span>    }</div>
+<div class="line"><span class="lineno">  158</span>  }</div>
+<div class="line"><span class="lineno">  159</span>  <span class="keywordflow">return</span> 0;</div>
+<div class="line"><span class="lineno">  160</span>}</div>
+<div class="ttc" id="aclassmspass_1_1seismic_1_1_basic_time_series_html_a347b349bb4e1f0e65978dfcd45ae3472"><div class="ttname"><a href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">mspass::seismic::BasicTimeSeries::npts</a></div><div class="ttdeci">size_t npts() const</div><div class="ttdef"><b>Definition</b> BasicTimeSeries.h:171</div></div>
+<div class="ttc" id="aclassmspass_1_1seismic_1_1_basic_time_series_html_a472074f3074d59f794d18017b010ab81"><div class="ttname"><a href="classmspass_1_1seismic_1_1_basic_time_series.html#a472074f3074d59f794d18017b010ab81">mspass::seismic::BasicTimeSeries::t0</a></div><div class="ttdeci">double t0() const</div><div class="ttdef"><b>Definition</b> BasicTimeSeries.h:174</div></div>
+<div class="ttc" id="aclassmspass_1_1seismic_1_1_basic_time_series_html_abe28ca2812a2ac21dd2196385ad106ab"><div class="ttname"><a href="classmspass_1_1seismic_1_1_basic_time_series.html#abe28ca2812a2ac21dd2196385ad106ab">mspass::seismic::BasicTimeSeries::sample_number</a></div><div class="ttdeci">int sample_number(double t) const</div><div class="ttdef"><b>Definition</b> BasicTimeSeries.h:72</div></div>
+<div class="ttc" id="aclassmspass_1_1seismic_1_1_basic_time_series_html_af31c96c0e2173d7581e1c3a3f8bcfde8"><div class="ttname"><a href="classmspass_1_1seismic_1_1_basic_time_series.html#af31c96c0e2173d7581e1c3a3f8bcfde8">mspass::seismic::BasicTimeSeries::dt</a></div><div class="ttdeci">double dt() const</div><div class="ttdef"><b>Definition</b> BasicTimeSeries.h:153</div></div>
+<div class="ttc" id="aclassmspass_1_1seismic_1_1_core_seismogram_html_a9ac5c7c060d582b1a399fb066d06779f"><div class="ttname"><a href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">mspass::seismic::CoreSeismogram::u</a></div><div class="ttdeci">mspass::utility::dmatrix u</div><div class="ttdef"><b>Definition</b> CoreSeismogram.h:52</div></div>
+<div class="ttc" id="aclassmspass_1_1seismic_1_1_core_seismogram_html_ae043fa67b9d889965ae473da583a1eb4"><div class="ttname"><a href="classmspass_1_1seismic_1_1_core_seismogram.html#ae043fa67b9d889965ae473da583a1eb4">mspass::seismic::CoreSeismogram::endtime</a></div><div class="ttdeci">double endtime() const noexcept</div><div class="ttdef"><b>Definition</b> CoreSeismogram.h:497</div></div>
+<div class="ttc" id="aclassmspass_1_1utility_1_1_error_logger_html_aa69873ba0aebf67e9ba24d01992c0bcf"><div class="ttname"><a href="classmspass_1_1utility_1_1_error_logger.html#aa69873ba0aebf67e9ba24d01992c0bcf">mspass::utility::ErrorLogger::log_error</a></div><div class="ttdeci">int log_error(const mspass::utility::MsPASSError &amp;merr)</div><div class="ttdef"><b>Definition</b> ErrorLogger.cc:72</div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -382,70 +378,64 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>all</b></td></tr>
 </div><div class="memdoc">
 
 <p>Implements <a class="el" href="classmspass_1_1algorithms_1_1_basic_taper.html">mspass::algorithms::BasicTaper</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   43</span>{</div>
-<div class="line"><span class="lineno">   44</span>  <span class="keywordtype">double</span> rampslope;</div>
-<div class="line"><span class="lineno">   45</span>  <span class="keywordflow">if</span>(head)</div>
-<div class="line"><span class="lineno">   46</span>  {</div>
-<div class="line"><span class="lineno">   47</span>    <span class="keywordflow">if</span>(d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#af8982109d3caaeee15bb5b3a63b89317">endtime</a>()&lt;t0head)</div>
-<div class="line"><span class="lineno">   48</span>    {</div>
-<div class="line"><span class="lineno">   49</span>      stringstream ss;</div>
-<div class="line"><span class="lineno">   50</span>      ss&lt;&lt;<span class="stringliteral">&quot;LinearTaper::apply:  inconsistent head taper parameters&quot;</span>&lt;&lt;endl</div>
-<div class="line"><span class="lineno">   51</span>         &lt;&lt; <span class="stringliteral">&quot;Data endtime=&quot;</span>&lt;&lt;d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#af8982109d3caaeee15bb5b3a63b89317">endtime</a>()&lt;&lt;<span class="stringliteral">&quot; which is earlier than start of head taper=&quot;</span></div>
-<div class="line"><span class="lineno">   52</span>         &lt;&lt; t0head&lt;&lt;endl&lt;&lt;<span class="stringliteral">&quot;Data vector was not altered&quot;</span>&lt;&lt;endl;</div>
-<div class="line"><span class="lineno">   53</span>      d.elog.<a class="code hl_function" href="classmspass_1_1utility_1_1_error_logger.html#aa69873ba0aebf67e9ba24d01992c0bcf">log_error</a>(<span class="stringliteral">&quot;LinearTaper&quot;</span>,ss.str(),ErrorSeverity::Complaint);</div>
-<div class="line"><span class="lineno">   54</span>      <span class="keywordflow">return</span> -1;</div>
-<div class="line"><span class="lineno">   55</span>    }</div>
-<div class="line"><span class="lineno">   56</span>    <span class="keywordtype">int</span> is;</div>
-<div class="line"><span class="lineno">   57</span>    <span class="keywordtype">double</span> t,wt;</div>
-<div class="line"><span class="lineno">   58</span>    <span class="keywordflow">for</span>(t=d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#a472074f3074d59f794d18017b010ab81">t0</a>();t&lt;t0head;t+=d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#af31c96c0e2173d7581e1c3a3f8bcfde8">dt</a>())</div>
-<div class="line"><span class="lineno">   59</span>    {</div>
-<div class="line"><span class="lineno">   60</span>      is=d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#abe28ca2812a2ac21dd2196385ad106ab">sample_number</a>(t);</div>
-<div class="line"><span class="lineno">   61</span>      <span class="keywordflow">if</span>(is&gt;=0 &amp;&amp; is&lt;d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">npts</a>()) d.<a class="code hl_variable" href="classmspass_1_1seismic_1_1_core_time_series.html#ab044edb3fe5fe734cb577a4434f390a2">s</a>[is]=0.0;</div>
-<div class="line"><span class="lineno">   62</span>    }</div>
-<div class="line"><span class="lineno">   63</span>    rampslope=1.0/(t1head-t0head);</div>
-<div class="line"><span class="lineno">   64</span>    <span class="keywordflow">for</span>(t=t0head;t&lt;t1head;t+=d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#af31c96c0e2173d7581e1c3a3f8bcfde8">dt</a>())</div>
-<div class="line"><span class="lineno">   65</span>    {</div>
-<div class="line"><span class="lineno">   66</span>      is=d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#abe28ca2812a2ac21dd2196385ad106ab">sample_number</a>(t);</div>
-<div class="line"><span class="lineno">   67</span>      <span class="keywordflow">if</span>(is&gt;=0)</div>
-<div class="line"><span class="lineno">   68</span>      {</div>
-<div class="line"><span class="lineno">   69</span>        wt=rampslope*(t-t0head);</div>
-<div class="line"><span class="lineno">   70</span>        d.<a class="code hl_variable" href="classmspass_1_1seismic_1_1_core_time_series.html#ab044edb3fe5fe734cb577a4434f390a2">s</a>[is]*=wt;</div>
-<div class="line"><span class="lineno">   71</span>      }</div>
-<div class="line"><span class="lineno">   72</span>    }</div>
-<div class="line"><span class="lineno">   73</span>  }</div>
-<div class="line"><span class="lineno">   74</span>  <span class="keywordflow">if</span>(tail)</div>
-<div class="line"><span class="lineno">   75</span>  {</div>
-<div class="line"><span class="lineno">   76</span>    <span class="keywordflow">if</span>(d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#a472074f3074d59f794d18017b010ab81">t0</a>()&gt;t0tail)</div>
-<div class="line"><span class="lineno">   77</span>    {</div>
-<div class="line"><span class="lineno">   78</span>      stringstream ss;</div>
-<div class="line"><span class="lineno">   79</span>      ss&lt;&lt;<span class="stringliteral">&quot;LinearTaper::apply:  inconsistent tail taper parameters&quot;</span>&lt;&lt;endl</div>
-<div class="line"><span class="lineno">   80</span>        &lt;&lt;<span class="stringliteral">&quot;Data start time=&quot;</span>&lt;&lt;d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#a472074f3074d59f794d18017b010ab81">t0</a>()&lt;&lt;<span class="stringliteral">&quot; is after the end of the tail taper = &quot;</span></div>
-<div class="line"><span class="lineno">   81</span>        &lt;&lt;t0tail&lt;&lt;endl&lt;&lt;<span class="stringliteral">&quot;Data vector was not altered&quot;</span>&lt;&lt;endl;</div>
-<div class="line"><span class="lineno">   82</span>      d.elog.<a class="code hl_function" href="classmspass_1_1utility_1_1_error_logger.html#aa69873ba0aebf67e9ba24d01992c0bcf">log_error</a>(<span class="stringliteral">&quot;LinearTaper&quot;</span>,ss.str(),ErrorSeverity::Complaint);</div>
-<div class="line"><span class="lineno">   83</span>      <span class="keywordflow">return</span> -1;</div>
-<div class="line"><span class="lineno">   84</span>    }</div>
-<div class="line"><span class="lineno">   85</span>    <span class="keywordtype">int</span> is;</div>
-<div class="line"><span class="lineno">   86</span>    <span class="keywordtype">double</span> t,wt;</div>
-<div class="line"><span class="lineno">   87</span>    <span class="keywordflow">for</span>(t=d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#af8982109d3caaeee15bb5b3a63b89317">endtime</a>();t&gt;=t0tail;t-=d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#af31c96c0e2173d7581e1c3a3f8bcfde8">dt</a>())</div>
-<div class="line"><span class="lineno">   88</span>    {</div>
-<div class="line"><span class="lineno">   89</span>      is=d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#abe28ca2812a2ac21dd2196385ad106ab">sample_number</a>(t);</div>
-<div class="line"><span class="lineno">   90</span>      <span class="keywordflow">if</span>(is&gt;=0 &amp;&amp; is&lt;d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">npts</a>()) d.<a class="code hl_variable" href="classmspass_1_1seismic_1_1_core_time_series.html#ab044edb3fe5fe734cb577a4434f390a2">s</a>[is]=0.0;</div>
-<div class="line"><span class="lineno">   91</span>    }</div>
-<div class="line"><span class="lineno">   92</span>    rampslope=1.0/(t0tail-t1tail);</div>
-<div class="line"><span class="lineno">   93</span>    <span class="keywordflow">for</span>(t=t0tail;t&gt;=t1tail;t-=d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#af31c96c0e2173d7581e1c3a3f8bcfde8">dt</a>())</div>
-<div class="line"><span class="lineno">   94</span>    {</div>
-<div class="line"><span class="lineno">   95</span>      is=d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#abe28ca2812a2ac21dd2196385ad106ab">sample_number</a>(t);</div>
-<div class="line"><span class="lineno">   96</span>      <span class="keywordflow">if</span>(is&gt;=0)</div>
-<div class="line"><span class="lineno">   97</span>      {</div>
-<div class="line"><span class="lineno">   98</span>        wt=rampslope*(t0tail-t);</div>
-<div class="line"><span class="lineno">   99</span>        d.<a class="code hl_variable" href="classmspass_1_1seismic_1_1_core_time_series.html#ab044edb3fe5fe734cb577a4434f390a2">s</a>[is]*=wt;</div>
-<div class="line"><span class="lineno">  100</span>      }</div>
-<div class="line"><span class="lineno">  101</span>    }</div>
-<div class="line"><span class="lineno">  102</span>  }</div>
-<div class="line"><span class="lineno">  103</span>  <span class="keywordflow">return</span> 0;</div>
-<div class="line"><span class="lineno">  104</span>}</div>
-<div class="ttc" id="aclassmspass_1_1seismic_1_1_basic_time_series_html_af8982109d3caaeee15bb5b3a63b89317"><div class="ttname"><a href="classmspass_1_1seismic_1_1_basic_time_series.html#af8982109d3caaeee15bb5b3a63b89317">mspass::seismic::BasicTimeSeries::endtime</a></div><div class="ttdeci">double endtime() const noexcept</div><div class="ttdef"><b>Definition</b> BasicTimeSeries.h:82</div></div>
-<div class="ttc" id="aclassmspass_1_1seismic_1_1_core_time_series_html_ab044edb3fe5fe734cb577a4434f390a2"><div class="ttname"><a href="classmspass_1_1seismic_1_1_core_time_series.html#ab044edb3fe5fe734cb577a4434f390a2">mspass::seismic::CoreTimeSeries::s</a></div><div class="ttdeci">std::vector&lt; double &gt; s</div><div class="ttdef"><b>Definition</b> CoreTimeSeries.h:28</div></div>
+<div class="fragment"><div class="line"><span class="lineno">   41</span>                                    {</div>
+<div class="line"><span class="lineno">   42</span>  <span class="keywordtype">double</span> rampslope;</div>
+<div class="line"><span class="lineno">   43</span>  <span class="keywordflow">if</span> (head) {</div>
+<div class="line"><span class="lineno">   44</span>    <span class="keywordflow">if</span> (d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#af8982109d3caaeee15bb5b3a63b89317">endtime</a>() &lt; t0head) {</div>
+<div class="line"><span class="lineno">   45</span>      stringstream ss;</div>
+<div class="line"><span class="lineno">   46</span>      ss &lt;&lt; <span class="stringliteral">&quot;LinearTaper::apply:  inconsistent head taper parameters&quot;</span> &lt;&lt; endl</div>
+<div class="line"><span class="lineno">   47</span>         &lt;&lt; <span class="stringliteral">&quot;Data endtime=&quot;</span> &lt;&lt; d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#af8982109d3caaeee15bb5b3a63b89317">endtime</a>()</div>
+<div class="line"><span class="lineno">   48</span>         &lt;&lt; <span class="stringliteral">&quot; which is earlier than start of head taper=&quot;</span> &lt;&lt; t0head &lt;&lt; endl</div>
+<div class="line"><span class="lineno">   49</span>         &lt;&lt; <span class="stringliteral">&quot;Data vector was not altered&quot;</span> &lt;&lt; endl;</div>
+<div class="line"><span class="lineno">   50</span>      d.elog.<a class="code hl_function" href="classmspass_1_1utility_1_1_error_logger.html#aa69873ba0aebf67e9ba24d01992c0bcf">log_error</a>(<span class="stringliteral">&quot;LinearTaper&quot;</span>, ss.str(), ErrorSeverity::Complaint);</div>
+<div class="line"><span class="lineno">   51</span>      <span class="keywordflow">return</span> -1;</div>
+<div class="line"><span class="lineno">   52</span>    }</div>
+<div class="line"><span class="lineno">   53</span>    <span class="keywordtype">int</span> is;</div>
+<div class="line"><span class="lineno">   54</span>    <span class="keywordtype">double</span> t, wt;</div>
+<div class="line"><span class="lineno">   55</span>    <span class="keywordflow">for</span> (t = d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#a472074f3074d59f794d18017b010ab81">t0</a>(); t &lt; t0head; t += d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#af31c96c0e2173d7581e1c3a3f8bcfde8">dt</a>()) {</div>
+<div class="line"><span class="lineno">   56</span>      is = d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#abe28ca2812a2ac21dd2196385ad106ab">sample_number</a>(t);</div>
+<div class="line"><span class="lineno">   57</span>      <span class="keywordflow">if</span> (is &gt;= 0 &amp;&amp; is &lt; d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">npts</a>())</div>
+<div class="line"><span class="lineno">   58</span>        d.<a class="code hl_variable" href="classmspass_1_1seismic_1_1_core_time_series.html#ab044edb3fe5fe734cb577a4434f390a2">s</a>[is] = 0.0;</div>
+<div class="line"><span class="lineno">   59</span>    }</div>
+<div class="line"><span class="lineno">   60</span>    rampslope = 1.0 / (t1head - t0head);</div>
+<div class="line"><span class="lineno">   61</span>    <span class="keywordflow">for</span> (t = t0head; t &lt; t1head; t += d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#af31c96c0e2173d7581e1c3a3f8bcfde8">dt</a>()) {</div>
+<div class="line"><span class="lineno">   62</span>      is = d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#abe28ca2812a2ac21dd2196385ad106ab">sample_number</a>(t);</div>
+<div class="line"><span class="lineno">   63</span>      <span class="keywordflow">if</span> (is &gt;= 0) {</div>
+<div class="line"><span class="lineno">   64</span>        wt = rampslope * (t - t0head);</div>
+<div class="line"><span class="lineno">   65</span>        d.<a class="code hl_variable" href="classmspass_1_1seismic_1_1_core_time_series.html#ab044edb3fe5fe734cb577a4434f390a2">s</a>[is] *= wt;</div>
+<div class="line"><span class="lineno">   66</span>      }</div>
+<div class="line"><span class="lineno">   67</span>    }</div>
+<div class="line"><span class="lineno">   68</span>  }</div>
+<div class="line"><span class="lineno">   69</span>  <span class="keywordflow">if</span> (tail) {</div>
+<div class="line"><span class="lineno">   70</span>    <span class="keywordflow">if</span> (d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#a472074f3074d59f794d18017b010ab81">t0</a>() &gt; t0tail) {</div>
+<div class="line"><span class="lineno">   71</span>      stringstream ss;</div>
+<div class="line"><span class="lineno">   72</span>      ss &lt;&lt; <span class="stringliteral">&quot;LinearTaper::apply:  inconsistent tail taper parameters&quot;</span> &lt;&lt; endl</div>
+<div class="line"><span class="lineno">   73</span>         &lt;&lt; <span class="stringliteral">&quot;Data start time=&quot;</span> &lt;&lt; d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#a472074f3074d59f794d18017b010ab81">t0</a>()</div>
+<div class="line"><span class="lineno">   74</span>         &lt;&lt; <span class="stringliteral">&quot; is after the end of the tail taper = &quot;</span> &lt;&lt; t0tail &lt;&lt; endl</div>
+<div class="line"><span class="lineno">   75</span>         &lt;&lt; <span class="stringliteral">&quot;Data vector was not altered&quot;</span> &lt;&lt; endl;</div>
+<div class="line"><span class="lineno">   76</span>      d.elog.<a class="code hl_function" href="classmspass_1_1utility_1_1_error_logger.html#aa69873ba0aebf67e9ba24d01992c0bcf">log_error</a>(<span class="stringliteral">&quot;LinearTaper&quot;</span>, ss.str(), ErrorSeverity::Complaint);</div>
+<div class="line"><span class="lineno">   77</span>      <span class="keywordflow">return</span> -1;</div>
+<div class="line"><span class="lineno">   78</span>    }</div>
+<div class="line"><span class="lineno">   79</span>    <span class="keywordtype">int</span> is;</div>
+<div class="line"><span class="lineno">   80</span>    <span class="keywordtype">double</span> t, wt;</div>
+<div class="line"><span class="lineno">   81</span>    <span class="keywordflow">for</span> (t = d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#af8982109d3caaeee15bb5b3a63b89317">endtime</a>(); t &gt;= t0tail; t -= d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#af31c96c0e2173d7581e1c3a3f8bcfde8">dt</a>()) {</div>
+<div class="line"><span class="lineno">   82</span>      is = d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#abe28ca2812a2ac21dd2196385ad106ab">sample_number</a>(t);</div>
+<div class="line"><span class="lineno">   83</span>      <span class="keywordflow">if</span> (is &gt;= 0 &amp;&amp; is &lt; d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">npts</a>())</div>
+<div class="line"><span class="lineno">   84</span>        d.<a class="code hl_variable" href="classmspass_1_1seismic_1_1_core_time_series.html#ab044edb3fe5fe734cb577a4434f390a2">s</a>[is] = 0.0;</div>
+<div class="line"><span class="lineno">   85</span>    }</div>
+<div class="line"><span class="lineno">   86</span>    rampslope = 1.0 / (t0tail - t1tail);</div>
+<div class="line"><span class="lineno">   87</span>    <span class="keywordflow">for</span> (t = t0tail; t &gt;= t1tail; t -= d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#af31c96c0e2173d7581e1c3a3f8bcfde8">dt</a>()) {</div>
+<div class="line"><span class="lineno">   88</span>      is = d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#abe28ca2812a2ac21dd2196385ad106ab">sample_number</a>(t);</div>
+<div class="line"><span class="lineno">   89</span>      <span class="keywordflow">if</span> (is &gt;= 0) {</div>
+<div class="line"><span class="lineno">   90</span>        wt = rampslope * (t0tail - t);</div>
+<div class="line"><span class="lineno">   91</span>        d.<a class="code hl_variable" href="classmspass_1_1seismic_1_1_core_time_series.html#ab044edb3fe5fe734cb577a4434f390a2">s</a>[is] *= wt;</div>
+<div class="line"><span class="lineno">   92</span>      }</div>
+<div class="line"><span class="lineno">   93</span>    }</div>
+<div class="line"><span class="lineno">   94</span>  }</div>
+<div class="line"><span class="lineno">   95</span>  <span class="keywordflow">return</span> 0;</div>
+<div class="line"><span class="lineno">   96</span>}</div>
+<div class="ttc" id="aclassmspass_1_1seismic_1_1_basic_time_series_html_af8982109d3caaeee15bb5b3a63b89317"><div class="ttname"><a href="classmspass_1_1seismic_1_1_basic_time_series.html#af8982109d3caaeee15bb5b3a63b89317">mspass::seismic::BasicTimeSeries::endtime</a></div><div class="ttdeci">double endtime() const noexcept</div><div class="ttdef"><b>Definition</b> BasicTimeSeries.h:77</div></div>
+<div class="ttc" id="aclassmspass_1_1seismic_1_1_core_time_series_html_ab044edb3fe5fe734cb577a4434f390a2"><div class="ttname"><a href="classmspass_1_1seismic_1_1_core_time_series.html#ab044edb3fe5fe734cb577a4434f390a2">mspass::seismic::CoreTimeSeries::s</a></div><div class="ttdeci">std::vector&lt; double &gt; s</div><div class="ttdef"><b>Definition</b> CoreTimeSeries.h:27</div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -473,7 +463,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>all</b></td></tr>
 </div><div class="memdoc">
 
 <p>Implements <a class="el" href="classmspass_1_1algorithms_1_1_basic_taper.html">mspass::algorithms::BasicTaper</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   93</span>{<span class="keywordflow">return</span> t0head;};</div>
+<div class="fragment"><div class="line"><span class="lineno">   91</span>{ <span class="keywordflow">return</span> t0head; };</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -499,7 +489,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>all</b></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   95</span>{<span class="keywordflow">return</span> t0tail;};</div>
+<div class="fragment"><div class="line"><span class="lineno">   93</span>{ <span class="keywordflow">return</span> t0tail; };</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -527,7 +517,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>all</b></td></tr>
 </div><div class="memdoc">
 
 <p>Implements <a class="el" href="classmspass_1_1algorithms_1_1_basic_taper.html">mspass::algorithms::BasicTaper</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   94</span>{<span class="keywordflow">return</span> t1head;};</div>
+<div class="fragment"><div class="line"><span class="lineno">   92</span>{ <span class="keywordflow">return</span> t1head; };</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -553,7 +543,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>all</b></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   96</span>{<span class="keywordflow">return</span> t1tail;};</div>
+<div class="fragment"><div class="line"><span class="lineno">   94</span>{ <span class="keywordflow">return</span> t1tail; };</div>
 </div><!-- fragment -->
 </div>
 </div>

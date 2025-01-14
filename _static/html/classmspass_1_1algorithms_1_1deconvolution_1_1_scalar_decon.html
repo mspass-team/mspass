@@ -196,7 +196,7 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
   </tr>
 </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   31</span>:shapingwavelet() {};</div>
+<div class="fragment"><div class="line"><span class="lineno">   31</span>: shapingwavelet() {};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -215,20 +215,19 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">    7</span>                                           : shapingwavelet(md)</div>
-<div class="line"><span class="lineno">    8</span>{</div>
-<div class="line"><span class="lineno">    9</span>    <span class="keywordflow">try</span> {</div>
-<div class="line"><span class="lineno">   10</span>        <span class="comment">/* This has to be defined or the shapingwavlet constructor will</span></div>
-<div class="line"><span class="lineno">   11</span><span class="comment">         * fail in the current implementation */</span></div>
-<div class="line"><span class="lineno">   12</span>        <span class="keywordtype">int</span> nfft=md.<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#a78f3a01e1b1deccd84a0833bea4ef462">get_int</a>(<span class="stringliteral">&quot;operator_nfft&quot;</span>);</div>
-<div class="line"><span class="lineno">   13</span>        wavelet.reserve(nfft);</div>
-<div class="line"><span class="lineno">   14</span>        data.reserve(nfft);</div>
-<div class="line"><span class="lineno">   15</span>        result.reserve(nfft);</div>
-<div class="line"><span class="lineno">   16</span>    } <span class="keywordflow">catch</span>(...) {</div>
-<div class="line"><span class="lineno">   17</span>        <span class="keywordflow">throw</span>;</div>
-<div class="line"><span class="lineno">   18</span>    };</div>
-<div class="line"><span class="lineno">   19</span>}</div>
-<div class="ttc" id="aclassmspass_1_1utility_1_1_metadata_html_a78f3a01e1b1deccd84a0833bea4ef462"><div class="ttname"><a href="classmspass_1_1utility_1_1_metadata.html#a78f3a01e1b1deccd84a0833bea4ef462">mspass::utility::Metadata::get_int</a></div><div class="ttdeci">int get_int(const std::string key) const override</div><div class="ttdef"><b>Definition</b> Metadata.h:159</div></div>
+<div class="fragment"><div class="line"><span class="lineno">    6</span>                                           : shapingwavelet(md) {</div>
+<div class="line"><span class="lineno">    7</span>  <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">    8</span>    <span class="comment">/* This has to be defined or the shapingwavlet constructor will</span></div>
+<div class="line"><span class="lineno">    9</span><span class="comment">     * fail in the current implementation */</span></div>
+<div class="line"><span class="lineno">   10</span>    <span class="keywordtype">int</span> nfft = md.<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#a78f3a01e1b1deccd84a0833bea4ef462">get_int</a>(<span class="stringliteral">&quot;operator_nfft&quot;</span>);</div>
+<div class="line"><span class="lineno">   11</span>    wavelet.reserve(nfft);</div>
+<div class="line"><span class="lineno">   12</span>    data.reserve(nfft);</div>
+<div class="line"><span class="lineno">   13</span>    result.reserve(nfft);</div>
+<div class="line"><span class="lineno">   14</span>  } <span class="keywordflow">catch</span> (...) {</div>
+<div class="line"><span class="lineno">   15</span>    <span class="keywordflow">throw</span>;</div>
+<div class="line"><span class="lineno">   16</span>  };</div>
+<div class="line"><span class="lineno">   17</span>}</div>
+<div class="ttc" id="aclassmspass_1_1utility_1_1_metadata_html_a78f3a01e1b1deccd84a0833bea4ef462"><div class="ttname"><a href="classmspass_1_1utility_1_1_metadata.html#a78f3a01e1b1deccd84a0833bea4ef462">mspass::utility::Metadata::get_int</a></div><div class="ttdeci">int get_int(const std::string key) const override</div><div class="ttdef"><b>Definition</b> Metadata.h:154</div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -247,12 +246,8 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   26</span>    : data(parent.data),</div>
-<div class="line"><span class="lineno">   27</span>      wavelet(parent.wavelet),</div>
-<div class="line"><span class="lineno">   28</span>       result(parent.result),</div>
-<div class="line"><span class="lineno">   29</span>         shapingwavelet(parent.shapingwavelet)</div>
-<div class="line"><span class="lineno">   30</span>{</div>
-<div class="line"><span class="lineno">   31</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">   23</span>    : data(parent.data), wavelet(parent.wavelet), result(parent.result),</div>
+<div class="line"><span class="lineno">   24</span>      shapingwavelet(parent.shapingwavelet) {}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -330,9 +325,9 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
 </div><div class="memdoc">
 <p>Change the shaping wavelet that will be applied to output.</p>
 <p>The suite of algorithms here use the concept of a shaping wavelet thoughout. The shaping wavelet for most applications should have a zero phase impulse response. This method changes the wavelet set with the operator. </p>
-<div class="fragment"><div class="line"><span class="lineno">   70</span>{</div>
-<div class="line"><span class="lineno">   71</span>    shapingwavelet=nsw;</div>
-<div class="line"><span class="lineno">   72</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">   56</span>                                                                  {</div>
+<div class="line"><span class="lineno">   57</span>  shapingwavelet = nsw;</div>
+<div class="line"><span class="lineno">   58</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -361,9 +356,9 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
 </div><div class="memdoc">
 
 <p>Implements <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_basic_decon_operator.html">mspass::algorithms::deconvolution::BasicDeconOperator</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   66</span>{</div>
-<div class="line"><span class="lineno">   67</span>    shapingwavelet=ShapingWavelet(md);</div>
-<div class="line"><span class="lineno">   68</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">   53</span>                                                    {</div>
+<div class="line"><span class="lineno">   54</span>  shapingwavelet = ShapingWavelet(md);</div>
+<div class="line"><span class="lineno">   55</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -390,9 +385,7 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
 </table>
 </div><div class="memdoc">
 <p>getter for <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html" title="Frequency domain shaping wavelet.">ShapingWavelet</a> stored with the operator. </p>
-<div class="fragment"><div class="line"><span class="lineno">   68</span>    {</div>
-<div class="line"><span class="lineno">   69</span>        <span class="keywordflow">return</span> this-&gt;shapingwavelet;</div>
-<div class="line"><span class="lineno">   70</span>    };</div>
+<div class="fragment"><div class="line"><span class="lineno">   65</span>{ <span class="keywordflow">return</span> this-&gt;shapingwavelet; };</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -418,9 +411,7 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
   </tr>
 </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   53</span>                                  {</div>
-<div class="line"><span class="lineno">   54</span>        <span class="keywordflow">return</span> result;</div>
-<div class="line"><span class="lineno">   55</span>    };</div>
+<div class="fragment"><div class="line"><span class="lineno">   53</span>{ <span class="keywordflow">return</span> result; };</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -446,10 +437,10 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
   </tr>
 </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   77</span>                                               {</div>
-<div class="line"><span class="lineno">   78</span>        <span class="keywordflow">return</span> this-&gt;shapingwavelet.<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html#a5d213e187ff91de27d96e65b643bd71b">impulse_response</a>();</div>
-<div class="line"><span class="lineno">   79</span>    };</div>
-<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet_html_a5d213e187ff91de27d96e65b643bd71b"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html#a5d213e187ff91de27d96e65b643bd71b">mspass::algorithms::deconvolution::ShapingWavelet::impulse_response</a></div><div class="ttdeci">mspass::seismic::CoreTimeSeries impulse_response()</div><div class="ttdef"><b>Definition</b> ShapingWavelet.cc:271</div></div>
+<div class="fragment"><div class="line"><span class="lineno">   72</span>                                             {</div>
+<div class="line"><span class="lineno">   73</span>    <span class="keywordflow">return</span> this-&gt;shapingwavelet.<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html#a5d213e187ff91de27d96e65b643bd71b">impulse_response</a>();</div>
+<div class="line"><span class="lineno">   74</span>  };</div>
+<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet_html_a5d213e187ff91de27d96e65b643bd71b"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html#a5d213e187ff91de27d96e65b643bd71b">mspass::algorithms::deconvolution::ShapingWavelet::impulse_response</a></div><div class="ttdeci">mspass::seismic::CoreTimeSeries impulse_response()</div><div class="ttdef"><b>Definition</b> ShapingWavelet.cc:265</div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -541,12 +532,12 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
 <p>Load all data required for decon. </p>
 <p>This method loads both the data vector and wavelet estimates as simple std::vectors. Timing must be maintained externally. This or the pair of methods loaddata and loadwavelet must be called before process. This method has a slight advantage in efficiency over successive calls to loaddata and loadwavelet for several reasons, but the difference is small.</p>
 <dl class="section return"><dt>Returns</dt><dd>always returns 0 </dd></dl>
-<div class="fragment"><div class="line"><span class="lineno">   43</span>{</div>
-<div class="line"><span class="lineno">   44</span>    wavelet=w;</div>
-<div class="line"><span class="lineno">   45</span>    data=d;</div>
-<div class="line"><span class="lineno">   46</span>    result.clear();</div>
-<div class="line"><span class="lineno">   47</span>    <span class="keywordflow">return</span> 0;</div>
-<div class="line"><span class="lineno">   48</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">   33</span>                                                                      {</div>
+<div class="line"><span class="lineno">   34</span>  wavelet = w;</div>
+<div class="line"><span class="lineno">   35</span>  data = d;</div>
+<div class="line"><span class="lineno">   36</span>  result.clear();</div>
+<div class="line"><span class="lineno">   37</span>  <span class="keywordflow">return</span> 0;</div>
+<div class="line"><span class="lineno">   38</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -566,11 +557,11 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
       </table>
 </div><div class="memdoc">
 <p>Load only the data vector. </p>
-<div class="fragment"><div class="line"><span class="lineno">   54</span>{</div>
-<div class="line"><span class="lineno">   55</span>  data=d;</div>
-<div class="line"><span class="lineno">   56</span>  result.clear();</div>
-<div class="line"><span class="lineno">   57</span>  <span class="keywordflow">return</span> 0;</div>
-<div class="line"><span class="lineno">   58</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">   43</span>                                                 {</div>
+<div class="line"><span class="lineno">   44</span>  data = d;</div>
+<div class="line"><span class="lineno">   45</span>  result.clear();</div>
+<div class="line"><span class="lineno">   46</span>  <span class="keywordflow">return</span> 0;</div>
+<div class="line"><span class="lineno">   47</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -590,11 +581,11 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
       </table>
 </div><div class="memdoc">
 <p>Load only the wavelet estimate. </p>
-<div class="fragment"><div class="line"><span class="lineno">   60</span>{</div>
-<div class="line"><span class="lineno">   61</span>  wavelet=w;</div>
-<div class="line"><span class="lineno">   62</span>  result.clear();</div>
-<div class="line"><span class="lineno">   63</span>  <span class="keywordflow">return</span> 0;</div>
-<div class="line"><span class="lineno">   64</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">   48</span>                                                    {</div>
+<div class="line"><span class="lineno">   49</span>  wavelet = w;</div>
+<div class="line"><span class="lineno">   50</span>  result.clear();</div>
+<div class="line"><span class="lineno">   51</span>  <span class="keywordflow">return</span> 0;</div>
+<div class="line"><span class="lineno">   52</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -613,15 +604,14 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   33</span>{</div>
-<div class="line"><span class="lineno">   34</span>    <span class="keywordflow">if</span>(<span class="keyword">this</span>!=&amp;parent)</div>
-<div class="line"><span class="lineno">   35</span>    {</div>
-<div class="line"><span class="lineno">   36</span>        wavelet=parent.wavelet;</div>
-<div class="line"><span class="lineno">   37</span>        data=parent.data;</div>
-<div class="line"><span class="lineno">   38</span>        result=parent.result;</div>
-<div class="line"><span class="lineno">   39</span>    }</div>
-<div class="line"><span class="lineno">   40</span>    <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
-<div class="line"><span class="lineno">   41</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">   25</span>                                                             {</div>
+<div class="line"><span class="lineno">   26</span>  <span class="keywordflow">if</span> (<span class="keyword">this</span> != &amp;parent) {</div>
+<div class="line"><span class="lineno">   27</span>    wavelet = parent.wavelet;</div>
+<div class="line"><span class="lineno">   28</span>    data = parent.data;</div>
+<div class="line"><span class="lineno">   29</span>    result = parent.result;</div>
+<div class="line"><span class="lineno">   30</span>  }</div>
+<div class="line"><span class="lineno">   31</span>  <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
+<div class="line"><span class="lineno">   32</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>

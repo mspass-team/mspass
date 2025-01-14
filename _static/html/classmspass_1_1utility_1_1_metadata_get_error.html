@@ -177,8 +177,8 @@ Additional Inherited Members</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   26</span>:<a class="code hl_function" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#a19f527c5f3f2e761e51c9b2d478d02c6">MsPASSError</a>(){}; <span class="comment">// seems necessary to not default this with gcc</span></div>
-<div class="ttc" id="aclassmspass_1_1utility_1_1_ms_p_a_s_s_error_html_a19f527c5f3f2e761e51c9b2d478d02c6"><div class="ttname"><a href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#a19f527c5f3f2e761e51c9b2d478d02c6">mspass::utility::MsPASSError::MsPASSError</a></div><div class="ttdeci">MsPASSError()</div><div class="ttdef"><b>Definition</b> MsPASSError.h:46</div></div>
+<div class="fragment"><div class="line"><span class="lineno">   25</span>      : <a class="code hl_function" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#a19f527c5f3f2e761e51c9b2d478d02c6">MsPASSError</a>() {}; <span class="comment">// seems necessary to not default this with gcc</span></div>
+<div class="ttc" id="aclassmspass_1_1utility_1_1_ms_p_a_s_s_error_html_a19f527c5f3f2e761e51c9b2d478d02c6"><div class="ttname"><a href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#a19f527c5f3f2e761e51c9b2d478d02c6">mspass::utility::MsPASSError::MsPASSError</a></div><div class="ttdeci">MsPASSError()</div><div class="ttdef"><b>Definition</b> MsPASSError.h:43</div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -221,17 +221,18 @@ Additional Inherited Members</h2></td></tr>
   </table>
   </dd>
 </dl>
-<div class="fragment"><div class="line"><span class="lineno">   30</span>  {</div>
-<div class="line"><span class="lineno">   31</span> </div>
-<div class="line"><span class="lineno">   32</span>    std::string pretty_name(boost::core::demangle(Texpected));</div>
-<div class="line"><span class="lineno">   33</span>    ss&lt;&lt;<span class="stringliteral">&quot;Error trying to extract Metadata with key=&quot;</span>&lt;&lt;key&lt;&lt;std::endl</div>
-<div class="line"><span class="lineno">   34</span>      &lt;&lt; <span class="stringliteral">&quot;No value associated with this key is set in Metadata object&quot;</span>&lt;&lt;std::endl</div>
-<div class="line"><span class="lineno">   35</span>      &lt;&lt; <span class="stringliteral">&quot;Expected an entry of type=&quot;</span>&lt;&lt;pretty_name&lt;&lt;std::endl;</div>
-<div class="line"><span class="lineno">   36</span>    <a class="code hl_variable" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#a47e9d74154f088f38fd7e5219abc81f5">message</a>=ss.str();</div>
-<div class="line"><span class="lineno">   37</span>    <a class="code hl_variable" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#af808615110822967a251108b20708f51">badness</a>=ErrorSeverity::Suspect;</div>
+<div class="fragment"><div class="line"><span class="lineno">   29</span>                                                               {</div>
+<div class="line"><span class="lineno">   30</span> </div>
+<div class="line"><span class="lineno">   31</span>    std::string pretty_name(boost::core::demangle(Texpected));</div>
+<div class="line"><span class="lineno">   32</span>    ss &lt;&lt; <span class="stringliteral">&quot;Error trying to extract Metadata with key=&quot;</span> &lt;&lt; key &lt;&lt; std::endl</div>
+<div class="line"><span class="lineno">   33</span>       &lt;&lt; <span class="stringliteral">&quot;No value associated with this key is set in Metadata object&quot;</span></div>
+<div class="line"><span class="lineno">   34</span>       &lt;&lt; std::endl</div>
+<div class="line"><span class="lineno">   35</span>       &lt;&lt; <span class="stringliteral">&quot;Expected an entry of type=&quot;</span> &lt;&lt; pretty_name &lt;&lt; std::endl;</div>
+<div class="line"><span class="lineno">   36</span>    <a class="code hl_variable" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#a47e9d74154f088f38fd7e5219abc81f5">message</a> = ss.str();</div>
+<div class="line"><span class="lineno">   37</span>    <a class="code hl_variable" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#af808615110822967a251108b20708f51">badness</a> = ErrorSeverity::Suspect;</div>
 <div class="line"><span class="lineno">   38</span>  };</div>
-<div class="ttc" id="aclassmspass_1_1utility_1_1_ms_p_a_s_s_error_html_a47e9d74154f088f38fd7e5219abc81f5"><div class="ttname"><a href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#a47e9d74154f088f38fd7e5219abc81f5">mspass::utility::MsPASSError::message</a></div><div class="ttdeci">std::string message</div><div class="ttdef"><b>Definition</b> MsPASSError.h:114</div></div>
-<div class="ttc" id="aclassmspass_1_1utility_1_1_ms_p_a_s_s_error_html_af808615110822967a251108b20708f51"><div class="ttname"><a href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#af808615110822967a251108b20708f51">mspass::utility::MsPASSError::badness</a></div><div class="ttdeci">ErrorSeverity badness</div><div class="ttdef"><b>Definition</b> MsPASSError.h:116</div></div>
+<div class="ttc" id="aclassmspass_1_1utility_1_1_ms_p_a_s_s_error_html_a47e9d74154f088f38fd7e5219abc81f5"><div class="ttname"><a href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#a47e9d74154f088f38fd7e5219abc81f5">mspass::utility::MsPASSError::message</a></div><div class="ttdeci">std::string message</div><div class="ttdef"><b>Definition</b> MsPASSError.h:108</div></div>
+<div class="ttc" id="aclassmspass_1_1utility_1_1_ms_p_a_s_s_error_html_af808615110822967a251108b20708f51"><div class="ttname"><a href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#af808615110822967a251108b20708f51">mspass::utility::MsPASSError::badness</a></div><div class="ttdeci">ErrorSeverity badness</div><div class="ttdef"><b>Definition</b> MsPASSError.h:110</div></div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#af808615110822967a251108b20708f51">mspass::utility::MsPASSError::badness</a>, and <a class="el" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#a47e9d74154f088f38fd7e5219abc81f5">mspass::utility::MsPASSError::message</a>.</p>
 
@@ -285,18 +286,18 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Constructor called when type requested does not match contents. </p>
 <p>This implementation uses a pickle style map container where the contents of the map can by any type. We use boost::any to provide sanity checks on types. This is creates the error message thrown when the type of the return does not match the type requested. </p>
-<div class="fragment"><div class="line"><span class="lineno">   47</span>  {</div>
-<div class="line"><span class="lineno">   48</span>    ss &lt;&lt; <span class="stringliteral">&quot;Error in Metadata get method.   Type mismatch in attem to get &quot;</span></div>
-<div class="line"><span class="lineno">   49</span>        &lt;&lt; <span class="stringliteral">&quot;data with key=&quot;</span>&lt;&lt;key&lt;&lt;std::endl</div>
-<div class="line"><span class="lineno">   50</span>      &lt;&lt; <span class="stringliteral">&quot;boost::any bad_any_cast wrote this message:  &quot;</span>&lt;&lt;std::endl</div>
-<div class="line"><span class="lineno">   51</span>      &lt;&lt; boostmessage&lt;&lt;std::endl;</div>
-<div class="line"><span class="lineno">   52</span>    std::string name_e(boost::core::demangle(Texpected));</div>
-<div class="line"><span class="lineno">   53</span>    ss &lt;&lt; <span class="stringliteral">&quot;Trying to convert to data of type=&quot;</span>&lt;&lt;name_e&lt;&lt;std::endl;</div>
-<div class="line"><span class="lineno">   54</span>    std::string name_a(boost::core::demangle(Tactual));</div>
-<div class="line"><span class="lineno">   55</span>    ss &lt;&lt; <span class="stringliteral">&quot;Actual entry has type=&quot;</span>&lt;&lt;name_a&lt;&lt;std::endl;</div>
-<div class="line"><span class="lineno">   56</span>    <a class="code hl_variable" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#a47e9d74154f088f38fd7e5219abc81f5">message</a>=ss.str();</div>
-<div class="line"><span class="lineno">   57</span>    <a class="code hl_variable" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#af808615110822967a251108b20708f51">badness</a>=ErrorSeverity::Suspect;</div>
-<div class="line"><span class="lineno">   58</span>  };</div>
+<div class="fragment"><div class="line"><span class="lineno">   46</span>                                                               {</div>
+<div class="line"><span class="lineno">   47</span>    ss &lt;&lt; <span class="stringliteral">&quot;Error in Metadata get method.   Type mismatch in attem to get &quot;</span></div>
+<div class="line"><span class="lineno">   48</span>       &lt;&lt; <span class="stringliteral">&quot;data with key=&quot;</span> &lt;&lt; key &lt;&lt; std::endl</div>
+<div class="line"><span class="lineno">   49</span>       &lt;&lt; <span class="stringliteral">&quot;boost::any bad_any_cast wrote this message:  &quot;</span> &lt;&lt; std::endl</div>
+<div class="line"><span class="lineno">   50</span>       &lt;&lt; boostmessage &lt;&lt; std::endl;</div>
+<div class="line"><span class="lineno">   51</span>    std::string name_e(boost::core::demangle(Texpected));</div>
+<div class="line"><span class="lineno">   52</span>    ss &lt;&lt; <span class="stringliteral">&quot;Trying to convert to data of type=&quot;</span> &lt;&lt; name_e &lt;&lt; std::endl;</div>
+<div class="line"><span class="lineno">   53</span>    std::string name_a(boost::core::demangle(Tactual));</div>
+<div class="line"><span class="lineno">   54</span>    ss &lt;&lt; <span class="stringliteral">&quot;Actual entry has type=&quot;</span> &lt;&lt; name_a &lt;&lt; std::endl;</div>
+<div class="line"><span class="lineno">   55</span>    <a class="code hl_variable" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#a47e9d74154f088f38fd7e5219abc81f5">message</a> = ss.str();</div>
+<div class="line"><span class="lineno">   56</span>    <a class="code hl_variable" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#af808615110822967a251108b20708f51">badness</a> = ErrorSeverity::Suspect;</div>
+<div class="line"><span class="lineno">   57</span>  };</div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#af808615110822967a251108b20708f51">mspass::utility::MsPASSError::badness</a>, and <a class="el" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#a47e9d74154f088f38fd7e5219abc81f5">mspass::utility::MsPASSError::message</a>.</p>
 
@@ -325,10 +326,10 @@ Additional Inherited Members</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   60</span>  {</div>
-<div class="line"><span class="lineno">   61</span>      <a class="code hl_variable" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#a47e9d74154f088f38fd7e5219abc81f5">message</a>=parent.message;</div>
-<div class="line"><span class="lineno">   62</span>      <a class="code hl_variable" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#af808615110822967a251108b20708f51">badness</a>=parent.badness;</div>
-<div class="line"><span class="lineno">   63</span>  };</div>
+<div class="fragment"><div class="line"><span class="lineno">   58</span>                                                   {</div>
+<div class="line"><span class="lineno">   59</span>    <a class="code hl_variable" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#a47e9d74154f088f38fd7e5219abc81f5">message</a> = parent.message;</div>
+<div class="line"><span class="lineno">   60</span>    <a class="code hl_variable" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#af808615110822967a251108b20708f51">badness</a> = parent.badness;</div>
+<div class="line"><span class="lineno">   61</span>  };</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -356,14 +357,13 @@ Additional Inherited Members</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   65</span>  {</div>
-<div class="line"><span class="lineno">   66</span>      <span class="keywordflow">if</span>(<span class="keyword">this</span>!=&amp;parent)</div>
-<div class="line"><span class="lineno">   67</span>      {</div>
-<div class="line"><span class="lineno">   68</span>          <a class="code hl_variable" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#a47e9d74154f088f38fd7e5219abc81f5">message</a>=parent.message;</div>
-<div class="line"><span class="lineno">   69</span>          <a class="code hl_variable" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#af808615110822967a251108b20708f51">badness</a>=parent.badness;</div>
-<div class="line"><span class="lineno">   70</span>      }</div>
-<div class="line"><span class="lineno">   71</span>      <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
-<div class="line"><span class="lineno">   72</span>  };</div>
+<div class="fragment"><div class="line"><span class="lineno">   62</span>                                                             {</div>
+<div class="line"><span class="lineno">   63</span>    <span class="keywordflow">if</span> (<span class="keyword">this</span> != &amp;parent) {</div>
+<div class="line"><span class="lineno">   64</span>      <a class="code hl_variable" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#a47e9d74154f088f38fd7e5219abc81f5">message</a> = parent.message;</div>
+<div class="line"><span class="lineno">   65</span>      <a class="code hl_variable" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#af808615110822967a251108b20708f51">badness</a> = parent.badness;</div>
+<div class="line"><span class="lineno">   66</span>    }</div>
+<div class="line"><span class="lineno">   67</span>    <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
+<div class="line"><span class="lineno">   68</span>  };</div>
 </div><!-- fragment -->
 </div>
 </div>

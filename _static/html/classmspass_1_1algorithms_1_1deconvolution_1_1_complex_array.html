@@ -172,11 +172,11 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Empty constructor. </p>
-<div class="fragment"><div class="line"><span class="lineno">   10</span>{</div>
-<div class="line"><span class="lineno">   11</span>    nsamp=0;</div>
-<div class="line"><span class="lineno">   12</span>    <span class="comment">/* Note declaration of shared_ptr initializes it with a NULL</span></div>
-<div class="line"><span class="lineno">   13</span><span class="comment">       pointer equivalent - no initialization is needed */</span></div>
-<div class="line"><span class="lineno">   14</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">    8</span>                           {</div>
+<div class="line"><span class="lineno">    9</span>  nsamp = 0;</div>
+<div class="line"><span class="lineno">   10</span>  <span class="comment">/* Note declaration of shared_ptr initializes it with a NULL</span></div>
+<div class="line"><span class="lineno">   11</span><span class="comment">     pointer equivalent - no initialization is needed */</span></div>
+<div class="line"><span class="lineno">   12</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -251,15 +251,14 @@ Public Member Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<div class="fragment"><div class="line"><span class="lineno">   36</span>{</div>
-<div class="line"><span class="lineno">   37</span>    nsamp=n;</div>
-<div class="line"><span class="lineno">   38</span>    data = std::shared_ptr&lt;FortranComplex64[]&gt;(<span class="keyword">new</span> FortranComplex64[nsamp]);</div>
-<div class="line"><span class="lineno">   39</span>    <span class="keywordflow">for</span>(std::size_t i=0; i&lt;nsamp; i++)</div>
-<div class="line"><span class="lineno">   40</span>    {</div>
-<div class="line"><span class="lineno">   41</span>        data[i].real=d[i].real;</div>
-<div class="line"><span class="lineno">   42</span>        data[i].imag=d[i].imag;</div>
-<div class="line"><span class="lineno">   43</span>    }</div>
-<div class="line"><span class="lineno">   44</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">   29</span>                                                     {</div>
+<div class="line"><span class="lineno">   30</span>  nsamp = n;</div>
+<div class="line"><span class="lineno">   31</span>  data = std::shared_ptr&lt;FortranComplex64[]&gt;(<span class="keyword">new</span> FortranComplex64[nsamp]);</div>
+<div class="line"><span class="lineno">   32</span>  <span class="keywordflow">for</span> (std::size_t i = 0; i &lt; nsamp; i++) {</div>
+<div class="line"><span class="lineno">   33</span>    data[i].real = d[i].real;</div>
+<div class="line"><span class="lineno">   34</span>    data[i].imag = d[i].imag;</div>
+<div class="line"><span class="lineno">   35</span>  }</div>
+<div class="line"><span class="lineno">   36</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -288,15 +287,14 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   46</span>{</div>
-<div class="line"><span class="lineno">   47</span>    nsamp=n;</div>
-<div class="line"><span class="lineno">   48</span>    data = std::shared_ptr&lt;FortranComplex64[]&gt;(<span class="keyword">new</span> FortranComplex64[nsamp]);</div>
-<div class="line"><span class="lineno">   49</span>    <span class="keywordflow">for</span>(std::size_t i=0; i&lt;nsamp; i++)</div>
-<div class="line"><span class="lineno">   50</span>    {</div>
-<div class="line"><span class="lineno">   51</span>        data[i].real=d[i].real;</div>
-<div class="line"><span class="lineno">   52</span>        data[i].imag=d[i].imag;</div>
-<div class="line"><span class="lineno">   53</span>    }</div>
-<div class="line"><span class="lineno">   54</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">   37</span>                                                     {</div>
+<div class="line"><span class="lineno">   38</span>  nsamp = n;</div>
+<div class="line"><span class="lineno">   39</span>  data = std::shared_ptr&lt;FortranComplex64[]&gt;(<span class="keyword">new</span> FortranComplex64[nsamp]);</div>
+<div class="line"><span class="lineno">   40</span>  <span class="keywordflow">for</span> (std::size_t i = 0; i &lt; nsamp; i++) {</div>
+<div class="line"><span class="lineno">   41</span>    data[i].real = d[i].real;</div>
+<div class="line"><span class="lineno">   42</span>    data[i].imag = d[i].imag;</div>
+<div class="line"><span class="lineno">   43</span>  }</div>
+<div class="line"><span class="lineno">   44</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -325,15 +323,14 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   56</span>{</div>
-<div class="line"><span class="lineno">   57</span>    nsamp=n;</div>
-<div class="line"><span class="lineno">   58</span>    data = std::shared_ptr&lt;FortranComplex64[]&gt;(<span class="keyword">new</span> FortranComplex64[nsamp]);</div>
-<div class="line"><span class="lineno">   59</span>    <span class="keywordflow">for</span>(std::size_t i=0; i&lt;nsamp; i++)</div>
-<div class="line"><span class="lineno">   60</span>    {</div>
-<div class="line"><span class="lineno">   61</span>        data[i].real=d[i];</div>
-<div class="line"><span class="lineno">   62</span>        data[i].imag=0.0;</div>
-<div class="line"><span class="lineno">   63</span>    }</div>
-<div class="line"><span class="lineno">   64</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">   45</span>                                          {</div>
+<div class="line"><span class="lineno">   46</span>  nsamp = n;</div>
+<div class="line"><span class="lineno">   47</span>  data = std::shared_ptr&lt;FortranComplex64[]&gt;(<span class="keyword">new</span> FortranComplex64[nsamp]);</div>
+<div class="line"><span class="lineno">   48</span>  <span class="keywordflow">for</span> (std::size_t i = 0; i &lt; nsamp; i++) {</div>
+<div class="line"><span class="lineno">   49</span>    data[i].real = d[i];</div>
+<div class="line"><span class="lineno">   50</span>    data[i].imag = 0.0;</div>
+<div class="line"><span class="lineno">   51</span>  }</div>
+<div class="line"><span class="lineno">   52</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -362,15 +359,14 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   66</span>{</div>
-<div class="line"><span class="lineno">   67</span>    nsamp=n;</div>
-<div class="line"><span class="lineno">   68</span>    data = std::shared_ptr&lt;FortranComplex64[]&gt;(<span class="keyword">new</span> FortranComplex64[nsamp]);</div>
-<div class="line"><span class="lineno">   69</span>    <span class="keywordflow">for</span>(std::size_t i=0; i&lt;nsamp; i++)</div>
-<div class="line"><span class="lineno">   70</span>    {</div>
-<div class="line"><span class="lineno">   71</span>        data[i].real=d[i];</div>
-<div class="line"><span class="lineno">   72</span>        data[i].imag=0.0;</div>
-<div class="line"><span class="lineno">   73</span>    }</div>
-<div class="line"><span class="lineno">   74</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">   53</span>                                           {</div>
+<div class="line"><span class="lineno">   54</span>  nsamp = n;</div>
+<div class="line"><span class="lineno">   55</span>  data = std::shared_ptr&lt;FortranComplex64[]&gt;(<span class="keyword">new</span> FortranComplex64[nsamp]);</div>
+<div class="line"><span class="lineno">   56</span>  <span class="keywordflow">for</span> (std::size_t i = 0; i &lt; nsamp; i++) {</div>
+<div class="line"><span class="lineno">   57</span>    data[i].real = d[i];</div>
+<div class="line"><span class="lineno">   58</span>    data[i].imag = 0.0;</div>
+<div class="line"><span class="lineno">   59</span>  }</div>
+<div class="line"><span class="lineno">   60</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -389,15 +385,14 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   76</span>{</div>
-<div class="line"><span class="lineno">   77</span>    nsamp=n;</div>
-<div class="line"><span class="lineno">   78</span>    data = std::shared_ptr&lt;FortranComplex64[]&gt;(<span class="keyword">new</span> FortranComplex64[nsamp]);</div>
-<div class="line"><span class="lineno">   79</span>    <span class="keywordflow">for</span>(std::size_t i=0; i&lt;nsamp; i++)</div>
-<div class="line"><span class="lineno">   80</span>    {</div>
-<div class="line"><span class="lineno">   81</span>        data[i].real=0.0;</div>
-<div class="line"><span class="lineno">   82</span>        data[i].imag=0.0;</div>
-<div class="line"><span class="lineno">   83</span>    }</div>
-<div class="line"><span class="lineno">   84</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">   61</span>                                {</div>
+<div class="line"><span class="lineno">   62</span>  nsamp = n;</div>
+<div class="line"><span class="lineno">   63</span>  data = std::shared_ptr&lt;FortranComplex64[]&gt;(<span class="keyword">new</span> FortranComplex64[nsamp]);</div>
+<div class="line"><span class="lineno">   64</span>  <span class="keywordflow">for</span> (std::size_t i = 0; i &lt; nsamp; i++) {</div>
+<div class="line"><span class="lineno">   65</span>    data[i].real = 0.0;</div>
+<div class="line"><span class="lineno">   66</span>    data[i].imag = 0.0;</div>
+<div class="line"><span class="lineno">   67</span>  }</div>
+<div class="line"><span class="lineno">   68</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -429,32 +424,26 @@ template&lt;class T &gt; </div>
       </table>
 </div><div class="memdoc">
 <p>Construct from different length of vector, adds zoeros to it And construct a constant arrays </p>
-<div class="fragment"><div class="line"><span class="lineno">  214</span>{</div>
-<div class="line"><span class="lineno">  215</span>    nsamp=n;</div>
-<div class="line"><span class="lineno">  216</span>    <span class="keywordflow">if</span>(nsamp&gt;d.size())</div>
-<div class="line"><span class="lineno">  217</span>    {</div>
-<div class="line"><span class="lineno">  218</span>        data = std::shared_ptr&lt;FortranComplex64[]&gt;(<span class="keyword">new</span> FortranComplex64[nsamp]);</div>
-<div class="line"><span class="lineno">  219</span>        <span class="keywordflow">for</span>(std::size_t i=0; i&lt;d.size(); i++)</div>
-<div class="line"><span class="lineno">  220</span>        {</div>
-<div class="line"><span class="lineno">  221</span>            this-&gt;data[i].real=d[i];</div>
-<div class="line"><span class="lineno">  222</span>            this-&gt;data[i].imag=0.0;</div>
-<div class="line"><span class="lineno">  223</span>        }</div>
-<div class="line"><span class="lineno">  224</span>        <span class="keywordflow">for</span>(std::size_t i=d.size(); i&lt;nsamp; i++)</div>
-<div class="line"><span class="lineno">  225</span>        {</div>
-<div class="line"><span class="lineno">  226</span>            this-&gt;data[i].real=0.0;</div>
-<div class="line"><span class="lineno">  227</span>            this-&gt;data[i].imag=0.0;</div>
-<div class="line"><span class="lineno">  228</span>        }</div>
-<div class="line"><span class="lineno">  229</span>    }</div>
-<div class="line"><span class="lineno">  230</span>    <span class="keywordflow">else</span></div>
-<div class="line"><span class="lineno">  231</span>    {</div>
-<div class="line"><span class="lineno">  232</span>        data = std::shared_ptr&lt;FortranComplex64[]&gt;(<span class="keyword">new</span> FortranComplex64[nsamp]);</div>
-<div class="line"><span class="lineno">  233</span>        <span class="keywordflow">for</span>(std::size_t i=0; i&lt;nsamp; i++)</div>
-<div class="line"><span class="lineno">  234</span>        {</div>
-<div class="line"><span class="lineno">  235</span>            this-&gt;data[i].real=d[i];</div>
-<div class="line"><span class="lineno">  236</span>            this-&gt;data[i].imag=0.0;</div>
-<div class="line"><span class="lineno">  237</span>        }</div>
-<div class="line"><span class="lineno">  238</span>    }</div>
-<div class="line"><span class="lineno">  239</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  211</span>                                                                   {</div>
+<div class="line"><span class="lineno">  212</span>  nsamp = n;</div>
+<div class="line"><span class="lineno">  213</span>  <span class="keywordflow">if</span> (nsamp &gt; d.size()) {</div>
+<div class="line"><span class="lineno">  214</span>    data = std::shared_ptr&lt;FortranComplex64[]&gt;(<span class="keyword">new</span> FortranComplex64[nsamp]);</div>
+<div class="line"><span class="lineno">  215</span>    <span class="keywordflow">for</span> (std::size_t i = 0; i &lt; d.size(); i++) {</div>
+<div class="line"><span class="lineno">  216</span>      this-&gt;data[i].real = d[i];</div>
+<div class="line"><span class="lineno">  217</span>      this-&gt;data[i].imag = 0.0;</div>
+<div class="line"><span class="lineno">  218</span>    }</div>
+<div class="line"><span class="lineno">  219</span>    <span class="keywordflow">for</span> (std::size_t i = d.size(); i &lt; nsamp; i++) {</div>
+<div class="line"><span class="lineno">  220</span>      this-&gt;data[i].real = 0.0;</div>
+<div class="line"><span class="lineno">  221</span>      this-&gt;data[i].imag = 0.0;</div>
+<div class="line"><span class="lineno">  222</span>    }</div>
+<div class="line"><span class="lineno">  223</span>  } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  224</span>    data = std::shared_ptr&lt;FortranComplex64[]&gt;(<span class="keyword">new</span> FortranComplex64[nsamp]);</div>
+<div class="line"><span class="lineno">  225</span>    <span class="keywordflow">for</span> (std::size_t i = 0; i &lt; nsamp; i++) {</div>
+<div class="line"><span class="lineno">  226</span>      this-&gt;data[i].real = d[i];</div>
+<div class="line"><span class="lineno">  227</span>      this-&gt;data[i].imag = 0.0;</div>
+<div class="line"><span class="lineno">  228</span>    }</div>
+<div class="line"><span class="lineno">  229</span>  }</div>
+<div class="line"><span class="lineno">  230</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -485,15 +474,14 @@ template&lt;class T &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  241</span>{</div>
-<div class="line"><span class="lineno">  242</span>    nsamp=n;</div>
-<div class="line"><span class="lineno">  243</span>    data = std::shared_ptr&lt;FortranComplex64[]&gt;(<span class="keyword">new</span> FortranComplex64[nsamp]);</div>
-<div class="line"><span class="lineno">  244</span>    <span class="keywordflow">for</span>(std::size_t i=0; i&lt;nsamp; i++)</div>
-<div class="line"><span class="lineno">  245</span>    {</div>
-<div class="line"><span class="lineno">  246</span>        this-&gt;data[i].real=d;</div>
-<div class="line"><span class="lineno">  247</span>        this-&gt;data[i].imag=0.0;</div>
-<div class="line"><span class="lineno">  248</span>    }</div>
-<div class="line"><span class="lineno">  249</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  231</span>                                                        {</div>
+<div class="line"><span class="lineno">  232</span>  nsamp = n;</div>
+<div class="line"><span class="lineno">  233</span>  data = std::shared_ptr&lt;FortranComplex64[]&gt;(<span class="keyword">new</span> FortranComplex64[nsamp]);</div>
+<div class="line"><span class="lineno">  234</span>  <span class="keywordflow">for</span> (std::size_t i = 0; i &lt; nsamp; i++) {</div>
+<div class="line"><span class="lineno">  235</span>    this-&gt;data[i].real = d;</div>
+<div class="line"><span class="lineno">  236</span>    this-&gt;data[i].imag = 0.0;</div>
+<div class="line"><span class="lineno">  237</span>  }</div>
+<div class="line"><span class="lineno">  238</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -541,15 +529,14 @@ template&lt;class T &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  106</span>{</div>
-<div class="line"><span class="lineno">  107</span>    nsamp=parent.nsamp;</div>
-<div class="line"><span class="lineno">  108</span>    data = std::shared_ptr&lt;FortranComplex64[]&gt;(<span class="keyword">new</span> FortranComplex64[nsamp]);</div>
-<div class="line"><span class="lineno">  109</span>    <span class="keywordflow">for</span>(std::size_t i=0; i&lt;nsamp; i++)</div>
-<div class="line"><span class="lineno">  110</span>    {</div>
-<div class="line"><span class="lineno">  111</span>        data[i].real=parent.data[i].real;</div>
-<div class="line"><span class="lineno">  112</span>        data[i].imag=parent.data[i].imag;</div>
-<div class="line"><span class="lineno">  113</span>    }</div>
-<div class="line"><span class="lineno">  114</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">   86</span>                                                     {</div>
+<div class="line"><span class="lineno">   87</span>  nsamp = parent.nsamp;</div>
+<div class="line"><span class="lineno">   88</span>  data = std::shared_ptr&lt;FortranComplex64[]&gt;(<span class="keyword">new</span> FortranComplex64[nsamp]);</div>
+<div class="line"><span class="lineno">   89</span>  <span class="keywordflow">for</span> (std::size_t i = 0; i &lt; nsamp; i++) {</div>
+<div class="line"><span class="lineno">   90</span>    data[i].real = parent.data[i].real;</div>
+<div class="line"><span class="lineno">   91</span>    data[i].imag = parent.data[i].imag;</div>
+<div class="line"><span class="lineno">   92</span>  }</div>
+<div class="line"><span class="lineno">   93</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -567,11 +554,11 @@ template&lt;class T &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  130</span>{</div>
-<div class="line"><span class="lineno">  131</span>    <span class="comment">/*Original implementation used a raw pointer for data array.   Changed</span></div>
-<div class="line"><span class="lineno">  132</span><span class="comment">      Dec. 2024 to shared_ptr so this destructor now does nothing.*/</span></div>
-<div class="line"><span class="lineno">  133</span>    <span class="comment">//delete[] data;</span></div>
-<div class="line"><span class="lineno">  134</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  106</span>                            {</div>
+<div class="line"><span class="lineno">  107</span>  <span class="comment">/*Original implementation used a raw pointer for data array.   Changed</span></div>
+<div class="line"><span class="lineno">  108</span><span class="comment">    Dec. 2024 to shared_ptr so this destructor now does nothing.*/</span></div>
+<div class="line"><span class="lineno">  109</span>  <span class="comment">// delete[] data;</span></div>
+<div class="line"><span class="lineno">  110</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -590,13 +577,14 @@ template&lt;class T &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  280</span>{</div>
-<div class="line"><span class="lineno">  281</span>    vector&lt;double&gt; result;</div>
-<div class="line"><span class="lineno">  282</span>    result.reserve(nsamp);</div>
-<div class="line"><span class="lineno">  283</span>    <span class="keywordflow">for</span>(std::size_t i=0; i&lt;nsamp; i++)</div>
-<div class="line"><span class="lineno">  284</span>        result.push_back(sqrt((<span class="keywordtype">double</span>)data[i].real*data[i].real+data[i].imag*data[i].imag));</div>
-<div class="line"><span class="lineno">  285</span>    <span class="keywordflow">return</span> result;</div>
-<div class="line"><span class="lineno">  286</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  245</span>                                       {</div>
+<div class="line"><span class="lineno">  246</span>  vector&lt;double&gt; result;</div>
+<div class="line"><span class="lineno">  247</span>  result.reserve(nsamp);</div>
+<div class="line"><span class="lineno">  248</span>  <span class="keywordflow">for</span> (std::size_t i = 0; i &lt; nsamp; i++)</div>
+<div class="line"><span class="lineno">  249</span>    result.push_back(sqrt((<span class="keywordtype">double</span>)data[i].real * data[i].real +</div>
+<div class="line"><span class="lineno">  250</span>                          data[i].imag * data[i].imag));</div>
+<div class="line"><span class="lineno">  251</span>  <span class="keywordflow">return</span> result;</div>
+<div class="line"><span class="lineno">  252</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -617,10 +605,10 @@ template&lt;class T &gt; </div>
 <p>product of complex and real vectors</p>
 <p>product of complex and a number</p>
 <p>Change vector to complex conjugates. </p>
-<div class="fragment"><div class="line"><span class="lineno">  275</span>{</div>
-<div class="line"><span class="lineno">  276</span>    <span class="keywordflow">for</span>(std::size_t i=0; i&lt;nsamp; i++)</div>
-<div class="line"><span class="lineno">  277</span>        data[i].imag=-data[i].imag;</div>
-<div class="line"><span class="lineno">  278</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  241</span>                        {</div>
+<div class="line"><span class="lineno">  242</span>  <span class="keywordflow">for</span> (std::size_t i = 0; i &lt; nsamp; i++)</div>
+<div class="line"><span class="lineno">  243</span>    data[i].imag = -data[i].imag;</div>
+<div class="line"><span class="lineno">  244</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -638,12 +626,13 @@ template&lt;class T &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  295</span>{</div>
-<div class="line"><span class="lineno">  296</span>    <span class="keywordtype">double</span> result=0;</div>
-<div class="line"><span class="lineno">  297</span>    <span class="keywordflow">for</span>(std::size_t i=0; i&lt;nsamp; i++)</div>
-<div class="line"><span class="lineno">  298</span>        result+=((<span class="keywordtype">double</span>)data[i].real*data[i].real+data[i].imag*data[i].imag);</div>
-<div class="line"><span class="lineno">  299</span>    <span class="keywordflow">return</span> sqrt(result);</div>
-<div class="line"><span class="lineno">  300</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  261</span>                                 {</div>
+<div class="line"><span class="lineno">  262</span>  <span class="keywordtype">double</span> result = 0;</div>
+<div class="line"><span class="lineno">  263</span>  <span class="keywordflow">for</span> (std::size_t i = 0; i &lt; nsamp; i++)</div>
+<div class="line"><span class="lineno">  264</span>    result +=</div>
+<div class="line"><span class="lineno">  265</span>        ((<span class="keywordtype">double</span>)data[i].real * data[i].real + data[i].imag * data[i].imag);</div>
+<div class="line"><span class="lineno">  266</span>  <span class="keywordflow">return</span> sqrt(result);</div>
+<div class="line"><span class="lineno">  267</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -662,14 +651,16 @@ template&lt;class T &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  259</span>{</div>
-<div class="line"><span class="lineno">  260</span>  <span class="keywordflow">try</span>{</div>
-<div class="line"><span class="lineno">  261</span>    <a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array.html#a3d86421b4c2e6c0efb76850f236ac2b5">ComplexArray</a> result(*<span class="keyword">this</span>);</div>
-<div class="line"><span class="lineno">  262</span>    result *= other;</div>
-<div class="line"><span class="lineno">  263</span>    <span class="keywordflow">return</span> result;</div>
-<div class="line"><span class="lineno">  264</span>  }<span class="keywordflow">catch</span>(...){<span class="keywordflow">throw</span>;};</div>
-<div class="line"><span class="lineno">  265</span>}</div>
-<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_html_a3d86421b4c2e6c0efb76850f236ac2b5"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array.html#a3d86421b4c2e6c0efb76850f236ac2b5">mspass::algorithms::deconvolution::ComplexArray::ComplexArray</a></div><div class="ttdeci">ComplexArray()</div><div class="ttdef"><b>Definition</b> ComplexArray.cc:9</div></div>
+<div class="fragment"><div class="line"><span class="lineno">  222</span>                    {</div>
+<div class="line"><span class="lineno">  223</span>  <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">  224</span>    <a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array.html#a3d86421b4c2e6c0efb76850f236ac2b5">ComplexArray</a> result(*<span class="keyword">this</span>);</div>
+<div class="line"><span class="lineno">  225</span>    result *= other;</div>
+<div class="line"><span class="lineno">  226</span>    <span class="keywordflow">return</span> result;</div>
+<div class="line"><span class="lineno">  227</span>  } <span class="keywordflow">catch</span> (...) {</div>
+<div class="line"><span class="lineno">  228</span>    <span class="keywordflow">throw</span>;</div>
+<div class="line"><span class="lineno">  229</span>  };</div>
+<div class="line"><span class="lineno">  230</span>}</div>
+<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_html_a3d86421b4c2e6c0efb76850f236ac2b5"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array.html#a3d86421b4c2e6c0efb76850f236ac2b5">mspass::algorithms::deconvolution::ComplexArray::ComplexArray</a></div><div class="ttdeci">ComplexArray()</div><div class="ttdef"><b>Definition</b> ComplexArray.cc:8</div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -688,26 +679,24 @@ template&lt;class T &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  184</span>{</div>
-<div class="line"><span class="lineno">  185</span>  <span class="keywordflow">if</span>(nsamp != other.nsamp)</div>
-<div class="line"><span class="lineno">  186</span>  {</div>
-<div class="line"><span class="lineno">  187</span>      stringstream sserr;</div>
-<div class="line"><span class="lineno">  188</span>      sserr &lt;&lt; <span class="stringliteral">&quot;ComplexArray::operator*=:  Inconsistent array sizes&quot;</span>&lt;&lt;endl</div>
-<div class="line"><span class="lineno">  189</span>        &lt;&lt; <span class="stringliteral">&quot;left hand side array size=&quot;</span>&lt;&lt;this-&gt;nsamp&lt;&lt;endl</div>
-<div class="line"><span class="lineno">  190</span>    &lt;&lt; <span class="stringliteral">&quot;right hand side array size=&quot;</span>&lt;&lt;other.nsamp&lt;&lt;endl</div>
-<div class="line"><span class="lineno">  191</span>    &lt;&lt; <span class="stringliteral">&quot;Sizes must match to use this operator&quot;</span>&lt;&lt;endl;</div>
-<div class="line"><span class="lineno">  192</span>      <span class="keywordflow">throw</span> MsPASSError(sserr.str(),ErrorSeverity::Invalid);</div>
-<div class="line"><span class="lineno">  193</span>  }</div>
-<div class="line"><span class="lineno">  194</span>  <span class="keywordflow">for</span>(std::size_t i=0; i&lt;nsamp; i++)</div>
-<div class="line"><span class="lineno">  195</span>  {</div>
-<div class="line"><span class="lineno">  196</span>    Complex64 z1(data[i].real,data[i].imag);</div>
-<div class="line"><span class="lineno">  197</span>    Complex64 z2(other.data[i].real,other.data[i].imag);</div>
-<div class="line"><span class="lineno">  198</span>    Complex64 z3(z1*z2);</div>
-<div class="line"><span class="lineno">  199</span>    data[i].real=z3.real();</div>
-<div class="line"><span class="lineno">  200</span>    data[i].imag=z3.imag();</div>
-<div class="line"><span class="lineno">  201</span>  }</div>
-<div class="line"><span class="lineno">  202</span>  <span class="keywordflow">return</span>(*<span class="keyword">this</span>);</div>
-<div class="line"><span class="lineno">  203</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  150</span>                                                                {</div>
+<div class="line"><span class="lineno">  151</span>  <span class="keywordflow">if</span> (nsamp != other.nsamp) {</div>
+<div class="line"><span class="lineno">  152</span>    stringstream sserr;</div>
+<div class="line"><span class="lineno">  153</span>    sserr &lt;&lt; <span class="stringliteral">&quot;ComplexArray::operator*=:  Inconsistent array sizes&quot;</span> &lt;&lt; endl</div>
+<div class="line"><span class="lineno">  154</span>          &lt;&lt; <span class="stringliteral">&quot;left hand side array size=&quot;</span> &lt;&lt; this-&gt;nsamp &lt;&lt; endl</div>
+<div class="line"><span class="lineno">  155</span>          &lt;&lt; <span class="stringliteral">&quot;right hand side array size=&quot;</span> &lt;&lt; other.nsamp &lt;&lt; endl</div>
+<div class="line"><span class="lineno">  156</span>          &lt;&lt; <span class="stringliteral">&quot;Sizes must match to use this operator&quot;</span> &lt;&lt; endl;</div>
+<div class="line"><span class="lineno">  157</span>    <span class="keywordflow">throw</span> MsPASSError(sserr.str(), ErrorSeverity::Invalid);</div>
+<div class="line"><span class="lineno">  158</span>  }</div>
+<div class="line"><span class="lineno">  159</span>  <span class="keywordflow">for</span> (std::size_t i = 0; i &lt; nsamp; i++) {</div>
+<div class="line"><span class="lineno">  160</span>    Complex64 z1(data[i].real, data[i].imag);</div>
+<div class="line"><span class="lineno">  161</span>    Complex64 z2(other.data[i].real, other.data[i].imag);</div>
+<div class="line"><span class="lineno">  162</span>    Complex64 z3(z1 * z2);</div>
+<div class="line"><span class="lineno">  163</span>    data[i].real = z3.real();</div>
+<div class="line"><span class="lineno">  164</span>    data[i].imag = z3.imag();</div>
+<div class="line"><span class="lineno">  165</span>  }</div>
+<div class="line"><span class="lineno">  166</span>  <span class="keywordflow">return</span> (*<span class="keyword">this</span>);</div>
+<div class="line"><span class="lineno">  167</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -726,13 +715,15 @@ template&lt;class T &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  243</span>{</div>
-<div class="line"><span class="lineno">  244</span>  <span class="keywordflow">try</span>{</div>
-<div class="line"><span class="lineno">  245</span>    <a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array.html#a3d86421b4c2e6c0efb76850f236ac2b5">ComplexArray</a> result(*<span class="keyword">this</span>);</div>
-<div class="line"><span class="lineno">  246</span>    result += other;</div>
-<div class="line"><span class="lineno">  247</span>    <span class="keywordflow">return</span> result;</div>
-<div class="line"><span class="lineno">  248</span>  }<span class="keywordflow">catch</span>(...){<span class="keywordflow">throw</span>;};</div>
-<div class="line"><span class="lineno">  249</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  202</span>                    {</div>
+<div class="line"><span class="lineno">  203</span>  <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">  204</span>    <a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array.html#a3d86421b4c2e6c0efb76850f236ac2b5">ComplexArray</a> result(*<span class="keyword">this</span>);</div>
+<div class="line"><span class="lineno">  205</span>    result += other;</div>
+<div class="line"><span class="lineno">  206</span>    <span class="keywordflow">return</span> result;</div>
+<div class="line"><span class="lineno">  207</span>  } <span class="keywordflow">catch</span> (...) {</div>
+<div class="line"><span class="lineno">  208</span>    <span class="keywordflow">throw</span>;</div>
+<div class="line"><span class="lineno">  209</span>  };</div>
+<div class="line"><span class="lineno">  210</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -751,23 +742,21 @@ template&lt;class T &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  148</span>{</div>
-<div class="line"><span class="lineno">  149</span>    <span class="keywordflow">if</span>(nsamp != other.nsamp)</div>
-<div class="line"><span class="lineno">  150</span>    {</div>
-<div class="line"><span class="lineno">  151</span>      stringstream sserr;</div>
-<div class="line"><span class="lineno">  152</span>      sserr &lt;&lt; <span class="stringliteral">&quot;ComplexArray::operator+=:  Inconsistent array sizes&quot;</span>&lt;&lt;endl</div>
-<div class="line"><span class="lineno">  153</span>        &lt;&lt; <span class="stringliteral">&quot;left hand side array size=&quot;</span>&lt;&lt;this-&gt;nsamp&lt;&lt;endl</div>
-<div class="line"><span class="lineno">  154</span>    &lt;&lt; <span class="stringliteral">&quot;right hand side array size=&quot;</span>&lt;&lt;other.nsamp&lt;&lt;endl</div>
-<div class="line"><span class="lineno">  155</span>    &lt;&lt; <span class="stringliteral">&quot;Sizes must match to use this operator&quot;</span>&lt;&lt;endl;</div>
-<div class="line"><span class="lineno">  156</span>      <span class="keywordflow">throw</span> MsPASSError(sserr.str(),ErrorSeverity::Invalid);</div>
-<div class="line"><span class="lineno">  157</span>    }</div>
-<div class="line"><span class="lineno">  158</span>    <span class="keywordflow">for</span>(std::size_t i=0; i&lt;nsamp; i++)</div>
-<div class="line"><span class="lineno">  159</span>    {</div>
-<div class="line"><span class="lineno">  160</span>        data[i].real+=other.data[i].real;</div>
-<div class="line"><span class="lineno">  161</span>        data[i].imag+=other.data[i].imag;</div>
-<div class="line"><span class="lineno">  162</span>    }</div>
-<div class="line"><span class="lineno">  163</span>    <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
-<div class="line"><span class="lineno">  164</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  120</span>                                                                {</div>
+<div class="line"><span class="lineno">  121</span>  <span class="keywordflow">if</span> (nsamp != other.nsamp) {</div>
+<div class="line"><span class="lineno">  122</span>    stringstream sserr;</div>
+<div class="line"><span class="lineno">  123</span>    sserr &lt;&lt; <span class="stringliteral">&quot;ComplexArray::operator+=:  Inconsistent array sizes&quot;</span> &lt;&lt; endl</div>
+<div class="line"><span class="lineno">  124</span>          &lt;&lt; <span class="stringliteral">&quot;left hand side array size=&quot;</span> &lt;&lt; this-&gt;nsamp &lt;&lt; endl</div>
+<div class="line"><span class="lineno">  125</span>          &lt;&lt; <span class="stringliteral">&quot;right hand side array size=&quot;</span> &lt;&lt; other.nsamp &lt;&lt; endl</div>
+<div class="line"><span class="lineno">  126</span>          &lt;&lt; <span class="stringliteral">&quot;Sizes must match to use this operator&quot;</span> &lt;&lt; endl;</div>
+<div class="line"><span class="lineno">  127</span>    <span class="keywordflow">throw</span> MsPASSError(sserr.str(), ErrorSeverity::Invalid);</div>
+<div class="line"><span class="lineno">  128</span>  }</div>
+<div class="line"><span class="lineno">  129</span>  <span class="keywordflow">for</span> (std::size_t i = 0; i &lt; nsamp; i++) {</div>
+<div class="line"><span class="lineno">  130</span>    data[i].real += other.data[i].real;</div>
+<div class="line"><span class="lineno">  131</span>    data[i].imag += other.data[i].imag;</div>
+<div class="line"><span class="lineno">  132</span>  }</div>
+<div class="line"><span class="lineno">  133</span>  <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
+<div class="line"><span class="lineno">  134</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -786,13 +775,15 @@ template&lt;class T &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  251</span>{</div>
-<div class="line"><span class="lineno">  252</span>  <span class="keywordflow">try</span>{</div>
-<div class="line"><span class="lineno">  253</span>    <a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array.html#a3d86421b4c2e6c0efb76850f236ac2b5">ComplexArray</a> result(*<span class="keyword">this</span>);</div>
-<div class="line"><span class="lineno">  254</span>    result -= other;</div>
-<div class="line"><span class="lineno">  255</span>    <span class="keywordflow">return</span> result;</div>
-<div class="line"><span class="lineno">  256</span>  }<span class="keywordflow">catch</span>(...){<span class="keywordflow">throw</span>;};</div>
-<div class="line"><span class="lineno">  257</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  212</span>                    {</div>
+<div class="line"><span class="lineno">  213</span>  <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">  214</span>    <a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array.html#a3d86421b4c2e6c0efb76850f236ac2b5">ComplexArray</a> result(*<span class="keyword">this</span>);</div>
+<div class="line"><span class="lineno">  215</span>    result -= other;</div>
+<div class="line"><span class="lineno">  216</span>    <span class="keywordflow">return</span> result;</div>
+<div class="line"><span class="lineno">  217</span>  } <span class="keywordflow">catch</span> (...) {</div>
+<div class="line"><span class="lineno">  218</span>    <span class="keywordflow">throw</span>;</div>
+<div class="line"><span class="lineno">  219</span>  };</div>
+<div class="line"><span class="lineno">  220</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -811,23 +802,21 @@ template&lt;class T &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  166</span>{</div>
-<div class="line"><span class="lineno">  167</span>    <span class="keywordflow">if</span>(nsamp != other.nsamp)</div>
-<div class="line"><span class="lineno">  168</span>    {</div>
-<div class="line"><span class="lineno">  169</span>      stringstream sserr;</div>
-<div class="line"><span class="lineno">  170</span>      sserr &lt;&lt; <span class="stringliteral">&quot;ComplexArray::operator-=:  Inconsistent array sizes&quot;</span>&lt;&lt;endl</div>
-<div class="line"><span class="lineno">  171</span>        &lt;&lt; <span class="stringliteral">&quot;left hand side array size=&quot;</span>&lt;&lt;this-&gt;nsamp&lt;&lt;endl</div>
-<div class="line"><span class="lineno">  172</span>    &lt;&lt; <span class="stringliteral">&quot;right hand side array size=&quot;</span>&lt;&lt;other.nsamp&lt;&lt;endl</div>
-<div class="line"><span class="lineno">  173</span>    &lt;&lt; <span class="stringliteral">&quot;Sizes must match to use this operator&quot;</span>&lt;&lt;endl;</div>
-<div class="line"><span class="lineno">  174</span>      <span class="keywordflow">throw</span> MsPASSError(sserr.str(),ErrorSeverity::Invalid);</div>
-<div class="line"><span class="lineno">  175</span>    }</div>
-<div class="line"><span class="lineno">  176</span>    <span class="keywordflow">for</span>(std::size_t i=0; i&lt;nsamp; i++)</div>
-<div class="line"><span class="lineno">  177</span>    {</div>
-<div class="line"><span class="lineno">  178</span>        data[i].real-=other.data[i].real;</div>
-<div class="line"><span class="lineno">  179</span>        data[i].imag-=other.data[i].imag;</div>
-<div class="line"><span class="lineno">  180</span>    }</div>
-<div class="line"><span class="lineno">  181</span>    <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
-<div class="line"><span class="lineno">  182</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  135</span>                                                                {</div>
+<div class="line"><span class="lineno">  136</span>  <span class="keywordflow">if</span> (nsamp != other.nsamp) {</div>
+<div class="line"><span class="lineno">  137</span>    stringstream sserr;</div>
+<div class="line"><span class="lineno">  138</span>    sserr &lt;&lt; <span class="stringliteral">&quot;ComplexArray::operator-=:  Inconsistent array sizes&quot;</span> &lt;&lt; endl</div>
+<div class="line"><span class="lineno">  139</span>          &lt;&lt; <span class="stringliteral">&quot;left hand side array size=&quot;</span> &lt;&lt; this-&gt;nsamp &lt;&lt; endl</div>
+<div class="line"><span class="lineno">  140</span>          &lt;&lt; <span class="stringliteral">&quot;right hand side array size=&quot;</span> &lt;&lt; other.nsamp &lt;&lt; endl</div>
+<div class="line"><span class="lineno">  141</span>          &lt;&lt; <span class="stringliteral">&quot;Sizes must match to use this operator&quot;</span> &lt;&lt; endl;</div>
+<div class="line"><span class="lineno">  142</span>    <span class="keywordflow">throw</span> MsPASSError(sserr.str(), ErrorSeverity::Invalid);</div>
+<div class="line"><span class="lineno">  143</span>  }</div>
+<div class="line"><span class="lineno">  144</span>  <span class="keywordflow">for</span> (std::size_t i = 0; i &lt; nsamp; i++) {</div>
+<div class="line"><span class="lineno">  145</span>    data[i].real -= other.data[i].real;</div>
+<div class="line"><span class="lineno">  146</span>    data[i].imag -= other.data[i].imag;</div>
+<div class="line"><span class="lineno">  147</span>  }</div>
+<div class="line"><span class="lineno">  148</span>  <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
+<div class="line"><span class="lineno">  149</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -846,13 +835,15 @@ template&lt;class T &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  267</span>{</div>
-<div class="line"><span class="lineno">  268</span>  <span class="keywordflow">try</span>{</div>
-<div class="line"><span class="lineno">  269</span>    <a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array.html#a3d86421b4c2e6c0efb76850f236ac2b5">ComplexArray</a> result(*<span class="keyword">this</span>);</div>
-<div class="line"><span class="lineno">  270</span>    result /= other;</div>
-<div class="line"><span class="lineno">  271</span>    <span class="keywordflow">return</span> result;</div>
-<div class="line"><span class="lineno">  272</span>  }<span class="keywordflow">catch</span>(...){<span class="keywordflow">throw</span>;};</div>
-<div class="line"><span class="lineno">  273</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  232</span>                    {</div>
+<div class="line"><span class="lineno">  233</span>  <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">  234</span>    <a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array.html#a3d86421b4c2e6c0efb76850f236ac2b5">ComplexArray</a> result(*<span class="keyword">this</span>);</div>
+<div class="line"><span class="lineno">  235</span>    result /= other;</div>
+<div class="line"><span class="lineno">  236</span>    <span class="keywordflow">return</span> result;</div>
+<div class="line"><span class="lineno">  237</span>  } <span class="keywordflow">catch</span> (...) {</div>
+<div class="line"><span class="lineno">  238</span>    <span class="keywordflow">throw</span>;</div>
+<div class="line"><span class="lineno">  239</span>  };</div>
+<div class="line"><span class="lineno">  240</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -871,41 +862,37 @@ template&lt;class T &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  205</span>{</div>
-<div class="line"><span class="lineno">  206</span>  <span class="keywordflow">if</span>(nsamp != other.nsamp)</div>
-<div class="line"><span class="lineno">  207</span>  {</div>
-<div class="line"><span class="lineno">  208</span>      stringstream sserr;</div>
-<div class="line"><span class="lineno">  209</span>      sserr &lt;&lt; <span class="stringliteral">&quot;ComplexArray::operator/=:  Inconsistent array sizes&quot;</span>&lt;&lt;endl</div>
-<div class="line"><span class="lineno">  210</span>        &lt;&lt; <span class="stringliteral">&quot;left hand side array size=&quot;</span>&lt;&lt;this-&gt;nsamp&lt;&lt;endl</div>
-<div class="line"><span class="lineno">  211</span>    &lt;&lt; <span class="stringliteral">&quot;right hand side array size=&quot;</span>&lt;&lt;other.nsamp&lt;&lt;endl</div>
-<div class="line"><span class="lineno">  212</span>    &lt;&lt; <span class="stringliteral">&quot;Sizes must match to use this operator&quot;</span>&lt;&lt;endl;</div>
-<div class="line"><span class="lineno">  213</span>      <span class="keywordflow">throw</span> MsPASSError(sserr.str(),ErrorSeverity::Invalid);</div>
-<div class="line"><span class="lineno">  214</span>  }</div>
-<div class="line"><span class="lineno">  215</span>  <span class="keywordflow">for</span>(std::size_t i=0; i&lt;nsamp; i++)</div>
-<div class="line"><span class="lineno">  216</span>  {</div>
-<div class="line"><span class="lineno">  217</span>    Complex64 z1(data[i].real,data[i].imag);</div>
-<div class="line"><span class="lineno">  218</span>    Complex64 z2(other.data[i].real,other.data[i].imag);</div>
-<div class="line"><span class="lineno">  219</span>    Complex64 z3(z1/z2);</div>
-<div class="line"><span class="lineno">  220</span>    data[i].real=z3.real();</div>
-<div class="line"><span class="lineno">  221</span>    data[i].imag=z3.imag();</div>
-<div class="line"><span class="lineno">  222</span>  }</div>
-<div class="line"><span class="lineno">  223</span>  <span class="comment">/* For efficiency we scan this array for nans rather than</span></div>
-<div class="line"><span class="lineno">  224</span><span class="comment">  put that in the loop above - standard advice for efficiency in</span></div>
-<div class="line"><span class="lineno">  225</span><span class="comment">  vector operators on modern computers */</span></div>
-<div class="line"><span class="lineno">  226</span>  <span class="keywordflow">for</span>(std::size_t i=0;i&lt;nsamp;++i)</div>
-<div class="line"><span class="lineno">  227</span>  {</div>
-<div class="line"><span class="lineno">  228</span>    <span class="keywordflow">if</span>(gsl_isnan(data[i].real) || gsl_isnan(data[i].imag) )</div>
-<div class="line"><span class="lineno">  229</span>    {</div>
-<div class="line"><span class="lineno">  230</span>      stringstream ss;</div>
-<div class="line"><span class="lineno">  231</span>      ss &lt;&lt; <span class="stringliteral">&quot;ComplexArray::operator /=:  Division yielded a NaN &quot;</span></div>
-<div class="line"><span class="lineno">  232</span>        &lt;&lt; <span class="stringliteral">&quot;at sample number &quot;</span>&lt;&lt;i&lt;&lt;endl</div>
-<div class="line"><span class="lineno">  233</span>        &lt;&lt; <span class="stringliteral">&quot;Denominator used for right hand side=&quot;</span>&lt;&lt;other.data[i].real</div>
-<div class="line"><span class="lineno">  234</span>    &lt;&lt; <span class="stringliteral">&quot; + &quot;</span>&lt;&lt;other.data[i].imag&lt;&lt;<span class="stringliteral">&quot; i &quot;</span>&lt;&lt;endl;</div>
-<div class="line"><span class="lineno">  235</span>      <span class="keywordflow">throw</span> MsPASSError(ss.str(),ErrorSeverity::Suspect);</div>
-<div class="line"><span class="lineno">  236</span>    }</div>
-<div class="line"><span class="lineno">  237</span>  }</div>
-<div class="line"><span class="lineno">  238</span>  <span class="keywordflow">return</span>(*<span class="keyword">this</span>);</div>
-<div class="line"><span class="lineno">  239</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  168</span>                                                                {</div>
+<div class="line"><span class="lineno">  169</span>  <span class="keywordflow">if</span> (nsamp != other.nsamp) {</div>
+<div class="line"><span class="lineno">  170</span>    stringstream sserr;</div>
+<div class="line"><span class="lineno">  171</span>    sserr &lt;&lt; <span class="stringliteral">&quot;ComplexArray::operator/=:  Inconsistent array sizes&quot;</span> &lt;&lt; endl</div>
+<div class="line"><span class="lineno">  172</span>          &lt;&lt; <span class="stringliteral">&quot;left hand side array size=&quot;</span> &lt;&lt; this-&gt;nsamp &lt;&lt; endl</div>
+<div class="line"><span class="lineno">  173</span>          &lt;&lt; <span class="stringliteral">&quot;right hand side array size=&quot;</span> &lt;&lt; other.nsamp &lt;&lt; endl</div>
+<div class="line"><span class="lineno">  174</span>          &lt;&lt; <span class="stringliteral">&quot;Sizes must match to use this operator&quot;</span> &lt;&lt; endl;</div>
+<div class="line"><span class="lineno">  175</span>    <span class="keywordflow">throw</span> MsPASSError(sserr.str(), ErrorSeverity::Invalid);</div>
+<div class="line"><span class="lineno">  176</span>  }</div>
+<div class="line"><span class="lineno">  177</span>  <span class="keywordflow">for</span> (std::size_t i = 0; i &lt; nsamp; i++) {</div>
+<div class="line"><span class="lineno">  178</span>    Complex64 z1(data[i].real, data[i].imag);</div>
+<div class="line"><span class="lineno">  179</span>    Complex64 z2(other.data[i].real, other.data[i].imag);</div>
+<div class="line"><span class="lineno">  180</span>    Complex64 z3(z1 / z2);</div>
+<div class="line"><span class="lineno">  181</span>    data[i].real = z3.real();</div>
+<div class="line"><span class="lineno">  182</span>    data[i].imag = z3.imag();</div>
+<div class="line"><span class="lineno">  183</span>  }</div>
+<div class="line"><span class="lineno">  184</span>  <span class="comment">/* For efficiency we scan this array for nans rather than</span></div>
+<div class="line"><span class="lineno">  185</span><span class="comment">  put that in the loop above - standard advice for efficiency in</span></div>
+<div class="line"><span class="lineno">  186</span><span class="comment">  vector operators on modern computers */</span></div>
+<div class="line"><span class="lineno">  187</span>  <span class="keywordflow">for</span> (std::size_t i = 0; i &lt; nsamp; ++i) {</div>
+<div class="line"><span class="lineno">  188</span>    <span class="keywordflow">if</span> (gsl_isnan(data[i].real) || gsl_isnan(data[i].imag)) {</div>
+<div class="line"><span class="lineno">  189</span>      stringstream ss;</div>
+<div class="line"><span class="lineno">  190</span>      ss &lt;&lt; <span class="stringliteral">&quot;ComplexArray::operator /=:  Division yielded a NaN &quot;</span></div>
+<div class="line"><span class="lineno">  191</span>         &lt;&lt; <span class="stringliteral">&quot;at sample number &quot;</span> &lt;&lt; i &lt;&lt; endl</div>
+<div class="line"><span class="lineno">  192</span>         &lt;&lt; <span class="stringliteral">&quot;Denominator used for right hand side=&quot;</span> &lt;&lt; other.data[i].real</div>
+<div class="line"><span class="lineno">  193</span>         &lt;&lt; <span class="stringliteral">&quot; + &quot;</span> &lt;&lt; other.data[i].imag &lt;&lt; <span class="stringliteral">&quot; i &quot;</span> &lt;&lt; endl;</div>
+<div class="line"><span class="lineno">  194</span>      <span class="keywordflow">throw</span> MsPASSError(ss.str(), ErrorSeverity::Suspect);</div>
+<div class="line"><span class="lineno">  195</span>    }</div>
+<div class="line"><span class="lineno">  196</span>  }</div>
+<div class="line"><span class="lineno">  197</span>  <span class="keywordflow">return</span> (*<span class="keyword">this</span>);</div>
+<div class="line"><span class="lineno">  198</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -924,19 +911,18 @@ template&lt;class T &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  116</span>{</div>
-<div class="line"><span class="lineno">  117</span>    <span class="keywordflow">if</span>(&amp;parent != <span class="keyword">this</span>)</div>
-<div class="line"><span class="lineno">  118</span>    {</div>
-<div class="line"><span class="lineno">  119</span>        this-&gt;nsamp=parent.nsamp;</div>
-<div class="line"><span class="lineno">  120</span>        this-&gt;data = std::shared_ptr&lt;FortranComplex64[]&gt;(<span class="keyword">new</span> FortranComplex64[nsamp]);</div>
-<div class="line"><span class="lineno">  121</span>        <span class="keywordflow">for</span>(std::size_t i=0; i&lt;nsamp; i++)</div>
-<div class="line"><span class="lineno">  122</span>        {</div>
-<div class="line"><span class="lineno">  123</span>            this-&gt;data[i].real=parent.data[i].real;</div>
-<div class="line"><span class="lineno">  124</span>            this-&gt;data[i].imag=parent.data[i].imag;</div>
-<div class="line"><span class="lineno">  125</span>        }</div>
-<div class="line"><span class="lineno">  126</span>    }</div>
-<div class="line"><span class="lineno">  127</span>    <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
-<div class="line"><span class="lineno">  128</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">   94</span>                                                                {</div>
+<div class="line"><span class="lineno">   95</span>  <span class="keywordflow">if</span> (&amp;parent != <span class="keyword">this</span>) {</div>
+<div class="line"><span class="lineno">   96</span>    this-&gt;nsamp = parent.nsamp;</div>
+<div class="line"><span class="lineno">   97</span>    this-&gt;data =</div>
+<div class="line"><span class="lineno">   98</span>        std::shared_ptr&lt;FortranComplex64[]&gt;(<span class="keyword">new</span> FortranComplex64[nsamp]);</div>
+<div class="line"><span class="lineno">   99</span>    <span class="keywordflow">for</span> (std::size_t i = 0; i &lt; nsamp; i++) {</div>
+<div class="line"><span class="lineno">  100</span>      this-&gt;data[i].real = parent.data[i].real;</div>
+<div class="line"><span class="lineno">  101</span>      this-&gt;data[i].imag = parent.data[i].imag;</div>
+<div class="line"><span class="lineno">  102</span>    }</div>
+<div class="line"><span class="lineno">  103</span>  }</div>
+<div class="line"><span class="lineno">  104</span>  <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
+<div class="line"><span class="lineno">  105</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -964,9 +950,9 @@ template&lt;class T &gt; </div>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>contents of vector at position sample. </dd></dl>
-<div class="fragment"><div class="line"><span class="lineno">  144</span>{</div>
-<div class="line"><span class="lineno">  145</span>    <span class="keywordflow">return</span> *<span class="keyword">reinterpret_cast&lt;</span>Complex64*<span class="keyword">&gt;</span>(&amp;data[sample].real);</div>
-<div class="line"><span class="lineno">  146</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  117</span>                                             {</div>
+<div class="line"><span class="lineno">  118</span>  <span class="keywordflow">return</span> *<span class="keyword">reinterpret_cast&lt;</span>Complex64 *<span class="keyword">&gt;</span>(&amp;data[sample].real);</div>
+<div class="line"><span class="lineno">  119</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -984,13 +970,13 @@ template&lt;class T &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  302</span>{</div>
-<div class="line"><span class="lineno">  303</span>    vector&lt;double&gt; result;</div>
-<div class="line"><span class="lineno">  304</span>    result.reserve(nsamp);</div>
-<div class="line"><span class="lineno">  305</span>    <span class="keywordflow">for</span>(std::size_t i=0; i&lt;nsamp; i++)</div>
-<div class="line"><span class="lineno">  306</span>        result.push_back(atan2((<span class="keywordtype">double</span>)data[i].imag,(<span class="keywordtype">double</span>)data[i].real));</div>
-<div class="line"><span class="lineno">  307</span>    <span class="keywordflow">return</span> result;</div>
-<div class="line"><span class="lineno">  308</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  268</span>                                         {</div>
+<div class="line"><span class="lineno">  269</span>  vector&lt;double&gt; result;</div>
+<div class="line"><span class="lineno">  270</span>  result.reserve(nsamp);</div>
+<div class="line"><span class="lineno">  271</span>  <span class="keywordflow">for</span> (std::size_t i = 0; i &lt; nsamp; i++)</div>
+<div class="line"><span class="lineno">  272</span>    result.push_back(atan2((<span class="keywordtype">double</span>)data[i].imag, (<span class="keywordtype">double</span>)data[i].real));</div>
+<div class="line"><span class="lineno">  273</span>  <span class="keywordflow">return</span> result;</div>
+<div class="line"><span class="lineno">  274</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1008,9 +994,9 @@ template&lt;class T &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  136</span>{</div>
-<div class="line"><span class="lineno">  137</span>    <span class="keywordflow">return</span> <span class="keyword">reinterpret_cast&lt;</span><span class="keywordtype">double</span>*<span class="keyword">&gt;</span>(&amp;data[0].real);</div>
-<div class="line"><span class="lineno">  138</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  111</span>                          {</div>
+<div class="line"><span class="lineno">  112</span>  <span class="keywordflow">return</span> <span class="keyword">reinterpret_cast&lt;</span><span class="keywordtype">double</span> *<span class="keyword">&gt;</span>(&amp;data[0].real);</div>
+<div class="line"><span class="lineno">  113</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1029,9 +1015,9 @@ template&lt;class T &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  140</span>{</div>
-<div class="line"><span class="lineno">  141</span>    <span class="keywordflow">return</span> <span class="keyword">reinterpret_cast&lt;</span><span class="keywordtype">double</span>*<span class="keyword">&gt;</span>(&amp;data[sample].real);</div>
-<div class="line"><span class="lineno">  142</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  114</span>                                    {</div>
+<div class="line"><span class="lineno">  115</span>  <span class="keywordflow">return</span> <span class="keyword">reinterpret_cast&lt;</span><span class="keywordtype">double</span> *<span class="keyword">&gt;</span>(&amp;data[sample].real);</div>
+<div class="line"><span class="lineno">  116</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1049,12 +1035,14 @@ template&lt;class T &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  288</span>{</div>
-<div class="line"><span class="lineno">  289</span>    <span class="keywordtype">double</span> result=0;</div>
-<div class="line"><span class="lineno">  290</span>    <span class="keywordflow">for</span>(std::size_t i=0; i&lt;nsamp; i++)</div>
-<div class="line"><span class="lineno">  291</span>        result+=((<span class="keywordtype">double</span>)data[i].real*data[i].real+data[i].imag*data[i].imag)/nsamp/nsamp;</div>
-<div class="line"><span class="lineno">  292</span>    <span class="keywordflow">return</span> sqrt(result);</div>
-<div class="line"><span class="lineno">  293</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  253</span>                               {</div>
+<div class="line"><span class="lineno">  254</span>  <span class="keywordtype">double</span> result = 0;</div>
+<div class="line"><span class="lineno">  255</span>  <span class="keywordflow">for</span> (std::size_t i = 0; i &lt; nsamp; i++)</div>
+<div class="line"><span class="lineno">  256</span>    result +=</div>
+<div class="line"><span class="lineno">  257</span>        ((<span class="keywordtype">double</span>)data[i].real * data[i].real + data[i].imag * data[i].imag) /</div>
+<div class="line"><span class="lineno">  258</span>        nsamp / nsamp;</div>
+<div class="line"><span class="lineno">  259</span>  <span class="keywordflow">return</span> sqrt(result);</div>
+<div class="line"><span class="lineno">  260</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1072,9 +1060,7 @@ template&lt;class T &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  310</span>{</div>
-<div class="line"><span class="lineno">  311</span>    <span class="keywordflow">return</span> nsamp;</div>
-<div class="line"><span class="lineno">  312</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  275</span>{ <span class="keywordflow">return</span> nsamp; }</div>
 </div><!-- fragment -->
 </div>
 </div>

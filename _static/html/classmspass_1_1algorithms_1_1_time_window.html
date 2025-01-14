@@ -121,8 +121,7 @@ Public Attributes</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Defines a time window. </p>
-<p>Time windows are a common concept in time series analysis and seismology in particular. The object definition here has no concept of a time standard. It simply defines an interval in terms of a pair of real numbers. <br  />
- </p>
+<p>Time windows are a common concept in time series analysis and seismology in particular. The object definition here has no concept of a time standard. It simply defines an interval in terms of a pair of real numbers. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a47add95b4b08cb15b8bad29453a93358" name="a47add95b4b08cb15b8bad29453a93358"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a47add95b4b08cb15b8bad29453a93358">&#9670;&#160;</a></span>TimeWindow() <span class="overload">[1/3]</span></h2>
@@ -147,9 +146,12 @@ Public Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 <p>Default constructor. </p>
-<div class="fragment"><div class="line"><span class="lineno">   27</span>{<a class="code hl_variable" href="classmspass_1_1algorithms_1_1_time_window.html#a2277a3ea634dfe6ba5bc71296d93e76a">start</a>=0.0;<a class="code hl_variable" href="classmspass_1_1algorithms_1_1_time_window.html#a916901f8d5d1dbb2bf38300bf28a2ec3">end</a>=1.0e99;};</div>
-<div class="ttc" id="aclassmspass_1_1algorithms_1_1_time_window_html_a2277a3ea634dfe6ba5bc71296d93e76a"><div class="ttname"><a href="classmspass_1_1algorithms_1_1_time_window.html#a2277a3ea634dfe6ba5bc71296d93e76a">mspass::algorithms::TimeWindow::start</a></div><div class="ttdeci">double start</div><div class="ttdef"><b>Definition</b> TimeWindow.h:19</div></div>
-<div class="ttc" id="aclassmspass_1_1algorithms_1_1_time_window_html_a916901f8d5d1dbb2bf38300bf28a2ec3"><div class="ttname"><a href="classmspass_1_1algorithms_1_1_time_window.html#a916901f8d5d1dbb2bf38300bf28a2ec3">mspass::algorithms::TimeWindow::end</a></div><div class="ttdeci">double end</div><div class="ttdef"><b>Definition</b> TimeWindow.h:23</div></div>
+<div class="fragment"><div class="line"><span class="lineno">   25</span>               {</div>
+<div class="line"><span class="lineno">   26</span>    <a class="code hl_variable" href="classmspass_1_1algorithms_1_1_time_window.html#a2277a3ea634dfe6ba5bc71296d93e76a">start</a> = 0.0;</div>
+<div class="line"><span class="lineno">   27</span>    <a class="code hl_variable" href="classmspass_1_1algorithms_1_1_time_window.html#a916901f8d5d1dbb2bf38300bf28a2ec3">end</a> = 1.0e99;</div>
+<div class="line"><span class="lineno">   28</span>  };</div>
+<div class="ttc" id="aclassmspass_1_1algorithms_1_1_time_window_html_a2277a3ea634dfe6ba5bc71296d93e76a"><div class="ttname"><a href="classmspass_1_1algorithms_1_1_time_window.html#a2277a3ea634dfe6ba5bc71296d93e76a">mspass::algorithms::TimeWindow::start</a></div><div class="ttdeci">double start</div><div class="ttdef"><b>Definition</b> TimeWindow.h:17</div></div>
+<div class="ttc" id="aclassmspass_1_1algorithms_1_1_time_window_html_a916901f8d5d1dbb2bf38300bf28a2ec3"><div class="ttname"><a href="classmspass_1_1algorithms_1_1_time_window.html#a916901f8d5d1dbb2bf38300bf28a2ec3">mspass::algorithms::TimeWindow::end</a></div><div class="ttdeci">double end</div><div class="ttdef"><b>Definition</b> TimeWindow.h:21</div></div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1algorithms_1_1_time_window.html#a916901f8d5d1dbb2bf38300bf28a2ec3">end</a>, and <a class="el" href="classmspass_1_1algorithms_1_1_time_window.html#a2277a3ea634dfe6ba5bc71296d93e76a">start</a>.</p>
 
@@ -195,7 +197,10 @@ Public Attributes</h2></td></tr>
   </table>
   </dd>
 </dl>
-<div class="fragment"><div class="line"><span class="lineno">   33</span>{<a class="code hl_variable" href="classmspass_1_1algorithms_1_1_time_window.html#a2277a3ea634dfe6ba5bc71296d93e76a">start</a>=ts;<a class="code hl_variable" href="classmspass_1_1algorithms_1_1_time_window.html#a916901f8d5d1dbb2bf38300bf28a2ec3">end</a>=te;};</div>
+<div class="fragment"><div class="line"><span class="lineno">   34</span>                                               {</div>
+<div class="line"><span class="lineno">   35</span>    <a class="code hl_variable" href="classmspass_1_1algorithms_1_1_time_window.html#a2277a3ea634dfe6ba5bc71296d93e76a">start</a> = ts;</div>
+<div class="line"><span class="lineno">   36</span>    <a class="code hl_variable" href="classmspass_1_1algorithms_1_1_time_window.html#a916901f8d5d1dbb2bf38300bf28a2ec3">end</a> = te;</div>
+<div class="line"><span class="lineno">   37</span>  };</div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1algorithms_1_1_time_window.html#a916901f8d5d1dbb2bf38300bf28a2ec3">end</a>, and <a class="el" href="classmspass_1_1algorithms_1_1_time_window.html#a2277a3ea634dfe6ba5bc71296d93e76a">start</a>.</p>
 
@@ -224,10 +229,10 @@ Public Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   35</span>  {</div>
-<div class="line"><span class="lineno">   36</span>    <a class="code hl_variable" href="classmspass_1_1algorithms_1_1_time_window.html#a2277a3ea634dfe6ba5bc71296d93e76a">start</a>=parent.start;</div>
-<div class="line"><span class="lineno">   37</span>    <a class="code hl_variable" href="classmspass_1_1algorithms_1_1_time_window.html#a916901f8d5d1dbb2bf38300bf28a2ec3">end</a>=parent.end;</div>
-<div class="line"><span class="lineno">   38</span>  }</div>
+<div class="fragment"><div class="line"><span class="lineno">   38</span>                                       {</div>
+<div class="line"><span class="lineno">   39</span>    <a class="code hl_variable" href="classmspass_1_1algorithms_1_1_time_window.html#a2277a3ea634dfe6ba5bc71296d93e76a">start</a> = parent.start;</div>
+<div class="line"><span class="lineno">   40</span>    <a class="code hl_variable" href="classmspass_1_1algorithms_1_1_time_window.html#a916901f8d5d1dbb2bf38300bf28a2ec3">end</a> = parent.end;</div>
+<div class="line"><span class="lineno">   41</span>  }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -255,9 +260,7 @@ Public Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 <p>Returns the window length </p>
-<div class="fragment"><div class="line"><span class="lineno">   62</span>  {</div>
-<div class="line"><span class="lineno">   63</span>    <span class="keywordflow">return</span>(<a class="code hl_variable" href="classmspass_1_1algorithms_1_1_time_window.html#a916901f8d5d1dbb2bf38300bf28a2ec3">end</a>-<a class="code hl_variable" href="classmspass_1_1algorithms_1_1_time_window.html#a2277a3ea634dfe6ba5bc71296d93e76a">start</a>);</div>
-<div class="line"><span class="lineno">   64</span>  };</div>
+<div class="fragment"><div class="line"><span class="lineno">   61</span>{ <span class="keywordflow">return</span> (<a class="code hl_variable" href="classmspass_1_1algorithms_1_1_time_window.html#a916901f8d5d1dbb2bf38300bf28a2ec3">end</a> - <a class="code hl_variable" href="classmspass_1_1algorithms_1_1_time_window.html#a2277a3ea634dfe6ba5bc71296d93e76a">start</a>); };</div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1algorithms_1_1_time_window.html#a916901f8d5d1dbb2bf38300bf28a2ec3">end</a>, and <a class="el" href="classmspass_1_1algorithms_1_1_time_window.html#a2277a3ea634dfe6ba5bc71296d93e76a">start</a>.</p>
 
@@ -286,14 +289,13 @@ Public Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   40</span>  {</div>
-<div class="line"><span class="lineno">   41</span>    <span class="keywordflow">if</span>(&amp;parent!=<span class="keyword">this</span>)</div>
-<div class="line"><span class="lineno">   42</span>    {</div>
-<div class="line"><span class="lineno">   43</span>      <a class="code hl_variable" href="classmspass_1_1algorithms_1_1_time_window.html#a2277a3ea634dfe6ba5bc71296d93e76a">start</a>=parent.start;</div>
-<div class="line"><span class="lineno">   44</span>      <a class="code hl_variable" href="classmspass_1_1algorithms_1_1_time_window.html#a916901f8d5d1dbb2bf38300bf28a2ec3">end</a>=parent.end;</div>
-<div class="line"><span class="lineno">   45</span>    }</div>
-<div class="line"><span class="lineno">   46</span>    <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
-<div class="line"><span class="lineno">   47</span>  }</div>
+<div class="fragment"><div class="line"><span class="lineno">   42</span>                                                  {</div>
+<div class="line"><span class="lineno">   43</span>    <span class="keywordflow">if</span> (&amp;parent != <span class="keyword">this</span>) {</div>
+<div class="line"><span class="lineno">   44</span>      <a class="code hl_variable" href="classmspass_1_1algorithms_1_1_time_window.html#a2277a3ea634dfe6ba5bc71296d93e76a">start</a> = parent.start;</div>
+<div class="line"><span class="lineno">   45</span>      <a class="code hl_variable" href="classmspass_1_1algorithms_1_1_time_window.html#a916901f8d5d1dbb2bf38300bf28a2ec3">end</a> = parent.end;</div>
+<div class="line"><span class="lineno">   46</span>    }</div>
+<div class="line"><span class="lineno">   47</span>    <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
+<div class="line"><span class="lineno">   48</span>  }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -321,13 +323,13 @@ Public Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 <p>Returns a new time window translated by tshift argument. </p>
-<div class="fragment"><div class="line"><span class="lineno">   52</span>  {</div>
+<div class="fragment"><div class="line"><span class="lineno">   52</span>                                              {</div>
 <div class="line"><span class="lineno">   53</span>    <a class="code hl_function" href="classmspass_1_1algorithms_1_1_time_window.html#a47add95b4b08cb15b8bad29453a93358">TimeWindow</a> newwindow(*<span class="keyword">this</span>);</div>
-<div class="line"><span class="lineno">   54</span>    newwindow.start+=tshift;</div>
+<div class="line"><span class="lineno">   54</span>    newwindow.start += tshift;</div>
 <div class="line"><span class="lineno">   55</span>    newwindow.end += tshift;</div>
-<div class="line"><span class="lineno">   56</span>    <span class="keywordflow">return</span>(newwindow);</div>
+<div class="line"><span class="lineno">   56</span>    <span class="keywordflow">return</span> (newwindow);</div>
 <div class="line"><span class="lineno">   57</span>  }</div>
-<div class="ttc" id="aclassmspass_1_1algorithms_1_1_time_window_html_a47add95b4b08cb15b8bad29453a93358"><div class="ttname"><a href="classmspass_1_1algorithms_1_1_time_window.html#a47add95b4b08cb15b8bad29453a93358">mspass::algorithms::TimeWindow::TimeWindow</a></div><div class="ttdeci">TimeWindow()</div><div class="ttdef"><b>Definition</b> TimeWindow.h:27</div></div>
+<div class="ttc" id="aclassmspass_1_1algorithms_1_1_time_window_html_a47add95b4b08cb15b8bad29453a93358"><div class="ttname"><a href="classmspass_1_1algorithms_1_1_time_window.html#a47add95b4b08cb15b8bad29453a93358">mspass::algorithms::TimeWindow::TimeWindow</a></div><div class="ttdeci">TimeWindow()</div><div class="ttdef"><b>Definition</b> TimeWindow.h:25</div></div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1algorithms_1_1_time_window.html#a916901f8d5d1dbb2bf38300bf28a2ec3">end</a>, and <a class="el" href="classmspass_1_1algorithms_1_1_time_window.html#a2277a3ea634dfe6ba5bc71296d93e76a">start</a>.</p>
 

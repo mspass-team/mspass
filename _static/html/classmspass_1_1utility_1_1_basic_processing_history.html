@@ -161,10 +161,10 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>jnm</b></td></
   </tr>
 </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   73</span>  {</div>
-<div class="line"><span class="lineno">   74</span>    jid=std::string();</div>
-<div class="line"><span class="lineno">   75</span>    jnm=std::string();</div>
-<div class="line"><span class="lineno">   76</span>  };</div>
+<div class="fragment"><div class="line"><span class="lineno">   58</span>                           {</div>
+<div class="line"><span class="lineno">   59</span>    jid = std::string();</div>
+<div class="line"><span class="lineno">   60</span>    jnm = std::string();</div>
+<div class="line"><span class="lineno">   61</span>  };</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -190,7 +190,7 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>jnm</b></td></
   </tr>
 </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   77</span>{};</div>
+<div class="fragment"><div class="line"><span class="lineno">   62</span>{};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -227,10 +227,10 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>jnm</b></td></
   </tr>
 </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   79</span>  {</div>
-<div class="line"><span class="lineno">   80</span>    jid=jobid;</div>
-<div class="line"><span class="lineno">   81</span>    jnm=jobname;</div>
-<div class="line"><span class="lineno">   82</span>  };</div>
+<div class="fragment"><div class="line"><span class="lineno">   63</span>                                                                         {</div>
+<div class="line"><span class="lineno">   64</span>    jid = jobid;</div>
+<div class="line"><span class="lineno">   65</span>    jnm = jobname;</div>
+<div class="line"><span class="lineno">   66</span>  };</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -257,10 +257,10 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>jnm</b></td></
   </tr>
 </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   84</span>  {</div>
-<div class="line"><span class="lineno">   85</span>    jid=parent.jid;</div>
-<div class="line"><span class="lineno">   86</span>    jnm=parent.jnm;</div>
-<div class="line"><span class="lineno">   87</span>  };</div>
+<div class="fragment"><div class="line"><span class="lineno">   67</span>                                                               {</div>
+<div class="line"><span class="lineno">   68</span>    jid = parent.jid;</div>
+<div class="line"><span class="lineno">   69</span>    jnm = parent.jnm;</div>
+<div class="line"><span class="lineno">   70</span>  };</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -287,9 +287,7 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>jnm</b></td></
   </tr>
 </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   98</span>  {</div>
-<div class="line"><span class="lineno">   99</span>    <span class="keywordflow">return</span> jid;</div>
-<div class="line"><span class="lineno">  100</span>  };</div>
+<div class="fragment"><div class="line"><span class="lineno">   80</span>{ <span class="keywordflow">return</span> jid; };</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -315,9 +313,7 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>jnm</b></td></
   </tr>
 </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  106</span>  {</div>
-<div class="line"><span class="lineno">  107</span>    <span class="keywordflow">return</span> jnm;</div>
-<div class="line"><span class="lineno">  108</span>  };</div>
+<div class="fragment"><div class="line"><span class="lineno">   82</span>{ <span class="keywordflow">return</span> jnm; };</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -347,7 +343,7 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>jnm</b></td></
 <p>Implementations of this method need to return a count of the number of processing steps that have been applied to put the data in the current state. This method could be made pure, but for convenience the base class always returns 0 since it does not implement the actual history mechanism. </p>
 
 <p>Reimplemented in <a class="el" href="classmspass_1_1utility_1_1_processing_history.html#a04eaa592369744d85f54da21b8de9776">mspass::utility::ProcessingHistory</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   96</span>{<span class="keywordflow">return</span> 0;};</div>
+<div class="fragment"><div class="line"><span class="lineno">   79</span>{ <span class="keywordflow">return</span> 0; };</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -374,14 +370,13 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>jnm</b></td></
   </tr>
 </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  114</span>  {</div>
-<div class="line"><span class="lineno">  115</span>    <span class="keywordflow">if</span>(<span class="keyword">this</span>!=(&amp;parent))</div>
-<div class="line"><span class="lineno">  116</span>    {</div>
-<div class="line"><span class="lineno">  117</span>      jnm=parent.jnm;</div>
-<div class="line"><span class="lineno">  118</span>      jid=parent.jid;</div>
-<div class="line"><span class="lineno">  119</span>    }</div>
-<div class="line"><span class="lineno">  120</span>    <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
-<div class="line"><span class="lineno">  121</span>  }</div>
+<div class="fragment"><div class="line"><span class="lineno">   84</span>                                                                          {</div>
+<div class="line"><span class="lineno">   85</span>    <span class="keywordflow">if</span> (<span class="keyword">this</span> != (&amp;parent)) {</div>
+<div class="line"><span class="lineno">   86</span>      jnm = parent.jnm;</div>
+<div class="line"><span class="lineno">   87</span>      jid = parent.jid;</div>
+<div class="line"><span class="lineno">   88</span>    }</div>
+<div class="line"><span class="lineno">   89</span>    <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
+<div class="line"><span class="lineno">   90</span>  }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -408,9 +403,7 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>jnm</b></td></
   </tr>
 </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  102</span>  {</div>
-<div class="line"><span class="lineno">  103</span>    jid=newjid;</div>
-<div class="line"><span class="lineno">  104</span>  };</div>
+<div class="fragment"><div class="line"><span class="lineno">   81</span>{ jid = newjid; };</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -437,9 +430,7 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>jnm</b></td></
   </tr>
 </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  110</span>  {</div>
-<div class="line"><span class="lineno">  111</span>    jnm=jobname;</div>
-<div class="line"><span class="lineno">  112</span>  };</div>
+<div class="fragment"><div class="line"><span class="lineno">   83</span>{ jnm = jobname; };</div>
 </div><!-- fragment -->
 </div>
 </div>

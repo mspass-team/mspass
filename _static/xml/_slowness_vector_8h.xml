@@ -2,9 +2,9 @@
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="_slowness_vector_8h" kind="file" language="C++">
     <compoundname>SlownessVector.h</compoundname>
-    <includes local="no">string</includes>
     <includes local="no">boost/archive/text_iarchive.hpp</includes>
     <includes local="no">boost/archive/text_oarchive.hpp</includes>
+    <includes local="no">string</includes>
     <includedby refid="mspass_8h" local="yes">/home/runner/work/mspass/mspass/cxx/include/mspass/mspass.h</includedby>
     <includedby refid="_core_seismogram_8h" local="yes">/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h</includedby>
     <includedby refid="_slowness_vector_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/seismic/SlownessVector.cc</includedby>
@@ -19,13 +19,13 @@
         <childnode refid="4" relation="include">
         </childnode>
       </node>
-      <node id="3">
+      <node id="2">
         <label>boost/archive/text_iarchive.hpp</label>
       </node>
-      <node id="4">
+      <node id="3">
         <label>boost/archive/text_oarchive.hpp</label>
       </node>
-      <node id="2">
+      <node id="4">
         <label>string</label>
       </node>
     </incdepgraph>
@@ -87,6 +87,8 @@
         </childnode>
         <childnode refid="10" relation="include">
         </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
         <childnode refid="2" relation="include">
         </childnode>
       </node>
@@ -139,46 +141,44 @@
     <programlisting>
 <codeline lineno="1"><highlight class="preprocessor">#ifndef<sp/>_SLOWNESS_H_</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="2"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>_SLOWNESS_H_</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="3"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;string&gt;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="4"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;boost/archive/text_iarchive.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;boost/archive/text_oarchive.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;boost/archive/text_iarchive.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;boost/archive/text_oarchive.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;string&gt;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="6"><highlight class="normal"></highlight></codeline>
-<codeline lineno="7"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespacemspass_1_1seismic" kindref="compound">mspass::seismic</ref></highlight></codeline>
-<codeline lineno="8"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="17" refid="classmspass_1_1seismic_1_1_slowness_vector" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classmspass_1_1seismic_1_1_slowness_vector" kindref="compound">SlownessVector</ref></highlight></codeline>
-<codeline lineno="18"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="19"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
-<codeline lineno="23" refid="classmspass_1_1seismic_1_1_slowness_vector_1aed8526fcbb32eb86bfb4f193d2ff03f9" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_slowness_vector_1aed8526fcbb32eb86bfb4f193d2ff03f9" kindref="member">ux</ref>;</highlight></codeline>
-<codeline lineno="27" refid="classmspass_1_1seismic_1_1_slowness_vector_1a2a7134614117cc5a648a1d292021fab0" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_slowness_vector_1a2a7134614117cc5a648a1d292021fab0" kindref="member">uy</ref>;</highlight></codeline>
-<codeline lineno="31"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_slowness_vector_1a3286002cf8085454b4acb253a57e3c1b" kindref="member">SlownessVector</ref>();</highlight></codeline>
-<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_slowness_vector_1a3286002cf8085454b4acb253a57e3c1b" kindref="member">SlownessVector</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>ux0,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>uy0,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>az0=0.0);</highlight></codeline>
-<codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_slowness_vector_1a3286002cf8085454b4acb253a57e3c1b" kindref="member">SlownessVector</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_slowness_vector" kindref="compound">SlownessVector</ref>&amp;);</highlight></codeline>
-<codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_slowness_vector_1a2e1d2b9fb9e0267ffa99ccf3291f5540" kindref="member">mag</ref>()<sp/>const<sp/>noexcept;</highlight></codeline>
-<codeline lineno="61"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_slowness_vector_1a6ae77a796e8927aa61c01821a89ea944" kindref="member">azimuth</ref>()<sp/>const<sp/>noexcept;</highlight></codeline>
-<codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_slowness_vector_1aa786c744259c0305097e99ab89505c31" kindref="member">baz</ref>()<sp/>const<sp/>noexcept;<sp/></highlight></codeline>
-<codeline lineno="70"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_slowness_vector" kindref="compound">SlownessVector</ref>&amp;<sp/>operator=(const<sp/><ref refid="classmspass_1_1seismic_1_1_slowness_vector" kindref="compound">SlownessVector</ref>&amp;<sp/>parent);</highlight></codeline>
-<codeline lineno="71"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>\brief<sp/>Standard<sp/>accumulation<sp/>operator.<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_slowness_vector" kindref="compound">SlownessVector</ref>&amp;<sp/>operator+=(const<sp/><ref refid="classmspass_1_1seismic_1_1_slowness_vector" kindref="compound">SlownessVector</ref>&amp;<sp/>other);</highlight></codeline>
-<codeline lineno="73"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>\brief<sp/>Standard<sp/>subtract<sp/>from<sp/><sp/>operator.<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="74"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_slowness_vector" kindref="compound">SlownessVector</ref>&amp;<sp/>operator-=(const<sp/><ref refid="classmspass_1_1seismic_1_1_slowness_vector" kindref="compound">SlownessVector</ref>&amp;<sp/>other);</highlight></codeline>
-<codeline lineno="75"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>\brief<sp/>Standard<sp/>addition<sp/><sp/>operator.<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>const<sp/><ref refid="classmspass_1_1seismic_1_1_slowness_vector" kindref="compound">SlownessVector</ref><sp/>operator+(const<sp/><ref refid="classmspass_1_1seismic_1_1_slowness_vector" kindref="compound">SlownessVector</ref>&amp;<sp/>other)<sp/>const;</highlight></codeline>
-<codeline lineno="77"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>\brief<sp/>Standard<sp/>subraction<sp/><sp/>operator.<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="78"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>const<sp/><ref refid="classmspass_1_1seismic_1_1_slowness_vector" kindref="compound">SlownessVector</ref><sp/>operator-(const<sp/><ref refid="classmspass_1_1seismic_1_1_slowness_vector" kindref="compound">SlownessVector</ref>&amp;<sp/>other)<sp/>const;</highlight></codeline>
-<codeline lineno="79"><highlight class="normal">private:</highlight></codeline>
-<codeline lineno="80"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>azimuth0;</highlight></codeline>
-<codeline lineno="81"><highlight class="normal"><sp/><sp/><sp/><sp/>friend<sp/>class<sp/>boost::serialization::access;</highlight></codeline>
-<codeline lineno="82"><highlight class="normal"><sp/><sp/><sp/><sp/>template&lt;class<sp/>Archive&gt;</highlight></codeline>
-<codeline lineno="83"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>serialize(Archive&amp;<sp/>ar,const<sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>version)</highlight></codeline>
-<codeline lineno="84"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
-<codeline lineno="85"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ar<sp/>&amp;<sp/><ref refid="classmspass_1_1seismic_1_1_slowness_vector_1aed8526fcbb32eb86bfb4f193d2ff03f9" kindref="member">ux</ref>;</highlight></codeline>
-<codeline lineno="86"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ar<sp/>&amp;<sp/><ref refid="classmspass_1_1seismic_1_1_slowness_vector_1a2a7134614117cc5a648a1d292021fab0" kindref="member">uy</ref>;</highlight></codeline>
-<codeline lineno="87"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ar<sp/>&amp;<sp/>azimuth0;</highlight></codeline>
-<codeline lineno="88"><highlight class="normal"><sp/><sp/><sp/><sp/>};</highlight></codeline>
-<codeline lineno="89"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="90"><highlight class="normal"></highlight></codeline>
-<codeline lineno="91"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>End<sp/>mspass::seismic<sp/>namespace<sp/>declaration</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="92"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespacemspass_1_1seismic" kindref="compound">mspass::seismic</ref><sp/>{</highlight></codeline>
+<codeline lineno="16" refid="classmspass_1_1seismic_1_1_slowness_vector" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classmspass_1_1seismic_1_1_slowness_vector" kindref="compound">SlownessVector</ref><sp/>{</highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="21" refid="classmspass_1_1seismic_1_1_slowness_vector_1aed8526fcbb32eb86bfb4f193d2ff03f9" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_slowness_vector_1aed8526fcbb32eb86bfb4f193d2ff03f9" kindref="member">ux</ref>;</highlight></codeline>
+<codeline lineno="25" refid="classmspass_1_1seismic_1_1_slowness_vector_1a2a7134614117cc5a648a1d292021fab0" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_slowness_vector_1a2a7134614117cc5a648a1d292021fab0" kindref="member">uy</ref>;</highlight></codeline>
+<codeline lineno="29"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_slowness_vector_1a3286002cf8085454b4acb253a57e3c1b" kindref="member">SlownessVector</ref>();</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_slowness_vector_1a3286002cf8085454b4acb253a57e3c1b" kindref="member">SlownessVector</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>ux0,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>uy0,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>az0<sp/>=<sp/>0.0);</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_slowness_vector_1a3286002cf8085454b4acb253a57e3c1b" kindref="member">SlownessVector</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_slowness_vector" kindref="compound">SlownessVector</ref><sp/>&amp;);</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_slowness_vector_1a2e1d2b9fb9e0267ffa99ccf3291f5540" kindref="member">mag</ref>()<sp/>const<sp/>noexcept;</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_slowness_vector_1a6ae77a796e8927aa61c01821a89ea944" kindref="member">azimuth</ref>()<sp/>const<sp/>noexcept;</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_slowness_vector_1aa786c744259c0305097e99ab89505c31" kindref="member">baz</ref>()<sp/>const<sp/>noexcept;</highlight></codeline>
+<codeline lineno="68"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_slowness_vector" kindref="compound">SlownessVector</ref><sp/>&amp;operator=(const<sp/><ref refid="classmspass_1_1seismic_1_1_slowness_vector" kindref="compound">SlownessVector</ref><sp/>&amp;parent);</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>\brief<sp/>Standard<sp/>accumulation<sp/>operator.<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="70"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_slowness_vector" kindref="compound">SlownessVector</ref><sp/>&amp;operator+=(const<sp/><ref refid="classmspass_1_1seismic_1_1_slowness_vector" kindref="compound">SlownessVector</ref><sp/>&amp;other);</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>\brief<sp/>Standard<sp/>subtract<sp/>from<sp/><sp/>operator.<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_slowness_vector" kindref="compound">SlownessVector</ref><sp/>&amp;operator-=(const<sp/><ref refid="classmspass_1_1seismic_1_1_slowness_vector" kindref="compound">SlownessVector</ref><sp/>&amp;other);</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>\brief<sp/>Standard<sp/>addition<sp/><sp/>operator.<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="74"><highlight class="normal"><sp/><sp/>const<sp/><ref refid="classmspass_1_1seismic_1_1_slowness_vector" kindref="compound">SlownessVector</ref><sp/>operator+(const<sp/><ref refid="classmspass_1_1seismic_1_1_slowness_vector" kindref="compound">SlownessVector</ref><sp/>&amp;other)<sp/>const;</highlight></codeline>
+<codeline lineno="75"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>\brief<sp/>Standard<sp/>subraction<sp/><sp/>operator.<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="76"><highlight class="normal"><sp/><sp/>const<sp/><ref refid="classmspass_1_1seismic_1_1_slowness_vector" kindref="compound">SlownessVector</ref><sp/>operator-(const<sp/><ref refid="classmspass_1_1seismic_1_1_slowness_vector" kindref="compound">SlownessVector</ref><sp/>&amp;other)<sp/>const;</highlight></codeline>
+<codeline lineno="77"><highlight class="normal"></highlight></codeline>
+<codeline lineno="78"><highlight class="normal">private:</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>azimuth0;</highlight></codeline>
+<codeline lineno="80"><highlight class="normal"><sp/><sp/>friend<sp/>class<sp/>boost::serialization::access;</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"><sp/><sp/>template<sp/>&lt;class<sp/>Archive&gt;</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>serialize(Archive<sp/>&amp;ar,<sp/>const<sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>version)<sp/>{</highlight></codeline>
+<codeline lineno="83"><highlight class="normal"><sp/><sp/><sp/><sp/>ar<sp/>&amp;<sp/><ref refid="classmspass_1_1seismic_1_1_slowness_vector_1aed8526fcbb32eb86bfb4f193d2ff03f9" kindref="member">ux</ref>;</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"><sp/><sp/><sp/><sp/>ar<sp/>&amp;<sp/><ref refid="classmspass_1_1seismic_1_1_slowness_vector_1a2a7134614117cc5a648a1d292021fab0" kindref="member">uy</ref>;</highlight></codeline>
+<codeline lineno="85"><highlight class="normal"><sp/><sp/><sp/><sp/>ar<sp/>&amp;<sp/>azimuth0;</highlight></codeline>
+<codeline lineno="86"><highlight class="normal"><sp/><sp/>};</highlight></codeline>
+<codeline lineno="87"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="88"><highlight class="normal"></highlight></codeline>
+<codeline lineno="89"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>mspass::seismic</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="90"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
     </programlisting>
     <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/SlownessVector.h"/>
   </compounddef>

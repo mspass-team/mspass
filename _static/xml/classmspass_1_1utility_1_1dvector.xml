@@ -18,7 +18,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" line="270" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" bodystart="270" bodyend="270"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" line="276" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" bodystart="276" bodyend="276"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1dvector_1af7a725c9b60712cdec20fd96e67db537" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
@@ -37,7 +37,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" line="272" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" bodystart="272" bodyend="272"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" line="278" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" bodystart="278" bodyend="278"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1dvector_1ae281fd4808613c838195d34339212e56" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -56,7 +56,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" line="274" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/dmatrix.cc" bodystart="249" bodyend="255"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" line="280" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/dmatrix.cc" bodystart="228" bodyend="233"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1dvector_1a64bc0a75cb80e934fd48ea9879482907" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1utility_1_1dvector" kindref="compound">dvector</ref> &amp;</type>
@@ -75,7 +75,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" line="276" column="9" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/dmatrix.cc" bodystart="238" bodyend="248"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" line="282" column="11" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/dmatrix.cc" bodystart="219" bodyend="227"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1dvector_1accddc88c31d3d73955fc91c0eed54035" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>double &amp;</type>
@@ -94,7 +94,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" line="278" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/dmatrix.cc" bodystart="256" bodyend="261"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" line="284" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/dmatrix.cc" bodystart="234" bodyend="238"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="friend">
@@ -116,8 +116,7 @@
         </briefdescription>
         <detaileddescription>
 <para>Matrix vector multiple operator.</para>
-<para>This operator is used for constructs like y=Ax where x is a vector and A is a matrix. y is the returned vector. <linebreak/>
- <parameterlist kind="param"><parameteritem>
+<para>This operator is used for constructs like y=Ax where x is a vector and A is a matrix. y is the returned vector. <parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>A</parametername>
 </parameternamelist>
@@ -149,15 +148,14 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" line="289" column="24" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/dmatrix.cc" bodystart="262" bodyend="276"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" line="295" column="18" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/dmatrix.cc" bodystart="239" bodyend="251"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
 <para>A vector compatible with dmatrix objects. </para>
     </briefdescription>
     <detaileddescription>
-<para>A vector is a special case of a matrix with one row or column. In this implementation, however, it always means a column vector. Hence, it is possible to multiply a vector x and a matrix A as Ax provided they are compatible sizes. This differs from matlab where row and columns vectors are sometimes used interchangably. <linebreak/>
- </para>
+<para>A vector is a special case of a matrix with one row or column. In this implementation, however, it always means a column vector. Hence, it is possible to multiply a vector x and a matrix A as Ax provided they are compatible sizes. This differs from matlab where row and columns vectors are sometimes used interchangably. </para>
     </detaileddescription>
     <inheritancegraph>
       <node id="2">
@@ -183,7 +181,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" line="266" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" bodystart="267" bodyend="290"/>
+    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" line="273" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" bodystart="273" bodyend="296"/>
     <listofallmembers>
       <member refid="classmspass_1_1utility_1_1dmatrix_1af195802dbdd085947b290aaf6c73ce02" prot="protected" virt="non-virtual"><scope>mspass::utility::dvector</scope><name>ary</name></member>
       <member refid="classmspass_1_1utility_1_1dmatrix_1ac32006f0dff7ca1b59fa8f3889deb9e5" prot="public" virt="non-virtual"><scope>mspass::utility::dvector</scope><name>columns</name></member>

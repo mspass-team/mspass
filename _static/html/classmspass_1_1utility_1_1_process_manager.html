@@ -121,10 +121,7 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   10</span>                               : jobnm()</div>
-<div class="line"><span class="lineno">   11</span>{</div>
-<div class="line"><span class="lineno">   12</span>  job_uuid=gen();</div>
-<div class="line"><span class="lineno">   13</span>};</div>
+<div class="fragment"><div class="line"><span class="lineno">   10</span>: jobnm() { job_uuid = gen(); };</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -154,34 +151,30 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   54</span>{</div>
-<div class="line"><span class="lineno">   55</span>  <span class="keywordtype">size_t</span> i;</div>
-<div class="line"><span class="lineno">   56</span>  map&lt;string,vector&lt;AlgorithmDefinition&gt;&gt;::const_iterator aptr;</div>
-<div class="line"><span class="lineno">   57</span>  aptr=algs.find(name);</div>
-<div class="line"><span class="lineno">   58</span>  <span class="keywordflow">if</span>(aptr==algs.end())</div>
-<div class="line"><span class="lineno">   59</span>  {</div>
-<div class="line"><span class="lineno">   60</span>    <span class="comment">/* If the name is not registered the map we don&#39;t want this</span></div>
-<div class="line"><span class="lineno">   61</span><span class="comment">    method to throw an error.  Instead we return the name with</span></div>
-<div class="line"><span class="lineno">   62</span><span class="comment">    the id field set to UNDEFINED*/</span></div>
-<div class="line"><span class="lineno">   63</span>    <span class="keywordflow">return</span> AlgorithmDefinition(name,<span class="stringliteral">&quot;UNDEFINED&quot;</span>,<span class="stringliteral">&quot;UNDEFINED&quot;</span>,<span class="stringliteral">&quot;UNDEFINED&quot;</span>);</div>
-<div class="line"><span class="lineno">   64</span>  }</div>
-<div class="line"><span class="lineno">   65</span>  <span class="keywordflow">else</span></div>
-<div class="line"><span class="lineno">   66</span>  {</div>
-<div class="line"><span class="lineno">   67</span>    i=instance;</div>
-<div class="line"><span class="lineno">   68</span>    <span class="keywordflow">if</span>(instance&gt;=(aptr-&gt;second.size()))</div>
-<div class="line"><span class="lineno">   69</span>    {</div>
-<div class="line"><span class="lineno">   70</span>      cerr &lt;&lt; <span class="stringliteral">&quot;ProcessManager::algorithm(Warning):  &quot;</span></div>
-<div class="line"><span class="lineno">   71</span>        &lt;&lt; <span class="stringliteral">&quot;algorithm=&quot;</span>&lt;&lt;name&lt;&lt;<span class="stringliteral">&quot; was defined but requested instance=&quot;</span></div>
-<div class="line"><span class="lineno">   72</span>        &lt;&lt; instance&lt;&lt;<span class="stringliteral">&quot; exceeds number of defined instances=&quot;</span></div>
-<div class="line"><span class="lineno">   73</span>        &lt;&lt; aptr-&gt;second.size()&lt;&lt;endl</div>
-<div class="line"><span class="lineno">   74</span>        &lt;&lt; <span class="stringliteral">&quot;Set to id for instance=&quot;</span></div>
-<div class="line"><span class="lineno">   75</span>        &lt;&lt; aptr-&gt;second.size() - 1&lt;&lt;endl</div>
-<div class="line"><span class="lineno">   76</span>        &lt;&lt; <span class="stringliteral">&quot;History data may be invalid&quot;</span>&lt;&lt;endl;</div>
-<div class="line"><span class="lineno">   77</span>      i=aptr-&gt;second.size() - 1;</div>
-<div class="line"><span class="lineno">   78</span>    }</div>
-<div class="line"><span class="lineno">   79</span>  }</div>
-<div class="line"><span class="lineno">   80</span>  <span class="keywordflow">return</span> aptr-&gt;second[i];</div>
-<div class="line"><span class="lineno">   81</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">   47</span>                                                                           {</div>
+<div class="line"><span class="lineno">   48</span>  <span class="keywordtype">size_t</span> i;</div>
+<div class="line"><span class="lineno">   49</span>  map&lt;string, vector&lt;AlgorithmDefinition&gt;&gt;::const_iterator aptr;</div>
+<div class="line"><span class="lineno">   50</span>  aptr = algs.find(name);</div>
+<div class="line"><span class="lineno">   51</span>  <span class="keywordflow">if</span> (aptr == algs.end()) {</div>
+<div class="line"><span class="lineno">   52</span>    <span class="comment">/* If the name is not registered the map we don&#39;t want this</span></div>
+<div class="line"><span class="lineno">   53</span><span class="comment">    method to throw an error.  Instead we return the name with</span></div>
+<div class="line"><span class="lineno">   54</span><span class="comment">    the id field set to UNDEFINED*/</span></div>
+<div class="line"><span class="lineno">   55</span>    <span class="keywordflow">return</span> AlgorithmDefinition(name, <span class="stringliteral">&quot;UNDEFINED&quot;</span>, <span class="stringliteral">&quot;UNDEFINED&quot;</span>, <span class="stringliteral">&quot;UNDEFINED&quot;</span>);</div>
+<div class="line"><span class="lineno">   56</span>  } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">   57</span>    i = instance;</div>
+<div class="line"><span class="lineno">   58</span>    <span class="keywordflow">if</span> (instance &gt;= (aptr-&gt;second.size())) {</div>
+<div class="line"><span class="lineno">   59</span>      cerr &lt;&lt; <span class="stringliteral">&quot;ProcessManager::algorithm(Warning):  &quot;</span></div>
+<div class="line"><span class="lineno">   60</span>           &lt;&lt; <span class="stringliteral">&quot;algorithm=&quot;</span> &lt;&lt; name</div>
+<div class="line"><span class="lineno">   61</span>           &lt;&lt; <span class="stringliteral">&quot; was defined but requested instance=&quot;</span> &lt;&lt; instance</div>
+<div class="line"><span class="lineno">   62</span>           &lt;&lt; <span class="stringliteral">&quot; exceeds number of defined instances=&quot;</span> &lt;&lt; aptr-&gt;second.size()</div>
+<div class="line"><span class="lineno">   63</span>           &lt;&lt; endl</div>
+<div class="line"><span class="lineno">   64</span>           &lt;&lt; <span class="stringliteral">&quot;Set to id for instance=&quot;</span> &lt;&lt; aptr-&gt;second.size() - 1 &lt;&lt; endl</div>
+<div class="line"><span class="lineno">   65</span>           &lt;&lt; <span class="stringliteral">&quot;History data may be invalid&quot;</span> &lt;&lt; endl;</div>
+<div class="line"><span class="lineno">   66</span>      i = aptr-&gt;second.size() - 1;</div>
+<div class="line"><span class="lineno">   67</span>    }</div>
+<div class="line"><span class="lineno">   68</span>  }</div>
+<div class="line"><span class="lineno">   69</span>  <span class="keywordflow">return</span> aptr-&gt;second[i];</div>
+<div class="line"><span class="lineno">   70</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -207,9 +200,7 @@ Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  139</span>  {</div>
-<div class="line"><span class="lineno">  140</span>    <span class="keywordflow">return</span> boost::uuids::to_string(job_uuid);</div>
-<div class="line"><span class="lineno">  141</span>  };</div>
+<div class="fragment"><div class="line"><span class="lineno">  123</span>{ <span class="keywordflow">return</span> boost::uuids::to_string(job_uuid); };</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -235,9 +226,7 @@ Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  135</span>  {</div>
-<div class="line"><span class="lineno">  136</span>    <span class="keywordflow">return</span> jobnm;</div>
-<div class="line"><span class="lineno">  137</span>  };</div>
+<div class="fragment"><div class="line"><span class="lineno">  122</span>{ <span class="keywordflow">return</span> jobnm; };</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -267,11 +256,11 @@ Public Member Functions</h2></td></tr>
 <p>Get a new UUID to define unique job run. </p>
 <p>MsPASS data objects are tagged with a UUID to properly handle processing history. Procedures can call his method to get a uuid based on boost's random_generator. We keep the generator in this object because web conversations suggest construction of random_generator is expensive in time and needs to not be done at the object level.</p>
 <dl class="section return"><dt>Returns</dt><dd>new uuid definign this job in string form. </dd></dl>
-<div class="fragment"><div class="line"><span class="lineno">  154</span>  {</div>
-<div class="line"><span class="lineno">  155</span>    boost::uuids::uuid id;</div>
-<div class="line"><span class="lineno">  156</span>    <span class="keywordtype">id</span>=gen();</div>
-<div class="line"><span class="lineno">  157</span>    <span class="keywordflow">return</span> boost::uuids::to_string(<span class="keywordtype">id</span>);</div>
-<div class="line"><span class="lineno">  158</span>  }</div>
+<div class="fragment"><div class="line"><span class="lineno">  135</span>                        {</div>
+<div class="line"><span class="lineno">  136</span>    boost::uuids::uuid id;</div>
+<div class="line"><span class="lineno">  137</span>    <span class="keywordtype">id</span> = gen();</div>
+<div class="line"><span class="lineno">  138</span>    <span class="keywordflow">return</span> boost::uuids::to_string(<span class="keywordtype">id</span>);</div>
+<div class="line"><span class="lineno">  139</span>  }</div>
 </div><!-- fragment -->
 </div>
 </div>

@@ -173,11 +173,11 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>all</b></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  356</span>{</div>
-<div class="line"><span class="lineno">  357</span>  head=<span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">  358</span>  tail=<span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">  359</span>  all=<span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">  360</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  324</span>                         {</div>
+<div class="line"><span class="lineno">  325</span>  head = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  326</span>  tail = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  327</span>  all = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  328</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -207,35 +207,30 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>all</b></td></tr>
 </div><div class="memdoc">
 
 <p>Implements <a class="el" href="classmspass_1_1algorithms_1_1_basic_taper.html">mspass::algorithms::BasicTaper</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  390</span>{</div>
-<div class="line"><span class="lineno">  391</span>  <span class="keywordflow">if</span>(all)</div>
-<div class="line"><span class="lineno">  392</span>  {</div>
-<div class="line"><span class="lineno">  393</span>    <span class="keywordflow">if</span>(d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">npts</a>()!=taper.size())</div>
-<div class="line"><span class="lineno">  394</span>    {</div>
-<div class="line"><span class="lineno">  395</span>      stringstream ss;</div>
-<div class="line"><span class="lineno">  396</span>      ss&lt;&lt;<span class="stringliteral">&quot;VectorTaper apply method:  size mismatch with data&quot;</span>&lt;&lt;endl</div>
-<div class="line"><span class="lineno">  397</span>        &lt;&lt;<span class="stringliteral">&quot;operator taper size=&quot;</span>&lt;&lt;taper.size()&lt;&lt;<span class="stringliteral">&quot; but data vector length=&quot;</span>&lt;&lt;d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">npts</a>()</div>
-<div class="line"><span class="lineno">  398</span>        &lt;&lt;endl</div>
-<div class="line"><span class="lineno">  399</span>        &lt;&lt;<span class="stringliteral">&quot;This operator requires these lengths to match&quot;</span>&lt;&lt;endl;</div>
-<div class="line"><span class="lineno">  400</span>      d.elog.<a class="code hl_function" href="classmspass_1_1utility_1_1_error_logger.html#aa69873ba0aebf67e9ba24d01992c0bcf">log_error</a>(<span class="stringliteral">&quot;VectorTaper&quot;</span>,ss.str(),ErrorSeverity::Complaint);</div>
-<div class="line"><span class="lineno">  401</span>      <span class="keywordflow">return</span> -1;</div>
-<div class="line"><span class="lineno">  402</span>    }</div>
-<div class="line"><span class="lineno">  403</span>    <span class="keywordflow">for</span>(<span class="keywordtype">int</span> i=0;i&lt;d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">npts</a>();++i)</div>
-<div class="line"><span class="lineno">  404</span>    {</div>
-<div class="line"><span class="lineno">  405</span>      <span class="keywordtype">double</span> wt=taper[i];</div>
-<div class="line"><span class="lineno">  406</span>      <span class="keywordflow">for</span>(<span class="keywordtype">int</span> k=0;k&lt;3;++k)</div>
-<div class="line"><span class="lineno">  407</span>      {</div>
-<div class="line"><span class="lineno">  408</span>        d.<a class="code hl_variable" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>(k,i)*=wt;</div>
-<div class="line"><span class="lineno">  409</span>      }</div>
-<div class="line"><span class="lineno">  410</span>    }</div>
-<div class="line"><span class="lineno">  411</span>    <span class="keywordflow">return</span> 0;</div>
-<div class="line"><span class="lineno">  412</span>  }</div>
-<div class="line"><span class="lineno">  413</span>  <span class="keywordflow">else</span></div>
-<div class="line"><span class="lineno">  414</span>    <span class="keywordflow">return</span> -1;</div>
-<div class="line"><span class="lineno">  415</span>}</div>
-<div class="ttc" id="aclassmspass_1_1seismic_1_1_basic_time_series_html_a347b349bb4e1f0e65978dfcd45ae3472"><div class="ttname"><a href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">mspass::seismic::BasicTimeSeries::npts</a></div><div class="ttdeci">size_t npts() const</div><div class="ttdef"><b>Definition</b> BasicTimeSeries.h:188</div></div>
-<div class="ttc" id="aclassmspass_1_1seismic_1_1_core_seismogram_html_a9ac5c7c060d582b1a399fb066d06779f"><div class="ttname"><a href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">mspass::seismic::CoreSeismogram::u</a></div><div class="ttdeci">mspass::utility::dmatrix u</div><div class="ttdef"><b>Definition</b> CoreSeismogram.h:53</div></div>
-<div class="ttc" id="aclassmspass_1_1utility_1_1_error_logger_html_aa69873ba0aebf67e9ba24d01992c0bcf"><div class="ttname"><a href="classmspass_1_1utility_1_1_error_logger.html#aa69873ba0aebf67e9ba24d01992c0bcf">mspass::utility::ErrorLogger::log_error</a></div><div class="ttdeci">int log_error(const mspass::utility::MsPASSError &amp;merr)</div><div class="ttdef"><b>Definition</b> ErrorLogger.cc:81</div></div>
+<div class="fragment"><div class="line"><span class="lineno">  353</span>                                    {</div>
+<div class="line"><span class="lineno">  354</span>  <span class="keywordflow">if</span> (all) {</div>
+<div class="line"><span class="lineno">  355</span>    <span class="keywordflow">if</span> (d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">npts</a>() != taper.size()) {</div>
+<div class="line"><span class="lineno">  356</span>      stringstream ss;</div>
+<div class="line"><span class="lineno">  357</span>      ss &lt;&lt; <span class="stringliteral">&quot;VectorTaper apply method:  size mismatch with data&quot;</span> &lt;&lt; endl</div>
+<div class="line"><span class="lineno">  358</span>         &lt;&lt; <span class="stringliteral">&quot;operator taper size=&quot;</span> &lt;&lt; taper.size()</div>
+<div class="line"><span class="lineno">  359</span>         &lt;&lt; <span class="stringliteral">&quot; but data vector length=&quot;</span> &lt;&lt; d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">npts</a>() &lt;&lt; endl</div>
+<div class="line"><span class="lineno">  360</span>         &lt;&lt; <span class="stringliteral">&quot;This operator requires these lengths to match&quot;</span> &lt;&lt; endl;</div>
+<div class="line"><span class="lineno">  361</span>      d.elog.<a class="code hl_function" href="classmspass_1_1utility_1_1_error_logger.html#aa69873ba0aebf67e9ba24d01992c0bcf">log_error</a>(<span class="stringliteral">&quot;VectorTaper&quot;</span>, ss.str(), ErrorSeverity::Complaint);</div>
+<div class="line"><span class="lineno">  362</span>      <span class="keywordflow">return</span> -1;</div>
+<div class="line"><span class="lineno">  363</span>    }</div>
+<div class="line"><span class="lineno">  364</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">npts</a>(); ++i) {</div>
+<div class="line"><span class="lineno">  365</span>      <span class="keywordtype">double</span> wt = taper[i];</div>
+<div class="line"><span class="lineno">  366</span>      <span class="keywordflow">for</span> (<span class="keywordtype">int</span> k = 0; k &lt; 3; ++k) {</div>
+<div class="line"><span class="lineno">  367</span>        d.<a class="code hl_variable" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>(k, i) *= wt;</div>
+<div class="line"><span class="lineno">  368</span>      }</div>
+<div class="line"><span class="lineno">  369</span>    }</div>
+<div class="line"><span class="lineno">  370</span>    <span class="keywordflow">return</span> 0;</div>
+<div class="line"><span class="lineno">  371</span>  } <span class="keywordflow">else</span></div>
+<div class="line"><span class="lineno">  372</span>    <span class="keywordflow">return</span> -1;</div>
+<div class="line"><span class="lineno">  373</span>}</div>
+<div class="ttc" id="aclassmspass_1_1seismic_1_1_basic_time_series_html_a347b349bb4e1f0e65978dfcd45ae3472"><div class="ttname"><a href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">mspass::seismic::BasicTimeSeries::npts</a></div><div class="ttdeci">size_t npts() const</div><div class="ttdef"><b>Definition</b> BasicTimeSeries.h:171</div></div>
+<div class="ttc" id="aclassmspass_1_1seismic_1_1_core_seismogram_html_a9ac5c7c060d582b1a399fb066d06779f"><div class="ttname"><a href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">mspass::seismic::CoreSeismogram::u</a></div><div class="ttdeci">mspass::utility::dmatrix u</div><div class="ttdef"><b>Definition</b> CoreSeismogram.h:52</div></div>
+<div class="ttc" id="aclassmspass_1_1utility_1_1_error_logger_html_aa69873ba0aebf67e9ba24d01992c0bcf"><div class="ttname"><a href="classmspass_1_1utility_1_1_error_logger.html#aa69873ba0aebf67e9ba24d01992c0bcf">mspass::utility::ErrorLogger::log_error</a></div><div class="ttdeci">int log_error(const mspass::utility::MsPASSError &amp;merr)</div><div class="ttdef"><b>Definition</b> ErrorLogger.cc:72</div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -264,26 +259,24 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>all</b></td></tr>
 </div><div class="memdoc">
 
 <p>Implements <a class="el" href="classmspass_1_1algorithms_1_1_basic_taper.html">mspass::algorithms::BasicTaper</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  370</span>{</div>
-<div class="line"><span class="lineno">  371</span>  <span class="keywordflow">if</span>(all)</div>
-<div class="line"><span class="lineno">  372</span>  {</div>
-<div class="line"><span class="lineno">  373</span>    <span class="keywordflow">if</span>(d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">npts</a>()!=taper.size())</div>
-<div class="line"><span class="lineno">  374</span>    {</div>
-<div class="line"><span class="lineno">  375</span>      stringstream ss;</div>
-<div class="line"><span class="lineno">  376</span>      ss&lt;&lt;<span class="stringliteral">&quot;VectorTaper apply method:  size mismatch with data&quot;</span>&lt;&lt;endl</div>
-<div class="line"><span class="lineno">  377</span>        &lt;&lt;<span class="stringliteral">&quot;operator taper size=&quot;</span>&lt;&lt;taper.size()&lt;&lt;<span class="stringliteral">&quot; but data vector length=&quot;</span>&lt;&lt;d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">npts</a>()</div>
-<div class="line"><span class="lineno">  378</span>        &lt;&lt;endl</div>
-<div class="line"><span class="lineno">  379</span>        &lt;&lt;<span class="stringliteral">&quot;This operator requires these lengths to match&quot;</span>&lt;&lt;endl;</div>
-<div class="line"><span class="lineno">  380</span>      d.elog.<a class="code hl_function" href="classmspass_1_1utility_1_1_error_logger.html#aa69873ba0aebf67e9ba24d01992c0bcf">log_error</a>(<span class="stringliteral">&quot;VectorTaper&quot;</span>,ss.str(),ErrorSeverity::Complaint);</div>
-<div class="line"><span class="lineno">  381</span>      <span class="keywordflow">return</span> -1;</div>
-<div class="line"><span class="lineno">  382</span>    }</div>
-<div class="line"><span class="lineno">  383</span>    <span class="keywordflow">for</span>(<span class="keywordtype">int</span> i=0;i&lt;d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">npts</a>();++i) d.<a class="code hl_variable" href="classmspass_1_1seismic_1_1_core_time_series.html#ab044edb3fe5fe734cb577a4434f390a2">s</a>[i] *= taper[i];</div>
-<div class="line"><span class="lineno">  384</span>    <span class="keywordflow">return</span> 0;</div>
-<div class="line"><span class="lineno">  385</span>  }</div>
-<div class="line"><span class="lineno">  386</span>  <span class="keywordflow">else</span></div>
-<div class="line"><span class="lineno">  387</span>    <span class="keywordflow">return</span> -1;</div>
-<div class="line"><span class="lineno">  388</span>}</div>
-<div class="ttc" id="aclassmspass_1_1seismic_1_1_core_time_series_html_ab044edb3fe5fe734cb577a4434f390a2"><div class="ttname"><a href="classmspass_1_1seismic_1_1_core_time_series.html#ab044edb3fe5fe734cb577a4434f390a2">mspass::seismic::CoreTimeSeries::s</a></div><div class="ttdeci">std::vector&lt; double &gt; s</div><div class="ttdef"><b>Definition</b> CoreTimeSeries.h:28</div></div>
+<div class="fragment"><div class="line"><span class="lineno">  336</span>                                    {</div>
+<div class="line"><span class="lineno">  337</span>  <span class="keywordflow">if</span> (all) {</div>
+<div class="line"><span class="lineno">  338</span>    <span class="keywordflow">if</span> (d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">npts</a>() != taper.size()) {</div>
+<div class="line"><span class="lineno">  339</span>      stringstream ss;</div>
+<div class="line"><span class="lineno">  340</span>      ss &lt;&lt; <span class="stringliteral">&quot;VectorTaper apply method:  size mismatch with data&quot;</span> &lt;&lt; endl</div>
+<div class="line"><span class="lineno">  341</span>         &lt;&lt; <span class="stringliteral">&quot;operator taper size=&quot;</span> &lt;&lt; taper.size()</div>
+<div class="line"><span class="lineno">  342</span>         &lt;&lt; <span class="stringliteral">&quot; but data vector length=&quot;</span> &lt;&lt; d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">npts</a>() &lt;&lt; endl</div>
+<div class="line"><span class="lineno">  343</span>         &lt;&lt; <span class="stringliteral">&quot;This operator requires these lengths to match&quot;</span> &lt;&lt; endl;</div>
+<div class="line"><span class="lineno">  344</span>      d.elog.<a class="code hl_function" href="classmspass_1_1utility_1_1_error_logger.html#aa69873ba0aebf67e9ba24d01992c0bcf">log_error</a>(<span class="stringliteral">&quot;VectorTaper&quot;</span>, ss.str(), ErrorSeverity::Complaint);</div>
+<div class="line"><span class="lineno">  345</span>      <span class="keywordflow">return</span> -1;</div>
+<div class="line"><span class="lineno">  346</span>    }</div>
+<div class="line"><span class="lineno">  347</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">npts</a>(); ++i)</div>
+<div class="line"><span class="lineno">  348</span>      d.<a class="code hl_variable" href="classmspass_1_1seismic_1_1_core_time_series.html#ab044edb3fe5fe734cb577a4434f390a2">s</a>[i] *= taper[i];</div>
+<div class="line"><span class="lineno">  349</span>    <span class="keywordflow">return</span> 0;</div>
+<div class="line"><span class="lineno">  350</span>  } <span class="keywordflow">else</span></div>
+<div class="line"><span class="lineno">  351</span>    <span class="keywordflow">return</span> -1;</div>
+<div class="line"><span class="lineno">  352</span>}</div>
+<div class="ttc" id="aclassmspass_1_1seismic_1_1_core_time_series_html_ab044edb3fe5fe734cb577a4434f390a2"><div class="ttname"><a href="classmspass_1_1seismic_1_1_core_time_series.html#ab044edb3fe5fe734cb577a4434f390a2">mspass::seismic::CoreTimeSeries::s</a></div><div class="ttdeci">std::vector&lt; double &gt; s</div><div class="ttdef"><b>Definition</b> CoreTimeSeries.h:27</div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -309,7 +302,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>all</b></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  162</span>{all=<span class="keyword">false</span>;};</div>
+<div class="fragment"><div class="line"><span class="lineno">  158</span>{ all = <span class="keyword">false</span>; };</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -335,9 +328,10 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>all</b></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  163</span>               {</div>
-<div class="line"><span class="lineno">  164</span>    <span class="keywordflow">if</span>(taper.size()&gt;0) all=<span class="keyword">true</span>;</div>
-<div class="line"><span class="lineno">  165</span>  };</div>
+<div class="fragment"><div class="line"><span class="lineno">  159</span>                {</div>
+<div class="line"><span class="lineno">  160</span>    <span class="keywordflow">if</span> (taper.size() &gt; 0)</div>
+<div class="line"><span class="lineno">  161</span>      all = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  162</span>  };</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -365,7 +359,10 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>all</b></td></tr>
 </div><div class="memdoc">
 
 <p>Implements <a class="el" href="classmspass_1_1algorithms_1_1_basic_taper.html">mspass::algorithms::BasicTaper</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  167</span>{std::cerr &lt;&lt; <span class="stringliteral">&quot;get_t0head not implemented for VectorTaper&quot;</span>;<span class="keywordflow">return</span> 0.0;};</div>
+<div class="fragment"><div class="line"><span class="lineno">  164</span>                            {</div>
+<div class="line"><span class="lineno">  165</span>    std::cerr &lt;&lt; <span class="stringliteral">&quot;get_t0head not implemented for VectorTaper&quot;</span>;</div>
+<div class="line"><span class="lineno">  166</span>    <span class="keywordflow">return</span> 0.0;</div>
+<div class="line"><span class="lineno">  167</span>  };</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -393,7 +390,10 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>all</b></td></tr>
 </div><div class="memdoc">
 
 <p>Implements <a class="el" href="classmspass_1_1algorithms_1_1_basic_taper.html">mspass::algorithms::BasicTaper</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  168</span>{std::cerr &lt;&lt; <span class="stringliteral">&quot;get_t1head not implemented for VectorTaper&quot;</span>;<span class="keywordflow">return</span> 0.0;};</div>
+<div class="fragment"><div class="line"><span class="lineno">  168</span>                            {</div>
+<div class="line"><span class="lineno">  169</span>    std::cerr &lt;&lt; <span class="stringliteral">&quot;get_t1head not implemented for VectorTaper&quot;</span>;</div>
+<div class="line"><span class="lineno">  170</span>    <span class="keywordflow">return</span> 0.0;</div>
+<div class="line"><span class="lineno">  171</span>  };</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -419,7 +419,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>all</b></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  166</span>{<span class="keywordflow">return</span> taper;};</div>
+<div class="fragment"><div class="line"><span class="lineno">  163</span>{ <span class="keywordflow">return</span> taper; };</div>
 </div><!-- fragment -->
 </div>
 </div>

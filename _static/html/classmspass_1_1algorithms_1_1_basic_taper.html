@@ -172,11 +172,11 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>boost::serialization
   </tr>
 </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   24</span>  {</div>
-<div class="line"><span class="lineno">   25</span>    head =<span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">   26</span>    tail = <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">   27</span>    all = <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">   28</span>  };</div>
+<div class="fragment"><div class="line"><span class="lineno">   20</span>               {</div>
+<div class="line"><span class="lineno">   21</span>    head = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">   22</span>    tail = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">   23</span>    all = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">   24</span>  };</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -202,7 +202,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>boost::serialization
   </tr>
 </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   29</span>{};</div>
+<div class="fragment"><div class="line"><span class="lineno">   25</span>{};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -229,7 +229,10 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>boost::serialization
   </tr>
 </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   33</span>{head=<span class="keyword">false</span>;all=<span class="keyword">false</span>;};</div>
+<div class="fragment"><div class="line"><span class="lineno">   29</span>                      {</div>
+<div class="line"><span class="lineno">   30</span>    head = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">   31</span>    all = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">   32</span>  };</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -255,7 +258,10 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>boost::serialization
   </tr>
 </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   35</span>{tail=<span class="keyword">false</span>;all=<span class="keyword">false</span>;};</div>
+<div class="fragment"><div class="line"><span class="lineno">   34</span>                      {</div>
+<div class="line"><span class="lineno">   35</span>    tail = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">   36</span>    all = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">   37</span>  };</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -281,7 +287,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>boost::serialization
   </tr>
 </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   32</span>{head=<span class="keyword">true</span>;};</div>
+<div class="fragment"><div class="line"><span class="lineno">   28</span>{ head = <span class="keyword">true</span>; };</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -307,7 +313,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>boost::serialization
   </tr>
 </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   34</span>{tail=<span class="keyword">true</span>;};</div>
+<div class="fragment"><div class="line"><span class="lineno">   33</span>{ tail = <span class="keyword">true</span>; };</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -333,9 +339,8 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>boost::serialization
   </tr>
 </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   37</span>  {</div>
-<div class="line"><span class="lineno">   38</span>    <span class="keywordflow">if</span>(head || all)</div>
-<div class="line"><span class="lineno">   39</span>    {</div>
+<div class="fragment"><div class="line"><span class="lineno">   38</span>                         {</div>
+<div class="line"><span class="lineno">   39</span>    <span class="keywordflow">if</span> (head || all) {</div>
 <div class="line"><span class="lineno">   40</span>      <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
 <div class="line"><span class="lineno">   41</span>    }</div>
 <div class="line"><span class="lineno">   42</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
@@ -365,13 +370,12 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>boost::serialization
   </tr>
 </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   45</span>  {</div>
-<div class="line"><span class="lineno">   46</span>    <span class="keywordflow">if</span>(tail || all)</div>
-<div class="line"><span class="lineno">   47</span>    {</div>
-<div class="line"><span class="lineno">   48</span>      <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><span class="lineno">   49</span>    }</div>
-<div class="line"><span class="lineno">   50</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">   51</span>  };</div>
+<div class="fragment"><div class="line"><span class="lineno">   44</span>                        {</div>
+<div class="line"><span class="lineno">   45</span>    <span class="keywordflow">if</span> (tail || all) {</div>
+<div class="line"><span class="lineno">   46</span>      <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">   47</span>    }</div>
+<div class="line"><span class="lineno">   48</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">   49</span>  };</div>
 </div><!-- fragment -->
 </div>
 </div>

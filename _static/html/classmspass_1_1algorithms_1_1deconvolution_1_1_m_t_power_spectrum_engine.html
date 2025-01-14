@@ -154,16 +154,16 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Default constructor. Do not use as it produces a null object that is no functional. </p>
-<div class="fragment"><div class="line"><span class="lineno">   19</span>{</div>
-<div class="line"><span class="lineno">   20</span>  taperlen=0;</div>
-<div class="line"><span class="lineno">   21</span>  ntapers=0;</div>
-<div class="line"><span class="lineno">   22</span>  nfft=0;</div>
-<div class="line"><span class="lineno">   23</span>  tbp=0.0;</div>
-<div class="line"><span class="lineno">   24</span>  deltaf=1.0;</div>
-<div class="line"><span class="lineno">   25</span>  operator_dt=1.0;</div>
-<div class="line"><span class="lineno">   26</span>  wavetable=NULL;</div>
-<div class="line"><span class="lineno">   27</span>  workspace=NULL;</div>
-<div class="line"><span class="lineno">   28</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">   17</span>                                             {</div>
+<div class="line"><span class="lineno">   18</span>  taperlen = 0;</div>
+<div class="line"><span class="lineno">   19</span>  ntapers = 0;</div>
+<div class="line"><span class="lineno">   20</span>  nfft = 0;</div>
+<div class="line"><span class="lineno">   21</span>  tbp = 0.0;</div>
+<div class="line"><span class="lineno">   22</span>  deltaf = 1.0;</div>
+<div class="line"><span class="lineno">   23</span>  operator_dt = 1.0;</div>
+<div class="line"><span class="lineno">   24</span>  wavetable = NULL;</div>
+<div class="line"><span class="lineno">   25</span>  workspace = NULL;</div>
+<div class="line"><span class="lineno">   26</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -223,64 +223,59 @@ Public Member Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<div class="fragment"><div class="line"><span class="lineno">   34</span>{</div>
-<div class="line"><span class="lineno">   35</span>  taperlen=winsize;</div>
-<div class="line"><span class="lineno">   36</span>  tbp=tbpin;</div>
-<div class="line"><span class="lineno">   37</span>  ntapers=ntpin;</div>
-<div class="line"><span class="lineno">   38</span>  <span class="keywordflow">if</span>(nfftin&lt;winsize)</div>
-<div class="line"><span class="lineno">   39</span>  {</div>
-<div class="line"><span class="lineno">   40</span>      nfft = nextPowerOf2(winsize);</div>
-<div class="line"><span class="lineno">   41</span>      <span class="keywordflow">if</span>(nfft==winsize) nfft=2*winsize;</div>
-<div class="line"><span class="lineno">   42</span>  }</div>
-<div class="line"><span class="lineno">   43</span>  <span class="keywordflow">else</span></div>
-<div class="line"><span class="lineno">   44</span>      nfft = nfftin;</div>
-<div class="line"><span class="lineno">   45</span>  operator_dt=dtin;</div>
-<div class="line"><span class="lineno">   46</span>  this-&gt;<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#a1dadcf9ec587fa2d48d04066ba1d55b4">set_df</a>(dtin);</div>
-<div class="line"><span class="lineno">   47</span>  <span class="keywordtype">int</span> nseq=<span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(2.0*tbp);</div>
-<div class="line"><span class="lineno">   48</span>  <span class="keywordflow">if</span>(ntapers&gt;nseq)</div>
-<div class="line"><span class="lineno">   49</span>  {</div>
-<div class="line"><span class="lineno">   50</span>    cerr &lt;&lt; <span class="stringliteral">&quot;MTPowerSpectrumEngine (WARNING):  requested number of tapers=&quot;</span>&lt;&lt;ntpin</div>
-<div class="line"><span class="lineno">   51</span>      &lt;&lt; endl</div>
-<div class="line"><span class="lineno">   52</span>      &lt;&lt; <span class="stringliteral">&quot;is inconsistent with requested time time bandwidth product =&quot;</span>&lt;&lt;tbp</div>
-<div class="line"><span class="lineno">   53</span>      &lt;&lt; endl</div>
-<div class="line"><span class="lineno">   54</span>      &lt;&lt; <span class="stringliteral">&quot;Automatically reset number tapers to max allowed=&quot;</span>&lt;&lt;nseq&lt;&lt;endl;</div>
-<div class="line"><span class="lineno">   55</span>    ntapers=nseq;</div>
-<div class="line"><span class="lineno">   56</span>  }</div>
-<div class="line"><span class="lineno">   57</span>  <span class="keywordtype">int</span> seql(0);</div>
-<div class="line"><span class="lineno">   58</span>  <span class="keywordtype">int</span> sequ=ntapers-1;</div>
-<div class="line"><span class="lineno">   59</span>  <span class="keywordtype">double</span> *work=<span class="keyword">new</span> <span class="keywordtype">double</span>[ntapers*taperlen];</div>
-<div class="line"><span class="lineno">   60</span>  dpss_calc(taperlen, tbp, seql, sequ, work);</div>
-<div class="line"><span class="lineno">   61</span>  tapers=dmatrix(ntapers,taperlen);</div>
-<div class="line"><span class="lineno">   62</span>  <span class="keywordtype">int</span> i,ii,j;</div>
-<div class="line"><span class="lineno">   63</span>  <span class="keywordflow">for</span>(i=0,ii=0; i&lt;ntapers; ++i)</div>
-<div class="line"><span class="lineno">   64</span>  {</div>
-<div class="line"><span class="lineno">   65</span>      <span class="keywordflow">for</span>(j=0; j&lt;taperlen; ++j)</div>
-<div class="line"><span class="lineno">   66</span>      {</div>
-<div class="line"><span class="lineno">   67</span>          tapers(i,j)=work[ii];</div>
-<div class="line"><span class="lineno">   68</span>          ++ii;</div>
-<div class="line"><span class="lineno">   69</span>      }</div>
-<div class="line"><span class="lineno">   70</span>  }</div>
-<div class="line"><span class="lineno">   71</span>  <span class="keyword">delete</span> [] work;</div>
-<div class="line"><span class="lineno">   72</span>  <span class="comment">/* To be consistent with Prieto we use this algorithm to convert to </span></div>
-<div class="line"><span class="lineno">   73</span><span class="comment">  what he calls the &quot;positive standard&quot;.   That means we assure the </span></div>
-<div class="line"><span class="lineno">   74</span><span class="comment">  center point is positive.</span></div>
-<div class="line"><span class="lineno">   75</span><span class="comment">  */</span></div>
-<div class="line"><span class="lineno">   76</span>  <span class="keywordflow">for</span>(i=0;i&lt;ntapers;++i)</div>
-<div class="line"><span class="lineno">   77</span>  {</div>
-<div class="line"><span class="lineno">   78</span>    <span class="keywordtype">int</span> lh;  <span class="comment">//matches Prieto algorithm name - see multitaper module</span></div>
-<div class="line"><span class="lineno">   79</span>    <span class="keywordflow">if</span>(taperlen%2)</div>
-<div class="line"><span class="lineno">   80</span>      lh = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>((taperlen+1)/2);</div>
-<div class="line"><span class="lineno">   81</span>    <span class="keywordflow">else</span></div>
-<div class="line"><span class="lineno">   82</span>      lh = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(taperlen/2);</div>
-<div class="line"><span class="lineno">   83</span>    <span class="keywordflow">if</span>(tapers(i,lh)&lt;0.0)</div>
-<div class="line"><span class="lineno">   84</span>    {</div>
-<div class="line"><span class="lineno">   85</span>      <span class="keywordflow">for</span>(j=0;j&lt;taperlen;++j) tapers(i,j) = -tapers(i,j);</div>
-<div class="line"><span class="lineno">   86</span>    }</div>
-<div class="line"><span class="lineno">   87</span>  }</div>
-<div class="line"><span class="lineno">   88</span>  wavetable=gsl_fft_complex_wavetable_alloc (nfft);</div>
-<div class="line"><span class="lineno">   89</span>  workspace=gsl_fft_complex_workspace_alloc (nfft);</div>
-<div class="line"><span class="lineno">   90</span>}</div>
-<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_html_a1dadcf9ec587fa2d48d04066ba1d55b4"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#a1dadcf9ec587fa2d48d04066ba1d55b4">mspass::algorithms::deconvolution::MTPowerSpectrumEngine::set_df</a></div><div class="ttdeci">double set_df(double dt)</div><div class="ttdoc">Putter equivalent of df.</div><div class="ttdef"><b>Definition</b> MTPowerSpectrumEngine.h:134</div></div>
+<div class="fragment"><div class="line"><span class="lineno">   30</span>                                                                {</div>
+<div class="line"><span class="lineno">   31</span>  taperlen = winsize;</div>
+<div class="line"><span class="lineno">   32</span>  tbp = tbpin;</div>
+<div class="line"><span class="lineno">   33</span>  ntapers = ntpin;</div>
+<div class="line"><span class="lineno">   34</span>  <span class="keywordflow">if</span> (nfftin &lt; winsize) {</div>
+<div class="line"><span class="lineno">   35</span>    nfft = nextPowerOf2(winsize);</div>
+<div class="line"><span class="lineno">   36</span>    <span class="keywordflow">if</span> (nfft == winsize)</div>
+<div class="line"><span class="lineno">   37</span>      nfft = 2 * winsize;</div>
+<div class="line"><span class="lineno">   38</span>  } <span class="keywordflow">else</span></div>
+<div class="line"><span class="lineno">   39</span>    nfft = nfftin;</div>
+<div class="line"><span class="lineno">   40</span>  operator_dt = dtin;</div>
+<div class="line"><span class="lineno">   41</span>  this-&gt;<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#a1dadcf9ec587fa2d48d04066ba1d55b4">set_df</a>(dtin);</div>
+<div class="line"><span class="lineno">   42</span>  <span class="keywordtype">int</span> nseq = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(2.0 * tbp);</div>
+<div class="line"><span class="lineno">   43</span>  <span class="keywordflow">if</span> (ntapers &gt; nseq) {</div>
+<div class="line"><span class="lineno">   44</span>    cerr &lt;&lt; <span class="stringliteral">&quot;MTPowerSpectrumEngine (WARNING):  requested number of tapers=&quot;</span></div>
+<div class="line"><span class="lineno">   45</span>         &lt;&lt; ntpin &lt;&lt; endl</div>
+<div class="line"><span class="lineno">   46</span>         &lt;&lt; <span class="stringliteral">&quot;is inconsistent with requested time time bandwidth product =&quot;</span></div>
+<div class="line"><span class="lineno">   47</span>         &lt;&lt; tbp &lt;&lt; endl</div>
+<div class="line"><span class="lineno">   48</span>         &lt;&lt; <span class="stringliteral">&quot;Automatically reset number tapers to max allowed=&quot;</span> &lt;&lt; nseq &lt;&lt; endl;</div>
+<div class="line"><span class="lineno">   49</span>    ntapers = nseq;</div>
+<div class="line"><span class="lineno">   50</span>  }</div>
+<div class="line"><span class="lineno">   51</span>  <span class="keywordtype">int</span> seql(0);</div>
+<div class="line"><span class="lineno">   52</span>  <span class="keywordtype">int</span> sequ = ntapers - 1;</div>
+<div class="line"><span class="lineno">   53</span>  <span class="keywordtype">double</span> *work = <span class="keyword">new</span> <span class="keywordtype">double</span>[ntapers * taperlen];</div>
+<div class="line"><span class="lineno">   54</span>  dpss_calc(taperlen, tbp, seql, sequ, work);</div>
+<div class="line"><span class="lineno">   55</span>  tapers = dmatrix(ntapers, taperlen);</div>
+<div class="line"><span class="lineno">   56</span>  <span class="keywordtype">int</span> i, ii, j;</div>
+<div class="line"><span class="lineno">   57</span>  <span class="keywordflow">for</span> (i = 0, ii = 0; i &lt; ntapers; ++i) {</div>
+<div class="line"><span class="lineno">   58</span>    <span class="keywordflow">for</span> (j = 0; j &lt; taperlen; ++j) {</div>
+<div class="line"><span class="lineno">   59</span>      tapers(i, j) = work[ii];</div>
+<div class="line"><span class="lineno">   60</span>      ++ii;</div>
+<div class="line"><span class="lineno">   61</span>    }</div>
+<div class="line"><span class="lineno">   62</span>  }</div>
+<div class="line"><span class="lineno">   63</span>  <span class="keyword">delete</span>[] work;</div>
+<div class="line"><span class="lineno">   64</span>  <span class="comment">/* To be consistent with Prieto we use this algorithm to convert to</span></div>
+<div class="line"><span class="lineno">   65</span><span class="comment">  what he calls the &quot;positive standard&quot;.   That means we assure the</span></div>
+<div class="line"><span class="lineno">   66</span><span class="comment">  center point is positive.</span></div>
+<div class="line"><span class="lineno">   67</span><span class="comment">  */</span></div>
+<div class="line"><span class="lineno">   68</span>  <span class="keywordflow">for</span> (i = 0; i &lt; ntapers; ++i) {</div>
+<div class="line"><span class="lineno">   69</span>    <span class="keywordtype">int</span> lh; <span class="comment">// matches Prieto algorithm name - see multitaper module</span></div>
+<div class="line"><span class="lineno">   70</span>    <span class="keywordflow">if</span> (taperlen % 2)</div>
+<div class="line"><span class="lineno">   71</span>      lh = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>((taperlen + 1) / 2);</div>
+<div class="line"><span class="lineno">   72</span>    <span class="keywordflow">else</span></div>
+<div class="line"><span class="lineno">   73</span>      lh = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(taperlen / 2);</div>
+<div class="line"><span class="lineno">   74</span>    <span class="keywordflow">if</span> (tapers(i, lh) &lt; 0.0) {</div>
+<div class="line"><span class="lineno">   75</span>      <span class="keywordflow">for</span> (j = 0; j &lt; taperlen; ++j)</div>
+<div class="line"><span class="lineno">   76</span>        tapers(i, j) = -tapers(i, j);</div>
+<div class="line"><span class="lineno">   77</span>    }</div>
+<div class="line"><span class="lineno">   78</span>  }</div>
+<div class="line"><span class="lineno">   79</span>  wavetable = gsl_fft_complex_wavetable_alloc(nfft);</div>
+<div class="line"><span class="lineno">   80</span>  workspace = gsl_fft_complex_workspace_alloc(nfft);</div>
+<div class="line"><span class="lineno">   81</span>}</div>
+<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_html_a1dadcf9ec587fa2d48d04066ba1d55b4"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#a1dadcf9ec587fa2d48d04066ba1d55b4">mspass::algorithms::deconvolution::MTPowerSpectrumEngine::set_df</a></div><div class="ttdeci">double set_df(double dt)</div><div class="ttdoc">Putter equivalent of df.</div><div class="ttdef"><b>Definition</b> MTPowerSpectrumEngine.h:126</div></div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#a1dadcf9ec587fa2d48d04066ba1d55b4">set_df()</a>.</p>
 
@@ -302,17 +297,16 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Standard copy constructor </p>
-<div class="fragment"><div class="line"><span class="lineno">   91</span>                                                                                : tapers(parent.tapers)</div>
-<div class="line"><span class="lineno">   92</span>{</div>
-<div class="line"><span class="lineno">   93</span>  taperlen=parent.taperlen;</div>
-<div class="line"><span class="lineno">   94</span>  ntapers=parent.ntapers;</div>
-<div class="line"><span class="lineno">   95</span>  nfft=parent.nfft;</div>
-<div class="line"><span class="lineno">   96</span>  tbp=parent.tbp;</div>
-<div class="line"><span class="lineno">   97</span>  operator_dt=parent.operator_dt;</div>
-<div class="line"><span class="lineno">   98</span>  deltaf=parent.deltaf;</div>
-<div class="line"><span class="lineno">   99</span>  wavetable=gsl_fft_complex_wavetable_alloc (nfft);</div>
-<div class="line"><span class="lineno">  100</span>  workspace=gsl_fft_complex_workspace_alloc (nfft);</div>
-<div class="line"><span class="lineno">  101</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">   84</span>    : tapers(parent.tapers) {</div>
+<div class="line"><span class="lineno">   85</span>  taperlen = parent.taperlen;</div>
+<div class="line"><span class="lineno">   86</span>  ntapers = parent.ntapers;</div>
+<div class="line"><span class="lineno">   87</span>  nfft = parent.nfft;</div>
+<div class="line"><span class="lineno">   88</span>  tbp = parent.tbp;</div>
+<div class="line"><span class="lineno">   89</span>  operator_dt = parent.operator_dt;</div>
+<div class="line"><span class="lineno">   90</span>  deltaf = parent.deltaf;</div>
+<div class="line"><span class="lineno">   91</span>  wavetable = gsl_fft_complex_wavetable_alloc(nfft);</div>
+<div class="line"><span class="lineno">   92</span>  workspace = gsl_fft_complex_workspace_alloc(nfft);</div>
+<div class="line"><span class="lineno">   93</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -331,10 +325,12 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Destructor. Not trivial as it has to delete the fft workspace and cached tapers. </p>
-<div class="fragment"><div class="line"><span class="lineno">  104</span>{</div>
-<div class="line"><span class="lineno">  105</span>    <span class="keywordflow">if</span>(wavetable!=NULL) gsl_fft_complex_wavetable_free (wavetable);</div>
-<div class="line"><span class="lineno">  106</span>    <span class="keywordflow">if</span>(workspace!=NULL) gsl_fft_complex_workspace_free (workspace);</div>
-<div class="line"><span class="lineno">  107</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">   95</span>                                              {</div>
+<div class="line"><span class="lineno">   96</span>  <span class="keywordflow">if</span> (wavetable != NULL)</div>
+<div class="line"><span class="lineno">   97</span>    gsl_fft_complex_wavetable_free(wavetable);</div>
+<div class="line"><span class="lineno">   98</span>  <span class="keywordflow">if</span> (workspace != NULL)</div>
+<div class="line"><span class="lineno">   99</span>    gsl_fft_complex_workspace_free(workspace);</div>
+<div class="line"><span class="lineno">  100</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -363,73 +359,77 @@ Public Member Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>vector containing estimated power spwecrum </dd></dl>
-<div class="fragment"><div class="line"><span class="lineno">  125</span>{</div>
-<div class="line"><span class="lineno">  126</span>  <span class="keywordflow">try</span>{</div>
-<div class="line"><span class="lineno">  127</span>    <span class="keywordtype">int</span> k;</div>
-<div class="line"><span class="lineno">  128</span>    <span class="comment">/* Used to test for operator sample interval against data sample interval.</span></div>
-<div class="line"><span class="lineno">  129</span><span class="comment">    We don&#39;t use a epsilon comparison as slippery clock data sometime shave sample</span></div>
-<div class="line"><span class="lineno">  130</span><span class="comment">    rates small percentage difference from nominal.*/</span></div>
-<div class="line"><span class="lineno">  131</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> DT_FRACTION_TOLERANCE(0.001);</div>
-<div class="line"><span class="lineno">  132</span>    <span class="keyword">const</span> <span class="keywordtype">string</span> algorithm(<span class="stringliteral">&quot;MTPowerSpectrumEngine&quot;</span>);</div>
-<div class="line"><span class="lineno">  133</span>    <span class="comment">/* We need to define this here to allow posting problems to elog.*/</span></div>
-<div class="line"><span class="lineno">  134</span>    PowerSpectrum result;</div>
-<div class="line"><span class="lineno">  135</span>    <span class="keywordtype">int</span> dsize=d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">npts</a>();</div>
-<div class="line"><span class="lineno">  136</span>    vector&lt;double&gt; work;</div>
-<div class="line"><span class="lineno">  137</span>    work.reserve(this-&gt;nfft);</div>
-<div class="line"><span class="lineno">  138</span>    <span class="keywordtype">double</span> dtfrac=fabs(d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#af31c96c0e2173d7581e1c3a3f8bcfde8">dt</a>()-this-&gt;operator_dt)/this-&gt;operator_dt;</div>
-<div class="line"><span class="lineno">  139</span>    <span class="keywordflow">if</span>(dtfrac&gt;DT_FRACTION_TOLERANCE)</div>
-<div class="line"><span class="lineno">  140</span>    {</div>
-<div class="line"><span class="lineno">  141</span>      stringstream ss;</div>
-<div class="line"><span class="lineno">  142</span>      ss &lt;&lt; <span class="stringliteral">&quot;Date sample interval=&quot;</span>&lt;&lt;d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#af31c96c0e2173d7581e1c3a3f8bcfde8">dt</a>()</div>
-<div class="line"><span class="lineno">  143</span>         &lt;&lt; <span class="stringliteral">&quot; does not match operator sample interval=&quot;</span></div>
-<div class="line"><span class="lineno">  144</span>         &lt;&lt; this-&gt;operator_dt &lt;&lt;endl</div>
-<div class="line"><span class="lineno">  145</span>         &lt;&lt; <span class="stringliteral">&quot;Cannot proceed.  Returning a null result&quot;</span>;</div>
-<div class="line"><span class="lineno">  146</span>      result.elog.log_error(<span class="stringliteral">&quot;MTPowerSpectrumEngine::apply&quot;</span>,</div>
-<div class="line"><span class="lineno">  147</span>            ss.str(), ErrorSeverity::Invalid);</div>
-<div class="line"><span class="lineno">  148</span>      result.kill();</div>
-<div class="line"><span class="lineno">  149</span>      <span class="keywordflow">return</span> result;</div>
-<div class="line"><span class="lineno">  150</span>    }</div>
-<div class="line"><span class="lineno">  151</span> </div>
-<div class="line"><span class="lineno">  152</span>    <span class="keywordflow">if</span>(dsize&lt;taperlen)</div>
-<div class="line"><span class="lineno">  153</span>    {</div>
-<div class="line"><span class="lineno">  154</span>      stringstream ss;</div>
-<div class="line"><span class="lineno">  155</span>      ss&lt;&lt;<span class="stringliteral">&quot;Received data window of length=&quot;</span>&lt;&lt;d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">npts</a>()&lt;&lt;<span class="stringliteral">&quot; samples&quot;</span>&lt;&lt;endl</div>
-<div class="line"><span class="lineno">  156</span>         &lt;&lt; <span class="stringliteral">&quot;Operator length=&quot;</span>&lt;&lt;taperlen&lt;&lt;endl</div>
-<div class="line"><span class="lineno">  157</span>         &lt;&lt; <span class="stringliteral">&quot;Results may be unreliable&quot;</span>&lt;&lt;endl;</div>
-<div class="line"><span class="lineno">  158</span>      result.elog.log_error(algorithm,<span class="keywordtype">string</span>(ss.str()),ErrorSeverity::Suspect);</div>
-<div class="line"><span class="lineno">  159</span>      <span class="keywordflow">for</span>(k=0;k&lt;taperlen;++k)work.push_back(0.0);</div>
-<div class="line"><span class="lineno">  160</span>      <span class="keywordflow">for</span>(k=0;k&lt;dsize;++k)work[k]=d.<a class="code hl_variable" href="classmspass_1_1seismic_1_1_core_time_series.html#ab044edb3fe5fe734cb577a4434f390a2">s</a>[k];</div>
-<div class="line"><span class="lineno">  161</span>    }</div>
-<div class="line"><span class="lineno">  162</span>    <span class="keywordflow">else</span></div>
-<div class="line"><span class="lineno">  163</span>    {</div>
-<div class="line"><span class="lineno">  164</span>      <span class="keywordflow">if</span>(dsize&gt;taperlen)</div>
-<div class="line"><span class="lineno">  165</span>      {</div>
-<div class="line"><span class="lineno">  166</span>        stringstream ss;</div>
-<div class="line"><span class="lineno">  167</span>        ss&lt;&lt;<span class="stringliteral">&quot;Received data window of length=&quot;</span>&lt;&lt;d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">npts</a>()&lt;&lt;<span class="stringliteral">&quot; samples&quot;</span>&lt;&lt;endl</div>
-<div class="line"><span class="lineno">  168</span>           &lt;&lt; <span class="stringliteral">&quot;Operator length=&quot;</span>&lt;&lt;taperlen&lt;&lt;endl</div>
-<div class="line"><span class="lineno">  169</span>           &lt;&lt; <span class="stringliteral">&quot;Results may be unreliable because data will be truncated to taper length&quot;</span>&lt;&lt;endl;</div>
-<div class="line"><span class="lineno">  170</span>        result.elog.log_error(algorithm,ss.str(),ErrorSeverity::Suspect);</div>
-<div class="line"><span class="lineno">  171</span>      }</div>
-<div class="line"><span class="lineno">  172</span>      <span class="keywordflow">for</span>(k=0;k&lt;taperlen;++k)work.push_back(d.<a class="code hl_variable" href="classmspass_1_1seismic_1_1_core_time_series.html#ab044edb3fe5fe734cb577a4434f390a2">s</a>[k]);</div>
-<div class="line"><span class="lineno">  173</span>    }</div>
-<div class="line"><span class="lineno">  174</span>    <span class="comment">/* intentionally omit try catch here because the above logic assures Sizes</span></div>
-<div class="line"><span class="lineno">  175</span><span class="comment">    must match here. This overloaded method will throw an exception in that case.</span></div>
-<div class="line"><span class="lineno">  176</span><span class="comment">    Note in this implementation the result returned by apply is scaled to</span></div>
-<div class="line"><span class="lineno">  177</span><span class="comment">    assumed properly scaled to power spectrum and normalized for multitapers.*/</span></div>
-<div class="line"><span class="lineno">  178</span>    vector&lt;double&gt; spec(this-&gt;<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#aa3c10c25ea2c6b82cf8bbe2991f16bfe">apply</a>(work));</div>
-<div class="line"><span class="lineno">  179</span> </div>
-<div class="line"><span class="lineno">  180</span>    result=PowerSpectrum(<span class="keyword">dynamic_cast&lt;</span><span class="keyword">const </span>Metadata&amp;<span class="keyword">&gt;</span>(d),</div>
-<div class="line"><span class="lineno">  181</span>       spec,deltaf,<span class="keywordtype">string</span>(<span class="stringliteral">&quot;Multitaper&quot;</span>),0.0,d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#af31c96c0e2173d7581e1c3a3f8bcfde8">dt</a>(),d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">npts</a>());</div>
-<div class="line"><span class="lineno">  182</span>    <span class="comment">/* We post these to metadata for the generic PowerSpectrum object. */</span></div>
-<div class="line"><span class="lineno">  183</span>    result.put&lt;<span class="keywordtype">double</span>&gt;(<span class="stringliteral">&quot;time_bandwidth_product&quot;</span>,tbp);</div>
-<div class="line"><span class="lineno">  184</span>    result.put&lt;<span class="keywordtype">long</span>&gt;(<span class="stringliteral">&quot;number_tapers&quot;</span>,ntapers);</div>
-<div class="line"><span class="lineno">  185</span>    <span class="keywordflow">return</span> result;</div>
-<div class="line"><span class="lineno">  186</span>  }<span class="keywordflow">catch</span>(...){<span class="keywordflow">throw</span>;};</div>
-<div class="line"><span class="lineno">  187</span>}</div>
-<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_html_aa3c10c25ea2c6b82cf8bbe2991f16bfe"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#aa3c10c25ea2c6b82cf8bbe2991f16bfe">mspass::algorithms::deconvolution::MTPowerSpectrumEngine::apply</a></div><div class="ttdeci">mspass::seismic::PowerSpectrum apply(const mspass::seismic::TimeSeries &amp;d)</div><div class="ttdef"><b>Definition</b> MTPowerSpectrumEngine.cc:124</div></div>
-<div class="ttc" id="aclassmspass_1_1seismic_1_1_basic_time_series_html_a347b349bb4e1f0e65978dfcd45ae3472"><div class="ttname"><a href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">mspass::seismic::BasicTimeSeries::npts</a></div><div class="ttdeci">size_t npts() const</div><div class="ttdef"><b>Definition</b> BasicTimeSeries.h:188</div></div>
-<div class="ttc" id="aclassmspass_1_1seismic_1_1_basic_time_series_html_af31c96c0e2173d7581e1c3a3f8bcfde8"><div class="ttname"><a href="classmspass_1_1seismic_1_1_basic_time_series.html#af31c96c0e2173d7581e1c3a3f8bcfde8">mspass::seismic::BasicTimeSeries::dt</a></div><div class="ttdeci">double dt() const</div><div class="ttdef"><b>Definition</b> BasicTimeSeries.h:162</div></div>
-<div class="ttc" id="aclassmspass_1_1seismic_1_1_core_time_series_html_ab044edb3fe5fe734cb577a4434f390a2"><div class="ttname"><a href="classmspass_1_1seismic_1_1_core_time_series.html#ab044edb3fe5fe734cb577a4434f390a2">mspass::seismic::CoreTimeSeries::s</a></div><div class="ttdeci">std::vector&lt; double &gt; s</div><div class="ttdef"><b>Definition</b> CoreTimeSeries.h:28</div></div>
+<div class="fragment"><div class="line"><span class="lineno">  116</span>                                                              {</div>
+<div class="line"><span class="lineno">  117</span>  <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">  118</span>    <span class="keywordtype">int</span> k;</div>
+<div class="line"><span class="lineno">  119</span>    <span class="comment">/* Used to test for operator sample interval against data sample interval.</span></div>
+<div class="line"><span class="lineno">  120</span><span class="comment">    We don&#39;t use a epsilon comparison as slippery clock data sometime shave</span></div>
+<div class="line"><span class="lineno">  121</span><span class="comment">    sample rates small percentage difference from nominal.*/</span></div>
+<div class="line"><span class="lineno">  122</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> DT_FRACTION_TOLERANCE(0.001);</div>
+<div class="line"><span class="lineno">  123</span>    <span class="keyword">const</span> <span class="keywordtype">string</span> algorithm(<span class="stringliteral">&quot;MTPowerSpectrumEngine&quot;</span>);</div>
+<div class="line"><span class="lineno">  124</span>    <span class="comment">/* We need to define this here to allow posting problems to elog.*/</span></div>
+<div class="line"><span class="lineno">  125</span>    PowerSpectrum result;</div>
+<div class="line"><span class="lineno">  126</span>    <span class="keywordtype">int</span> dsize = d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">npts</a>();</div>
+<div class="line"><span class="lineno">  127</span>    vector&lt;double&gt; work;</div>
+<div class="line"><span class="lineno">  128</span>    work.reserve(this-&gt;nfft);</div>
+<div class="line"><span class="lineno">  129</span>    <span class="keywordtype">double</span> dtfrac = fabs(d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#af31c96c0e2173d7581e1c3a3f8bcfde8">dt</a>() - this-&gt;operator_dt) / this-&gt;operator_dt;</div>
+<div class="line"><span class="lineno">  130</span>    <span class="keywordflow">if</span> (dtfrac &gt; DT_FRACTION_TOLERANCE) {</div>
+<div class="line"><span class="lineno">  131</span>      stringstream ss;</div>
+<div class="line"><span class="lineno">  132</span>      ss &lt;&lt; <span class="stringliteral">&quot;Date sample interval=&quot;</span> &lt;&lt; d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#af31c96c0e2173d7581e1c3a3f8bcfde8">dt</a>()</div>
+<div class="line"><span class="lineno">  133</span>         &lt;&lt; <span class="stringliteral">&quot; does not match operator sample interval=&quot;</span> &lt;&lt; this-&gt;operator_dt</div>
+<div class="line"><span class="lineno">  134</span>         &lt;&lt; endl</div>
+<div class="line"><span class="lineno">  135</span>         &lt;&lt; <span class="stringliteral">&quot;Cannot proceed.  Returning a null result&quot;</span>;</div>
+<div class="line"><span class="lineno">  136</span>      result.elog.log_error(<span class="stringliteral">&quot;MTPowerSpectrumEngine::apply&quot;</span>, ss.str(),</div>
+<div class="line"><span class="lineno">  137</span>                            ErrorSeverity::Invalid);</div>
+<div class="line"><span class="lineno">  138</span>      result.kill();</div>
+<div class="line"><span class="lineno">  139</span>      <span class="keywordflow">return</span> result;</div>
+<div class="line"><span class="lineno">  140</span>    }</div>
+<div class="line"><span class="lineno">  141</span> </div>
+<div class="line"><span class="lineno">  142</span>    <span class="keywordflow">if</span> (dsize &lt; taperlen) {</div>
+<div class="line"><span class="lineno">  143</span>      stringstream ss;</div>
+<div class="line"><span class="lineno">  144</span>      ss &lt;&lt; <span class="stringliteral">&quot;Received data window of length=&quot;</span> &lt;&lt; d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">npts</a>() &lt;&lt; <span class="stringliteral">&quot; samples&quot;</span> &lt;&lt; endl</div>
+<div class="line"><span class="lineno">  145</span>         &lt;&lt; <span class="stringliteral">&quot;Operator length=&quot;</span> &lt;&lt; taperlen &lt;&lt; endl</div>
+<div class="line"><span class="lineno">  146</span>         &lt;&lt; <span class="stringliteral">&quot;Results may be unreliable&quot;</span> &lt;&lt; endl;</div>
+<div class="line"><span class="lineno">  147</span>      result.elog.log_error(algorithm, <span class="keywordtype">string</span>(ss.str()),</div>
+<div class="line"><span class="lineno">  148</span>                            ErrorSeverity::Suspect);</div>
+<div class="line"><span class="lineno">  149</span>      <span class="keywordflow">for</span> (k = 0; k &lt; taperlen; ++k)</div>
+<div class="line"><span class="lineno">  150</span>        work.push_back(0.0);</div>
+<div class="line"><span class="lineno">  151</span>      <span class="keywordflow">for</span> (k = 0; k &lt; dsize; ++k)</div>
+<div class="line"><span class="lineno">  152</span>        work[k] = d.<a class="code hl_variable" href="classmspass_1_1seismic_1_1_core_time_series.html#ab044edb3fe5fe734cb577a4434f390a2">s</a>[k];</div>
+<div class="line"><span class="lineno">  153</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  154</span>      <span class="keywordflow">if</span> (dsize &gt; taperlen) {</div>
+<div class="line"><span class="lineno">  155</span>        stringstream ss;</div>
+<div class="line"><span class="lineno">  156</span>        ss &lt;&lt; <span class="stringliteral">&quot;Received data window of length=&quot;</span> &lt;&lt; d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">npts</a>() &lt;&lt; <span class="stringliteral">&quot; samples&quot;</span></div>
+<div class="line"><span class="lineno">  157</span>           &lt;&lt; endl</div>
+<div class="line"><span class="lineno">  158</span>           &lt;&lt; <span class="stringliteral">&quot;Operator length=&quot;</span> &lt;&lt; taperlen &lt;&lt; endl</div>
+<div class="line"><span class="lineno">  159</span>           &lt;&lt; <span class="stringliteral">&quot;Results may be unreliable because data will be truncated to &quot;</span></div>
+<div class="line"><span class="lineno">  160</span>              <span class="stringliteral">&quot;taper length&quot;</span></div>
+<div class="line"><span class="lineno">  161</span>           &lt;&lt; endl;</div>
+<div class="line"><span class="lineno">  162</span>        result.elog.log_error(algorithm, ss.str(), ErrorSeverity::Suspect);</div>
+<div class="line"><span class="lineno">  163</span>      }</div>
+<div class="line"><span class="lineno">  164</span>      <span class="keywordflow">for</span> (k = 0; k &lt; taperlen; ++k)</div>
+<div class="line"><span class="lineno">  165</span>        work.push_back(d.<a class="code hl_variable" href="classmspass_1_1seismic_1_1_core_time_series.html#ab044edb3fe5fe734cb577a4434f390a2">s</a>[k]);</div>
+<div class="line"><span class="lineno">  166</span>    }</div>
+<div class="line"><span class="lineno">  167</span>    <span class="comment">/* intentionally omit try catch here because the above logic assures Sizes</span></div>
+<div class="line"><span class="lineno">  168</span><span class="comment">    must match here. This overloaded method will throw an exception in that</span></div>
+<div class="line"><span class="lineno">  169</span><span class="comment">    case. Note in this implementation the result returned by apply is scaled to</span></div>
+<div class="line"><span class="lineno">  170</span><span class="comment">    assumed properly scaled to power spectrum and normalized for multitapers.*/</span></div>
+<div class="line"><span class="lineno">  171</span>    vector&lt;double&gt; spec(this-&gt;<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#aa3c10c25ea2c6b82cf8bbe2991f16bfe">apply</a>(work));</div>
+<div class="line"><span class="lineno">  172</span> </div>
+<div class="line"><span class="lineno">  173</span>    result = PowerSpectrum(<span class="keyword">dynamic_cast&lt;</span><span class="keyword">const </span>Metadata &amp;<span class="keyword">&gt;</span>(d), spec, deltaf,</div>
+<div class="line"><span class="lineno">  174</span>                           <span class="keywordtype">string</span>(<span class="stringliteral">&quot;Multitaper&quot;</span>), 0.0, d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#af31c96c0e2173d7581e1c3a3f8bcfde8">dt</a>(), d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">npts</a>());</div>
+<div class="line"><span class="lineno">  175</span>    <span class="comment">/* We post these to metadata for the generic PowerSpectrum object. */</span></div>
+<div class="line"><span class="lineno">  176</span>    result.put&lt;<span class="keywordtype">double</span>&gt;(<span class="stringliteral">&quot;time_bandwidth_product&quot;</span>, tbp);</div>
+<div class="line"><span class="lineno">  177</span>    result.put&lt;<span class="keywordtype">long</span>&gt;(<span class="stringliteral">&quot;number_tapers&quot;</span>, ntapers);</div>
+<div class="line"><span class="lineno">  178</span>    <span class="keywordflow">return</span> result;</div>
+<div class="line"><span class="lineno">  179</span>  } <span class="keywordflow">catch</span> (...) {</div>
+<div class="line"><span class="lineno">  180</span>    <span class="keywordflow">throw</span>;</div>
+<div class="line"><span class="lineno">  181</span>  };</div>
+<div class="line"><span class="lineno">  182</span>}</div>
+<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_html_aa3c10c25ea2c6b82cf8bbe2991f16bfe"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#aa3c10c25ea2c6b82cf8bbe2991f16bfe">mspass::algorithms::deconvolution::MTPowerSpectrumEngine::apply</a></div><div class="ttdeci">mspass::seismic::PowerSpectrum apply(const mspass::seismic::TimeSeries &amp;d)</div><div class="ttdef"><b>Definition</b> MTPowerSpectrumEngine.cc:116</div></div>
+<div class="ttc" id="aclassmspass_1_1seismic_1_1_basic_time_series_html_a347b349bb4e1f0e65978dfcd45ae3472"><div class="ttname"><a href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">mspass::seismic::BasicTimeSeries::npts</a></div><div class="ttdeci">size_t npts() const</div><div class="ttdef"><b>Definition</b> BasicTimeSeries.h:171</div></div>
+<div class="ttc" id="aclassmspass_1_1seismic_1_1_basic_time_series_html_af31c96c0e2173d7581e1c3a3f8bcfde8"><div class="ttname"><a href="classmspass_1_1seismic_1_1_basic_time_series.html#af31c96c0e2173d7581e1c3a3f8bcfde8">mspass::seismic::BasicTimeSeries::dt</a></div><div class="ttdeci">double dt() const</div><div class="ttdef"><b>Definition</b> BasicTimeSeries.h:153</div></div>
+<div class="ttc" id="aclassmspass_1_1seismic_1_1_core_time_series_html_ab044edb3fe5fe734cb577a4434f390a2"><div class="ttname"><a href="classmspass_1_1seismic_1_1_core_time_series.html#ab044edb3fe5fe734cb577a4434f390a2">mspass::seismic::CoreTimeSeries::s</a></div><div class="ttdeci">std::vector&lt; double &gt; s</div><div class="ttdef"><b>Definition</b> CoreTimeSeries.h:27</div></div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#aa3c10c25ea2c6b82cf8bbe2991f16bfe">apply()</a>, <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#af31c96c0e2173d7581e1c3a3f8bcfde8">mspass::seismic::BasicTimeSeries::dt()</a>, <a class="el" href="classmspass_1_1seismic_1_1_power_spectrum.html#a920cd0761252df4312168f4571165f2b">mspass::seismic::PowerSpectrum::elog</a>, <a class="el" href="classmspass_1_1seismic_1_1_basic_spectrum.html#a7400b002f21460fece1d5519dfbc26c7">mspass::seismic::BasicSpectrum::kill()</a>, <a class="el" href="classmspass_1_1utility_1_1_error_logger.html#aa69873ba0aebf67e9ba24d01992c0bcf">mspass::utility::ErrorLogger::log_error()</a>, <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">mspass::seismic::BasicTimeSeries::npts()</a>, and <a class="el" href="classmspass_1_1seismic_1_1_core_time_series.html#ab044edb3fe5fe734cb577a4434f390a2">mspass::seismic::CoreTimeSeries::s</a>.</p>
 
@@ -492,7 +492,7 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 <p>Return the frquency bin size defined for this operator. </p>
-<div class="fragment"><div class="line"><span class="lineno">   91</span>{<span class="keywordflow">return</span> deltaf;};</div>
+<div class="fragment"><div class="line"><span class="lineno">   92</span>{ <span class="keywordflow">return</span> deltaf; };</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -519,7 +519,7 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 <p>Retrieve the internally cached required data sample interval. </p>
-<div class="fragment"><div class="line"><span class="lineno">  114</span>{<span class="keywordflow">return</span> operator_dt;};</div>
+<div class="fragment"><div class="line"><span class="lineno">  106</span>{ <span class="keywordflow">return</span> operator_dt; };</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -546,7 +546,7 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 <p>Return size of fft used by this operator - usually not the same as taper length. </p>
-<div class="fragment"><div class="line"><span class="lineno">  112</span>{<span class="keywordflow">return</span> nfft;};</div>
+<div class="fragment"><div class="line"><span class="lineno">  104</span>{ <span class="keywordflow">return</span> nfft; };</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -565,17 +565,16 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Return and std::vector of all frequencies for spectral estimates this operator computes. </p>
-<div class="fragment"><div class="line"><span class="lineno">  260</span>{</div>
-<div class="line"><span class="lineno">  261</span>  vector&lt;double&gt; f;</div>
-<div class="line"><span class="lineno">  262</span>  <span class="comment">/* If taperlen is odd this still works according to gsl documentation.*/</span></div>
-<div class="line"><span class="lineno">  263</span>  <span class="keywordflow">for</span>(<span class="keywordtype">int</span> i=0;i&lt;this-&gt;<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#a92db35500eda333738d2c650e0b6d82f">nf</a>();++i)</div>
-<div class="line"><span class="lineno">  264</span>  {</div>
-<div class="line"><span class="lineno">  265</span>    <span class="comment">/* Here we assume i=0 frequency is 0 */</span></div>
-<div class="line"><span class="lineno">  266</span>    f.push_back(deltaf*((<span class="keywordtype">double</span>)i));</div>
-<div class="line"><span class="lineno">  267</span>  }</div>
-<div class="line"><span class="lineno">  268</span>  <span class="keywordflow">return</span> f;</div>
-<div class="line"><span class="lineno">  269</span>}</div>
-<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_html_a92db35500eda333738d2c650e0b6d82f"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#a92db35500eda333738d2c650e0b6d82f">mspass::algorithms::deconvolution::MTPowerSpectrumEngine::nf</a></div><div class="ttdeci">int nf()</div><div class="ttdef"><b>Definition</b> MTPowerSpectrumEngine.h:143</div></div>
+<div class="fragment"><div class="line"><span class="lineno">  256</span>                                                  {</div>
+<div class="line"><span class="lineno">  257</span>  vector&lt;double&gt; f;</div>
+<div class="line"><span class="lineno">  258</span>  <span class="comment">/* If taperlen is odd this still works according to gsl documentation.*/</span></div>
+<div class="line"><span class="lineno">  259</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; this-&gt;<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#a92db35500eda333738d2c650e0b6d82f">nf</a>(); ++i) {</div>
+<div class="line"><span class="lineno">  260</span>    <span class="comment">/* Here we assume i=0 frequency is 0 */</span></div>
+<div class="line"><span class="lineno">  261</span>    f.push_back(deltaf * ((<span class="keywordtype">double</span>)i));</div>
+<div class="line"><span class="lineno">  262</span>  }</div>
+<div class="line"><span class="lineno">  263</span>  <span class="keywordflow">return</span> f;</div>
+<div class="line"><span class="lineno">  264</span>}</div>
+<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_html_a92db35500eda333738d2c650e0b6d82f"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#a92db35500eda333738d2c650e0b6d82f">mspass::algorithms::deconvolution::MTPowerSpectrumEngine::nf</a></div><div class="ttdeci">int nf()</div><div class="ttdef"><b>Definition</b> MTPowerSpectrumEngine.h:135</div></div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#a92db35500eda333738d2c650e0b6d82f">nf()</a>.</p>
 
@@ -604,18 +603,18 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 <p>Return tne number of frequency bins in estimates the operator will compute. </p>
-<div class="fragment"><div class="line"><span class="lineno">  144</span>  {</div>
-<div class="line"><span class="lineno">  145</span>    <span class="comment">/* this simple formula depends upon integer truncation when used with</span></div>
-<div class="line"><span class="lineno">  146</span><span class="comment">    nfft as an odd number.   For reference, this is what prieto uses in</span></div>
-<div class="line"><span class="lineno">  147</span><span class="comment">    the python multitaper package:</span></div>
-<div class="line"><span class="lineno">  148</span><span class="comment">    if (nfft%2 == 0):</span></div>
-<div class="line"><span class="lineno">  149</span><span class="comment">        nf = int(nfft/2 + 1)</span></div>
-<div class="line"><span class="lineno">  150</span><span class="comment">    else:</span></div>
-<div class="line"><span class="lineno">  151</span><span class="comment">        nf = int((nfft+1)/2)</span></div>
-<div class="line"><span class="lineno">  152</span><span class="comment">    they will yield the same result but this is simpler and faster</span></div>
-<div class="line"><span class="lineno">  153</span><span class="comment">    */</span></div>
-<div class="line"><span class="lineno">  154</span>    <span class="keywordflow">return</span> (this-&gt;nfft)/2 + 1;</div>
-<div class="line"><span class="lineno">  155</span>  };</div>
+<div class="fragment"><div class="line"><span class="lineno">  135</span>           {</div>
+<div class="line"><span class="lineno">  136</span>    <span class="comment">/* this simple formula depends upon integer truncation when used with</span></div>
+<div class="line"><span class="lineno">  137</span><span class="comment">    nfft as an odd number.   For reference, this is what prieto uses in</span></div>
+<div class="line"><span class="lineno">  138</span><span class="comment">    the python multitaper package:</span></div>
+<div class="line"><span class="lineno">  139</span><span class="comment">    if (nfft%2 == 0):</span></div>
+<div class="line"><span class="lineno">  140</span><span class="comment">        nf = int(nfft/2 + 1)</span></div>
+<div class="line"><span class="lineno">  141</span><span class="comment">    else:</span></div>
+<div class="line"><span class="lineno">  142</span><span class="comment">        nf = int((nfft+1)/2)</span></div>
+<div class="line"><span class="lineno">  143</span><span class="comment">    they will yield the same result but this is simpler and faster</span></div>
+<div class="line"><span class="lineno">  144</span><span class="comment">    */</span></div>
+<div class="line"><span class="lineno">  145</span>    <span class="keywordflow">return</span> (this-&gt;nfft) / 2 + 1;</div>
+<div class="line"><span class="lineno">  146</span>  };</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -642,9 +641,7 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 <p>Return number of tapers used by this engine. </p>
-<div class="fragment"><div class="line"><span class="lineno">  107</span>  {</div>
-<div class="line"><span class="lineno">  108</span>    <span class="keywordflow">return</span> ntapers;</div>
-<div class="line"><span class="lineno">  109</span>  };</div>
+<div class="fragment"><div class="line"><span class="lineno">  101</span>{ <span class="keywordflow">return</span> ntapers; };</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -664,21 +661,20 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Standard assignment operator. </p>
-<div class="fragment"><div class="line"><span class="lineno">  109</span>{</div>
-<div class="line"><span class="lineno">  110</span>  <span class="keywordflow">if</span>(&amp;parent!=<span class="keyword">this</span>)</div>
-<div class="line"><span class="lineno">  111</span>  {</div>
-<div class="line"><span class="lineno">  112</span>    taperlen=parent.taperlen;</div>
-<div class="line"><span class="lineno">  113</span>    ntapers=parent.ntapers;</div>
-<div class="line"><span class="lineno">  114</span>    nfft=parent.nfft;</div>
-<div class="line"><span class="lineno">  115</span>    tbp=parent.tbp;</div>
-<div class="line"><span class="lineno">  116</span>    operator_dt=parent.operator_dt;</div>
-<div class="line"><span class="lineno">  117</span>    deltaf=parent.deltaf;</div>
-<div class="line"><span class="lineno">  118</span>    tapers=parent.tapers;</div>
-<div class="line"><span class="lineno">  119</span>    wavetable = gsl_fft_complex_wavetable_alloc (nfft);</div>
-<div class="line"><span class="lineno">  120</span>    workspace = gsl_fft_complex_workspace_alloc (nfft);</div>
-<div class="line"><span class="lineno">  121</span>  }</div>
-<div class="line"><span class="lineno">  122</span>  <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
-<div class="line"><span class="lineno">  123</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  102</span>                                                                    {</div>
+<div class="line"><span class="lineno">  103</span>  <span class="keywordflow">if</span> (&amp;parent != <span class="keyword">this</span>) {</div>
+<div class="line"><span class="lineno">  104</span>    taperlen = parent.taperlen;</div>
+<div class="line"><span class="lineno">  105</span>    ntapers = parent.ntapers;</div>
+<div class="line"><span class="lineno">  106</span>    nfft = parent.nfft;</div>
+<div class="line"><span class="lineno">  107</span>    tbp = parent.tbp;</div>
+<div class="line"><span class="lineno">  108</span>    operator_dt = parent.operator_dt;</div>
+<div class="line"><span class="lineno">  109</span>    deltaf = parent.deltaf;</div>
+<div class="line"><span class="lineno">  110</span>    tapers = parent.tapers;</div>
+<div class="line"><span class="lineno">  111</span>    wavetable = gsl_fft_complex_wavetable_alloc(nfft);</div>
+<div class="line"><span class="lineno">  112</span>    workspace = gsl_fft_complex_workspace_alloc(nfft);</div>
+<div class="line"><span class="lineno">  113</span>  }</div>
+<div class="line"><span class="lineno">  114</span>  <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
+<div class="line"><span class="lineno">  115</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -716,14 +712,14 @@ Public Member Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>computed df </dd></dl>
-<div class="fragment"><div class="line"><span class="lineno">  135</span>  {</div>
-<div class="line"><span class="lineno">  136</span>    this-&gt;operator_dt = <a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#af7ea0259803f6cac1c5e8166541b2f51">dt</a>;</div>
-<div class="line"><span class="lineno">  137</span>    <span class="keywordtype">int</span> this_nf = this-&gt;<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#a92db35500eda333738d2c650e0b6d82f">nf</a>();</div>
-<div class="line"><span class="lineno">  138</span>    <span class="keywordtype">double</span> fny = 1.0/(2.0*<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#af7ea0259803f6cac1c5e8166541b2f51">dt</a>);</div>
-<div class="line"><span class="lineno">  139</span>    this-&gt;deltaf = fny/<span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(this_nf-1);</div>
-<div class="line"><span class="lineno">  140</span>    <span class="keywordflow">return</span> deltaf;</div>
-<div class="line"><span class="lineno">  141</span>  };</div>
-<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_html_af7ea0259803f6cac1c5e8166541b2f51"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#af7ea0259803f6cac1c5e8166541b2f51">mspass::algorithms::deconvolution::MTPowerSpectrumEngine::dt</a></div><div class="ttdeci">double dt()</div><div class="ttdef"><b>Definition</b> MTPowerSpectrumEngine.h:114</div></div>
+<div class="fragment"><div class="line"><span class="lineno">  126</span>                           {</div>
+<div class="line"><span class="lineno">  127</span>    this-&gt;operator_dt = <a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#af7ea0259803f6cac1c5e8166541b2f51">dt</a>;</div>
+<div class="line"><span class="lineno">  128</span>    <span class="keywordtype">int</span> this_nf = this-&gt;<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#a92db35500eda333738d2c650e0b6d82f">nf</a>();</div>
+<div class="line"><span class="lineno">  129</span>    <span class="keywordtype">double</span> fny = 1.0 / (2.0 * <a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#af7ea0259803f6cac1c5e8166541b2f51">dt</a>);</div>
+<div class="line"><span class="lineno">  130</span>    this-&gt;deltaf = fny / <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(this_nf - 1);</div>
+<div class="line"><span class="lineno">  131</span>    <span class="keywordflow">return</span> deltaf;</div>
+<div class="line"><span class="lineno">  132</span>  };</div>
+<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_html_af7ea0259803f6cac1c5e8166541b2f51"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#af7ea0259803f6cac1c5e8166541b2f51">mspass::algorithms::deconvolution::MTPowerSpectrumEngine::dt</a></div><div class="ttdeci">double dt()</div><div class="ttdef"><b>Definition</b> MTPowerSpectrumEngine.h:106</div></div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#af7ea0259803f6cac1c5e8166541b2f51">dt()</a>, and <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#a92db35500eda333738d2c650e0b6d82f">nf()</a>.</p>
 
@@ -752,9 +748,7 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 <p>Retrieve the taper length. </p>
-<div class="fragment"><div class="line"><span class="lineno">   97</span>  {</div>
-<div class="line"><span class="lineno">   98</span>    <span class="keywordflow">return</span> taperlen;</div>
-<div class="line"><span class="lineno">   99</span>  };</div>
+<div class="fragment"><div class="line"><span class="lineno">   97</span>{ <span class="keywordflow">return</span> taperlen; };</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -781,9 +775,7 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 <p>Retrieve time-bandwidth product. </p>
-<div class="fragment"><div class="line"><span class="lineno">  102</span>  {</div>
-<div class="line"><span class="lineno">  103</span>    <span class="keywordflow">return</span> tbp;</div>
-<div class="line"><span class="lineno">  104</span>  };</div>
+<div class="fragment"><div class="line"><span class="lineno">   99</span>{ <span class="keywordflow">return</span> tbp; };</div>
 </div><!-- fragment -->
 </div>
 </div>

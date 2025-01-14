@@ -145,7 +145,7 @@ Public Member Functions</h2></td></tr>
 <p>Default constructor.</p>
 <p>This consructor is realy the same as what would be automatically generated. We define it to be clear and because I think pybind11 may need this declaration to allow a python wrapper for a default constructor. <br  />
  </p>
-<div class="fragment"><div class="line"><span class="lineno">   51</span>: nm(),myid(),input_type(),output_type() {};</div>
+<div class="fragment"><div class="line"><span class="lineno">   50</span>: nm(), myid(), input_type(), output_type() {};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -203,13 +203,13 @@ Public Member Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<div class="fragment"><div class="line"><span class="lineno">   66</span>  {</div>
-<div class="line"><span class="lineno">   67</span>    nm=name;</div>
-<div class="line"><span class="lineno">   68</span>    myid=<a class="code hl_function" href="classmspass_1_1utility_1_1_algorithm_definition.html#ae249ed54773be28bc994b347106eb11b">id</a>;</div>
-<div class="line"><span class="lineno">   69</span>    input_type=typin;</div>
-<div class="line"><span class="lineno">   70</span>    output_type=typout;</div>
-<div class="line"><span class="lineno">   71</span>  };</div>
-<div class="ttc" id="aclassmspass_1_1utility_1_1_algorithm_definition_html_ae249ed54773be28bc994b347106eb11b"><div class="ttname"><a href="classmspass_1_1utility_1_1_algorithm_definition.html#ae249ed54773be28bc994b347106eb11b">mspass::utility::AlgorithmDefinition::id</a></div><div class="ttdeci">std::string id() const</div><div class="ttdoc">return the id as a string.</div><div class="ttdef"><b>Definition</b> ProcessManager.h:90</div></div>
+<div class="fragment"><div class="line"><span class="lineno">   64</span>                                                                  {</div>
+<div class="line"><span class="lineno">   65</span>    nm = name;</div>
+<div class="line"><span class="lineno">   66</span>    myid = <a class="code hl_function" href="classmspass_1_1utility_1_1_algorithm_definition.html#ae249ed54773be28bc994b347106eb11b">id</a>;</div>
+<div class="line"><span class="lineno">   67</span>    input_type = typin;</div>
+<div class="line"><span class="lineno">   68</span>    output_type = typout;</div>
+<div class="line"><span class="lineno">   69</span>  };</div>
+<div class="ttc" id="aclassmspass_1_1utility_1_1_algorithm_definition_html_ae249ed54773be28bc994b347106eb11b"><div class="ttname"><a href="classmspass_1_1utility_1_1_algorithm_definition.html#ae249ed54773be28bc994b347106eb11b">mspass::utility::AlgorithmDefinition::id</a></div><div class="ttdeci">std::string id() const</div><div class="ttdoc">return the id as a string.</div><div class="ttdef"><b>Definition</b> ProcessManager.h:84</div></div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1utility_1_1_algorithm_definition.html#ae249ed54773be28bc994b347106eb11b">id()</a>.</p>
 
@@ -238,12 +238,12 @@ Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   73</span>  {</div>
-<div class="line"><span class="lineno">   74</span>    nm=parent.nm;</div>
-<div class="line"><span class="lineno">   75</span>    myid=parent.myid;</div>
-<div class="line"><span class="lineno">   76</span>    input_type=parent.input_type;</div>
-<div class="line"><span class="lineno">   77</span>    output_type=parent.output_type;</div>
-<div class="line"><span class="lineno">   78</span>  };</div>
+<div class="fragment"><div class="line"><span class="lineno">   70</span>                                                         {</div>
+<div class="line"><span class="lineno">   71</span>    nm = parent.nm;</div>
+<div class="line"><span class="lineno">   72</span>    myid = parent.myid;</div>
+<div class="line"><span class="lineno">   73</span>    input_type = parent.input_type;</div>
+<div class="line"><span class="lineno">   74</span>    output_type = parent.output_type;</div>
+<div class="line"><span class="lineno">   75</span>  };</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -273,9 +273,7 @@ Public Member Functions</h2></td></tr>
 
 <p>return the id as a string. </p>
 <p>In MsPASS the id is normally a MongoDB ObjectID string representation of the documnt saved in the database that holds the paramters defining a particular algorithm instance. If the algorithm has no parameters this string will be null. Callers should test that condition by calling the length method of std::string to verify the id is not zero length </p>
-<div class="fragment"><div class="line"><span class="lineno">   91</span>  {</div>
-<div class="line"><span class="lineno">   92</span>    <span class="keywordflow">return</span> myid;</div>
-<div class="line"><span class="lineno">   93</span>  };</div>
+<div class="fragment"><div class="line"><span class="lineno">   84</span>{ <span class="keywordflow">return</span> myid; };</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -301,9 +299,7 @@ Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   80</span>  {</div>
-<div class="line"><span class="lineno">   81</span>    <span class="keywordflow">return</span> nm;</div>
-<div class="line"><span class="lineno">   82</span>  };</div>
+<div class="fragment"><div class="line"><span class="lineno">   76</span>{ <span class="keywordflow">return</span> nm; };</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -330,16 +326,15 @@ Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  104</span>  {</div>
-<div class="line"><span class="lineno">  105</span>    <span class="keywordflow">if</span>(<span class="keyword">this</span>==&amp;parent)</div>
-<div class="line"><span class="lineno">  106</span>    {</div>
-<div class="line"><span class="lineno">  107</span>      nm=parent.nm;</div>
-<div class="line"><span class="lineno">  108</span>      myid=parent.myid;</div>
-<div class="line"><span class="lineno">  109</span>      input_type=parent.input_type;</div>
-<div class="line"><span class="lineno">  110</span>      output_type=parent.output_type;</div>
-<div class="line"><span class="lineno">  111</span>    }</div>
-<div class="line"><span class="lineno">  112</span>    <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
-<div class="line"><span class="lineno">  113</span>  };</div>
+<div class="fragment"><div class="line"><span class="lineno">   94</span>                                                                    {</div>
+<div class="line"><span class="lineno">   95</span>    <span class="keywordflow">if</span> (<span class="keyword">this</span> == &amp;parent) {</div>
+<div class="line"><span class="lineno">   96</span>      nm = parent.nm;</div>
+<div class="line"><span class="lineno">   97</span>      myid = parent.myid;</div>
+<div class="line"><span class="lineno">   98</span>      input_type = parent.input_type;</div>
+<div class="line"><span class="lineno">   99</span>      output_type = parent.output_type;</div>
+<div class="line"><span class="lineno">  100</span>    }</div>
+<div class="line"><span class="lineno">  101</span>    <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
+<div class="line"><span class="lineno">  102</span>  };</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -368,7 +363,7 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 <p>Set a new id string.</p>
 <p>The id straing is used to define a unique instance of an algorithm for a particular set of parameters. This is the only putter for this class because it is the only attribute that should ever be changed after construction. The reason is the name and type constraints are fixed, but id defines a particular instance that may be variable. </p>
-<div class="fragment"><div class="line"><span class="lineno">  101</span>{myid=<a class="code hl_function" href="classmspass_1_1utility_1_1_algorithm_definition.html#ae249ed54773be28bc994b347106eb11b">id</a>;};</div>
+<div class="fragment"><div class="line"><span class="lineno">   92</span>{ myid = <a class="code hl_function" href="classmspass_1_1utility_1_1_algorithm_definition.html#ae249ed54773be28bc994b347106eb11b">id</a>; };</div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1utility_1_1_algorithm_definition.html#ae249ed54773be28bc994b347106eb11b">id()</a>.</p>
 

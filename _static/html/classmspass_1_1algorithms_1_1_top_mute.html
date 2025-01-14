@@ -140,9 +140,7 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Default constructor. Exists but the result is invalid </p>
-<div class="fragment"><div class="line"><span class="lineno">  419</span>{</div>
-<div class="line"><span class="lineno">  420</span>  taper=NULL;</div>
-<div class="line"><span class="lineno">  421</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  376</span>{ taper = NULL; }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -194,35 +192,34 @@ Public Member Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<div class="fragment"><div class="line"><span class="lineno">  426</span>{</div>
-<div class="line"><span class="lineno">  427</span>  <span class="keyword">const</span> <span class="keywordtype">string</span> base_error(<span class="stringliteral">&quot;TopMute parameterized constructor:  &quot;</span>);</div>
-<div class="line"><span class="lineno">  428</span>  <span class="keywordflow">if</span>(t1&lt;=t0)</div>
-<div class="line"><span class="lineno">  429</span>  {</div>
-<div class="line"><span class="lineno">  430</span>    stringstream ss;</div>
-<div class="line"><span class="lineno">  431</span>    ss&lt;&lt;base_error&lt;&lt;<span class="stringliteral">&quot;Zero time (t0) must be less than end of mute time (t1)&quot;</span>&lt;&lt;endl</div>
-<div class="line"><span class="lineno">  432</span>       &lt;&lt; <span class="stringliteral">&quot;Constructor was passed t0=&quot;</span>&lt;&lt;t0&lt;&lt;<span class="stringliteral">&quot; and t1=&quot;</span>&lt;&lt;t1&lt;&lt;endl;</div>
-<div class="line"><span class="lineno">  433</span>    <span class="keywordflow">throw</span> MsPASSError(ss.str(),ErrorSeverity::Invalid);</div>
-<div class="line"><span class="lineno">  434</span>  }</div>
-<div class="line"><span class="lineno">  435</span>  <span class="keywordflow">try</span>{</div>
-<div class="line"><span class="lineno">  436</span>    <span class="keywordflow">if</span>(type==<span class="stringliteral">&quot;linear&quot;</span>)</div>
-<div class="line"><span class="lineno">  437</span>    {</div>
-<div class="line"><span class="lineno">  438</span>      taper=std::make_shared&lt;LinearTaper&gt;(t0,t1,t0+999999.0,t1+999999.0);</div>
-<div class="line"><span class="lineno">  439</span>      taper-&gt;disable_tail();</div>
-<div class="line"><span class="lineno">  440</span>    }</div>
-<div class="line"><span class="lineno">  441</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span>(type==<span class="stringliteral">&quot;cosine&quot;</span>)</div>
-<div class="line"><span class="lineno">  442</span>    {</div>
-<div class="line"><span class="lineno">  443</span>      taper=std::make_shared&lt;CosineTaper&gt;(t0,t1,t0+999999.0,t1+999999.0);</div>
-<div class="line"><span class="lineno">  444</span>      taper-&gt;disable_tail();</div>
-<div class="line"><span class="lineno">  445</span>    }</div>
-<div class="line"><span class="lineno">  446</span>    <span class="keywordflow">else</span></div>
-<div class="line"><span class="lineno">  447</span>    {</div>
-<div class="line"><span class="lineno">  448</span>      stringstream ss;</div>
-<div class="line"><span class="lineno">  449</span>      ss &lt;&lt; base_error&lt;&lt;<span class="stringliteral">&quot;Unrecognized type argument=&quot;</span>&lt;&lt;type&lt;&lt;endl</div>
-<div class="line"><span class="lineno">  450</span>         &lt;&lt; <span class="stringliteral">&quot;Current options are:  linear OR cosine&quot;</span>&lt;&lt;endl;</div>
-<div class="line"><span class="lineno">  451</span>      <span class="keywordflow">throw</span> MsPASSError(ss.str(),ErrorSeverity::Invalid);</div>
-<div class="line"><span class="lineno">  452</span>    }</div>
-<div class="line"><span class="lineno">  453</span>  }<span class="keywordflow">catch</span>(...){<span class="keywordflow">throw</span>;};</div>
-<div class="line"><span class="lineno">  454</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  378</span>                                                                       {</div>
+<div class="line"><span class="lineno">  379</span>  <span class="keyword">const</span> <span class="keywordtype">string</span> base_error(<span class="stringliteral">&quot;TopMute parameterized constructor:  &quot;</span>);</div>
+<div class="line"><span class="lineno">  380</span>  <span class="keywordflow">if</span> (t1 &lt;= t0) {</div>
+<div class="line"><span class="lineno">  381</span>    stringstream ss;</div>
+<div class="line"><span class="lineno">  382</span>    ss &lt;&lt; base_error &lt;&lt; <span class="stringliteral">&quot;Zero time (t0) must be less than end of mute time (t1)&quot;</span></div>
+<div class="line"><span class="lineno">  383</span>       &lt;&lt; endl</div>
+<div class="line"><span class="lineno">  384</span>       &lt;&lt; <span class="stringliteral">&quot;Constructor was passed t0=&quot;</span> &lt;&lt; t0 &lt;&lt; <span class="stringliteral">&quot; and t1=&quot;</span> &lt;&lt; t1 &lt;&lt; endl;</div>
+<div class="line"><span class="lineno">  385</span>    <span class="keywordflow">throw</span> MsPASSError(ss.str(), ErrorSeverity::Invalid);</div>
+<div class="line"><span class="lineno">  386</span>  }</div>
+<div class="line"><span class="lineno">  387</span>  <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">  388</span>    <span class="keywordflow">if</span> (type == <span class="stringliteral">&quot;linear&quot;</span>) {</div>
+<div class="line"><span class="lineno">  389</span>      taper =</div>
+<div class="line"><span class="lineno">  390</span>          std::make_shared&lt;LinearTaper&gt;(t0, t1, t0 + 999999.0, t1 + 999999.0);</div>
+<div class="line"><span class="lineno">  391</span>      taper-&gt;disable_tail();</div>
+<div class="line"><span class="lineno">  392</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (type == <span class="stringliteral">&quot;cosine&quot;</span>) {</div>
+<div class="line"><span class="lineno">  393</span>      taper =</div>
+<div class="line"><span class="lineno">  394</span>          std::make_shared&lt;CosineTaper&gt;(t0, t1, t0 + 999999.0, t1 + 999999.0);</div>
+<div class="line"><span class="lineno">  395</span>      taper-&gt;disable_tail();</div>
+<div class="line"><span class="lineno">  396</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  397</span>      stringstream ss;</div>
+<div class="line"><span class="lineno">  398</span>      ss &lt;&lt; base_error &lt;&lt; <span class="stringliteral">&quot;Unrecognized type argument=&quot;</span> &lt;&lt; type &lt;&lt; endl</div>
+<div class="line"><span class="lineno">  399</span>         &lt;&lt; <span class="stringliteral">&quot;Current options are:  linear OR cosine&quot;</span> &lt;&lt; endl;</div>
+<div class="line"><span class="lineno">  400</span>      <span class="keywordflow">throw</span> MsPASSError(ss.str(), ErrorSeverity::Invalid);</div>
+<div class="line"><span class="lineno">  401</span>    }</div>
+<div class="line"><span class="lineno">  402</span>  } <span class="keywordflow">catch</span> (...) {</div>
+<div class="line"><span class="lineno">  403</span>    <span class="keywordflow">throw</span>;</div>
+<div class="line"><span class="lineno">  404</span>  };</div>
+<div class="line"><span class="lineno">  405</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -242,9 +239,7 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Standard copy constructor. </p>
-<div class="fragment"><div class="line"><span class="lineno">  455</span>                                      : taper(parent.taper)</div>
-<div class="line"><span class="lineno">  456</span>{</div>
-<div class="line"><span class="lineno">  457</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  406</span>: taper(parent.taper) {}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -263,8 +258,7 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Destructor. The destructor of this class is not null. </p>
-<div class="fragment"><div class="line"><span class="lineno">  423</span>{</div>
-<div class="line"><span class="lineno">  424</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  377</span>{}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -285,13 +279,15 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Apply the operator to a Seismogram object. </p>
-<div class="fragment"><div class="line"><span class="lineno">  475</span>{</div>
-<div class="line"><span class="lineno">  476</span>  <span class="keywordflow">try</span>{</div>
-<div class="line"><span class="lineno">  477</span>    <span class="keywordtype">int</span> iret;</div>
-<div class="line"><span class="lineno">  478</span>    iret=this-&gt;taper-&gt;apply(d);</div>
-<div class="line"><span class="lineno">  479</span>    <span class="keywordflow">return</span> iret;</div>
-<div class="line"><span class="lineno">  480</span>  }<span class="keywordflow">catch</span>(...){<span class="keywordflow">throw</span>;};</div>
-<div class="line"><span class="lineno">  481</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  422</span>                                             {</div>
+<div class="line"><span class="lineno">  423</span>  <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">  424</span>    <span class="keywordtype">int</span> iret;</div>
+<div class="line"><span class="lineno">  425</span>    iret = this-&gt;taper-&gt;apply(d);</div>
+<div class="line"><span class="lineno">  426</span>    <span class="keywordflow">return</span> iret;</div>
+<div class="line"><span class="lineno">  427</span>  } <span class="keywordflow">catch</span> (...) {</div>
+<div class="line"><span class="lineno">  428</span>    <span class="keywordflow">throw</span>;</div>
+<div class="line"><span class="lineno">  429</span>  };</div>
+<div class="line"><span class="lineno">  430</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -311,13 +307,15 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Apply the operator to a TimeSeries object. </p>
-<div class="fragment"><div class="line"><span class="lineno">  467</span>{</div>
-<div class="line"><span class="lineno">  468</span>  <span class="keywordflow">try</span>{</div>
-<div class="line"><span class="lineno">  469</span>    <span class="keywordtype">int</span> iret;</div>
-<div class="line"><span class="lineno">  470</span>    iret=this-&gt;taper-&gt;apply(d);</div>
-<div class="line"><span class="lineno">  471</span>    <span class="keywordflow">return</span> iret;</div>
-<div class="line"><span class="lineno">  472</span>  }<span class="keywordflow">catch</span>(...){<span class="keywordflow">throw</span>;};</div>
-<div class="line"><span class="lineno">  473</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  413</span>                                             {</div>
+<div class="line"><span class="lineno">  414</span>  <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">  415</span>    <span class="keywordtype">int</span> iret;</div>
+<div class="line"><span class="lineno">  416</span>    iret = this-&gt;taper-&gt;apply(d);</div>
+<div class="line"><span class="lineno">  417</span>    <span class="keywordflow">return</span> iret;</div>
+<div class="line"><span class="lineno">  418</span>  } <span class="keywordflow">catch</span> (...) {</div>
+<div class="line"><span class="lineno">  419</span>    <span class="keywordflow">throw</span>;</div>
+<div class="line"><span class="lineno">  420</span>  };</div>
+<div class="line"><span class="lineno">  421</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -344,7 +342,7 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 <p>Return the start of mute taper - points with time &lt; this number are zeroed </p>
-<div class="fragment"><div class="line"><span class="lineno">  230</span>  {<span class="keywordflow">return</span> taper-&gt;get_t0head();};</div>
+<div class="fragment"><div class="line"><span class="lineno">  232</span>{ <span class="keywordflow">return</span> taper-&gt;get_t0head(); };</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -371,7 +369,7 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 <p>Return the end time of the mute taper - points after this point are unaltered by the mute. </p>
-<div class="fragment"><div class="line"><span class="lineno">  233</span>  {<span class="keywordflow">return</span> taper-&gt;get_t1head();};</div>
+<div class="fragment"><div class="line"><span class="lineno">  235</span>{ <span class="keywordflow">return</span> taper-&gt;get_t1head(); };</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -391,13 +389,12 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Standard assignment operator. </p>
-<div class="fragment"><div class="line"><span class="lineno">  459</span>{</div>
-<div class="line"><span class="lineno">  460</span>  <span class="keywordflow">if</span>(&amp;parent != <span class="keyword">this</span>)</div>
-<div class="line"><span class="lineno">  461</span>  {</div>
-<div class="line"><span class="lineno">  462</span>    this-&gt;taper = parent.taper;</div>
-<div class="line"><span class="lineno">  463</span>  }</div>
-<div class="line"><span class="lineno">  464</span>  <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
-<div class="line"><span class="lineno">  465</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  407</span>                                                 {</div>
+<div class="line"><span class="lineno">  408</span>  <span class="keywordflow">if</span> (&amp;parent != <span class="keyword">this</span>) {</div>
+<div class="line"><span class="lineno">  409</span>    this-&gt;taper = parent.taper;</div>
+<div class="line"><span class="lineno">  410</span>  }</div>
+<div class="line"><span class="lineno">  411</span>  <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
+<div class="line"><span class="lineno">  412</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -416,20 +413,21 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Return a string with a name describing the form of the taper - currently returns either linear or cosine </p>
-<div class="fragment"><div class="line"><span class="lineno">  489</span>{</div>
-<div class="line"><span class="lineno">  490</span>  BasicTaper *rawptr;</div>
-<div class="line"><span class="lineno">  491</span>  rawptr = this-&gt;taper.get();</div>
-<div class="line"><span class="lineno">  492</span>  <span class="keywordflow">if</span>(<span class="keyword">dynamic_cast&lt;</span><span class="keyword">const </span>LinearTaper*<span class="keyword">&gt;</span>(rawptr))</div>
-<div class="line"><span class="lineno">  493</span>    <span class="keywordflow">return</span> string(<span class="stringliteral">&quot;linear&quot;</span>);</div>
-<div class="line"><span class="lineno">  494</span>  <span class="keywordflow">else</span> <span class="keywordflow">if</span>(<span class="keyword">dynamic_cast&lt;</span><span class="keyword">const </span>CosineTaper*<span class="keyword">&gt;</span>(rawptr))</div>
-<div class="line"><span class="lineno">  495</span>    <span class="keywordflow">return</span> string(<span class="stringliteral">&quot;cosine&quot;</span>);</div>
-<div class="line"><span class="lineno">  496</span>  <span class="keywordflow">else</span></div>
-<div class="line"><span class="lineno">  497</span>    <span class="comment">/* note there is a VectorTaper child of BasicTaper but it is not supported</span></div>
-<div class="line"><span class="lineno">  498</span><span class="comment">    by TopMute - only allows linear and cosine - so if that happened somehow</span></div>
-<div class="line"><span class="lineno">  499</span><span class="comment">    we throw this exception in that case too. */</span></div>
-<div class="line"><span class="lineno">  500</span>    <span class="keywordflow">throw</span> MsPASSError(<span class="stringliteral">&quot;TopMute::taper_type:  Internal taper dynamic cast does not resolve;  this should not happen and is a bug&quot;</span>,</div>
-<div class="line"><span class="lineno">  501</span>      ErrorSeverity::Fatal);</div>
-<div class="line"><span class="lineno">  502</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  437</span>                                 {</div>
+<div class="line"><span class="lineno">  438</span>  BasicTaper *rawptr;</div>
+<div class="line"><span class="lineno">  439</span>  rawptr = this-&gt;taper.get();</div>
+<div class="line"><span class="lineno">  440</span>  <span class="keywordflow">if</span> (<span class="keyword">dynamic_cast&lt;</span><span class="keyword">const </span>LinearTaper *<span class="keyword">&gt;</span>(rawptr))</div>
+<div class="line"><span class="lineno">  441</span>    <span class="keywordflow">return</span> string(<span class="stringliteral">&quot;linear&quot;</span>);</div>
+<div class="line"><span class="lineno">  442</span>  <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<span class="keyword">dynamic_cast&lt;</span><span class="keyword">const </span>CosineTaper *<span class="keyword">&gt;</span>(rawptr))</div>
+<div class="line"><span class="lineno">  443</span>    <span class="keywordflow">return</span> string(<span class="stringliteral">&quot;cosine&quot;</span>);</div>
+<div class="line"><span class="lineno">  444</span>  <span class="keywordflow">else</span></div>
+<div class="line"><span class="lineno">  445</span>    <span class="comment">/* note there is a VectorTaper child of BasicTaper but it is not supported</span></div>
+<div class="line"><span class="lineno">  446</span><span class="comment">    by TopMute - only allows linear and cosine - so if that happened somehow</span></div>
+<div class="line"><span class="lineno">  447</span><span class="comment">    we throw this exception in that case too. */</span></div>
+<div class="line"><span class="lineno">  448</span>    <span class="keywordflow">throw</span> MsPASSError(<span class="stringliteral">&quot;TopMute::taper_type:  Internal taper dynamic cast does &quot;</span></div>
+<div class="line"><span class="lineno">  449</span>                      <span class="stringliteral">&quot;not resolve;  this should not happen and is a bug&quot;</span>,</div>
+<div class="line"><span class="lineno">  450</span>                      ErrorSeverity::Fatal);</div>
+<div class="line"><span class="lineno">  451</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>

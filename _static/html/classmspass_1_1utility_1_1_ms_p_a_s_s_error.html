@@ -163,12 +163,12 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 <p>Default constructor built inline. </p>
-<div class="fragment"><div class="line"><span class="lineno">   46</span>                 {</div>
-<div class="line"><span class="lineno">   47</span>        <a class="code hl_variable" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#a47e9d74154f088f38fd7e5219abc81f5">message</a>=<span class="stringliteral">&quot;MsPASS library error\n&quot;</span>;</div>
-<div class="line"><span class="lineno">   48</span>        <a class="code hl_variable" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#af808615110822967a251108b20708f51">badness</a>=ErrorSeverity::Fatal;</div>
-<div class="line"><span class="lineno">   49</span>    };</div>
-<div class="ttc" id="aclassmspass_1_1utility_1_1_ms_p_a_s_s_error_html_a47e9d74154f088f38fd7e5219abc81f5"><div class="ttname"><a href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#a47e9d74154f088f38fd7e5219abc81f5">mspass::utility::MsPASSError::message</a></div><div class="ttdeci">std::string message</div><div class="ttdef"><b>Definition</b> MsPASSError.h:114</div></div>
-<div class="ttc" id="aclassmspass_1_1utility_1_1_ms_p_a_s_s_error_html_af808615110822967a251108b20708f51"><div class="ttname"><a href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#af808615110822967a251108b20708f51">mspass::utility::MsPASSError::badness</a></div><div class="ttdeci">ErrorSeverity badness</div><div class="ttdef"><b>Definition</b> MsPASSError.h:116</div></div>
+<div class="fragment"><div class="line"><span class="lineno">   43</span>                {</div>
+<div class="line"><span class="lineno">   44</span>    <a class="code hl_variable" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#a47e9d74154f088f38fd7e5219abc81f5">message</a> = <span class="stringliteral">&quot;MsPASS library error\n&quot;</span>;</div>
+<div class="line"><span class="lineno">   45</span>    <a class="code hl_variable" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#af808615110822967a251108b20708f51">badness</a> = ErrorSeverity::Fatal;</div>
+<div class="line"><span class="lineno">   46</span>  };</div>
+<div class="ttc" id="aclassmspass_1_1utility_1_1_ms_p_a_s_s_error_html_a47e9d74154f088f38fd7e5219abc81f5"><div class="ttname"><a href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#a47e9d74154f088f38fd7e5219abc81f5">mspass::utility::MsPASSError::message</a></div><div class="ttdeci">std::string message</div><div class="ttdef"><b>Definition</b> MsPASSError.h:108</div></div>
+<div class="ttc" id="aclassmspass_1_1utility_1_1_ms_p_a_s_s_error_html_af808615110822967a251108b20708f51"><div class="ttname"><a href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#af808615110822967a251108b20708f51">mspass::utility::MsPASSError::badness</a></div><div class="ttdeci">ErrorSeverity badness</div><div class="ttdef"><b>Definition</b> MsPASSError.h:110</div></div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#af808615110822967a251108b20708f51">badness</a>, and <a class="el" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#a47e9d74154f088f38fd7e5219abc81f5">message</a>.</p>
 
@@ -217,13 +217,13 @@ Protected Attributes</h2></td></tr>
   </table>
   </dd>
 </dl>
-<div class="fragment"><div class="line"><span class="lineno">   60</span>                                                        {</div>
-<div class="line"><span class="lineno">   61</span>        <a class="code hl_variable" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#a47e9d74154f088f38fd7e5219abc81f5">message</a>=mess;</div>
-<div class="line"><span class="lineno">   62</span>        std::string s(howbad);</div>
-<div class="line"><span class="lineno">   63</span>        <span class="comment">/* this small helper function parses s to conver to the</span></div>
-<div class="line"><span class="lineno">   64</span><span class="comment">        enum class of badness*/</span></div>
-<div class="line"><span class="lineno">   65</span>        <a class="code hl_variable" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#af808615110822967a251108b20708f51">badness</a>=string2severity(s);</div>
-<div class="line"><span class="lineno">   66</span>    };</div>
+<div class="fragment"><div class="line"><span class="lineno">   58</span>                                                        {</div>
+<div class="line"><span class="lineno">   59</span>    <a class="code hl_variable" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#a47e9d74154f088f38fd7e5219abc81f5">message</a> = mess;</div>
+<div class="line"><span class="lineno">   60</span>    std::string s(howbad);</div>
+<div class="line"><span class="lineno">   61</span>    <span class="comment">/* this small helper function parses s to conver to the</span></div>
+<div class="line"><span class="lineno">   62</span><span class="comment">    enum class of badness*/</span></div>
+<div class="line"><span class="lineno">   63</span>    <a class="code hl_variable" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#af808615110822967a251108b20708f51">badness</a> = string2severity(s);</div>
+<div class="line"><span class="lineno">   64</span>  };</div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#af808615110822967a251108b20708f51">badness</a>, and <a class="el" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#a47e9d74154f088f38fd7e5219abc81f5">message</a>.</p>
 
@@ -271,10 +271,10 @@ Protected Attributes</h2></td></tr>
   </table>
   </dd>
 </dl>
-<div class="fragment"><div class="line"><span class="lineno">   76</span>        {</div>
-<div class="line"><span class="lineno">   77</span>            <a class="code hl_variable" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#a47e9d74154f088f38fd7e5219abc81f5">message</a>=mess;</div>
-<div class="line"><span class="lineno">   78</span>            <a class="code hl_variable" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#af808615110822967a251108b20708f51">badness</a>=s;</div>
-<div class="line"><span class="lineno">   79</span>        };</div>
+<div class="fragment"><div class="line"><span class="lineno">   74</span>                                                            {</div>
+<div class="line"><span class="lineno">   75</span>    <a class="code hl_variable" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#a47e9d74154f088f38fd7e5219abc81f5">message</a> = mess;</div>
+<div class="line"><span class="lineno">   76</span>    <a class="code hl_variable" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#af808615110822967a251108b20708f51">badness</a> = s;</div>
+<div class="line"><span class="lineno">   77</span>  };</div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#af808615110822967a251108b20708f51">badness</a>, and <a class="el" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#a47e9d74154f088f38fd7e5219abc81f5">message</a>.</p>
 
@@ -314,10 +314,10 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 <p>Construct from a char * and severity enum. </p>
-<div class="fragment"><div class="line"><span class="lineno">   82</span>                                                       {</div>
-<div class="line"><span class="lineno">   83</span>        <a class="code hl_variable" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#a47e9d74154f088f38fd7e5219abc81f5">message</a>=std::string(mess);</div>
-<div class="line"><span class="lineno">   84</span>        <a class="code hl_variable" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#af808615110822967a251108b20708f51">badness</a>=s;</div>
-<div class="line"><span class="lineno">   85</span>    };</div>
+<div class="fragment"><div class="line"><span class="lineno">   80</span>                                                       {</div>
+<div class="line"><span class="lineno">   81</span>    <a class="code hl_variable" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#a47e9d74154f088f38fd7e5219abc81f5">message</a> = std::string(mess);</div>
+<div class="line"><span class="lineno">   82</span>    <a class="code hl_variable" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#af808615110822967a251108b20708f51">badness</a> = s;</div>
+<div class="line"><span class="lineno">   83</span>  };</div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#af808615110822967a251108b20708f51">badness</a>, and <a class="el" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#a47e9d74154f088f38fd7e5219abc81f5">message</a>.</p>
 
@@ -347,9 +347,7 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 <p>Sends error message thrown by MsPASS library functions to standard error. </p>
-<div class="fragment"><div class="line"><span class="lineno">   89</span>                {</div>
-<div class="line"><span class="lineno">   90</span>  std::cerr &lt;&lt; <a class="code hl_variable" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#a47e9d74154f088f38fd7e5219abc81f5">message</a> &lt;&lt; std::endl;</div>
-<div class="line"><span class="lineno">   91</span>};</div>
+<div class="fragment"><div class="line"><span class="lineno">   87</span>{ std::cerr &lt;&lt; <a class="code hl_variable" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#a47e9d74154f088f38fd7e5219abc81f5">message</a> &lt;&lt; std::endl; };</div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#a47e9d74154f088f38fd7e5219abc81f5">message</a>.</p>
 
@@ -379,9 +377,7 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 <p>Overloaded method for sending error message to other than stderr. </p>
-<div class="fragment"><div class="line"><span class="lineno">   94</span>{</div>
-<div class="line"><span class="lineno">   95</span>    ofs &lt;&lt; <a class="code hl_variable" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#a47e9d74154f088f38fd7e5219abc81f5">message</a> &lt;&lt;std::endl;</div>
-<div class="line"><span class="lineno">   96</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">   89</span>{ ofs &lt;&lt; <a class="code hl_variable" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#a47e9d74154f088f38fd7e5219abc81f5">message</a> &lt;&lt; std::endl; }</div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#a47e9d74154f088f38fd7e5219abc81f5">message</a>.</p>
 
@@ -410,7 +406,7 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 <p>Return error severity as the enum value. </p>
-<div class="fragment"><div class="line"><span class="lineno">  109</span>{<span class="keywordflow">return</span> <a class="code hl_variable" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#af808615110822967a251108b20708f51">badness</a>;};</div>
+<div class="fragment"><div class="line"><span class="lineno">  102</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#af808615110822967a251108b20708f51">badness</a>; };</div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#af808615110822967a251108b20708f51">badness</a>.</p>
 
@@ -438,9 +434,11 @@ Protected Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>This overrides the method in std::exception to load our string. This allows handlers to use the what method and get the error string from seisp. Idea copied from: <a href="http://www.cplusplus.com/doc/tutorial/exceptions/">http://www.cplusplus.com/doc/tutorial/exceptions/</a></p>
-<p>pybind11 limitations make it problematic for python error handlers to get the output of the severity method or even get to the badness attribute. See the cc code for the implementation detail. </p>
-<div class="fragment"><div class="line"><span class="lineno">  107</span>{<span class="keywordflow">return</span> <a class="code hl_variable" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#a47e9d74154f088f38fd7e5219abc81f5">message</a>.c_str();};</div>
+<p>This overrides the method in std::exception to load our string. This allows handlers to use the what method and get the error string from seisp. Idea copied from: <a href="http://www.cplusplus.com/doc/tutorial/exceptions/">http://www.cplusplus.com/doc/tutorial/exceptions/</a> </p><pre class="fragment">  pybind11 limitations make it problematic for
+  python error handlers to get the output of the severity method or
+  even get to the badness attribute.   See the cc code for the
+</pre><p> implementation detail. </p>
+<div class="fragment"><div class="line"><span class="lineno">  100</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#a47e9d74154f088f38fd7e5219abc81f5">message</a>.c_str(); };</div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#a47e9d74154f088f38fd7e5219abc81f5">message</a>.</p>
 

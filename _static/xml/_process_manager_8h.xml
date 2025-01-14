@@ -2,17 +2,17 @@
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="_process_manager_8h" kind="file" language="C++">
     <compoundname>ProcessManager.h</compoundname>
-    <includes local="no">map</includes>
-    <includes local="no">vector</includes>
-    <includes local="no">boost/serialization/serialization.hpp</includes>
-    <includes local="no">boost/serialization/map.hpp</includes>
-    <includes local="no">boost/serialization/vector.hpp</includes>
     <includes local="no">boost/archive/text_iarchive.hpp</includes>
     <includes local="no">boost/archive/text_oarchive.hpp</includes>
+    <includes local="no">boost/serialization/map.hpp</includes>
+    <includes local="no">boost/serialization/serialization.hpp</includes>
+    <includes local="no">boost/serialization/vector.hpp</includes>
     <includes local="no">boost/uuid/uuid.hpp</includes>
     <includes local="no">boost/uuid/uuid_generators.hpp</includes>
     <includes local="no">boost/uuid/uuid_io.hpp</includes>
     <includes local="no">boost/uuid/uuid_serialize.hpp</includes>
+    <includes local="no">map</includes>
+    <includes local="no">vector</includes>
     <includedby refid="_process_manager_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/utility/ProcessManager.cc</includedby>
     <incdepgraph>
       <node id="1">
@@ -41,37 +41,37 @@
         <childnode refid="12" relation="include">
         </childnode>
       </node>
-      <node id="7">
+      <node id="2">
         <label>boost/archive/text_iarchive.hpp</label>
       </node>
-      <node id="8">
+      <node id="3">
         <label>boost/archive/text_oarchive.hpp</label>
       </node>
-      <node id="5">
+      <node id="4">
         <label>boost/serialization/map.hpp</label>
       </node>
-      <node id="4">
+      <node id="5">
         <label>boost/serialization/serialization.hpp</label>
       </node>
       <node id="6">
         <label>boost/serialization/vector.hpp</label>
       </node>
-      <node id="9">
+      <node id="7">
         <label>boost/uuid/uuid.hpp</label>
       </node>
-      <node id="10">
+      <node id="8">
         <label>boost/uuid/uuid_generators.hpp</label>
       </node>
-      <node id="11">
+      <node id="9">
         <label>boost/uuid/uuid_io.hpp</label>
       </node>
-      <node id="12">
+      <node id="10">
         <label>boost/uuid/uuid_serialize.hpp</label>
       </node>
-      <node id="2">
+      <node id="11">
         <label>map</label>
       </node>
-      <node id="3">
+      <node id="12">
         <label>vector</label>
       </node>
     </incdepgraph>
@@ -86,110 +86,91 @@
     <programlisting>
 <codeline lineno="1"><highlight class="preprocessor">#ifndef<sp/>_PROCESS_MANAGER_H_</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="2"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>_PROCESS_MANAGER_H_</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="3"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;map&gt;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="4"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;vector&gt;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;boost/serialization/serialization.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="6"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;boost/serialization/map.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;boost/archive/text_iarchive.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;boost/archive/text_oarchive.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;boost/serialization/map.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;boost/serialization/serialization.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="7"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;boost/serialization/vector.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="8"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;boost/archive/text_iarchive.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="9"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;boost/archive/text_oarchive.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="10"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;boost/uuid/uuid.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="11"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;boost/uuid/uuid_generators.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="12"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;boost/uuid/uuid_io.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="13"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;boost/uuid/uuid_serialize.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="14"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">mspass{</highlight></codeline>
-<codeline lineno="15"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">utility{</highlight></codeline>
-<codeline lineno="43" refid="classmspass_1_1utility_1_1_algorithm_definition" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classmspass_1_1utility_1_1_algorithm_definition" kindref="compound">AlgorithmDefinition</ref></highlight></codeline>
-<codeline lineno="44"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="45"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
-<codeline lineno="51" refid="classmspass_1_1utility_1_1_algorithm_definition_1a23ca24b9ba072a9a874044c7d16116f0" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1utility_1_1_algorithm_definition_1a23ca24b9ba072a9a874044c7d16116f0" kindref="member">AlgorithmDefinition</ref>()<sp/>:<sp/>nm(),myid(),input_type(),output_type()<sp/>{};</highlight></codeline>
-<codeline lineno="64" refid="classmspass_1_1utility_1_1_algorithm_definition_1a7cc0aa96863729272c2a0f1a61b086e5" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1utility_1_1_algorithm_definition_1a7cc0aa96863729272c2a0f1a61b086e5" kindref="member">AlgorithmDefinition</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>name,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>typin,</highlight></codeline>
-<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>typout,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/></highlight><highlight class="keywordtype">id</highlight><highlight class="normal">)</highlight></codeline>
-<codeline lineno="66"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
-<codeline lineno="67"><highlight class="normal"><sp/><sp/><sp/><sp/>nm=name;</highlight></codeline>
-<codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/>myid=<ref refid="classmspass_1_1utility_1_1_algorithm_definition_1ae249ed54773be28bc994b347106eb11b" kindref="member">id</ref>;</highlight></codeline>
-<codeline lineno="69"><highlight class="normal"><sp/><sp/><sp/><sp/>input_type=typin;</highlight></codeline>
-<codeline lineno="70"><highlight class="normal"><sp/><sp/><sp/><sp/>output_type=typout;</highlight></codeline>
-<codeline lineno="71"><highlight class="normal"><sp/><sp/>};</highlight></codeline>
-<codeline lineno="72"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1utility_1_1_algorithm_definition_1a23ca24b9ba072a9a874044c7d16116f0" kindref="member">AlgorithmDefinition</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_algorithm_definition" kindref="compound">AlgorithmDefinition</ref>&amp;<sp/>parent)</highlight></codeline>
-<codeline lineno="73"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
-<codeline lineno="74"><highlight class="normal"><sp/><sp/><sp/><sp/>nm=parent.nm;</highlight></codeline>
-<codeline lineno="75"><highlight class="normal"><sp/><sp/><sp/><sp/>myid=parent.myid;</highlight></codeline>
-<codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/>input_type=parent.input_type;</highlight></codeline>
-<codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/>output_type=parent.output_type;</highlight></codeline>
-<codeline lineno="78"><highlight class="normal"><sp/><sp/>};</highlight></codeline>
-<codeline lineno="79"><highlight class="normal"><sp/><sp/>std::string<sp/>name()</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
-<codeline lineno="80"><highlight class="keyword"><sp/><sp/></highlight><highlight class="normal">{</highlight></codeline>
-<codeline lineno="81"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>nm;</highlight></codeline>
-<codeline lineno="82"><highlight class="normal"><sp/><sp/>};</highlight></codeline>
-<codeline lineno="90" refid="classmspass_1_1utility_1_1_algorithm_definition_1ae249ed54773be28bc994b347106eb11b" refkind="member"><highlight class="normal"><sp/><sp/>std::string<sp/><ref refid="classmspass_1_1utility_1_1_algorithm_definition_1ae249ed54773be28bc994b347106eb11b" kindref="member">id</ref>()</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
-<codeline lineno="91"><highlight class="keyword"><sp/><sp/></highlight><highlight class="normal">{</highlight></codeline>
-<codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>myid;</highlight></codeline>
-<codeline lineno="93"><highlight class="normal"><sp/><sp/>};</highlight></codeline>
-<codeline lineno="101" refid="classmspass_1_1utility_1_1_algorithm_definition_1a68aacda33ad00fd84803b51013e8b4ff" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_algorithm_definition_1a68aacda33ad00fd84803b51013e8b4ff" kindref="member">set_id</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/></highlight><highlight class="keywordtype">id</highlight><highlight class="normal">){myid=<ref refid="classmspass_1_1utility_1_1_algorithm_definition_1ae249ed54773be28bc994b347106eb11b" kindref="member">id</ref>;};</highlight></codeline>
-<codeline lineno="102"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//void<sp/>set_name(const<sp/>string<sp/>name){nm=name;};</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="103"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1utility_1_1_algorithm_definition" kindref="compound">AlgorithmDefinition</ref>&amp;<sp/>operator=(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_algorithm_definition" kindref="compound">AlgorithmDefinition</ref>&amp;<sp/>parent)</highlight></codeline>
-<codeline lineno="104"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
-<codeline lineno="105"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(</highlight><highlight class="keyword">this</highlight><highlight class="normal">==&amp;parent)</highlight></codeline>
-<codeline lineno="106"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
-<codeline lineno="107"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>nm=parent.nm;</highlight></codeline>
-<codeline lineno="108"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>myid=parent.myid;</highlight></codeline>
-<codeline lineno="109"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>input_type=parent.input_type;</highlight></codeline>
-<codeline lineno="110"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>output_type=parent.output_type;</highlight></codeline>
-<codeline lineno="111"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="112"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>*</highlight><highlight class="keyword">this</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="113"><highlight class="normal"><sp/><sp/>};</highlight></codeline>
-<codeline lineno="114"><highlight class="normal"></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
-<codeline lineno="115"><highlight class="normal"><sp/><sp/>std::string<sp/>nm;</highlight></codeline>
-<codeline lineno="116"><highlight class="normal"><sp/><sp/>std::string<sp/>myid;</highlight></codeline>
-<codeline lineno="117"><highlight class="normal"><sp/><sp/>std::string<sp/>input_type;</highlight></codeline>
-<codeline lineno="118"><highlight class="normal"><sp/><sp/>std::string<sp/>output_type;</highlight></codeline>
-<codeline lineno="119"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">friend</highlight><highlight class="normal"><sp/>boost::serialization::access;</highlight></codeline>
-<codeline lineno="120"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">class</highlight><highlight class="normal"><sp/>Archive&gt;</highlight></codeline>
-<codeline lineno="121"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>serialize(Archive&amp;<sp/>ar,</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>version)</highlight></codeline>
-<codeline lineno="122"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
-<codeline lineno="123"><highlight class="normal"><sp/><sp/><sp/><sp/>ar<sp/>&amp;<sp/>nm;</highlight></codeline>
-<codeline lineno="124"><highlight class="normal"><sp/><sp/><sp/><sp/>ar<sp/>&amp;<sp/>myid;</highlight></codeline>
-<codeline lineno="125"><highlight class="normal"><sp/><sp/>};</highlight></codeline>
-<codeline lineno="126"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="127" refid="classmspass_1_1utility_1_1_process_manager" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classmspass_1_1utility_1_1_process_manager" kindref="compound">ProcessManager</ref></highlight></codeline>
-<codeline lineno="128"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="129"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
-<codeline lineno="130"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1utility_1_1_process_manager" kindref="compound">ProcessManager</ref>();</highlight></codeline>
-<codeline lineno="131"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1utility_1_1_process_manager" kindref="compound">ProcessManager</ref>(std::string<sp/>fname);</highlight></codeline>
-<codeline lineno="132"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1utility_1_1_algorithm_definition" kindref="compound">AlgorithmDefinition</ref><sp/>algorithm(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>name,</highlight></codeline>
-<codeline lineno="133"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>instance=0)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="134"><highlight class="normal"><sp/><sp/>std::string<sp/>jobname()</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
-<codeline lineno="135"><highlight class="keyword"><sp/><sp/></highlight><highlight class="normal">{</highlight></codeline>
-<codeline lineno="136"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>jobnm;</highlight></codeline>
-<codeline lineno="137"><highlight class="normal"><sp/><sp/>};</highlight></codeline>
-<codeline lineno="138"><highlight class="normal"><sp/><sp/>std::string<sp/>jobid()</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
-<codeline lineno="139"><highlight class="keyword"><sp/><sp/></highlight><highlight class="normal">{</highlight></codeline>
-<codeline lineno="140"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>boost::uuids::to_string(job_uuid);</highlight></codeline>
-<codeline lineno="141"><highlight class="normal"><sp/><sp/>};</highlight></codeline>
-<codeline lineno="153" refid="classmspass_1_1utility_1_1_process_manager_1aa19241756ba1c486953668958fc2a21a" refkind="member"><highlight class="normal"><sp/><sp/>std::string<sp/><ref refid="classmspass_1_1utility_1_1_process_manager_1aa19241756ba1c486953668958fc2a21a" kindref="member">new_newid</ref>()</highlight></codeline>
-<codeline lineno="154"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
-<codeline lineno="155"><highlight class="normal"><sp/><sp/><sp/><sp/>boost::uuids::uuid<sp/>id;</highlight></codeline>
-<codeline lineno="156"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">id</highlight><highlight class="normal">=gen();</highlight></codeline>
-<codeline lineno="157"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>boost::uuids::to_string(</highlight><highlight class="keywordtype">id</highlight><highlight class="normal">);</highlight></codeline>
-<codeline lineno="158"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
-<codeline lineno="159"><highlight class="normal"></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
-<codeline lineno="160"><highlight class="normal"><sp/><sp/>std::string<sp/>jobnm;</highlight></codeline>
-<codeline lineno="161"><highlight class="normal"><sp/><sp/>boost::uuids::uuid<sp/>job_uuid;</highlight></codeline>
-<codeline lineno="162"><highlight class="normal"><sp/><sp/>boost::uuids::random_generator<sp/>gen;</highlight></codeline>
-<codeline lineno="163"><highlight class="normal"><sp/><sp/>std::map&lt;std::string,std::vector&lt;AlgorithmDefinition&gt;&gt;<sp/>algs;</highlight></codeline>
-<codeline lineno="164"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">friend</highlight><highlight class="normal"><sp/>boost::serialization::access;</highlight></codeline>
-<codeline lineno="165"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">class</highlight><highlight class="normal"><sp/>Archive&gt;</highlight></codeline>
-<codeline lineno="166"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>serialize(Archive&amp;<sp/>ar,</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>version)</highlight></codeline>
-<codeline lineno="167"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
-<codeline lineno="168"><highlight class="normal"><sp/><sp/><sp/><sp/>ar<sp/>&amp;<sp/>jobnm;</highlight></codeline>
-<codeline lineno="169"><highlight class="normal"><sp/><sp/><sp/><sp/>ar<sp/>&amp;<sp/>job_uuid;</highlight></codeline>
-<codeline lineno="170"><highlight class="normal"><sp/><sp/><sp/><sp/>ar<sp/>&amp;<sp/>algs;</highlight></codeline>
-<codeline lineno="171"><highlight class="normal"><sp/><sp/>};</highlight></codeline>
-<codeline lineno="172"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="173"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>end<sp/>utility<sp/>namespace</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="174"><highlight class="normal">}<sp/><sp/></highlight><highlight class="comment">//<sp/>end<sp/>mspass<sp/>namespace<sp/>encapsulation</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="175"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;boost/uuid/uuid.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;boost/uuid/uuid_generators.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;boost/uuid/uuid_io.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;boost/uuid/uuid_serialize.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;map&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;vector&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">mspass<sp/>{</highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">utility<sp/>{</highlight></codeline>
+<codeline lineno="43" refid="classmspass_1_1utility_1_1_algorithm_definition" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classmspass_1_1utility_1_1_algorithm_definition" kindref="compound">AlgorithmDefinition</ref><sp/>{</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="50" refid="classmspass_1_1utility_1_1_algorithm_definition_1a23ca24b9ba072a9a874044c7d16116f0" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1utility_1_1_algorithm_definition_1a23ca24b9ba072a9a874044c7d16116f0" kindref="member">AlgorithmDefinition</ref>()<sp/>:<sp/>nm(),<sp/>myid(),<sp/>input_type(),<sp/>output_type()<sp/>{};</highlight></codeline>
+<codeline lineno="63" refid="classmspass_1_1utility_1_1_algorithm_definition_1a7cc0aa96863729272c2a0f1a61b086e5" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1utility_1_1_algorithm_definition_1a7cc0aa96863729272c2a0f1a61b086e5" kindref="member">AlgorithmDefinition</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>name,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>typin,</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>typout,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/></highlight><highlight class="keywordtype">id</highlight><highlight class="normal">)<sp/>{</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/>nm<sp/>=<sp/>name;</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/>myid<sp/>=<sp/><ref refid="classmspass_1_1utility_1_1_algorithm_definition_1ae249ed54773be28bc994b347106eb11b" kindref="member">id</ref>;</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"><sp/><sp/><sp/><sp/>input_type<sp/>=<sp/>typin;</highlight></codeline>
+<codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/>output_type<sp/>=<sp/>typout;</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"><sp/><sp/>};</highlight></codeline>
+<codeline lineno="70"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1utility_1_1_algorithm_definition_1a23ca24b9ba072a9a874044c7d16116f0" kindref="member">AlgorithmDefinition</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_algorithm_definition" kindref="compound">AlgorithmDefinition</ref><sp/>&amp;parent)<sp/>{</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/>nm<sp/>=<sp/>parent.nm;</highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/>myid<sp/>=<sp/>parent.myid;</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"><sp/><sp/><sp/><sp/>input_type<sp/>=<sp/>parent.input_type;</highlight></codeline>
+<codeline lineno="74"><highlight class="normal"><sp/><sp/><sp/><sp/>output_type<sp/>=<sp/>parent.output_type;</highlight></codeline>
+<codeline lineno="75"><highlight class="normal"><sp/><sp/>};</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"><sp/><sp/>std::string<sp/>name()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>nm;<sp/>};</highlight></codeline>
+<codeline lineno="84" refid="classmspass_1_1utility_1_1_algorithm_definition_1ae249ed54773be28bc994b347106eb11b" refkind="member"><highlight class="normal"><sp/><sp/>std::string<sp/><ref refid="classmspass_1_1utility_1_1_algorithm_definition_1ae249ed54773be28bc994b347106eb11b" kindref="member">id</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>myid;<sp/>};</highlight></codeline>
+<codeline lineno="92" refid="classmspass_1_1utility_1_1_algorithm_definition_1a68aacda33ad00fd84803b51013e8b4ff" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_algorithm_definition_1a68aacda33ad00fd84803b51013e8b4ff" kindref="member">set_id</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/></highlight><highlight class="keywordtype">id</highlight><highlight class="normal">)<sp/>{<sp/>myid<sp/>=<sp/><ref refid="classmspass_1_1utility_1_1_algorithm_definition_1ae249ed54773be28bc994b347106eb11b" kindref="member">id</ref>;<sp/>};</highlight></codeline>
+<codeline lineno="93"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>void<sp/>set_name(const<sp/>string<sp/>name){nm=name;};</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="94"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1utility_1_1_algorithm_definition" kindref="compound">AlgorithmDefinition</ref><sp/>&amp;operator=(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_algorithm_definition" kindref="compound">AlgorithmDefinition</ref><sp/>&amp;parent)<sp/>{</highlight></codeline>
+<codeline lineno="95"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keyword">this</highlight><highlight class="normal"><sp/>==<sp/>&amp;parent)<sp/>{</highlight></codeline>
+<codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>nm<sp/>=<sp/>parent.nm;</highlight></codeline>
+<codeline lineno="97"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>myid<sp/>=<sp/>parent.myid;</highlight></codeline>
+<codeline lineno="98"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>input_type<sp/>=<sp/>parent.input_type;</highlight></codeline>
+<codeline lineno="99"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>output_type<sp/>=<sp/>parent.output_type;</highlight></codeline>
+<codeline lineno="100"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="101"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>*</highlight><highlight class="keyword">this</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="102"><highlight class="normal"><sp/><sp/>};</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"></highlight></codeline>
+<codeline lineno="104"><highlight class="normal"></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="105"><highlight class="normal"><sp/><sp/>std::string<sp/>nm;</highlight></codeline>
+<codeline lineno="106"><highlight class="normal"><sp/><sp/>std::string<sp/>myid;</highlight></codeline>
+<codeline lineno="107"><highlight class="normal"><sp/><sp/>std::string<sp/>input_type;</highlight></codeline>
+<codeline lineno="108"><highlight class="normal"><sp/><sp/>std::string<sp/>output_type;</highlight></codeline>
+<codeline lineno="109"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">friend</highlight><highlight class="normal"><sp/>boost::serialization::access;</highlight></codeline>
+<codeline lineno="110"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">class</highlight><highlight class="normal"><sp/>Archive&gt;</highlight></codeline>
+<codeline lineno="111"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>serialize(Archive<sp/>&amp;ar,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>version)<sp/>{</highlight></codeline>
+<codeline lineno="112"><highlight class="normal"><sp/><sp/><sp/><sp/>ar<sp/>&amp;<sp/>nm;</highlight></codeline>
+<codeline lineno="113"><highlight class="normal"><sp/><sp/><sp/><sp/>ar<sp/>&amp;<sp/>myid;</highlight></codeline>
+<codeline lineno="114"><highlight class="normal"><sp/><sp/>};</highlight></codeline>
+<codeline lineno="115"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="116" refid="classmspass_1_1utility_1_1_process_manager" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classmspass_1_1utility_1_1_process_manager" kindref="compound">ProcessManager</ref><sp/>{</highlight></codeline>
+<codeline lineno="117"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="118"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1utility_1_1_process_manager" kindref="compound">ProcessManager</ref>();</highlight></codeline>
+<codeline lineno="119"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1utility_1_1_process_manager" kindref="compound">ProcessManager</ref>(std::string<sp/>fname);</highlight></codeline>
+<codeline lineno="120"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1utility_1_1_algorithm_definition" kindref="compound">AlgorithmDefinition</ref><sp/>algorithm(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>name,</highlight></codeline>
+<codeline lineno="121"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>instance<sp/>=<sp/>0)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="122"><highlight class="normal"><sp/><sp/>std::string<sp/>jobname()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>jobnm;<sp/>};</highlight></codeline>
+<codeline lineno="123"><highlight class="normal"><sp/><sp/>std::string<sp/>jobid()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>boost::uuids::to_string(job_uuid);<sp/>};</highlight></codeline>
+<codeline lineno="135" refid="classmspass_1_1utility_1_1_process_manager_1aa19241756ba1c486953668958fc2a21a" refkind="member"><highlight class="normal"><sp/><sp/>std::string<sp/><ref refid="classmspass_1_1utility_1_1_process_manager_1aa19241756ba1c486953668958fc2a21a" kindref="member">new_newid</ref>()<sp/>{</highlight></codeline>
+<codeline lineno="136"><highlight class="normal"><sp/><sp/><sp/><sp/>boost::uuids::uuid<sp/>id;</highlight></codeline>
+<codeline lineno="137"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">id</highlight><highlight class="normal"><sp/>=<sp/>gen();</highlight></codeline>
+<codeline lineno="138"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>boost::uuids::to_string(</highlight><highlight class="keywordtype">id</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="139"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="140"><highlight class="normal"></highlight></codeline>
+<codeline lineno="141"><highlight class="normal"></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="142"><highlight class="normal"><sp/><sp/>std::string<sp/>jobnm;</highlight></codeline>
+<codeline lineno="143"><highlight class="normal"><sp/><sp/>boost::uuids::uuid<sp/>job_uuid;</highlight></codeline>
+<codeline lineno="144"><highlight class="normal"><sp/><sp/>boost::uuids::random_generator<sp/>gen;</highlight></codeline>
+<codeline lineno="145"><highlight class="normal"><sp/><sp/>std::map&lt;std::string,<sp/>std::vector&lt;AlgorithmDefinition&gt;&gt;<sp/>algs;</highlight></codeline>
+<codeline lineno="146"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">friend</highlight><highlight class="normal"><sp/>boost::serialization::access;</highlight></codeline>
+<codeline lineno="147"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">class</highlight><highlight class="normal"><sp/>Archive&gt;</highlight></codeline>
+<codeline lineno="148"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>serialize(Archive<sp/>&amp;ar,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>version)<sp/>{</highlight></codeline>
+<codeline lineno="149"><highlight class="normal"><sp/><sp/><sp/><sp/>ar<sp/>&amp;<sp/>jobnm;</highlight></codeline>
+<codeline lineno="150"><highlight class="normal"><sp/><sp/><sp/><sp/>ar<sp/>&amp;<sp/>job_uuid;</highlight></codeline>
+<codeline lineno="151"><highlight class="normal"><sp/><sp/><sp/><sp/>ar<sp/>&amp;<sp/>algs;</highlight></codeline>
+<codeline lineno="152"><highlight class="normal"><sp/><sp/>};</highlight></codeline>
+<codeline lineno="153"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="154"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>utility</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="155"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>mspass</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="156"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
     </programlisting>
     <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessManager.h"/>
   </compounddef>
