@@ -1,9 +1,13 @@
 #ifndef _METADATADEFINITIONS_H_
 #define _METADATADEFINITIONS_H_
+#include <string>
 #include <map>
 #include <tuple>
+#include <list>
+#include "mspass/utility/Metadata.h"
 namespace mspass {
 namespace utility {
+using mspass::utility::MDtype;
 enum class MDDefFormat { PF, YAML };
 
 /*! \brief Define properties of Metadata known to mspass.
