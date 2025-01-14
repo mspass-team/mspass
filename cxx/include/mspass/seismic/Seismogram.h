@@ -1,21 +1,22 @@
 #ifndef _SEISMOGRAM_H_
 #define _SEISMOGRAM_H_
 #include "mspass/seismic/CoreSeismogram.h"
-#include "mspass/utility/ProcessingHistory.h"
 #include "mspass/utility/ErrorLogger.h"
+#include "mspass/utility/ProcessingHistory.h"
 
-namespace mspass::seismic{
+namespace mspass::seismic {
 /*! \brief Implemntation of Seismogram for MsPASS.
 
 This is the working version of a three-component seismogram object used
 in the MsPASS framework.   It extends CoreSeismogram by adding
 ProcessingHistory.   */
 class Seismogram : public mspass::seismic::CoreSeismogram,
-   public mspass::utility::ProcessingHistory
-{
+                   public mspass::utility::ProcessingHistory {
 public:
   /*! Default constructor.   Only runs subclass default constructors. */
-  Seismogram() : mspass::seismic::CoreSeismogram(),mspass::utility::ProcessingHistory(){};
+  Seismogram()
+      : mspass::seismic::CoreSeismogram(),
+        mspass::utility::ProcessingHistory() {};
   /*! Bare bones constructor allocates space and little else.
 
   Sometimes it is helpful to construct a skeleton that can be fleshed out
@@ -49,7 +50,7 @@ public:
 
   \param d is the data to be copied to create the new Seismogram object
    */
-  Seismogram(const mspass::seismic::CoreSeismogram& d);
+  Seismogram(const mspass::seismic::CoreSeismogram &d);
   /*! Contruct from a core seismogram and initialize history as origin.
 
   This constructor is a variant of a similar one built only from a
@@ -67,7 +68,7 @@ public:
   \param is core data to be cloned
   \param alg is the algorithm name to set for the origin history record.
   */
-  Seismogram(const mspass::seismic::CoreSeismogram& d, const std::string alg);
+  Seismogram(const mspass::seismic::CoreSeismogram &d, const std::string alg);
   /*! \brief Partial constructor from base classes.
 
   This is a partial constructor useful sometimes for building a Seismogram
@@ -79,9 +80,8 @@ public:
   \param bts is the BasicTimeSeries that overrides any md data.
   \param md is the Metadata cloned to make the partially constructed object.
   */
-  Seismogram(const mspass::seismic::BasicTimeSeries& bts,
-      const mspass::utility::Metadata& md);
-
+  Seismogram(const mspass::seismic::BasicTimeSeries &bts,
+             const mspass::utility::Metadata &md);
 
   /*! \brief Construct from all pieces.
 
@@ -101,10 +101,11 @@ mess with).   tm is also a dmatrix representation the tmatrix stored
 internally as a 2d C array, but we use the dmatrix to mesh
 with serialization.
 */
-  Seismogram(const mspass::seismic::BasicTimeSeries& b, const mspass::utility::Metadata& m,
-    const mspass::utility::ProcessingHistory& his,
-      const bool card, const bool ortho,
-        const mspass::utility::dmatrix& tm, const mspass::utility::dmatrix& uin);
+  Seismogram(const mspass::seismic::BasicTimeSeries &b,
+             const mspass::utility::Metadata &m,
+             const mspass::utility::ProcessingHistory &his, const bool card,
+             const bool ortho, const mspass::utility::dmatrix &tm,
+             const mspass::utility::dmatrix &uin);
   /*! Constructor driven by a Metadata object.
 
   The flexibilityof Metadata makes it helpful at times to build a Seismogram
@@ -124,56 +125,57 @@ with serialization.
   \param readername is the algorithm name assigned to the top level history
      record.   Defaults to "load3C"
   */
-  Seismogram(const Metadata& md,const std::string jobname=std::string("test"),
-    const std::string jobid=std::string("UNDEFINED"),
-      const std::string readername=std::string("load3C"),
-        const std::string algid=std::string("0"));
+  Seismogram(const Metadata &md,
+             const std::string jobname = std::string("test"),
+             const std::string jobid = std::string("UNDEFINED"),
+             const std::string readername = std::string("load3C"),
+             const std::string algid = std::string("0"));
 
-/*! \brief Construct from Metadata definition that includes data path.
- *
- A Metadata object is sufficiently general that it can contain enough
- information to contruct an object from attributes contained in it.
- This constuctor uses that approach, with the actual loading of data
- being an option (on by default).   In mspass this is constructor is
- used to load data with Metadata constructed from MongoDB and then
- using the path created from two parameters (dir and dfile used as
- in css3.0 wfdisc) to read data.   The API is general but the
- implementation in mspass is very rigid.   It blindly assumes the
- data being read are binary doubles in the right byte order and
- ordered in the native order for dmatrix (Fortran order).  i.e.
- the constuctor does a raw fread of ns*3 doubles into the internal
- array used in the dmatrix implementation.
+  /*! \brief Construct from Metadata definition that includes data path.
+   *
+   A Metadata object is sufficiently general that it can contain enough
+   information to contruct an object from attributes contained in it.
+   This constuctor uses that approach, with the actual loading of data
+   being an option (on by default).   In mspass this is constructor is
+   used to load data with Metadata constructed from MongoDB and then
+   using the path created from two parameters (dir and dfile used as
+   in css3.0 wfdisc) to read data.   The API is general but the
+   implementation in mspass is very rigid.   It blindly assumes the
+   data being read are binary doubles in the right byte order and
+   ordered in the native order for dmatrix (Fortran order).  i.e.
+   the constuctor does a raw fread of ns*3 doubles into the internal
+   array used in the dmatrix implementation.
 
- A second element of the Metadata that is special for MsPASS is the
- handling of the transformation matrix by this constructor.   In MsPASS
- the transformation matrix is stored as a python object in MongoDB.
- This constructor aims to fetch that entity with the key 'tmatrix'.
- To be more robust and simpler to use with data not loaded from mongodb
- we default tmatrix to assume the data are in standard coordinates.  That is,
- if the key tmatrix is not defined in Metadata passed as arg0, the
- constructor assumes it should set the transformation matrix to an identity.
- Use set_transformation_matrix if that assumption is wrong for your data.
+   A second element of the Metadata that is special for MsPASS is the
+   handling of the transformation matrix by this constructor.   In MsPASS
+   the transformation matrix is stored as a python object in MongoDB.
+   This constructor aims to fetch that entity with the key 'tmatrix'.
+   To be more robust and simpler to use with data not loaded from mongodb
+   we default tmatrix to assume the data are in standard coordinates.  That is,
+   if the key tmatrix is not defined in Metadata passed as arg0, the
+   constructor assumes it should set the transformation matrix to an identity.
+   Use set_transformation_matrix if that assumption is wrong for your data.
 
- \param md is the Metadata used for the construction.
+   \param md is the Metadata used for the construction.
 
- \param load_data if true (default) a file name is constructed from
- dir+"/"+dfile, the file is openned, fseek is called to foff,
- data are read with fread, and the file is closed.  If false a dmatrix
- for u is still created of size 3xns, but the matrix is only initialized
- to all zeros.
+   \param load_data if true (default) a file name is constructed from
+   dir+"/"+dfile, the file is openned, fseek is called to foff,
+   data are read with fread, and the file is closed.  If false a dmatrix
+   for u is still created of size 3xns, but the matrix is only initialized
+   to all zeros.
 
- \exception  Will throw a MsPASSError if required metadata are missing.
- */
-   Seismogram(const Metadata& md, bool load_data)
-     : mspass::seismic::CoreSeismogram(md,load_data), mspass::utility::ProcessingHistory()
-   {};
+   \exception  Will throw a MsPASSError if required metadata are missing.
+   */
+  Seismogram(const Metadata &md, bool load_data)
+      : mspass::seismic::CoreSeismogram(md, load_data),
+        mspass::utility::ProcessingHistory() {};
   /*! Standard copy constructor. */
-  Seismogram(const Seismogram& parent)
-    : mspass::seismic::CoreSeismogram(parent), mspass::utility::ProcessingHistory(parent)
-  {};
-  virtual ~Seismogram(){};
+  Seismogram(const Seismogram &parent)
+      : mspass::seismic::CoreSeismogram(parent),
+        mspass::utility::ProcessingHistory(parent) {};
+  virtual ~Seismogram() {};
   /*! Standard assignment operator. */
-  Seismogram& operator=(const Seismogram& parent);
+  Seismogram &operator=(const Seismogram &parent);
   /*! \brief Load just the ProcessingHistory data from another data source.
 
   Some algorithms don't handle processing history.   In those situations it
@@ -182,7 +184,7 @@ with serialization.
 
   \param h is the ProcessingHistory data to copy into this Seismogram.
   */
-  void load_history(const mspass::utility::ProcessingHistory& h);
+  void load_history(const mspass::utility::ProcessingHistory &h);
   /*! Return an estimate of the memmory use by the data in this object.
 
   Memory consumed by a Seismogram object is needed to implement the
@@ -194,5 +196,5 @@ with serialization.
   */
   size_t memory_use() const;
 };
-}//END mspass::seismic namespace
+} // namespace mspass::seismic
 #endif

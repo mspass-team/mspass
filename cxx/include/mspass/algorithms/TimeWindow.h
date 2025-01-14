@@ -1,75 +1,72 @@
 #ifndef _TIMEWINDOW_H_
 #define _TIMEWINDOW_H_
-namespace mspass::algorithms
-{
+namespace mspass::algorithms {
 /*!
 \brief Defines a time window.
 
 Time windows are a common concept in time series analysis and seismology
 in particular.  The object definition here has no concept of a time
-standard.  It simply defines an interval in terms of a pair of 
-real numbers.  
+standard.  It simply defines an interval in terms of a pair of
+real numbers.
 **/
-class TimeWindow
-{
+class TimeWindow {
 public:
-/*!
-// Start time of the window.
-**/
+  /*!
+  // Start time of the window.
+  **/
   double start;
-/*!
-// End time of the window.
-**/
-  double  end;  
-/*!
-// Default constructor.
-**/
-  TimeWindow(){start=0.0;end=1.0e99;};
-/*!
-// Parameterized constructor.
-//\param ts - start time
-//\param te - end time 
-**/
-  TimeWindow(const double ts,const double te){start=ts;end=te;};
-  TimeWindow(const TimeWindow& parent)
-  {
-    start=parent.start;
-    end=parent.end;
+  /*!
+  // End time of the window.
+  **/
+  double end;
+  /*!
+  // Default constructor.
+  **/
+  TimeWindow() {
+    start = 0.0;
+    end = 1.0e99;
+  };
+  /*!
+  // Parameterized constructor.
+  //\param ts - start time
+  //\param te - end time
+  **/
+  TimeWindow(const double ts, const double te) {
+    start = ts;
+    end = te;
+  };
+  TimeWindow(const TimeWindow &parent) {
+    start = parent.start;
+    end = parent.end;
   }
-  TimeWindow& operator=(const TimeWindow& parent)
-  {
-    if(&parent!=this)
-    {
-      start=parent.start;
-      end=parent.end;
+  TimeWindow &operator=(const TimeWindow &parent) {
+    if (&parent != this) {
+      start = parent.start;
+      end = parent.end;
     }
     return *this;
   }
-/*!
-// Returns a new time window translated by tshift argument.
-**/
-  TimeWindow shift(const double tshift) const
-  {
+  /*!
+  // Returns a new time window translated by tshift argument.
+  **/
+  TimeWindow shift(const double tshift) const {
     TimeWindow newwindow(*this);
-    newwindow.start+=tshift;
+    newwindow.start += tshift;
     newwindow.end += tshift;
-    return(newwindow);
+    return (newwindow);
   }
-/*!
-// Returns the window length
-**/
-  double length()
-  {
-    return(end-start);
-  };
+  /*!
+  // Returns the window length
+  **/
+  double length() { return (end - start); };
 };
 
 /* This strange looking function is a C++ function object.
-// It is used in the STL container called a set used for gaps below.  
+// It is used in the STL container called a set used for gaps below.
 // This function is used as the comparison function for ordering
 // the elements of the set.  It makes TimeWindows indexed by
 // intervals similar to thw way Datascope uses time:endtime
-// Be aware, however, that for the same reason as datascope overlapping 
+// Be aware, however, that for the same reason as datascope overlapping
 // time windows will cause ambiguity in indexing times by this
 // method.
 */
@@ -81,11 +78,11 @@ public:
 // determine if a time is inside a particular time window.
 //\author Gary L. Pavlis
 **/
-class TimeWindowCmp
-{
+class TimeWindowCmp {
 public:
-  bool operator()(const TimeWindow ti1,const TimeWindow ti2) const
-  {return(ti1.end<ti2.start);};
+  bool operator()(const TimeWindow ti1, const TimeWindow ti2) const {
+    return (ti1.end < ti2.start);
+  };
 };
-}  // end mspass::seismic namespace declaration
+} // namespace mspass::algorithms
 #endif

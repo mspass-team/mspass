@@ -1,18 +1,18 @@
 #ifndef _PROCESS_MANAGER_H_
 #define _PROCESS_MANAGER_H_
-#include <map>
-#include <vector>
-#include <boost/serialization/serialization.hpp>
-#include <boost/serialization/map.hpp>
-#include <boost/serialization/vector.hpp>
 #include <boost/archive/text_iarchive.hpp>
 #include <boost/archive/text_oarchive.hpp>
+#include <boost/serialization/map.hpp>
+#include <boost/serialization/serialization.hpp>
+#include <boost/serialization/vector.hpp>
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
 #include <boost/uuid/uuid_serialize.hpp>
-namespace mspass{
-namespace utility{
+#include <map>
+#include <vector>
+namespace mspass {
+namespace utility {
 /*! \brief Lightweight data structure to completely describe an algorithm.
 
 Processing data always involves application of one or more algorithms.
@@ -40,15 +40,14 @@ chain.   For readers input_type is set to "NotApplicable" and output_type
 is to be defined for that reader.  Readers may or may not have control
 parameters.
 */
-class AlgorithmDefinition
-{
+class AlgorithmDefinition {
 public:
   /*! Default constructor.
 
   This consructor is realy the same as what would be automatically generated.
   We define it to be clear and because I think pybind11 may need this
   declaration to allow a python wrapper for a default constructor.  */
-  AlgorithmDefinition() : nm(),myid(),input_type(),output_type() {};
+  AlgorithmDefinition() : nm(), myid(), input_type(), output_type() {};
   /*! Primary constructor.
 
   This constructor sets the two primary attributes of this object.
@@ -62,24 +61,19 @@ public:
     this instance of an algorithm.
   */
   AlgorithmDefinition(const std::string name, const std::string typin,
-    const std::string typout, const std::string id)
-  {
-    nm=name;
-    myid=id;
-    input_type=typin;
-    output_type=typout;
+                      const std::string typout, const std::string id) {
+    nm = name;
+    myid = id;
+    input_type = typin;
+    output_type = typout;
   };
-  AlgorithmDefinition(const AlgorithmDefinition& parent)
-  {
-    nm=parent.nm;
-    myid=parent.myid;
-    input_type=parent.input_type;
-    output_type=parent.output_type;
+  AlgorithmDefinition(const AlgorithmDefinition &parent) {
+    nm = parent.nm;
+    myid = parent.myid;
+    input_type = parent.input_type;
+    output_type = parent.output_type;
   };
-  std::string name() const
-  {
-    return nm;
-  };
+  std::string name() const { return nm; };
   /*! \brief return the id as a string.
 
   In MsPASS the id is normally a MongoDB ObjectID string representation of
@@ -87,10 +81,7 @@ public:
   particular algorithm instance.  If the algorithm has no parameters
   this string will be null. Callers should test that condition by calling
   the length method of std::string to verify the id is not zero length */
-  std::string id() const
-  {
-    return myid;
-  };
+  std::string id() const { return myid; };
   /*! Set a new id string.
 
   The id straing is used to define a unique instance of an algorithm
@@ -98,47 +89,38 @@ public:
   class because it is the only attribute that should ever be changed
   after construction.  The reason is the name and type constraints are
   fixed, but id defines a particular instance that may be variable. */
-  void set_id(const std::string id){myid=id;};
-  //void set_name(const string name){nm=name;};
-  AlgorithmDefinition& operator=(const AlgorithmDefinition& parent)
-  {
-    if(this==&parent)
-    {
-      nm=parent.nm;
-      myid=parent.myid;
-      input_type=parent.input_type;
-      output_type=parent.output_type;
+  void set_id(const std::string id) { myid = id; };
+  // void set_name(const string name){nm=name;};
+  AlgorithmDefinition &operator=(const AlgorithmDefinition &parent) {
+    if (this == &parent) {
+      nm = parent.nm;
+      myid = parent.myid;
+      input_type = parent.input_type;
+      output_type = parent.output_type;
     }
     return *this;
   };
+
 private:
   std::string nm;
   std::string myid;
   std::string input_type;
   std::string output_type;
   friend boost::serialization::access;
-  template<class Archive>
-     void serialize(Archive& ar,const unsigned int version)
-  {
+  template <class Archive>
+  void serialize(Archive &ar, const unsigned int version) {
     ar & nm;
     ar & myid;
   };
 };
-class ProcessManager
-{
+class ProcessManager {
 public:
   ProcessManager();
   ProcessManager(std::string fname);
   AlgorithmDefinition algorithm(const std::string name,
-    const size_t instance=0) const;
-  std::string jobname() const
-  {
-    return jobnm;
-  };
-  std::string jobid() const
-  {
-    return boost::uuids::to_string(job_uuid);
-  };
+                                const size_t instance = 0) const;
+  std::string jobname() const { return jobnm; };
+  std::string jobid() const { return boost::uuids::to_string(job_uuid); };
   /*! \brief Get a new UUID to define unique job run.
 
   MsPASS data objects are tagged with a UUID to properly handle
@@ -150,26 +132,25 @@ public:
 
   \return new uuid definign this job in string form.
   */
-  std::string new_newid()
-  {
+  std::string new_newid() {
     boost::uuids::uuid id;
-    id=gen();
+    id = gen();
     return boost::uuids::to_string(id);
   }
+
 private:
   std::string jobnm;
   boost::uuids::uuid job_uuid;
   boost::uuids::random_generator gen;
-  std::map<std::string,std::vector<AlgorithmDefinition>> algs;
+  std::map<std::string, std::vector<AlgorithmDefinition>> algs;
   friend boost::serialization::access;
-  template<class Archive>
-     void serialize(Archive& ar,const unsigned int version)
-  {
+  template <class Archive>
+  void serialize(Archive &ar, const unsigned int version) {
     ar & jobnm;
     ar & job_uuid;
     ar & algs;
   };
 };
-} // end utility namespace
-}  // end mspass namespace encapsulation
+} // namespace utility
+} // namespace mspass
 #endif

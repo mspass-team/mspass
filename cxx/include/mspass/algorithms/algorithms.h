@@ -5,11 +5,11 @@
    *
    */
 #include "mspass/algorithms/TimeWindow.h"
+#include "mspass/seismic/Ensemble.h"
 #include "mspass/seismic/Seismogram.h"
 #include "mspass/seismic/TimeSeries.h"
-#include "mspass/seismic/Ensemble.h"
 #include "mspass/seismic/TimeSeriesWGaps.h"
-namespace mspass::algorithms{
+namespace mspass::algorithms {
 /* \brief Apply agc operator to three component seismogram data.
 
    Automatic gain control (agc) is a standard operation in seismic
@@ -33,8 +33,10 @@ original data.
 This function does not throw an exception, but can post errors to the
 ErrorLogger object that is a member of Seismogram.
 */
-mspass::seismic::TimeSeries agc(mspass::seismic::Seismogram& d,const double twin);
-/*! \brief Extracts a requested time window of data from a parent Seismogram object.
+mspass::seismic::TimeSeries agc(mspass::seismic::Seismogram &d,
+                                const double twin);
+/*! \brief Extracts a requested time window of data from a parent Seismogram
+object.
 
 It is common to need to extract a smaller segment of data from a larger
 time window of data.  This function accomplishes this in a nifty method that
@@ -52,29 +54,34 @@ analysis of data in parallel constructs.
 \param parent is the larger Seismogram object to be windowed
 \param tw defines the data range to be extracted from parent.
 */
-mspass::seismic::Seismogram WindowData(const mspass::seismic::Seismogram& parent,
-  const mspass::algorithms::TimeWindow& tw);
-  /*! \brief Extracts a requested time window of data from a parent CoreSeismogram object.
+mspass::seismic::Seismogram
+WindowData(const mspass::seismic::Seismogram &parent,
+           const mspass::algorithms::TimeWindow &tw);
+/*! \brief Extracts a requested time window of data from a parent CoreSeismogram
+object.
 
-  It is common to need to extract a smaller segment of data from a larger
-  time window of data.  This function accomplishes this in a nifty method that
-  takes advantage of the methods contained in the BasicTimeSeries object for
-  handling time.   Differs from the overloaded Seismogram version because it
-  will throw an exception if given an invalid window.
+It is common to need to extract a smaller segment of data from a larger
+time window of data.  This function accomplishes this in a nifty method that
+takes advantage of the methods contained in the BasicTimeSeries object for
+handling time.   Differs from the overloaded Seismogram version because it
+will throw an exception if given an invalid window.
 
 
-  \return new CoreSeismgram object derived from  parent but windowed by input
-        time window range.
+\return new CoreSeismgram object derived from  parent but windowed by input
+      time window range.
 
-  \exception MsPASSError object if the requested time window is not inside data range
+\exception MsPASSError object if the requested time window is not inside data
+range
 
-  \param parent is the larger Seismogram object to be windowed
-  \param tw defines the data range to be extracted from parent.
-  */
-  mspass::seismic::CoreSeismogram WindowData(const mspass::seismic::CoreSeismogram& parent,
-    const mspass::algorithms::TimeWindow& tw);
+\param parent is the larger Seismogram object to be windowed
+\param tw defines the data range to be extracted from parent.
+*/
+mspass::seismic::CoreSeismogram
+WindowData(const mspass::seismic::CoreSeismogram &parent,
+           const mspass::algorithms::TimeWindow &tw);
 
-/*! \brief Extracts a requested time window of data from a parent TimeSeries object.
+/*! \brief Extracts a requested time window of data from a parent TimeSeries
+object.
 
 It is common to need to extract a smaller segment of data from a larger
 time window of data.  This is a bombproof algorithm to accomplish that
@@ -91,26 +98,30 @@ analysis of data in parallel constructs.
 \param parent is the larger TimeSeries object to be windowed
 \param tw defines the data range to be extracted from parent.
 */
-mspass::seismic::TimeSeries WindowData(const mspass::seismic::TimeSeries& parent,
-  const mspass::algorithms::TimeWindow& tw);
-  /*! \brief Extracts a requested time window of data from a parent CoreTimeSeries object.
+mspass::seismic::TimeSeries
+WindowData(const mspass::seismic::TimeSeries &parent,
+           const mspass::algorithms::TimeWindow &tw);
+/*! \brief Extracts a requested time window of data from a parent CoreTimeSeries
+object.
 
-  It is common to need to extract a smaller segment of data from a larger
-  time window of data.  This function accomplishes this in a nifty method that
-  takes advantage of the methods contained in the BasicTimeSeries object for
-  handling time.
+It is common to need to extract a smaller segment of data from a larger
+time window of data.  This function accomplishes this in a nifty method that
+takes advantage of the methods contained in the BasicTimeSeries object for
+handling time.
 
-  \return new CoreTimeSeries object derived from  parent but windowed by input
-        time window range.
+\return new CoreTimeSeries object derived from  parent but windowed by input
+      time window range.
 
-  \exception MsPASSError object if the requested time window is not inside data range
+\exception MsPASSError object if the requested time window is not inside data
+range
 
-  \param parent is the larger CoreTimeSeries object to be windowed
-  \param tw defines the data range to be extracted from parent.
-  */
+\param parent is the larger CoreTimeSeries object to be windowed
+\param tw defines the data range to be extracted from parent.
+*/
 
-  mspass::seismic::CoreTimeSeries WindowData(const mspass::seismic::CoreTimeSeries& parent,
-    const mspass::algorithms::TimeWindow& tw);
+mspass::seismic::CoreTimeSeries
+WindowData(const mspass::seismic::CoreTimeSeries &parent,
+           const mspass::algorithms::TimeWindow &tw);
 
 /* This set of procedures are ancessors of seismogram_helpers.   They
  * were moved to algorithms June 2020 for mspass */
@@ -127,16 +138,20 @@ mspass::seismic::TimeSeries WindowData(const mspass::seismic::TimeSeries& parent
  one to convert the data back to an absolute time standard if they so
  desire, but it is less flexible than the input key method.
 
-\exception SeisppError for errors in extracting required information from metadata area.
+\exception SeisppError for errors in extracting required information from
+metadata area.
 
 \param din  is input seismogram
-\param key is the metadata key used to find the arrival time to use as a reference.
-\param tw is a TimeWindow object that defines the window of data to extract around
-    the desired arrival time.
+\param key is the metadata key used to find the arrival time to use as a
+reference.
+\param tw is a TimeWindow object that defines the window of data to extract
+around the desired arrival time.
 **/
-std::shared_ptr<mspass::seismic::Seismogram> ArrivalTimeReference(mspass::seismic::Seismogram& din,
-	std::string key, mspass::algorithms::TimeWindow tw);
-/*! \brief Extract one component from a Seismogram and create a TimeSeries object from it.
+std::shared_ptr<mspass::seismic::Seismogram>
+ArrivalTimeReference(mspass::seismic::Seismogram &din, std::string key,
+                     mspass::algorithms::TimeWindow tw);
+/*! \brief Extract one component from a Seismogram and create a TimeSeries
+object from it.
 
  Copies all Metadata from parent Seismogram to build a TimeSeries
  object.  This will often leave relics of the transformation matrix
@@ -157,8 +172,9 @@ std::shared_ptr<mspass::seismic::Seismogram> ArrivalTimeReference(mspass::seismi
 
 \return TimeSeries of component requested
 **/
-mspass::seismic::TimeSeries ExtractComponent(const mspass::seismic::Seismogram& tcs,
-		const unsigned int component);
+mspass::seismic::TimeSeries
+ExtractComponent(const mspass::seismic::Seismogram &tcs,
+                 const unsigned int component);
 /* Enemble algorithms */
 /*! \brief  Returns a gather of Seismograms in an arrival time reference fram.
 
@@ -166,15 +182,18 @@ mspass::seismic::TimeSeries ExtractComponent(const mspass::seismic::Seismogram& 
  zero is defined as an arrival time extracted from the metadata area of
  each member object.
 
-\exception SeisppError for errors in extracting required information from metadata area.
+\exception SeisppError for errors in extracting required information from
+metadata area.
 
 \param din  is input gather
-\param key is the metadata key used to find the arrival time to use as a reference.
-\param tw is a TimeWindow object that defines the window of data to extract around
-    the desired arrival time.
+\param key is the metadata key used to find the arrival time to use as a
+reference.
+\param tw is a TimeWindow object that defines the window of data to extract
+around the desired arrival time.
 **/
-std::shared_ptr<mspass::seismic::ThreeComponentEnsemble> ArrivalTimeReference
-  (mspass::seismic::ThreeComponentEnsemble& din, std::string key, mspass::algorithms::TimeWindow tw);
+std::shared_ptr<mspass::seismic::ThreeComponentEnsemble>
+ArrivalTimeReference(mspass::seismic::ThreeComponentEnsemble &din,
+                     std::string key, mspass::algorithms::TimeWindow tw);
 /*! \brief Extract one component from a 3C ensemble.
  *
  This function creates an ensemble of TimeSeries objects that are
@@ -196,8 +215,8 @@ std::shared_ptr<mspass::seismic::ThreeComponentEnsemble> ArrivalTimeReference
    input is incompatible or the component number is not 0,1, or 2.
    */
 mspass::seismic::Ensemble<mspass::seismic::TimeSeries> ExtractComponent(
-  const mspass::seismic::Ensemble<mspass::seismic::Seismogram>& d,
-	const unsigned int comp);
+    const mspass::seismic::Ensemble<mspass::seismic::Seismogram> &d,
+    const unsigned int comp);
 /*! \brief Sparse time domain convolution.
 Sometimes with modeling we have an data series (d) that is sparse
 that we want to convolve with a wavelet to produce a simulation data
@@ -212,9 +231,9 @@ for zeros in d.
 \param wavelet is the wavelet to be convolved with d (not sparse)
 \param d is the sparse data vector (dominated by zeros).
 */
-mspass::seismic::CoreSeismogram sparse_convolve(
-    const mspass::seismic::CoreTimeSeries& wavelet,
-		const mspass::seismic::CoreSeismogram& d);
+mspass::seismic::CoreSeismogram
+sparse_convolve(const mspass::seismic::CoreTimeSeries &wavelet,
+                const mspass::seismic::CoreSeismogram &d);
 /*! \brief Combine a grouped set of TimeSeries into one Seismogram.
 
 A Seismogram object is a bundle of TimeSeries objects that define a
@@ -277,8 +296,8 @@ Errors from attempting to construct a Seismogram generate elog messages
 and kills of an output components.
 */
 
-mspass::seismic::Seismogram BundleSEEDGroup
-    (const std::vector<mspass::seismic::TimeSeries>& d,
+mspass::seismic::Seismogram
+BundleSEEDGroup(const std::vector<mspass::seismic::TimeSeries> &d,
                 const size_t i0, const size_t iend);
 /*! \brief Assemble a SeismogramEnsemble from a sorted TimeSeriesEnsemble.
 
@@ -317,8 +336,8 @@ does not have sta or chan defined (as noted above null net or loc are
 handled.)
 
 */
-mspass::seismic::LoggingEnsemble<mspass::seismic::Seismogram> bundle_seed_data
-    (mspass::seismic::LoggingEnsemble<mspass::seismic::TimeSeries>& d);
+mspass::seismic::LoggingEnsemble<mspass::seismic::Seismogram> bundle_seed_data(
+    mspass::seismic::LoggingEnsemble<mspass::seismic::TimeSeries> &d);
 /*! \brief Sort a TimeSeriesEnsemble with a natural order with seed name codes.
 
 The seed standard tags every single miniseed record with four string keys
@@ -343,8 +362,12 @@ Note this algorithm alters the ensemble it receives in place.
 
 \param d is the ensemble to be sorted.
 */
-void seed_ensemble_sort(mspass::seismic::LoggingEnsemble<mspass::seismic::TimeSeries>& d);
-mspass::seismic::TimeSeriesWGaps splice_segments(std::vector<mspass::seismic::TimeSeries>& segments,bool save_history);
-std::vector<mspass::seismic::TimeSeries> repair_overlaps(std::vector<mspass::seismic::TimeSeries>& segments);
-}//End mspass::algorithms namespace encapsulation
+void seed_ensemble_sort(
+    mspass::seismic::LoggingEnsemble<mspass::seismic::TimeSeries> &d);
+mspass::seismic::TimeSeriesWGaps
+splice_segments(std::vector<mspass::seismic::TimeSeries> &segments,
+                bool save_history);
+std::vector<mspass::seismic::TimeSeries>
+repair_overlaps(std::vector<mspass::seismic::TimeSeries> &segments);
+} // namespace mspass::algorithms
 #endif

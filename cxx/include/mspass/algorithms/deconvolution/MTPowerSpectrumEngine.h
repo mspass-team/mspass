@@ -1,17 +1,17 @@
 #ifndef __MTPOWERSPECTRUM_ENGINE_H__
-#define  __MTPOWERSPECTRUM_ENGINE_H__
+#define __MTPOWERSPECTRUM_ENGINE_H__
 
-#include <memory>
-#include <vector>
-#include <gsl/gsl_errno.h>
-#include <gsl/gsl_fft_complex.h>
-#include <boost/archive/text_iarchive.hpp>
-#include <boost/archive/text_oarchive.hpp>
+#include "mspass/seismic/PowerSpectrum.h"
 #include "mspass/seismic/TimeSeries.h"
 #include "mspass/utility/dmatrix.h"
-#include "mspass/seismic/PowerSpectrum.h"
+#include <boost/archive/text_iarchive.hpp>
+#include <boost/archive/text_oarchive.hpp>
+#include <gsl/gsl_errno.h>
+#include <gsl/gsl_fft_complex.h>
+#include <memory>
+#include <vector>
 
-namespace mspass::algorithms::deconvolution{
+namespace mspass::algorithms::deconvolution {
 /*! \brief Multittaper power spectral estimator.
 
 The multitaper method uses averages of spectra windowed by Slepian functions.
@@ -26,10 +26,10 @@ This class uses the apply model for processing.  It accepts raw vector or
 TimeSeries data.  The former assumes the sample interval is 1 while the second
 scales the spectrum to have units of 1/Hz.
 */
-class MTPowerSpectrumEngine
-{
+class MTPowerSpectrumEngine {
 public:
-  /*! Default constructor.  Do not use as it produces a null object that is no functional.*/
+  /*! Default constructor.  Do not use as it produces a null object that is no
+   * functional.*/
   MTPowerSpectrumEngine();
   /*! \brief construct with full definition.
 
@@ -48,14 +48,14 @@ public:
     to compute frequency bin size from fft length.
     */
   MTPowerSpectrumEngine(const int winsize, const double tbp, const int ntapers,
-       const int nfftin=-1,const double dtin=1.0);
+                        const int nfftin = -1, const double dtin = 1.0);
   /*! Standard copy constructor*/
-  MTPowerSpectrumEngine(const MTPowerSpectrumEngine& parent);
+  MTPowerSpectrumEngine(const MTPowerSpectrumEngine &parent);
   /*! Destructor.  Not trivial as it has to delete the fft workspace and
   cached tapers. */
   ~MTPowerSpectrumEngine();
   /*! Standard assignment operator. */
-  MTPowerSpectrumEngine& operator=(const MTPowerSpectrumEngine& parent);
+  MTPowerSpectrumEngine &operator=(const MTPowerSpectrumEngine &parent);
   /*! \process a TimeSeries.
 
   This is one of two methods for applying the multiaper algorithm to data.
@@ -70,7 +70,7 @@ public:
   \param parent is the data to process
   \return vector containing estimated power spwecrum
   */
-  mspass::seismic::PowerSpectrum apply(const mspass::seismic::TimeSeries& d);
+  mspass::seismic::PowerSpectrum apply(const mspass::seismic::TimeSeries &d);
   /*! \brief Low level processing of vector of data.
 
   This is lower level function that processes a raw vector of data.   Since
@@ -81,37 +81,29 @@ public:
   returns power spectral density assuming a sample rate of 1.  i.e. it
   scales to correct for the gsl fft scaling by of the forward transform by N.
 
-  \param d is the vector of data to process.  d.size() must this->taperlen() value.
+  \param d is the vector of data to process.  d.size() must this->taperlen()
+  value.
   \return vector containing estimated power spectrum (usual convention with
     0 containing 0 frequency value)
   \exception throw a MsPASSError if the size of d does not match operator length
   */
-  std::vector<double> apply(const std::vector<double>& d);
+  std::vector<double> apply(const std::vector<double> &d);
   /*! Return the frquency bin size defined for this operator. */
-  double df() const {return deltaf;};
+  double df() const { return deltaf; };
   /*! Return and std::vector of all frequencies for spectral estimates this
   operator computes. */
   std::vector<double> frequencies();
   /*! Retrieve the taper length.*/
-  int taper_length() const
-  {
-    return taperlen;
-  };
+  int taper_length() const { return taperlen; };
   /*! Retrieve time-bandwidth product.*/
-  double time_bandwidth_product()  const
-  {
-    return tbp;
-  };
+  double time_bandwidth_product() const { return tbp; };
   /*! Return number of tapers used by this engine. */
-  int number_tapers() const
-  {
-    return ntapers;
-  };
+  int number_tapers() const { return ntapers; };
   /*! Return size of fft used by this operator - usually not the same as taper
   length.*/
-  int fftsize() const {return nfft;};
+  int fftsize() const { return nfft; };
   /*! Retrieve the internally cached required data sample interval. */
-  double dt(){return operator_dt;};
+  double dt() { return operator_dt; };
   /*! \brief Putter equivalent of df.
 
   The computation of the Rayleigh bin size is complicated a bit by the folding
@@ -131,17 +123,16 @@ public:
 
   \return computed df
   */
-  double set_df(double dt)
-  {
+  double set_df(double dt) {
     this->operator_dt = dt;
     int this_nf = this->nf();
-    double fny = 1.0/(2.0*dt);
-    this->deltaf = fny/static_cast<double>(this_nf-1);
+    double fny = 1.0 / (2.0 * dt);
+    this->deltaf = fny / static_cast<double>(this_nf - 1);
     return deltaf;
   };
-  /*! Return tne number of frequency bins in estimates the operator will compute. */
-  int nf()
-  {
+  /*! Return tne number of frequency bins in estimates the operator will
+   * compute. */
+  int nf() {
     /* this simple formula depends upon integer truncation when used with
     nfft as an odd number.   For reference, this is what prieto uses in
     the python multitaper package:
@@ -151,8 +142,9 @@ public:
         nf = int((nfft+1)/2)
     they will yield the same result but this is simpler and faster
     */
-    return (this->nfft)/2 + 1;
+    return (this->nfft) / 2 + 1;
   };
+
 private:
   int taperlen;
   int ntapers;
@@ -165,20 +157,8 @@ private:
   gsl_fft_complex_wavetable *wavetable;
   gsl_fft_complex_workspace *workspace;
   friend boost::serialization::access;
-  template<class Archive>
-  void save(Archive& ar, const unsigned int version) const
-  {
-      ar & taperlen;
-      ar & ntapers;
-      ar & nfft;
-      ar & tbp;
-      ar & operator_dt;
-      ar & tapers;
-      ar & deltaf;
-  }
-  template<class Archive>
-  void load(Archive &ar, const unsigned int version)
-  {
+  template <class Archive>
+  void save(Archive &ar, const unsigned int version) const {
     ar & taperlen;
     ar & ntapers;
     ar & nfft;
@@ -186,10 +166,19 @@ private:
     ar & operator_dt;
     ar & tapers;
     ar & deltaf;
-    this->wavetable = gsl_fft_complex_wavetable_alloc (this->nfft);
-    this->workspace = gsl_fft_complex_workspace_alloc (this->nfft);
+  }
+  template <class Archive> void load(Archive &ar, const unsigned int version) {
+    ar & taperlen;
+    ar & ntapers;
+    ar & nfft;
+    ar & tbp;
+    ar & operator_dt;
+    ar & tapers;
+    ar & deltaf;
+    this->wavetable = gsl_fft_complex_wavetable_alloc(this->nfft);
+    this->workspace = gsl_fft_complex_workspace_alloc(this->nfft);
   }
   BOOST_SERIALIZATION_SPLIT_MEMBER()
 };
-} //namespace ed
+} // namespace mspass::algorithms::deconvolution
 #endif

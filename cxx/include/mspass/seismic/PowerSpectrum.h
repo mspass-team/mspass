@@ -1,16 +1,14 @@
 #ifndef _POWER_SPECTRUM_H_
 #define _POWER_SPECTRUM_H_
-#include <vector>
+#include "mspass/seismic/BasicSpectrum.h"
+#include "mspass/utility/ErrorLogger.h"
 #include "mspass/utility/Metadata.h"
 #include "mspass/utility/MsPASSError.h"
-#include "mspass/utility/ErrorLogger.h"
-#include "mspass/seismic/BasicSpectrum.h"
-namespace mspass::seismic
-{
+#include <vector>
+namespace mspass::seismic {
 /*! Class defining the concept of a power psectrum. */
 class PowerSpectrum : public mspass::seismic::BasicSpectrum,
-                      public mspass::utility::Metadata
-{
+                      public mspass::utility::Metadata {
 public:
   /*! Descriptive name assigned by creator of algorithm used to generate it.
 
@@ -44,15 +42,12 @@ public:
     this estimate.
   */
 
-  template <class T> PowerSpectrum(const mspass::utility::Metadata& md,
-    const std::vector<T>& d,
-      const double dfin,
-        const std::string nm,
-          const double f0in,
-            const double dtin,
-              const int npts_in);
-  PowerSpectrum(const PowerSpectrum& parent);
-  PowerSpectrum& operator=(const PowerSpectrum& parent);
+  template <class T>
+  PowerSpectrum(const mspass::utility::Metadata &md, const std::vector<T> &d,
+                const double dfin, const std::string nm, const double f0in,
+                const double dtin, const int npts_in);
+  PowerSpectrum(const PowerSpectrum &parent);
+  PowerSpectrum &operator=(const PowerSpectrum &parent);
   /*! \brief Standard accumulation operator.
 
   Sometimes we need to sum power spectra.  Type examplel would be
@@ -62,7 +57,7 @@ public:
 
   \exception will throw a MsPaSSError if the left and right side
   are not equal length of have different f0 of df values.*/
-  PowerSpectrum& operator+=(const PowerSpectrum& other);
+  PowerSpectrum &operator+=(const PowerSpectrum &other);
   /*! \brief Compute amplitude spectrum from power spectrum.
 
   The amplitude spectrum is sqrt of the power values.  This is a
@@ -80,25 +75,25 @@ public:
   */
   double power(const double f) const;
 
-  double frequency(const int sample_number) const
-  {
+  double frequency(const int sample_number) const {
     const std::string base_error("PowerSpectrum::frequency:  ");
-    if(sample_number<0) throw mspass::utility::MsPASSError(base_error
-        + "Sample number parameter passed cannot be negative");
-    if(sample_number>=(this->nf())) throw mspass::utility::MsPASSError(base_error
-        + "Sample number parameter passed xceeds range of spectrum array");
-    return this->f0()+sample_number*this->df();
+    if (sample_number < 0)
+      throw mspass::utility::MsPASSError(
+          base_error + "Sample number parameter passed cannot be negative");
+    if (sample_number >= (this->nf()))
+      throw mspass::utility::MsPASSError(
+          base_error +
+          "Sample number parameter passed xceeds range of spectrum array");
+    return this->f0() + sample_number * this->df();
   };
   std::vector<double> frequencies() const;
   /* \brief Return number of frequencies in estimate (size of spectrum vector).
 
   Users should be aware that when zero padding is used the size of the
   spectrum vector will be larger than half the number of time series samples.*/
-  size_t nf()const{return spectrum.size();};
+  size_t nf() const { return spectrum.size(); };
   /*! Return the nyquist frequency for this estimate. */
-  double Nyquist() const {
-    return 1.0/(2.0*this->parent_dt);
-  };
+  double Nyquist() const { return 1.0 / (2.0 * this->parent_dt); };
 };
 /*! Fully parameterized constructor template.
 
@@ -106,18 +101,18 @@ See class definition of PowerSpectrum for usage.  Template to allow
 data vector of multiple types.
 */
 
-template <class T> PowerSpectrum::PowerSpectrum(const mspass::utility::Metadata& md,
-    const std::vector<T>& d,const double dfin,const std::string nm,
-      const double f0in, const double dtin, const int npts_in)
-      : BasicSpectrum(dfin,f0in,dtin,npts_in),
-          mspass::utility::Metadata(md),
-            elog()
-{
-  spectrum_type=nm;
+template <class T>
+PowerSpectrum::PowerSpectrum(const mspass::utility::Metadata &md,
+                             const std::vector<T> &d, const double dfin,
+                             const std::string nm, const double f0in,
+                             const double dtin, const int npts_in)
+    : BasicSpectrum(dfin, f0in, dtin, npts_in), mspass::utility::Metadata(md),
+      elog() {
+  spectrum_type = nm;
   spectrum.reserve(d.size());
-  for(size_t k=0;k<d.size();++k)
+  for (size_t k = 0; k < d.size(); ++k)
     spectrum.push_back(static_cast<double>(d[k]));
   this->set_live();
 };
-}  //end namespace
+} // namespace mspass::seismic
 #endif

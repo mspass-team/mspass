@@ -2,7 +2,7 @@
 #ifndef _COMMON_MULTITAPER_H_
 #define _COMMON_MULTITAPER_H_
 #include "mspass/utility/Metadata.h"
-namespace mspass::algorithms::deconvolution{
-int ComputeTaperLength(const mspass::utility::Metadata& md);
+namespace mspass::algorithms::deconvolution {
+int ComputeTaperLength(const mspass::utility::Metadata &md);
 }
 #endif

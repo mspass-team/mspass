@@ -1,13 +1,12 @@
 #ifndef _MSPASS_ENSEMBLE_H_
 #define _MSPASS_ENSEMBLE_H_
-#include <vector>
-#include "mspass/seismic/TimeSeries.h"
 #include "mspass/seismic/Seismogram.h"
+#include "mspass/seismic/TimeSeries.h"
 #include "mspass/utility/memory_constants.h"
+#include <vector>
 
-namespace mspass::seismic{
-template <typename Tdata> class Ensemble : public mspass::utility::Metadata
-{
+namespace mspass::seismic {
+template <typename Tdata> class Ensemble : public mspass::utility::Metadata {
 public:
   /*! \brief Container holding data objects.
 
@@ -20,7 +19,7 @@ public:
   */
   std::vector<Tdata> member;
   /*! Default constructor. */
-  Ensemble(){};
+  Ensemble() {};
   /*! \brief Reserve space but build empty ensemble.
 
   Often we know what the size of an ensemble is before we start
@@ -29,22 +28,22 @@ public:
 
   \param - expected number of members.
   */
-  Ensemble(const size_t n){member.reserve(n);};
+  Ensemble(const size_t n) { member.reserve(n); };
   /*! Partial constructor to clone metadata and set aside n slots but no data*/
-  Ensemble(const mspass::utility::Metadata& md,const size_t n) : mspass::utility::Metadata(md)
-  {
-      member.reserve(n);
+  Ensemble(const mspass::utility::Metadata &md, const size_t n)
+      : mspass::utility::Metadata(md) {
+    member.reserve(n);
   };
   /*! Standard copy constructor. */
-  Ensemble(const Ensemble& parent) : mspass::utility::Metadata(dynamic_cast<const mspass::utility::Metadata&>(parent)),
-    member(parent.member){};
+  Ensemble(const Ensemble &parent)
+      : mspass::utility::Metadata(
+            dynamic_cast<const mspass::utility::Metadata &>(parent)),
+        member(parent.member) {};
   /*! Standard assignment operator. */
-  Ensemble& operator=(const Ensemble& parent)
-  {
-    if(this!=(&parent))
-    {
+  Ensemble &operator=(const Ensemble &parent) {
+    if (this != (&parent)) {
       this->Metadata::operator=(parent);
-      member=parent.member;
+      member = parent.member;
     }
     return *this;
   };
@@ -59,10 +58,11 @@ public:
 
   \param n  is the member to be extracted and returned.
   */
-  Tdata& operator[](const size_t n) const
-  try{
-    return(this->member[n]);
-  }catch(...){throw;};
+  Tdata &operator[](const size_t n) const try {
+    return (this->member[n]);
+  } catch (...) {
+    throw;
+  };
   /*! \brief updates ensemble header (Metadata).
 
   Sometime it is helpful to change a group of header attributes stored
@@ -74,12 +74,13 @@ public:
   \param newmd contains new Metadata to use for updates.
 
   */
-  void update_metadata(const mspass::utility::Metadata& newmd)
-  try{
+  void update_metadata(const mspass::utility::Metadata &newmd) try {
     mspass::utility::Metadata *md;
-    md=dynamic_cast<mspass::utility::Metadata*>(this);
+    md = dynamic_cast<mspass::utility::Metadata *>(this);
     (*md) += newmd;
-  }catch(...){throw;};
+  } catch (...) {
+    throw;
+  };
   /*! \brief copy ensemble metadata to all members.
 
     An ensemble has global metadata, but each member is required to have
@@ -88,37 +89,31 @@ public:
     previous key:value pairs in a member that are also present in the
     ensemble metadata.
     */
-  void sync_metadata()
-  {
-      size_t i;
-      for(i=0;i<this->member.size();++i)
-      {
-          mspass::utility::Metadata *mdmember=&(this->member[i]);
-          (*mdmember)+=dynamic_cast<mspass::utility::Metadata&>(*this);
-      }
+  void sync_metadata() {
+    size_t i;
+    for (i = 0; i < this->member.size(); ++i) {
+      mspass::utility::Metadata *mdmember = &(this->member[i]);
+      (*mdmember) += dynamic_cast<mspass::utility::Metadata &>(*this);
+    }
   };
   /*! \brief copy ensemble metadata to all members except for the ones excluded.
-    */
-  void sync_metadata(std::vector<std::string> exclude)
-  {
+   */
+  void sync_metadata(std::vector<std::string> exclude) {
     mspass::utility::Metadata sync_md(*this);
-    for (size_t i = 0; i < exclude.size(); i++)
-    {
-      if(sync_md.is_defined(exclude[i])) {
-          sync_md.erase(exclude[i]);
+    for (size_t i = 0; i < exclude.size(); i++) {
+      if (sync_md.is_defined(exclude[i])) {
+        sync_md.erase(exclude[i]);
       }
     }
-    for (size_t i = 0; i < this->member.size(); ++i)
-    {
+    for (size_t i = 0; i < this->member.size(); ++i) {
       mspass::utility::Metadata *mdmember = &(this->member[i]);
       (*mdmember) += sync_md;
     }
   };
-
 };
 
-
-/*! \brief Template class that extends Ensemble to include an error log and live tests.
+/*! \brief Template class that extends Ensemble to include an error log and live
+tests.
 
 This class extends the Ensemble class defined in MsPASS for bundling
 collections of data that can be pushed to an std::vector container.  The
@@ -137,17 +132,13 @@ algorithms that emit an ensemble (regardless of inputs).  The live/dead
 tests and error logger make the handlers consistent with the atomic objects
 of mspass.
 */
-template <typename T> class LoggingEnsemble : public Ensemble<T>
-{
+template <typename T> class LoggingEnsemble : public Ensemble<T> {
 public:
   /*! Standard mspass container for holding error logs. */
   mspass::utility::ErrorLogger elog;
   /*! Default constructor.   Initializes all pieces with default constructor
   and marks the ensemble dead.*/
-  LoggingEnsemble(): Ensemble<T>(), elog()
-  {
-    ensemble_is_live=false;
-  };
+  LoggingEnsemble() : Ensemble<T>(), elog() { ensemble_is_live = false; };
 
   /* The next two constructors are used to provide a parallel qpi to
   CoreEnsemble - there might be another way to do this in the C++ code or
@@ -160,9 +151,8 @@ public:
   ensemble, like the default constructor, is marked initially as dead.
   The user must call the set_live method of this ensemble after loading
   data or downstream processors may drop the data. */
-  LoggingEnsemble(const size_t n) : Ensemble<T>(n),elog()
-  {
-    ensemble_is_live=false;
+  LoggingEnsemble(const size_t n) : Ensemble<T>(n), elog() {
+    ensemble_is_live = false;
   }
   /*! Construct a framework for the ensemble with metadata.
 
@@ -170,12 +160,11 @@ public:
   and reserves n slots to be added.   Be warned it marks the ensemble dead.
   Once valid data are loaded the user should call the set_live method for
   the ensemble to prevent the data from being ignored downstream.*/
-  LoggingEnsemble(const mspass::utility::Metadata& md,const size_t n)
-    : Ensemble<T>(md,n),elog()
-  {
+  LoggingEnsemble(const mspass::utility::Metadata &md, const size_t n)
+      : Ensemble<T>(md, n), elog() {
     /* Might be advised to set this true, but since an object created by
     this method has only slots but no data validate would return false.*/
-    ensemble_is_live=false;
+    ensemble_is_live = false;
   }
   /*! Construct from all pieces.
 
@@ -183,29 +172,27 @@ public:
   construct for the pickle interface.  It is unlikely to be of interest
   in a C++ application. Calls reserve only for member vector but but does
   not insert data - detail of the pickle implementation*/
-  LoggingEnsemble(const mspass::utility::Metadata& md,
-    const mspass::utility::ErrorLogger& elogin, const size_t ndata)
-      : Ensemble<T>(md,ndata),elog(elogin)
-  {
-  };
+  LoggingEnsemble(const mspass::utility::Metadata &md,
+                  const mspass::utility::ErrorLogger &elogin,
+                  const size_t ndata)
+      : Ensemble<T>(md, ndata), elog(elogin) {};
   /*! Standard copy constructor.   */
-  LoggingEnsemble(const LoggingEnsemble<T>& parent)
-          : Ensemble<T>(parent),elog(parent.elog)
-  {
-    ensemble_is_live=parent.ensemble_is_live;
+  LoggingEnsemble(const LoggingEnsemble<T> &parent)
+      : Ensemble<T>(parent), elog(parent.elog) {
+    ensemble_is_live = parent.ensemble_is_live;
   };
-  /*! Clone from a base class Ensemble.  Initializes error null and sets live. */
-  LoggingEnsemble(const Ensemble<T>& parent)
-          : Ensemble<T>(parent),elog()
- {
-   ensemble_is_live=true;
- };
+  /*! Clone from a base class Ensemble.  Initializes error null and sets live.
+   */
+  LoggingEnsemble(const Ensemble<T> &parent) : Ensemble<T>(parent), elog() {
+    ensemble_is_live = true;
+  };
   /*! Markt the entire ensemble bad. */
-  void kill(){ensemble_is_live=false;};
+  void kill() { ensemble_is_live = false; };
   /*! Getter to test if the ensemble has any valid data. */
-  bool live() const {return ensemble_is_live;};
-  /*! Complement to live method - returns true if there are no valid data members. */
-  bool dead() const {return !ensemble_is_live;};
+  bool live() const { return ensemble_is_live; };
+  /*! Complement to live method - returns true if there are no valid data
+   * members. */
+  bool dead() const { return !ensemble_is_live; };
   /*! Check to see if ensemble has any live data.
 
   In processing one can occasionally (not rare but not common either)
@@ -221,56 +208,52 @@ public:
   validate method.  If validate is false it refuses to set the state
   live and returns false.  If validate returns true it will return true.
    */
-  bool set_live(){
-    if(this->validate())
-    {
-      ensemble_is_live=true;
+  bool set_live() {
+    if (this->validate()) {
+      ensemble_is_live = true;
       return true;
-    }
-    else
+    } else
       return false;
   };
 
   /*! Standard assignment operator. */
-  LoggingEnsemble<T>& operator=(const LoggingEnsemble<T>& parent)
-  {
-    if(&parent != this)
-    {
+  LoggingEnsemble<T> &operator=(const LoggingEnsemble<T> &parent) {
+    if (&parent != this) {
       this->mspass::utility::Metadata::operator=(parent);
       this->member.reserve(parent.member.size());
-      this->member=parent.member;
-      elog=parent.elog;
-      ensemble_is_live=parent.ensemble_is_live;
+      this->member = parent.member;
+      elog = parent.elog;
+      ensemble_is_live = parent.ensemble_is_live;
     }
     return *this;
   };
-  size_t memory_use() const
-  {
+  size_t memory_use() const {
     size_t memuse;
     memuse = sizeof(*this);
-    for(auto p=this->member.begin();p!=this->member.end();++p)
-    {
+    for (auto p = this->member.begin(); p != this->member.end(); ++p) {
       memuse += p->memory_use();
     }
     /* Account for ensemble metadata */
     /* We can only estimate the size of the Metadata container.
     These constants are defined in memory_constants.h */
-    memuse += mspass::utility::memory_constants::MD_AVERAGE_SIZE*this->md.size();
-    memuse += mspass::utility::memory_constants::KEY_AVERAGE_SIZE*this->changed_or_set.size();
+    memuse +=
+        mspass::utility::memory_constants::MD_AVERAGE_SIZE * this->md.size();
+    memuse += mspass::utility::memory_constants::KEY_AVERAGE_SIZE *
+              this->changed_or_set.size();
     /* Account for error log size */
-    memuse += mspass::utility::memory_constants::ELOG_AVERAGE_SIZE*this->elog.size();
+    memuse += mspass::utility::memory_constants::ELOG_AVERAGE_SIZE *
+              this->elog.size();
     return memuse;
   };
-private:
 
+private:
   bool ensemble_is_live;
 };
 
-template <typename T> bool LoggingEnsemble<T>::validate()
-{
-  for(auto dptr=this->member.begin();dptr!=this->member.end();++dptr)
-  {
-    if(dptr->live()) return true;
+template <typename T> bool LoggingEnsemble<T>::validate() {
+  for (auto dptr = this->member.begin(); dptr != this->member.end(); ++dptr) {
+    if (dptr->live())
+      return true;
   }
   return false;
 }
@@ -301,7 +284,8 @@ instead in such a situation.
 */
 /* Disable temporarily - needs a revision to match new history approach
 template <typename Tdata>
-  size_t set_inputs(ProcessingHistoryRecord& rec, const mspass::seismic::Ensemble<Tdata>& d)
+  size_t set_inputs(ProcessingHistoryRecord& rec, const
+mspass::seismic::Ensemble<Tdata>& d)
 {
   try{
     for(size_t i=0;i<d.member.size();++i)
@@ -318,5 +302,5 @@ template <typename Tdata>
   }catch(...){throw;};
 };
 */
-}  // End mspass::seismic namespace encapsulation
-#endif  //  End guard
+} // namespace mspass::seismic
+#endif //  End guard

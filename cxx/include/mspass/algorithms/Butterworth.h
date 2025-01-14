@@ -1,9 +1,9 @@
 #ifndef _MSPASS_BUTTERWORTH_H_
 #define _MSPASS_BUTTERWORTH_H_
-#include "mspass/seismic/TimeSeries.h"
-#include "mspass/seismic/Seismogram.h"
 #include "mspass/algorithms/deconvolution/ComplexArray.h"
-namespace mspass::algorithms{
+#include "mspass/seismic/Seismogram.h"
+#include "mspass/seismic/TimeSeries.h"
+namespace mspass::algorithms {
 /*! \brief MsPASS implementation of Butterworth filter as processing object.
 
 MsPASS has an existing filter routine that can implement buterworth filters
@@ -32,8 +32,7 @@ that.  The method to change the expected sample interval has some sanity
 checks to reduce, but not eliminate the possibility of mistakes that will create
 unstable filters.
 */
-class Butterworth
-{
+class Butterworth {
 public:
   /*! \brief Default constructor.
 
@@ -73,9 +72,9 @@ public:
   implementation. That matters only if you want to compare what we did here
   to the original seismic unix code.
 
-  Note the iir filter coefficiets are always derived from the poles and Frequencies
-  so this constructor is just an alternate way to define the filter without the abstraction
-  of number of poles.
+  Note the iir filter coefficiets are always derived from the poles and
+  Frequencies so this constructor is just an alternate way to define the filter
+  without the abstraction of number of poles.
 
   \param zerophase when true use a zerophase filter.
      When false defines a one pass minimum phase filter.
@@ -98,11 +97,10 @@ public:
   \param sample_interval is the expected data sample interval
   */
   Butterworth(const bool zerophase, const bool enable_lo, const bool enable_hi,
-    const double fstoplo, const double astoplo,
-    const double fpasslo, const double apasslo,
-    const double fpasshi, const double apasshi,
-    const double fstophi, const double astophi,
-    const double sample_interval);
+              const double fstoplo, const double astoplo, const double fpasslo,
+              const double apasslo, const double fpasshi, const double apasshi,
+              const double fstophi, const double astophi,
+              const double sample_interval);
   /*! Construct using tagged valus created from a Metadata container.
 
   This behaves exactly like the fully parameterized contructor except it
@@ -110,11 +108,11 @@ public:
   are identical to the argument names defined above.  The best guidance
   for using this constuctor is to look a the comments in the default
   parameter file.*/
-  Butterworth(const mspass::utility::Metadata& md);
+  Butterworth(const mspass::utility::Metadata &md);
   /*! \brief Construct by defining corner frequencies and number of npoles
 
-  Butterworth filters can also be defind by a corner frequency and number of poles.
-  In fact, only the nondimensional form of these parameters are stored as
+  Butterworth filters can also be defind by a corner frequency and number of
+  poles. In fact, only the nondimensional form of these parameters are stored as
   private attributes to define the filter.
   \param zerophase when true use a zerophase filter.
      When false defines a one pass minimum phase filter.
@@ -130,13 +128,12 @@ public:
 
   */
   Butterworth(const bool zerophase, const bool enable_lo, const bool enable_hi,
-     const int npolelo, const double f3dblo,
-      const int npolehi, const double f3dbhi,
-        const double sample_interval);
+              const int npolelo, const double f3dblo, const int npolehi,
+              const double f3dbhi, const double sample_interval);
   /*! Standard copy conststructor. */
-  Butterworth(const Butterworth& parent);
+  Butterworth(const Butterworth &parent);
   /*! Standard assignment operator. */
-  Butterworth& operator=(const Butterworth& parent);
+  Butterworth &operator=(const Butterworth &parent);
   /*! \brief Return the impulse response.
 
   The response of a linear filter like the butterworth filter can always
@@ -176,7 +173,7 @@ public:
   \exception throws a MsPASSError if the hi corner is inconsistent with the
   sample rate of d
   */
-  void apply(mspass::seismic::CoreTimeSeries& d);
+  void apply(mspass::seismic::CoreTimeSeries &d);
   /*! \brief Apply the filter to a CoreTimeSeries object.
 
   This method alters the data vector inside d in place and changes no
@@ -199,7 +196,7 @@ public:
   \exception none, but callers should consider checking for errors posted to
   elog
   */
-  void apply(mspass::seismic::TimeSeries& d);
+  void apply(mspass::seismic::TimeSeries &d);
   /*! \brief Filter a raw vector of data.
 
   Use this method to apply the filter to a raw vector of data.  The
@@ -211,7 +208,7 @@ public:
 
   \param d is the data to be filtered (note the data are altered in place)
   */
-  void apply(std::vector<double>& d);
+  void apply(std::vector<double> &d);
   /*! \brief Apply the filter to a CoreSeismogram object.
 
   This method alters the data vector inside d in place and changes no
@@ -234,7 +231,7 @@ public:
   \exception throws a MsPASSError if the hi corner is inconsistent with the
   sample rate of d
   */
-  void apply(mspass::seismic::CoreSeismogram& d);
+  void apply(mspass::seismic::CoreSeismogram &d);
   /*! \brief Apply the filter to a CoreTimeSeries object.
 
   This method alters the data vector inside d in place and changes no
@@ -257,7 +254,7 @@ public:
   \exception none, but callers should consider checking for errors posted to
   elog
   */
-  void apply(mspass::seismic::Seismogram& d);
+  void apply(mspass::seismic::Seismogram &d);
   /*! \brief Return the response of the filter in the frequency domain.
 
   The impulse response of any linear system can always be characterized by
@@ -274,7 +271,8 @@ public:
   fft in the gnu scientific library that definitely does that).
 
   */
-  mspass::algorithms::deconvolution::ComplexArray transfer_function(const int n);
+  mspass::algorithms::deconvolution::ComplexArray
+  transfer_function(const int n);
   /*! \brief set the sample interval assumed for input data.
 
   This function can be used when running with raw data vectors if the sample
@@ -292,30 +290,23 @@ public:
 
   \param dtnew is the new sample interval to set for the operator.
   */
-  void change_dt(const double dtnew)
-  {
-    this->f3db_lo *= (dtnew/(this->dt));
-    this->f3db_hi *= (dtnew/(this->dt));
-    this->dt=dtnew;
+  void change_dt(const double dtnew) {
+    this->f3db_lo *= (dtnew / (this->dt));
+    this->f3db_hi *= (dtnew / (this->dt));
+    this->dt = dtnew;
   };
   /*! Return the low frequency 3db corner (in Hz).*/
-  double low_corner() const
-  {
-    return f3db_lo/dt;
-  };
+  double low_corner() const { return f3db_lo / dt; };
   /*! Return the high frequency 3db corner (in Hz).*/
-  double high_corner() const
-  {
-    return f3db_hi/dt;
-  };
+  double high_corner() const { return f3db_hi / dt; };
   /*! Return the number of poles defining the highpass (lowcut) element
   of the filter.*/
-  int npoles_low() const {return npoles_lo;};
+  int npoles_low() const { return npoles_lo; };
   /*! Return the number of poles defining the lowpass (highcut) element
   of the filter.*/
-  int npoles_high() const {return npoles_hi;};
+  int npoles_high() const { return npoles_hi; };
   /*! Return the current operator sample interval.*/
-  double current_dt()const {return dt;};
+  double current_dt() const { return dt; };
   /*! Return a string defining the type of operator this filter defines.
   Currently can be one of the following:  bandpass, lowpass, or highpass.
   It is possible to construct a band reject filter with the right
@@ -325,18 +316,14 @@ public:
   (the hi and lo concepts described above) and guesses the filter type.
   If both are off it returns "Undefined".
   */
-  std::string filter_type() const
-  {
-    if(use_lo)
-    {
-      if(use_hi)
+  std::string filter_type() const {
+    if (use_lo) {
+      if (use_hi)
         return std::string("bandpass");
       else
         return std::string("highpass");
-    }
-    else
-    {
-      if(use_hi)
+    } else {
+      if (use_hi)
         return std::string("lowpass");
       else
         return std::string("Undefined");
@@ -344,12 +331,10 @@ public:
   };
   /*! Return true if the filter is defined as a zero phase filter.
   Returns false if it is minimum phase. */
-  bool is_zerophase() const
-  {
-    return zerophase;
-  };
+  bool is_zerophase() const { return zerophase; };
+
 private:
-  bool use_lo,use_hi;
+  bool use_lo, use_hi;
   bool zerophase;
 
   /* bfdesign sets npoles and 3db points based on specified band properties.
@@ -362,24 +347,25 @@ private:
   /* These three functions are nearly exact copies of seismic unix
   functions with a couple of differences:
   1.  All floats in the su code are made double here to mesh with modern arch
-  2.  bfhighpass is changed to bflowpass and bflowpass is changed to bfhighcut to mesh
-  with the names used here more cleanly.  that is, pass and cut define
+  2.  bfhighpass is changed to bflowpass and bflowpass is changed to bfhighcut
+  to mesh with the names used here more cleanly.  that is, pass and cut define
   the opposite sense of a filter and it gets very confusing when the
   terms get mixed up in the same set of code.  This way low always means the
   low end of the pass band and high is the high end of the pass band.
   */
 
-  void bfdesign (double fpass, double apass, double fstop, double astop,
-    int *npoles, double *f3db);
-  void bfhighcut (int npoles, double f3db, int n, double p[], double q[]);
-  void bflowcut (int npoles, double f3db, int n, double p[], double q[]);
+  void bfdesign(double fpass, double apass, double fstop, double astop,
+                int *npoles, double *f3db);
+  void bfhighcut(int npoles, double f3db, int n, double p[], double q[]);
+  void bflowcut(int npoles, double f3db, int n, double p[], double q[]);
   /* These internal methods use internal dt value to call bfdesign with
   nondimensional frequencies. Hence they should always be called after
-  a change in dt.  They are also handy to contain common code for constructors. */
-  void set_lo(const double fstop, const double fpass,
-    const double astop, const double apass);
-  void set_hi(const double fstop, const double fpass,
-    const double astop, const double apass);
+  a change in dt.  They are also handy to contain common code for constructors.
+*/
+  void set_lo(const double fstop, const double fpass, const double astop,
+              const double apass);
+  void set_hi(const double fstop, const double fpass, const double astop,
+              const double apass);
 };
-}  // namespace end
+} // namespace mspass::algorithms
 #endif
