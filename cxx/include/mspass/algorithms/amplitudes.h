@@ -332,7 +332,11 @@ public:
   };
   /*! Return bandwidth in dB. */
   double bandwidth() const {
-    if (f_range <= 0.0)
+    /* All these conditionals are necessary for handling unexpected
+     * values.   0 is effectively and error return.  Without these
+     * the function can return NaN or generate floating point exceptions. */
+    if ((f_range <= 0.0) || (high_edge_f<=low_edge_f)
+      || (high_edge_f < 0.0) || (low_edge_f < 0.0) )
       return 0.0;
     else {
       double ratio = high_edge_f / low_edge_f;
