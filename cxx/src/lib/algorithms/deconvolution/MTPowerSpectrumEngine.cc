@@ -245,10 +245,20 @@ vector<double> MTPowerSpectrumEngine::apply(const vector<double> &d) {
   double specssq(0.0), scale;
   for (auto p = result.begin(); p != result.end(); ++p)
     specssq += (*p);
-  scale = ssq / (specssq * this->df());
-  /* Scaling for fft implementation - Established from zero pad tests it has
-  to be this factor */
-  scale /= static_cast<double>(d.size());
+  /* test for zeros to avoid divide by zero or a NaN. 
+   * result will be all zeros this way.  Without we get all NaNs
+   * in the spectrum*/
+  if((ssq<=0.0) || (specssq<=0.0))
+  {
+    scale = 1.0;
+  }
+  else
+  {
+    scale = ssq / (specssq * this->df());
+    /* Scaling for fft implementation - Established from zero pad tests it has
+    to be this factor.   */
+    scale /= static_cast<double>(d.size());
+  }
   for (j = 0; j < this->nf(); ++j)
     result[j] *= scale;
   return result;
