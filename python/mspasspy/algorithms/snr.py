@@ -17,7 +17,11 @@ from mspasspy.ccore.algorithms.amplitudes import (
 from mspasspy.ccore.algorithms.basic import TimeWindow, Butterworth, _ExtractComponent
 from mspasspy.algorithms.signals import filter
 from mspasspy.algorithms.window import WindowData
-import matplotlib.pyplot as plt
+
+# debug
+#import matplotlib.pyplot as plt
+#from mspasspy.util.seismic import print_metadata
+#import matplotlib.pyplot as plt
 
 
 def EstimateBandwidth(
@@ -111,6 +115,7 @@ def EstimateBandwidth(
        exceed the defined threshold.
     """
     alg = "EstimateBandwidth"
+    SNR_CEILING = 1e6
     if not isinstance(S, PowerSpectrum):
         message = (
             alg
@@ -143,7 +148,19 @@ def EstimateBandwidth(
         i_n = N.sample_number(f)
         # conditional needed in case S and N are computed with different sample intervals
         if i_n < N.nf():
-            snrdata[i] = S.spectrum[i] / N.spectrum[i_n]
+            Nnow = N.spectrum[i_n]
+            Snow = S.spectrum[i]
+            if Snow <= 0.0:
+                snrdata[i] = 1.0
+            elif Nnow <= 0.0:
+                if Snow>0:
+                    snrdata[i] = SNR_CEILING
+                else:
+                    # this would give an NaN otherwise so flag it as bag
+                    # by setting it to 1
+                    snrdata[i] = 1.0
+            else:
+                snrdata[i] = Snow/Nnow
         else:
             snrdata[i] = 1.0
     # S and N are power, convert to amplitude
@@ -644,26 +661,39 @@ def FD_snr_estimator(
             sengine = MTPowerSpectrumEngine(s.npts, tbp, ntapers, s.npts * 2, s.dt)
         N = nengine.apply(n)
         S = sengine.apply(s)
-        # bwd = EstimateBandwidth(
-        #    S.df(),
-        #    S,
-        #    N,
-        #    band_cutoff_snr,
-        #    tbp,
-        #    high_frequency_search_start,
-        #    fix_high_edge,
-        # )
+        # the apply methods can fail.  They flag that with a return  marked dead
+	# we append the elog messages to this datum, kill it, and return if that 
+        # happens
+        if N.dead() or S.dead():
+            if S.dead():
+                # this elog should have a message with further info on why it was killed
+                my_logger += S.elog
+                my_logger.log_error(algname,
+                                    "spectrum esimator returned signal spectrum marked dead",
+                                    ErrorSeverity.Invalid)
+            if N.dead():
+               my_logger += N.elog
+               my_logger.log_error(algname,
+                                   "spectrum esimator returned noise spectrum marked dead",
+                                   ErrorSeverity.Invalid)
+            return [dict(),my_logger]
+
         bwd = EstimateBandwidth(S, N, snr_threshold=band_cutoff_snr, f0=f0)
         # The low edge can be zero but that will not work correctly with the
         # bandwidth method of bwd.  That C++ function has a bug in that it doesn't
         # handle that highly possible error condition.  This is a workaround
-
         if bwd.low_edge_f <= 0.0:
-            bandwidth = 20.0 * np.log10(bwd.high_edge_f / S.df())
+            # handle completely null result 
+            if bwd.high_edge_f > 0.0:
+                bandwidth = 20.0 * np.log10(bwd.high_edge_f / S.df())
+            else:
+                bandwidth = 0.0
         else:
             bandwidth = bwd.bandwidth()
         # here we return empty result if the bandwidth is too low
-        if bwd.bandwidth() < signal_detection_minimum_bandwidth:
+        if bandwidth < signal_detection_minimum_bandwidth:
+            message = "Estimated bandwidth={} below detection minimum={}".format(bandwidth,signal_detection_minimum_bandwidth)
+            my_logger.log_error(algname,message,ErrorSeverity.Invalid)
             return [dict(), my_logger]
         # These estimates are always computed and posted once we pass the above test for validity
         snrdata["low_f_band_edge"] = bwd.low_edge_f
@@ -724,8 +754,8 @@ def FD_snr_estimator(
         )
         filtered_data = TimeSeries(data_object)
         BWfilt.apply(filtered_data)
-        nfilt = WindowData(filtered_data, noise_window.start, noise_window.end)
-        sfilt = WindowData(filtered_data, signal_window.start, signal_window.end)
+        nfilt = WindowData(filtered_data, noise_window.start, noise_window.end,short_segment_handling="truncate")
+        sfilt = WindowData(filtered_data, signal_window.start, signal_window.end,short_segment_handling="truncate")
 
         # this is needed externally as a signal to use a lowpass instead of
         # bandpass to recreate the filtered data
@@ -778,7 +808,7 @@ def FD_snr_estimator(
                         samp, namp
                     )
                 except:
-                    my_logger.log_erro(
+                    my_logger.log_error(
                         algname,
                         "Error computing filtered_envelope metrics:  snr_filtered_envelope_peak not computed",
                         ErrorSeverity.Complaint,
@@ -1216,6 +1246,9 @@ def broadband_snr_QC(
             )
     if data_to_process.time_is_UTC():
         data_to_process.ator(arrival_time)
+    # debug
+    #plt.plot(data_to_process.time_axis(),data_to_process.data)
+    #plt.show()
     [snrdata, elog] = FD_snr_estimator(
         data_to_process,
         noise_window=noise_window,
@@ -1253,6 +1286,8 @@ def broadband_snr_QC(
     snrdata["snr_signal_window_end"] = arrival_time + signal_window.end
     snrdata["snr_noise_window_start"] = arrival_time + noise_window.start
     snrdata["snr_noise_window_end"] = arrival_time + noise_window.end
+    # debug
+    #print_metadata(snrdata)
 
     # These cross-referencing keys may not always be defined when a phase
     # time is based on a pick so we add these cautiously
