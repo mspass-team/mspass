@@ -84,8 +84,8 @@ def verify_snr_outputs_match(so1, so2):
 
 def test_snr_functions():
     """
-    The snr module has a set of simple snr metrics tested by 
-    this function.   
+    The snr module has a set of simple snr metrics tested by
+    this function.
     """
     with open("python/tests/data/snrtestdata", "rb") as pickle_file:
         ts0 = pickle.load(pickle_file)
@@ -112,6 +112,7 @@ def test_snr_functions():
     assert np.isclose(snrmad_rms, 6.278840062165531)
     assert np.isclose(snrperc_rms, 11.237789966979753)
 
+
 def test_FD_snr_estimator():
     """
     Test function for snr module.   This function is currently incomplete as it
@@ -137,7 +138,7 @@ def test_FD_snr_estimator():
         f0=1.0,
         band_cutoff_snr=2.0,
     )
-    #print(json_util.dumps(fd_snr_output[0], indent=2))
+    # print(json_util.dumps(fd_snr_output[0], indent=2))
 
     elog = fd_snr_output[1]
     assert elog.size() == 0
@@ -234,6 +235,7 @@ def test_FD_snr_estimator():
     assert sigspec.nf() == 6002
     assert nspec.nf() == 15002
 
+
 def test_FD_snr_estimator_error_handlers():
     """
     As the name implies this tests error handling features of FD_snr_estimator.
@@ -254,59 +256,59 @@ def test_FD_snr_estimator_error_handlers():
         f0=1.0,
         band_cutoff_snr=2.0,
     )
-    # should return an empty dict in 0 for this condition 
+    # should return an empty dict in 0 for this condition
     # with a posted error message in 1
     assert len(fd_snr_output[0]) == 0
-    assert fd_snr_output[1].size()>0
+    assert fd_snr_output[1].size() > 0
 
     # test a handlers that throw exceptions
 
-    with pytest.raises(MsPASSError,match="Received invalid data object"):
+    with pytest.raises(MsPASSError, match="Received invalid data object"):
         fd_snr_output = FD_snr_estimator(
-                "badarg0",
-                noise_window=nwin,
-                signal_window=swin,
-                f0=1.0,
-                band_cutoff_snr=2.0,
-            )
+            "badarg0",
+            noise_window=nwin,
+            signal_window=swin,
+            f0=1.0,
+            band_cutoff_snr=2.0,
+        )
     # tests a rare user error entering an invalid number of tapes
     ts = TimeSeries(ts0)
-    with pytest.raises(MsPASSError,match="ntapers="):
+    with pytest.raises(MsPASSError, match="ntapers="):
         fd_snr_output = FD_snr_estimator(
-                ts,
-                ntapers=50,
-                noise_window=nwin,
-                signal_window=swin,
-                f0=1.0,
-                band_cutoff_snr=2.0,
-            )
+            ts,
+            ntapers=50,
+            noise_window=nwin,
+            signal_window=swin,
+            f0=1.0,
+            band_cutoff_snr=2.0,
+        )
     # Test handling of dead datum
     ts = TimeSeries(ts0)
     ts.kill()
     fd_snr_output = FD_snr_estimator(
-                ts,
-                noise_window=nwin,
-                signal_window=swin,
-                f0=1.0,
-                band_cutoff_snr=2.0,
-                )
-    assert len(fd_snr_output[0])==0
-    assert fd_snr_output[1].size()>0
+        ts,
+        noise_window=nwin,
+        signal_window=swin,
+        f0=1.0,
+        band_cutoff_snr=2.0,
+    )
+    assert len(fd_snr_output[0]) == 0
+    assert fd_snr_output[1].size() > 0
 
 
 def test_arrival_functions():
     """
     This function tests the arrival_snr function and broadband_snr_QC
-    functions that are higher level functions using the other functions 
-    in this module to compute a user selected set of metrics.  We do 
-    them together to validate outputs against a master run using 
-    FD_snr_estimator. 
+    functions that are higher level functions using the other functions
+    in this module to compute a user selected set of metrics.  We do
+    them together to validate outputs against a master run using
+    FD_snr_estimator.
     """
     with open("python/tests/data/snrtestdata", "rb") as pickle_file:
         ts0 = pickle.load(pickle_file)
         ts = TimeSeries(ts0)  # use this as working copy
-        
-    # this reruns FD_estimator as above to create the master 
+
+    # this reruns FD_estimator as above to create the master
     # pattern of snr metrics validated
     nwin = TimeWindow(-200.0, -50.0)
     swin = TimeWindow(-10.0, 50.0)
@@ -388,7 +390,8 @@ def test_arrival_functions():
     )
     assert idout2 == idout
 
-#test_snr_functions()
-#test_FD_snr_estimator()
-#test_arrival_functions()
-#test_FD_snr_estimator_error_handlers()
+
+# test_snr_functions()
+# test_FD_snr_estimator()
+# test_arrival_functions()
+# test_FD_snr_estimator_error_handlers()
