@@ -9,4 +9,4 @@ MsPASS is made available through [dockerhub](https://hub.docker.com/r/mspass/msp
 
 Please refer to the [Documentation](https://www.mspass.org/) for details.
 
-If you want to contribute to this project, follow this [wiki](https://github.com/mspass-team/mspass/wiki/Compiling-MsPASS-from-source-code) to set up the environment so that you can compile the project and develop locally. Please also go through this [instunctions page](https://github.com/mspass-team/mspass/wiki/Get-started-instructions-for-contributors) before contribution.
+If you want to contribute to this project, follow this [wiki](https://github.com/mspass-team/mspass/wiki/Compiling-MsPASS-from-source-code) to set up the environment so that you can compile the project and develop locally. Please also go through this [instructions page](https://github.com/mspass-team/mspass/wiki/Get-started-instructions-for-contributors) before contribution.
