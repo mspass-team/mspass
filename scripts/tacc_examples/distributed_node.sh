@@ -3,7 +3,7 @@
 #SECTION 1:  slurm commands (see below for more details)
 #SBATCH -J mspass           # Job name
 #SBATCH -o mspass.o%j       # Name of stdout output file
-#SBATCH -p skx-dev          # Queue (partition) name - system dependent
+#SBATCH -p normal          # Queue (partition) name - system dependent
 #SBATCH -N 3                # Total # of nodes
 #SBATCH -n 3                # Total # of mpi tasks (normally the same as -N)
 #SBATCH -t 02:00:00         # Run time (hh:mm:ss)
@@ -13,9 +13,8 @@
 # SECTION 2:  Define the software environment
 # Most HPC systems like stampede2 use a softwere module
 # manager to allow each job to define any special packages it needs to
-# run.  In our case that is only tacc-singularity.
-ml unload xalt
-ml tacc-singularity
+# run.  In our case that is only tacc-apptainer.
+module load tacc-apptainer
 module list
 pwd
 date
@@ -31,9 +30,9 @@ WORK_DIR=$SCRATCH/mspass/workdir
 MSPASS_CONTAINER=$WORK2/mspass/mspass_latest.sif
 # specify the location where user wants to store the data
 # should be in either tmp or scratch
-DB_PATH='scratch'
+DB_PATH=$SCRATCH/mongodb
 # the base for all hostname addresses
-HOSTNAME_BASE='stampede2.tacc.utexas.edu'
+HOSTNAME_BASE='frontera.tacc.utexas.edu'
 # Sets whether to use sharding or not (here sharding is turned on)
 DB_SHARDING=true
 # define database that enable sharding
@@ -44,9 +43,9 @@ SHARD_COLLECTIONS=(
 )
 # This variable is used to simplify launching each container
 # Arguments are added to this string to launch each instance of a
-# container.  stampede2 uses a package called singularity to launch
+# container.  stampede2 uses a package called apptainer to launch
 # each container instances
-SING_COM="singularity run $MSPASS_CONTAINER"
+APP_COM="apptainer run $MSPASS_CONTAINER"
 
 
 # Section 4:  Set up some necessary communication channels
@@ -74,8 +73,8 @@ mkdir -p $WORK_DIR
 cd $WORK_DIR
 
 # start a distributed scheduler container in the primary node
-SINGULARITYENV_MSPASS_WORK_DIR=$WORK_DIR \
-SINGULARITYENV_MSPASS_ROLE=scheduler $SING_COM &
+APPTAINERENV_MSPASS_WORK_DIR=$WORK_DIR \
+APPTAINERENV_MSPASS_ROLE=scheduler $APP_COM &
 
 # get the all the hostnames of worker nodes
 WORKER_LIST=`scontrol show hostname ${SLURM_NODELIST} | \
@@ -84,10 +83,10 @@ WORKER_LIST=`scontrol show hostname ${SLURM_NODELIST} | \
 echo $WORKER_LIST
 
 # start worker container in each worker node
-SINGULARITYENV_MSPASS_WORK_DIR=$WORK_DIR \
-SINGULARITYENV_MSPASS_SCHEDULER_ADDRESS=$NODE_HOSTNAME \
-SINGULARITYENV_MSPASS_ROLE=worker \
-mpiexec.hydra -n $((SLURM_NNODES-1)) -ppn 1 -hosts $WORKER_LIST $SING_COM &
+APPTAINERENV_MSPASS_WORK_DIR=$WORK_DIR \
+APPTAINERENV_MSPASS_SCHEDULER_ADDRESS=$NODE_HOSTNAME \
+APPTAINERENV_MSPASS_ROLE=worker \
+mpiexec.hydra -n $((SLURM_NNODES-1)) -ppn 1 -hosts $WORKER_LIST $APP_COM &
 
 if [ "$DB_SHARDING" = true ] ; then
     echo 'Using Sharding MongoDB'
@@ -109,12 +108,12 @@ if [ "$DB_SHARDING" = true ] ; then
         SHARD_LOGS_PATH[$i]="$username@${WORKER_LIST_ARR[$i]}.${HOSTNAME_BASE}:/tmp/logs/mongo_log_shard_$i"
     done
 
-    SINGULARITYENV_MSPASS_WORK_DIR=$WORK_DIR \
-    SINGULARITYENV_MSPASS_SHARD_DATABASE=${SHARD_DATABASE} \
-    SINGULARITYENV_MSPASS_SHARD_COLLECTIONS=${SHARD_COLLECTIONS[@]} \
-    SINGULARITYENV_MSPASS_SHARD_LIST=${SHARD_LIST[@]} \
-    SINGULARITYENV_MSPASS_SLEEP_TIME=$SLEEP_TIME \
-    SINGULARITYENV_MSPASS_ROLE=dbmanager $SING_COM &
+    APPTAINERENV_MSPASS_WORK_DIR=$WORK_DIR \
+    APPTAINERENV_MSPASS_SHARD_DATABASE=${SHARD_DATABASE} \
+    APPTAINERENV_MSPASS_SHARD_COLLECTIONS=${SHARD_COLLECTIONS[@]} \
+    APPTAINERENV_MSPASS_SHARD_LIST=${SHARD_LIST[@]} \
+    APPTAINERENV_MSPASS_SLEEP_TIME=$SLEEP_TIME \
+    APPTAINERENV_MSPASS_ROLE=dbmanager $APP_COM &
 
     # ensure enough time for dbmanager to finish
     sleep 30
@@ -122,28 +121,28 @@ if [ "$DB_SHARDING" = true ] ; then
     # start a shard container in each worker node
     # mipexec could be cleaner while ssh would induce more complexity
     for i in ${!WORKER_LIST_ARR[@]}; do
-        SINGULARITYENV_MSPASS_WORK_DIR=$WORK_DIR \
-        SINGULARITYENV_MSPASS_SHARD_ID=$i \
-        SINGULARITYENV_MSPASS_DB_PATH=$DB_PATH \
-        SINGULARITYENV_MSPASS_SLEEP_TIME=$SLEEP_TIME \
-        SINGULARITYENV_MSPASS_CONFIG_SERVER_ADDR="configserver/${NODE_HOSTNAME}.${HOSTNAME_BASE}:27018" \
-        SINGULARITYENV_MSPASS_ROLE=shard \
-        mpiexec.hydra -n 1 -ppn 1 -hosts ${WORKER_LIST_ARR[i]} $SING_COM &
+        APPTAINERENV_MSPASS_WORK_DIR=$WORK_DIR \
+        APPTAINERENV_MSPASS_SHARD_ID=$i \
+        APPTAINERENV_MSPASS_DB_DIR=$DB_PATH \
+        APPTAINERENV_MSPASS_SLEEP_TIME=$SLEEP_TIME \
+        APPTAINERENV_MSPASS_CONFIG_SERVER_ADDR="configserver/${NODE_HOSTNAME}.${HOSTNAME_BASE}:27018" \
+        APPTAINERENV_MSPASS_ROLE=shard \
+        mpiexec.hydra -n 1 -ppn 1 -hosts ${WORKER_LIST_ARR[i]} $APP_COM &
     done
 
     # Launch the jupyter notebook frontend in the primary node.
     # Run in batch mode if the script was
     # submitted with a "-b notebook.ipynb"
     if [ $# -eq 0 ]; then
-        SINGULARITYENV_MSPASS_WORK_DIR=$WORK_DIR \
-        SINGULARITYENV_MSPASS_SCHEDULER_ADDRESS=$NODE_HOSTNAME \
-        SINGULARITYENV_MSPASS_DB_ADDRESS=$NODE_HOSTNAME \
-        SINGULARITYENV_MSPASS_DB_PATH=$DB_PATH \
-        SINGULARITYENV_MSPASS_SHARD_ADDRESS=${SHARD_ADDRESS[@]} \
-        SINGULARITYENV_MSPASS_SHARD_DB_PATH=${SHARD_DB_PATH[@]} \
-        SINGULARITYENV_MSPASS_SHARD_LOGS_PATH=${SHARD_LOGS_PATH[@]} \
-        SINGULARITYENV_MSPASS_DB_MODE="shard" \
-        SINGULARITYENV_MSPASS_ROLE=frontend $SING_COM
+        APPTAINERENV_MSPASS_WORK_DIR=$WORK_DIR \
+        APPTAINERENV_MSPASS_SCHEDULER_ADDRESS=$NODE_HOSTNAME \
+        APPTAINERENV_MSPASS_DB_ADDRESS=$NODE_HOSTNAME \
+        APPTAINERENV_MSPASS_DB_DIR=$DB_PATH \
+        APPTAINERENV_MSPASS_SHARD_ADDRESS=${SHARD_ADDRESS[@]} \
+        APPTAINERENV_MSPASS_SHARD_DB_PATH=${SHARD_DB_PATH[@]} \
+        APPTAINERENV_MSPASS_SHARD_LOGS_PATH=${SHARD_LOGS_PATH[@]} \
+        APPTAINERENV_MSPASS_DB_MODE="shard" \
+        APPTAINERENV_MSPASS_ROLE=frontend $APP_COM
     else
         while getopts "b:" flag
         do
@@ -151,22 +150,22 @@ if [ "$DB_SHARDING" = true ] ; then
                 b) notebook_file=${OPTARG};
             esac
         done
-        SINGULARITYENV_MSPASS_WORK_DIR=$WORK_DIR \
-        SINGULARITYENV_MSPASS_SCHEDULER_ADDRESS=$NODE_HOSTNAME \
-        SINGULARITYENV_MSPASS_DB_ADDRESS=$NODE_HOSTNAME \
-        SINGULARITYENV_MSPASS_DB_PATH=$DB_PATH \
-        SINGULARITYENV_MSPASS_SHARD_ADDRESS=${SHARD_ADDRESS[@]} \
-        SINGULARITYENV_MSPASS_SHARD_DB_PATH=${SHARD_DB_PATH[@]} \
-        SINGULARITYENV_MSPASS_SHARD_LOGS_PATH=${SHARD_LOGS_PATH[@]} \
-        SINGULARITYENV_MSPASS_DB_MODE="shard" \
-        SINGULARITYENV_MSPASS_ROLE=frontend $SING_COM --batch $notebook_file
+        APPTAINERENV_MSPASS_WORK_DIR=$WORK_DIR \
+        APPTAINERENV_MSPASS_SCHEDULER_ADDRESS=$NODE_HOSTNAME \
+        APPTAINERENV_MSPASS_DB_ADDRESS=$NODE_HOSTNAME \
+        APPTAINERENV_MSPASS_DB_DIR=$DB_PATH \
+        APPTAINERENV_MSPASS_SHARD_ADDRESS=${SHARD_ADDRESS[@]} \
+        APPTAINERENV_MSPASS_SHARD_DB_PATH=${SHARD_DB_PATH[@]} \
+        APPTAINERENV_MSPASS_SHARD_LOGS_PATH=${SHARD_LOGS_PATH[@]} \
+        APPTAINERENV_MSPASS_DB_MODE="shard" \
+        APPTAINERENV_MSPASS_ROLE=frontend $APP_COM --batch $notebook_file
     fi
 else
     echo "Using Single node MongoDB"
     # start a db container in the primary node
-    SINGULARITYENV_MSPASS_DB_PATH=$DB_PATH \
-    SINGULARITYENV_MSPASS_WORK_DIR=$WORK_DIR \
-    SINGULARITYENV_MSPASS_ROLE=db $SING_COM &
+    APPTAINERENV_MSPASS_DB_DIR=$DB_PATH \
+    APPTAINERENV_MSPASS_WORK_DIR=$WORK_DIR \
+    APPTAINERENV_MSPASS_ROLE=db $APP_COM &
     # ensure enough time for db instance to finish
     sleep 10
 
@@ -174,11 +173,11 @@ else
     # Run in batch mode if the script was
     # submitted with a "-b notebook.ipynb"
     if [ $# -eq 0 ]; then
-        SINGULARITYENV_MSPASS_WORK_DIR=$WORK_DIR \
-        SINGULARITYENV_MSPASS_SCHEDULER_ADDRESS=$NODE_HOSTNAME \
-        SINGULARITYENV_MSPASS_DB_ADDRESS=$NODE_HOSTNAME \
-        SINGULARITYENV_MSPASS_SLEEP_TIME=$SLEEP_TIME \
-        SINGULARITYENV_MSPASS_ROLE=frontend $SING_COM
+        APPTAINERENV_MSPASS_WORK_DIR=$WORK_DIR \
+        APPTAINERENV_MSPASS_SCHEDULER_ADDRESS=$NODE_HOSTNAME \
+        APPTAINERENV_MSPASS_DB_ADDRESS=$NODE_HOSTNAME \
+        APPTAINERENV_MSPASS_SLEEP_TIME=$SLEEP_TIME \
+        APPTAINERENV_MSPASS_ROLE=frontend $APP_COM
     else
         while getopts "b:" flag
         do
@@ -186,10 +185,10 @@ else
                 b) notebook_file=${OPTARG};
             esac
         done
-        SINGULARITYENV_MSPASS_WORK_DIR=$WORK_DIR \
-        SINGULARITYENV_MSPASS_SCHEDULER_ADDRESS=$NODE_HOSTNAME \
-        SINGULARITYENV_MSPASS_DB_ADDRESS=$NODE_HOSTNAME \
-        SINGULARITYENV_MSPASS_SLEEP_TIME=$SLEEP_TIME \
-        SINGULARITYENV_MSPASS_ROLE=frontend $SING_COM --batch $notebook_file
+        APPTAINERENV_MSPASS_WORK_DIR=$WORK_DIR \
+        APPTAINERENV_MSPASS_SCHEDULER_ADDRESS=$NODE_HOSTNAME \
+        APPTAINERENV_MSPASS_DB_ADDRESS=$NODE_HOSTNAME \
+        APPTAINERENV_MSPASS_SLEEP_TIME=$SLEEP_TIME \
+        APPTAINERENV_MSPASS_ROLE=frontend $APP_COM --batch $notebook_file
     fi
 fi
