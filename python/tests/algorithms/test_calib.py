@@ -7,7 +7,8 @@ Created on Thu Jan 23 07:50:25 2025
 
 @author: pavlis
 """
-from mspasspy.algoriths.calib import ApplyCalibEngine
+from mspasspy.algorithms.calib import ApplyCalibEngine
+import sys
 
 sys.path.append("python/tests")
 from helper import get_live_timeseries
@@ -23,13 +24,12 @@ from obspy import read_inventory, UTCDateTime
 import pytest
 
 
-class test_ApplyCalibEngine:
+class TestApplyCalibEngine:
     def setup_class(self):
         client = DBClient()
         client.drop_database("test_calib")
         self.db = client.get_database("test_calib")
-        # xmlfile = "./python/tests/data/calib_teststa.xml"
-        xmlfile = "calib_teststa.xml"
+        xmlfile = "./python/tests/data/calib_teststa.xml"
         inv = read_inventory(xmlfile, format="STATIONXML")
         self.db.save_inventory(inv)
         self.ts = get_live_timeseries()
@@ -176,10 +176,3 @@ class test_ApplyCalibEngine:
             else:
                 # dead data should be ignored
                 assert np.isclose(d.data, 1.0).all()
-
-
-# for debugging tests outside pytest
-tester = test_ApplyCalibEngine()
-tester.setup_class()
-# tester.test_constructor()
-tester.test_apply()
