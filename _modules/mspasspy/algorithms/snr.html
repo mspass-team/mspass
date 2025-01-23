@@ -159,7 +159,11 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.ccore.algorithms.basic</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeWindow</span><span class="p">,</span> <span class="n">Butterworth</span><span class="p">,</span> <span class="n">_ExtractComponent</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.algorithms.signals</span><span class="w"> </span><span class="kn">import</span> <span class="nb">filter</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.algorithms.window</span><span class="w"> </span><span class="kn">import</span> <span class="n">WindowData</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+
+<span class="c1"># debug</span>
+<span class="c1"># import matplotlib.pyplot as plt</span>
+<span class="c1"># from mspasspy.util.seismic import print_metadata</span>
+<span class="c1"># import matplotlib.pyplot as plt</span>
 
 
 <div class="viewcode-block" id="EstimateBandwidth"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.snr.EstimateBandwidth">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">EstimateBandwidth</span><span class="p">(</span>
@@ -253,6 +257,7 @@
 <span class="sd">       exceed the defined threshold.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">alg</span> <span class="o">=</span> <span class="s2">&quot;EstimateBandwidth&quot;</span>
+    <span class="n">SNR_CEILING</span> <span class="o">=</span> <span class="mf">1e6</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">PowerSpectrum</span><span class="p">):</span>
         <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">alg</span>
@@ -285,7 +290,19 @@
         <span class="n">i_n</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">sample_number</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
         <span class="c1"># conditional needed in case S and N are computed with different sample intervals</span>
         <span class="k">if</span> <span class="n">i_n</span> <span class="o">&lt;</span> <span class="n">N</span><span class="o">.</span><span class="n">nf</span><span class="p">():</span>
-            <span class="n">snrdata</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">spectrum</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">/</span> <span class="n">N</span><span class="o">.</span><span class="n">spectrum</span><span class="p">[</span><span class="n">i_n</span><span class="p">]</span>
+            <span class="n">Nnow</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">spectrum</span><span class="p">[</span><span class="n">i_n</span><span class="p">]</span>
+            <span class="n">Snow</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">spectrum</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">Snow</span> <span class="o">&lt;=</span> <span class="mf">0.0</span><span class="p">:</span>
+                <span class="n">snrdata</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+            <span class="k">elif</span> <span class="n">Nnow</span> <span class="o">&lt;=</span> <span class="mf">0.0</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">Snow</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">snrdata</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">SNR_CEILING</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># this would give an NaN otherwise so flag it as bag</span>
+                    <span class="c1"># by setting it to 1</span>
+                    <span class="n">snrdata</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">snrdata</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">Snow</span> <span class="o">/</span> <span class="n">Nnow</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">snrdata</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
     <span class="c1"># S and N are power, convert to amplitude</span>
@@ -786,26 +803,45 @@
             <span class="n">sengine</span> <span class="o">=</span> <span class="n">MTPowerSpectrumEngine</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">npts</span><span class="p">,</span> <span class="n">tbp</span><span class="p">,</span> <span class="n">ntapers</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">npts</span> <span class="o">*</span> <span class="mi">2</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">dt</span><span class="p">)</span>
         <span class="n">N</span> <span class="o">=</span> <span class="n">nengine</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
         <span class="n">S</span> <span class="o">=</span> <span class="n">sengine</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
-        <span class="c1"># bwd = EstimateBandwidth(</span>
-        <span class="c1">#    S.df(),</span>
-        <span class="c1">#    S,</span>
-        <span class="c1">#    N,</span>
-        <span class="c1">#    band_cutoff_snr,</span>
-        <span class="c1">#    tbp,</span>
-        <span class="c1">#    high_frequency_search_start,</span>
-        <span class="c1">#    fix_high_edge,</span>
-        <span class="c1"># )</span>
+        <span class="c1"># the apply methods can fail.  They flag that with a return  marked dead</span>
+        <span class="c1"># we append the elog messages to this datum, kill it, and return if that</span>
+        <span class="c1"># happens</span>
+        <span class="k">if</span> <span class="n">N</span><span class="o">.</span><span class="n">dead</span><span class="p">()</span> <span class="ow">or</span> <span class="n">S</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">S</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
+                <span class="c1"># this elog should have a message with further info on why it was killed</span>
+                <span class="n">my_logger</span> <span class="o">+=</span> <span class="n">S</span><span class="o">.</span><span class="n">elog</span>
+                <span class="n">my_logger</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
+                    <span class="n">algname</span><span class="p">,</span>
+                    <span class="s2">&quot;spectrum esimator returned signal spectrum marked dead&quot;</span><span class="p">,</span>
+                    <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="n">N</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
+                <span class="n">my_logger</span> <span class="o">+=</span> <span class="n">N</span><span class="o">.</span><span class="n">elog</span>
+                <span class="n">my_logger</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
+                    <span class="n">algname</span><span class="p">,</span>
+                    <span class="s2">&quot;spectrum esimator returned noise spectrum marked dead&quot;</span><span class="p">,</span>
+                    <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">return</span> <span class="p">[</span><span class="nb">dict</span><span class="p">(),</span> <span class="n">my_logger</span><span class="p">]</span>
+
         <span class="n">bwd</span> <span class="o">=</span> <span class="n">EstimateBandwidth</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">snr_threshold</span><span class="o">=</span><span class="n">band_cutoff_snr</span><span class="p">,</span> <span class="n">f0</span><span class="o">=</span><span class="n">f0</span><span class="p">)</span>
         <span class="c1"># The low edge can be zero but that will not work correctly with the</span>
         <span class="c1"># bandwidth method of bwd.  That C++ function has a bug in that it doesn&#39;t</span>
         <span class="c1"># handle that highly possible error condition.  This is a workaround</span>
-
         <span class="k">if</span> <span class="n">bwd</span><span class="o">.</span><span class="n">low_edge_f</span> <span class="o">&lt;=</span> <span class="mf">0.0</span><span class="p">:</span>
-            <span class="n">bandwidth</span> <span class="o">=</span> <span class="mf">20.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">bwd</span><span class="o">.</span><span class="n">high_edge_f</span> <span class="o">/</span> <span class="n">S</span><span class="o">.</span><span class="n">df</span><span class="p">())</span>
+            <span class="c1"># handle completely null result</span>
+            <span class="k">if</span> <span class="n">bwd</span><span class="o">.</span><span class="n">high_edge_f</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">:</span>
+                <span class="n">bandwidth</span> <span class="o">=</span> <span class="mf">20.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">bwd</span><span class="o">.</span><span class="n">high_edge_f</span> <span class="o">/</span> <span class="n">S</span><span class="o">.</span><span class="n">df</span><span class="p">())</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">bandwidth</span> <span class="o">=</span> <span class="mf">0.0</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">bandwidth</span> <span class="o">=</span> <span class="n">bwd</span><span class="o">.</span><span class="n">bandwidth</span><span class="p">()</span>
         <span class="c1"># here we return empty result if the bandwidth is too low</span>
-        <span class="k">if</span> <span class="n">bwd</span><span class="o">.</span><span class="n">bandwidth</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">signal_detection_minimum_bandwidth</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">bandwidth</span> <span class="o">&lt;</span> <span class="n">signal_detection_minimum_bandwidth</span><span class="p">:</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;Estimated bandwidth=</span><span class="si">{}</span><span class="s2"> below detection minimum=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">bandwidth</span><span class="p">,</span> <span class="n">signal_detection_minimum_bandwidth</span>
+            <span class="p">)</span>
+            <span class="n">my_logger</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">algname</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
             <span class="k">return</span> <span class="p">[</span><span class="nb">dict</span><span class="p">(),</span> <span class="n">my_logger</span><span class="p">]</span>
         <span class="c1"># These estimates are always computed and posted once we pass the above test for validity</span>
         <span class="n">snrdata</span><span class="p">[</span><span class="s2">&quot;low_f_band_edge&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bwd</span><span class="o">.</span><span class="n">low_edge_f</span>
@@ -866,8 +902,18 @@
         <span class="p">)</span>
         <span class="n">filtered_data</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">data_object</span><span class="p">)</span>
         <span class="n">BWfilt</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">filtered_data</span><span class="p">)</span>
-        <span class="n">nfilt</span> <span class="o">=</span> <span class="n">WindowData</span><span class="p">(</span><span class="n">filtered_data</span><span class="p">,</span> <span class="n">noise_window</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="n">noise_window</span><span class="o">.</span><span class="n">end</span><span class="p">)</span>
-        <span class="n">sfilt</span> <span class="o">=</span> <span class="n">WindowData</span><span class="p">(</span><span class="n">filtered_data</span><span class="p">,</span> <span class="n">signal_window</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="n">signal_window</span><span class="o">.</span><span class="n">end</span><span class="p">)</span>
+        <span class="n">nfilt</span> <span class="o">=</span> <span class="n">WindowData</span><span class="p">(</span>
+            <span class="n">filtered_data</span><span class="p">,</span>
+            <span class="n">noise_window</span><span class="o">.</span><span class="n">start</span><span class="p">,</span>
+            <span class="n">noise_window</span><span class="o">.</span><span class="n">end</span><span class="p">,</span>
+            <span class="n">short_segment_handling</span><span class="o">=</span><span class="s2">&quot;truncate&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">sfilt</span> <span class="o">=</span> <span class="n">WindowData</span><span class="p">(</span>
+            <span class="n">filtered_data</span><span class="p">,</span>
+            <span class="n">signal_window</span><span class="o">.</span><span class="n">start</span><span class="p">,</span>
+            <span class="n">signal_window</span><span class="o">.</span><span class="n">end</span><span class="p">,</span>
+            <span class="n">short_segment_handling</span><span class="o">=</span><span class="s2">&quot;truncate&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
 
         <span class="c1"># this is needed externally as a signal to use a lowpass instead of</span>
         <span class="c1"># bandpass to recreate the filtered data</span>
@@ -920,7 +966,7 @@
                         <span class="n">samp</span><span class="p">,</span> <span class="n">namp</span>
                     <span class="p">)</span>
                 <span class="k">except</span><span class="p">:</span>
-                    <span class="n">my_logger</span><span class="o">.</span><span class="n">log_erro</span><span class="p">(</span>
+                    <span class="n">my_logger</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
                         <span class="n">algname</span><span class="p">,</span>
                         <span class="s2">&quot;Error computing filtered_envelope metrics:  snr_filtered_envelope_peak not computed&quot;</span><span class="p">,</span>
                         <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span><span class="p">,</span>
@@ -1358,6 +1404,9 @@
             <span class="p">)</span>
     <span class="k">if</span> <span class="n">data_to_process</span><span class="o">.</span><span class="n">time_is_UTC</span><span class="p">():</span>
         <span class="n">data_to_process</span><span class="o">.</span><span class="n">ator</span><span class="p">(</span><span class="n">arrival_time</span><span class="p">)</span>
+    <span class="c1"># debug</span>
+    <span class="c1"># plt.plot(data_to_process.time_axis(),data_to_process.data)</span>
+    <span class="c1"># plt.show()</span>
     <span class="p">[</span><span class="n">snrdata</span><span class="p">,</span> <span class="n">elog</span><span class="p">]</span> <span class="o">=</span> <span class="n">FD_snr_estimator</span><span class="p">(</span>
         <span class="n">data_to_process</span><span class="p">,</span>
         <span class="n">noise_window</span><span class="o">=</span><span class="n">noise_window</span><span class="p">,</span>
@@ -1395,6 +1444,8 @@
     <span class="n">snrdata</span><span class="p">[</span><span class="s2">&quot;snr_signal_window_end&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">arrival_time</span> <span class="o">+</span> <span class="n">signal_window</span><span class="o">.</span><span class="n">end</span>
     <span class="n">snrdata</span><span class="p">[</span><span class="s2">&quot;snr_noise_window_start&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">arrival_time</span> <span class="o">+</span> <span class="n">noise_window</span><span class="o">.</span><span class="n">start</span>
     <span class="n">snrdata</span><span class="p">[</span><span class="s2">&quot;snr_noise_window_end&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">arrival_time</span> <span class="o">+</span> <span class="n">noise_window</span><span class="o">.</span><span class="n">end</span>
+    <span class="c1"># debug</span>
+    <span class="c1"># print_metadata(snrdata)</span>
 
     <span class="c1"># These cross-referencing keys may not always be defined when a phase</span>
     <span class="c1"># time is based on a pick so we add these cautiously</span>

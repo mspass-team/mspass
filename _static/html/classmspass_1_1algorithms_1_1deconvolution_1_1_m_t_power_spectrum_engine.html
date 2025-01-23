@@ -565,15 +565,15 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Return and std::vector of all frequencies for spectral estimates this operator computes. </p>
-<div class="fragment"><div class="line"><span class="lineno">  256</span>                                                  {</div>
-<div class="line"><span class="lineno">  257</span>  vector&lt;double&gt; f;</div>
-<div class="line"><span class="lineno">  258</span>  <span class="comment">/* If taperlen is odd this still works according to gsl documentation.*/</span></div>
-<div class="line"><span class="lineno">  259</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; this-&gt;<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#a92db35500eda333738d2c650e0b6d82f">nf</a>(); ++i) {</div>
-<div class="line"><span class="lineno">  260</span>    <span class="comment">/* Here we assume i=0 frequency is 0 */</span></div>
-<div class="line"><span class="lineno">  261</span>    f.push_back(deltaf * ((<span class="keywordtype">double</span>)i));</div>
-<div class="line"><span class="lineno">  262</span>  }</div>
-<div class="line"><span class="lineno">  263</span>  <span class="keywordflow">return</span> f;</div>
-<div class="line"><span class="lineno">  264</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  266</span>                                                  {</div>
+<div class="line"><span class="lineno">  267</span>  vector&lt;double&gt; f;</div>
+<div class="line"><span class="lineno">  268</span>  <span class="comment">/* If taperlen is odd this still works according to gsl documentation.*/</span></div>
+<div class="line"><span class="lineno">  269</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; this-&gt;<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#a92db35500eda333738d2c650e0b6d82f">nf</a>(); ++i) {</div>
+<div class="line"><span class="lineno">  270</span>    <span class="comment">/* Here we assume i=0 frequency is 0 */</span></div>
+<div class="line"><span class="lineno">  271</span>    f.push_back(deltaf * ((<span class="keywordtype">double</span>)i));</div>
+<div class="line"><span class="lineno">  272</span>  }</div>
+<div class="line"><span class="lineno">  273</span>  <span class="keywordflow">return</span> f;</div>
+<div class="line"><span class="lineno">  274</span>}</div>
 <div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_html_a92db35500eda333738d2c650e0b6d82f"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#a92db35500eda333738d2c650e0b6d82f">mspass::algorithms::deconvolution::MTPowerSpectrumEngine::nf</a></div><div class="ttdeci">int nf()</div><div class="ttdef"><b>Definition</b> MTPowerSpectrumEngine.h:135</div></div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#a92db35500eda333738d2c650e0b6d82f">nf()</a>.</p>

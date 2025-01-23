@@ -183,13 +183,17 @@ double&#160;</td><td class="memItemRight" valign="bottom"><b>f_range</b></td></t
 </div><div class="memdoc">
 <p>Return bandwidth in dB. </p>
 <div class="fragment"><div class="line"><span class="lineno">  334</span>                           {</div>
-<div class="line"><span class="lineno">  335</span>    <span class="keywordflow">if</span> (f_range &lt;= 0.0)</div>
-<div class="line"><span class="lineno">  336</span>      <span class="keywordflow">return</span> 0.0;</div>
-<div class="line"><span class="lineno">  337</span>    <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  338</span>      <span class="keywordtype">double</span> ratio = <a class="code hl_variable" href="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data.html#aa5e75df4c544e03a44cb3efc1077bc39">high_edge_f</a> / <a class="code hl_variable" href="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data.html#a0f125fbec3cba28118e541d4f040501f">low_edge_f</a>;</div>
-<div class="line"><span class="lineno">  339</span>      <span class="keywordflow">return</span> 20.0 * log10(ratio);</div>
-<div class="line"><span class="lineno">  340</span>    }</div>
-<div class="line"><span class="lineno">  341</span>  };</div>
+<div class="line"><span class="lineno">  335</span>    <span class="comment">/* All these conditionals are necessary for handling unexpected</span></div>
+<div class="line"><span class="lineno">  336</span><span class="comment">     * values.   0 is effectively and error return.  Without these</span></div>
+<div class="line"><span class="lineno">  337</span><span class="comment">     * the function can return NaN or generate floating point exceptions. */</span></div>
+<div class="line"><span class="lineno">  338</span>    <span class="keywordflow">if</span> ((f_range &lt;= 0.0) || (<a class="code hl_variable" href="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data.html#aa5e75df4c544e03a44cb3efc1077bc39">high_edge_f</a>&lt;=<a class="code hl_variable" href="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data.html#a0f125fbec3cba28118e541d4f040501f">low_edge_f</a>)</div>
+<div class="line"><span class="lineno">  339</span>      || (<a class="code hl_variable" href="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data.html#aa5e75df4c544e03a44cb3efc1077bc39">high_edge_f</a> &lt; 0.0) || (<a class="code hl_variable" href="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data.html#a0f125fbec3cba28118e541d4f040501f">low_edge_f</a> &lt; 0.0) )</div>
+<div class="line"><span class="lineno">  340</span>      <span class="keywordflow">return</span> 0.0;</div>
+<div class="line"><span class="lineno">  341</span>    <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  342</span>      <span class="keywordtype">double</span> ratio = <a class="code hl_variable" href="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data.html#aa5e75df4c544e03a44cb3efc1077bc39">high_edge_f</a> / <a class="code hl_variable" href="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data.html#a0f125fbec3cba28118e541d4f040501f">low_edge_f</a>;</div>
+<div class="line"><span class="lineno">  343</span>      <span class="keywordflow">return</span> 20.0 * log10(ratio);</div>
+<div class="line"><span class="lineno">  344</span>    }</div>
+<div class="line"><span class="lineno">  345</span>  };</div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data.html#aa5e75df4c544e03a44cb3efc1077bc39">high_edge_f</a>, and <a class="el" href="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data.html#a0f125fbec3cba28118e541d4f040501f">low_edge_f</a>.</p>
 
