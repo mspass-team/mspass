@@ -41,6 +41,14 @@ bundle
     :undoc-members:
     :show-inheritance:
 
+calib
+-------
+
+.. automodule:: mspasspy.algorithms.calib
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 edit
 -------
 

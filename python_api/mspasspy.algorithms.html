@@ -160,6 +160,10 @@
 <li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.bundle.bundle_seed_data"><code class="docutils literal notranslate"><span class="pre">bundle_seed_data()</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="#module-mspasspy.algorithms.calib">calib</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.calib.ApplyCalibEngine"><code class="docutils literal notranslate"><span class="pre">ApplyCalibEngine</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="#module-mspasspy.algorithms.edit">edit</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.edit.Add"><code class="docutils literal notranslate"><span class="pre">Add</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.edit.Add2"><code class="docutils literal notranslate"><span class="pre">Add2</span></code></a></li>
@@ -2317,6 +2321,89 @@ rotate_to_standard method on each Seismogram before any use.</p>
 </dd>
 </dl>
 <p>Caller should be enclosed in a handler if run on a large data set.</p>
+</dd></dl>
+
+</section>
+<section id="module-mspasspy.algorithms.calib">
+<span id="calib"></span><h2>calib<a class="headerlink" href="#module-mspasspy.algorithms.calib" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="mspasspy.algorithms.calib.ApplyCalibEngine">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.calib.</span></span><span class="sig-name descname"><span class="pre">ApplyCalibEngine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'channel'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ounits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['counts',</span> <span class="pre">'COUNTS',</span> <span class="pre">'count',</span> <span class="pre">'COUNT']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iunits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['m/s',</span> <span class="pre">'M/S']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">response_data_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'serialized_channel_data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/calib.html#ApplyCalibEngine"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.calib.ApplyCalibEngine" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A special case of response correction is a simple scalar multiply by a
+constant used to convert data from raw counts to the (now) standard units
+of nm/s.  For many applications using broadband data that correction
+is sufficient to assure ensembles of signals are on a common amplitude
+scale.  A basic rule if the passband of the processing is inside the
+instrument passband a full response correction is not alway necessary.
+A case in point is reeiver function processing where the passband of
+actual data is inside the passband of most “broadband sensors”.</p>
+<p>This class can be used to process TimeSeries or TimeSeriesEnsemble
+objects to convert data from raw counts to units of nm/s.</p>
+<p>The effort required to extract the conversion factor from the
+archain response format of seed and station xml is not trivial.
+We rely here on the conversion of downloaded station metadata from
+fdsn sources via web services and obspy’s downloading methods.
+Obspy converts that archain data to what they call an Inventory
+object.  In MsPASS we disaggregate the complicated Inventory object
+into a set of MongoDB documents with one entry for each
+seed time period fr each channel of data.   Inside that document is a
+an attibute with the tag “serialized_channel_data” that contains
+the detailed response data serialized with pickle.   The
+constructor for this object runs pickle.loads on that data to yield
+an obspy Response object.  We only extract the “sensitivity” value from
+Response.   A major complication is unit restrictions and invalid
+Response objects.  These are handled by the constructor as described
+below.   The current implementation can only handle Response objects
+with “input units” of meters per second and “output units” of counts.
+Note input and output is because the Response object uses
+sensitivity = 1/calib.  i.e. sensitivity is the scale to convert
+physical units to counts which backward from what this class is
+designed for - converting counts to physical units of nm/s.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.algorithms.calib.ApplyCalibEngine.apply_calib">
+<span class="sig-name descname"><span class="pre">apply_calib</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'channel_id'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kill_if_undefined</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/calib.html#ApplyCalibEngine.apply_calib"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.calib.ApplyCalibEngine.apply_calib" title="Permalink to this definition"></a></dt>
+<dd><p>Use this method to apply a calib value to a TimeSeries or all the
+live members of a TimeSeriesEnsemble.</p>
+<p>This is the processing function used for applying calibration.
+It is a method instead of a function because the class allows the
+calib values to be cached inside the object.   The input(s) must
+contain a MongoDB ObjectId that can be matched with the ids
+loaded in the cache by the constructor.   By default the key
+used is “channel_id”.  That can be changed with the “id_key”
+argument.  If a match is found all
+the sample valued are multiplied by calib AND the calib attribute is
+set.   Note a complaint will be issued if calib was found to already
+be defined in  AND is not 1.0 (a default sometimes appropriate)</p>
+<p>This method can easily become a mass murderer.   By default any
+datum with an undefined calib value in the cache of this object will
+be marked dead on return with a error message posted to its elog
+container.  If the <cite>kill_if_undefined</cite> argument is set False
+such data will not be killed but an elog message will be posted
+marked complaint.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>d</strong> (<cite>TimeSeries</cite> or <cite>TimeSeriesEnsemle</cite>  This method will
+raise a ValueError exception if d is anything else.) – input data to process</p></li>
+<li><p><strong>kill_if_undefined</strong> – bolean that when True (default) will
+cause any datum for which a matching calib cannot be found to be
+killed.   Note this operation is atomic so for ensembles only
+members that fail the match will be killed.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>copy of input with amplitudes multiplied by calib factor.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.algorithms.calib.ApplyCalibEngine.size">
+<span class="sig-name descname"><span class="pre">size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/calib.html#ApplyCalibEngine.size"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.calib.ApplyCalibEngine.size" title="Permalink to this definition"></a></dt>
+<dd><p>Return size of the cache of calib values stored in the object.</p>
+</dd></dl>
+
 </dd></dl>
 
 </section>
