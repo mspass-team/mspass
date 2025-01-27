@@ -1,14 +1,19 @@
 import numpy
-from matplotlib import pyplot
+import matplotlib.pyplot as plt
+from abc import ABC, abstractmethod
 
+from mspasspy.ccore.utility import MsPASSError, ErrorSeverity
 from mspasspy.ccore.seismic import (
     Seismogram,
     TimeSeries,
     TimeSeriesEnsemble,
     SeismogramEnsemble,
 )
+from mspasspy.util.seismic import number_live
 from mspasspy.algorithms.basic import ExtractComponent
-from mspasspy.algorithms.window import scale as alg_scale
+# set as this alias to avoid collision with internal scale
+# not sure that is necessary but this makes context clearer
+from mspasspy.algorithms.window import scale as mspass_scale_function
 
 
 def wtva_raw(section, t0, dt, ranges=None, scale=1.0, color="k", normalize=False):
@@ -73,23 +78,23 @@ def wtva_raw(section, t0, dt, ranges=None, scale=1.0, color="k", normalize=False
         gmin = section.min()
         amp = gmax - gmin
         toffset = 0.5
-    pyplot.ylim(max(t), 0)
+    plt.ylim(max(t), 0)
     if ranges is None:
         ranges = (0, ntraces)
     x0, x1 = ranges
     # horizontal increment
     dx = (x1 - x0) / ntraces
-    pyplot.xlim(x0 - dx / 2.0, x1 + dx / 2.0)
+    plt.xlim(x0 - dx / 2.0, x1 + dx / 2.0)
     for i, trace in enumerate(section.transpose()):
         tr = (((trace - gmin) / amp) - toffset) * scale * dx
         x = x0 + i * dx  # x position for this trace
-        pyplot.plot(x + tr, t, "k")
+        plt.plot(x + tr, t, "k")
         if color != None:
-            pyplot.fill_betweenx(t, x + tr, x, tr > 0, color=color)
+            plt.fill_betweenx(t, x + tr, x, tr > 0, color=color)
 
 
 def image_raw(
-    section, t0, dt, ranges=None, cmap=pyplot.cm.gray, aspect=None, vmin=None, vmax=None
+    section, t0, dt, ranges=None, cmap=plt.cm.gray, aspect=None, vmin=None, vmax=None
 ):
     """
     Plot a numpy 2D array (matrix) in an image format.  This type of
@@ -124,7 +129,7 @@ def image_raw(
     * ranges : (x1, x2)
         min and max horizontal coordinate values (default trace number)
     * cmap : colormap
-        color map to be used. (see pyplot.cm module)
+        color map to be used. (see plt.cm module)
     * aspect : float
         matplotlib imshow aspect parameter, ratio between axes
     * vmin, vmax : float
@@ -151,7 +156,7 @@ def image_raw(
         scale = numpy.abs([section.max(), section.min()]).max()
         vmin = -scale
         vmax = scale
-    pyplot.imshow(
+    plt.imshow(
         data,
         aspect=aspect,
         cmap=cmap,
@@ -209,8 +214,6 @@ def tse2nparray(ens):
 def seis2nparray(d):
     tmin = d.t0
     dt = d.dt
-    m = d.npts
-    n = 3
     work = numpy.array(d.data)
     return [tmin, dt, work]
 
@@ -218,7 +221,6 @@ def seis2nparray(d):
 def ts2nparray(d):
     tmin = d.t0
     dt = d.dt
-    m = d.npts
     work = numpy.array(d.data)
     return [tmin, dt, work]
 
@@ -240,7 +242,7 @@ def wtvaplot(
         # recursion - only call itself once and only once
         title3c = title
         for i in range(3):
-            pyplot.figure(i)
+            plt.figure(i)
             dcomp = ExtractComponent(d, i)
             if title != None:
                 title3c = "%s:%d" % (title, i)
@@ -250,8 +252,8 @@ def wtvaplot(
                 if cmap != None:
                     image_raw(section, t0, dt, ranges, cmap)
                 if title3c != None:
-                    pyplot.title(title3c)
-                figure_handles.append(pyplot.gcf())
+                    plt.title(title3c)
+                figure_handles.append(plt.gcf())
             except RuntimeError as err:
                 print(err)
                 return None
@@ -276,8 +278,8 @@ def wtvaplot(
             if cmap != None:
                 image_raw(section, t0, dt, ranges, cmap)
             if title != None:
-                pyplot.title(title)
-            figure_handles.append(pyplot.gcf())
+                plt.title(title)
+            figure_handles.append(plt.gcf())
         except RuntimeError as err:
             print(err)
             return None
@@ -285,7 +287,7 @@ def wtvaplot(
 
 
 def imageplot(
-    d, ranges=None, cmap=pyplot.cm.gray, aspect=None, vmin=None, vmax=None, title=None
+    d, ranges=None, cmap=plt.cm.gray, aspect=None, vmin=None, vmax=None, title=None
 ):
     """
     Image plotter for mspass ensemble objects.
@@ -301,7 +303,7 @@ def imageplot(
         # recursion - only call itself once and only once
         title3c = title
         for i in range(3):
-            pyplot.figure(i)
+            plt.figure(i)
             dcomp = ExtractComponent(d, i)
             if title != None:
                 title3c = "%s:%d" % (title, i)
@@ -309,8 +311,8 @@ def imageplot(
                 [t0, dt, section] = tse2nparray(dcomp)
                 image_raw(section, t0, dt, ranges, cmap, aspect, vmin, vmax)
                 if title3c != None:
-                    pyplot.title(title3c)
-                figure_handles.append(pyplot.gcf())
+                    plt.title(title3c)
+                figure_handles.append(plt.gcf())
             except RuntimeError as err:
                 print(err)
                 return None
@@ -333,8 +335,8 @@ def imageplot(
             section = plotdata[2]
             image_raw(section, t0, dt, ranges, cmap, aspect, vmin, vmax)
             if title != None:
-                pyplot.title(title)
-            figure_handles.append(pyplot.gcf())
+                plt.title(title)
+            figure_handles.append(plt.gcf())
         except RuntimeError as err:
             print(err)
             return None
@@ -403,7 +405,7 @@ class SectionPlotter:
         # as it may duplicate the call to change_style at the end, BUT
         # if the default changes these initial values do not need to be
         # changed
-        self._style = "wtvaimg"
+        self.style = "wtvaimg"
         self._use_variable_area = True
         self._fill_color = "k"  # black in matplotlib
         self._color_background = True
@@ -453,7 +455,7 @@ class SectionPlotter:
                 raise RuntimeError(
                     "SectionPlotter.change_style: wtva style requires fill_color to be a valid color code - received a None"
                 )
-            self._style = "wtva"
+            self.style = "wtva"
             self._color_background = False
             # force this when set this way
             self._color_map = None
@@ -468,7 +470,7 @@ class SectionPlotter:
                 raise RuntimeError(
                     "SectionPlotter.change_style: wtvaimg style requires a fill_color definition - received a None"
                 )
-            self._style = "wtvaimg"
+            self.style = "wtvaimg"
             self._color_background = True
             self._fill_color = fill_color
             self._color_map = color_map
@@ -478,13 +480,13 @@ class SectionPlotter:
                 raise RuntimeError(
                     "SectionPlotter.change_style: img style requires a color_map definition - received a None"
                 )
-            self._style = "img"
+            self.style = "img"
             self._color_background = True
             self._fill_color = None
             self._use_variable_area = False
             self._color_map = color_map
         elif newstyle == "wt":
-            self._style = "wt"
+            self.style = "wt"
             self._color_background = False
             self._color_map = None
             self._fill_color = None
@@ -505,13 +507,13 @@ class SectionPlotter:
 
         :Returns: an array of one or 3 (only for SeismogramEnsemble dat)
           matplotlib.pylot.gcf() plot handle(s).
-        :rtype: The plot handle is what matplotlib.pyplot calls a gcf.  It
-          is the return of pyplot.gcf() and can be used to alter some properties
+        :rtype: The plot handle is what matplotlib.plt calls a gcf.  It
+          is the return of plt.gcf() and can be used to alter some properties
           of the figure.  See matplotlib documentation.
         """
         # these are all handled by the same function with argument combinations defined by
         # change_style determining the behavior.
-        if self._style == "wtva" or self._style == "wtvaimg" or self._style == "wt":
+        if self.style == "wtva" or self.style == "wtvaimg" or self.style == "wt":
             handle = wtvaplot(
                 d,
                 self._ranges,
@@ -522,7 +524,7 @@ class SectionPlotter:
                 self.title,
             )
             return handle
-        elif self._style == "img":
+        elif self.style == "img":
             handle = imageplot(
                 d,
                 self._ranges,
@@ -536,12 +538,110 @@ class SectionPlotter:
         else:
             raise RuntimeError(
                 "SectionPlotter.plot:  internal style definition="
-                + self._style
+                + self.style
                 + " which is illegal.  Run change_style method"
             )
 
+class BasicSeismicPlotter(ABC):
+    """
+    Base class for MsPASS graphics objects used to visualize seismic 
+    data with the geometry of time as the x axis.  That produces 
+    graphics with seismograms horizontal as opposed to record sections 
+    where the time axis is y.   
+    
+    This base class should never be instantiated by itself.   It contains
+    methods that can be reused by different implementations in a class 
+    hierarchy.   
+    """
+    def __init__(self,scale=1.0,normalize=False,title=None):
+        self.scale = scale
+        self.title = title
+        self.normalize = normalize
 
-class SeismicPlotter:
+    # These two method should perhaps be implemented as decorators
+
+    def topdown(self):
+        """
+        Switch to mode of plotting ensembles from the top downward
+        from default of bottum upward.
+        """
+        self._plot_topdown = True
+
+    def bottomup(self):
+        """
+        Restore (or force) default ensemble plot order of bottup upward.
+        """
+        self._plot_topdown = False
+
+    def _deepcopy(self, d):
+        """
+        Private helper method for immediately above.   Necessary because
+        copy.deepcopy doesn't work with our pybind11 wrappers. There may be a
+        fix, but for now we have to use copy constructors specific to each
+        object type.
+        """
+        if isinstance(d, TimeSeries):
+            return TimeSeries(d)
+        elif isinstance(d, Seismogram):
+            return Seismogram(d)
+        elif isinstance(d, TimeSeriesEnsemble):
+            return TimeSeriesEnsemble(d)
+        elif isinstance(d, SeismogramEnsemble):
+            return SeismogramEnsemble(d)
+        else:
+            message = "BasicSeismicPlotter._deepcopy:  "
+            message += "received unsupported data type={}".format(str(type(d)))
+            raise MsPASSError(message,ErrorSeverity.Invalid)
+
+    def set_topdown(self):
+        """
+        Call this method to have datat plotted from top down.  Default plots
+        ensemble member 0 at the bottom of the plot with successive members
+        plotted in units of 1.0 above the last.  When this is called the
+        order is reversed.
+        """
+        self._plot_topdown = True
+
+    # These are private methods used internally
+
+    def _normalize(self, d):
+        """
+        Normalizes data (d) using scale function.  for ensembles that
+        is peak normalization to level self.scale by section. For
+        Seismograms each component will be normalized independently.
+        For TimeSeries the peak is adjusted to self.scale.
+
+        :param d:  input data to be scanned (must be one of mspass supported
+        data objects or will throw an exception)
+        :param perf:  clip level as used in seismic unix displays.
+        """
+        # These are place holders for now.  Requires some new code in ccore
+        # to sort absolute values and return perf level - should use faster
+        # max value when perf is 100%
+        if isinstance(d, SeismogramEnsemble):
+            mspass_scale_function(d, scale_by_section=True, level=self.scale)
+        elif isinstance(d, TimeSeriesEnsemble):
+            mspass_scale_function(d, scale_by_section=True, level=self.scale)
+        elif isinstance(d, TimeSeries):
+            mspass_scale_function(d, level=self.scale)
+        elif isinstance(d, Seismogram):
+            mspass_scale_function(d, level=self.scale)
+        else:
+            message = "BasicSeismicPlotter._deepcopy:  "
+            message += "received unsupported data type={}".format(str(type(d)))
+            raise MsPASSError(message,ErrorSeverity.Invalid)
+    @abstractmethod
+    def plot():
+        """
+        Alll concrete implementations must implement this method to do 
+        some plotting.
+        """
+        pass
+
+
+        
+    
+class SeismicPlotter(BasicSeismicPlotter):
     """
     SeismicPlotter is used to plot mspass data objects in the
     seismology convention with time as the x axis.  Use SectionPlotter
@@ -565,36 +665,35 @@ class SeismicPlotter:
     to the change_style method, should be done before calling plot.
     """
 
-    def __init__(self, scale=1.0, normalize=False, title=None):
+    def __init__(self, scale=1.0, normalize=False, title=None, style='wtvaimg'):
         """
         Constructor for this object.   It mostly sets defaults but
         has a few common optional parameters to set at construction
-        time.  Note style is intentionally not a constructor
-        parameter because of parameter interdependence.  The default
-        plot style is "wtva".  Use change_style to use change plot
-        style.
-
+        time.  
         :param scale:  optional scale factor to apply to data before plotting
           (default assumes data have been scaled to amplitude of order 1)
+        :type scale: float (default 1.0)
         :param  normalize:  Default assumes the data have been scaled with
-        one of the mspass amplitude scaling functions to be of order one
-        (or the scale parameter).  Set True if the data are to be
-        normalized internally by the plotter.
+          one of the mspass amplitude scaling functions to be of order one
+          (or the scale parameter).  Set True if the data are to be
+          normalized internally by the plotter.
+        :type normalize: boolean (defalt False)
         :param title:   optional title to put on graphics.  Note for
-        SeismogramEnsembles each of the three windows will be tagged
-        with a variant of this title string adding ":n" where n is
-        the component number (0,1,2).
+          SeismogramEnsembles each of the three windows will be tagged
+          with a variant of this title string adding ":n" where n is
+          the component number (0,1,2).
+        :type title: string (default None makes no plot title)
+        :param style:  plot style to one of the accepted style names. 
+          That is one of: ["wt","wtva","img","wtvaimg"]
+        :type style:  string (one of list above or a TypeError exceptin
+          is thrown)
         """
-        # these are public because they can set independently
-        self.scale = scale
-        self.title = title
-        self.normalize = normalize
-        # these have some interdependencies and are best altered only
-        # through the change_style method.  This may be unnecessary
-        # as it may duplicate the call to change_style at the end, BUT
-        # if the default changes these initial values do not need to be
-        # changed
-        self._style = "wtva"
+        super().__init__(
+            scale=scale,
+            title=title,
+            normalize=normalize,
+            )
+
         self._fill_color = "k"  # black in matplotlib
         self._color_map = "seismic"
         # these are options to raw codes adapted from  fatiando a terra
@@ -610,8 +709,38 @@ class SeismicPlotter:
         # Should be smaller than 1/screem horizontal pixel maximum size
         self._RANGE_RATIO_TEST = 0.0001
         self._default_single_ts_aspect = 0.25
-        # use change_style to simply default style
-        self.change_style("wtvaimg")
+        if style in ["wt","wtva","img","wtvaimg"]:
+            # use change_style to simply default style as this does more than 
+            # just set a string name
+            self.change_style(style)
+        else:
+            message = "SeismicPlotter constuctor:  "
+            message += "Illegal valeu for style={}\n".format(style)
+            message ++ "Must string froom this list of keywords:"
+            message +="wt, wtva, img, wtvaimg"
+            raise TypeError(message)
+        # These are set whenever a plot is made.
+        # None signals they aren't yet defined and need to be 
+        # initialized. 
+        self.figure = None
+        self.figure_handles = None
+
+    def get_plot_gcf(self):
+        """
+        Returns the matplotlib figure handle of the canvas used for all 
+        plots but that for a SeismogramEnsemble.   Useful only for 
+        subclasses that need to manipulate the handle.
+        """
+        return self.figure
+    def get_3Censemble_gcf(self)->tuple:
+        """
+        Returns the matplotlb figure handles for handlng 
+        SeismogramEnsemble data.  This plotter draws 3c data in three 
+        different figure handles with number tags 0, 1, and 2 for 
+        each component.  Useful method mainly for subclasses of 
+        this class.
+        """
+        return self.figure_handles
 
     def change_style(self, newstyle, fill_color="k", color_map="seismic"):
         """
@@ -648,7 +777,7 @@ class SeismicPlotter:
                 raise RuntimeError(
                     "SectionPlotter.change_style: wtva style requires fill_color to be a valid color code - received a None"
                 )
-            self._style = "wtva"
+            self.style = "wtva"
             # force this when set this way
             self._color_map = None
             self._fill_color = fill_color
@@ -661,7 +790,7 @@ class SeismicPlotter:
                 raise RuntimeError(
                     "SectionPlotter.change_style: wtvaimg style requires a fill_color definition - received a None"
                 )
-            self._style = "wtvaimg"
+            self.style = "wtvaimg"
             self._fill_color = fill_color
             self._color_map = color_map
         elif newstyle == "img":
@@ -669,32 +798,19 @@ class SeismicPlotter:
                 raise RuntimeError(
                     "SectionPlotter.change_style: img style requires a color_map definition - received a None"
                 )
-            self._style = "img"
+            self.style = "img"
             self._fill_color = None
             self._color_map = color_map
         elif newstyle == "wt":
-            self._style = "wt"
+            self.style = "wt"
             self._color_map = None
             self._fill_color = None
         else:
             raise RuntimeError(
                 "SectionPlotter.change_style:  unknown style type=" + newstyle
             )
+        self.style = newstyle
 
-    # These two method should perhaps be implemented as decorators
-
-    def topdown(self):
-        """
-        Switch to mode of plotting ensembles from the top downward
-        from default of bottum upward.
-        """
-        self._plot_topdown = True
-
-    def bottomup(self):
-        """
-        Restore (or force) default ensemble plot order of bottup upward.
-        """
-        self._plot_topdown = False
 
     def plot(self, d):
         # make copy always to prevent unintentional scaling of input data
@@ -703,92 +819,34 @@ class SeismicPlotter:
             self._normalize(d2plot)
         else:
             d2plot = d  # always a shallow copy in python
-        if self._style == "wtva":
+        if self.style == "wtva":
             self._wtva(d2plot, fill=True)
-        elif self._style == "wt":
+        elif self.style == "wt":
             self._wtva(d2plot, fill=False)
-        elif self._style == "wtvaimg":
+        elif self.style == "wtvaimg":
             self._wtva(d2plot, fill=True)
             self._imageplot(d2plot)
-        elif self._style == "img":
+        elif self.style == "img":
             self._imageplot(d2plot)
         else:
             raise RuntimeError(
                 "SeismicPlotter.plot:  internal style definition="
-                + self._style
+                + self.style
                 + " is invalid\nThis should not happen"
             )
 
-    def _deepcopy(self, d):
-        """
-        Private helper method for immediately above.   Necessary because
-        copy.deepcopy doesn't work with our pybind11 wrappers. There may be a
-        fix, but for now we have to use copy constructors specific to each
-        object type.
-        """
-        if isinstance(d, TimeSeries):
-            return TimeSeries(d)
-        elif isinstance(d, Seismogram):
-            return Seismogram(d)
-        elif isinstance(d, TimeSeriesEnsemble):
-            return TimeSeriesEnsemble(d)
-        elif isinstance(d, SeismogramEnsemble):
-            return SeismogramEnsemble(d)
-        else:
-            raise RuntimeError(
-                "SeismicPlotter._deepcopy:  received and unsupported data type=",
-                type(d),
-            )
-
-    def set_topdown(self):
-        """
-        Call this method to have datat plotted from top down.  Default plots
-        ensemble member 0 at the bottom of the plot with successive members
-        plotted in units of 1.0 above the last.  When this is called the
-        order is reversed.
-        """
-        self._plot_topdown = True
-
-    # These are private methods used internally
-
-    def _normalize(self, d):
-        """
-        Normalizes data (d) using scale function.  for ensembles that
-        is peak normalization to level self.scale by section. For
-        Seismograms each component will be normalized independently.
-        For TimeSeries the peak is adjusted to self.scale.
-
-        :param d:  input data to be scanned (must be one of mspass supported
-        data objects or will throw an exception)
-        :param perf:  clip level as used in seismic unix displays.
-        """
-        # These are place holders for now.  Requires some new code in ccore
-        # to sort absolute values and return perf level - should use faster
-        # max value when perf is 100%
-        if isinstance(d, SeismogramEnsemble):
-            alg_scale(d, scale_by_section=True, level=self.scale)
-        elif isinstance(d, TimeSeriesEnsemble):
-            alg_scale(d, scale_by_section=True, level=self.scale)
-        elif isinstance(d, TimeSeries):
-            alg_scale(d, level=self.scale)
-        elif isinstance(d, Seismogram):
-            alg_scale(d, level=self.scale)
-        else:
-            raise RuntimeError(
-                "SeismicPlotter._normalize:  Received unsupported data type=", type(d)
-            )
-
+ 
     def _add_3C_titles(self):
         """
-        Private method to add titles with pyplot.title to 3C ensemble data.
+        Private method to add titles with plt.title to 3C ensemble data.
         This algorithm is a bit fragile as it depends upon use of
         figure tagged with integer component number.
         """
         if self.title != None:
             for k in range(3):
-                pyplot.figure(k)
+                plt.figure(k)
                 title3c = "%s:%d" % (self.title, k)
-                pyplot.title(title3c)
+                plt.title(title3c)
 
     def _wtva(self, d, fill=True):
         """
@@ -798,30 +856,30 @@ class SeismicPlotter:
         this function does little more than determine the type of the input
         data d and call the appropriate private method for that data type.
         """
-        base_error = "SeismicPlotter._imageplot (Error):  "
+        base_error = "SeismicPlotter._wtva (Error):  "
         if isinstance(d, SeismogramEnsemble):
             if len(d.member) <= 0:
                 raise IndexError(base_error + "ensemble container is empty")
-            self._wtva_SeismogramEnsemble(d, fill)
+            self.figure_handles = self._wtva_SeismogramEnsemble(d, fill)
             self._add_3C_titles()
         elif isinstance(d, TimeSeriesEnsemble):
             if len(d.member) <= 0:
                 raise IndexError(base_error + "ensemble container is empty")
-            self._wtva_TimeSeriesEnsemble(d, fill)
+            self.figure = self._wtva_TimeSeriesEnsemble(d, fill)
             if self.title != None:
-                pyplot.title(self.title)
+                plt.title(self.title)
         elif isinstance(d, TimeSeries):
             if d.npts <= 0:
                 raise IndexError(base_error + "data vector is empty.  Nothing to plot")
-            self._wtva_TimeSeries(d, fill)
+            self.figre = self._wtva_TimeSeries(d, fill)
             if self.title != None:
-                pyplot.title(self.title)
+                plt.title(self.title)
         elif isinstance(d, Seismogram):
             if d.npts <= 0:
                 raise IndexError(base_error + "data vector is empty.  Nothing to plot")
-            self._wtva_Seismogram(d, fill)
+            self.figure = self._wtva_Seismogram(d, fill)
             if self.title != None:
-                pyplot.title(self.title)
+                plt.title(self.title)
         else:
             raise RuntimeError(base_error + "Received unsupported data type=", type(d))
 
@@ -833,26 +891,26 @@ class SeismicPlotter:
         if isinstance(d, SeismogramEnsemble):
             if len(d.member) <= 0:
                 raise IndexError(base_error + "ensemble container is empty")
-            self._imageplot_SeismogramEnsemble(d)
+            self.figure_handles = self._imageplot_SeismogramEnsemble(d)
             self._add_3C_titles()
         elif isinstance(d, TimeSeriesEnsemble):
             if len(d.member) <= 0:
                 raise IndexError(base_error + "ensemble container is empty")
-            self._imageplot_TimeSeriesEnsemble(d)
+            self.figure = self._imageplot_TimeSeriesEnsemble(d)
             if self.title != None:
-                pyplot.title(self.title)
+                plt.title(self.title)
         elif isinstance(d, TimeSeries):
             if d.npts <= 0:
                 raise IndexError(base_error + "data vector is empty.  Nothing to plot")
-            self._imageplot_TimeSeries(d)
+            self.figure = self._imageplot_TimeSeries(d)
             if self.title != None:
-                pyplot.title(self.title)
+                plt.title(self.title)
         elif isinstance(d, Seismogram):
             if d.npts <= 0:
                 raise IndexError(base_error + "data vector is empty.  Nothing to plot")
-            self._imageplot_Seismogram(d)
+            self.figure = self._imageplot_Seismogram(d)
             if self.title != None:
-                pyplot.title(self.title)
+                plt.title(self.title)
         else:
             raise RuntimeError(base_error + "Received unsupported data type=", type(d))
 
@@ -863,15 +921,15 @@ class SeismicPlotter:
 
         t = numpy.linspace(d.t0, d.t0 + d.dt * d.npts, d.npts)
         # We don't need a gain factor here - will be needed for an image overlay through
-        pyplot.plot(t, d.data, "k")
+        plt.plot(t, d.data, "k")
         if fill:
             # Necessary because fill_between doesn't support the pybind11
             # wrapped vector directly - need to convert to numpy array
             y = numpy.array(d.data)
-            pyplot.fill_between(
+            plt.fill_between(
                 t, 0, y, where=y > 0.0, interpolate=True, color=self._fill_color
             )
-        return pyplot.gcf()
+        return plt.gcf()
 
     def _wtva_Seismogram(self, d, fill):
         # this could be implemented by converting d to an ensemble
@@ -880,6 +938,7 @@ class SeismicPlotter:
             dcomp = ExtractComponent(d, k)
             ens.member.append(dcomp)
         self._wtva_TimeSeriesEnsemble(ens, fill)
+        return plt.gcf()
 
     def _get_ensemble_size(self, d):
         # Unlike SectionPlotter we allow irregular start times and don't
@@ -923,11 +982,11 @@ class SeismicPlotter:
 
     def _wtva_TimeSeriesEnsemble(self, d, fill):
         (ndata, tmin, tmax) = self._get_ensemble_size(d)
-        pyplot.xlim(tmin, tmax)
+        plt.xlim(tmin, tmax)
         # This plotting engine always equally spaces traces horizontally so
         # unlike SectionPlotter we just compute the range as the number of
         # intervals + 1 for padding
-        pyplot.ylim(-0.5, float(ndata) - 0.5)
+        plt.ylim(-0.5, float(ndata) - 0.5)
         for i in range(ndata):
             # skip data marked dead - this will leave a hole in plot.  We could
             # plot a line but this is proably better unless proven otherwise
@@ -946,9 +1005,9 @@ class SeismicPlotter:
             endtime = d.member[i].endtime()
             npts = d.member[i].npts
             t = numpy.linspace(t0, endtime, npts)
-            pyplot.plot(t, y, "k")
+            plt.plot(t, y, "k")
             if fill:
-                pyplot.fill_between(
+                plt.fill_between(
                     t,
                     offset,
                     y,
@@ -956,7 +1015,7 @@ class SeismicPlotter:
                     interpolate=True,
                     color=self._fill_color,
                 )
-        return pyplot.gcf()
+        return plt.gcf()
 
     def _wtva_SeismogramEnsemble(self, d, fill):
         # implement by call to ExtractComponent and calling TimeSeriesEnsemble method 3 times
@@ -965,11 +1024,11 @@ class SeismicPlotter:
         for k in range(3):
             dcomp = ExtractComponent(d, k)
             # figure_title='Component %d' % k
-            # pyplot.figure(figure_title)
-            pyplot.figure(k)
+            # plt.figure(figure_title)
+            plt.figure(k)
             handle = self._wtva(dcomp)
             figure_handles.append(handle)
-        # pyplot.show()
+        # plt.show()
         return figure_handles
 
     def _imageplot_TimeSeriesEnsemble(self, d):
@@ -1036,7 +1095,7 @@ class SeismicPlotter:
             extent = (tmin, tmax, float(ndata) - 0.5, -0.5)
         else:
             origin_position = "lower"
-        pyplot.imshow(
+        plt.imshow(
             work,
             aspect="auto",
             cmap=self._color_map,
@@ -1045,6 +1104,7 @@ class SeismicPlotter:
             vmin=vmin,
             vmax=vmax,
         )
+        return plt.gcf()
 
     def _imageplot_SeismogramEnsemble(self, d):
         # implement by call to ExtractComponent and calling TimeSeriesEnsemble method 3 times
@@ -1052,10 +1112,10 @@ class SeismicPlotter:
         figure_handles = []
         for k in range(3):
             dcomp = ExtractComponent(d, k)
-            pyplot.figure(k)
+            plt.figure(k)
             figure = self._imageplot(dcomp)
             figure_handles.append(figure)
-        # pyplot.show()
+        # plt.show()
         return figure_handles
 
     def _imageplot_Seismogram(self, d):
@@ -1065,13 +1125,9 @@ class SeismicPlotter:
             dcomp = ExtractComponent(d, k)
             ens.member.append(dcomp)
         self._imageplot_TimeSeriesEnsemble(ens)
+        return plt.gcf()
 
     def _imageplot_TimeSeries(self, d):
-        # this plot reduces to a simple call to plot defining a time axis from
-        # a single trace - pretty much like the obspy plot but with optional
-        # shading.  It assumes d is a TimeSeries.
-
-        t = numpy.linspace(d.t0, d.endtime(), d.npts)
         # somewhat inefficient, but TimeSeries size in this context
         # would always be small enough to be irrelevant
         work = numpy.zeros(shape=[1, d.npts])
@@ -1084,12 +1140,162 @@ class SeismicPlotter:
             scale = numpy.abs([work.max(), work.min()]).max()
             vmin = -scale
             vmax = scale
-        pyplot.imshow(
+        plt.imshow(
             work,
-            aspect="auto",
+            aspect=aspect,
             cmap=self._color_map,
             extent=extent,
             vmin=vmin,
             vmax=vmax,
         )
-        return pyplot.gcf()
+        return plt.gcf()
+
+class LargeEnsemblePlotter(SeismicPlotter):
+    """
+    This is a special class to handle ensembles.   It forces a solution 
+    that can be mysterous for a naive use of the more general SeismicPlotter.
+    That is, with a large ensemble the plot can easily come out a black 
+    image when the number of ensemble members are of the order of 1/10 
+    or more of the number of pixels defining the y axis.  The way thsi 
+    subclass addresses that is by forcing the following:
+        1.  It normally produces multiple plots to display data in blocks.
+            sac users can think of this like theh "perplot" argument used
+            in the sac ppk function.
+        2.  It defaults to wiggle trace only plots to improve performance.
+        3.  It defaults to automatic scaling assuming that for many 
+            inputs something always needs to be scaled
+        4.  It will only accept ensemble objects
+        
+    Note since this is a subclass of SeismicPlotter, Seismogram enembles 
+    will be plotted in three different figure windows.  
+
+    Be warned large ensembles can produce a very large number of plots 
+    with a single call to the plot method of this class.  With interactive 
+    use you may need to click on a lot of windows to see all the data and 
+    for notebooks you can quickly create a huge notebook.  All plotting 
+    for large data sets must be done with caution.
+    """
+    def __init__(self, 
+                 scale=0.5, 
+                 normalize=True, 
+                 title=None,
+                 members_per_frame=20):
+        """
+        Constructor for this object.   It mostly sets defaults but
+        has a few common optional parameters to set at construction
+        time.  Note style is intentionally not a constructor
+        parameter because of parameter interdependence.  The default
+        plot style is "wt" to maximize performance. You can use the
+        change_stye method inherited from SeismicPlotter to make 
+        the plots a different style.
+
+        :param scale:  optional scale factor to apply to data before plotting
+          (default assumes data have been scaled to amplitude of order 1)
+        :type scale: float (default 1.0)
+        :param  normalize:  Default assumes the data have been scaled with
+          one of the mspass amplitude scaling functions to be of order one
+          (or the scale parameter).  Set True if the data are to be
+          normalized internally by the plotter.
+        :type normalize: boolean (defalt False)
+        :param title:   optional title to put on graphics.  Note for
+          SeismogramEnsembles each of the three windows will be tagged
+          with a variant of this title string adding ":n" where n is
+          the component number (0,1,2).
+        :type title: string (default None makes no plot title)
+        :param members_per_frame:  Number of 
+        """
+        super().__init__(
+            scale=scale,
+            title=title,
+            normalize=normalize,
+            )
+        self.change_style('wt')
+        self.members_per_frame = members_per_frame
+        
+    def plot(self, ens,skip_the_dead=True):
+        """
+        Plots esembles in groups of size defined by the instance. 
+        
+        This plot method overrides the plot method of SeismicPlotter 
+        but actually uses the same functions to make the plots.  
+        It does so  using a trick to run the "super" function.   
+        When run interactively the function will block with 
+        each frame until the window(s) is(are) closed.   In a notebook 
+        the frames will all be rendered sequentially into the notebook.
+        
+        As far as I can tell a limitation of the matplotlib is that 
+        to allow an event loop for zoom and pan operatios on the plot 
+        the window has to be closed in interactive mode.  It would be 
+        nice to not have to have the window have to pop up for each frame 
+        but I (glp) can't see how to do that - it may be impossible without
+        a major rewrite.
+        
+        Note if the input ensemble is marked dead or has no live members 
+        a informational message will be "printed" (print staement) and 
+        nothing will be plotted.
+        
+        :param ens:  Ensemble to be plotted
+        :type ens:  Must be either a TimeSeriesEnsemble of SeismogramEnsemle 
+           or the method will throw a TypeError exception.
+        :param skip_the_dead:  Boolean controllng how dead data are 
+           handed.  When True (default) dead data will be silently skippped.
+           When False all dead data will create an empty plot cell in 
+           the position of the body. 
+           
+        """
+        alg = "LargeEnsemblePlotter.plot"
+        if not isinstance(ens,(TimeSeriesEnsemble,SeismogramEnsemble)):
+            message = "LargeEnsemblePlotter.plot:  "
+            message += "Illegal type for arg0={}\n".format(str(type(ens)))
+            message += "Can only plot seismic ensemble objects"
+            raise TypeError(message)
+            
+        if ens.dead():
+            print(alg + "received ensemble marked dead - cannot  plot ensemble marked dead")
+            return
+        N = len(ens.member)
+        Nlive = number_live(ens)
+        if Nlive <= 0:
+            print(alg + " ensemble has no live members - nothing to plot")
+        if isinstance(ens,TimeSeriesEnsemble):
+            e2plot=TimeSeriesEnsemble()
+        else:
+            e2plot=SeismogramEnsemble()
+        count = 0
+        frame_number = 0
+        for i in range(len(ens.member)):
+            # shorthand
+            d = ens.member[i]
+            if skip_the_dead and d.dead():
+                # ddebug
+                print("skipping member ",i)
+                continue
+            if count < self.members_per_frame and i != (N-1):
+                e2plot.member.append(d)
+                count += 1
+            else:
+                if frame_number > 0:
+                    self._clear_figure_canvases()
+                super().plot(e2plot)
+                # show blocks in interactive mode untill the framem iis 
+                # closed.  I think in a notebook it make the plot and 
+                # continue on producing multiple plot frames. 
+                plt.show()
+                frame_number += 1
+                count = 0
+                e2plot.member.clear()
+    def _clear_figure_canvases(self):
+        """
+        Private method used to clear the canvas for any active graphhics. 
+        Complicated by the fact tha SeismicPlotter use a single canvas 
+        for TimeSeriesEnsemble plots and 3 canvases for SeismogramEnsembles.
+        """
+        gcf = self.get_plot_gcf()
+        if gcf:
+            gcf.clear()
+        handles = self.get_3Censemble_gcf()
+        if handles:
+            for gcf in handles:
+                gcf.clear()
+       
+        
