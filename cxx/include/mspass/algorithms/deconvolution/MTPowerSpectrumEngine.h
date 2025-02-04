@@ -103,7 +103,7 @@ public:
   length.*/
   int fftsize() const { return nfft; };
   /*! Retrieve the internally cached required data sample interval. */
-  double dt() { return operator_dt; };
+  double dt() const { return operator_dt; };
   /*! \brief Putter equivalent of df.
 
   The computation of the Rayleigh bin size is complicated a bit by the folding

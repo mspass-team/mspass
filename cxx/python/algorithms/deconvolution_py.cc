@@ -393,7 +393,7 @@ PYBIND11_MODULE(deconvolution, m) {
     .def("nf",&MTPowerSpectrumEngine::nf,"Return number of frequency bins in this operator")
     .def("nfft",&MTPowerSpectrumEngine::fftsize,"Return size of fft workspace in this operator")
     /* We do pickle for this object in a different way than I've ever done this
-    before.  This object can be define by only 3 numbers that are expanded in
+    before.  This object can be define by only 5 numbers that are expanded in
     the constructor into what can be very large arrays.  An untested hypothesis that
     this approach builds on is that it is cheaper to recompute the tapers when
     this object gets serialized than it is to serialize, move, and deserialize
@@ -403,7 +403,7 @@ PYBIND11_MODULE(deconvolution, m) {
     .def(py::pickle(
       [](const MTPowerSpectrumEngine& self)
       {
-        return py::make_tuple(self.taper_length(),self.time_bandwidth_product(),self.number_tapers(),self.fftsize());
+        return py::make_tuple(self.taper_length(),self.time_bandwidth_product(),self.number_tapers(),self.fftsize(),self.dt());
       },
       [](py::tuple t)
       {
@@ -411,7 +411,8 @@ PYBIND11_MODULE(deconvolution, m) {
         double tbp=t[1].cast<double>();
         int ntapers=t[2].cast<int>();
         int nfft=t[3].cast<int>();
-        return MTPowerSpectrumEngine(taperlen,tbp,ntapers,nfft);
+        double dt=t[4].cast<double>();
+        return MTPowerSpectrumEngine(taperlen,tbp,ntapers,nfft,dt);
       }
     ))
   ;
