@@ -126,9 +126,9 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a10d4b650fdedd815652c1e4e86a0e715"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afaabbb574b28194bde51e45d1cfd2787" id="r_afaabbb574b28194bde51e45d1cfd2787"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#afaabbb574b28194bde51e45d1cfd2787">fftsize</a> () const</td></tr>
 <tr class="separator:afaabbb574b28194bde51e45d1cfd2787"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af7ea0259803f6cac1c5e8166541b2f51" id="r_af7ea0259803f6cac1c5e8166541b2f51"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#af7ea0259803f6cac1c5e8166541b2f51">dt</a> ()</td></tr>
-<tr class="separator:af7ea0259803f6cac1c5e8166541b2f51"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1dadcf9ec587fa2d48d04066ba1d55b4" id="r_a1dadcf9ec587fa2d48d04066ba1d55b4"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#a1dadcf9ec587fa2d48d04066ba1d55b4">set_df</a> (double <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#af7ea0259803f6cac1c5e8166541b2f51">dt</a>)</td></tr>
+<tr class="memitem:a742dcf1ea4d54af357f6cb220e2fa10d" id="r_a742dcf1ea4d54af357f6cb220e2fa10d"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#a742dcf1ea4d54af357f6cb220e2fa10d">dt</a> () const</td></tr>
+<tr class="separator:a742dcf1ea4d54af357f6cb220e2fa10d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1dadcf9ec587fa2d48d04066ba1d55b4" id="r_a1dadcf9ec587fa2d48d04066ba1d55b4"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#a1dadcf9ec587fa2d48d04066ba1d55b4">set_df</a> (double <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#a742dcf1ea4d54af357f6cb220e2fa10d">dt</a>)</td></tr>
 <tr class="memdesc:a1dadcf9ec587fa2d48d04066ba1d55b4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Putter equivalent of df.  <br /></td></tr>
 <tr class="separator:a1dadcf9ec587fa2d48d04066ba1d55b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a92db35500eda333738d2c650e0b6d82f" id="r_a92db35500eda333738d2c650e0b6d82f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#a92db35500eda333738d2c650e0b6d82f">nf</a> ()</td></tr>
@@ -496,8 +496,8 @@ Public Member Functions</h2></td></tr>
 </div><!-- fragment -->
 </div>
 </div>
-<a id="af7ea0259803f6cac1c5e8166541b2f51" name="af7ea0259803f6cac1c5e8166541b2f51"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af7ea0259803f6cac1c5e8166541b2f51">&#9670;&#160;</a></span>dt()</h2>
+<a id="a742dcf1ea4d54af357f6cb220e2fa10d" name="a742dcf1ea4d54af357f6cb220e2fa10d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a742dcf1ea4d54af357f6cb220e2fa10d">&#9670;&#160;</a></span>dt()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -509,7 +509,7 @@ Public Member Functions</h2></td></tr>
           <td class="memname">double mspass::algorithms::deconvolution::MTPowerSpectrumEngine::dt </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
-          <td></td>
+          <td> const</td>
         </tr>
       </table>
   </td>
@@ -713,15 +713,15 @@ Public Member Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>computed df </dd></dl>
 <div class="fragment"><div class="line"><span class="lineno">  126</span>                           {</div>
-<div class="line"><span class="lineno">  127</span>    this-&gt;operator_dt = <a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#af7ea0259803f6cac1c5e8166541b2f51">dt</a>;</div>
+<div class="line"><span class="lineno">  127</span>    this-&gt;operator_dt = <a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#a742dcf1ea4d54af357f6cb220e2fa10d">dt</a>;</div>
 <div class="line"><span class="lineno">  128</span>    <span class="keywordtype">int</span> this_nf = this-&gt;<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#a92db35500eda333738d2c650e0b6d82f">nf</a>();</div>
-<div class="line"><span class="lineno">  129</span>    <span class="keywordtype">double</span> fny = 1.0 / (2.0 * <a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#af7ea0259803f6cac1c5e8166541b2f51">dt</a>);</div>
+<div class="line"><span class="lineno">  129</span>    <span class="keywordtype">double</span> fny = 1.0 / (2.0 * <a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#a742dcf1ea4d54af357f6cb220e2fa10d">dt</a>);</div>
 <div class="line"><span class="lineno">  130</span>    this-&gt;deltaf = fny / <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(this_nf - 1);</div>
 <div class="line"><span class="lineno">  131</span>    <span class="keywordflow">return</span> deltaf;</div>
 <div class="line"><span class="lineno">  132</span>  };</div>
-<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_html_af7ea0259803f6cac1c5e8166541b2f51"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#af7ea0259803f6cac1c5e8166541b2f51">mspass::algorithms::deconvolution::MTPowerSpectrumEngine::dt</a></div><div class="ttdeci">double dt()</div><div class="ttdef"><b>Definition</b> MTPowerSpectrumEngine.h:106</div></div>
+<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_html_a742dcf1ea4d54af357f6cb220e2fa10d"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#a742dcf1ea4d54af357f6cb220e2fa10d">mspass::algorithms::deconvolution::MTPowerSpectrumEngine::dt</a></div><div class="ttdeci">double dt() const</div><div class="ttdef"><b>Definition</b> MTPowerSpectrumEngine.h:106</div></div>
 </div><!-- fragment -->
-<p class="reference">References <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#af7ea0259803f6cac1c5e8166541b2f51">dt()</a>, and <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#a92db35500eda333738d2c650e0b6d82f">nf()</a>.</p>
+<p class="reference">References <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#a742dcf1ea4d54af357f6cb220e2fa10d">dt()</a>, and <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#a92db35500eda333738d2c650e0b6d82f">nf()</a>.</p>
 
 </div>
 </div>

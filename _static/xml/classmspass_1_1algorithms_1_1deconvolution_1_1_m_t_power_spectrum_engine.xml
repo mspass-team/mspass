@@ -452,10 +452,10 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MTPowerSpectrumEngine.h" line="104" column="7" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MTPowerSpectrumEngine.h" bodystart="104" bodyend="104"/>
       </memberdef>
-      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1af7ea0259803f6cac1c5e8166541b2f51" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a742dcf1ea4d54af357f6cb220e2fa10d" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>double</type>
         <definition>double mspass::algorithms::deconvolution::MTPowerSpectrumEngine::dt</definition>
-        <argsstring>()</argsstring>
+        <argsstring>() const</argsstring>
         <name>dt</name>
         <qualifiedname>mspass::algorithms::deconvolution::MTPowerSpectrumEngine::dt</qualifiedname>
         <briefdescription>
@@ -499,7 +499,7 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MTPowerSpectrumEngine.h" line="126" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MTPowerSpectrumEngine.h" bodystart="126" bodyend="132"/>
-        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1af7ea0259803f6cac1c5e8166541b2f51" compoundref="_m_t_power_spectrum_engine_8h" startline="106" endline="106">dt</references>
+        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a742dcf1ea4d54af357f6cb220e2fa10d" compoundref="_m_t_power_spectrum_engine_8h" startline="106" endline="106">dt</references>
         <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a92db35500eda333738d2c650e0b6d82f" compoundref="_m_t_power_spectrum_engine_8h" startline="135" endline="146">nf</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a92db35500eda333738d2c650e0b6d82f" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
@@ -587,7 +587,7 @@
       <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1ab679e58c66c0c4a332350c7f4282e806" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::MTPowerSpectrumEngine</scope><name>apply</name></member>
       <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1aedb60b87afad3afa660be4e408766e0c" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::MTPowerSpectrumEngine</scope><name>deltaf</name></member>
       <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1ada36c092fdc3aa128be8eb25d00349d6" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::MTPowerSpectrumEngine</scope><name>df</name></member>
-      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1af7ea0259803f6cac1c5e8166541b2f51" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::MTPowerSpectrumEngine</scope><name>dt</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a742dcf1ea4d54af357f6cb220e2fa10d" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::MTPowerSpectrumEngine</scope><name>dt</name></member>
       <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1afaabbb574b28194bde51e45d1cfd2787" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::MTPowerSpectrumEngine</scope><name>fftsize</name></member>
       <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a626438cc21ade06cfa7053c324ae58b4" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::MTPowerSpectrumEngine</scope><name>frequencies</name></member>
       <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1af2122de2c5193ebde4d1171e2dca92b6" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::MTPowerSpectrumEngine</scope><name>load</name></member>
