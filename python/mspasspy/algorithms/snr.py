@@ -804,11 +804,14 @@ def FD_snr_estimator(
                             ErrorSeverity.Complaint,
                         )
                 except MsPASSError as err:
-                    # This handler currently would never be entered but
-                    # left in place to keep code more robust in the event
-                    # of a change
+                    # This handler is entered only if BandwidthStatistics
+                    # throws an exception.  Currently that can only happen
+                    # if an internal C class VectorStatistics throws
+                    # an exception.  The internal logic shouldn't let that
+                    # happen but this is a safety in case it does.
                     newmessage = _reformat_mspass_error(
-                        "BandwithStatistics throw the following error\n",
+                        err,
+                        "BandwithStatistics threw the following error\n",
                         "Five snr_stats attributes were not computed",
                     )
                     my_logger.log_error(algname, newmessage, err.severity)

@@ -143,14 +143,12 @@ BandwidthData EstimateBandwidth(const double signal_df, const PowerSpectrum &s,
 }
 Metadata BandwidthStatistics(const PowerSpectrum &s, const PowerSpectrum &n,
                              const BandwidthData &bwd) {
-  /* As noted above this correction is needed for an irregular window size*/
-  double window_length_correction =
-      static_cast<double>(s.nf()) / static_cast<double>(n.nf());
   Metadata result;
   /* the algorithm below will fail if either of these conditions is true so
   we trap that and return a null result.   Caller must handle the null
   return correctly*/
-  if ((bwd.f_range <= 0.0) || ((bwd.high_edge_f - bwd.low_edge_f) < s.df())) {
+  if ((bwd.f_range <= 0.0) || ((bwd.high_edge_f - bwd.low_edge_f) < s.df())
+       || s.dead() || n.dead() || s.nf()<=0 || n.nf()<=0) {
     result.put_double("median_snr", 0.0);
     result.put_double("maximum_snr", 0.0);
     result.put_double("minimum_snr", 0.0);
@@ -160,6 +158,9 @@ Metadata BandwidthStatistics(const PowerSpectrum &s, const PowerSpectrum &n,
     result.put_bool("stats_are_valid", false);
     return result;
   }
+  /* As noted above this correction is needed for an irregular window size*/
+  double window_length_correction =
+      static_cast<double>(s.nf()) / static_cast<double>(n.nf());
   std::vector<double> bandsnr;
   double f;
   for (f = bwd.low_edge_f; f < bwd.high_edge_f && f < s.Nyquist();
