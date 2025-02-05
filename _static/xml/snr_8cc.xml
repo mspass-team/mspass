@@ -559,53 +559,54 @@
 <codeline lineno="143"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="144"><highlight class="normal">Metadata<sp/>BandwidthStatistics(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>PowerSpectrum<sp/>&amp;s,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>PowerSpectrum<sp/>&amp;n,</highlight></codeline>
 <codeline lineno="145"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>BandwidthData<sp/>&amp;bwd)<sp/>{</highlight></codeline>
-<codeline lineno="146"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>As<sp/>noted<sp/>above<sp/>this<sp/>correction<sp/>is<sp/>needed<sp/>for<sp/>an<sp/>irregular<sp/>window<sp/>size*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="147"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>window_length_correction<sp/>=</highlight></codeline>
-<codeline lineno="148"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keywordtype">double</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(s.nf())<sp/>/<sp/></highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keywordtype">double</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(n.nf());</highlight></codeline>
-<codeline lineno="149"><highlight class="normal"><sp/><sp/>Metadata<sp/>result;</highlight></codeline>
-<codeline lineno="150"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>the<sp/>algorithm<sp/>below<sp/>will<sp/>fail<sp/>if<sp/>either<sp/>of<sp/>these<sp/>conditions<sp/>is<sp/>true<sp/>so</highlight></codeline>
-<codeline lineno="151"><highlight class="comment"><sp/><sp/>we<sp/>trap<sp/>that<sp/>and<sp/>return<sp/>a<sp/>null<sp/>result.<sp/><sp/><sp/>Caller<sp/>must<sp/>handle<sp/>the<sp/>null</highlight></codeline>
-<codeline lineno="152"><highlight class="comment"><sp/><sp/>return<sp/>correctly*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="153"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>((bwd.f_range<sp/>&lt;=<sp/>0.0)<sp/>||<sp/>((bwd.high_edge_f<sp/>-<sp/>bwd.low_edge_f)<sp/>&lt;<sp/>s.df()))<sp/>{</highlight></codeline>
-<codeline lineno="154"><highlight class="normal"><sp/><sp/><sp/><sp/>result.put_double(</highlight><highlight class="stringliteral">&quot;median_snr&quot;</highlight><highlight class="normal">,<sp/>0.0);</highlight></codeline>
-<codeline lineno="155"><highlight class="normal"><sp/><sp/><sp/><sp/>result.put_double(</highlight><highlight class="stringliteral">&quot;maximum_snr&quot;</highlight><highlight class="normal">,<sp/>0.0);</highlight></codeline>
-<codeline lineno="156"><highlight class="normal"><sp/><sp/><sp/><sp/>result.put_double(</highlight><highlight class="stringliteral">&quot;minimum_snr&quot;</highlight><highlight class="normal">,<sp/>0.0);</highlight></codeline>
-<codeline lineno="157"><highlight class="normal"><sp/><sp/><sp/><sp/>result.put_double(</highlight><highlight class="stringliteral">&quot;q1_4_snr&quot;</highlight><highlight class="normal">,<sp/>0.0);</highlight></codeline>
-<codeline lineno="158"><highlight class="normal"><sp/><sp/><sp/><sp/>result.put_double(</highlight><highlight class="stringliteral">&quot;q3_4_snr&quot;</highlight><highlight class="normal">,<sp/>0.0);</highlight></codeline>
-<codeline lineno="159"><highlight class="normal"><sp/><sp/><sp/><sp/>result.put_double(</highlight><highlight class="stringliteral">&quot;mean_snr&quot;</highlight><highlight class="normal">,<sp/>0.0);</highlight></codeline>
-<codeline lineno="160"><highlight class="normal"><sp/><sp/><sp/><sp/>result.put_bool(</highlight><highlight class="stringliteral">&quot;stats_are_valid&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">);</highlight></codeline>
-<codeline lineno="161"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>result;</highlight></codeline>
-<codeline lineno="162"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
-<codeline lineno="163"><highlight class="normal"><sp/><sp/>std::vector&lt;double&gt;<sp/>bandsnr;</highlight></codeline>
-<codeline lineno="164"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>f;</highlight></codeline>
-<codeline lineno="165"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(f<sp/>=<sp/>bwd.low_edge_f;<sp/>f<sp/>&lt;<sp/>bwd.high_edge_f<sp/>&amp;&amp;<sp/>f<sp/>&lt;<sp/>s.Nyquist();</highlight></codeline>
-<codeline lineno="166"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/>f<sp/>+=<sp/>s.df())<sp/>{</highlight></codeline>
-<codeline lineno="167"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>signal_amp,<sp/>noise_amp,<sp/>snr;</highlight></codeline>
-<codeline lineno="168"><highlight class="normal"><sp/><sp/><sp/><sp/>signal_amp<sp/>=<sp/>sqrt(s.power(f));</highlight></codeline>
-<codeline lineno="169"><highlight class="normal"><sp/><sp/><sp/><sp/>noise_amp<sp/>=<sp/>sqrt(n.power(f));</highlight></codeline>
-<codeline lineno="170"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(noise_amp<sp/>&lt;=<sp/>0.0)<sp/>{</highlight></codeline>
-<codeline lineno="171"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(signal_amp<sp/>&gt;<sp/>0.0)</highlight></codeline>
-<codeline lineno="172"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>snr<sp/>=<sp/>NOISE_FREE;</highlight></codeline>
-<codeline lineno="173"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="174"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>snr<sp/>=<sp/>INDETERMINATE;</highlight></codeline>
-<codeline lineno="175"><highlight class="normal"><sp/><sp/><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"><sp/>{</highlight></codeline>
-<codeline lineno="176"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>snr<sp/>=<sp/>window_length_correction<sp/>*<sp/>signal_amp<sp/>/<sp/>noise_amp;</highlight></codeline>
-<codeline lineno="177"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="178"><highlight class="normal"><sp/><sp/><sp/><sp/>bandsnr.push_back(snr);</highlight></codeline>
-<codeline lineno="179"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
-<codeline lineno="180"><highlight class="normal"><sp/><sp/>VectorStatistics&lt;double&gt;<sp/>stats(bandsnr);</highlight></codeline>
-<codeline lineno="181"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>stats<sp/>contains<sp/>multiple<sp/>methods<sp/>that<sp/>return<sp/>other<sp/>metrics<sp/>but<sp/>we<sp/>only</highlight></codeline>
-<codeline lineno="182"><highlight class="comment"><sp/><sp/>return<sp/>typical<sp/>box<sp/>plot<sp/>values<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="183"><highlight class="normal"><sp/><sp/>result.put_double(</highlight><highlight class="stringliteral">&quot;median_snr&quot;</highlight><highlight class="normal">,<sp/>stats.median());</highlight></codeline>
-<codeline lineno="184"><highlight class="normal"><sp/><sp/>result.put_double(</highlight><highlight class="stringliteral">&quot;maximum_snr&quot;</highlight><highlight class="normal">,<sp/>stats.upper_bound());</highlight></codeline>
-<codeline lineno="185"><highlight class="normal"><sp/><sp/>result.put_double(</highlight><highlight class="stringliteral">&quot;minimum_snr&quot;</highlight><highlight class="normal">,<sp/>stats.lower_bound());</highlight></codeline>
-<codeline lineno="186"><highlight class="normal"><sp/><sp/>result.put_double(</highlight><highlight class="stringliteral">&quot;q1_4_snr&quot;</highlight><highlight class="normal">,<sp/>stats.q1_4());</highlight></codeline>
-<codeline lineno="187"><highlight class="normal"><sp/><sp/>result.put_double(</highlight><highlight class="stringliteral">&quot;q3_4_snr&quot;</highlight><highlight class="normal">,<sp/>stats.q3_4());</highlight></codeline>
-<codeline lineno="188"><highlight class="normal"><sp/><sp/>result.put_double(</highlight><highlight class="stringliteral">&quot;mean_snr&quot;</highlight><highlight class="normal">,<sp/>stats.mean());</highlight></codeline>
-<codeline lineno="189"><highlight class="normal"><sp/><sp/>result.put_bool(</highlight><highlight class="stringliteral">&quot;stats_are_valid&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">);</highlight></codeline>
-<codeline lineno="190"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>result;</highlight></codeline>
-<codeline lineno="191"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="192"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>mspass::algorithms::amplitudes</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="146"><highlight class="normal"><sp/><sp/>Metadata<sp/>result;</highlight></codeline>
+<codeline lineno="147"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>the<sp/>algorithm<sp/>below<sp/>will<sp/>fail<sp/>if<sp/>either<sp/>of<sp/>these<sp/>conditions<sp/>is<sp/>true<sp/>so</highlight></codeline>
+<codeline lineno="148"><highlight class="comment"><sp/><sp/>we<sp/>trap<sp/>that<sp/>and<sp/>return<sp/>a<sp/>null<sp/>result.<sp/><sp/><sp/>Caller<sp/>must<sp/>handle<sp/>the<sp/>null</highlight></codeline>
+<codeline lineno="149"><highlight class="comment"><sp/><sp/>return<sp/>correctly*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="150"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>((bwd.f_range<sp/>&lt;=<sp/>0.0)<sp/>||<sp/>((bwd.high_edge_f<sp/>-<sp/>bwd.low_edge_f)<sp/>&lt;<sp/>s.df())</highlight></codeline>
+<codeline lineno="151"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/>||<sp/>s.dead()<sp/>||<sp/>n.dead()<sp/>||<sp/>s.nf()&lt;=0<sp/>||<sp/>n.nf()&lt;=0)<sp/>{</highlight></codeline>
+<codeline lineno="152"><highlight class="normal"><sp/><sp/><sp/><sp/>result.put_double(</highlight><highlight class="stringliteral">&quot;median_snr&quot;</highlight><highlight class="normal">,<sp/>0.0);</highlight></codeline>
+<codeline lineno="153"><highlight class="normal"><sp/><sp/><sp/><sp/>result.put_double(</highlight><highlight class="stringliteral">&quot;maximum_snr&quot;</highlight><highlight class="normal">,<sp/>0.0);</highlight></codeline>
+<codeline lineno="154"><highlight class="normal"><sp/><sp/><sp/><sp/>result.put_double(</highlight><highlight class="stringliteral">&quot;minimum_snr&quot;</highlight><highlight class="normal">,<sp/>0.0);</highlight></codeline>
+<codeline lineno="155"><highlight class="normal"><sp/><sp/><sp/><sp/>result.put_double(</highlight><highlight class="stringliteral">&quot;q1_4_snr&quot;</highlight><highlight class="normal">,<sp/>0.0);</highlight></codeline>
+<codeline lineno="156"><highlight class="normal"><sp/><sp/><sp/><sp/>result.put_double(</highlight><highlight class="stringliteral">&quot;q3_4_snr&quot;</highlight><highlight class="normal">,<sp/>0.0);</highlight></codeline>
+<codeline lineno="157"><highlight class="normal"><sp/><sp/><sp/><sp/>result.put_double(</highlight><highlight class="stringliteral">&quot;mean_snr&quot;</highlight><highlight class="normal">,<sp/>0.0);</highlight></codeline>
+<codeline lineno="158"><highlight class="normal"><sp/><sp/><sp/><sp/>result.put_bool(</highlight><highlight class="stringliteral">&quot;stats_are_valid&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="159"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>result;</highlight></codeline>
+<codeline lineno="160"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="161"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>As<sp/>noted<sp/>above<sp/>this<sp/>correction<sp/>is<sp/>needed<sp/>for<sp/>an<sp/>irregular<sp/>window<sp/>size*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="162"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>window_length_correction<sp/>=</highlight></codeline>
+<codeline lineno="163"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keywordtype">double</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(s.nf())<sp/>/<sp/></highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keywordtype">double</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(n.nf());</highlight></codeline>
+<codeline lineno="164"><highlight class="normal"><sp/><sp/>std::vector&lt;double&gt;<sp/>bandsnr;</highlight></codeline>
+<codeline lineno="165"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>f;</highlight></codeline>
+<codeline lineno="166"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(f<sp/>=<sp/>bwd.low_edge_f;<sp/>f<sp/>&lt;<sp/>bwd.high_edge_f<sp/>&amp;&amp;<sp/>f<sp/>&lt;<sp/>s.Nyquist();</highlight></codeline>
+<codeline lineno="167"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/>f<sp/>+=<sp/>s.df())<sp/>{</highlight></codeline>
+<codeline lineno="168"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>signal_amp,<sp/>noise_amp,<sp/>snr;</highlight></codeline>
+<codeline lineno="169"><highlight class="normal"><sp/><sp/><sp/><sp/>signal_amp<sp/>=<sp/>sqrt(s.power(f));</highlight></codeline>
+<codeline lineno="170"><highlight class="normal"><sp/><sp/><sp/><sp/>noise_amp<sp/>=<sp/>sqrt(n.power(f));</highlight></codeline>
+<codeline lineno="171"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(noise_amp<sp/>&lt;=<sp/>0.0)<sp/>{</highlight></codeline>
+<codeline lineno="172"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(signal_amp<sp/>&gt;<sp/>0.0)</highlight></codeline>
+<codeline lineno="173"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>snr<sp/>=<sp/>NOISE_FREE;</highlight></codeline>
+<codeline lineno="174"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="175"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>snr<sp/>=<sp/>INDETERMINATE;</highlight></codeline>
+<codeline lineno="176"><highlight class="normal"><sp/><sp/><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"><sp/>{</highlight></codeline>
+<codeline lineno="177"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>snr<sp/>=<sp/>window_length_correction<sp/>*<sp/>signal_amp<sp/>/<sp/>noise_amp;</highlight></codeline>
+<codeline lineno="178"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="179"><highlight class="normal"><sp/><sp/><sp/><sp/>bandsnr.push_back(snr);</highlight></codeline>
+<codeline lineno="180"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="181"><highlight class="normal"><sp/><sp/>VectorStatistics&lt;double&gt;<sp/>stats(bandsnr);</highlight></codeline>
+<codeline lineno="182"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>stats<sp/>contains<sp/>multiple<sp/>methods<sp/>that<sp/>return<sp/>other<sp/>metrics<sp/>but<sp/>we<sp/>only</highlight></codeline>
+<codeline lineno="183"><highlight class="comment"><sp/><sp/>return<sp/>typical<sp/>box<sp/>plot<sp/>values<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="184"><highlight class="normal"><sp/><sp/>result.put_double(</highlight><highlight class="stringliteral">&quot;median_snr&quot;</highlight><highlight class="normal">,<sp/>stats.median());</highlight></codeline>
+<codeline lineno="185"><highlight class="normal"><sp/><sp/>result.put_double(</highlight><highlight class="stringliteral">&quot;maximum_snr&quot;</highlight><highlight class="normal">,<sp/>stats.upper_bound());</highlight></codeline>
+<codeline lineno="186"><highlight class="normal"><sp/><sp/>result.put_double(</highlight><highlight class="stringliteral">&quot;minimum_snr&quot;</highlight><highlight class="normal">,<sp/>stats.lower_bound());</highlight></codeline>
+<codeline lineno="187"><highlight class="normal"><sp/><sp/>result.put_double(</highlight><highlight class="stringliteral">&quot;q1_4_snr&quot;</highlight><highlight class="normal">,<sp/>stats.q1_4());</highlight></codeline>
+<codeline lineno="188"><highlight class="normal"><sp/><sp/>result.put_double(</highlight><highlight class="stringliteral">&quot;q3_4_snr&quot;</highlight><highlight class="normal">,<sp/>stats.q3_4());</highlight></codeline>
+<codeline lineno="189"><highlight class="normal"><sp/><sp/>result.put_double(</highlight><highlight class="stringliteral">&quot;mean_snr&quot;</highlight><highlight class="normal">,<sp/>stats.mean());</highlight></codeline>
+<codeline lineno="190"><highlight class="normal"><sp/><sp/>result.put_bool(</highlight><highlight class="stringliteral">&quot;stats_are_valid&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="191"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>result;</highlight></codeline>
+<codeline lineno="192"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="193"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>mspass::algorithms::amplitudes</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/snr.cc"/>
   </compounddef>

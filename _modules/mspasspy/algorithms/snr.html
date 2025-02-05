@@ -946,11 +946,14 @@
                             <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span><span class="p">,</span>
                         <span class="p">)</span>
                 <span class="k">except</span> <span class="n">MsPASSError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
-                    <span class="c1"># This handler currently would never be entered but</span>
-                    <span class="c1"># left in place to keep code more robust in the event</span>
-                    <span class="c1"># of a change</span>
+                    <span class="c1"># This handler is entered only if BandwidthStatistics</span>
+                    <span class="c1"># throws an exception.  Currently that can only happen</span>
+                    <span class="c1"># if an internal C class VectorStatistics throws</span>
+                    <span class="c1"># an exception.  The internal logic shouldn&#39;t let that</span>
+                    <span class="c1"># happen but this is a safety in case it does.</span>
                     <span class="n">newmessage</span> <span class="o">=</span> <span class="n">_reformat_mspass_error</span><span class="p">(</span>
-                        <span class="s2">&quot;BandwithStatistics throw the following error</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
+                        <span class="n">err</span><span class="p">,</span>
+                        <span class="s2">&quot;BandwithStatistics threw the following error</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
                         <span class="s2">&quot;Five snr_stats attributes were not computed&quot;</span><span class="p">,</span>
                     <span class="p">)</span>
                     <span class="n">my_logger</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">algname</span><span class="p">,</span> <span class="n">newmessage</span><span class="p">,</span> <span class="n">err</span><span class="o">.</span><span class="n">severity</span><span class="p">)</span>
