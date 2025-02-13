@@ -288,17 +288,26 @@ def mspass_method_wrapper(
     This decorator executes the target method on the input data.  It is used
     mainly to reduce duplicate code to perserve history and error logs
     with mspass object.
+    
+    A large fraction of algorithms used in mspass are "atomic" meaning 
+    they only operator on TimeSeries and/or Seismogram objects.   In mspass
+    an "ensemble" is a container with multiple atomic objects.  This decorator 
+    can then also be used to adapt an atomic algorithm to work automatically 
+    with ensembles.   When using the decorator if the funtion being decorated
+    works only on atomic data set the boolean `handles_ensembles` should be 
+    set as False (the default).  Set it True only for functions that handle 
+    ensembles as the type of arg0.  
 
     :param func: target function
     :param selfarg:  the self pointer for the class with which this method is associated
     :param data: input data, only mspasspy data objects are accepted, i.e. TimeSeries, Seismogram, Ensemble.
     :param args: extra arguments
     :param object_history: True to preserve this processing history in the data object, False not to. object_history
-     and alg_id are intimately related and control how object level history is handled.
-     Object level history is disabled by default for efficiency.  If object_history is set True and the string passed
-     as alg_id is defined (not None which is the default) each Seismogram or TimeSeries object will attempt to
-     save the history through a new_map operation.   If the history chain is empty this will silently generate
-     an error posted to error log on each object.
+       and alg_id are intimately related and control how object level history is handled.
+       Object level history is disabled by default for efficiency.  If object_history is set True and the string passed
+       as alg_id is defined (not None which is the default) each Seismogram or TimeSeries object will attempt to
+       save the history through a new_map operation.   If the history chain is empty this will silently generate
+       an error posted to error log on each object.
     :param alg_id: alg_id is a unique id to record the usage of func while preserving the history.
     :type alg_id: :class:`bson.objectid.ObjectId`
     :param alg_name: alg_name is the name the func we are gonna save while preserving the history.
@@ -307,19 +316,23 @@ def mspass_method_wrapper(
       This is useful for pre-run checks of a large job to validate a workflow. Errors generate exceptions
       but the function returns before attempting any calculations.
     :param inplace_return: when func is an in-place function that doesn't return anything, but you want to
-     return the origin data (for example, in map-reduce), set inplace_return as true.
+       return the origin data (for example, in map-reduce), set inplace_return as true.
     :param function_return_key:  Some functions one might want to wrap with this decorator
-     return something that is appropriate to save as Metadata.  If so, use this argument to
-     define the key used to set that field in the data that is returned.
-     This feature should normally be considered as a way to wrap an existing
-     algorithm that you do not wish to alter, but which returns something useful.
-     In principle that return can be almost anything, but we recommend this feature
-     be limited to only simple types (i.e. int, float, etc.).  The decorator makes
-     no type checks so the caller is responsible for assuring what is posted will not cause
-     downstream problems.  The default for this parameter is None, which
-     is taken to mean any return of the wrapped function will be ignored.  Note
-     that when function_return_key is anything but None, it is assumed the
-     returned object is the (usually modified) data object.
+       return something that is appropriate to save as Metadata.  If so, use this argument to
+       define the key used to set that field in the data that is returned.
+       This feature should normally be considered as a way to wrap an existing
+       algorithm that you do not wish to alter, but which returns something useful.
+       In principle that return can be almost anything, but we recommend this feature
+       be limited to only simple types (i.e. int, float, etc.).  The decorator makes
+       no type checks so the caller is responsible for assuring what is posted will not cause
+       downstream problems.  The default for this parameter is None, which
+       is taken to mean any return of the wrapped function will be ignored.  Note
+       that when function_return_key is anything but None, it is assumed the
+       returned object is the (usually modified) data object.
+     :param handles_ensembes:  set True if the function this is applied to 
+       can hangle ensemble objects directly.   When False, which is the default 
+       this decorator applies the atomic function to each ensemble member in 
+       a loop over membes.
     :param kwargs: extra kv arguments
     :return: origin data or the output of func
     """
