@@ -327,9 +327,29 @@ class dummy_class_method_wrapper:
         dryrun=False,
         inplace_return=False,
         function_return_key=None,
+        handles_ensembles=False,
         **kwargs,
     ):
         return "Finish"
+    @mspass_method_wrapper
+    def dummy_numeric_method(
+            self,
+            data,
+            *args,
+            object_history=False,
+            alg_id=None,
+            alg_name=None,
+            dryrun=False,
+            inplace_return=False,
+            function_return_key=None,
+            handles_ensembles=False,
+            **kwargs,
+        ):
+        """
+        Used for testing handling of ensembles with handles_ensemble option.
+        """
+        data["foobar"] = 1.0
+        return data
 
 
 def test_mspass_method_wrapper():
@@ -355,6 +375,11 @@ def test_mspass_method_wrapper():
         str(err.value)
         == "<class 'test_decorators.dummy_class_method_wrapper'>: object_history was true but alg_id not defined"
     )
+    # added Feb 2025 to test new error handler for ValueError exception 
+    # do not allow function_return_key option with ensemble
+    with pytest.raises(ValueError,match="Usage error:"):
+        e = get_live_timeseries_ensemble(3)
+        dummy_instance.dummy_numeric_method(e,function_return_key="foobar")
 
     # Default behavior
     assert "Finish" == dummy_instance.dummy_func_method_wrapper(seis)
@@ -405,6 +430,23 @@ def test_mspass_method_wrapper():
     assert not data.live
 
     assert "OK" == dummy_instance.dummy_func_method_wrapper(seis, dryrun=True)
+    
+    # tests for new ensemble handling features Feb 2025
+    # note we use a TimeSeriesEnsemble but a SeismogramEnsemble would behave 
+    # the same for the current api - careful if there is divergence
+    e = get_live_timeseries_ensemble(3) 
+    e = dummy_instance.dummy_numeric_method(e, handles_ensembles=False)
+    # in this case all the members need to be tested
+    for d in e.member:
+        assert d["foobar"] == 1.0
+    assert "foobar" not in e
+    # with handles_ensembles_false reverse the tests above
+    e = get_live_timeseries_ensemble(3) 
+    e = dummy_instance.dummy_numeric_method(e, handles_ensembles=True)
+    # in this case all the members need to be tested
+    for d in e.member:
+        assert "foobar" not in d
+    assert e["foobar"] == 1.0
 
 
 @mspass_func_wrapper
