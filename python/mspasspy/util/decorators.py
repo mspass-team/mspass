@@ -1,9 +1,7 @@
 from decorator import decorator
-import copy
 
 from mspasspy.util.converter import Stream2Seismogram, Trace2TimeSeries
-
-from mspasspy.ccore.utility import Metadata, MsPASSError, ErrorSeverity
+from mspasspy.ccore.utility import MsPASSError, ErrorSeverity
 from mspasspy.ccore.seismic import (
     Seismogram,
     TimeSeries,
@@ -37,6 +35,15 @@ def mspass_func_wrapper(
     error logs into the mspasspy objects. By wrapping your function using this decorator, you can save some workload.
     Runtime error won't be raised in order to be efficient in map-reduce operations. MspassError with a severity Fatal
     will be raised, others won't be raised.
+    
+    A large fraction of algorithms used in mspass are "atomic" meaning 
+    they only operator on TimeSeries and/or Seismogram objects.   In mspass
+    an "ensemble" is a container with multiple atomic objects.  This decorator 
+    can then also be used to adapt an atomic algorithm to work automatically 
+    with ensembles.   When using the decorator if the funtion being decorated
+    works only on atomic data set the boolean `handles_ensembles` should be 
+    set as False (the default).  Set it True only for functions that handle 
+    ensembles as the type of arg0.  
 
     :param func: target function
     :param data: input data, only mspasspy data objects are accepted, i.e. TimeSeries, Seismogram, Ensemble.
@@ -269,6 +276,7 @@ def mspass_method_wrapper(
     dryrun=False,
     inplace_return=False,
     function_return_key=None,
+    handles_ensembles=False,
     **kwargs,
 ):
     """
@@ -329,39 +337,65 @@ def mspass_method_wrapper(
 
     if object_history and alg_id is None:
         raise ValueError(alg_name + ": object_history was true but alg_id not defined")
-
+    if function_return_key and isinstance(data,(TimeSeriesEnsemble, SeismogramEnsemble)):
+        message = "Usage error:  "
+        message += "function_return_key was defined as {} but input type is an ensemble.\n".format(function_return_key)
+        message += "That options is not allowed for ensembles in any class method"
+        raise ValueError(message)
     if dryrun:
         return "OK"
 
     if is_input_dead(data):
         return data
+    
+    if isinstance(data, (Seismogram, TimeSeries)) or handles_ensembles:
+        run_only_once = True
+    else:
+        run_only_once = False
 
     try:
-        res = func(selfarg, data, *args, **kwargs)
-        if object_history:
-            logging_helper.info(data, alg_id, alg_name)
-        if function_return_key is not None:
-            if isinstance(function_return_key, str):
-                data[function_return_key] = res
+        if run_only_once:
+            res = func(selfarg, data, *args, **kwargs)
+            if object_history:
+                logging_helper.info(data, alg_id, alg_name)
+            if function_return_key is not None:
+                if isinstance(function_return_key, str):
+                    data[function_return_key] = res
+                else:
+                    data.elog.log_error(
+                        alg_name,
+                        "Illegal type received for function_return_key argument="
+                        + str(type(function_return_key))
+                        + "\nReturn value not saved in Metadata",
+                        ErrorSeverity.Complaint,
+                    )
+                if not inplace_return:
+                    data.elog.log_error(
+                        alg_name,
+                        "Inconsistent arguments; inplace_return was set False and function_return_key was not None.\nAssuming inplace_return == True is correct",
+                       ErrorSeverity.Complaint,
+                    )
+                return data
+            elif inplace_return:
+                return data
             else:
-                data.elog.log_error(
-                    alg_name,
-                    "Illegal type received for function_return_key argument="
-                    + str(type(function_return_key))
-                    + "\nReturn value not saved in Metadata",
-                    ErrorSeverity.Complaint,
-                )
-            if not inplace_return:
-                data.elog.log_error(
-                    alg_name,
-                    "Inconsistent arguments; inplace_return was set False and function_return_key was not None.\nAssuming inplace_return == True is correct",
-                    ErrorSeverity.Complaint,
-                )
-            return data
-        elif inplace_return:
-            return data
+                return res
         else:
-            return res
+            # this block is only for ensembles - the run_only_once boolean 
+            # means we enter here only if this is an ensmble and the 
+            # boolean handles_ensembles is false
+            N = len(data.member)
+            for i in range(N):
+                # alias to make logic clearer
+                d = data.member[i]
+                d = func(selfarg, d, *args, **kwargs)
+                data.member[i] = d
+                if object_history:
+                    logging_helper.info(data.member[i], alg_id, alg_name)
+            # Note the in place return concept does not apply to 
+            # ensemles - all are in place by defintion if passed through 
+            # this wrapper
+            return data
     except RuntimeError as err:
         if isinstance(data, (Seismogram, TimeSeries)):
             data.elog.log_error(alg_name, str(err), ErrorSeverity.Invalid)
