@@ -30,11 +30,22 @@ def filter(
     alg_id=None,
     dryrun=False,
     inplace_return=True,
+    handles_ensembles=True,
     **options,
 ):
     """
-    This function filters the data of mspasspy objects. Note it is wrapped by mspass_func_wrapper, so the processing
-    history and error logs can be preserved.
+    Applies a time invariant filter to a MsPASS data object.
+    
+    This entry is a wrapper around the obspy filter function.  It accepts the 
+    same arguments as the obspy function and runs the same implementation. 
+    See their documentation for details, but note the idiosyncracy of 
+    their API is inherited.  Because different types of filters are 
+    enabled by the setting of the "type" argument, what kwarg values are 
+    referenced depend upon the value of "type".   In particular, note:
+        - "bandpass" requires values for "freqmin" and "freqmax as corner frequenices
+        - "lowpass" requires only a value for "freq" to define the one corner
+        - "highpass" also requres only the value "freq" for the low corner
+    There are other options described in the obspy documentation.
 
     :param data: input data, only mspasspy data objects are accepted, i.e. TimeSeries, Seismogram, Ensemble.
     :param type: type of filter, 'bandpass', 'bandstop', 'lowpass', 'highpass', 'lowpass_cheby_2', 'lowpass_fir',
@@ -69,6 +80,7 @@ def detrend(
     alg_id=None,
     dryrun=False,
     inplace_return=True,
+    handles_ensembles=True,
     type="simple",
     **options,
 ):
@@ -109,6 +121,7 @@ def interpolate(
     alg_id=None,
     dryrun=False,
     inplace_return=True,
+    handles_ensembles=True,
     method="weighted_average_slopes",
     starttime=None,
     npts=None,

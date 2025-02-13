@@ -24,6 +24,7 @@ def ExtractComponent(
     alg_id=None,
     dryrun=False,
     inplace_return=False,
+    handles_ensembles=True,
     function_return_key=None,
     **kwargs,
 ):
@@ -91,6 +92,7 @@ def ator(
     alg_id=None,
     dryrun=False,
     inplace_return=True,
+    handles_ensembles=False,
     function_return_key=None,
     **kwargs,
 ):
@@ -101,12 +103,20 @@ def ator(
     to a relative time standard.  Examples are conversions to travel
     time using an event origin time or shifting to an arrival time
     reference frame. This operation simply switches the tref
-    variable and alters t0 by tshift.
+    variable and alters t0 by tshift.  Note the special feature 
+    of how arg0 is handled.   If it is a string it assumed to be a 
+    Metadata key to use to fetch the time shift value from the data object's 
+    Metadata container.   If it is number it is used directly.'
 
     :param data: data object to be converted.
     :type data: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
-    :param tshift: time shift applied to data before switching data to relative time mode.
-    :type tshift: :class:`float`
+    :param tshift: used to define time shift to apply.   If value is string 
+       the function assumes it is a metadata key it can use to extract the 
+       requred value from the data's metadata container.  If it is a floating
+       point number it is used directly.   Anything else will result in a 
+       TypeError exception.  If a string is used but the key is not defined 
+       the datum will be killed with an elog message.
+    :type tshift: :class:`float` or a string to use as a metdata key (see above)
     :param object_history: True to preserve the processing history. For details, refer to
      :class:`~mspasspy.util.decorators.mspass_func_wrapper`.
     :param alg_name: alg_name is the name the func we are gonna save while preserving the history.
@@ -119,7 +129,20 @@ def ator(
      return something that is appropriate to save as Metadata.  If so, use this argument to
      define the key used to set that field in the data that is returned.
     """
-    data.ator(tshift)
+    if isinstance(tshift,float):
+        data.ator(tshift)
+    elif isinstance(tshift,str):
+        if tshift in data:
+            timeshift=data[tshift]
+            data.ator(timeshift)
+        else:
+            message = "arg0 string defines key={} not defined in Metadata container of this datum\n".format(tshift)
+            data.elog.log_error("ator",message,ErrorSeverity.Invalid)
+            data.kill()
+    else:
+        message = "ator:  usage error\n"
+        message += "Invalid type for arg0={}\n".format(str(type(tshift)))
+        raise ValueError(message)
 
 
 @mspass_func_wrapper
@@ -132,6 +155,7 @@ def rtoa(
     dryrun=False,
     inplace_return=True,
     function_return_key=None,
+    handles_ensembles=False,
     **kwargs,
 ):
     """
@@ -172,6 +196,7 @@ def rotate(
     dryrun=False,
     inplace_return=True,
     function_return_key=None,
+    handles_ensembles=False,
     **kwargs,
 ):
     """
@@ -217,6 +242,7 @@ def rotate_to_standard(
     dryrun=False,
     inplace_return=True,
     function_return_key=None,
+    handles_ensembles=False,
     **kwargs,
 ):
     """
@@ -274,6 +300,7 @@ def free_surface_transformation(
     dryrun=False,
     inplace_return=True,
     function_return_key=None,
+    handles_ensembles=True,
     **kwargs,
 ):
     """
@@ -468,6 +495,7 @@ def transform(
     dryrun=False,
     inplace_return=True,
     function_return_key=None,
+    handles_ensembles=False,
     **kwargs,
 ):
     """
@@ -509,6 +537,7 @@ def transform_to_RTZ(
     dryrun=False,
     inplace_return=False,
     function_return_key=None,
+    handles_ensembles=True,
 ):
     """
     Applies coordinate transform to RTZ version of ray coordinates.
@@ -636,6 +665,7 @@ def transform_to_LQT(
     dryrun=False,
     inplace_return=False,
     function_return_key=None,
+    handles_ensembles=False,
 ):
     """
     Applies coordinate transform to LQT version of ray coordinates.
@@ -807,6 +837,7 @@ def linear_taper(
     dryrun=False,
     inplace_return=True,
     function_return_key=None,
+    handles_ensembles=False,
     **kwargs,
 ):
     """
@@ -857,6 +888,7 @@ def cosine_taper(
     dryrun=False,
     inplace_return=True,
     function_return_key=None,
+    handles_ensembles=False,
     **kwargs,
 ):
     """
@@ -906,6 +938,7 @@ def vector_taper(
     dryrun=False,
     inplace_return=True,
     function_return_key=None,
+    handles_ensembles=False,
     **kwargs,
 ):
     """
