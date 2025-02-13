@@ -1,8 +1,9 @@
 from decorator import decorator
+import copy
 
 from mspasspy.util.converter import Stream2Seismogram, Trace2TimeSeries
 
-from mspasspy.ccore.utility import MsPASSError, ErrorSeverity
+from mspasspy.ccore.utility import Metadata, MsPASSError, ErrorSeverity
 from mspasspy.ccore.seismic import (
     Seismogram,
     TimeSeries,
@@ -25,6 +26,7 @@ def mspass_func_wrapper(
     dryrun=False,
     inplace_return=False,
     function_return_key=None,
+    handles_ensembles=False,
     **kwargs,
 ):
     """
@@ -55,17 +57,23 @@ def mspass_func_wrapper(
     :param inplace_return: when func is an in-place function that doesn't return anything, but you want to
      return the origin data (for example, in map-reduce), set inplace_return as true.
     :param function_return_key:  Some functions one might want to wrap with this decorator
-     return something that is appropriate to save as Metadata.  If so, use this argument to
-     define the key used to set that field in the data that is returned.
-     This feature should normally be considered as a way to wrap an existing
-     algorithm that you do not wish to alter, but which returns something useful.
-     In principle that return can be almost anything, but we recommend this feature
-     be limited to only simple types (i.e. int, float, etc.).  The decorator makes
-     no type checks so the caller is responsible for assuring what is posted will not cause
-     downstream problems.  The default for this parameter is None, which
-     is taken to mean any return of the wrapped function will be ignored.  Note
-     that when function_return_key is anything but None, it is assumed the
-     returned object is the (usually modified) data object.
+       return something that is appropriate to save as Metadata.  If so, use this argument to
+       define the key used to set that field in the data that is returned.
+       This feature should normally be considered as a way to wrap an existing
+       algorithm that you do not wish to alter, but which returns something useful.
+       In principle that return can be almost anything, but we recommend this feature
+       be limited to only simple types (i.e. int, float, etc.).  The decorator makes
+       o type checks so the caller is responsible for assuring what is posted will not cause
+       downstream problems.  The default for this parameter is None, which
+       is taken to mean any return of the wrapped function will be ignored.  Note
+       that when function_return_key is anything but None, it is assumed the
+       returned object is the (usually modified) data object.  NOTE:  this 
+       options is NOT supported for ensembles.   If you set this value for 
+       ensemble input this decorator will throw a ValueError exception.
+    :param handles_ensembes:  set True if the function this is applied to 
+      can hangle ensemble objects directly.   When False, which is the default 
+      this decorator applies the atomic function to each ensemble member in 
+      a loop over membes.
     :param kwargs: extra kv arguments
     :return: origin data or the output of func
     """
@@ -74,7 +82,11 @@ def mspass_func_wrapper(
     ):
         raise TypeError("mspass_func_wrapper only accepts mspass object as data input")
 
-    # if not defined
+    if function_return_key and isinstance(data,(TimeSeriesEnsemble, SeismogramEnsemble)):
+        message = "Usage error:  "
+        message += "function_return_key was defined as {} but input type is an ensemble.\n".format(function_return_key)
+        message += "That options is not allowed for ensembles in any function"
+        raise ValueError(message)
     if not alg_name:
         alg_name = func.__name__
 
@@ -87,32 +99,53 @@ def mspass_func_wrapper(
     if is_input_dead(data):
         return data
 
+    if isinstance(data, (Seismogram, TimeSeries)) or handles_ensembles:
+        run_only_once = True
+    else:
+        run_only_once = False
     try:
-        res = func(data, *args, **kwargs)
-        if object_history:
-            logging_helper.info(data, alg_id, alg_name)
-        if function_return_key is not None:
-            if isinstance(function_return_key, str):
-                data[function_return_key] = res
+        if run_only_once:
+            res = func(data, *args, **kwargs)
+            if object_history:
+                logging_helper.info(data, alg_id, alg_name)
+            if function_return_key is not None:
+                if isinstance(function_return_key, str):
+                    data[function_return_key] = res
+                else:
+                    data.elog.log_error(
+                        alg_name,
+                        "Illegal type received for function_return_key argument="
+                        + str(type(function_return_key))
+                        + "\nReturn value not saved in Metadata",
+                        ErrorSeverity.Complaint,
+                        )
+                if not inplace_return:
+                    data.elog.log_error(
+                        alg_name,
+                        "Inconsistent arguments; inplace_return was set False and function_return_key was not None.\nAssuming inplace_return == True is correct",
+                        ErrorSeverity.Complaint,
+                        )
+                return data
+            elif inplace_return:
+                return data
             else:
-                data.elog.log_error(
-                    alg_name,
-                    "Illegal type received for function_return_key argument="
-                    + str(type(function_return_key))
-                    + "\nReturn value not saved in Metadata",
-                    ErrorSeverity.Complaint,
-                )
-            if not inplace_return:
-                data.elog.log_error(
-                    alg_name,
-                    "Inconsistent arguments; inplace_return was set False and function_return_key was not None.\nAssuming inplace_return == True is correct",
-                    ErrorSeverity.Complaint,
-                )
-            return data
-        elif inplace_return:
-            return data
+                return res
         else:
-            return res
+            # this block is only for ensembles - the run_only_once boolean 
+            # means we enter here only if this is an ensmble and the 
+            # boolean handles_ensembles is false
+            N = len(data.member)
+            for i in range(N):
+                # alias to make logic clearer
+                d = data.member[i]
+                d = func(d, *args, **kwargs)
+                data.member[i] = d
+                if object_history:
+                    logging_helper.info(data.member[i], alg_id, alg_name)
+            # Note the in place return concept does not apply to 
+            # ensemles - all are in place by defintion if passed through 
+            # this wrapper
+            return data
     except RuntimeError as err:
         if isinstance(data, (Seismogram, TimeSeries)):
             data.elog.log_error(alg_name, str(err), ErrorSeverity.Invalid)

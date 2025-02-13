@@ -11,14 +11,15 @@ from mspasspy.ccore.seismic import (
 )
 from mspasspy.ccore.utility import MsPASSError, ErrorSeverity
 from mspasspy.global_history.manager import GlobalHistoryManager
-from mspasspy.db.database import Database
-from mspasspy.db.client import DBClient
 
-# module to test
+
+# pytest in mspass is always run from the top level director of the 
+# source tree so we need to add this to path to see the helper module
+# used only for testing
 sys.path.append("python/tests")
-sys.path.append("python/mspasspy/util/")
+#sys.path.append("python/mspasspy/util/")
 
-from decorators import (
+from mspasspy.util.decorators import (
     mspass_func_wrapper,
     mspass_func_wrapper_multi,
     is_input_dead,
@@ -31,7 +32,7 @@ from decorators import (
     timeseries_copy_helper,
     mspass_method_wrapper,
 )
-import logging_helper
+from mspasspy.util import logging_helper
 from helper import (
     get_live_seismogram,
     get_live_timeseries,
@@ -93,6 +94,25 @@ def dummy_func(
 ):
     return "dummy"
 
+@mspass_func_wrapper
+def dummy_numeric_function(
+        data,
+        *args,
+        object_history=False,
+        alg_id=None,
+        dryrun=False,
+        inplace_return=False,
+        function_return_key=None,
+        handles_ensembles=False,
+        **kwargs,
+    ):
+    """
+    Use this dummy function if the test has to actually do something 
+    rational to the data - dummy_func will return invalid types that 
+    would confuse tests on ensembles.
+    """
+    data["foobar"] = 1.0
+    return data
 
 def test_mspass_func_wrapper():
     with pytest.raises(TypeError) as err:
@@ -107,6 +127,12 @@ def test_mspass_func_wrapper():
     assert (
         str(err.value) == "dummy_func: object_history was true but alg_id not defined"
     )
+    # added Feb 2025 to test new error handler for ValueError exception 
+    # do not allow function_return_key option with ensembles
+    with pytest.raises(ValueError,match="Usage error:"):
+        e = get_live_timeseries_ensemble(3)
+        dummy_numeric_function(e,function_return_key="foobar")
+                      
 
     assert "OK" == dummy_func(seis, dryrun=True)
 
@@ -145,6 +171,24 @@ def test_mspass_func_wrapper():
         errs[-2].message
         == "Illegal type received for function_return_key argument=<class 'dict'>\nReturn value not saved in Metadata"
     )
+    # tests for new ensemble handling features Feb 2025
+    # note we use a TimeSeriesEnsemble but a SeismogramEnsemble would behave 
+    # the same for the current api - careful if there is divergence
+    e = get_live_timeseries_ensemble(3) 
+    e = dummy_numeric_function(e, handles_ensembles=False)
+    # in this case all the members need to be tested
+    for d in e.member:
+        assert d["foobar"] == 1.0
+    assert "foobar" not in e
+    # with handles_ensembles_false reverse the tests above
+    e = get_live_timeseries_ensemble(3) 
+    e = dummy_numeric_function(e, handles_ensembles=True)
+    # in this case all the members need to be tested
+    for d in e.member:
+        assert "foobar" not in d
+    assert e["foobar"] == 1.0
+    
+    
 
     # dead object will return immediately
     seis.kill()
@@ -375,6 +419,7 @@ def dummy_func_2(
     alg_id=None,
     dryrun=False,
     inplace_return=True,
+    handles_ensembles=True,   # needed or mspass_func_wrapper will throw an exception
     **kwargs,
 ):
     if isinstance(data, obspy.Trace):
