@@ -35,12 +35,12 @@ def filter(
 ):
     """
     Applies a time invariant filter to a MsPASS data object.
-    
-    This entry is a wrapper around the obspy filter function.  It accepts the 
-    same arguments as the obspy function and runs the same implementation. 
-    See their documentation for details, but note the idiosyncracy of 
-    their API is inherited.  Because different types of filters are 
-    enabled by the setting of the "type" argument, what kwarg values are 
+
+    This entry is a wrapper around the obspy filter function.  It accepts the
+    same arguments as the obspy function and runs the same implementation.
+    See their documentation for details, but note the idiosyncracy of
+    their API is inherited.  Because different types of filters are
+    enabled by the setting of the "type" argument, what kwarg values are
     referenced depend upon the value of "type".   In particular, note:
         - "bandpass" requires values for "freqmin" and "freqmax as corner frequenices
         - "lowpass" requires only a value for "freq" to define the one corner

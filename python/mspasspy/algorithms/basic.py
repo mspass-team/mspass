@@ -103,18 +103,18 @@ def ator(
     to a relative time standard.  Examples are conversions to travel
     time using an event origin time or shifting to an arrival time
     reference frame. This operation simply switches the tref
-    variable and alters t0 by tshift.  Note the special feature 
-    of how arg0 is handled.   If it is a string it assumed to be a 
-    Metadata key to use to fetch the time shift value from the data object's 
+    variable and alters t0 by tshift.  Note the special feature
+    of how arg0 is handled.   If it is a string it assumed to be a
+    Metadata key to use to fetch the time shift value from the data object's
     Metadata container.   If it is number it is used directly.'
 
     :param data: data object to be converted.
     :type data: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
-    :param tshift: used to define time shift to apply.   If value is string 
-       the function assumes it is a metadata key it can use to extract the 
+    :param tshift: used to define time shift to apply.   If value is string
+       the function assumes it is a metadata key it can use to extract the
        requred value from the data's metadata container.  If it is a floating
-       point number it is used directly.   Anything else will result in a 
-       TypeError exception.  If a string is used but the key is not defined 
+       point number it is used directly.   Anything else will result in a
+       TypeError exception.  If a string is used but the key is not defined
        the datum will be killed with an elog message.
     :type tshift: :class:`float` or a string to use as a metdata key (see above)
     :param object_history: True to preserve the processing history. For details, refer to
@@ -129,15 +129,17 @@ def ator(
      return something that is appropriate to save as Metadata.  If so, use this argument to
      define the key used to set that field in the data that is returned.
     """
-    if isinstance(tshift,float):
+    if isinstance(tshift, float):
         data.ator(tshift)
-    elif isinstance(tshift,str):
+    elif isinstance(tshift, str):
         if tshift in data:
-            timeshift=data[tshift]
+            timeshift = data[tshift]
             data.ator(timeshift)
         else:
-            message = "arg0 string defines key={} not defined in Metadata container of this datum\n".format(tshift)
-            data.elog.log_error("ator",message,ErrorSeverity.Invalid)
+            message = "arg0 string defines key={} not defined in Metadata container of this datum\n".format(
+                tshift
+            )
+            data.elog.log_error("ator", message, ErrorSeverity.Invalid)
             data.kill()
     else:
         message = "ator:  usage error\n"

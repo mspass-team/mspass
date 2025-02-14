@@ -26,7 +26,7 @@ from mspasspy.ccore.algorithms.amplitudes import (
     _scale_ensemble_members,
     ScalingMethod,
 )
-from mspasspy.util.decorators import mspass_func_wrapper
+from mspasspy.util.decorators import mspass_func_wrapper, mspass_method_wrapper
 
 
 def ensemble_error_post(d, alg, message, severity):
@@ -589,6 +589,7 @@ def WindowData(
     alg_name="WindowData",
     alg_id=None,
     dryrun=False,
+    handles_ensemble=True,
 ):
     """
     Apply a window operation to cut out data within a specified time range
@@ -1200,6 +1201,7 @@ class TopMute:
         self.processor = _TopMute(t0, t1, type)
         self.t0 = t0
 
+    @mspass_method_wrapper
     def apply(self, d, object_history=False, instance=None):
         """
         Use thie method to apply the defined top mute to one of the MsPASS

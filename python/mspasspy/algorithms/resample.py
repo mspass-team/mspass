@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from mspasspy.util.decorators import mspass_func_wrapper
+from mspasspy.util.decorators import mspass_func_wrapper, mspass_method_wrapper
 from mspasspy.ccore.utility import MsPASSError, ErrorSeverity, dmatrix
 from mspasspy.ccore.seismic import (
     TimeSeries,
@@ -127,7 +127,7 @@ class BasicResampler(ABC):
             return -1
 
     @abstractmethod
-    def resample(self, mspass_object):
+    def resample(self, mspass_object, handles_ensembles=True):
         """
         Main operator a concrete class must implement.  It should accept
         any mspass data object and return a clone that has been resampled
@@ -186,6 +186,7 @@ class ScipyResampler(BasicResampler):
         super().__init__(sampling_rate=sampling_rate)
         self.window = window
 
+    @mspass_method_wrapper
     def resample(self, mspass_object):
         """
         Applies the scipy.signal.resample function to all data held in
@@ -325,7 +326,8 @@ class ScipyDecimator(BasicResampler):
             )
         return message
 
-    def resample(self, mspass_object):
+    @mspass_method_wrapper
+    def resample(self, mspass_object, handles_ensembles=True):
         """
         Implementation of required abstract method for this operator.
         The only argument is mspass_object.   The operator will downsample
@@ -436,6 +438,7 @@ def resample(
     dryrun=False,
     inplace_return=False,
     function_return_key=None,
+    handles_ensembles=True,
 ):
     """
     Resample any valid data object to a common sample rate (sample interval).

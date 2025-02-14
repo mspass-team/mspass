@@ -156,7 +156,7 @@ class MetadataGT(Executioner):
         self.verbose = verbose
 
     @mspass_method_wrapper
-    def kill_if_true(self, d, apply_to_members=False):
+    def kill_if_true(self, d, apply_to_members=False, handles_ensembles=True):
         """
         Implementation of this abstract method for this tester.
         Kills d if the d[self.key] > value stored with the class.
@@ -219,7 +219,7 @@ class MetadataGE(Executioner):
         self.verbose = verbose
 
     @mspass_method_wrapper
-    def kill_if_true(self, d, apply_to_members=False):
+    def kill_if_true(self, d, apply_to_members=False, handles_ensembles=True):
         """
         Implementation of this abstract method for this tester.
         Kills d if the d[self.key] >= value stored with the class.
@@ -280,7 +280,7 @@ class MetadataLT(Executioner):
         self.verbose = verbose
 
     @mspass_method_wrapper
-    def kill_if_true(self, d, apply_to_members=False):
+    def kill_if_true(self, d, apply_to_members=False, handles_ensembles=True):
         """
         Implementation of this abstract method for this tester.
         Kills d if the d[self.key] > value stored with the class.
@@ -341,7 +341,7 @@ class MetadataLE(Executioner):
         self.verbose = verbose
 
     @mspass_method_wrapper
-    def kill_if_true(self, d, apply_to_members=False):
+    def kill_if_true(self, d, apply_to_members=False, handles_ensembles=True):
         """
         Implementation of this abstract method for this tester.
         Kills d if the d[self.key] <= value stored with the class.
@@ -404,7 +404,7 @@ class MetadataEQ(Executioner):
         self.verbose = verbose
 
     @mspass_method_wrapper
-    def kill_if_true(self, d, apply_to_members=False):
+    def kill_if_true(self, d, apply_to_members=False, handles_ensembles=True):
         """
         Implementation of this abstract method for this tester.
         Kills d if the d[self.key] == value stored with the class.
@@ -467,7 +467,7 @@ class MetadataNE(Executioner):
         self.verbose = verbose
 
     @mspass_method_wrapper
-    def kill_if_true(self, d, apply_to_members=False):
+    def kill_if_true(self, d, apply_to_members=False, handles_ensembles=True):
         """
         Implementation of this abstract method for this tester.
         Kills d if the d[self.key] != value stored with the class.
@@ -520,7 +520,7 @@ class MetadataDefined(Executioner):
         self.verbose = verbose
 
     @mspass_method_wrapper
-    def kill_if_true(self, d, apply_to_members=False):
+    def kill_if_true(self, d, apply_to_members=False, handles_ensembles=True):
         """
         Implementation of this abstract method for this tester.
         Kills d if self.key is defined for this datum
@@ -662,7 +662,7 @@ class MetadataInterval(Executioner):
         self.verbose = verbose
 
     @mspass_method_wrapper
-    def kill_if_true(self, d, apply_to_members=False):
+    def kill_if_true(self, d, apply_to_members=False, handles_ensembles=True):
         """
         Implementation of this abstract method for this tester.
         Kills d if the d[self.key] <= value stored with the class.
@@ -776,7 +776,7 @@ class FiringSquad(Executioner):
             self.executioners.append(ex)
 
     @mspass_method_wrapper
-    def kill_if_true(self, d, apply_to_members=False):
+    def kill_if_true(self, d, apply_to_members=False, handles_ensembles=True):
         """
         Implementation of base class method.  In this case failure is
         defined as not passing one of the set of tests loaded  when
@@ -958,7 +958,14 @@ class ChangeKey(MetadataOperator):
             raise MsPASSError(message, ErrorSeverity.Fatal)
 
     @mspass_method_wrapper
-    def apply(self, d, apply_to_members=False, fast_mode=False, verbose=False):
+    def apply(
+        self,
+        d,
+        apply_to_members=False,
+        fast_mode=False,
+        verbose=False,
+        handles_enembles=True,
+    ):
         if _input_is_valid(d):
             if d.dead():
                 return d
@@ -1046,7 +1053,7 @@ class SetValue(MetadataOperator):
         self.value = constant_value
 
     @mspass_method_wrapper
-    def apply(self, d, apply_to_members=False):
+    def apply(self, d, apply_to_members=False, handles_ensembles=True):
         """
         Used to apply this operator to Metadata of a MsPASS data object.
         Use of decorator adds common MsPASS arguments as call options.
@@ -1113,7 +1120,7 @@ class Add(MetadataOperator):
         self.value = value_to_add
 
     @mspass_method_wrapper
-    def apply(self, d, apply_to_members=False):
+    def apply(self, d, apply_to_members=False, handles_ensembles=True):
         elognametag = "Metadata Add Operator"
         if _input_is_valid(d):
             if d.dead():
@@ -1191,7 +1198,7 @@ class Multiply(MetadataOperator):
         self.value = value_to_multiply
 
     @mspass_method_wrapper
-    def apply(self, d, apply_to_members=False):
+    def apply(self, d, apply_to_members=False, handles_ensembles=True):
         elognametag = "Metadata Multiply Operator"
         if _input_is_valid(d):
             if d.dead():
@@ -1268,7 +1275,7 @@ class Subtract(MetadataOperator):
         self.value = value_to_subtract
 
     @mspass_method_wrapper
-    def apply(self, d, apply_to_members=False):
+    def apply(self, d, apply_to_members=False, handles_ensembles=True):
         elognametag = "Metadata Subtract Operator"
         if _input_is_valid(d):
             if d.dead():
@@ -1346,7 +1353,7 @@ class Divide(MetadataOperator):
         self.value = value_to_divide
 
     @mspass_method_wrapper
-    def apply(self, d, apply_to_members=False):
+    def apply(self, d, apply_to_members=False, handles_ensembles=True):
         elognametag = "Metadata Divide Operator"
         if _input_is_valid(d):
             if d.dead():
@@ -1431,7 +1438,7 @@ class IntegerDivide(MetadataOperator):
         self.value = value
 
     @mspass_method_wrapper
-    def apply(self, d, apply_to_members=False):
+    def apply(self, d, apply_to_members=False, handles_ensembles=True):
         elognametag = "Metadata IntegerDivide Operator"
         if _input_is_valid(d):
             if d.dead():
@@ -1520,7 +1527,7 @@ class Mod(MetadataOperator):
         self.value = value
 
     @mspass_method_wrapper
-    def apply(self, d, apply_to_members=False):
+    def apply(self, d, apply_to_members=False, handles_ensembles=True):
         elognametag = "Metadata Mod Operator"
         if _input_is_valid(d):
             if d.dead():
@@ -1613,7 +1620,7 @@ class Add2(MetadataOperator):
         self.key2 = key2
 
     @mspass_method_wrapper
-    def apply(self, d, apply_to_members=False):
+    def apply(self, d, apply_to_members=False, handles_ensembles=True):
         elognametag = "Metadata Add2 Operator"
         if _input_is_valid(d):
             if d.dead():
@@ -1713,7 +1720,7 @@ class Multiply2(MetadataOperator):
         self.key2 = key2
 
     @mspass_method_wrapper
-    def apply(self, d, apply_to_members=False):
+    def apply(self, d, apply_to_members=False, handles_ensembles=True):
         elognametag = "Metadata Multiply2 Operator"
         if _input_is_valid(d):
             if d.dead():
@@ -1813,7 +1820,7 @@ class Subtract2(MetadataOperator):
         self.key2 = key2
 
     @mspass_method_wrapper
-    def apply(self, d, apply_to_members=False):
+    def apply(self, d, apply_to_members=False, handles_ensembles=True):
         elognametag = "Metadata Subtract2 Operator"
         if _input_is_valid(d):
             if d.dead():
@@ -1913,7 +1920,7 @@ class Divide2(MetadataOperator):
         self.key2 = key2
 
     @mspass_method_wrapper
-    def apply(self, d, apply_to_members=False):
+    def apply(self, d, apply_to_members=False, handles_ensembles=True):
         elognametag = "Metadata Divide2 Operator"
         if _input_is_valid(d):
             if d.dead():
@@ -2013,7 +2020,7 @@ class IntegerDivide2(MetadataOperator):
         self.key2 = key2
 
     @mspass_method_wrapper
-    def apply(self, d, apply_to_members=False):
+    def apply(self, d, apply_to_members=False, handles_ensembles=True):
         elognametag = "Metadata IntegerDivide2 Operator"
         if _input_is_valid(d):
             if d.dead():
@@ -2113,7 +2120,7 @@ class Mod2(MetadataOperator):
         self.key2 = key2
 
     @mspass_method_wrapper
-    def apply(self, d, apply_to_members=False):
+    def apply(self, d, apply_to_members=False, handles_ensembles=True):
         elognametag = "Metadata Mod2 Operator"
         if _input_is_valid(d):
             if d.dead():
@@ -2230,7 +2237,7 @@ class MetadataOperatorChain(MetadataOperator):
             self.oplist.append(ex)
 
     @mspass_method_wrapper
-    def apply(self, d, apply_to_members=False):
+    def apply(self, d, apply_to_members=False, handles_ensembles=True):
         """
         Implementation of base class method.  In this case failure is
         defined as not passing one of the set of tests loaded  when
