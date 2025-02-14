@@ -272,7 +272,7 @@ def test_CNRRFDecon():
     d = Seismogram(d0wn)
     # use default pf file for this and all tests in this file
     pf = pfread("./data/pf/CNRDeconEngine.pf")
-    #pf = pfread("/geode2/home/u070/pavlis/Quartz/src/mspass/data/pf/CNRDeconEngine.pf")
+    # pf = pfread("/geode2/home/u070/pavlis/Quartz/src/mspass/data/pf/CNRDeconEngine.pf")
     engine = CNRDeconEngine(pf)
     nw = TimeWindow(-45.0, -5.0)
     sw = TimeWindow(-5.0, 30.0)
@@ -292,23 +292,23 @@ def test_CNRRFDecon():
     verify_decon_output(d_decon, engine, rfwavelet)
     # verify pickle of engine works -important for parallel processng
     # as dask and spark will pickle engine in map/reduce operators
-    #d = Seismogram(d0wn)
-    #rfwavelet - TimeSeries(rfwavelet0)
-    #dumpstring = pickle.dumps(engine)
-    #engine_cpy = pickle.loads(dumpstring)
-    #d_decon2, aout, iout = CNRRFDecon(
+    # d = Seismogram(d0wn)
+    # rfwavelet - TimeSeries(rfwavelet0)
+    # dumpstring = pickle.dumps(engine)
+    # engine_cpy = pickle.loads(dumpstring)
+    # d_decon2, aout, iout = CNRRFDecon(
     #    d,
     #    engine_cpy,
     #    signal_window=sw,
     #    noise_window=nw,
     #    return_wavelet=True,
     #    use_3C_noise=True,
-    #)
-    #assert d_decon2.live
-    #assert aout.live
-    #assert iout.live
-    #assert d_decon2.npts == d_decon.npts
-    #assert np.isclose(d_decon.data, d_decon2.data).all()
+    # )
+    # assert d_decon2.live
+    # assert aout.live
+    # assert iout.live
+    # assert d_decon2.npts == d_decon.npts
+    # assert np.isclose(d_decon.data, d_decon2.data).all()
 
     # verify_decon_output(d_decon, engine, rfwavelet)
     # repeat with 1c noise estimate option and return wavelet off
