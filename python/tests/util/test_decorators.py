@@ -13,11 +13,11 @@ from mspasspy.ccore.utility import MsPASSError, ErrorSeverity
 from mspasspy.global_history.manager import GlobalHistoryManager
 
 
-# pytest in mspass is always run from the top level director of the 
+# pytest in mspass is always run from the top level director of the
 # source tree so we need to add this to path to see the helper module
 # used only for testing
 sys.path.append("python/tests")
-#sys.path.append("python/mspasspy/util/")
+# sys.path.append("python/mspasspy/util/")
 
 from mspasspy.util.decorators import (
     mspass_func_wrapper,
@@ -94,25 +94,27 @@ def dummy_func(
 ):
     return "dummy"
 
+
 @mspass_func_wrapper
 def dummy_numeric_function(
-        data,
-        *args,
-        object_history=False,
-        alg_id=None,
-        dryrun=False,
-        inplace_return=False,
-        function_return_key=None,
-        handles_ensembles=False,
-        **kwargs,
-    ):
+    data,
+    *args,
+    object_history=False,
+    alg_id=None,
+    dryrun=False,
+    inplace_return=False,
+    function_return_key=None,
+    handles_ensembles=False,
+    **kwargs,
+):
     """
-    Use this dummy function if the test has to actually do something 
-    rational to the data - dummy_func will return invalid types that 
+    Use this dummy function if the test has to actually do something
+    rational to the data - dummy_func will return invalid types that
     would confuse tests on ensembles.
     """
     data["foobar"] = 1.0
     return data
+
 
 def test_mspass_func_wrapper():
     with pytest.raises(TypeError) as err:
@@ -127,12 +129,11 @@ def test_mspass_func_wrapper():
     assert (
         str(err.value) == "dummy_func: object_history was true but alg_id not defined"
     )
-    # added Feb 2025 to test new error handler for ValueError exception 
+    # added Feb 2025 to test new error handler for ValueError exception
     # do not allow function_return_key option with ensembles
-    with pytest.raises(ValueError,match="Usage error:"):
+    with pytest.raises(ValueError, match="Usage error:"):
         e = get_live_timeseries_ensemble(3)
-        dummy_numeric_function(e,function_return_key="foobar")
-                      
+        dummy_numeric_function(e, function_return_key="foobar")
 
     assert "OK" == dummy_func(seis, dryrun=True)
 
@@ -172,23 +173,21 @@ def test_mspass_func_wrapper():
         == "Illegal type received for function_return_key argument=<class 'dict'>\nReturn value not saved in Metadata"
     )
     # tests for new ensemble handling features Feb 2025
-    # note we use a TimeSeriesEnsemble but a SeismogramEnsemble would behave 
+    # note we use a TimeSeriesEnsemble but a SeismogramEnsemble would behave
     # the same for the current api - careful if there is divergence
-    e = get_live_timeseries_ensemble(3) 
+    e = get_live_timeseries_ensemble(3)
     e = dummy_numeric_function(e, handles_ensembles=False)
     # in this case all the members need to be tested
     for d in e.member:
         assert d["foobar"] == 1.0
     assert "foobar" not in e
     # with handles_ensembles_false reverse the tests above
-    e = get_live_timeseries_ensemble(3) 
+    e = get_live_timeseries_ensemble(3)
     e = dummy_numeric_function(e, handles_ensembles=True)
     # in this case all the members need to be tested
     for d in e.member:
         assert "foobar" not in d
     assert e["foobar"] == 1.0
-    
-    
 
     # dead object will return immediately
     seis.kill()
@@ -331,20 +330,21 @@ class dummy_class_method_wrapper:
         **kwargs,
     ):
         return "Finish"
+
     @mspass_method_wrapper
     def dummy_numeric_method(
-            self,
-            data,
-            *args,
-            object_history=False,
-            alg_id=None,
-            alg_name=None,
-            dryrun=False,
-            inplace_return=False,
-            function_return_key=None,
-            handles_ensembles=False,
-            **kwargs,
-        ):
+        self,
+        data,
+        *args,
+        object_history=False,
+        alg_id=None,
+        alg_name=None,
+        dryrun=False,
+        inplace_return=False,
+        function_return_key=None,
+        handles_ensembles=False,
+        **kwargs,
+    ):
         """
         Used for testing handling of ensembles with handles_ensemble option.
         """
@@ -375,11 +375,11 @@ def test_mspass_method_wrapper():
         str(err.value)
         == "<class 'test_decorators.dummy_class_method_wrapper'>: object_history was true but alg_id not defined"
     )
-    # added Feb 2025 to test new error handler for ValueError exception 
+    # added Feb 2025 to test new error handler for ValueError exception
     # do not allow function_return_key option with ensemble
-    with pytest.raises(ValueError,match="Usage error:"):
+    with pytest.raises(ValueError, match="Usage error:"):
         e = get_live_timeseries_ensemble(3)
-        dummy_instance.dummy_numeric_method(e,function_return_key="foobar")
+        dummy_instance.dummy_numeric_method(e, function_return_key="foobar")
 
     # Default behavior
     assert "Finish" == dummy_instance.dummy_func_method_wrapper(seis)
@@ -430,18 +430,18 @@ def test_mspass_method_wrapper():
     assert not data.live
 
     assert "OK" == dummy_instance.dummy_func_method_wrapper(seis, dryrun=True)
-    
+
     # tests for new ensemble handling features Feb 2025
-    # note we use a TimeSeriesEnsemble but a SeismogramEnsemble would behave 
+    # note we use a TimeSeriesEnsemble but a SeismogramEnsemble would behave
     # the same for the current api - careful if there is divergence
-    e = get_live_timeseries_ensemble(3) 
+    e = get_live_timeseries_ensemble(3)
     e = dummy_instance.dummy_numeric_method(e, handles_ensembles=False)
     # in this case all the members need to be tested
     for d in e.member:
         assert d["foobar"] == 1.0
     assert "foobar" not in e
     # with handles_ensembles_false reverse the tests above
-    e = get_live_timeseries_ensemble(3) 
+    e = get_live_timeseries_ensemble(3)
     e = dummy_instance.dummy_numeric_method(e, handles_ensembles=True)
     # in this case all the members need to be tested
     for d in e.member:
@@ -461,7 +461,7 @@ def dummy_func_2(
     alg_id=None,
     dryrun=False,
     inplace_return=True,
-    handles_ensembles=True,   # needed or mspass_func_wrapper will throw an exception
+    handles_ensembles=True,  # needed or mspass_func_wrapper will throw an exception
     **kwargs,
 ):
     if isinstance(data, obspy.Trace):

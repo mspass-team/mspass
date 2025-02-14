@@ -35,15 +35,15 @@ def mspass_func_wrapper(
     error logs into the mspasspy objects. By wrapping your function using this decorator, you can save some workload.
     Runtime error won't be raised in order to be efficient in map-reduce operations. MspassError with a severity Fatal
     will be raised, others won't be raised.
-    
-    A large fraction of algorithms used in mspass are "atomic" meaning 
+
+    A large fraction of algorithms used in mspass are "atomic" meaning
     they only operator on TimeSeries and/or Seismogram objects.   In mspass
-    an "ensemble" is a container with multiple atomic objects.  This decorator 
-    can then also be used to adapt an atomic algorithm to work automatically 
+    an "ensemble" is a container with multiple atomic objects.  This decorator
+    can then also be used to adapt an atomic algorithm to work automatically
     with ensembles.   When using the decorator if the funtion being decorated
-    works only on atomic data set the boolean `handles_ensembles` should be 
-    set as False (the default).  Set it True only for functions that handle 
-    ensembles as the type of arg0.  
+    works only on atomic data set the boolean `handles_ensembles` should be
+    set as False (the default).  Set it True only for functions that handle
+    ensembles as the type of arg0.
 
     :param func: target function
     :param data: input data, only mspasspy data objects are accepted, i.e. TimeSeries, Seismogram, Ensemble.
@@ -74,12 +74,12 @@ def mspass_func_wrapper(
        downstream problems.  The default for this parameter is None, which
        is taken to mean any return of the wrapped function will be ignored.  Note
        that when function_return_key is anything but None, it is assumed the
-       returned object is the (usually modified) data object.  NOTE:  this 
-       options is NOT supported for ensembles.   If you set this value for 
+       returned object is the (usually modified) data object.  NOTE:  this
+       options is NOT supported for ensembles.   If you set this value for
        ensemble input this decorator will throw a ValueError exception.
-    :param handles_ensembes:  set True if the function this is applied to 
-      can hangle ensemble objects directly.   When False, which is the default 
-      this decorator applies the atomic function to each ensemble member in 
+    :param handles_ensembes:  set True if the function this is applied to
+      can hangle ensemble objects directly.   When False, which is the default
+      this decorator applies the atomic function to each ensemble member in
       a loop over membes.
     :param kwargs: extra kv arguments
     :return: origin data or the output of func
@@ -89,9 +89,13 @@ def mspass_func_wrapper(
     ):
         raise TypeError("mspass_func_wrapper only accepts mspass object as data input")
 
-    if function_return_key and isinstance(data,(TimeSeriesEnsemble, SeismogramEnsemble)):
+    if function_return_key and isinstance(
+        data, (TimeSeriesEnsemble, SeismogramEnsemble)
+    ):
         message = "Usage error:  "
-        message += "function_return_key was defined as {} but input type is an ensemble.\n".format(function_return_key)
+        message += "function_return_key was defined as {} but input type is an ensemble.\n".format(
+            function_return_key
+        )
         message += "That options is not allowed for ensembles in any function"
         raise ValueError(message)
     if not alg_name:
@@ -125,21 +129,21 @@ def mspass_func_wrapper(
                         + str(type(function_return_key))
                         + "\nReturn value not saved in Metadata",
                         ErrorSeverity.Complaint,
-                        )
+                    )
                 if not inplace_return:
                     data.elog.log_error(
                         alg_name,
                         "Inconsistent arguments; inplace_return was set False and function_return_key was not None.\nAssuming inplace_return == True is correct",
                         ErrorSeverity.Complaint,
-                        )
+                    )
                 return data
             elif inplace_return:
                 return data
             else:
                 return res
         else:
-            # this block is only for ensembles - the run_only_once boolean 
-            # means we enter here only if this is an ensmble and the 
+            # this block is only for ensembles - the run_only_once boolean
+            # means we enter here only if this is an ensmble and the
             # boolean handles_ensembles is false
             N = len(data.member)
             for i in range(N):
@@ -149,8 +153,8 @@ def mspass_func_wrapper(
                 data.member[i] = d
                 if object_history:
                     logging_helper.info(data.member[i], alg_id, alg_name)
-            # Note the in place return concept does not apply to 
-            # ensemles - all are in place by defintion if passed through 
+            # Note the in place return concept does not apply to
+            # ensemles - all are in place by defintion if passed through
             # this wrapper
             return data
     except RuntimeError as err:
@@ -288,15 +292,15 @@ def mspass_method_wrapper(
     This decorator executes the target method on the input data.  It is used
     mainly to reduce duplicate code to perserve history and error logs
     with mspass object.
-    
-    A large fraction of algorithms used in mspass are "atomic" meaning 
+
+    A large fraction of algorithms used in mspass are "atomic" meaning
     they only operator on TimeSeries and/or Seismogram objects.   In mspass
-    an "ensemble" is a container with multiple atomic objects.  This decorator 
-    can then also be used to adapt an atomic algorithm to work automatically 
+    an "ensemble" is a container with multiple atomic objects.  This decorator
+    can then also be used to adapt an atomic algorithm to work automatically
     with ensembles.   When using the decorator if the funtion being decorated
-    works only on atomic data set the boolean `handles_ensembles` should be 
-    set as False (the default).  Set it True only for functions that handle 
-    ensembles as the type of arg0.  
+    works only on atomic data set the boolean `handles_ensembles` should be
+    set as False (the default).  Set it True only for functions that handle
+    ensembles as the type of arg0.
 
     :param func: target function
     :param selfarg:  the self pointer for the class with which this method is associated
@@ -329,9 +333,9 @@ def mspass_method_wrapper(
        is taken to mean any return of the wrapped function will be ignored.  Note
        that when function_return_key is anything but None, it is assumed the
        returned object is the (usually modified) data object.
-     :param handles_ensembes:  set True if the function this is applied to 
-       can hangle ensemble objects directly.   When False, which is the default 
-       this decorator applies the atomic function to each ensemble member in 
+     :param handles_ensembes:  set True if the function this is applied to
+       can hangle ensemble objects directly.   When False, which is the default
+       this decorator applies the atomic function to each ensemble member in
        a loop over membes.
     :param kwargs: extra kv arguments
     :return: origin data or the output of func
@@ -350,9 +354,13 @@ def mspass_method_wrapper(
 
     if object_history and alg_id is None:
         raise ValueError(alg_name + ": object_history was true but alg_id not defined")
-    if function_return_key and isinstance(data,(TimeSeriesEnsemble, SeismogramEnsemble)):
+    if function_return_key and isinstance(
+        data, (TimeSeriesEnsemble, SeismogramEnsemble)
+    ):
         message = "Usage error:  "
-        message += "function_return_key was defined as {} but input type is an ensemble.\n".format(function_return_key)
+        message += "function_return_key was defined as {} but input type is an ensemble.\n".format(
+            function_return_key
+        )
         message += "That options is not allowed for ensembles in any class method"
         raise ValueError(message)
     if dryrun:
@@ -360,7 +368,7 @@ def mspass_method_wrapper(
 
     if is_input_dead(data):
         return data
-    
+
     if isinstance(data, (Seismogram, TimeSeries)) or handles_ensembles:
         run_only_once = True
     else:
@@ -386,7 +394,7 @@ def mspass_method_wrapper(
                     data.elog.log_error(
                         alg_name,
                         "Inconsistent arguments; inplace_return was set False and function_return_key was not None.\nAssuming inplace_return == True is correct",
-                       ErrorSeverity.Complaint,
+                        ErrorSeverity.Complaint,
                     )
                 return data
             elif inplace_return:
@@ -394,8 +402,8 @@ def mspass_method_wrapper(
             else:
                 return res
         else:
-            # this block is only for ensembles - the run_only_once boolean 
-            # means we enter here only if this is an ensmble and the 
+            # this block is only for ensembles - the run_only_once boolean
+            # means we enter here only if this is an ensmble and the
             # boolean handles_ensembles is false
             N = len(data.member)
             for i in range(N):
@@ -405,8 +413,8 @@ def mspass_method_wrapper(
                 data.member[i] = d
                 if object_history:
                     logging_helper.info(data.member[i], alg_id, alg_name)
-            # Note the in place return concept does not apply to 
-            # ensemles - all are in place by defintion if passed through 
+            # Note the in place return concept does not apply to
+            # ensemles - all are in place by defintion if passed through
             # this wrapper
             return data
     except RuntimeError as err:
