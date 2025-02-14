@@ -17,6 +17,7 @@ from mspasspy.ccore.algorithms.amplitudes import (
 from mspasspy.ccore.algorithms.basic import TimeWindow, Butterworth, _ExtractComponent
 from mspasspy.algorithms.signals import filter
 from mspasspy.algorithms.window import WindowData
+from mspasspy.util.decorators import mspass_func_wrapper
 
 # debug
 # import matplotlib.pyplot as plt
@@ -259,6 +260,7 @@ def _safe_snr_calculation(s, n):
         return s / n
 
 
+@mspass_func_wrapper
 def snr(
     data_object,
     noise_window=TimeWindow(-130.0, -5.0),
@@ -413,6 +415,7 @@ def _reformat_mspass_error(
     return log_message
 
 
+@mspass_func_wrapper
 def FD_snr_estimator(
     data_object,
     noise_window=TimeWindow(-130.0, -5.0),
@@ -899,6 +902,7 @@ def FD_snr_estimator(
     return [snrdata, my_logger]
 
 
+@mspass_func_wrapper
 def arrival_snr(
     data_object,
     noise_window=TimeWindow(-130.0, -5.0),
@@ -1058,6 +1062,7 @@ def arrival_snr(
     return data_object
 
 
+@mspass_func_wrapper
 def broadband_snr_QC(
     data_object,
     component=2,
@@ -1584,6 +1589,7 @@ def visualize_qcdata(
     :type qc_subdoc_key:  string or None.  Default "Parrival"
        is default of `broadband_arrival_QC`.
     """
+    import matplotlib.pyplot as plt
 
     def pts2box(xmin, xmax, ymin, ymax) -> tuple:
         """
