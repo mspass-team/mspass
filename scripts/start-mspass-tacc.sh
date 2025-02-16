@@ -75,33 +75,58 @@ export SPARK_LOG_DIR=${MSPASS_LOG_DIR}
 if [ $# -eq 0 ] || [ $1 = "--batch" ]; then
 
   function start_mspass_frontend {
-    BATCH_MODE_ARGS="--to notebook --inplace --execute $1"
-    NOTEBOOK_ARGS="--notebook-dir=${MSPASS_WORKDIR} --port=${JUPYTER_PORT} --no-browser --ip=0.0.0.0 --allow-root"
-    # if MSPASS_JUPYTER_PWD is not set, notebook will generate a default token
-    # we rely on jupyter's python function to hash the password
-    MSPASS_JUPYTER_PWD_HASHED=$(python3 -c "from notebook.auth import passwd; print(passwd('${MSPASS_JUPYTER_PWD}'))") 
-    NOTEBOOK_ARGS="${NOTEBOOK_ARGS} --NotebookApp.token=${MSPASS_JUPYTER_PWD}"
+      NOTEBOOK_ARGS="--notebook-dir=${MSPASS_WORKDIR} --port=${JUPYTER_PORT} --no-browser --ip=0.0.0.0 --allow-root"
 
-    if [ "$MSPASS_SCHEDULER" = "spark" ]; then
-      export PYSPARK_DRIVER_PYTHON=jupyter
-      if [ -z $1 ]; then
-        export PYSPARK_DRIVER_PYTHON_OPTS="lab ${NOTEBOOK_ARGS}" 
-      else
-        export PYSPARK_DRIVER_PYTHON_OPTS="nbconvert ${BATCH_MODE_ARGS}" 
+      # Handle Jupyter password hashing if set
+      if [[ ! -z ${MSPASS_JUPYTER_PWD+x} ]]; then
+          MSPASS_JUPYTER_PWD_HASHED=$(python3 -c "from notebook.auth import passwd; print(passwd('${MSPASS_JUPYTER_PWD}'))")
+          NOTEBOOK_ARGS="${NOTEBOOK_ARGS} --NotebookApp.password=${MSPASS_JUPYTER_PWD_HASHED}"
       fi
-      pyspark \
-        --conf "spark.mongodb.input.uri=mongodb://${MSPASS_DB_ADDRESS}:${MONGODB_PORT}/test.misc" \
-        --conf "spark.mongodb.output.uri=mongodb://${MSPASS_DB_ADDRESS}:${MONGODB_PORT}/test.misc" \
-        --conf "spark.master=spark://${MSPASS_SCHEDULER_ADDRESS}:${SPARK_MASTER_PORT}" \
-        --packages org.mongodb.spark:mongo-spark-connector_2.12:3.0.0 
-    else # if [ "$MSPASS_SCHEDULER" = "dask" ]
-      export DASK_SCHEDULER_ADDRESS=${MSPASS_SCHEDULER_ADDRESS}:${DASK_SCHEDULER_PORT}
-      if [ -z $1 ]; then
-        jupyter lab ${NOTEBOOK_ARGS} 
+
+      if [ "$MSPASS_SCHEDULER" = "spark" ]; then
+          if [ -z "$1" ]; then
+              # Interactive Jupyter Lab mode for Spark
+              export PYSPARK_DRIVER_PYTHON=jupyter
+              export PYSPARK_DRIVER_PYTHON_OPTS="lab ${NOTEBOOK_ARGS}"
+              pyspark \
+                  --conf "spark.mongodb.input.uri=mongodb://${MSPASS_DB_ADDRESS}:${MONGODB_PORT}/test.misc" \
+                  --conf "spark.mongodb.output.uri=mongodb://${MSPASS_DB_ADDRESS}:${MONGODB_PORT}/test.misc" \
+                  --conf "spark.master=spark://${MSPASS_SCHEDULER_ADDRESS}:${SPARK_MASTER_PORT}" \                  --packages org.mongodb.spark:mongo-spark-connector_2.12:3.0.0
+          else
+              # Batch mode processing for Spark
+              input_file="$1"
+              if [[ "$input_file" == *.ipynb ]]; then
+                  echo "Converting notebook to Python script: $input_file"
+                  jupyter nbconvert --to script "$input_file"
+                  script_file="${input_file%.*}.py"
+              else
+                  script_file="$input_file"
+              fi
+              spark-submit \
+                  --conf "spark.mongodb.input.uri=mongodb://${MSPASS_DB_ADDRESS}:${MONGODB_PORT}/test.misc" \
+                  --conf "spark.mongodb.output.uri=mongodb://${MSPASS_DB_ADDRESS}:${MONGODB_PORT}/test.misc" \
+                  --conf "spark.master=spark://${MSPASS_SCHEDULER_ADDRESS}:${SPARK_MASTER_PORT}" \                  --packages org.mongodb.spark:mongo-spark-connector_2.12:3.0.0 \
+                  "$script_file"
+          fi
       else
-        jupyter nbconvert ${BATCH_MODE_ARGS}
+          # Dask scheduler configuration
+          export DASK_SCHEDULER_ADDRESS=${MSPASS_SCHEDULER_ADDRESS}:${DASK_SCHEDULER_PORT}
+          if [ -z "$1" ]; then
+              # Interactive Jupyter Lab mode for Dask
+              jupyter lab ${NOTEBOOK_ARGS}
+          else
+              # Batch mode processing for Dask
+              input_file="$1"
+              if [[ "$input_file" == *.ipynb ]]; then
+                  echo "Converting notebook to Python script: $input_file"
+                  jupyter nbconvert --to script "$input_file"
+                  script_file="${input_file%.*}.py"
+              else
+                  script_file="$input_file"
+              fi
+              python "$script_file"
+          fi
       fi
-    fi
   }
 
   function clean_up_single_node {
