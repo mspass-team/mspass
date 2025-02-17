@@ -1,0 +1,11 @@
+#Image: mspass/mspass
+#Version: 1.0.0
+
+FROM ghcr.io/mspass-team/mspass:weekly
+
+LABEL maintainer="Ian Wang <yinzhi.wang.cug@gmail.com>"
+
+ADD scripts/start-mspass-tacc.sh /usr/sbin/start-mspass-tacc.sh
+RUN chmod +x /usr/sbin/start-mspass-tacc.sh
+
+ENTRYPOINT ["/usr/sbin/tini", "-s", "-g", "--", "/usr/sbin/start-mspass-tacc.sh"]
