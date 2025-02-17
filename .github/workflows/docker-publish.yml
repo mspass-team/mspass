@@ -429,7 +429,7 @@ jobs:
       # Build and push tacc image
       - name: Build and push tacc image (amd64 only)
         uses: docker/build-push-action@v4
-        if: ${{ github.event_name == 'schedule' }}
+        #if: ${{ github.event_name == 'schedule' }}
         with:
           context: .
           file: Dockerfile_tacc
