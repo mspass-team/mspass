@@ -400,6 +400,9 @@ def RFdecon(
     alg_name="RFdecon",
     alg_id=None,
     dryrun=False,
+    handles_ensembles=False,
+    checks_arg0_type=True,
+    handles_dead_data=True,
 ):
     """
     Use this function to compute conventional receiver functions

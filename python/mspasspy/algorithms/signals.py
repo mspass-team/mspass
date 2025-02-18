@@ -30,7 +30,7 @@ def filter(
     alg_id=None,
     dryrun=False,
     inplace_return=True,
-    handles_ensembles=True,
+    handles_dead_data=False,
     **options,
 ):
     """
@@ -80,7 +80,7 @@ def detrend(
     alg_id=None,
     dryrun=False,
     inplace_return=True,
-    handles_ensembles=True,
+    handles_dead_data=False,
     type="simple",
     **options,
 ):
@@ -121,7 +121,7 @@ def interpolate(
     alg_id=None,
     dryrun=False,
     inplace_return=True,
-    handles_ensembles=True,
+    handles_dead_data=False,
     method="weighted_average_slopes",
     starttime=None,
     npts=None,
@@ -242,6 +242,7 @@ def correlate_stream_template(
     dryrun=False,
     template_time=None,
     return_type="seismogram",
+    handles_dead_data=True,
     **kwargs,
 ):
     res = obspy.signal.cross_correlation.correlate_stream_template(
@@ -274,6 +275,7 @@ def correlation_detector(
     details=None,
     plot=None,
     return_type="seismogram",
+    handles_dead_data=False,
     **kwargs,
 ):
     tem_list = []
@@ -316,6 +318,7 @@ def templates_max_similarity(
     alg_name="templates_max_similarity",
     alg_id=None,
     dryrun=False,
+    handles_dead_data=False,
 ):
     tem_list = []
     for template in streams_templates:
@@ -353,6 +356,7 @@ def xcorr_max(
     alg_id=None,
     dryrun=False,
     abs_max=True,
+    handles_dead_data=False,
 ):
     return obspy.signal.cross_correlation.xcorr_max(data, abs_max)
 

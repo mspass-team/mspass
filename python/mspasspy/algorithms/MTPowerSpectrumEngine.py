@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 import numpy as np
 from multitaper.mtspec import MTSpec
-from mspasspy.util.decorators import mspass_method_wrapper
 from mspasspy.ccore.utility import MsPASSError, ErrorSeverity, Metadata
 from mspasspy.ccore.seismic import TimeSeries, DoubleVector, PowerSpectrum
 
@@ -58,10 +57,11 @@ class MTPowerSpectrumEngine:
         self.lamb = None  # constructor for MTSpec set this
         self.MTSpec_instance = None
 
-    @mspass_method_wrapper
+ 
     def apply(self, d, dt=1.0):
         """
-        need to support vector input or a TimeSeries - returns a PowerSpectrum
+        needs to support vector input or a TimeSeries - returns a PowerSpectrum
+        Cannot use mspass decorator because it supports raw data vectors
 
         """
         # All inputs end up filling a numpy array passed to MTSpec below

@@ -25,6 +25,8 @@ def ExtractComponent(
     dryrun=False,
     inplace_return=False,
     handles_ensembles=True,
+    checks_arg0_type=True,
+    handles_dead_data=True,
     function_return_key=None,
     **kwargs,
 ):
@@ -93,6 +95,8 @@ def ator(
     dryrun=False,
     inplace_return=True,
     handles_ensembles=False,
+    checks_arg0_type=False,
+    handles_dead_data=True,
     function_return_key=None,
     **kwargs,
 ):
@@ -129,7 +133,7 @@ def ator(
      return something that is appropriate to save as Metadata.  If so, use this argument to
      define the key used to set that field in the data that is returned.
     """
-    if isinstance(tshift, float):
+    if isinstance(tshift, (float, int)):
         data.ator(tshift)
     elif isinstance(tshift, str):
         if tshift in data:
@@ -158,6 +162,8 @@ def rtoa(
     inplace_return=True,
     function_return_key=None,
     handles_ensembles=False,
+    checks_arg0_type=False,
+    handles_dead_data=True,
     **kwargs,
 ):
     """
@@ -199,6 +205,8 @@ def rotate(
     inplace_return=True,
     function_return_key=None,
     handles_ensembles=False,
+    checks_arg0_type=False,
+    handles_dead_data=True,
     **kwargs,
 ):
     """
@@ -245,6 +253,8 @@ def rotate_to_standard(
     inplace_return=True,
     function_return_key=None,
     handles_ensembles=False,
+    checks_arg0_type=False,
+    handles_dead_data=True,
     **kwargs,
 ):
     """
@@ -303,6 +313,8 @@ def free_surface_transformation(
     inplace_return=True,
     function_return_key=None,
     handles_ensembles=True,
+    checks_arg0_type=True,
+    handles_dead_data=True,
     **kwargs,
 ):
     """
@@ -498,6 +510,8 @@ def transform(
     inplace_return=True,
     function_return_key=None,
     handles_ensembles=False,
+    checks_arg0_type=False,
+    handles_dead_data=True,
     **kwargs,
 ):
     """
@@ -540,6 +554,8 @@ def transform_to_RTZ(
     inplace_return=False,
     function_return_key=None,
     handles_ensembles=True,
+    checks_arg0_type=False,
+    handles_dead_data=False,
 ):
     """
     Applies coordinate transform to RTZ version of ray coordinates.
@@ -668,6 +684,8 @@ def transform_to_LQT(
     inplace_return=False,
     function_return_key=None,
     handles_ensembles=False,
+    checks_arg0_type=False,
+    handles_dead_data=False,
 ):
     """
     Applies coordinate transform to LQT version of ray coordinates.
@@ -840,6 +858,8 @@ def linear_taper(
     inplace_return=True,
     function_return_key=None,
     handles_ensembles=False,
+    checks_arg0_type=False,
+    handles_dead_data=False,
     **kwargs,
 ):
     """
@@ -891,6 +911,8 @@ def cosine_taper(
     inplace_return=True,
     function_return_key=None,
     handles_ensembles=False,
+    checks_arg0_type=False,
+    handles_dead_data=False,
     **kwargs,
 ):
     """
@@ -941,6 +963,8 @@ def vector_taper(
     inplace_return=True,
     function_return_key=None,
     handles_ensembles=False,
+    checks_arg0_type=False,
+    handles_dead_data=False,
     **kwargs,
 ):
     """

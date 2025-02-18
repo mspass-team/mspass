@@ -3266,7 +3266,13 @@ class ArrivalMatcher(DataFrameCacheMatcher):
 
 
 @mspass_func_wrapper
-def normalize(mspass_object, matcher, kill_on_failure=True):
+def normalize(mspass_object, 
+              matcher, 
+              kill_on_failure=True,
+              handles_ensembles=False,
+              checks_arg0_type=False,
+              handles_dead_data=True,
+              ):
     """
     Generic function to do in line normalization with dask/spark map operator.
 
@@ -3288,6 +3294,12 @@ def normalize(mspass_object, matcher, kill_on_failure=True):
     into the dask bag we will call dataset.  We can normalize
     that data within a workflow as follows:
         dataset = dataset.map(normalize,matcher)
+        
+    An important warning about ensembles. If the function receives an 
+    ensemble by default it will enter a loop to apply the normalization 
+    to all "member" objects of the ensemble.   If you need to insert 
+    the normalizatio parameters into the ensemble's Metadata container 
+    instead of all the members set `handles_ensembles=True`.  
 
     :param mspass_object:  data to be normalized
     :type mspass_object:  For all mspass matchers this
@@ -3303,8 +3315,11 @@ def normalize(mspass_object, matcher, kill_on_failure=True):
     :type matcher:  must be a concrete subclass of BasicMatcher
 
     :param kill_on_failure:  when True if the call to the find_one
-    method of matcher fails the datum returned will be marked dead.
+      method of matcher fails the datum returned will be marked dead.
     :type kill_on_failure:  boolean
+    
+    :param handles_ensembles:  boolean controlling how the function is 
+      applied with ensembles - see above.
 
     :return:  copy of mspass_object.  dead data are returned immediately.
     if kill_on_failure is true the result may be killed on return.

@@ -217,6 +217,8 @@ def MCXcorPrepP(
     minimum_coda_duration=5.0,
     correlation_window_start=-3.0,
     handles_ensembles=True,
+    checks_arg0_type=True,
+    handles_dead_data=False,
 ) -> TimeSeriesEnsemble:
     """
     Function used to preprocess an ensemble  to prepare input for
@@ -1109,6 +1111,8 @@ def align_and_stack(
     residual_norm_floor=0.1,
     demean_residuals=True,
     handles_ensembles=True,
+    checks_arg0_type=True,
+    handles_dead_data=True,
 ) -> tuple:
     """
     This function uses an initial estimate of the array stack passed as
@@ -1859,6 +1863,9 @@ def post_MCXcor_metrics(
     window=None,
     phase_time_key="Ptime",
     time_shift_key="arrival_time_correction",
+    handles_ensembles=False,
+    checks_arg0_type=False,
+    handles_dead_data=False,
 ) -> TimeSeries:
     """
     Computes and posts a set of standard QC metrics for result of multichannel cross-correlation

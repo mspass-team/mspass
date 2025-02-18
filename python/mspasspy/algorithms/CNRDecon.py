@@ -201,6 +201,8 @@ def CNRRFDecon(
     inplace_return=False,
     handles_ensembles=False,
     function_return_key=None,
+    checks_arg0_type=True,
+    handles_dead_data=True,
     **kwargs,
 ) -> tuple:
     """

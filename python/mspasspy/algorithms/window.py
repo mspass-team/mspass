@@ -90,6 +90,9 @@ def scale(
     alg_id=None,
     dryrun=False,
     function_return_key=None,
+    handles_ensembles=False,
+    checks_arg0_type=True,
+    handles_dead_data=True,
 ):
     """
     Top level function interface to data scaling methods.
@@ -158,6 +161,8 @@ def scale(
     if isinstance(d, TimeSeries) or isinstance(d, Seismogram):
         if d.dead():
             return d
+    else:
+        message = "scale:  received invalid data type={} for arg0".format(str(type(d)))
     # First validate arguments
     # The logic here would be much cleaner if ensembles had an elog attribute
     # may happen as group discussions have proposed that change.  this should
@@ -286,8 +291,7 @@ def scale(
         else:
             ensemble_error_post(d, alg_name, message, ErrorSeverity.Invalid)
 
-
-@mspass_func_wrapper
+# not decorated for reasons given in docstring below
 def WindowDataAtomic(
     d,
     win_start,
@@ -295,14 +299,10 @@ def WindowDataAtomic(
     t0shift=None,
     short_segment_handling="kill",
     log_recoverable_errors=True,
-    object_history=False,
-    alg_name="WindowDataAtomic",
-    alg_id=None,
-    dryrun=False,
 ):
     """
     Cut atomic data to a shorter time segment defined by a time range.
-
+    
     Cutting a smaller waveform segment from a larger waveform segment
     is a very common seismic data processing task.  Handling that low
     level operation needs to be done efficiently but with a reasonable
@@ -359,6 +359,10 @@ def WindowDataAtomic(
     value only to the nearest sample.   That way time computed with the
     time method (endtime is a special case for sample npts-1)
     will have subsample accuracy.
+    
+    Note:  This function should not normally be used.  WindowData 
+    calls it directy for atomic inputs and adds only a tiny overhead.  
+    It can still be used as long as you don't need object-level history.'
 
     :param d: is the input data.  d must be either a
       :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
@@ -401,21 +405,7 @@ def WindowDataAtomic(
     output.  When False recovery will be done silently.  Note when
     `short_segment_handling` is set to "kill" logging is not optional and
     kill will always create an error log entry.
-    :param object_history: boolean to enable or disable saving object
-      level history.  Default is False.  Note this functionality is
-      implemented via the mspass_func_wrapper decorator.
-    :param alg_name:   When history is enabled this is the algorithm name
-      assigned to the stamp for applying this algorithm.
-      Default ("WindowData") should normally be just used.
-      Note this functionality is implemented via the mspass_func_wrapper decorator.
-    :param ald_id:  algorithm id to assign to history record (used only if
-      object_history is set True.)
-      Note this functionality is implemented via the mspass_func_wrapper decorator.
-    :param dryrun:
-      Note this functionality is implemented via the mspass_func_wrapper decorator.
-    :param dryrun:
-      Note this functionality is implemented via the mspass_func_wrapper decorator.
-
+    
     :return: copy of d with sample range reduced to twin range.  Returns
       an empty version of the parent data type (default constructor) if
       the input is marked dead
@@ -589,7 +579,9 @@ def WindowData(
     alg_name="WindowData",
     alg_id=None,
     dryrun=False,
-    handles_ensemble=True,
+    handles_ensembles=True,
+    checks_arg0_type=True,
+    handles_dead_data=True,
 ):
     """
     Apply a window operation to cut out data within a specified time range
@@ -759,18 +751,17 @@ def WindowData(
       the input is marked dead
     """
     if isinstance(mspass_object, (TimeSeries, Seismogram)):
-        return WindowDataAtomic(
-            mspass_object,
-            win_start,
-            win_end,
-            t0shift=t0shift,
-            short_segment_handling=short_segment_handling,
-            log_recoverable_errors=log_recoverable_errors,
-            object_history=object_history,
-            alg_name=alg_name,
-            alg_id=alg_id,
-            dryrun=dryrun,
-        )
+        if mspass_object.dead():
+            return mspass_object
+        else:
+            return WindowDataAtomic(
+                mspass_object,
+                win_start,
+                win_end,
+                t0shift=t0shift,
+                short_segment_handling=short_segment_handling,
+                log_recoverable_errors=log_recoverable_errors,
+            )
     elif isinstance(mspass_object, (TimeSeriesEnsemble, SeismogramEnsemble)):
         if mspass_object.dead():
             return mspass_object
@@ -786,10 +777,6 @@ def WindowData(
                             t0shift=t0shift,
                             short_segment_handling=short_segment_handling,
                             log_recoverable_errors=log_recoverable_errors,
-                            object_history=object_history,
-                            alg_name=alg_name,
-                            alg_id=alg_id,
-                            dryrun=dryrun,
                         )
                         if mspass_object.member[i].live:
                             nlive += 1
@@ -813,10 +800,6 @@ def WindowData(
                             t0shift=t0shift,
                             short_segment_handling=short_segment_handling,
                             log_recoverable_errors=log_recoverable_errors,
-                            object_history=object_history,
-                            alg_name=alg_name,
-                            alg_id=alg_id,
-                            dryrun=dryrun,
                         )
                         ensout.member.append(d)
                         if d.live:
@@ -849,6 +832,9 @@ def WindowData_autopad(
     alg_name="WindowData_autopad",
     alg_id=None,
     dryrun=False,
+    handles_ensembles=False,
+    checks_arg0_type=True,
+    handles_dead_data=False,
 ):
     """
     Windows an atomic data object with automatic padding if the
