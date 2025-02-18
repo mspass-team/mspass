@@ -17,7 +17,7 @@ from mspasspy.global_history.manager import GlobalHistoryManager
 # source tree so we need to add this to path to see the helper module
 # used only for testing
 sys.path.append("python/tests")
-# sys.path.append("python/mspasspy/util/")
+
 
 from mspasspy.util.decorators import (
     mspass_func_wrapper,
@@ -115,6 +115,26 @@ def dummy_numeric_function(
     data["foobar"] = 1.0
     return data
 
+@mspass_func_wrapper
+def check_arg0_tester(
+    data,
+    *args,
+    checks_arg0_type=True,
+    handle_ensemble=True,
+    **kwargs,
+):
+    """
+    Test function used to validate behavior of the check_arg0_type
+    feature.  Raises a ValueError typical of processing functions 
+    when data is not a valid type.
+    """
+    if isinstance(data,TimeSeries):
+        data["foo"] = "bar"
+        return data
+    else:
+        raise TypeError("test function arg0 is an invalid type")
+    
+        
 
 def test_mspass_func_wrapper():
     with pytest.raises(TypeError) as err:
@@ -195,7 +215,51 @@ def test_mspass_func_wrapper():
     assert not data.live
     data = dummy_func(seis, inplace_return=True)
     assert not data.live
+    
+    # check behavir of checks_arg0_type with handles_ensembles
+    d = get_live_timeseries()
+    # should work in this case
+    d = check_arg0_tester(d)
+    assert "foo" in d
+    # this should have a message from the actuall function
+    with pytest.raises(TypeError,match="test function arg0 is an invalid type"):
+        d = check_arg0_tester("notvaliddata", checks_arg0_type=True)
+    # this should return the decorator error
+    with pytest.raises(TypeError,match="mspass_func_wrapper only accepts mspass object"):
+        d = check_arg0_tester("notvaliddata", checks_arg0_type=False)
 
+    # test selective typte behavior with different settings of 
+    # handles ensemble.  Notice check_arg0_tester internally only accepts 
+    # TimeSeries.   When check_arg0_type s False and handles_ensemble is 
+    # True it should process an ensemble.  Otherwise it should throw a
+    # ValueError exception
+    e = get_live_timeseries_ensemble(3)
+    assert e.live
+    e = check_arg0_tester(e, checks_arg0_type=True, handles_ensembles=False)
+    for d in e.member:
+        assert d["foo"]=="bar"
+    e = get_live_timeseries_ensemble(3)
+    with pytest.raises(TypeError,match="test function arg0 is an invalid type"):
+        e = check_arg0_tester(e,checks_arg0_type=True, handles_ensembles=True)
+    # this would be a mistake in usage for this test function but is the 
+    # behavio the decoraor should have - returns the functions message not 
+    # the decorator message.  Note using seismogram because the 
+    # function only takes TimeSeries - this will work for a TimeSeriesEnsemble
+    # and not throw an exceptoin
+    e = get_live_seismogram_ensemble(3)
+    with pytest.raises(TypeError,match="test function arg0 is an invalid type"):
+        e = check_arg0_tester(e, checks_arg0_type=False, handles_ensembles=False)
+    # True-True not testable directly - would fail referencing "member" 
+    # attibute in decorator - an incorrect usage not worth testing
+    
+    # check handling of an algorithm killing all data
+    e = get_live_timeseries_ensemble(3)
+    for i in range(3):
+        e.member[i].kill()
+    assert e.live
+    e = check_arg0_tester(e, checks_arg0_type=True, handles_ensembles=False)
+    assert e.dead()
+    assert e.elog.size() == 1
 
 @timeseries_as_trace
 def dummy_func_timeseries_as_trace(d, any=None):
@@ -327,6 +391,8 @@ class dummy_class_method_wrapper:
         inplace_return=False,
         function_return_key=None,
         handles_ensembles=False,
+        checks_arg0_type=False,
+        handles_dead_data=False,
         **kwargs,
     ):
         return "Finish"
@@ -343,6 +409,8 @@ class dummy_class_method_wrapper:
         inplace_return=False,
         function_return_key=None,
         handles_ensembles=False,
+        checks_arg0_type=False,
+        handles_dead_data=False,
         **kwargs,
     ):
         """
@@ -350,31 +418,37 @@ class dummy_class_method_wrapper:
         """
         data["foobar"] = 1.0
         return data
+    
+    @mspass_method_wrapper
+    def check_arg0_tester(
+        self,
+        data,
+        *args,
+        checks_arg0_type=True,
+        handle_ensemble=True,
+        **kwargs,
+    ):
+        """
+        Test function used to validate behavior of the check_arg0_type
+        feature.  Raises a ValueError typical of processing functions 
+        when data is not a valid type.
+        """
+        if isinstance(data,TimeSeries):
+            data["foo"] = "bar"
+            return data
+        else:
+            raise TypeError("test function arg0 is an invalid type")
 
 
 def test_mspass_method_wrapper():
     dummy_instance = dummy_class_method_wrapper()
-    with pytest.raises(TypeError) as err:
+    with pytest.raises(TypeError,match="mspass_method_wrapper only accepts") as err:
         dummy_instance.dummy_func_method_wrapper(1)
-    assert (
-        str(err.value) == "mspass_func_wrapper only accepts mspass object as data input"
-    )
 
-    with pytest.raises(ValueError) as err:
+    with pytest.raises(ValueError,match="object_history was true but alg_id not defined") as err:
         seis = get_live_seismogram()
         dummy_instance.dummy_func_method_wrapper(seis, object_history=True)
-    assert (
-        str(err.value)
-        == "<class 'test_decorators.dummy_class_method_wrapper'>: object_history was true but alg_id not defined"
-    )
 
-    with pytest.raises(ValueError) as err:
-        seis = get_live_seismogram()
-        dummy_instance.dummy_func_method_wrapper(seis, object_history=True)
-    assert (
-        str(err.value)
-        == "<class 'test_decorators.dummy_class_method_wrapper'>: object_history was true but alg_id not defined"
-    )
     # added Feb 2025 to test new error handler for ValueError exception
     # do not allow function_return_key option with ensemble
     with pytest.raises(ValueError, match="Usage error:"):
@@ -389,10 +463,7 @@ def test_mspass_method_wrapper():
     dummy_instance.dummy_func_method_wrapper(seis, object_history=True, alg_id="0")
     assert seis.number_of_stages() == 1
     assert len(seis.get_nodes()) == 1
-    assert (
-        seis.current_nodedata().algorithm
-        == "<class 'test_decorators.dummy_class_method_wrapper'>"
-    )
+    assert "dummy_class_method_wrapper" in seis.current_nodedata().algorithm
     assert seis.current_nodedata().algid == "0"
 
     # inplace return
@@ -413,22 +484,24 @@ def test_mspass_method_wrapper():
     assert isinstance(data, Seismogram)
     errs = seis.elog.get_error_log()
     assert len(errs) == 2
-    assert errs[-1].algorithm == "<class 'test_decorators.dummy_class_method_wrapper'>"
+    assert "dummy_class_method_wrapper" in errs[1].algorithm
     assert (
-        errs[-1].message
+        errs[1].message
         == "Inconsistent arguments; inplace_return was set False and function_return_key was not None.\nAssuming inplace_return == True is correct"
     )
-    assert errs[-2].algorithm == "<class 'test_decorators.dummy_class_method_wrapper'>"
+    assert "dummy_class_method_wrapper" in errs[0].algorithm
     assert (
-        errs[-2].message
+        errs[0].message
         == "Illegal type received for function_return_key argument=<class 'dict'>\nReturn value not saved in Metadata"
     )
 
     # Test immediate return
     seis.kill()
     data = dummy_instance.dummy_func_method_wrapper(seis)
-    assert not data.live
+    assert data.dead()
 
+    # test dryrun feature
+    seis.set_live()
     assert "OK" == dummy_instance.dummy_func_method_wrapper(seis, dryrun=True)
 
     # tests for new ensemble handling features Feb 2025
@@ -447,7 +520,46 @@ def test_mspass_method_wrapper():
     for d in e.member:
         assert "foobar" not in d
     assert e["foobar"] == 1.0
+    
+    # check behavir of checks_arg0_type with handles_ensembles
+    d = get_live_timeseries()
+    # should work in this case
+    d = dummy_instance.check_arg0_tester(d)
+    assert "foo" in d
+    # this should have a message from the actuall function
+    with pytest.raises(TypeError,match="test function arg0 is an invalid type"):
+        d = dummy_instance.check_arg0_tester("notvaliddata", checks_arg0_type=True)
+    # this should return the decorator error
+    with pytest.raises(TypeError,match="mspass_method_wrapper only accepts mspass object"):
+        d = dummy_instance.check_arg0_tester("notvaliddata", checks_arg0_type=False)
 
+    # test selective typte behavior with different settings of 
+    # handles ensemble.  Notice check_arg0_tester internally only accepts 
+    # TimeSeries.   When check_arg0_type s False and handles_ensemble is 
+    # True it should process an ensemble.  Otherwise it should throw a
+    # ValueError exception
+    e = get_live_timeseries_ensemble(3)
+    assert e.live
+    e = dummy_instance.check_arg0_tester(e, checks_arg0_type=True, handles_ensembles=False)
+    for d in e.member:
+        assert d["foo"]=="bar"
+    e = get_live_timeseries_ensemble(3)
+    with pytest.raises(TypeError,match="test function arg0 is an invalid type"):
+        e = dummy_instance.check_arg0_tester(e,checks_arg0_type=True, handles_ensembles=True)
+    # simulate case of mismatched member type but valid seismic data type 
+    # here we get the method's exception message
+    e = get_live_seismogram_ensemble(3)
+    with pytest.raises(TypeError,match="test function arg0 is an invalid type"):
+        e = dummy_instance.check_arg0_tester(e, checks_arg0_type=False, handles_ensembles=False)
+
+    # check handling of an algorithm killing all data
+    e = get_live_timeseries_ensemble(3)
+    for i in range(3):
+        e.member[i].kill()
+    assert e.live
+    e = dummy_instance.check_arg0_tester(e, checks_arg0_type=True, handles_ensembles=False)
+    assert e.dead()
+    assert e.elog.size() == 1
 
 @mspass_func_wrapper
 @timeseries_as_trace
@@ -687,3 +799,4 @@ def test_copy_helpers():
 
 if __name__ == "__main__":
     test_copy_helpers()
+

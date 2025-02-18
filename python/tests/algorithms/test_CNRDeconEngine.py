@@ -357,7 +357,11 @@ def test_CNRRFDecon_error_handlers():
     nw = TimeWindow(-45.0, -5.0)
     sw = TimeWindow(-5.0, 30.0)
     # first arg type and validity checkers
-    with pytest.raises(TypeError, match="illegal type="):
+    # this is what the function would throw
+    # with pytest.raises(TypeError, match="illegal type="):   
+    # mspass_func_decorator catches the same error and requires this 
+    with pytest.raises(TypeError, 
+                match="mspass_func_wrapper only accepts mspass object"):
         d_decon = CNRRFDecon("foo", engine, signal_window=sw, noise_window=nw)
 
     d = Seismogram(d0wn)
@@ -550,7 +554,11 @@ def test_CNRArrayDecon_error_handlers():
     # first test handlers for argument errors
     e = SeismogramEnsemble(e0)
     w = Seismogram(s0)
-    with pytest.raises(TypeError, match="Illegal type for arg0"):
+    # this is what the function would throw
+    # with pytest.raises(TypeError, match="Illegal type for arg0"):
+    # mspass_func_decorator catches the same error and requires this 
+    with pytest.raises(TypeError, 
+                match="mspass_func_wrapper only accepts mspass object"):
         e_d = CNRArrayDecon("foo", w, engine, noise_window=nw, signal_window=sw)
 
     with pytest.raises(TypeError, match="Illegal type for required arg1"):

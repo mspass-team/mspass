@@ -1,3 +1,5 @@
+import sys
+sys.path.append("python/tests")
 import numpy as np
 from helper import (
     get_live_seismogram,
