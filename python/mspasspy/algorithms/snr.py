@@ -268,9 +268,11 @@ def snr(
     noise_metric="mad",
     signal_metric="mad",
     perc=95.0,
+    *args,
     handles_ensembles=False,
     checks_arg0_type=False,
     handles_dead_data=False,
+    **kwargs,
 ):
     """
     Compute time-domain based signal-to-noise ratio with a specified metric.
@@ -934,9 +936,11 @@ def arrival_snr(
         "filtered_MAD",
         "filtered_perc",
     ],
+    *args,
     handles_ensembles=False,
     checks_arg0_type=True,
     handles_dead_data=True,
+    **kwargs,
 ):
     """
     Specialization of FD_snr_estimator.   A common situation where snr
@@ -1102,9 +1106,11 @@ def broadband_snr_QC(
     taup_model=None,
     source_collection="source",
     receiver_collection=None,
+    *args,
     handles_ensembles=False,
     checks_arg0_type=True,
     handles_dead_data=True,
+    **kwargs,
 ):
     """
     Compute a series of metrics that can be used for quality control

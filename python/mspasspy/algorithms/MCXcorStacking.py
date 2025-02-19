@@ -216,9 +216,11 @@ def MCXcorPrepP(
     search_window_fraction=0.9,
     minimum_coda_duration=5.0,
     correlation_window_start=-3.0,
+    *args,
     handles_ensembles=True,
     checks_arg0_type=True,
-    handles_dead_data=False,
+    handles_dead_data=True,
+    **kwargs,
 ) -> TimeSeriesEnsemble:
     """
     Function used to preprocess an ensemble  to prepare input for
@@ -1110,9 +1112,11 @@ def align_and_stack(
     convergence=0.01,
     residual_norm_floor=0.1,
     demean_residuals=True,
+    *args,
     handles_ensembles=True,
     checks_arg0_type=True,
     handles_dead_data=True,
+    **kwargs,
 ) -> tuple:
     """
     This function uses an initial estimate of the array stack passed as
@@ -1863,9 +1867,11 @@ def post_MCXcor_metrics(
     window=None,
     phase_time_key="Ptime",
     time_shift_key="arrival_time_correction",
+    *args,
     handles_ensembles=False,
     checks_arg0_type=False,
     handles_dead_data=False,
+    **kwargs,
 ) -> TimeSeries:
     """
     Computes and posts a set of standard QC metrics for result of multichannel cross-correlation
@@ -2096,7 +2102,7 @@ def demean_residuals(
 
 
 @mspass_func_wrapper
-def remove_incident_wavefield(d, beam, handles_ensembles=True):
+def remove_incident_wavefield(d, beam, *args, handles_ensembles=True,**kwargs):
     """
     Remove incident wavefield for teleseismic P wave data using a beam estimate.
 

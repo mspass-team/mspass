@@ -85,14 +85,16 @@ def scale(
     level=1.0,
     scale_by_section=False,
     use_mean=False,
+    *args,
     object_history=False,
     alg_name="scale",
     alg_id=None,
     dryrun=False,
     function_return_key=None,
-    handles_ensembles=False,
+    handles_ensembles=True,
     checks_arg0_type=True,
     handles_dead_data=True,
+    **kwargs,
 ):
     """
     Top level function interface to data scaling methods.
@@ -1188,7 +1190,16 @@ class TopMute:
         self.t0 = t0
 
     @mspass_method_wrapper
-    def apply(self, d, object_history=False, instance=None):
+    def apply(self, 
+              d, 
+              object_history=False, 
+              instance=None,
+              *args,
+              checks_arg0_type=True,
+              handles_ensembles=False,
+              handles_dead_data=True,
+              **kwargs,
+        ):
         """
         Use thie method to apply the defined top mute to one of the MsPASS
         atomic data objects. The method does a sanity check on the input
@@ -1208,10 +1219,9 @@ class TopMute:
           come from the global history manager or be set manually.
         """
         if not isinstance(d, TimeSeries) and not isinstance(d, Seismogram):
-            raise MsPASSError(
-                "TopMute.apply:  usage error.  Input data must be a TimeSeries or Seismogram object",
-                ErrorSeverity.Invalid,
-            )
+            message = "TopMute.apply:  usage error.  Input data must be a TimeSeries or Seismogram object"
+            message += "Actual type of arg={}".format(type(d))
+            raise TypeError(message)
         if d.dead():
             return d
         if d.t0 > self.t0:

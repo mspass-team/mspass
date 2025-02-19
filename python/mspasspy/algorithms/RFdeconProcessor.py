@@ -396,6 +396,7 @@ def RFdecon(
     wcomp=2,
     ncomp=2,
     QCdocument_key="RFdecon_properties",
+    *args,
     object_history=False,
     alg_name="RFdecon",
     alg_id=None,
@@ -403,6 +404,7 @@ def RFdecon(
     handles_ensembles=False,
     checks_arg0_type=True,
     handles_dead_data=True,
+    **kwargs,
 ):
     """
     Use this function to compute conventional receiver functions

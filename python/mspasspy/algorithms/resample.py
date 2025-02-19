@@ -187,7 +187,7 @@ class ScipyResampler(BasicResampler):
         self.window = window
 
     @mspass_method_wrapper
-    def resample(self, mspass_object, checks_arg0_type=True):
+    def resample(self, mspass_object, *args, checks_arg0_type=True, **kwargs):
         """
         Applies the scipy.signal.resample function to all data held in
         a mspass container passed through arg0 (mspass_object).
@@ -327,7 +327,7 @@ class ScipyDecimator(BasicResampler):
         return message
 
     @mspass_method_wrapper
-    def resample(self, mspass_object, checks_arg0_type=True):
+    def resample(self, mspass_object, *args, checks_arg0_type=True, **kwargs):
         """
         Implementation of required abstract method for this operator.
         The only argument is mspass_object.   The operator will downsample
@@ -436,6 +436,7 @@ def resample(
     decimator,
     resampler,
     verify_operators=True,
+    *args,
     object_history=False,
     alg_name="resample",
     alg_id=None,
@@ -445,6 +446,7 @@ def resample(
     handles_ensembles=True,
     checks_arg0_type=True,
     handles_dead_data=False,
+    **kwargs,
 ):
     """
     Resample any valid data object to a common sample rate (sample interval).

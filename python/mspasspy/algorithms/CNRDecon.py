@@ -194,6 +194,7 @@ def CNRRFDecon(
     bandwidth_keys=["low_f_band_edge", "high_f_band_edge"],
     QCdata_key="CNRFDecon_properties",
     return_wavelet=False,
+    *args,
     object_history=False,
     alg_name="CNRRFDecon",
     alg_id=None,
@@ -527,7 +528,9 @@ def CNRArrayDecon(
     bandwidth_subdocument_key=None,
     bandwidth_keys=["low_f_band_edge", "high_f_band_edge"],
     return_wavelet=False,
+    *args,
     handles_ensembles=True,
+    **kwargs,
 ) -> tuple:
     """
     Notes:  delete when writing final docstring

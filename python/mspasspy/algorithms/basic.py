@@ -547,6 +547,7 @@ def transform_to_RTZ(
     phi=None,
     angle_units="degrees",
     key_is_backazimuth=True,
+    *args,
     object_history=False,
     alg_name=None,
     alg_id=None,
@@ -556,6 +557,7 @@ def transform_to_RTZ(
     handles_ensembles=True,
     checks_arg0_type=False,
     handles_dead_data=False,
+    **kwargs,
 ):
     """
     Applies coordinate transform to RTZ version of ray coordinates.
@@ -677,6 +679,7 @@ def transform_to_LQT(
     phi=None,
     theta=None,
     angle_units="degrees",
+    *args,
     object_history=False,
     alg_name=None,
     alg_id=None,
@@ -686,6 +689,7 @@ def transform_to_LQT(
     handles_ensembles=False,
     checks_arg0_type=False,
     handles_dead_data=False,
+    **kwargs,
 ):
     """
     Applies coordinate transform to LQT version of ray coordinates.
