@@ -800,5 +800,8 @@ def test_TopMute():
     failmute.apply(ts2)
     assert not ts2.live
 
-    with pytest.raises(MsPASSError, match="must be a TimeSeries or Seismogram"):
+    with pytest.raises(TypeError,match="TopMute.apply:  usage error."):
         failmute.apply([1, 2, 3])
+        
+        
+test_TopMute()

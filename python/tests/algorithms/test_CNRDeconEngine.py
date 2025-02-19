@@ -361,7 +361,7 @@ def test_CNRRFDecon_error_handlers():
     # with pytest.raises(TypeError, match="illegal type="):   
     # mspass_func_decorator catches the same error and requires this 
     with pytest.raises(TypeError, 
-                match="mspass_func_wrapper only accepts mspass object"):
+                match="CNRRFDecon:  illegal type="):
         d_decon = CNRRFDecon("foo", engine, signal_window=sw, noise_window=nw)
 
     d = Seismogram(d0wn)

@@ -47,7 +47,7 @@ def load_test_data():
     """
     filename = "MCXcorStacking.testdata"
     # for testing use this
-    # dir = "../data"
+    #dir = "../data"
     # with pytest use this
     dir = "./python/tests/data"
     path = dir + "/" + filename
@@ -73,7 +73,7 @@ def load_TAtestdata():
     """
     filename = "MCXcor_testdata.pickle"
     # for testing use this
-    # dir = "../data"
+    #dir = "../data"
     # with pytest use this
     dir = "./python/tests/data"
     path = dir + "/" + filename
@@ -621,7 +621,7 @@ def test_MCXcorPrepP():
     # first check dogmatic type tests
     e = TimeSeriesEnsemble(e0)
     with pytest.raises(TypeError, match="MCXcorPrepP:  Illegal type="):
-        [eo, beam] = MCXcorPrepP("foo", nw)
+        [eo, beam] = MCXcorPrepP("foo", nw, checks_arg0_type=True)
     with pytest.raises(TypeError, match="MCXcorPrepP:  Illegal type="):
         [eo, beam] = MCXcorPrepP(e, "foo")
     # test handling of dead ensemble

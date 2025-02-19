@@ -169,7 +169,7 @@ def test_RFdecon_error_handlers():
     # which algorithm we used doesn't matter here - use defaults
     engine = RFdeconProcessor()
     # first a simple type test of arg0
-    with pytest.raises(TypeError, match="only accepts mspass object"):
+    with pytest.raises(TypeError, match="RFdecon:  arg0 is of type="):
         foo = RFdecon("badarg0")
     # test handling dead datum
     d = Seismogram(seis0)
