@@ -25,7 +25,7 @@ from mspasspy.algorithms.basic import (
 # module to test
 sys.path.append("python/tests")
 
-from helper import get_live_seismogram, get_live_timeseries, get_sin_timeseries
+from helper import get_live_timeseries
 
 
 def is_identity(tm):
@@ -428,6 +428,7 @@ def test_transform_to_RTZ():
     seis["seaz"] = seaz
     for i in range(nmembers):
         e.member.append(Seismogram(seis))
+    e.set_live()
     # ensemble is 3 copies of the same data this test used above
     # has seaz set
     eout = transform_to_RTZ(e)
@@ -563,14 +564,15 @@ def test_transform_to_LQT():
     # atomic version tests what is needed for arg method and
     # is not recommended for ensembles anyway
     nmembers = 3
-    e = SeismogramEnsemble(3)
+    e = SeismogramEnsemble(nmembers)
     az = 90.0 - phi
     seaz = az + 180.0
     seis = Seismogram(seis0)
     seis["seaz"] = seaz
     seis["ema"] = theta
-    for i in range(3):
+    for i in range(nmembers):
         e.member.append(Seismogram(seis))
+    e.set_live()
     # ensemble is 3 copies of the same data this test used above
     # has seaz set
     eout = transform_to_LQT(e)

@@ -17,6 +17,7 @@ from mspasspy.ccore.algorithms.amplitudes import (
 from mspasspy.ccore.algorithms.basic import TimeWindow, Butterworth, _ExtractComponent
 from mspasspy.algorithms.signals import filter
 from mspasspy.algorithms.window import WindowData
+from mspasspy.util.decorators import mspass_func_wrapper
 
 # debug
 # import matplotlib.pyplot as plt
@@ -259,6 +260,7 @@ def _safe_snr_calculation(s, n):
         return s / n
 
 
+@mspass_func_wrapper
 def snr(
     data_object,
     noise_window=TimeWindow(-130.0, -5.0),
@@ -266,6 +268,11 @@ def snr(
     noise_metric="mad",
     signal_metric="mad",
     perc=95.0,
+    *args,
+    handles_ensembles=False,
+    checks_arg0_type=False,
+    handles_dead_data=False,
+    **kwargs,
 ):
     """
     Compute time-domain based signal-to-noise ratio with a specified metric.
@@ -413,6 +420,8 @@ def _reformat_mspass_error(
     return log_message
 
 
+# Do not use mspass_func_decorator here because it is mainly aninternal
+# engine used by more usable functions in this module
 def FD_snr_estimator(
     data_object,
     noise_window=TimeWindow(-130.0, -5.0),
@@ -899,6 +908,7 @@ def FD_snr_estimator(
     return [snrdata, my_logger]
 
 
+@mspass_func_wrapper
 def arrival_snr(
     data_object,
     noise_window=TimeWindow(-130.0, -5.0),
@@ -926,6 +936,11 @@ def arrival_snr(
         "filtered_MAD",
         "filtered_perc",
     ],
+    *args,
+    handles_ensembles=False,
+    checks_arg0_type=True,
+    handles_dead_data=True,
+    **kwargs,
 ):
     """
     Specialization of FD_snr_estimator.   A common situation where snr
@@ -1058,6 +1073,7 @@ def arrival_snr(
     return data_object
 
 
+@mspass_func_wrapper
 def broadband_snr_QC(
     data_object,
     component=2,
@@ -1090,6 +1106,11 @@ def broadband_snr_QC(
     taup_model=None,
     source_collection="source",
     receiver_collection=None,
+    *args,
+    handles_ensembles=False,
+    checks_arg0_type=True,
+    handles_dead_data=True,
+    **kwargs,
 ):
     """
     Compute a series of metrics that can be used for quality control
@@ -1195,8 +1216,7 @@ def broadband_snr_QC(
     :return:  the data_object modified by insertion of the snr QC data
       in the object's Metadata under the key defined by metadata_output_key.
     """
-    if data_object.dead():
-        return data_object
+
     if isinstance(data_object, TimeSeries):
         # We need to make a copy of a TimeSeries object to assure the only
         # thing we change is the Metadata we add to the return
@@ -1226,6 +1246,8 @@ def broadband_snr_QC(
             + "Input must be either TimeSeries or a Seismogram object",
             ErrorSeverity.Fatal,
         )
+    if data_object.dead():
+        return data_object
     if use_measured_arrival_time:
         arrival_time = data_object[measured_arrival_time_key]
     else:
@@ -1584,6 +1606,7 @@ def visualize_qcdata(
     :type qc_subdoc_key:  string or None.  Default "Parrival"
        is default of `broadband_arrival_QC`.
     """
+    import matplotlib.pyplot as plt
 
     def pts2box(xmin, xmax, ymin, ymax) -> tuple:
         """

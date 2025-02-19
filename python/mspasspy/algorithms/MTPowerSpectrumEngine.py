@@ -59,7 +59,8 @@ class MTPowerSpectrumEngine:
 
     def apply(self, d, dt=1.0):
         """
-        need to support vector input or a TimeSeries - returns a PowerSpectrum
+        needs to support vector input or a TimeSeries - returns a PowerSpectrum
+        Cannot use mspass decorator because it supports raw data vectors
 
         """
         # All inputs end up filling a numpy array passed to MTSpec below
