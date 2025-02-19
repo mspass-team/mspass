@@ -153,16 +153,17 @@ class ApplyCalibEngine:
             raise MsPASSError(message, ErrorSeverity.Invalid)
 
     @mspass_method_wrapper
-    def apply_calib(self, 
-          d, 
-          id_key="channel_id", 
-          kill_if_undefined=True,
-          *args,
-          handles_ensembles=True,
-          checks_arg0_type=True,
-          handles_dead_data=True,
-          **kwargs,
-        ):
+    def apply_calib(
+        self,
+        d,
+        id_key="channel_id",
+        kill_if_undefined=True,
+        *args,
+        handles_ensembles=True,
+        checks_arg0_type=True,
+        handles_dead_data=True,
+        **kwargs,
+    ):
         """
         Use this method to apply a calib value to a TimeSeries or all the
         live members of a TimeSeriesEnsemble.

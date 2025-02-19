@@ -420,7 +420,7 @@ def _reformat_mspass_error(
     return log_message
 
 
-# Do not use mspass_func_decorator here because it is mainly aninternal 
+# Do not use mspass_func_decorator here because it is mainly aninternal
 # engine used by more usable functions in this module
 def FD_snr_estimator(
     data_object,

@@ -427,8 +427,8 @@ class ScipyDecimator(BasicResampler):
 
 
 @mspass_func_wrapper
-# note handles_dead_data could be left at default True only because 
-# resampling operators in this module all handle dead data cleanly. 
+# note handles_dead_data could be left at default True only because
+# resampling operators in this module all handle dead data cleanly.
 # set False for efficiency and to be more robust with other implementations
 # of decimator or resampler
 def resample(

@@ -57,7 +57,6 @@ class MTPowerSpectrumEngine:
         self.lamb = None  # constructor for MTSpec set this
         self.MTSpec_instance = None
 
- 
     def apply(self, d, dt=1.0):
         """
         needs to support vector input or a TimeSeries - returns a PowerSpectrum
