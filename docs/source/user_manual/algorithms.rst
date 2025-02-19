@@ -5,7 +5,40 @@ Algorithms
 Overview
 -----------
 This page is a quick reference to algorithms available in MsPASS.
-The page is organized as a set of tables with hyperlinks to the docstrings
+The functions described here are all algorithms for handling MsPASS
+seismic data objects.   Utility functions for other objectives are described
+elsewhere.
+
+The API of all the functions described here is standardized.   Key features
+to be aware of are:
+
+#.  All functions assume arg0 is a seismic data object.
+#.  Some functions can handle all data types and some are more restictive.
+    The tables below provides a quick reference in addition to the docstrings.
+#.  All functions enforce the data type of arg0 and will throw a TypeError
+    exception for any mismatch.
+#.  All implement the dead/live concept.  In particular, all have the behavior
+    that if the data object passed as arg0 is marked dead it immediately
+    returns.  If the type of input and output are the same the return is
+    identical to the input.   If the type changes and an input datum is
+    marked dead the output will be a default constructed version of the output type
+    with a copy of the Metadata from the input and a copy of the input's error
+    log.
+#.  All functions that are intrinsically atomic (i.e. operates on :code:`TimeSeries`
+    and/or :code:`Seismogram` objects) also work ensembles.   In MsPASS an
+    ensemble is just a container with one or more atomic data stored under the
+    common symbol :code:`member`.  (e.g. if e is a :code:`TimeSeriesEnsemble`,
+    then e.member[i] is the ith component :code:`TimeSeries` object.) Atomic
+    algorithms applied to ensemble are always done as a loop over the
+    :code:`member` array.
+#.  No MsPASS will throw an exception except for a usage error or a system
+    level failure that is unrecoverable.   When an individual datum has
+    issues that don't allow the algorithm to work with the specified
+    inputs (e.g. windowing when the window range is outside the time range of
+    the data) the datum will be killed with a message posted to the object's
+    error log.
+
+This document is organized as a set of tables with hyperlinks to the docstrings
 for each algorithm function.
 
 Processing Functions
@@ -18,6 +51,13 @@ for obspy functions, some are written in C++ with python wrappers, and
 some are pure C++ functions with python bindings.   Note the name field in the
 table below is a hyperlink to the docstring for that function.
 
+Note also if an input or output are listed as :code:`TimeSeries` it
+will also process a :code:`TimeSeriesEnsemble` with a loop.
+Similarly, if input or output is listed as  :code:`Seismogram` the
+function will also process a :code:`SeismogramEnsemble` with a loop.
+When input or output are listed as "any" it means any seismic data
+type is handled.
+
 .. list-table:: Processing Functions
    :widths: 10 70 10 10
    :header-rows: 1
@@ -27,7 +67,7 @@ table below is a hyperlink to the docstring for that function.
      - Inputs
      - Outputs
    * - :py:func:`correlate<mspasspy.algorithms.signals.correlate>`
-     - Cross-correlate pair of signals
+     - Cross-correlate pair of signals (obspy)
      - TimeSeries
      - TimeSeries
    * - :py:func:`correlate_stream_template<mspasspy.algorithms.signals.correlate_stream_template>`
@@ -62,10 +102,6 @@ table below is a hyperlink to the docstring for that function.
      - scale data to specified level with a specified amplitude metric
      - Any
      - Same as input
-   * - :py:func:`snr<mspasspy.algorithms.snr.snr>`
-     - Compute one of several possible time-domain signal-to-noise ratio metrics
-     - TimeSeries Seismogram
-     - float
    * - :py:func:`broadband_snr_QC<mspasspy.algorithms.snr.broadband_snr_QC>`
      - Computes a series of snr-based amplitude metrics and posts them to output Metadata
      - TimeSeries or Seismogram
@@ -168,19 +204,23 @@ utility for writing custom functions that use them inside another algorithm.
    * - :py:func:`MADAmplitude<mspasspy.ccore.algorithms.amplitudes.MADAmplitude>`
      - Calculate amplitude with the MAD metric
      - TimeSeries or Seismogram
-     - double
+     - float
    * - :py:func:`PeakAmplitude<mspasspy.ccore.algorithms.amplitudes.PeakAmplitude>`
      - Calculate amplitude with the peak absolute value
      - TimeSeries or Seismogram
-     - double
+     - float
    * - :py:func:`PercAmplitude<mspasspy.ccore.algorithms.amplitudes.PercAmplitude>`
      - Calculate amplitude at a specified percentage level
      - TimeSeries or Seismogram
-     - double
+     - float
    * - :py:func:`RMSAmplitude<mspasspy.ccore.algorithms.amplitudes.RMSAmplitude>`
      - Calculate amplitude with the RMS metric
      - TimeSeries or Seismogram
-     - double
+     - float
+   * - :py:func:`snr<mspasspy.algorithms.snr.snr>`
+     - Compute one of several possible time-domain signal-to-noise ratio metrics
+     - TimeSeries or Seismogram
+     - float
 
 Processing Objects
 -------------------------------------
@@ -188,7 +228,9 @@ This collection of things are "processing objects" meaning they implement
 processing using a C++ or python class that has a method that runs
 an algorithm on seismic data.  All are effectively functions that
 take inputs and emit an output.  The only difference is the syntax
-of a "method" compared to a simple function.
+of a "method" compared to a simple function.  They also have the
+same API guarantees listed at the beginning of this section
+(i.e. the list of items in the first section).
 
 .. list-table:: Processing Objects
    :widths: 10 70 10 10 10
@@ -202,132 +244,132 @@ of a "method" compared to a simple function.
    * - :py:class:`Add<mspasspy.algorithms.edit.Add>`
      - Add a constant to a metadata value
      - apply
-     - Any seismic data object
+     - any
      - Edited version of input
    * - :py:class:`Add2<mspasspy.algorithms.edit.Add2>`
      - Add two metadata values
      - apply
-     - Any seismic data object
+     - any
      - Edited version of input
    * - :py:class:`ChangeKey<mspasspy.algorithms.edit.ChangeKey>`
      - Change key associated with a value
      - apply
-     - Any seismic data object
+     - any
      - Edited version of input
    * - :py:class:`Divide<mspasspy.algorithms.edit.Divide>`
      - Divide a metadata value by a constant
      - apply
-     - Any seismic data object
+     - any
      - Edited version of input
    * - :py:class:`Divide2<mspasspy.algorithms.edit.Divide2>`
      - Divide one metadata value by another
      - apply
-     - Any seismic data object
+     - any
      - Edited version of input
    * - :py:class:`IntegerDivide<mspasspy.algorithms.edit.IntegerDivide>`
      - Apply integer divide operator to a metadata value
      - apply
-     - Any seismic data object
+     - any
      - Edited version of input
    * - :py:class:`IntegerDivide2<mspasspy.algorithms.edit.IntegerDivide2>`
      - Apply integer divide operator to two metadata values
      - apply
-     - Any seismic data object
+     - any
      - Edited version of input
    * - :py:class:`Mod<mspasspy.algorithms.edit.Mod>`
      - Change a key to value mod constant
      - apply
-     - Any seismic data object
+     - any
      - Edited version of input
    * - :py:class:`Mod2<mspasspy.algorithms.edit.Mod2>`
      - Set a field as mod division of a pair of values
      - apply
-     - Any seismic data object
+     - any
      - Edited version of input
    * - :py:class:`Multiply<mspasspy.algorithms.edit.Multiply>`
      - Change a key to value times constant
      - apply
-     - Any seismic data object
+     - any
      - Edited version of input
    * - :py:class:`Multiply2<mspasspy.algorithms.edit.Multiply2>`
      - Set a field as produce of a pair of values
      - apply
-     - Any seismic data object
+     - any
      - Edited version of input
    * - :py:class:`SetValue<mspasspy.algorithms.edit.Multiply2>`
      - Set a field to a constant
      - apply
-     - Any seismic data object
+     - any
      - Edited version of input
    * - :py:class:`Subtract<mspasspy.algorithms.edit.Subtract>`
      - Change a key to value minus a constant
      - apply
-     - Any seismic data object
+     - any
      - Edited version of input
    * - :py:class:`Subtract2<mspasspy.algorithms.edit.Subtract2>`
      - Set a field as difference of a pair of values
      - apply
-     - Any seismic data object
+     - any
      - Edited version of input
    * - :py:class:`erase_metadata<mspasspy.algorithms.edit.erase_metadata>`
      - Clear all defined values of a specified key
      - apply
-     - Any seismic data object
+     - any
      - Edited version of input
    * - :py:class:`MetadataOperatorChain<mspasspy.algorithms.edit.MetadataOperatorChain>`
      - Apply a chain of metadata calculators
      - apply
-     - Any seismic data object
+     - any
      - Edited version of input
    * - :py:class:`FiringSquad<mspasspy.algorithms.edit.FiringSquad>`
      - Apply a series of kill operators
      - kill_if_true
-     - Any seismic data object
+     - any
      - Edited version of input
    * - :py:class:`MetadataDefined<mspasspy.algorithms.edit.MetadataDefined>`
      - Kill if a key-value pair is defined
      - kill_if_true
-     - Any seismic data object
+     - any
      - Edited version of input
    * - :py:class:`MetadataUndefined<mspasspy.algorithms.edit.MetadataUndefined>`
      - Kill if a key-value pair is not defined
      - kill_if_true
-     - Any seismic data object
+     - any
      - Edited version of input
    * - :py:class:`MetadataEQMetadataEQ<mspasspy.algorithms.edit.MetadataEQMetadataEQ>`
      - Kill a datum if a value is equal to constant
      - kill_if_true
-     - Any seismic data object
+     - any
      - Edited version of input
    * - :py:class:`MetadataNEMetadataNE<mspasspy.algorithms.edit.MetadataNEMetadataNE>`
      - Kill a datum if a value is not equal to constant
      - kill_if_true
-     - Any seismic data object
+     - any
      - Edited version of input
    * - :py:class:`MetadataGE<mspasspy.algorithms.edit.MetadataGE>`
      - Kill if a value is greater than or equal to a constant
      - kill_if_true
-     - Any seismic data object
+     - any
      - Edited version of input
    * - :py:class:`MetadataGT<mspasspy.algorithms.edit.MetadataGT>`
      - Kill if a value is greater than a constant
      - kill_if_true
-     - Any seismic data object
+     - any
      - Edited version of input
    * - :py:class:`MetadataLE<mspasspy.algorithms.edit.MetadataLE>`
      - Kill if a value is less than or equal to a constant
      - kill_if_true
-     - Any seismic data object
+     - any
      - Edited version of input
    * - :py:class:`MetadataLT<mspasspy.algorithms.edit.MetadataLT>`
      - Kill if a value is less than a constant
      - kill_if_true
-     - Any seismic data object
+     - any
      - Edited version of input
    * - :py:class:`MetadataInterval<mspasspy.algorithms.edit.MetadataInterval>`
      - Kill for value relative to an interval
      - kill_if_true
-     - Any seismic data object
+     - any
      - Edited version of input
 
 Deconvolution algorithms
@@ -356,6 +398,15 @@ See the docstrings with links above for usage.
 A different, unpublished (aka experimental) algorithm called
 "Colored Noise Regularized Three Component Decon " is
 implemented in the C++ class
-:py:class:`mspasspy.ccore.algorithms.deconvolution.CNR3CDecon`.
-See the mspass deconvolution tutorial for guidance on using this
-experimental algorithm.  
+:py:class:`mspasspy.ccore.algorithms.deconvolution.CNRDeconEngine`.
+There are two python functions that utilize the "engine":
+
+#.  :py:class:`mspasspy.algorithms.CNRDecon.CNRRFDecon` uses the
+    CNR algorithm to estimate conventional "receiver functions" where
+    each 3C station is deconvolved independently.
+#.  The same engine
+    is used for an array version called
+    :py:class:`mspasspy.algorithms.CNRDecon.CNRArrayDecon`
+    
+See the mspass deconvolution tutorial for guidance on using these
+experimental algorithms.
