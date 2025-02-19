@@ -47,7 +47,7 @@ def load_test_data():
     """
     filename = "MCXcorStacking.testdata"
     # for testing use this
-    #dir = "../data"
+    # dir = "../data"
     # with pytest use this
     dir = "./python/tests/data"
     path = dir + "/" + filename
@@ -73,7 +73,7 @@ def load_TAtestdata():
     """
     filename = "MCXcor_testdata.pickle"
     # for testing use this
-    #dir = "../data"
+    # dir = "../data"
     # with pytest use this
     dir = "./python/tests/data"
     path = dir + "/" + filename

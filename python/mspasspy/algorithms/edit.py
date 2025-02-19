@@ -228,11 +228,11 @@ class MetadataGE(Executioner):
 
     @mspass_method_wrapper
     def kill_if_true(
-        self, 
-        d, 
-        apply_to_members=False, 
+        self,
+        d,
+        apply_to_members=False,
         *args,
-        handles_ensembles=True, 
+        handles_ensembles=True,
         checks_arg0_type=True,
         **kwargs,
     ):
@@ -297,11 +297,11 @@ class MetadataLT(Executioner):
 
     @mspass_method_wrapper
     def kill_if_true(
-        self, 
-        d, 
+        self,
+        d,
         apply_to_members=False,
         *args,
-        handles_ensembles=True, 
+        handles_ensembles=True,
         checks_arg0_type=True,
         **kwargs,
     ):
@@ -366,11 +366,11 @@ class MetadataLE(Executioner):
 
     @mspass_method_wrapper
     def kill_if_true(
-        self, 
-        d, 
-        apply_to_members=False, 
+        self,
+        d,
+        apply_to_members=False,
         *args,
-        handles_ensembles=True, 
+        handles_ensembles=True,
         checks_arg0_type=True,
         **kwargs,
     ):
@@ -437,11 +437,11 @@ class MetadataEQ(Executioner):
 
     @mspass_method_wrapper
     def kill_if_true(
-        self, 
-        d, 
-        apply_to_members=False, 
+        self,
+        d,
+        apply_to_members=False,
         *args,
-        handles_ensembles=True, 
+        handles_ensembles=True,
         checks_arg0_type=True,
         **kwargs,
     ):
@@ -508,11 +508,11 @@ class MetadataNE(Executioner):
 
     @mspass_method_wrapper
     def kill_if_true(
-        self, 
-        d, 
-        apply_to_members=False, 
+        self,
+        d,
+        apply_to_members=False,
         *args,
-        handles_ensembles=True, 
+        handles_ensembles=True,
         checks_arg0_type=True,
         **kwargs,
     ):
@@ -569,11 +569,11 @@ class MetadataDefined(Executioner):
 
     @mspass_method_wrapper
     def kill_if_true(
-        self, 
-        d, 
-        apply_to_members=False, 
+        self,
+        d,
+        apply_to_members=False,
         *args,
-        handles_ensembles=True, 
+        handles_ensembles=True,
         checks_arg0_type=True,
         **kwargs,
     ):
@@ -630,14 +630,14 @@ class MetadataUndefined(Executioner):
 
     @mspass_method_wrapper
     def kill_if_true(
-        self, 
-        d, 
-        apply_to_members=False, 
+        self,
+        d,
+        apply_to_members=False,
         *args,
-        handles_ensembles=True, 
+        handles_ensembles=True,
         checks_arg0_type=True,
         **kwargs,
-        ):
+    ):
         """
         Implementation of this abstract method for this tester.
         Kills d if self.key is not defined for this datum
@@ -727,11 +727,11 @@ class MetadataInterval(Executioner):
 
     @mspass_method_wrapper
     def kill_if_true(
-        self, 
-        d, 
-        apply_to_members=False, 
+        self,
+        d,
+        apply_to_members=False,
         *args,
-        handles_ensembles=True, 
+        handles_ensembles=True,
         checks_arg0_type=True,
         **kwargs,
     ):
@@ -849,11 +849,11 @@ class FiringSquad(Executioner):
 
     @mspass_method_wrapper
     def kill_if_true(
-        self, 
-        d, 
-        apply_to_members=False, 
+        self,
+        d,
+        apply_to_members=False,
         *args,
-        handles_ensembles=True, 
+        handles_ensembles=True,
         checks_arg0_type=True,
         **kwargs,
     ):
@@ -1136,11 +1136,11 @@ class SetValue(MetadataOperator):
 
     @mspass_method_wrapper
     def apply(
-        self, 
-        d, 
-        apply_to_members=False, 
+        self,
+        d,
+        apply_to_members=False,
         *args,
-        handles_ensembles=True, 
+        handles_ensembles=True,
         checks_arg0_type=True,
         **kwargs,
     ):
@@ -1211,11 +1211,11 @@ class Add(MetadataOperator):
 
     @mspass_method_wrapper
     def apply(
-        self, 
-        d, 
-        apply_to_members=False, 
+        self,
+        d,
+        apply_to_members=False,
         *args,
-        handles_ensembles=True, 
+        handles_ensembles=True,
         checks_arg0_type=True,
         **kwargs,
     ):
@@ -1297,11 +1297,11 @@ class Multiply(MetadataOperator):
 
     @mspass_method_wrapper
     def apply(
-        self, 
-        d, 
-        apply_to_members=False, 
+        self,
+        d,
+        apply_to_members=False,
         *args,
-        handles_ensembles=True, 
+        handles_ensembles=True,
         checks_arg0_type=True,
         **kwargs,
     ):
@@ -1382,11 +1382,11 @@ class Subtract(MetadataOperator):
 
     @mspass_method_wrapper
     def apply(
-        self, 
-        d, 
-        apply_to_members=False, 
+        self,
+        d,
+        apply_to_members=False,
         *args,
-        handles_ensembles=True, 
+        handles_ensembles=True,
         checks_arg0_type=True,
         **kwargs,
     ):
@@ -1468,11 +1468,11 @@ class Divide(MetadataOperator):
 
     @mspass_method_wrapper
     def apply(
-        self, 
-        d, 
-        apply_to_members=False, 
+        self,
+        d,
+        apply_to_members=False,
         *args,
-        handles_ensembles=True, 
+        handles_ensembles=True,
         checks_arg0_type=True,
         **kwargs,
     ):
@@ -1561,11 +1561,11 @@ class IntegerDivide(MetadataOperator):
 
     @mspass_method_wrapper
     def apply(
-        self, 
-        d, 
-        apply_to_members=False, 
+        self,
+        d,
+        apply_to_members=False,
         *args,
-        handles_ensembles=True, 
+        handles_ensembles=True,
         checks_arg0_type=True,
         **kwargs,
     ):
@@ -1658,11 +1658,11 @@ class Mod(MetadataOperator):
 
     @mspass_method_wrapper
     def apply(
-        self, 
-        d, 
-        apply_to_members=False, 
+        self,
+        d,
+        apply_to_members=False,
         *args,
-        handles_ensembles=True, 
+        handles_ensembles=True,
         checks_arg0_type=True,
         **kwargs,
     ):
@@ -1759,11 +1759,11 @@ class Add2(MetadataOperator):
 
     @mspass_method_wrapper
     def apply(
-        self, 
-        d, 
-        apply_to_members=False, 
+        self,
+        d,
+        apply_to_members=False,
         *args,
-        handles_ensembles=True, 
+        handles_ensembles=True,
         checks_arg0_type=True,
         **kwargs,
     ):
@@ -1867,11 +1867,11 @@ class Multiply2(MetadataOperator):
 
     @mspass_method_wrapper
     def apply(
-        self, 
-        d, 
-        apply_to_members=False, 
+        self,
+        d,
+        apply_to_members=False,
         *args,
-        handles_ensembles=True, 
+        handles_ensembles=True,
         checks_arg0_type=True,
         **kwargs,
     ):
@@ -1975,11 +1975,11 @@ class Subtract2(MetadataOperator):
 
     @mspass_method_wrapper
     def apply(
-        self, 
-        d, 
-        apply_to_members=False, 
+        self,
+        d,
+        apply_to_members=False,
         *args,
-        handles_ensembles=True, 
+        handles_ensembles=True,
         checks_arg0_type=True,
         **kwargs,
     ):
@@ -2083,11 +2083,11 @@ class Divide2(MetadataOperator):
 
     @mspass_method_wrapper
     def apply(
-        self, 
-        d, 
-        apply_to_members=False, 
+        self,
+        d,
+        apply_to_members=False,
         *args,
-        handles_ensembles=True, 
+        handles_ensembles=True,
         checks_arg0_type=True,
         **kwargs,
     ):
@@ -2191,11 +2191,11 @@ class IntegerDivide2(MetadataOperator):
 
     @mspass_method_wrapper
     def apply(
-        self, 
-        d, 
-        apply_to_members=False, 
+        self,
+        d,
+        apply_to_members=False,
         *args,
-        handles_ensembles=True, 
+        handles_ensembles=True,
         checks_arg0_type=True,
         **kwargs,
     ):
@@ -2299,11 +2299,11 @@ class Mod2(MetadataOperator):
 
     @mspass_method_wrapper
     def apply(
-        self, 
-        d, 
-        apply_to_members=False, 
+        self,
+        d,
+        apply_to_members=False,
         *args,
-        handles_ensembles=True, 
+        handles_ensembles=True,
         checks_arg0_type=True,
         **kwargs,
     ):
@@ -2424,11 +2424,11 @@ class MetadataOperatorChain(MetadataOperator):
 
     @mspass_method_wrapper
     def apply(
-        self, 
-        d, 
-        apply_to_members=False, 
+        self,
+        d,
+        apply_to_members=False,
         *args,
-        handles_ensembles=True, 
+        handles_ensembles=True,
         checks_arg0_type=True,
         **kwargs,
     ):

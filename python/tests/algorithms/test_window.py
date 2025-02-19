@@ -800,8 +800,8 @@ def test_TopMute():
     failmute.apply(ts2)
     assert not ts2.live
 
-    with pytest.raises(TypeError,match="TopMute.apply:  usage error."):
+    with pytest.raises(TypeError, match="TopMute.apply:  usage error."):
         failmute.apply([1, 2, 3])
-        
-        
+
+
 test_TopMute()

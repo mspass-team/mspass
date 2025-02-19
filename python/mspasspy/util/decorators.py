@@ -30,96 +30,96 @@ def mspass_func_wrapper(
     handles_dead_data=True,
     **kwargs,
 ):
-    """ 
+    """
     Decorator wrapper to adapt a simple function to the mspass parallel processing framework.
 
-    This decorator can be used to adapt a processing function to the 
-    mspass framework.  It can be used to handle the following nonstandard 
+    This decorator can be used to adapt a processing function to the
+    mspass framework.  It can be used to handle the following nonstandard
     functionality that would not appear in a function outside of mspass:
         1.  This decorator can make a function dogmatic about the type of arg0.
-            A processing function in mspass normally requires arg0 to be a 
-            seismic data type.   If the function being decorated handles 
-            arg0 propertly add `checks_arg0_type=True` to the functions 
-            kwargs list.  That will assure the error handler used by the 
+            A processing function in mspass normally requires arg0 to be a
+            seismic data type.   If the function being decorated handles
+            arg0 propertly add `checks_arg0_type=True` to the functions
+            kwargs list.  That will assure the error handler used by the
             function itself will be used instead of the generic wrapper code.
-            When False (the default) this decorator will always throw a 
+            When False (the default) this decorator will always throw a
             TypeError with a generic message if arg0 is invalid.
         2.  MsPASS data objects all use the concept of the boolean "live"
-            as a way to mark a datum as valid (dead means it is bad). 
-            MsPASS functios should normally kill a problem datum and 
-            not throw exceptions for anything but system level error 
-            like a malloc error. A properly designed function 
-            has a test for dead data immediately after verifying 
-            arg0 is valid and testing of "data.live" is a valid thing to 
-            do.  To assure that doesn't happen if checks_arg0_type is 
+            as a way to mark a datum as valid (dead means it is bad).
+            MsPASS functios should normally kill a problem datum and
+            not throw exceptions for anything but system level error
+            like a malloc error. A properly designed function
+            has a test for dead data immediately after verifying
+            arg0 is valid and testing of "data.live" is a valid thing to
+            do.  To assure that doesn't happen if checks_arg0_type is
             false and the test for a valid type yields success
-            (i.e. find data is a valid seismic object) a test for 
-            live will data will be done and the functionw will immediately 
-            return a datum marked dead.  If set True, the default, we let 
+            (i.e. find data is a valid seismic object) a test for
+            live will data will be done and the functionw will immediately
+            return a datum marked dead.  If set True, the default, we let
             the functions dead data handler do the task.
-        3.  MsPASS data object have an internal mechanism to preserve 
-            object-level history that records the sequence of algorithms 
-            applied to a piece of data to get it to it's current stage  
-            This decorator adds that functionality through three kwarg 
+        3.  MsPASS data object have an internal mechanism to preserve
+            object-level history that records the sequence of algorithms
+            applied to a piece of data to get it to it's current stage
+            This decorator adds that functionality through three kwarg
             values: `object_history`,`alg_id', and `alg_name'.  `object_history`
             is  boolean that enables (if True) or disables (False - default)
-            that mechanism.   The other two are tags.   See the User 
-            Manual for more details.  
-        4.  MsPASS data are either "atomic" (TimeSeries or Seismogram) or 
-            "ensembles" (TimeSeriesEnseble and SeismogramEnsemble).   
-            "ensembles", however, are a conainer holding one or more 
-            atomic objects.  Processing algorithms may require only atomic 
-            or ensemble objects.  For algorithms that expect atomic data, 
-            however, it is common to need to apply the same function to 
+            that mechanism.   The other two are tags.   See the User
+            Manual for more details.
+        4.  MsPASS data are either "atomic" (TimeSeries or Seismogram) or
+            "ensembles" (TimeSeriesEnseble and SeismogramEnsemble).
+            "ensembles", however, are a conainer holding one or more
+            atomic objects.  Processing algorithms may require only atomic
+            or ensemble objects.  For algorithms that expect atomic data,
+            however, it is common to need to apply the same function to
             all ensemble "members" (the set of atomic objects that define the
-            ensemble).   Some processing functions are designed to handle 
-            either but some aren't.  If a function is set up to hanlde 
-            ensembles, the `handles_ensembles` boolean should be set True. 
-            That is set True because a well designed algorithm for use with 
-            MsPASS should do that.  Set `handles_ensembles=False` if the 
-            function is set up to only handle atomic data.  In that situation 
-            the decorator will handle ensembles by setting up a loop to 
-            call the decorated function for each enemble member. 
-        5.  The boolean `inplace_return` should be set True on a function 
-            that it set up like a FORTRAN subroutine or a C void return.  
-            i.e. it doesn't return anything but alters data internally. 
-            In that situation the decorator returns arg0 that is assumed to 
+            ensemble).   Some processing functions are designed to handle
+            either but some aren't.  If a function is set up to hanlde
+            ensembles, the `handles_ensembles` boolean should be set True.
+            That is set True because a well designed algorithm for use with
+            MsPASS should do that.  Set `handles_ensembles=False` if the
+            function is set up to only handle atomic data.  In that situation
+            the decorator will handle ensembles by setting up a loop to
+            call the decorated function for each enemble member.
+        5.  The boolean `inplace_return` should be set True on a function
+            that it set up like a FORTRAN subroutine or a C void return.
+            i.e. it doesn't return anything but alters data internally.
+            In that situation the decorator returns arg0 that is assumed to
             have been altered by the function.
-        6.  Use `function_return_key` if a function doesn't return a seismic 
-            data object at all but computes something returned as a value. 
-            If used that capability allows a return value to be mapped into 
-            the Metadata container of the input data object and set with 
-            the specified key.  
-            
-    Finally, this decorator has a standardized behavior for handling 
-    ensembles that is not optional.  If the input is an ensemble it is 
-    not at all uncommon to have an algorithm kill all ensemble members.  
-    The ensemble container has a global "live" attribute that this decorator 
+        6.  Use `function_return_key` if a function doesn't return a seismic
+            data object at all but computes something returned as a value.
+            If used that capability allows a return value to be mapped into
+            the Metadata container of the input data object and set with
+            the specified key.
+
+    Finally, this decorator has a standardized behavior for handling
+    ensembles that is not optional.  If the input is an ensemble it is
+    not at all uncommon to have an algorithm kill all ensemble members.
+    The ensemble container has a global "live" attribute that this decorator
     will set False (i.e. define as dead) if all the member object are marked
     dead.
 
     :param func: target function
-    :param data: arg0 of function call being decorated.  This symbol is 
+    :param data: arg0 of function call being decorated.  This symbol is
       expected to point to an input data that is expected to be a MsPASS
       data object i.e. TimeSeries, Seismogram, Ensemble.
     :param args: extra positional arguments for decorated function
-    :param object_history:  boolean used to enable or disable 
+    :param object_history:  boolean used to enable or disable
        object level history for this function.  When False (default)
-       object-level history is not enabld for this function.  When 
+       object-level history is not enabld for this function.  When
        set True the decorator will add object history history th e
-       name of the function and the value of alg_id.  
-       Object level history is disabled by default for efficiency.  
+       name of the function and the value of alg_id.
+       Object level history is disabled by default for efficiency.
        If object_history is set True and the string passed
-       as alg_id is defined (not None which is the default) each 
+       as alg_id is defined (not None which is the default) each
        Seismogram or TimeSeries object will attempt to
-       save the history through a new_map operation.   
+       save the history through a new_map operation.
        If the history chain is empty this will silently generate
        an error posted to error log on each object.
-    :param alg_id: alg_id is a unique id to record the usage of func 
+    :param alg_id: alg_id is a unique id to record the usage of func
       while preserving the history.
     :type alg_id: str (e.g. str of an ObjectId)
-    :param alg_name: alternative name to assign the algorithm.  If not 
-      defined (set as None) the name of the decorated function is used.  
+    :param alg_name: alternative name to assign the algorithm.  If not
+      defined (set as None) the name of the decorated function is used.
     :type alg_name: :class:`str` or None (default)
     :param dryrun: True for dry-run, the algorithm is not run, but the arguments used in this wrapper will be checked.
       This is useful for pre-run checks of a large job to validate a workflow. Errors generate exceptions
@@ -145,15 +145,15 @@ def mspass_func_wrapper(
       this decorator applies the atomic function to each ensemble member in
       a loop over membes.
     :param kwargs: extra kv arguments
-    :return: modified seismic data object.  Can be a different type than 
-       the input.   If function_return_key is used only the Metadata 
+    :return: modified seismic data object.  Can be a different type than
+       the input.   If function_return_key is used only the Metadata
        container  should be altered.
     """
     # Add an error trap for arg0 if this function doesn't do that
     if not checks_arg0_type:
         if not isinstance(
-                data, (Seismogram, TimeSeries, SeismogramEnsemble, TimeSeriesEnsemble)
-            ):
+            data, (Seismogram, TimeSeries, SeismogramEnsemble, TimeSeriesEnsemble)
+        ):
             message = "mspass_func_wrapper only accepts mspass object as data input\n"
             message += "Actual type of arg0={}".format(str(type(data)))
             raise TypeError(message)
@@ -177,8 +177,8 @@ def mspass_func_wrapper(
 
     if dryrun:
         return "OK"
-    # reverse logic a bit confusing but idea is to do nothing if 
-    # handles_dead_data is true assuming the function will handle dead 
+    # reverse logic a bit confusing but idea is to do nothing if
+    # handles_dead_data is true assuming the function will handle dead
     # data propertly
     if not handles_dead_data:
         if data.dead():
@@ -187,13 +187,13 @@ def mspass_func_wrapper(
     if isinstance(data, (Seismogram, TimeSeries)):
         run_only_once = True
     elif isinstance(data, (TimeSeriesEnsemble, SeismogramEnsemble)):
-            if handles_ensembles:
-                run_only_once = True
-            else:
-                run_only_once = False
+        if handles_ensembles:
+            run_only_once = True
+        else:
+            run_only_once = False
     else:
-        # we only get here if checks_arg0_type is True and the 
-        # type is bad - with this logic func will be called and 
+        # we only get here if checks_arg0_type is True and the
+        # type is bad - with this logic func will be called and
         # we assume it throws an exception
         run_only_once = True
     try:
@@ -235,14 +235,14 @@ def mspass_func_wrapper(
                 data.member[i] = d
                 if object_history:
                     logging_helper.info(data.member[i], alg_id, alg_name)
-                    
+
             # mark ensmeble killed by all applications of func as dead
             N_live = number_live(data)
-            if N_live<=len(data.member):
+            if N_live <= len(data.member):
                 message = "function killed all ensemble members.  Marking ensemble dead"
-                data.elog.log_error(alg_name,message,ErrorSeverity.Invalid)
+                data.elog.log_error(alg_name, message, ErrorSeverity.Invalid)
                 data.kill()
-                
+
             # Note the in place return concept does not apply to
             # ensemles - all are in place by defintion if passed through
             # this wrapper
@@ -391,8 +391,8 @@ def mspass_method_wrapper(
     can then also be used to adapt an atomic algorithm to work automatically
     with ensembles.   When using the decorator if the funtion being decorated
     works only on atomic data set the boolean `handles_ensembles` should be
-    set as False.   True, which is the default, should be used functions that 
-    handle ensembles automatically. 
+    set as False.   True, which is the default, should be used functions that
+    handle ensembles automatically.
 
 
     :param func: target function
@@ -427,7 +427,7 @@ def mspass_method_wrapper(
        that when function_return_key is anything but None, it is assumed the
        returned object is the (usually modified) data object.
      :param handles_ensembes:  set True (default) if the function this is applied to
-       can hangle ensemble objects directly.   When False this decorator 
+       can hangle ensemble objects directly.   When False this decorator
        applies the atomic function to each ensemble member in
        a loop over members.
     :param kwargs: extra kv arguments
@@ -436,8 +436,8 @@ def mspass_method_wrapper(
     # Add an error trap for arg0 if this function doesn't do that
     if not checks_arg0_type:
         if not isinstance(
-                data, (Seismogram, TimeSeries, SeismogramEnsemble, TimeSeriesEnsemble)
-            ):
+            data, (Seismogram, TimeSeries, SeismogramEnsemble, TimeSeriesEnsemble)
+        ):
             message = "mspass_method_wrapper only accepts mspass object as data input\n"
             message += "Actual type of arg0={}".format(str(type(data)))
             raise TypeError(message)
@@ -466,8 +466,8 @@ def mspass_method_wrapper(
     if dryrun:
         return "OK"
 
-    # reverse logic a bit confusing but idea is to do nothing if 
-    # handles_dead_data is true assuming the function will handle dead 
+    # reverse logic a bit confusing but idea is to do nothing if
+    # handles_dead_data is true assuming the function will handle dead
     # data propertly
     if not handles_dead_data:
         if data.dead():
@@ -476,13 +476,13 @@ def mspass_method_wrapper(
     if isinstance(data, (Seismogram, TimeSeries)):
         run_only_once = True
     elif isinstance(data, (TimeSeriesEnsemble, SeismogramEnsemble)):
-            if handles_ensembles:
-                run_only_once = True
-            else:
-                run_only_once = False
+        if handles_ensembles:
+            run_only_once = True
+        else:
+            run_only_once = False
     else:
-        # we only get here if checks_arg0_type is True and the 
-        # type is bad - with this logic func will be called and 
+        # we only get here if checks_arg0_type is True and the
+        # type is bad - with this logic func will be called and
         # we assume it throws an exception
         run_only_once = True
 
@@ -528,9 +528,9 @@ def mspass_method_wrapper(
 
             # mark ensmeble killed by all applications of func as dead
             N_live = number_live(data)
-            if N_live<=len(data.member):
+            if N_live <= len(data.member):
                 message = "function killed all ensemble members.  Marking ensemble dead"
-                data.elog.log_error(alg_name,message,ErrorSeverity.Invalid)
+                data.elog.log_error(alg_name, message, ErrorSeverity.Invalid)
                 data.kill()
             # Note the in place return concept does not apply to
             # ensemles - all are in place by defintion if passed through
