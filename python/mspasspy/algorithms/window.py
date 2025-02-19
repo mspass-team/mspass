@@ -293,6 +293,7 @@ def scale(
         else:
             ensemble_error_post(d, alg_name, message, ErrorSeverity.Invalid)
 
+
 # not decorated for reasons given in docstring below
 def WindowDataAtomic(
     d,
@@ -304,7 +305,7 @@ def WindowDataAtomic(
 ):
     """
     Cut atomic data to a shorter time segment defined by a time range.
-    
+
     Cutting a smaller waveform segment from a larger waveform segment
     is a very common seismic data processing task.  Handling that low
     level operation needs to be done efficiently but with a reasonable
@@ -361,9 +362,9 @@ def WindowDataAtomic(
     value only to the nearest sample.   That way time computed with the
     time method (endtime is a special case for sample npts-1)
     will have subsample accuracy.
-    
-    Note:  This function should not normally be used.  WindowData 
-    calls it directy for atomic inputs and adds only a tiny overhead.  
+
+    Note:  This function should not normally be used.  WindowData
+    calls it directy for atomic inputs and adds only a tiny overhead.
     It can still be used as long as you don't need object-level history.'
 
     :param d: is the input data.  d must be either a
@@ -407,7 +408,7 @@ def WindowDataAtomic(
     output.  When False recovery will be done silently.  Note when
     `short_segment_handling` is set to "kill" logging is not optional and
     kill will always create an error log entry.
-    
+
     :return: copy of d with sample range reduced to twin range.  Returns
       an empty version of the parent data type (default constructor) if
       the input is marked dead
@@ -1190,16 +1191,17 @@ class TopMute:
         self.t0 = t0
 
     @mspass_method_wrapper
-    def apply(self, 
-              d, 
-              object_history=False, 
-              instance=None,
-              *args,
-              checks_arg0_type=True,
-              handles_ensembles=False,
-              handles_dead_data=True,
-              **kwargs,
-        ):
+    def apply(
+        self,
+        d,
+        object_history=False,
+        instance=None,
+        *args,
+        checks_arg0_type=True,
+        handles_ensembles=False,
+        handles_dead_data=True,
+        **kwargs,
+    ):
         """
         Use thie method to apply the defined top mute to one of the MsPASS
         atomic data objects. The method does a sanity check on the input

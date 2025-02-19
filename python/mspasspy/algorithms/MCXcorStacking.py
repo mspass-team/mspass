@@ -2102,7 +2102,7 @@ def demean_residuals(
 
 
 @mspass_func_wrapper
-def remove_incident_wavefield(d, beam, *args, handles_ensembles=True,**kwargs):
+def remove_incident_wavefield(d, beam, *args, handles_ensembles=True, **kwargs):
     """
     Remove incident wavefield for teleseismic P wave data using a beam estimate.
 
