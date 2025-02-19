@@ -154,7 +154,9 @@ def mspass_func_wrapper(
         if not isinstance(
                 data, (Seismogram, TimeSeries, SeismogramEnsemble, TimeSeriesEnsemble)
             ):
-            raise TypeError("mspass_func_wrapper only accepts mspass object as data input")
+            message = "mspass_func_wrapper only accepts mspass object as data input\n"
+            message += "Actual type of arg0={}".format(str(type(data)))
+            raise TypeError(message)
         else:
             if data.dead():
                 return data
@@ -305,16 +307,16 @@ def mspass_func_wrapper_multi(
     if not isinstance(
         data1, (Seismogram, TimeSeries, SeismogramEnsemble, TimeSeriesEnsemble)
     ):
-        raise TypeError(
-            "mspass_func_wrapper_multi only accepts mspass object as data input"
-        )
+        message = "mspass_func_wrapper_multi only accepts mspass object as data input\n"
+        message += "Actual type of arg0={}".format(str(type(data1)))
+        raise TypeError(message)
 
     if not isinstance(
         data2, (Seismogram, TimeSeries, SeismogramEnsemble, TimeSeriesEnsemble)
     ):
-        raise TypeError(
-            "mspass_func_wrapper_multi only accepts mspass object as data input"
-        )
+        message = "mspass_func_wrapper_multi only accepts mspass object as data input\n"
+        message += "Actual type of arg0={}".format(str(type(data2)))
+        raise TypeError(message)
 
     if not alg_name:
         alg_name = func.__name__
@@ -436,7 +438,9 @@ def mspass_method_wrapper(
         if not isinstance(
                 data, (Seismogram, TimeSeries, SeismogramEnsemble, TimeSeriesEnsemble)
             ):
-            raise TypeError("mspass_method_wrapper only accepts mspass object as data input")
+            message = "mspass_method_wrapper only accepts mspass object as data input\n"
+            message += "Actual type of arg0={}".format(str(type(data)))
+            raise TypeError(message)
         else:
             if data.dead():
                 return data
