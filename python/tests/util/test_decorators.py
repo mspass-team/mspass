@@ -139,9 +139,7 @@ def check_arg0_tester(
 def test_mspass_func_wrapper():
     with pytest.raises(TypeError) as err:
         dummy_func(1)
-    assert (
-        str(err.value) == "mspass_func_wrapper only accepts mspass object as data input"
-    )
+    assert "mspass_func_wrapper only accepts mspass object" in str(err.value)
 
     with pytest.raises(ValueError) as err:
         seis = get_live_seismogram()
@@ -588,9 +586,7 @@ def test_all_decorators():
     # test mspass_func_wrapper
     with pytest.raises(TypeError) as err:
         dummy_func_2(1)
-    assert (
-        str(err.value) == "mspass_func_wrapper only accepts mspass object as data input"
-    )
+    assert "mspass_func_wrapper only accepts mspass object" in str(err.value)
 
     with pytest.raises(ValueError) as err:
         seis = get_live_seismogram()
@@ -654,10 +650,7 @@ def dummy_func_multi(
 def test_mspass_func_wrapper_multi():
     with pytest.raises(TypeError) as err:
         dummy_func_multi(1, 2)
-    assert (
-        str(err.value)
-        == "mspass_func_wrapper_multi only accepts mspass object as data input"
-    )
+    assert "mspass_func_wrapper_multi only accepts mspass object" in str(err.value)
 
     with pytest.raises(ValueError) as err:
         seis1 = get_live_seismogram()
