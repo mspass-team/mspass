@@ -9,6 +9,7 @@ Created on Tue Jul  9 05:37:40 2024
 """
 import numpy as np
 from scipy import signal
+from mspasspy.util.decorators import mspass_func_wrapper
 from mspasspy.ccore.algorithms.amplitudes import (
     MADAmplitude,
     RMSAmplitude,
@@ -194,6 +195,7 @@ def _compute_default_robust_window(
     return TimeWindow(starttime, endtime)
 
 
+@mspass_func_wrapper
 def MCXcorPrepP(
     ensemble,
     noise_window,
@@ -214,6 +216,11 @@ def MCXcorPrepP(
     search_window_fraction=0.9,
     minimum_coda_duration=5.0,
     correlation_window_start=-3.0,
+    *args,
+    handles_ensembles=True,
+    checks_arg0_type=True,
+    handles_dead_data=True,
+    **kwargs,
 ) -> TimeSeriesEnsemble:
     """
     Function used to preprocess an ensemble  to prepare input for
@@ -1086,6 +1093,7 @@ def beam_align(ensemble, beam, window=None, time_shift_limit=10.0):
     return ensemble
 
 
+@mspass_func_wrapper
 def align_and_stack(
     ensemble,
     beam,
@@ -1104,6 +1112,11 @@ def align_and_stack(
     convergence=0.01,
     residual_norm_floor=0.1,
     demean_residuals=True,
+    *args,
+    handles_ensembles=True,
+    checks_arg0_type=True,
+    handles_dead_data=True,
+    **kwargs,
 ) -> tuple:
     """
     This function uses an initial estimate of the array stack passed as
@@ -1841,6 +1854,7 @@ def phase_time(
         return -1.0
 
 
+@mspass_func_wrapper
 def post_MCXcor_metrics(
     d,
     beam,
@@ -1853,6 +1867,11 @@ def post_MCXcor_metrics(
     window=None,
     phase_time_key="Ptime",
     time_shift_key="arrival_time_correction",
+    *args,
+    handles_ensembles=False,
+    checks_arg0_type=False,
+    handles_dead_data=False,
+    **kwargs,
 ) -> TimeSeries:
     """
     Computes and posts a set of standard QC metrics for result of multichannel cross-correlation
@@ -2082,7 +2101,8 @@ def demean_residuals(
     return ensemble
 
 
-def remove_incident_wavefield(d, beam):
+@mspass_func_wrapper
+def remove_incident_wavefield(d, beam, *args, handles_ensembles=True, **kwargs):
     """
     Remove incident wavefield for teleseismic P wave data using a beam estimate.
 
