@@ -314,9 +314,9 @@ def mspass_func_wrapper_multi(
     if not isinstance(
         data2, (Seismogram, TimeSeries, SeismogramEnsemble, TimeSeriesEnsemble)
     ):
-        message = "mspass_func_wrapper_multi only accepts mspass object as data input\n"
-        message += "Actual type of arg0={}".format(str(type(data2)))
-        raise TypeError(message)
+        raise TypeError(
+            "mspass_func_wrapper_multi only accepts mspass object as data input"
+        )
 
     if not alg_name:
         alg_name = func.__name__
