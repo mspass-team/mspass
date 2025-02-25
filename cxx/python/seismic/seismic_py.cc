@@ -882,7 +882,7 @@ PYBIND11_MODULE(seismic, m) {
         [](const PowerSpectrum& self)
         {
           /* PowerSpectrum inherit Metadata so we have to serialize that*/
-
+          pybind11::gil_scoped_acquire acquire;
           pybind11::object sbuf;
           sbuf=serialize_metadata_py(dynamic_cast<const Metadata&>(self));
           py::array_t<double, py::array::f_style> darr(self.spectrum.size(),
@@ -890,11 +890,14 @@ PYBIND11_MODULE(seismic, m) {
           stringstream ss_elog;
           boost::archive::text_oarchive ar(ss_elog);
           ar << self.elog;
-          return py::make_tuple(sbuf,self.df(),self.f0(),self.spectrum_type,
+          pybind11::tuple r_tuple = py::make_tuple(sbuf,self.df(),self.f0(),self.spectrum_type,
               ss_elog.str(),darr,self.dt(),self.timeseries_npts());
+          pybind11::gil_scoped_release release;
+          return r_tuple;
         },
         [](py::tuple t)
         {
+          pybind11::gil_scoped_acquire acquire;
           /* Deserialize Metadata*/
           pybind11::object sbuf=t[0];
           Metadata md=restore_serialized_metadata_py(sbuf);
@@ -915,6 +918,7 @@ PYBIND11_MODULE(seismic, m) {
           double parent_npts=t[7].cast<double>();
           PowerSpectrum restored(md,d,df,spectrum_type,f0,dt,parent_npts);
           restored.elog=elog;
+          pybind11::gil_scoped_release release;
           return restored;
         }
       ))

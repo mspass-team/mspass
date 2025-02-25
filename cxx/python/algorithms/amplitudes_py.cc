@@ -19,34 +19,42 @@ PYBIND11_MODULE(amplitudes, m) {
   /* Amplitude functions - overloads */
   m.def("PeakAmplitude",py::overload_cast<const CoreTimeSeries&>(&PeakAmplitude),
     "Compute amplitude as largest absolute amplitude",
+    py::call_guard<py::gil_scoped_release>(),
     py::return_value_policy::copy,py::arg("d") )
   ;
   m.def("PeakAmplitude",py::overload_cast<const CoreSeismogram&>(&PeakAmplitude),
     "Compute amplitude as largest vector amplitude",
+    py::call_guard<py::gil_scoped_release>(),
     py::return_value_policy::copy,py::arg("d") )
   ;
   m.def("RMSAmplitude",py::overload_cast<const CoreTimeSeries&>(&RMSAmplitude),
     "Compute amplitude from rms of signal",
+    py::call_guard<py::gil_scoped_release>(),
     py::return_value_policy::copy,py::arg("d") )
   ;
   m.def("RMSAmplitude",py::overload_cast<const CoreSeismogram&>(&RMSAmplitude),
     "Compute amplitude as rms on all 3 components",
+    py::call_guard<py::gil_scoped_release>(),
     py::return_value_policy::copy,py::arg("d") )
   ;
   m.def("MADAmplitude",py::overload_cast<const CoreTimeSeries&>(&MADAmplitude),
     "Compute amplitude from median absolute deviation (MAD) of signal",
+    py::call_guard<py::gil_scoped_release>(),
     py::return_value_policy::copy,py::arg("d") )
   ;
   m.def("MADAmplitude",py::overload_cast<const CoreSeismogram&>(&MADAmplitude),
     "Compute amplitude as median of vector amplitudes",
+    py::call_guard<py::gil_scoped_release>(),
     py::return_value_policy::copy,py::arg("d") )
   ;
   m.def("PercAmplitude",py::overload_cast<const CoreTimeSeries&,const double>(&PercAmplitude),
     "Compute amplitude of signal using clip percentage metric",
+    py::call_guard<py::gil_scoped_release>(),
     py::return_value_policy::copy,py::arg("d"),py::arg("perf") )
   ;
   m.def("PercAmplitude",py::overload_cast<const CoreSeismogram&,const double>(&PercAmplitude),
     "Compute amplitude of signal using clip percentage metric",
+    py::call_guard<py::gil_scoped_release>(),
     py::return_value_policy::copy,py::arg("d"),py::arg("perf") )
   ;
   py::enum_<ScalingMethod>(m,"ScalingMethod")
@@ -64,6 +72,7 @@ PYBIND11_MODULE(amplitudes, m) {
          const double,
             const TimeWindow>(&scale<Seismogram>),
     "Scale a Seismogram object with a chosen amplitude metric",
+    py::call_guard<py::gil_scoped_release>(),
     py::return_value_policy::copy,
     py::arg("d"),py::arg("method"),py::arg("level"),py::arg("window") )
   ;
@@ -72,6 +81,7 @@ PYBIND11_MODULE(amplitudes, m) {
       const double,
          const TimeWindow>(&scale<TimeSeries>),
     "Scale a TimeSeries object with a chosen amplitude metric",
+    py::call_guard<py::gil_scoped_release>(),
     py::return_value_policy::copy,
     py::arg("d"),py::arg("method"),py::arg("level"),py::arg("window") )
   ;
@@ -80,6 +90,7 @@ PYBIND11_MODULE(amplitudes, m) {
             const double,
                const TimeWindow>(&scale_ensemble_members<Seismogram>),
     "Scale each member of a SeismogramEnsemble individually by selected metric",
+    py::call_guard<py::gil_scoped_release>(),
     py::return_value_policy::copy,
     py::arg("d"),py::arg("method"),py::arg("level"),py::arg("window") )
   ;
@@ -88,18 +99,21 @@ PYBIND11_MODULE(amplitudes, m) {
             const double,
                const TimeWindow>(&scale_ensemble_members<TimeSeries>),
     "Scale each member of a TimeSeriesEnsemble individually by selected metric",
+    py::call_guard<py::gil_scoped_release>(),
     py::return_value_policy::copy,
     py::arg("d"),py::arg("method"),py::arg("level"),py::arg("window") )
   ;
   m.def("_scale_ensemble",py::overload_cast<Ensemble<Seismogram>&,
           const ScalingMethod&, const double, const bool>(&scale_ensemble<Seismogram>),
     "Apply a uniform scale to a SeismogramEnsemble using average member estimates by a selected method",
+    py::call_guard<py::gil_scoped_release>(),
     py::return_value_policy::copy,
     py::arg("d"),py::arg("method"),py::arg("level"),py::arg("use_mean") )
   ;
   m.def("_scale_ensemble",py::overload_cast<Ensemble<TimeSeries>&,
           const ScalingMethod&, const double, const bool>(&scale_ensemble<TimeSeries>),
     "Apply a uniform scale to a TimeSeriesEnsemble using average member estimates by a selected method",
+    py::call_guard<py::gil_scoped_release>(),
     py::return_value_policy::copy,
     py::arg("d"),py::arg("method"),py::arg("level"),py::arg("use_mean") )
   ;
@@ -121,6 +135,7 @@ PYBIND11_MODULE(amplitudes, m) {
          "Total frequency range of signal spectrum used for snr estimate")
   ;
   m.def("EstimateBandwidth",&EstimateBandwidth,"Estimate signal bandwidth estimate of power spectra of signal and noise",
+    py::call_guard<py::gil_scoped_release>(),
     py::return_value_policy::copy,
     py::arg("signal_df"),
     py::arg("signal_power_spectrum"),
@@ -133,6 +148,7 @@ PYBIND11_MODULE(amplitudes, m) {
   ;
   m.def("BandwidthStatistics",&BandwidthStatistics,
       "Compute statistical summary of snr in a passband returned by EstimateBandwidth - Returned in Metadata container",
+    py::call_guard<py::gil_scoped_release>(),
     py::return_value_policy::copy,
     py::arg("signal_spectrum"),
     py::arg("noise_spectrum"),
