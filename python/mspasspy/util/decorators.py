@@ -1,7 +1,6 @@
 from decorator import decorator
 
 from mspasspy.util.converter import Stream2Seismogram, Trace2TimeSeries
-
 from mspasspy.ccore.utility import MsPASSError, ErrorSeverity
 from mspasspy.ccore.seismic import (
     Seismogram,
@@ -9,6 +8,7 @@ from mspasspy.ccore.seismic import (
     TimeSeriesEnsemble,
     SeismogramEnsemble,
 )
+from mspasspy.util.seismic import number_live
 
 # from mspasspy.global_history.manager import GlobalHistoryManager
 from mspasspy.util import logging_helper
@@ -25,56 +25,150 @@ def mspass_func_wrapper(
     dryrun=False,
     inplace_return=False,
     function_return_key=None,
+    handles_ensembles=True,
+    checks_arg0_type=False,
+    handles_dead_data=True,
     **kwargs,
 ):
     """
     Decorator wrapper to adapt a simple function to the mspass parallel processing framework.
 
-    This function serves as a decorator wrapper, which is widely used in mspasspy library. It executes the target
-    function on input data. Data are restricted to be mspasspy objects. It also preserves the processing history and
-    error logs into the mspasspy objects. By wrapping your function using this decorator, you can save some workload.
-    Runtime error won't be raised in order to be efficient in map-reduce operations. MspassError with a severity Fatal
-    will be raised, others won't be raised.
+    This decorator can be used to adapt a processing function to the
+    mspass framework.  It can be used to handle the following nonstandard
+    functionality that would not appear in a function outside of mspass:
+        1.  This decorator can make a function dogmatic about the type of arg0.
+            A processing function in mspass normally requires arg0 to be a
+            seismic data type.   If the function being decorated handles
+            arg0 propertly add `checks_arg0_type=True` to the functions
+            kwargs list.  That will assure the error handler used by the
+            function itself will be used instead of the generic wrapper code.
+            When False (the default) this decorator will always throw a
+            TypeError with a generic message if arg0 is invalid.
+        2.  MsPASS data objects all use the concept of the boolean "live"
+            as a way to mark a datum as valid (dead means it is bad).
+            MsPASS functios should normally kill a problem datum and
+            not throw exceptions for anything but system level error
+            like a malloc error. A properly designed function
+            has a test for dead data immediately after verifying
+            arg0 is valid and testing of "data.live" is a valid thing to
+            do.  To assure that doesn't happen if checks_arg0_type is
+            false and the test for a valid type yields success
+            (i.e. find data is a valid seismic object) a test for
+            live will data will be done and the functionw will immediately
+            return a datum marked dead.  If set True, the default, we let
+            the functions dead data handler do the task.
+        3.  MsPASS data object have an internal mechanism to preserve
+            object-level history that records the sequence of algorithms
+            applied to a piece of data to get it to it's current stage
+            This decorator adds that functionality through three kwarg
+            values: `object_history`,`alg_id', and `alg_name'.  `object_history`
+            is  boolean that enables (if True) or disables (False - default)
+            that mechanism.   The other two are tags.   See the User
+            Manual for more details.
+        4.  MsPASS data are either "atomic" (TimeSeries or Seismogram) or
+            "ensembles" (TimeSeriesEnseble and SeismogramEnsemble).
+            "ensembles", however, are a conainer holding one or more
+            atomic objects.  Processing algorithms may require only atomic
+            or ensemble objects.  For algorithms that expect atomic data,
+            however, it is common to need to apply the same function to
+            all ensemble "members" (the set of atomic objects that define the
+            ensemble).   Some processing functions are designed to handle
+            either but some aren't.  If a function is set up to hanlde
+            ensembles, the `handles_ensembles` boolean should be set True.
+            That is set True because a well designed algorithm for use with
+            MsPASS should do that.  Set `handles_ensembles=False` if the
+            function is set up to only handle atomic data.  In that situation
+            the decorator will handle ensembles by setting up a loop to
+            call the decorated function for each enemble member.
+        5.  The boolean `inplace_return` should be set True on a function
+            that it set up like a FORTRAN subroutine or a C void return.
+            i.e. it doesn't return anything but alters data internally.
+            In that situation the decorator returns arg0 that is assumed to
+            have been altered by the function.
+        6.  Use `function_return_key` if a function doesn't return a seismic
+            data object at all but computes something returned as a value.
+            If used that capability allows a return value to be mapped into
+            the Metadata container of the input data object and set with
+            the specified key.
+
+    Finally, this decorator has a standardized behavior for handling
+    ensembles that is not optional.  If the input is an ensemble it is
+    not at all uncommon to have an algorithm kill all ensemble members.
+    The ensemble container has a global "live" attribute that this decorator
+    will set False (i.e. define as dead) if all the member object are marked
+    dead.
 
     :param func: target function
-    :param data: input data, only mspasspy data objects are accepted, i.e. TimeSeries, Seismogram, Ensemble.
-    :param args: extra arguments
-    :param object_history: True to preserve this processing history in the data object, False not to. object_history
-     and alg_id are intimately related and control how object level history is handled.
-     Object level history is disabled by default for efficiency.  If object_history is set True and the string passed
-     as alg_id is defined (not None which is the default) each Seismogram or TimeSeries object will attempt to
-     save the history through a new_map operation.   If the history chain is empty this will silently generate
-     an error posted to error log on each object.
-    :param alg_id: alg_id is a unique id to record the usage of func while preserving the history.
-    :type alg_id: :class:`bson.objectid.ObjectId`
-    :param alg_name: alg_name is the name the func we are gonna save while preserving the history.
-    :type alg_name: :class:`str`
+    :param data: arg0 of function call being decorated.  This symbol is
+      expected to point to an input data that is expected to be a MsPASS
+      data object i.e. TimeSeries, Seismogram, Ensemble.
+    :param args: extra positional arguments for decorated function
+    :param object_history:  boolean used to enable or disable
+       object level history for this function.  When False (default)
+       object-level history is not enabld for this function.  When
+       set True the decorator will add object history history th e
+       name of the function and the value of alg_id.
+       Object level history is disabled by default for efficiency.
+       If object_history is set True and the string passed
+       as alg_id is defined (not None which is the default) each
+       Seismogram or TimeSeries object will attempt to
+       save the history through a new_map operation.
+       If the history chain is empty this will silently generate
+       an error posted to error log on each object.
+    :param alg_id: alg_id is a unique id to record the usage of func
+      while preserving the history.
+    :type alg_id: str (e.g. str of an ObjectId)
+    :param alg_name: alternative name to assign the algorithm.  If not
+      defined (set as None) the name of the decorated function is used.
+    :type alg_name: :class:`str` or None (default)
     :param dryrun: True for dry-run, the algorithm is not run, but the arguments used in this wrapper will be checked.
       This is useful for pre-run checks of a large job to validate a workflow. Errors generate exceptions
       but the function returns before attempting any calculations.
     :param inplace_return: when func is an in-place function that doesn't return anything, but you want to
-     return the origin data (for example, in map-reduce), set inplace_return as true.
+       return the origin data (for example, in map-reduce), set inplace_return as true.
     :param function_return_key:  Some functions one might want to wrap with this decorator
-     return something that is appropriate to save as Metadata.  If so, use this argument to
-     define the key used to set that field in the data that is returned.
-     This feature should normally be considered as a way to wrap an existing
-     algorithm that you do not wish to alter, but which returns something useful.
-     In principle that return can be almost anything, but we recommend this feature
-     be limited to only simple types (i.e. int, float, etc.).  The decorator makes
-     no type checks so the caller is responsible for assuring what is posted will not cause
-     downstream problems.  The default for this parameter is None, which
-     is taken to mean any return of the wrapped function will be ignored.  Note
-     that when function_return_key is anything but None, it is assumed the
-     returned object is the (usually modified) data object.
+       return something that is appropriate to save as Metadata.  If so, use this argument to
+       define the key used to set that field in the data that is returned.
+       This feature should normally be considered as a way to wrap an existing
+       algorithm that you do not wish to alter, but which returns something useful.
+       In principle that return can be almost anything, but we recommend this feature
+       be limited to only simple types (i.e. int, float, etc.).  The decorator makes
+       o type checks so the caller is responsible for assuring what is posted will not cause
+       downstream problems.  The default for this parameter is None, which
+       is taken to mean any return of the wrapped function will be ignored.  Note
+       that when function_return_key is anything but None, it is assumed the
+       returned object is the (usually modified) data object.  NOTE:  this
+       options is NOT supported for ensembles.   If you set this value for
+       ensemble input this decorator will throw a ValueError exception.
+    :param handles_ensembes:  set True if the function this is applied to
+      can hangle ensemble objects directly.   When False, which is the default
+      this decorator applies the atomic function to each ensemble member in
+      a loop over membes.
     :param kwargs: extra kv arguments
-    :return: origin data or the output of func
+    :return: modified seismic data object.  Can be a different type than
+       the input.   If function_return_key is used only the Metadata
+       container  should be altered.
     """
-    if not isinstance(
-        data, (Seismogram, TimeSeries, SeismogramEnsemble, TimeSeriesEnsemble)
+    # Add an error trap for arg0 if this function doesn't do that
+    if not checks_arg0_type:
+        if not isinstance(
+            data, (Seismogram, TimeSeries, SeismogramEnsemble, TimeSeriesEnsemble)
+        ):
+            message = "mspass_func_wrapper only accepts mspass object as data input\n"
+            message += "Actual type of arg0={}".format(str(type(data)))
+            raise TypeError(message)
+        else:
+            if data.dead():
+                return data
+    if function_return_key and isinstance(
+        data, (TimeSeriesEnsemble, SeismogramEnsemble)
     ):
-        raise TypeError("mspass_func_wrapper only accepts mspass object as data input")
-
-    # if not defined
+        message = "Usage error:  "
+        message += "function_return_key was defined as {} but input type is an ensemble.\n".format(
+            function_return_key
+        )
+        message += "That options is not allowed for ensembles in any function"
+        raise ValueError(message)
     if not alg_name:
         alg_name = func.__name__
 
@@ -83,36 +177,76 @@ def mspass_func_wrapper(
 
     if dryrun:
         return "OK"
-
-    if is_input_dead(data):
-        return data
-
-    try:
-        res = func(data, *args, **kwargs)
-        if object_history:
-            logging_helper.info(data, alg_id, alg_name)
-        if function_return_key is not None:
-            if isinstance(function_return_key, str):
-                data[function_return_key] = res
-            else:
-                data.elog.log_error(
-                    alg_name,
-                    "Illegal type received for function_return_key argument="
-                    + str(type(function_return_key))
-                    + "\nReturn value not saved in Metadata",
-                    ErrorSeverity.Complaint,
-                )
-            if not inplace_return:
-                data.elog.log_error(
-                    alg_name,
-                    "Inconsistent arguments; inplace_return was set False and function_return_key was not None.\nAssuming inplace_return == True is correct",
-                    ErrorSeverity.Complaint,
-                )
+    # reverse logic a bit confusing but idea is to do nothing if
+    # handles_dead_data is true assuming the function will handle dead
+    # data propertly
+    if not handles_dead_data:
+        if data.dead():
             return data
-        elif inplace_return:
-            return data
+
+    if isinstance(data, (Seismogram, TimeSeries)):
+        run_only_once = True
+    elif isinstance(data, (TimeSeriesEnsemble, SeismogramEnsemble)):
+        if handles_ensembles:
+            run_only_once = True
         else:
-            return res
+            run_only_once = False
+    else:
+        # we only get here if checks_arg0_type is True and the
+        # type is bad - with this logic func will be called and
+        # we assume it throws an exception
+        run_only_once = True
+    try:
+        if run_only_once:
+            res = func(data, *args, **kwargs)
+            if object_history:
+                logging_helper.info(data, alg_id, alg_name)
+            if function_return_key is not None:
+                if isinstance(function_return_key, str):
+                    data[function_return_key] = res
+                else:
+                    data.elog.log_error(
+                        alg_name,
+                        "Illegal type received for function_return_key argument="
+                        + str(type(function_return_key))
+                        + "\nReturn value not saved in Metadata",
+                        ErrorSeverity.Complaint,
+                    )
+                if not inplace_return:
+                    data.elog.log_error(
+                        alg_name,
+                        "Inconsistent arguments; inplace_return was set False and function_return_key was not None.\nAssuming inplace_return == True is correct",
+                        ErrorSeverity.Complaint,
+                    )
+                return data
+            elif inplace_return:
+                return data
+            else:
+                return res
+        else:
+            # this block is only for ensembles - the run_only_once boolean
+            # means we enter here only if this is an ensmble and the
+            # boolean handles_ensembles is false
+            N = len(data.member)
+            for i in range(N):
+                # alias to make logic clearer
+                d = data.member[i]
+                d = func(d, *args, **kwargs)
+                data.member[i] = d
+                if object_history:
+                    logging_helper.info(data.member[i], alg_id, alg_name)
+
+            # mark ensmeble killed by all applications of func as dead
+            N_live = number_live(data)
+            if N_live <= len(data.member):
+                message = "function killed all ensemble members.  Marking ensemble dead"
+                data.elog.log_error(alg_name, message, ErrorSeverity.Invalid)
+                data.kill()
+
+            # Note the in place return concept does not apply to
+            # ensemles - all are in place by defintion if passed through
+            # this wrapper
+            return data
     except RuntimeError as err:
         if isinstance(data, (Seismogram, TimeSeries)):
             data.elog.log_error(alg_name, str(err), ErrorSeverity.Invalid)
@@ -173,9 +307,9 @@ def mspass_func_wrapper_multi(
     if not isinstance(
         data1, (Seismogram, TimeSeries, SeismogramEnsemble, TimeSeriesEnsemble)
     ):
-        raise TypeError(
-            "mspass_func_wrapper_multi only accepts mspass object as data input"
-        )
+        message = "mspass_func_wrapper_multi only accepts mspass object as data input\n"
+        message += "Actual type of arg0={}".format(str(type(data1)))
+        raise TypeError(message)
 
     if not isinstance(
         data2, (Seismogram, TimeSeries, SeismogramEnsemble, TimeSeriesEnsemble)
@@ -236,6 +370,9 @@ def mspass_method_wrapper(
     dryrun=False,
     inplace_return=False,
     function_return_key=None,
+    handles_ensembles=True,
+    checks_arg0_type=False,
+    handles_dead_data=True,
     **kwargs,
 ):
     """
@@ -248,16 +385,26 @@ def mspass_method_wrapper(
     mainly to reduce duplicate code to perserve history and error logs
     with mspass object.
 
+    A large fraction of algorithms used in mspass are "atomic" meaning
+    they only operator on TimeSeries and/or Seismogram objects.   In mspass
+    an "ensemble" is a container with multiple atomic objects.  This decorator
+    can then also be used to adapt an atomic algorithm to work automatically
+    with ensembles.   When using the decorator if the funtion being decorated
+    works only on atomic data set the boolean `handles_ensembles` should be
+    set as False.   True, which is the default, should be used functions that
+    handle ensembles automatically.
+
+
     :param func: target function
     :param selfarg:  the self pointer for the class with which this method is associated
     :param data: input data, only mspasspy data objects are accepted, i.e. TimeSeries, Seismogram, Ensemble.
     :param args: extra arguments
     :param object_history: True to preserve this processing history in the data object, False not to. object_history
-     and alg_id are intimately related and control how object level history is handled.
-     Object level history is disabled by default for efficiency.  If object_history is set True and the string passed
-     as alg_id is defined (not None which is the default) each Seismogram or TimeSeries object will attempt to
-     save the history through a new_map operation.   If the history chain is empty this will silently generate
-     an error posted to error log on each object.
+       and alg_id are intimately related and control how object level history is handled.
+       Object level history is disabled by default for efficiency.  If object_history is set True and the string passed
+       as alg_id is defined (not None which is the default) each Seismogram or TimeSeries object will attempt to
+       save the history through a new_map operation.   If the history chain is empty this will silently generate
+       an error posted to error log on each object.
     :param alg_id: alg_id is a unique id to record the usage of func while preserving the history.
     :type alg_id: :class:`bson.objectid.ObjectId`
     :param alg_name: alg_name is the name the func we are gonna save while preserving the history.
@@ -266,26 +413,37 @@ def mspass_method_wrapper(
       This is useful for pre-run checks of a large job to validate a workflow. Errors generate exceptions
       but the function returns before attempting any calculations.
     :param inplace_return: when func is an in-place function that doesn't return anything, but you want to
-     return the origin data (for example, in map-reduce), set inplace_return as true.
+       return the origin data (for example, in map-reduce), set inplace_return as true.
     :param function_return_key:  Some functions one might want to wrap with this decorator
-     return something that is appropriate to save as Metadata.  If so, use this argument to
-     define the key used to set that field in the data that is returned.
-     This feature should normally be considered as a way to wrap an existing
-     algorithm that you do not wish to alter, but which returns something useful.
-     In principle that return can be almost anything, but we recommend this feature
-     be limited to only simple types (i.e. int, float, etc.).  The decorator makes
-     no type checks so the caller is responsible for assuring what is posted will not cause
-     downstream problems.  The default for this parameter is None, which
-     is taken to mean any return of the wrapped function will be ignored.  Note
-     that when function_return_key is anything but None, it is assumed the
-     returned object is the (usually modified) data object.
+       return something that is appropriate to save as Metadata.  If so, use this argument to
+       define the key used to set that field in the data that is returned.
+       This feature should normally be considered as a way to wrap an existing
+       algorithm that you do not wish to alter, but which returns something useful.
+       In principle that return can be almost anything, but we recommend this feature
+       be limited to only simple types (i.e. int, float, etc.).  The decorator makes
+       no type checks so the caller is responsible for assuring what is posted will not cause
+       downstream problems.  The default for this parameter is None, which
+       is taken to mean any return of the wrapped function will be ignored.  Note
+       that when function_return_key is anything but None, it is assumed the
+       returned object is the (usually modified) data object.
+     :param handles_ensembes:  set True (default) if the function this is applied to
+       can hangle ensemble objects directly.   When False this decorator
+       applies the atomic function to each ensemble member in
+       a loop over members.
     :param kwargs: extra kv arguments
     :return: origin data or the output of func
     """
-    if not isinstance(
-        data, (Seismogram, TimeSeries, SeismogramEnsemble, TimeSeriesEnsemble)
-    ):
-        raise TypeError("mspass_func_wrapper only accepts mspass object as data input")
+    # Add an error trap for arg0 if this function doesn't do that
+    if not checks_arg0_type:
+        if not isinstance(
+            data, (Seismogram, TimeSeries, SeismogramEnsemble, TimeSeriesEnsemble)
+        ):
+            message = "mspass_method_wrapper only accepts mspass object as data input\n"
+            message += "Actual type of arg0={}".format(str(type(data)))
+            raise TypeError(message)
+        else:
+            if data.dead():
+                return data
 
     # if not defined
     if not alg_name:
@@ -296,39 +454,88 @@ def mspass_method_wrapper(
 
     if object_history and alg_id is None:
         raise ValueError(alg_name + ": object_history was true but alg_id not defined")
-
+    if function_return_key and isinstance(
+        data, (TimeSeriesEnsemble, SeismogramEnsemble)
+    ):
+        message = "Usage error:  "
+        message += "function_return_key was defined as {} but input type is an ensemble.\n".format(
+            function_return_key
+        )
+        message += "That options is not allowed for ensembles in any class method"
+        raise ValueError(message)
     if dryrun:
         return "OK"
 
-    if is_input_dead(data):
-        return data
+    # reverse logic a bit confusing but idea is to do nothing if
+    # handles_dead_data is true assuming the function will handle dead
+    # data propertly
+    if not handles_dead_data:
+        if data.dead():
+            return data
+
+    if isinstance(data, (Seismogram, TimeSeries)):
+        run_only_once = True
+    elif isinstance(data, (TimeSeriesEnsemble, SeismogramEnsemble)):
+        if handles_ensembles:
+            run_only_once = True
+        else:
+            run_only_once = False
+    else:
+        # we only get here if checks_arg0_type is True and the
+        # type is bad - with this logic func will be called and
+        # we assume it throws an exception
+        run_only_once = True
 
     try:
-        res = func(selfarg, data, *args, **kwargs)
-        if object_history:
-            logging_helper.info(data, alg_id, alg_name)
-        if function_return_key is not None:
-            if isinstance(function_return_key, str):
-                data[function_return_key] = res
+        if run_only_once:
+            res = func(selfarg, data, *args, **kwargs)
+            if object_history:
+                logging_helper.info(data, alg_id, alg_name)
+            if function_return_key is not None:
+                if isinstance(function_return_key, str):
+                    data[function_return_key] = res
+                else:
+                    data.elog.log_error(
+                        alg_name,
+                        "Illegal type received for function_return_key argument="
+                        + str(type(function_return_key))
+                        + "\nReturn value not saved in Metadata",
+                        ErrorSeverity.Complaint,
+                    )
+                if not inplace_return:
+                    data.elog.log_error(
+                        alg_name,
+                        "Inconsistent arguments; inplace_return was set False and function_return_key was not None.\nAssuming inplace_return == True is correct",
+                        ErrorSeverity.Complaint,
+                    )
+                return data
+            elif inplace_return:
+                return data
             else:
-                data.elog.log_error(
-                    alg_name,
-                    "Illegal type received for function_return_key argument="
-                    + str(type(function_return_key))
-                    + "\nReturn value not saved in Metadata",
-                    ErrorSeverity.Complaint,
-                )
-            if not inplace_return:
-                data.elog.log_error(
-                    alg_name,
-                    "Inconsistent arguments; inplace_return was set False and function_return_key was not None.\nAssuming inplace_return == True is correct",
-                    ErrorSeverity.Complaint,
-                )
-            return data
-        elif inplace_return:
-            return data
+                return res
         else:
-            return res
+            # this block is only for ensembles - the run_only_once boolean
+            # means we enter here only if this is an ensmble and the
+            # boolean handles_ensembles is false
+            N = len(data.member)
+            for i in range(N):
+                # alias to make logic clearer
+                d = data.member[i]
+                d = func(selfarg, d, *args, **kwargs)
+                data.member[i] = d
+                if object_history:
+                    logging_helper.info(data.member[i], alg_id, alg_name)
+
+            # mark ensmeble killed by all applications of func as dead
+            N_live = number_live(data)
+            if N_live <= len(data.member):
+                message = "function killed all ensemble members.  Marking ensemble dead"
+                data.elog.log_error(alg_name, message, ErrorSeverity.Invalid)
+                data.kill()
+            # Note the in place return concept does not apply to
+            # ensemles - all are in place by defintion if passed through
+            # this wrapper
+            return data
     except RuntimeError as err:
         if isinstance(data, (Seismogram, TimeSeries)):
             data.elog.log_error(alg_name, str(err), ErrorSeverity.Invalid)

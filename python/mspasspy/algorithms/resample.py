@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from mspasspy.util.decorators import mspass_func_wrapper
+from mspasspy.util.decorators import mspass_func_wrapper, mspass_method_wrapper
 from mspasspy.ccore.utility import MsPASSError, ErrorSeverity, dmatrix
 from mspasspy.ccore.seismic import (
     TimeSeries,
@@ -127,7 +127,7 @@ class BasicResampler(ABC):
             return -1
 
     @abstractmethod
-    def resample(self, mspass_object):
+    def resample(self, mspass_object, handles_ensembles=True):
         """
         Main operator a concrete class must implement.  It should accept
         any mspass data object and return a clone that has been resampled
@@ -186,7 +186,8 @@ class ScipyResampler(BasicResampler):
         super().__init__(sampling_rate=sampling_rate)
         self.window = window
 
-    def resample(self, mspass_object):
+    @mspass_method_wrapper
+    def resample(self, mspass_object, *args, checks_arg0_type=True, **kwargs):
         """
         Applies the scipy.signal.resample function to all data held in
         a mspass container passed through arg0 (mspass_object).
@@ -325,7 +326,8 @@ class ScipyDecimator(BasicResampler):
             )
         return message
 
-    def resample(self, mspass_object):
+    @mspass_method_wrapper
+    def resample(self, mspass_object, *args, checks_arg0_type=True, **kwargs):
         """
         Implementation of required abstract method for this operator.
         The only argument is mspass_object.   The operator will downsample
@@ -425,17 +427,26 @@ class ScipyDecimator(BasicResampler):
 
 
 @mspass_func_wrapper
+# note handles_dead_data could be left at default True only because
+# resampling operators in this module all handle dead data cleanly.
+# set False for efficiency and to be more robust with other implementations
+# of decimator or resampler
 def resample(
     mspass_object,
     decimator,
     resampler,
     verify_operators=True,
+    *args,
     object_history=False,
     alg_name="resample",
     alg_id=None,
     dryrun=False,
     inplace_return=False,
     function_return_key=None,
+    handles_ensembles=True,
+    checks_arg0_type=True,
+    handles_dead_data=False,
+    **kwargs,
 ):
     """
     Resample any valid data object to a common sample rate (sample interval).

@@ -14,9 +14,10 @@ Created on Tue May 28 19:22:10 2024
 """
 import numpy as np
 
+from mspasspy.util.decorators import mspass_func_wrapper
 from mspasspy.ccore.seismic import TimeSeries, Seismogram, SeismogramEnsemble
 from mspasspy.ccore.algorithms.basic import _WindowData3C
-from mspasspy.ccore.utility import ErrorSeverity
+from mspasspy.ccore.utility import ErrorSeverity, MsPASSError
 from mspasspy.ccore.algorithms.deconvolution import CNRDeconEngine
 from mspasspy.algorithms.window import WindowData
 from mspasspy.algorithms.basic import ExtractComponent
@@ -180,6 +181,7 @@ def prediction_error(engine, wavelet) -> float:
     return np.linalg.norm(err.data) / np.linalg.norm(io.data)
 
 
+@mspass_func_wrapper
 def CNRRFDecon(
     seis,
     engine,
@@ -192,6 +194,17 @@ def CNRRFDecon(
     bandwidth_keys=["low_f_band_edge", "high_f_band_edge"],
     QCdata_key="CNRFDecon_properties",
     return_wavelet=False,
+    *args,
+    object_history=False,
+    alg_name="CNRRFDecon",
+    alg_id=None,
+    dryrun=False,
+    inplace_return=False,
+    handles_ensembles=False,
+    function_return_key=None,
+    checks_arg0_type=True,
+    handles_dead_data=True,
+    **kwargs,
 ) -> tuple:
     """
     Uses the CNRRFDeconEngine instance passed as `engine` to
@@ -501,6 +514,7 @@ def CNRRFDecon(
         return d
 
 
+@mspass_func_wrapper
 def CNRArrayDecon(
     ensemble,
     beam,
@@ -514,6 +528,9 @@ def CNRArrayDecon(
     bandwidth_subdocument_key=None,
     bandwidth_keys=["low_f_band_edge", "high_f_band_edge"],
     return_wavelet=False,
+    *args,
+    handles_ensembles=True,
+    **kwargs,
 ) -> tuple:
     """
     Notes:  delete when writing final docstring
@@ -676,17 +693,17 @@ def CNRArrayDecon(
             psnoise = engine.compute_noise_spectrum(n2use)
         # we cannot proceed if the noise spectrum estimation failed
         if psnoise.dead():
-            ensout.elog += psnoise.elog
-            ensout.log_error(
-                alg,
+            ensemble.elog += psnoise.elog
+            ensemble.log_error(
+                prog,
                 "compute_noise_spectrum failed - cannot process this ensemble",
                 ErrorSeverity.Invalid,
             )
-            ensout.kill()
+            ensemble.kill()
             if return_wavelet:
-                return [ensout, None, None]
+                return [ensemble, None, None]
             else:
-                return ensout
+                return ensemble
         beam = WindowData(beam, signal_window.start, signal_window.end)
     else:
         message = "Illegal argument combination.\n"

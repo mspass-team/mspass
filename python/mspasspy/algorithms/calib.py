@@ -2,6 +2,7 @@ import pickle
 import numpy as np
 from mspasspy.ccore.seismic import TimeSeries, TimeSeriesEnsemble
 from mspasspy.ccore.utility import MsPASSError, ErrorSeverity
+from mspasspy.util.decorators import mspass_method_wrapper
 from obspy import UTCDateTime
 
 
@@ -151,7 +152,18 @@ class ApplyCalibEngine:
             )
             raise MsPASSError(message, ErrorSeverity.Invalid)
 
-    def apply_calib(self, d, id_key="channel_id", kill_if_undefined=True):
+    @mspass_method_wrapper
+    def apply_calib(
+        self,
+        d,
+        id_key="channel_id",
+        kill_if_undefined=True,
+        *args,
+        handles_ensembles=True,
+        checks_arg0_type=True,
+        handles_dead_data=True,
+        **kwargs,
+    ):
         """
         Use this method to apply a calib value to a TimeSeries or all the
         live members of a TimeSeriesEnsemble.
