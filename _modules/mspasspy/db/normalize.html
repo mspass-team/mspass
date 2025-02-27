@@ -3408,7 +3408,14 @@
 
 
 <div class="viewcode-block" id="normalize"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.normalize">[docs]</a><span class="nd">@mspass_func_wrapper</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">normalize</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">matcher</span><span class="p">,</span> <span class="n">kill_on_failure</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">normalize</span><span class="p">(</span>
+    <span class="n">mspass_object</span><span class="p">,</span>
+    <span class="n">matcher</span><span class="p">,</span>
+    <span class="n">kill_on_failure</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">handles_ensembles</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">checks_arg0_type</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">handles_dead_data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generic function to do in line normalization with dask/spark map operator.</span>
 
@@ -3431,6 +3438,12 @@
 <span class="sd">    that data within a workflow as follows:</span>
 <span class="sd">        dataset = dataset.map(normalize,matcher)</span>
 
+<span class="sd">    An important warning about ensembles. If the function receives an</span>
+<span class="sd">    ensemble by default it will enter a loop to apply the normalization</span>
+<span class="sd">    to all &quot;member&quot; objects of the ensemble.   If you need to insert</span>
+<span class="sd">    the normalizatio parameters into the ensemble&#39;s Metadata container</span>
+<span class="sd">    instead of all the members set `handles_ensembles=True`.</span>
+
 <span class="sd">    :param mspass_object:  data to be normalized</span>
 <span class="sd">    :type mspass_object:  For all mspass matchers this</span>
 <span class="sd">      must be one of the mspass data types of TimeSeries, Seismogram,</span>
@@ -3445,8 +3458,11 @@
 <span class="sd">    :type matcher:  must be a concrete subclass of BasicMatcher</span>
 
 <span class="sd">    :param kill_on_failure:  when True if the call to the find_one</span>
-<span class="sd">    method of matcher fails the datum returned will be marked dead.</span>
+<span class="sd">      method of matcher fails the datum returned will be marked dead.</span>
 <span class="sd">    :type kill_on_failure:  boolean</span>
+
+<span class="sd">    :param handles_ensembles:  boolean controlling how the function is</span>
+<span class="sd">      applied with ensembles - see above.</span>
 
 <span class="sd">    :return:  copy of mspass_object.  dead data are returned immediately.</span>
 <span class="sd">    if kill_on_failure is true the result may be killed on return.</span>

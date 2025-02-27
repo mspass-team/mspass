@@ -298,7 +298,15 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">verbose</span>
 
 <div class="viewcode-block" id="MetadataGT.kill_if_true"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.MetadataGT.kill_if_true">[docs]</a>    <span class="nd">@mspass_method_wrapper</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">kill_if_true</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">apply_to_members</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">kill_if_true</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">d</span><span class="p">,</span>
+        <span class="n">apply_to_members</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+        <span class="n">handles_ensembles</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">checks_arg0_type</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Implementation of this abstract method for this tester.</span>
 <span class="sd">        Kills d if the d[self.key] &gt; value stored with the class.</span>
@@ -361,7 +369,15 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">verbose</span>
 
 <div class="viewcode-block" id="MetadataGE.kill_if_true"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.MetadataGE.kill_if_true">[docs]</a>    <span class="nd">@mspass_method_wrapper</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">kill_if_true</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">apply_to_members</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">kill_if_true</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">d</span><span class="p">,</span>
+        <span class="n">apply_to_members</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+        <span class="n">handles_ensembles</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">checks_arg0_type</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Implementation of this abstract method for this tester.</span>
 <span class="sd">        Kills d if the d[self.key] &gt;= value stored with the class.</span>
@@ -422,7 +438,15 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">verbose</span>
 
 <div class="viewcode-block" id="MetadataLT.kill_if_true"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.MetadataLT.kill_if_true">[docs]</a>    <span class="nd">@mspass_method_wrapper</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">kill_if_true</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">apply_to_members</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">kill_if_true</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">d</span><span class="p">,</span>
+        <span class="n">apply_to_members</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+        <span class="n">handles_ensembles</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">checks_arg0_type</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Implementation of this abstract method for this tester.</span>
 <span class="sd">        Kills d if the d[self.key] &gt; value stored with the class.</span>
@@ -483,7 +507,15 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">verbose</span>
 
 <div class="viewcode-block" id="MetadataLE.kill_if_true"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.MetadataLE.kill_if_true">[docs]</a>    <span class="nd">@mspass_method_wrapper</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">kill_if_true</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">apply_to_members</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">kill_if_true</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">d</span><span class="p">,</span>
+        <span class="n">apply_to_members</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+        <span class="n">handles_ensembles</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">checks_arg0_type</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Implementation of this abstract method for this tester.</span>
 <span class="sd">        Kills d if the d[self.key] &lt;= value stored with the class.</span>
@@ -546,7 +578,15 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">verbose</span>
 
 <div class="viewcode-block" id="MetadataEQ.kill_if_true"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.MetadataEQ.kill_if_true">[docs]</a>    <span class="nd">@mspass_method_wrapper</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">kill_if_true</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">apply_to_members</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">kill_if_true</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">d</span><span class="p">,</span>
+        <span class="n">apply_to_members</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+        <span class="n">handles_ensembles</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">checks_arg0_type</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Implementation of this abstract method for this tester.</span>
 <span class="sd">        Kills d if the d[self.key] == value stored with the class.</span>
@@ -609,7 +649,15 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">verbose</span>
 
 <div class="viewcode-block" id="MetadataNE.kill_if_true"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.MetadataNE.kill_if_true">[docs]</a>    <span class="nd">@mspass_method_wrapper</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">kill_if_true</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">apply_to_members</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">kill_if_true</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">d</span><span class="p">,</span>
+        <span class="n">apply_to_members</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+        <span class="n">handles_ensembles</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">checks_arg0_type</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Implementation of this abstract method for this tester.</span>
 <span class="sd">        Kills d if the d[self.key] != value stored with the class.</span>
@@ -662,7 +710,15 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">verbose</span>
 
 <div class="viewcode-block" id="MetadataDefined.kill_if_true"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.MetadataDefined.kill_if_true">[docs]</a>    <span class="nd">@mspass_method_wrapper</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">kill_if_true</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">apply_to_members</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">kill_if_true</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">d</span><span class="p">,</span>
+        <span class="n">apply_to_members</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+        <span class="n">handles_ensembles</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">checks_arg0_type</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Implementation of this abstract method for this tester.</span>
 <span class="sd">        Kills d if self.key is defined for this datum</span>
@@ -715,7 +771,15 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">verbose</span>
 
 <div class="viewcode-block" id="MetadataUndefined.kill_if_true"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.MetadataUndefined.kill_if_true">[docs]</a>    <span class="nd">@mspass_method_wrapper</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">kill_if_true</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">apply_to_members</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">kill_if_true</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">d</span><span class="p">,</span>
+        <span class="n">apply_to_members</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+        <span class="n">handles_ensembles</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">checks_arg0_type</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Implementation of this abstract method for this tester.</span>
 <span class="sd">        Kills d if self.key is not defined for this datum</span>
@@ -804,7 +868,15 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">verbose</span>
 
 <div class="viewcode-block" id="MetadataInterval.kill_if_true"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.MetadataInterval.kill_if_true">[docs]</a>    <span class="nd">@mspass_method_wrapper</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">kill_if_true</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">apply_to_members</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">kill_if_true</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">d</span><span class="p">,</span>
+        <span class="n">apply_to_members</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+        <span class="n">handles_ensembles</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">checks_arg0_type</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Implementation of this abstract method for this tester.</span>
 <span class="sd">        Kills d if the d[self.key] &lt;= value stored with the class.</span>
@@ -918,7 +990,15 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">executioners</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span>
 
 <div class="viewcode-block" id="FiringSquad.kill_if_true"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.FiringSquad.kill_if_true">[docs]</a>    <span class="nd">@mspass_method_wrapper</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">kill_if_true</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">apply_to_members</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">kill_if_true</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">d</span><span class="p">,</span>
+        <span class="n">apply_to_members</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+        <span class="n">handles_ensembles</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">checks_arg0_type</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Implementation of base class method.  In this case failure is</span>
 <span class="sd">        defined as not passing one of the set of tests loaded  when</span>
@@ -1100,7 +1180,16 @@
             <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Fatal</span><span class="p">)</span>
 
 <div class="viewcode-block" id="ChangeKey.apply"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.ChangeKey.apply">[docs]</a>    <span class="nd">@mspass_method_wrapper</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">apply_to_members</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">fast_mode</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">d</span><span class="p">,</span>
+        <span class="n">apply_to_members</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">fast_mode</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+        <span class="n">handles_enembles</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
         <span class="k">if</span> <span class="n">_input_is_valid</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
                 <span class="k">return</span> <span class="n">d</span>
@@ -1188,7 +1277,15 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">constant_value</span>
 
 <div class="viewcode-block" id="SetValue.apply"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.SetValue.apply">[docs]</a>    <span class="nd">@mspass_method_wrapper</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">apply_to_members</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">d</span><span class="p">,</span>
+        <span class="n">apply_to_members</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+        <span class="n">handles_ensembles</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">checks_arg0_type</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Used to apply this operator to Metadata of a MsPASS data object.</span>
 <span class="sd">        Use of decorator adds common MsPASS arguments as call options.</span>
@@ -1255,7 +1352,15 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value_to_add</span>
 
 <div class="viewcode-block" id="Add.apply"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Add.apply">[docs]</a>    <span class="nd">@mspass_method_wrapper</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">apply_to_members</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">d</span><span class="p">,</span>
+        <span class="n">apply_to_members</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+        <span class="n">handles_ensembles</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">checks_arg0_type</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
         <span class="n">elognametag</span> <span class="o">=</span> <span class="s2">&quot;Metadata Add Operator&quot;</span>
         <span class="k">if</span> <span class="n">_input_is_valid</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
@@ -1333,7 +1438,15 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value_to_multiply</span>
 
 <div class="viewcode-block" id="Multiply.apply"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Multiply.apply">[docs]</a>    <span class="nd">@mspass_method_wrapper</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">apply_to_members</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">d</span><span class="p">,</span>
+        <span class="n">apply_to_members</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+        <span class="n">handles_ensembles</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">checks_arg0_type</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
         <span class="n">elognametag</span> <span class="o">=</span> <span class="s2">&quot;Metadata Multiply Operator&quot;</span>
         <span class="k">if</span> <span class="n">_input_is_valid</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
@@ -1410,7 +1523,15 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value_to_subtract</span>
 
 <div class="viewcode-block" id="Subtract.apply"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Subtract.apply">[docs]</a>    <span class="nd">@mspass_method_wrapper</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">apply_to_members</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">d</span><span class="p">,</span>
+        <span class="n">apply_to_members</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+        <span class="n">handles_ensembles</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">checks_arg0_type</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
         <span class="n">elognametag</span> <span class="o">=</span> <span class="s2">&quot;Metadata Subtract Operator&quot;</span>
         <span class="k">if</span> <span class="n">_input_is_valid</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
@@ -1488,7 +1609,15 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value_to_divide</span>
 
 <div class="viewcode-block" id="Divide.apply"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Divide.apply">[docs]</a>    <span class="nd">@mspass_method_wrapper</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">apply_to_members</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">d</span><span class="p">,</span>
+        <span class="n">apply_to_members</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+        <span class="n">handles_ensembles</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">checks_arg0_type</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
         <span class="n">elognametag</span> <span class="o">=</span> <span class="s2">&quot;Metadata Divide Operator&quot;</span>
         <span class="k">if</span> <span class="n">_input_is_valid</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
@@ -1573,7 +1702,15 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
 
 <div class="viewcode-block" id="IntegerDivide.apply"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.IntegerDivide.apply">[docs]</a>    <span class="nd">@mspass_method_wrapper</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">apply_to_members</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">d</span><span class="p">,</span>
+        <span class="n">apply_to_members</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+        <span class="n">handles_ensembles</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">checks_arg0_type</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
         <span class="n">elognametag</span> <span class="o">=</span> <span class="s2">&quot;Metadata IntegerDivide Operator&quot;</span>
         <span class="k">if</span> <span class="n">_input_is_valid</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
@@ -1662,7 +1799,15 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
 
 <div class="viewcode-block" id="Mod.apply"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Mod.apply">[docs]</a>    <span class="nd">@mspass_method_wrapper</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">apply_to_members</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">d</span><span class="p">,</span>
+        <span class="n">apply_to_members</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+        <span class="n">handles_ensembles</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">checks_arg0_type</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
         <span class="n">elognametag</span> <span class="o">=</span> <span class="s2">&quot;Metadata Mod Operator&quot;</span>
         <span class="k">if</span> <span class="n">_input_is_valid</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
@@ -1755,7 +1900,15 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">key2</span> <span class="o">=</span> <span class="n">key2</span>
 
 <div class="viewcode-block" id="Add2.apply"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Add2.apply">[docs]</a>    <span class="nd">@mspass_method_wrapper</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">apply_to_members</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">d</span><span class="p">,</span>
+        <span class="n">apply_to_members</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+        <span class="n">handles_ensembles</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">checks_arg0_type</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
         <span class="n">elognametag</span> <span class="o">=</span> <span class="s2">&quot;Metadata Add2 Operator&quot;</span>
         <span class="k">if</span> <span class="n">_input_is_valid</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
@@ -1855,7 +2008,15 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">key2</span> <span class="o">=</span> <span class="n">key2</span>
 
 <div class="viewcode-block" id="Multiply2.apply"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Multiply2.apply">[docs]</a>    <span class="nd">@mspass_method_wrapper</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">apply_to_members</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">d</span><span class="p">,</span>
+        <span class="n">apply_to_members</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+        <span class="n">handles_ensembles</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">checks_arg0_type</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
         <span class="n">elognametag</span> <span class="o">=</span> <span class="s2">&quot;Metadata Multiply2 Operator&quot;</span>
         <span class="k">if</span> <span class="n">_input_is_valid</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
@@ -1955,7 +2116,15 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">key2</span> <span class="o">=</span> <span class="n">key2</span>
 
 <div class="viewcode-block" id="Subtract2.apply"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Subtract2.apply">[docs]</a>    <span class="nd">@mspass_method_wrapper</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">apply_to_members</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">d</span><span class="p">,</span>
+        <span class="n">apply_to_members</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+        <span class="n">handles_ensembles</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">checks_arg0_type</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
         <span class="n">elognametag</span> <span class="o">=</span> <span class="s2">&quot;Metadata Subtract2 Operator&quot;</span>
         <span class="k">if</span> <span class="n">_input_is_valid</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
@@ -2055,7 +2224,15 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">key2</span> <span class="o">=</span> <span class="n">key2</span>
 
 <div class="viewcode-block" id="Divide2.apply"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Divide2.apply">[docs]</a>    <span class="nd">@mspass_method_wrapper</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">apply_to_members</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">d</span><span class="p">,</span>
+        <span class="n">apply_to_members</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+        <span class="n">handles_ensembles</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">checks_arg0_type</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
         <span class="n">elognametag</span> <span class="o">=</span> <span class="s2">&quot;Metadata Divide2 Operator&quot;</span>
         <span class="k">if</span> <span class="n">_input_is_valid</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
@@ -2155,7 +2332,15 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">key2</span> <span class="o">=</span> <span class="n">key2</span>
 
 <div class="viewcode-block" id="IntegerDivide2.apply"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.IntegerDivide2.apply">[docs]</a>    <span class="nd">@mspass_method_wrapper</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">apply_to_members</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">d</span><span class="p">,</span>
+        <span class="n">apply_to_members</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+        <span class="n">handles_ensembles</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">checks_arg0_type</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
         <span class="n">elognametag</span> <span class="o">=</span> <span class="s2">&quot;Metadata IntegerDivide2 Operator&quot;</span>
         <span class="k">if</span> <span class="n">_input_is_valid</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
@@ -2255,7 +2440,15 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">key2</span> <span class="o">=</span> <span class="n">key2</span>
 
 <div class="viewcode-block" id="Mod2.apply"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Mod2.apply">[docs]</a>    <span class="nd">@mspass_method_wrapper</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">apply_to_members</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">d</span><span class="p">,</span>
+        <span class="n">apply_to_members</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+        <span class="n">handles_ensembles</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">checks_arg0_type</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
         <span class="n">elognametag</span> <span class="o">=</span> <span class="s2">&quot;Metadata Mod2 Operator&quot;</span>
         <span class="k">if</span> <span class="n">_input_is_valid</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
@@ -2372,7 +2565,15 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">oplist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span>
 
 <div class="viewcode-block" id="MetadataOperatorChain.apply"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.MetadataOperatorChain.apply">[docs]</a>    <span class="nd">@mspass_method_wrapper</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">apply_to_members</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">d</span><span class="p">,</span>
+        <span class="n">apply_to_members</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+        <span class="n">handles_ensembles</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">checks_arg0_type</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Implementation of base class method.  In this case failure is</span>
 <span class="sd">        defined as not passing one of the set of tests loaded  when</span>

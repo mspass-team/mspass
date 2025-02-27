@@ -172,11 +172,22 @@
     <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">inplace_return</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">handles_dead_data</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="o">**</span><span class="n">options</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    This function filters the data of mspasspy objects. Note it is wrapped by mspass_func_wrapper, so the processing</span>
-<span class="sd">    history and error logs can be preserved.</span>
+<span class="sd">    Applies a time invariant filter to a MsPASS data object.</span>
+
+<span class="sd">    This entry is a wrapper around the obspy filter function.  It accepts the</span>
+<span class="sd">    same arguments as the obspy function and runs the same implementation.</span>
+<span class="sd">    See their documentation for details, but note the idiosyncracy of</span>
+<span class="sd">    their API is inherited.  Because different types of filters are</span>
+<span class="sd">    enabled by the setting of the &quot;type&quot; argument, what kwarg values are</span>
+<span class="sd">    referenced depend upon the value of &quot;type&quot;.   In particular, note:</span>
+<span class="sd">        - &quot;bandpass&quot; requires values for &quot;freqmin&quot; and &quot;freqmax as corner frequenices</span>
+<span class="sd">        - &quot;lowpass&quot; requires only a value for &quot;freq&quot; to define the one corner</span>
+<span class="sd">        - &quot;highpass&quot; also requres only the value &quot;freq&quot; for the low corner</span>
+<span class="sd">    There are other options described in the obspy documentation.</span>
 
 <span class="sd">    :param data: input data, only mspasspy data objects are accepted, i.e. TimeSeries, Seismogram, Ensemble.</span>
 <span class="sd">    :param type: type of filter, &#39;bandpass&#39;, &#39;bandstop&#39;, &#39;lowpass&#39;, &#39;highpass&#39;, &#39;lowpass_cheby_2&#39;, &#39;lowpass_fir&#39;,</span>
@@ -211,6 +222,7 @@
     <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">inplace_return</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">handles_dead_data</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;simple&quot;</span><span class="p">,</span>
     <span class="o">**</span><span class="n">options</span><span class="p">,</span>
 <span class="p">):</span>
@@ -251,6 +263,7 @@
     <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">inplace_return</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">handles_dead_data</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">method</span><span class="o">=</span><span class="s2">&quot;weighted_average_slopes&quot;</span><span class="p">,</span>
     <span class="n">starttime</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">npts</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -371,6 +384,7 @@
     <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">template_time</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">return_type</span><span class="o">=</span><span class="s2">&quot;seismogram&quot;</span><span class="p">,</span>
+    <span class="n">handles_dead_data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">):</span>
     <span class="n">res</span> <span class="o">=</span> <span class="n">obspy</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">cross_correlation</span><span class="o">.</span><span class="n">correlate_stream_template</span><span class="p">(</span>
@@ -403,6 +417,7 @@
     <span class="n">details</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">plot</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">return_type</span><span class="o">=</span><span class="s2">&quot;seismogram&quot;</span><span class="p">,</span>
+    <span class="n">handles_dead_data</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">):</span>
     <span class="n">tem_list</span> <span class="o">=</span> <span class="p">[]</span>
@@ -445,6 +460,7 @@
     <span class="n">alg_name</span><span class="o">=</span><span class="s2">&quot;templates_max_similarity&quot;</span><span class="p">,</span>
     <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">handles_dead_data</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
 <span class="p">):</span>
     <span class="n">tem_list</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">template</span> <span class="ow">in</span> <span class="n">streams_templates</span><span class="p">:</span>
@@ -482,6 +498,7 @@
     <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">abs_max</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">handles_dead_data</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
 <span class="p">):</span>
     <span class="k">return</span> <span class="n">obspy</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">cross_correlation</span><span class="o">.</span><span class="n">xcorr_max</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">abs_max</span><span class="p">)</span></div>
 

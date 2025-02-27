@@ -154,7 +154,39 @@
 <section id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Permalink to this heading"></a></h2>
 <p>This page is a quick reference to algorithms available in MsPASS.
-The page is organized as a set of tables with hyperlinks to the docstrings
+The functions described here are all algorithms for handling MsPASS
+seismic data objects.   Utility functions for other objectives are described
+elsewhere.</p>
+<p>The API of all the functions described here is standardized.   Key features
+to be aware of are:</p>
+<ol class="arabic simple">
+<li><p>All functions assume arg0 is a seismic data object.</p></li>
+<li><p>Some functions can handle all data types and some are more restictive.
+The tables below provides a quick reference in addition to the docstrings.</p></li>
+<li><p>All functions enforce the data type of arg0 and will throw a TypeError
+exception for any mismatch.</p></li>
+<li><p>All implement the dead/live concept.  In particular, all have the behavior
+that if the data object passed as arg0 is marked dead it immediately
+returns.  If the type of input and output are the same the return is
+identical to the input.   If the type changes and an input datum is
+marked dead the output will be a default constructed version of the output type
+with a copy of the Metadata from the input and a copy of the input’s error
+log.</p></li>
+<li><p>All functions that are intrinsically atomic (i.e. operates on <code class="code docutils literal notranslate"><span class="pre">TimeSeries</span></code>
+and/or <code class="code docutils literal notranslate"><span class="pre">Seismogram</span></code> objects) also work ensembles.   In MsPASS an
+ensemble is just a container with one or more atomic data stored under the
+common symbol <code class="code docutils literal notranslate"><span class="pre">member</span></code>.  (e.g. if e is a <code class="code docutils literal notranslate"><span class="pre">TimeSeriesEnsemble</span></code>,
+then e.member[i] is the ith component <code class="code docutils literal notranslate"><span class="pre">TimeSeries</span></code> object.) Atomic
+algorithms applied to ensemble are always done as a loop over the
+<code class="code docutils literal notranslate"><span class="pre">member</span></code> array.</p></li>
+<li><p>No MsPASS will throw an exception except for a usage error or a system
+level failure that is unrecoverable.   When an individual datum has
+issues that don’t allow the algorithm to work with the specified
+inputs (e.g. windowing when the window range is outside the time range of
+the data) the datum will be killed with a message posted to the object’s
+error log.</p></li>
+</ol>
+<p>This document is organized as a set of tables with hyperlinks to the docstrings
 for each algorithm function.</p>
 </section>
 <section id="processing-functions">
@@ -166,6 +198,12 @@ may or may not be the same type.   Some are wrappers
 for obspy functions, some are written in C++ with python wrappers, and
 some are pure C++ functions with python bindings.   Note the name field in the
 table below is a hyperlink to the docstring for that function.</p>
+<p>Note also if an input or output are listed as <code class="code docutils literal notranslate"><span class="pre">TimeSeries</span></code> it
+will also process a <code class="code docutils literal notranslate"><span class="pre">TimeSeriesEnsemble</span></code> with a loop.
+Similarly, if input or output is listed as  <code class="code docutils literal notranslate"><span class="pre">Seismogram</span></code> the
+function will also process a <code class="code docutils literal notranslate"><span class="pre">SeismogramEnsemble</span></code> with a loop.
+When input or output are listed as “any” it means any seismic data
+type is handled.</p>
 <table class="docutils align-default" id="id2">
 <caption><span class="caption-number">Table 3 </span><span class="caption-text">Processing Functions</span><a class="headerlink" href="#id2" title="Permalink to this table"></a></caption>
 <colgroup>
@@ -183,7 +221,7 @@ table below is a hyperlink to the docstring for that function.</p>
 </thead>
 <tbody>
 <tr class="row-even"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.signals.correlate" title="mspasspy.algorithms.signals.correlate"><code class="xref py py-func docutils literal notranslate"><span class="pre">correlate</span></code></a></p></td>
-<td><p>Cross-correlate pair of signals</p></td>
+<td><p>Cross-correlate pair of signals (obspy)</p></td>
 <td><p>TimeSeries</p></td>
 <td><p>TimeSeries</p></td>
 </tr>
@@ -227,102 +265,97 @@ table below is a hyperlink to the docstring for that function.</p>
 <td><p>Any</p></td>
 <td><p>Same as input</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.snr.snr" title="mspasspy.algorithms.snr.snr"><code class="xref py py-func docutils literal notranslate"><span class="pre">snr</span></code></a></p></td>
-<td><p>Compute one of several possible time-domain signal-to-noise ratio metrics</p></td>
-<td><p>TimeSeries Seismogram</p></td>
-<td><p>float</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.snr.broadband_snr_QC" title="mspasspy.algorithms.snr.broadband_snr_QC"><code class="xref py py-func docutils literal notranslate"><span class="pre">broadband_snr_QC</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.snr.broadband_snr_QC" title="mspasspy.algorithms.snr.broadband_snr_QC"><code class="xref py py-func docutils literal notranslate"><span class="pre">broadband_snr_QC</span></code></a></p></td>
 <td><p>Computes a series of snr-based amplitude metrics and posts them to output Metadata</p></td>
 <td><p>TimeSeries or Seismogram</p></td>
 <td><p>Same as input (Metadata altered)</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.snr.arrival_snr" title="mspasspy.algorithms.snr.arrival_snr"><code class="xref py py-func docutils literal notranslate"><span class="pre">arrival_snr</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.snr.arrival_snr" title="mspasspy.algorithms.snr.arrival_snr"><code class="xref py py-func docutils literal notranslate"><span class="pre">arrival_snr</span></code></a></p></td>
 <td><p>Computes a series of snr-based amplitude metrics relative to an Extarrival time</p></td>
 <td><p>TimeSeries</p></td>
 <td><p>TimeSeries (Metadata altered)</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-func docutils literal notranslate"><span class="pre">FD_snr_estimator</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-func docutils literal notranslate"><span class="pre">FD_snr_estimator</span></code></p></td>
 <td><p>Computes a set of broadband snr estimates in the frequency domain</p></td>
 <td><p>TimeSeries</p></td>
 <td><p>[dict,ErrorLogger]</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.basic.ArrivalTimeReference" title="mspasspy.ccore.algorithms.basic.ArrivalTimeReference"><code class="xref py py-func docutils literal notranslate"><span class="pre">ArrivalTimeReference</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.basic.ArrivalTimeReference" title="mspasspy.ccore.algorithms.basic.ArrivalTimeReference"><code class="xref py py-func docutils literal notranslate"><span class="pre">ArrivalTimeReference</span></code></a></p></td>
 <td><p>Shifts time 0 to arrival time defined by a Metadata key</p></td>
 <td><p>Seismogram or SeismogramEnsemble</p></td>
 <td><p>Same as input</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.basic.agc" title="mspasspy.ccore.algorithms.basic.agc"><code class="xref py py-func docutils literal notranslate"><span class="pre">agc</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.basic.agc" title="mspasspy.ccore.algorithms.basic.agc"><code class="xref py py-func docutils literal notranslate"><span class="pre">agc</span></code></a></p></td>
 <td><p>Applies an automatic gain control operator with a specified duration</p></td>
 <td><p>Seismogram</p></td>
 <td><p>TimeSeries of gains, Seismogram input altered in place</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.basic.repair_overlaps" title="mspasspy.ccore.algorithms.basic.repair_overlaps"><code class="xref py py-func docutils literal notranslate"><span class="pre">repair_overlaps</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.basic.repair_overlaps" title="mspasspy.ccore.algorithms.basic.repair_overlaps"><code class="xref py py-func docutils literal notranslate"><span class="pre">repair_overlaps</span></code></a></p></td>
 <td><p>Repair overlapping data segments</p></td>
 <td><p>list of TimeSeries</p></td>
 <td><p>TimeSeries</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.basic.seed_ensemble_sort" title="mspasspy.ccore.algorithms.basic.seed_ensemble_sort"><code class="xref py py-func docutils literal notranslate"><span class="pre">seed_ensemble_sort</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.basic.seed_ensemble_sort" title="mspasspy.ccore.algorithms.basic.seed_ensemble_sort"><code class="xref py py-func docutils literal notranslate"><span class="pre">seed_ensemble_sort</span></code></a></p></td>
 <td><p>Sorts an ensemble into net:sta:chan:loc order</p></td>
 <td><p>TimeSeriesEnsemble</p></td>
 <td><p>TimeSeriesEnsemble</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.basic.splice_segments" title="mspasspy.ccore.algorithms.basic.splice_segments"><code class="xref py py-func docutils literal notranslate"><span class="pre">splice_segments</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.basic.splice_segments" title="mspasspy.ccore.algorithms.basic.splice_segments"><code class="xref py py-func docutils literal notranslate"><span class="pre">splice_segments</span></code></a></p></td>
 <td><p>Splice a list of TimeSeries objects into a continuous single TimeSeries</p></td>
 <td><p>list of TimeSeries</p></td>
 <td><p>TimeSeries</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-func docutils literal notranslate"><span class="pre">bundle</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-func docutils literal notranslate"><span class="pre">bundle</span></code></p></td>
 <td><p>Bundle a TimeSeriesEnsemble into a SeismogramEnsemble</p></td>
 <td><p>TimeSeriesEnsemble</p></td>
 <td><p>SeismogramEnsemble</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.bundle.BundleSEEDGroup" title="mspasspy.algorithms.bundle.BundleSEEDGroup"><code class="xref py py-func docutils literal notranslate"><span class="pre">BundleSEEDGroup</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.bundle.BundleSEEDGroup" title="mspasspy.algorithms.bundle.BundleSEEDGroup"><code class="xref py py-func docutils literal notranslate"><span class="pre">BundleSEEDGroup</span></code></a></p></td>
 <td><p>Bundle a list of TimeSeries into a Seismogram object</p></td>
 <td><p>list of TimeSeries</p></td>
 <td><p>Seismogram</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.basic.ExtractComponent" title="mspasspy.algorithms.basic.ExtractComponent"><code class="xref py py-func docutils literal notranslate"><span class="pre">ExtractComponent</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.basic.ExtractComponent" title="mspasspy.algorithms.basic.ExtractComponent"><code class="xref py py-func docutils literal notranslate"><span class="pre">ExtractComponent</span></code></a></p></td>
 <td><p>Extract one component from a Seismogram or SeismogramEnsemble</p></td>
 <td><p>Seismogram or SeismogramEnsemble</p></td>
 <td><p>TimeSeries or TimeSeriesEnsemble</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.basic.ator" title="mspasspy.algorithms.basic.ator"><code class="xref py py-func docutils literal notranslate"><span class="pre">ator</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.basic.ator" title="mspasspy.algorithms.basic.ator"><code class="xref py py-func docutils literal notranslate"><span class="pre">ator</span></code></a></p></td>
 <td><p>Change from UTC to relative time standard</p></td>
 <td><p>any</p></td>
 <td><p>same as input</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.basic.rtoa" title="mspasspy.algorithms.basic.rtoa"><code class="xref py py-func docutils literal notranslate"><span class="pre">rtoa</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.basic.rtoa" title="mspasspy.algorithms.basic.rtoa"><code class="xref py py-func docutils literal notranslate"><span class="pre">rtoa</span></code></a></p></td>
 <td><p>Change from relative to UTC time standard</p></td>
 <td><p>any</p></td>
 <td><p>same as input</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.basic.rotate" title="mspasspy.algorithms.basic.rotate"><code class="xref py py-func docutils literal notranslate"><span class="pre">rotate</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.basic.rotate" title="mspasspy.algorithms.basic.rotate"><code class="xref py py-func docutils literal notranslate"><span class="pre">rotate</span></code></a></p></td>
 <td><p>Generic coordinate rotation</p></td>
 <td><p>Seismogram or SeismogramEnsemble</p></td>
 <td><p>same as input</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.basic.rotate_to_standard" title="mspasspy.algorithms.basic.rotate_to_standard"><code class="xref py py-func docutils literal notranslate"><span class="pre">rotate_to_standard</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.basic.rotate_to_standard" title="mspasspy.algorithms.basic.rotate_to_standard"><code class="xref py py-func docutils literal notranslate"><span class="pre">rotate_to_standard</span></code></a></p></td>
 <td><p>Restore data to cardinal directions</p></td>
 <td><p>Seismogram or SeismogramEnsemble</p></td>
 <td><p>same as input</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.basic.transform" title="mspasspy.algorithms.basic.transform"><code class="xref py py-func docutils literal notranslate"><span class="pre">transform</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.basic.transform" title="mspasspy.algorithms.basic.transform"><code class="xref py py-func docutils literal notranslate"><span class="pre">transform</span></code></a></p></td>
 <td><p>Apply a general transformation matrix to 3C data</p></td>
 <td><p>Seismogram or SeismogramEnsemble</p></td>
 <td><p>same as input</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.basic.linear_taper" title="mspasspy.algorithms.basic.linear_taper"><code class="xref py py-func docutils literal notranslate"><span class="pre">linear_taper</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.basic.linear_taper" title="mspasspy.algorithms.basic.linear_taper"><code class="xref py py-func docutils literal notranslate"><span class="pre">linear_taper</span></code></a></p></td>
 <td><p>Apply a one-sided, linear taper</p></td>
 <td><p>any</p></td>
 <td><p>same as input</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.basic.cosine_taper" title="mspasspy.algorithms.basic.cosine_taper"><code class="xref py py-func docutils literal notranslate"><span class="pre">cosine_taper</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.basic.cosine_taper" title="mspasspy.algorithms.basic.cosine_taper"><code class="xref py py-func docutils literal notranslate"><span class="pre">cosine_taper</span></code></a></p></td>
 <td><p>Apply a one-sided, cosine taper</p></td>
 <td><p>any</p></td>
 <td><p>same as input</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.basic.vector_taper" title="mspasspy.algorithms.basic.vector_taper"><code class="xref py py-func docutils literal notranslate"><span class="pre">vector_taper</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.basic.vector_taper" title="mspasspy.algorithms.basic.vector_taper"><code class="xref py py-func docutils literal notranslate"><span class="pre">vector_taper</span></code></a></p></td>
 <td><p>Apply a taper defined by a vector of samples</p></td>
 <td><p>any</p></td>
 <td><p>same as input</p></td>
@@ -364,22 +397,27 @@ utility for writing custom functions that use them inside another algorithm.</p>
 <tr class="row-even"><td><p><a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.amplitudes.MADAmplitude" title="mspasspy.ccore.algorithms.amplitudes.MADAmplitude"><code class="xref py py-func docutils literal notranslate"><span class="pre">MADAmplitude</span></code></a></p></td>
 <td><p>Calculate amplitude with the MAD metric</p></td>
 <td><p>TimeSeries or Seismogram</p></td>
-<td><p>double</p></td>
+<td><p>float</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.amplitudes.PeakAmplitude" title="mspasspy.ccore.algorithms.amplitudes.PeakAmplitude"><code class="xref py py-func docutils literal notranslate"><span class="pre">PeakAmplitude</span></code></a></p></td>
 <td><p>Calculate amplitude with the peak absolute value</p></td>
 <td><p>TimeSeries or Seismogram</p></td>
-<td><p>double</p></td>
+<td><p>float</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.amplitudes.PercAmplitude" title="mspasspy.ccore.algorithms.amplitudes.PercAmplitude"><code class="xref py py-func docutils literal notranslate"><span class="pre">PercAmplitude</span></code></a></p></td>
 <td><p>Calculate amplitude at a specified percentage level</p></td>
 <td><p>TimeSeries or Seismogram</p></td>
-<td><p>double</p></td>
+<td><p>float</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.amplitudes.RMSAmplitude" title="mspasspy.ccore.algorithms.amplitudes.RMSAmplitude"><code class="xref py py-func docutils literal notranslate"><span class="pre">RMSAmplitude</span></code></a></p></td>
 <td><p>Calculate amplitude with the RMS metric</p></td>
 <td><p>TimeSeries or Seismogram</p></td>
-<td><p>double</p></td>
+<td><p>float</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.snr.snr" title="mspasspy.algorithms.snr.snr"><code class="xref py py-func docutils literal notranslate"><span class="pre">snr</span></code></a></p></td>
+<td><p>Compute one of several possible time-domain signal-to-noise ratio metrics</p></td>
+<td><p>TimeSeries or Seismogram</p></td>
+<td><p>float</p></td>
 </tr>
 </tbody>
 </table>
@@ -390,7 +428,9 @@ utility for writing custom functions that use them inside another algorithm.</p>
 processing using a C++ or python class that has a method that runs
 an algorithm on seismic data.  All are effectively functions that
 take inputs and emit an output.  The only difference is the syntax
-of a “method” compared to a simple function.</p>
+of a “method” compared to a simple function.  They also have the
+same API guarantees listed at the beginning of this section
+(i.e. the list of items in the first section).</p>
 <table class="docutils align-default" id="id4">
 <caption><span class="caption-number">Table 5 </span><span class="caption-text">Processing Objects</span><a class="headerlink" href="#id4" title="Permalink to this table"></a></caption>
 <colgroup>
@@ -412,157 +452,157 @@ of a “method” compared to a simple function.</p>
 <tr class="row-even"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Add" title="mspasspy.algorithms.edit.Add"><code class="xref py py-class docutils literal notranslate"><span class="pre">Add</span></code></a></p></td>
 <td><p>Add a constant to a metadata value</p></td>
 <td><p>apply</p></td>
-<td><p>Any seismic data object</p></td>
+<td><p>any</p></td>
 <td><p>Edited version of input</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Add2" title="mspasspy.algorithms.edit.Add2"><code class="xref py py-class docutils literal notranslate"><span class="pre">Add2</span></code></a></p></td>
 <td><p>Add two metadata values</p></td>
 <td><p>apply</p></td>
-<td><p>Any seismic data object</p></td>
+<td><p>any</p></td>
 <td><p>Edited version of input</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.ChangeKey" title="mspasspy.algorithms.edit.ChangeKey"><code class="xref py py-class docutils literal notranslate"><span class="pre">ChangeKey</span></code></a></p></td>
 <td><p>Change key associated with a value</p></td>
 <td><p>apply</p></td>
-<td><p>Any seismic data object</p></td>
+<td><p>any</p></td>
 <td><p>Edited version of input</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Divide" title="mspasspy.algorithms.edit.Divide"><code class="xref py py-class docutils literal notranslate"><span class="pre">Divide</span></code></a></p></td>
 <td><p>Divide a metadata value by a constant</p></td>
 <td><p>apply</p></td>
-<td><p>Any seismic data object</p></td>
+<td><p>any</p></td>
 <td><p>Edited version of input</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Divide2" title="mspasspy.algorithms.edit.Divide2"><code class="xref py py-class docutils literal notranslate"><span class="pre">Divide2</span></code></a></p></td>
 <td><p>Divide one metadata value by another</p></td>
 <td><p>apply</p></td>
-<td><p>Any seismic data object</p></td>
+<td><p>any</p></td>
 <td><p>Edited version of input</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.IntegerDivide" title="mspasspy.algorithms.edit.IntegerDivide"><code class="xref py py-class docutils literal notranslate"><span class="pre">IntegerDivide</span></code></a></p></td>
 <td><p>Apply integer divide operator to a metadata value</p></td>
 <td><p>apply</p></td>
-<td><p>Any seismic data object</p></td>
+<td><p>any</p></td>
 <td><p>Edited version of input</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.IntegerDivide2" title="mspasspy.algorithms.edit.IntegerDivide2"><code class="xref py py-class docutils literal notranslate"><span class="pre">IntegerDivide2</span></code></a></p></td>
 <td><p>Apply integer divide operator to two metadata values</p></td>
 <td><p>apply</p></td>
-<td><p>Any seismic data object</p></td>
+<td><p>any</p></td>
 <td><p>Edited version of input</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Mod" title="mspasspy.algorithms.edit.Mod"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mod</span></code></a></p></td>
 <td><p>Change a key to value mod constant</p></td>
 <td><p>apply</p></td>
-<td><p>Any seismic data object</p></td>
+<td><p>any</p></td>
 <td><p>Edited version of input</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Mod2" title="mspasspy.algorithms.edit.Mod2"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mod2</span></code></a></p></td>
 <td><p>Set a field as mod division of a pair of values</p></td>
 <td><p>apply</p></td>
-<td><p>Any seismic data object</p></td>
+<td><p>any</p></td>
 <td><p>Edited version of input</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Multiply" title="mspasspy.algorithms.edit.Multiply"><code class="xref py py-class docutils literal notranslate"><span class="pre">Multiply</span></code></a></p></td>
 <td><p>Change a key to value times constant</p></td>
 <td><p>apply</p></td>
-<td><p>Any seismic data object</p></td>
+<td><p>any</p></td>
 <td><p>Edited version of input</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Multiply2" title="mspasspy.algorithms.edit.Multiply2"><code class="xref py py-class docutils literal notranslate"><span class="pre">Multiply2</span></code></a></p></td>
 <td><p>Set a field as produce of a pair of values</p></td>
 <td><p>apply</p></td>
-<td><p>Any seismic data object</p></td>
+<td><p>any</p></td>
 <td><p>Edited version of input</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Multiply2" title="mspasspy.algorithms.edit.Multiply2"><code class="xref py py-class docutils literal notranslate"><span class="pre">SetValue</span></code></a></p></td>
 <td><p>Set a field to a constant</p></td>
 <td><p>apply</p></td>
-<td><p>Any seismic data object</p></td>
+<td><p>any</p></td>
 <td><p>Edited version of input</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Subtract" title="mspasspy.algorithms.edit.Subtract"><code class="xref py py-class docutils literal notranslate"><span class="pre">Subtract</span></code></a></p></td>
 <td><p>Change a key to value minus a constant</p></td>
 <td><p>apply</p></td>
-<td><p>Any seismic data object</p></td>
+<td><p>any</p></td>
 <td><p>Edited version of input</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Subtract2" title="mspasspy.algorithms.edit.Subtract2"><code class="xref py py-class docutils literal notranslate"><span class="pre">Subtract2</span></code></a></p></td>
 <td><p>Set a field as difference of a pair of values</p></td>
 <td><p>apply</p></td>
-<td><p>Any seismic data object</p></td>
+<td><p>any</p></td>
 <td><p>Edited version of input</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.erase_metadata" title="mspasspy.algorithms.edit.erase_metadata"><code class="xref py py-class docutils literal notranslate"><span class="pre">erase_metadata</span></code></a></p></td>
 <td><p>Clear all defined values of a specified key</p></td>
 <td><p>apply</p></td>
-<td><p>Any seismic data object</p></td>
+<td><p>any</p></td>
 <td><p>Edited version of input</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.MetadataOperatorChain" title="mspasspy.algorithms.edit.MetadataOperatorChain"><code class="xref py py-class docutils literal notranslate"><span class="pre">MetadataOperatorChain</span></code></a></p></td>
 <td><p>Apply a chain of metadata calculators</p></td>
 <td><p>apply</p></td>
-<td><p>Any seismic data object</p></td>
+<td><p>any</p></td>
 <td><p>Edited version of input</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.FiringSquad" title="mspasspy.algorithms.edit.FiringSquad"><code class="xref py py-class docutils literal notranslate"><span class="pre">FiringSquad</span></code></a></p></td>
 <td><p>Apply a series of kill operators</p></td>
 <td><p>kill_if_true</p></td>
-<td><p>Any seismic data object</p></td>
+<td><p>any</p></td>
 <td><p>Edited version of input</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.MetadataDefined" title="mspasspy.algorithms.edit.MetadataDefined"><code class="xref py py-class docutils literal notranslate"><span class="pre">MetadataDefined</span></code></a></p></td>
 <td><p>Kill if a key-value pair is defined</p></td>
 <td><p>kill_if_true</p></td>
-<td><p>Any seismic data object</p></td>
+<td><p>any</p></td>
 <td><p>Edited version of input</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.MetadataUndefined" title="mspasspy.algorithms.edit.MetadataUndefined"><code class="xref py py-class docutils literal notranslate"><span class="pre">MetadataUndefined</span></code></a></p></td>
 <td><p>Kill if a key-value pair is not defined</p></td>
 <td><p>kill_if_true</p></td>
-<td><p>Any seismic data object</p></td>
+<td><p>any</p></td>
 <td><p>Edited version of input</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-class docutils literal notranslate"><span class="pre">MetadataEQMetadataEQ</span></code></p></td>
 <td><p>Kill a datum if a value is equal to constant</p></td>
 <td><p>kill_if_true</p></td>
-<td><p>Any seismic data object</p></td>
+<td><p>any</p></td>
 <td><p>Edited version of input</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-class docutils literal notranslate"><span class="pre">MetadataNEMetadataNE</span></code></p></td>
 <td><p>Kill a datum if a value is not equal to constant</p></td>
 <td><p>kill_if_true</p></td>
-<td><p>Any seismic data object</p></td>
+<td><p>any</p></td>
 <td><p>Edited version of input</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.MetadataGE" title="mspasspy.algorithms.edit.MetadataGE"><code class="xref py py-class docutils literal notranslate"><span class="pre">MetadataGE</span></code></a></p></td>
 <td><p>Kill if a value is greater than or equal to a constant</p></td>
 <td><p>kill_if_true</p></td>
-<td><p>Any seismic data object</p></td>
+<td><p>any</p></td>
 <td><p>Edited version of input</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.MetadataGT" title="mspasspy.algorithms.edit.MetadataGT"><code class="xref py py-class docutils literal notranslate"><span class="pre">MetadataGT</span></code></a></p></td>
 <td><p>Kill if a value is greater than a constant</p></td>
 <td><p>kill_if_true</p></td>
-<td><p>Any seismic data object</p></td>
+<td><p>any</p></td>
 <td><p>Edited version of input</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.MetadataLE" title="mspasspy.algorithms.edit.MetadataLE"><code class="xref py py-class docutils literal notranslate"><span class="pre">MetadataLE</span></code></a></p></td>
 <td><p>Kill if a value is less than or equal to a constant</p></td>
 <td><p>kill_if_true</p></td>
-<td><p>Any seismic data object</p></td>
+<td><p>any</p></td>
 <td><p>Edited version of input</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.MetadataLT" title="mspasspy.algorithms.edit.MetadataLT"><code class="xref py py-class docutils literal notranslate"><span class="pre">MetadataLT</span></code></a></p></td>
 <td><p>Kill if a value is less than a constant</p></td>
 <td><p>kill_if_true</p></td>
-<td><p>Any seismic data object</p></td>
+<td><p>any</p></td>
 <td><p>Edited version of input</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.MetadataInterval" title="mspasspy.algorithms.edit.MetadataInterval"><code class="xref py py-class docutils literal notranslate"><span class="pre">MetadataInterval</span></code></a></p></td>
 <td><p>Kill for value relative to an interval</p></td>
 <td><p>kill_if_true</p></td>
-<td><p>Any seismic data object</p></td>
+<td><p>any</p></td>
 <td><p>Edited version of input</p></td>
 </tr>
 </tbody>
@@ -592,9 +632,18 @@ the Slepian tapers.</p></li>
 <p>A different, unpublished (aka experimental) algorithm called
 “Colored Noise Regularized Three Component Decon “ is
 implemented in the C++ class
-<code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.algorithms.deconvolution.CNR3CDecon</span></code>.
-See the mspass deconvolution tutorial for guidance on using this
-experimental algorithm.</p>
+<a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.CNRDeconEngine" title="mspasspy.ccore.algorithms.deconvolution.CNRDeconEngine"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.algorithms.deconvolution.CNRDeconEngine</span></code></a>.
+There are two python functions that utilize the “engine”:</p>
+<ol class="arabic simple">
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.algorithms.CNRDecon.CNRRFDecon</span></code> uses the
+CNR algorithm to estimate conventional “receiver functions” where
+each 3C station is deconvolved independently.</p></li>
+<li><p>The same engine
+is used for an array version called
+<code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.algorithms.CNRDecon.CNRArrayDecon</span></code></p></li>
+</ol>
+<p>See the mspass deconvolution tutorial for guidance on using these
+experimental algorithms.</p>
 </section>
 </section>
 

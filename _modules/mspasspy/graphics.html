@@ -153,6 +153,7 @@
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.util.seismic</span><span class="w"> </span><span class="kn">import</span> <span class="n">number_live</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.algorithms.basic</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExtractComponent</span>
+
 <span class="c1"># set as this alias to avoid collision with internal scale</span>
 <span class="c1"># not sure that is necessary but this makes context clearer</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.algorithms.window</span><span class="w"> </span><span class="kn">import</span> <span class="n">scale</span> <span class="k">as</span> <span class="n">mspass_scale_function</span>
@@ -684,18 +685,20 @@
                 <span class="o">+</span> <span class="s2">&quot; which is illegal.  Run change_style method&quot;</span>
             <span class="p">)</span></div></div>
 
+
 <div class="viewcode-block" id="BasicSeismicPlotter"><a class="viewcode-back" href="../../python_api/mspasspy.graphics.html#mspasspy.graphics.BasicSeismicPlotter">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">BasicSeismicPlotter</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Base class for MsPASS graphics objects used to visualize seismic </span>
-<span class="sd">    data with the geometry of time as the x axis.  That produces </span>
-<span class="sd">    graphics with seismograms horizontal as opposed to record sections </span>
-<span class="sd">    where the time axis is y.   </span>
-<span class="sd">    </span>
+<span class="sd">    Base class for MsPASS graphics objects used to visualize seismic</span>
+<span class="sd">    data with the geometry of time as the x axis.  That produces</span>
+<span class="sd">    graphics with seismograms horizontal as opposed to record sections</span>
+<span class="sd">    where the time axis is y.</span>
+
 <span class="sd">    This base class should never be instantiated by itself.   It contains</span>
-<span class="sd">    methods that can be reused by different implementations in a class </span>
-<span class="sd">    hierarchy.   </span>
+<span class="sd">    methods that can be reused by different implementations in a class</span>
+<span class="sd">    hierarchy.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span><span class="n">normalize</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">scale</span> <span class="o">=</span> <span class="n">scale</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="n">title</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">normalize</span> <span class="o">=</span> <span class="n">normalize</span>
@@ -733,7 +736,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;BasicSeismicPlotter._deepcopy:  &quot;</span>
             <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;received unsupported data type=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">d</span><span class="p">)))</span>
-            <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="n">message</span><span class="p">,</span><span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
 
 <div class="viewcode-block" id="BasicSeismicPlotter.set_topdown"><a class="viewcode-back" href="../../python_api/mspasspy.graphics.html#mspasspy.graphics.BasicSeismicPlotter.set_topdown">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">set_topdown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -771,18 +774,17 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;BasicSeismicPlotter._deepcopy:  &quot;</span>
             <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;received unsupported data type=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">d</span><span class="p">)))</span>
-            <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="n">message</span><span class="p">,</span><span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+
 <div class="viewcode-block" id="BasicSeismicPlotter.plot"><a class="viewcode-back" href="../../python_api/mspasspy.graphics.html#mspasspy.graphics.BasicSeismicPlotter.plot">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">plot</span><span class="p">():</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Alll concrete implementations must implement this method to do </span>
+<span class="sd">        Alll concrete implementations must implement this method to do</span>
 <span class="sd">        some plotting.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div></div>
 
 
-        
-    
 <div class="viewcode-block" id="SeismicPlotter"><a class="viewcode-back" href="../../python_api/mspasspy.graphics.html#mspasspy.graphics.SeismicPlotter">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">SeismicPlotter</span><span class="p">(</span><span class="n">BasicSeismicPlotter</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    SeismicPlotter is used to plot mspass data objects in the</span>
@@ -807,11 +809,11 @@
 <span class="sd">    to the change_style method, should be done before calling plot.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s1">&#39;wtvaimg&#39;</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s2">&quot;wtvaimg&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Constructor for this object.   It mostly sets defaults but</span>
 <span class="sd">        has a few common optional parameters to set at construction</span>
-<span class="sd">        time.  </span>
+<span class="sd">        time.</span>
 <span class="sd">        :param scale:  optional scale factor to apply to data before plotting</span>
 <span class="sd">          (default assumes data have been scaled to amplitude of order 1)</span>
 <span class="sd">        :type scale: float (default 1.0)</span>
@@ -825,7 +827,7 @@
 <span class="sd">          with a variant of this title string adding &quot;:n&quot; where n is</span>
 <span class="sd">          the component number (0,1,2).</span>
 <span class="sd">        :type title: string (default None makes no plot title)</span>
-<span class="sd">        :param style:  plot style to one of the accepted style names. </span>
+<span class="sd">        :param style:  plot style to one of the accepted style names.</span>
 <span class="sd">          That is one of: [&quot;wt&quot;,&quot;wtva&quot;,&quot;img&quot;,&quot;wtvaimg&quot;]</span>
 <span class="sd">        :type style:  string (one of list above or a TypeError exceptin</span>
 <span class="sd">          is thrown)</span>
@@ -834,7 +836,7 @@
             <span class="n">scale</span><span class="o">=</span><span class="n">scale</span><span class="p">,</span>
             <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span>
             <span class="n">normalize</span><span class="o">=</span><span class="n">normalize</span><span class="p">,</span>
-            <span class="p">)</span>
+        <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_fill_color</span> <span class="o">=</span> <span class="s2">&quot;k&quot;</span>  <span class="c1"># black in matplotlib</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_color_map</span> <span class="o">=</span> <span class="s2">&quot;seismic&quot;</span>
@@ -851,35 +853,36 @@
         <span class="c1"># Should be smaller than 1/screem horizontal pixel maximum size</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_RANGE_RATIO_TEST</span> <span class="o">=</span> <span class="mf">0.0001</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_default_single_ts_aspect</span> <span class="o">=</span> <span class="mf">0.25</span>
-        <span class="k">if</span> <span class="n">style</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;wt&quot;</span><span class="p">,</span><span class="s2">&quot;wtva&quot;</span><span class="p">,</span><span class="s2">&quot;img&quot;</span><span class="p">,</span><span class="s2">&quot;wtvaimg&quot;</span><span class="p">]:</span>
-            <span class="c1"># use change_style to simply default style as this does more than </span>
+        <span class="k">if</span> <span class="n">style</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;wt&quot;</span><span class="p">,</span> <span class="s2">&quot;wtva&quot;</span><span class="p">,</span> <span class="s2">&quot;img&quot;</span><span class="p">,</span> <span class="s2">&quot;wtvaimg&quot;</span><span class="p">]:</span>
+            <span class="c1"># use change_style to simply default style as this does more than</span>
             <span class="c1"># just set a string name</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">change_style</span><span class="p">(</span><span class="n">style</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;SeismicPlotter constuctor:  &quot;</span>
             <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Illegal valeu for style=</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">style</span><span class="p">)</span>
-            <span class="n">message</span> <span class="o">++</span> <span class="s2">&quot;Must string froom this list of keywords:&quot;</span>
-            <span class="n">message</span> <span class="o">+=</span><span class="s2">&quot;wt, wtva, img, wtvaimg&quot;</span>
+            <span class="n">message</span> <span class="o">+</span> <span class="o">+</span><span class="s2">&quot;Must string froom this list of keywords:&quot;</span>
+            <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;wt, wtva, img, wtvaimg&quot;</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
         <span class="c1"># These are set whenever a plot is made.</span>
-        <span class="c1"># None signals they aren&#39;t yet defined and need to be </span>
-        <span class="c1"># initialized. </span>
+        <span class="c1"># None signals they aren&#39;t yet defined and need to be</span>
+        <span class="c1"># initialized.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">figure</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">figure_handles</span> <span class="o">=</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="SeismicPlotter.get_plot_gcf"><a class="viewcode-back" href="../../python_api/mspasspy.graphics.html#mspasspy.graphics.SeismicPlotter.get_plot_gcf">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_plot_gcf</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns the matplotlib figure handle of the canvas used for all </span>
-<span class="sd">        plots but that for a SeismogramEnsemble.   Useful only for </span>
+<span class="sd">        Returns the matplotlib figure handle of the canvas used for all</span>
+<span class="sd">        plots but that for a SeismogramEnsemble.   Useful only for</span>
 <span class="sd">        subclasses that need to manipulate the handle.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">figure</span></div>
-<div class="viewcode-block" id="SeismicPlotter.get_3Censemble_gcf"><a class="viewcode-back" href="../../python_api/mspasspy.graphics.html#mspasspy.graphics.SeismicPlotter.get_3Censemble_gcf">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_3Censemble_gcf</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">-&gt;</span><span class="nb">tuple</span><span class="p">:</span>
+
+<div class="viewcode-block" id="SeismicPlotter.get_3Censemble_gcf"><a class="viewcode-back" href="../../python_api/mspasspy.graphics.html#mspasspy.graphics.SeismicPlotter.get_3Censemble_gcf">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_3Censemble_gcf</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns the matplotlb figure handles for handlng </span>
-<span class="sd">        SeismogramEnsemble data.  This plotter draws 3c data in three </span>
-<span class="sd">        different figure handles with number tags 0, 1, and 2 for </span>
-<span class="sd">        each component.  Useful method mainly for subclasses of </span>
+<span class="sd">        Returns the matplotlb figure handles for handlng</span>
+<span class="sd">        SeismogramEnsemble data.  This plotter draws 3c data in three</span>
+<span class="sd">        different figure handles with number tags 0, 1, and 2 for</span>
+<span class="sd">        each component.  Useful method mainly for subclasses of</span>
 <span class="sd">        this class.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">figure_handles</span></div>
@@ -953,7 +956,6 @@
             <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">style</span> <span class="o">=</span> <span class="n">newstyle</span></div>
 
-
 <div class="viewcode-block" id="SeismicPlotter.plot"><a class="viewcode-back" href="../../python_api/mspasspy.graphics.html#mspasspy.graphics.SeismicPlotter.plot">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
         <span class="c1"># make copy always to prevent unintentional scaling of input data</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">normalize</span><span class="p">:</span>
@@ -977,7 +979,6 @@
                 <span class="o">+</span> <span class="s2">&quot; is invalid</span><span class="se">\n</span><span class="s2">This should not happen&quot;</span>
             <span class="p">)</span></div>
 
- 
     <span class="k">def</span><span class="w"> </span><span class="nf">_add_3C_titles</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Private method to add titles with plt.title to 3C ensemble data.</span>
@@ -1292,43 +1293,41 @@
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">plt</span><span class="o">.</span><span class="n">gcf</span><span class="p">()</span></div>
 
+
 <div class="viewcode-block" id="LargeEnsemblePlotter"><a class="viewcode-back" href="../../python_api/mspasspy.graphics.html#mspasspy.graphics.LargeEnsemblePlotter">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">LargeEnsemblePlotter</span><span class="p">(</span><span class="n">SeismicPlotter</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    This is a special class to handle ensembles.   It forces a solution </span>
+<span class="sd">    This is a special class to handle ensembles.   It forces a solution</span>
 <span class="sd">    that can be mysterous for a naive use of the more general SeismicPlotter.</span>
-<span class="sd">    That is, with a large ensemble the plot can easily come out a black </span>
-<span class="sd">    image when the number of ensemble members are of the order of 1/10 </span>
-<span class="sd">    or more of the number of pixels defining the y axis.  The way thsi </span>
+<span class="sd">    That is, with a large ensemble the plot can easily come out a black</span>
+<span class="sd">    image when the number of ensemble members are of the order of 1/10</span>
+<span class="sd">    or more of the number of pixels defining the y axis.  The way thsi</span>
 <span class="sd">    subclass addresses that is by forcing the following:</span>
 <span class="sd">        1.  It normally produces multiple plots to display data in blocks.</span>
 <span class="sd">            sac users can think of this like theh &quot;perplot&quot; argument used</span>
 <span class="sd">            in the sac ppk function.</span>
 <span class="sd">        2.  It defaults to wiggle trace only plots to improve performance.</span>
-<span class="sd">        3.  It defaults to automatic scaling assuming that for many </span>
+<span class="sd">        3.  It defaults to automatic scaling assuming that for many</span>
 <span class="sd">            inputs something always needs to be scaled</span>
 <span class="sd">        4.  It will only accept ensemble objects</span>
-<span class="sd">        </span>
-<span class="sd">    Note since this is a subclass of SeismicPlotter, Seismogram enembles </span>
-<span class="sd">    will be plotted in three different figure windows.  </span>
 
-<span class="sd">    Be warned large ensembles can produce a very large number of plots </span>
-<span class="sd">    with a single call to the plot method of this class.  With interactive </span>
-<span class="sd">    use you may need to click on a lot of windows to see all the data and </span>
-<span class="sd">    for notebooks you can quickly create a huge notebook.  All plotting </span>
+<span class="sd">    Note since this is a subclass of SeismicPlotter, Seismogram enembles</span>
+<span class="sd">    will be plotted in three different figure windows.</span>
+
+<span class="sd">    Be warned large ensembles can produce a very large number of plots</span>
+<span class="sd">    with a single call to the plot method of this class.  With interactive</span>
+<span class="sd">    use you may need to click on a lot of windows to see all the data and</span>
+<span class="sd">    for notebooks you can quickly create a huge notebook.  All plotting</span>
 <span class="sd">    for large data sets must be done with caution.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
-                 <span class="n">scale</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> 
-                 <span class="n">normalize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> 
-                 <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                 <span class="n">members_per_frame</span><span class="o">=</span><span class="mi">20</span><span class="p">):</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">members_per_frame</span><span class="o">=</span><span class="mi">20</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Constructor for this object.   It mostly sets defaults but</span>
 <span class="sd">        has a few common optional parameters to set at construction</span>
 <span class="sd">        time.  Note style is intentionally not a constructor</span>
 <span class="sd">        parameter because of parameter interdependence.  The default</span>
 <span class="sd">        plot style is &quot;wt&quot; to maximize performance. You can use the</span>
-<span class="sd">        change_stye method inherited from SeismicPlotter to make </span>
+<span class="sd">        change_stye method inherited from SeismicPlotter to make</span>
 <span class="sd">        the plots a different style.</span>
 
 <span class="sd">        :param scale:  optional scale factor to apply to data before plotting</span>
@@ -1344,65 +1343,68 @@
 <span class="sd">          with a variant of this title string adding &quot;:n&quot; where n is</span>
 <span class="sd">          the component number (0,1,2).</span>
 <span class="sd">        :type title: string (default None makes no plot title)</span>
-<span class="sd">        :param members_per_frame:  Number of </span>
+<span class="sd">        :param members_per_frame:  Number of</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
             <span class="n">scale</span><span class="o">=</span><span class="n">scale</span><span class="p">,</span>
             <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span>
             <span class="n">normalize</span><span class="o">=</span><span class="n">normalize</span><span class="p">,</span>
-            <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">change_style</span><span class="p">(</span><span class="s1">&#39;wt&#39;</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">change_style</span><span class="p">(</span><span class="s2">&quot;wt&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">members_per_frame</span> <span class="o">=</span> <span class="n">members_per_frame</span>
-        
-<div class="viewcode-block" id="LargeEnsemblePlotter.plot"><a class="viewcode-back" href="../../python_api/mspasspy.graphics.html#mspasspy.graphics.LargeEnsemblePlotter.plot">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ens</span><span class="p">,</span><span class="n">skip_the_dead</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+
+<div class="viewcode-block" id="LargeEnsemblePlotter.plot"><a class="viewcode-back" href="../../python_api/mspasspy.graphics.html#mspasspy.graphics.LargeEnsemblePlotter.plot">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ens</span><span class="p">,</span> <span class="n">skip_the_dead</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Plots esembles in groups of size defined by the instance. </span>
-<span class="sd">        </span>
-<span class="sd">        This plot method overrides the plot method of SeismicPlotter </span>
-<span class="sd">        but actually uses the same functions to make the plots.  </span>
-<span class="sd">        It does so  using a trick to run the &quot;super&quot; function.   </span>
-<span class="sd">        When run interactively the function will block with </span>
-<span class="sd">        each frame until the window(s) is(are) closed.   In a notebook </span>
+<span class="sd">        Plots esembles in groups of size defined by the instance.</span>
+
+<span class="sd">        This plot method overrides the plot method of SeismicPlotter</span>
+<span class="sd">        but actually uses the same functions to make the plots.</span>
+<span class="sd">        It does so  using a trick to run the &quot;super&quot; function.</span>
+<span class="sd">        When run interactively the function will block with</span>
+<span class="sd">        each frame until the window(s) is(are) closed.   In a notebook</span>
 <span class="sd">        the frames will all be rendered sequentially into the notebook.</span>
-<span class="sd">        </span>
-<span class="sd">        As far as I can tell a limitation of the matplotlib is that </span>
-<span class="sd">        to allow an event loop for zoom and pan operatios on the plot </span>
-<span class="sd">        the window has to be closed in interactive mode.  It would be </span>
-<span class="sd">        nice to not have to have the window have to pop up for each frame </span>
+
+<span class="sd">        As far as I can tell a limitation of the matplotlib is that</span>
+<span class="sd">        to allow an event loop for zoom and pan operatios on the plot</span>
+<span class="sd">        the window has to be closed in interactive mode.  It would be</span>
+<span class="sd">        nice to not have to have the window have to pop up for each frame</span>
 <span class="sd">        but I (glp) can&#39;t see how to do that - it may be impossible without</span>
 <span class="sd">        a major rewrite.</span>
-<span class="sd">        </span>
-<span class="sd">        Note if the input ensemble is marked dead or has no live members </span>
-<span class="sd">        a informational message will be &quot;printed&quot; (print staement) and </span>
+
+<span class="sd">        Note if the input ensemble is marked dead or has no live members</span>
+<span class="sd">        a informational message will be &quot;printed&quot; (print staement) and</span>
 <span class="sd">        nothing will be plotted.</span>
-<span class="sd">        </span>
+
 <span class="sd">        :param ens:  Ensemble to be plotted</span>
-<span class="sd">        :type ens:  Must be either a TimeSeriesEnsemble of SeismogramEnsemle </span>
+<span class="sd">        :type ens:  Must be either a TimeSeriesEnsemble of SeismogramEnsemle</span>
 <span class="sd">           or the method will throw a TypeError exception.</span>
-<span class="sd">        :param skip_the_dead:  Boolean controllng how dead data are </span>
+<span class="sd">        :param skip_the_dead:  Boolean controllng how dead data are</span>
 <span class="sd">           handed.  When True (default) dead data will be silently skippped.</span>
-<span class="sd">           When False all dead data will create an empty plot cell in </span>
-<span class="sd">           the position of the body. </span>
-<span class="sd">           </span>
+<span class="sd">           When False all dead data will create an empty plot cell in</span>
+<span class="sd">           the position of the body.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">alg</span> <span class="o">=</span> <span class="s2">&quot;LargeEnsemblePlotter.plot&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ens</span><span class="p">,(</span><span class="n">TimeSeriesEnsemble</span><span class="p">,</span><span class="n">SeismogramEnsemble</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ens</span><span class="p">,</span> <span class="p">(</span><span class="n">TimeSeriesEnsemble</span><span class="p">,</span> <span class="n">SeismogramEnsemble</span><span class="p">)):</span>
             <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;LargeEnsemblePlotter.plot:  &quot;</span>
             <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Illegal type for arg0=</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">ens</span><span class="p">)))</span>
             <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Can only plot seismic ensemble objects&quot;</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
-            
+
         <span class="k">if</span> <span class="n">ens</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
-            <span class="nb">print</span><span class="p">(</span><span class="n">alg</span> <span class="o">+</span> <span class="s2">&quot;received ensemble marked dead - cannot  plot ensemble marked dead&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="n">alg</span>
+                <span class="o">+</span> <span class="s2">&quot;received ensemble marked dead - cannot  plot ensemble marked dead&quot;</span>
+            <span class="p">)</span>
             <span class="k">return</span>
         <span class="n">N</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">ens</span><span class="o">.</span><span class="n">member</span><span class="p">)</span>
         <span class="n">Nlive</span> <span class="o">=</span> <span class="n">number_live</span><span class="p">(</span><span class="n">ens</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">Nlive</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="n">alg</span> <span class="o">+</span> <span class="s2">&quot; ensemble has no live members - nothing to plot&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ens</span><span class="p">,</span><span class="n">TimeSeriesEnsemble</span><span class="p">):</span>
-            <span class="n">e2plot</span><span class="o">=</span><span class="n">TimeSeriesEnsemble</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ens</span><span class="p">,</span> <span class="n">TimeSeriesEnsemble</span><span class="p">):</span>
+            <span class="n">e2plot</span> <span class="o">=</span> <span class="n">TimeSeriesEnsemble</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">e2plot</span><span class="o">=</span><span class="n">SeismogramEnsemble</span><span class="p">()</span>
+            <span class="n">e2plot</span> <span class="o">=</span> <span class="n">SeismogramEnsemble</span><span class="p">()</span>
         <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="n">frame_number</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ens</span><span class="o">.</span><span class="n">member</span><span class="p">)):</span>
@@ -1410,26 +1412,27 @@
             <span class="n">d</span> <span class="o">=</span> <span class="n">ens</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
             <span class="k">if</span> <span class="n">skip_the_dead</span> <span class="ow">and</span> <span class="n">d</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
                 <span class="c1"># ddebug</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;skipping member &quot;</span><span class="p">,</span><span class="n">i</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;skipping member &quot;</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
                 <span class="k">continue</span>
-            <span class="k">if</span> <span class="n">count</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">members_per_frame</span> <span class="ow">and</span> <span class="n">i</span> <span class="o">!=</span> <span class="p">(</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">count</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">members_per_frame</span> <span class="ow">and</span> <span class="n">i</span> <span class="o">!=</span> <span class="p">(</span><span class="n">N</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
                 <span class="n">e2plot</span><span class="o">.</span><span class="n">member</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
                 <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">frame_number</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_clear_figure_canvases</span><span class="p">()</span>
                 <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">e2plot</span><span class="p">)</span>
-                <span class="c1"># show blocks in interactive mode untill the framem iis </span>
-                <span class="c1"># closed.  I think in a notebook it make the plot and </span>
-                <span class="c1"># continue on producing multiple plot frames. </span>
+                <span class="c1"># show blocks in interactive mode untill the framem iis</span>
+                <span class="c1"># closed.  I think in a notebook it make the plot and</span>
+                <span class="c1"># continue on producing multiple plot frames.</span>
                 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
                 <span class="n">frame_number</span> <span class="o">+=</span> <span class="mi">1</span>
                 <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
                 <span class="n">e2plot</span><span class="o">.</span><span class="n">member</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div>
+
     <span class="k">def</span><span class="w"> </span><span class="nf">_clear_figure_canvases</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Private method used to clear the canvas for any active graphhics. </span>
-<span class="sd">        Complicated by the fact tha SeismicPlotter use a single canvas </span>
+<span class="sd">        Private method used to clear the canvas for any active graphhics.</span>
+<span class="sd">        Complicated by the fact tha SeismicPlotter use a single canvas</span>
 <span class="sd">        for TimeSeriesEnsemble plots and 3 canvases for SeismogramEnsembles.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">gcf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_plot_gcf</span><span class="p">()</span>
@@ -1439,8 +1442,6 @@
         <span class="k">if</span> <span class="n">handles</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">gcf</span> <span class="ow">in</span> <span class="n">handles</span><span class="p">:</span>
                 <span class="n">gcf</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div>
-       
-        
 </pre></div>
 
            </div>

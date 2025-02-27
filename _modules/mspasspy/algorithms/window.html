@@ -168,7 +168,7 @@
     <span class="n">_scale_ensemble_members</span><span class="p">,</span>
     <span class="n">ScalingMethod</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.util.decorators</span><span class="w"> </span><span class="kn">import</span> <span class="n">mspass_func_wrapper</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.util.decorators</span><span class="w"> </span><span class="kn">import</span> <span class="n">mspass_func_wrapper</span><span class="p">,</span> <span class="n">mspass_method_wrapper</span>
 
 
 <div class="viewcode-block" id="ensemble_error_post"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.window.ensemble_error_post">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">ensemble_error_post</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">alg</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">severity</span><span class="p">):</span>
@@ -227,11 +227,16 @@
     <span class="n">level</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
     <span class="n">scale_by_section</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">use_mean</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="o">*</span><span class="n">args</span><span class="p">,</span>
     <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">alg_name</span><span class="o">=</span><span class="s2">&quot;scale&quot;</span><span class="p">,</span>
     <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">function_return_key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">handles_ensembles</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">checks_arg0_type</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">handles_dead_data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Top level function interface to data scaling methods.</span>
@@ -300,6 +305,8 @@
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
             <span class="k">return</span> <span class="n">d</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;scale:  received invalid data type=</span><span class="si">{}</span><span class="s2"> for arg0&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">d</span><span class="p">)))</span>
     <span class="c1"># First validate arguments</span>
     <span class="c1"># The logic here would be much cleaner if ensembles had an elog attribute</span>
     <span class="c1"># may happen as group discussions have proposed that change.  this should</span>
@@ -429,18 +436,14 @@
             <span class="n">ensemble_error_post</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="WindowDataAtomic"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.window.WindowDataAtomic">[docs]</a><span class="nd">@mspass_func_wrapper</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">WindowDataAtomic</span><span class="p">(</span>
+<span class="c1"># not decorated for reasons given in docstring below</span>
+<div class="viewcode-block" id="WindowDataAtomic"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.window.WindowDataAtomic">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">WindowDataAtomic</span><span class="p">(</span>
     <span class="n">d</span><span class="p">,</span>
     <span class="n">win_start</span><span class="p">,</span>
     <span class="n">win_end</span><span class="p">,</span>
     <span class="n">t0shift</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">short_segment_handling</span><span class="o">=</span><span class="s2">&quot;kill&quot;</span><span class="p">,</span>
     <span class="n">log_recoverable_errors</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-    <span class="n">alg_name</span><span class="o">=</span><span class="s2">&quot;WindowDataAtomic&quot;</span><span class="p">,</span>
-    <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Cut atomic data to a shorter time segment defined by a time range.</span>
@@ -502,6 +505,10 @@
 <span class="sd">    time method (endtime is a special case for sample npts-1)</span>
 <span class="sd">    will have subsample accuracy.</span>
 
+<span class="sd">    Note:  This function should not normally be used.  WindowData</span>
+<span class="sd">    calls it directy for atomic inputs and adds only a tiny overhead.</span>
+<span class="sd">    It can still be used as long as you don&#39;t need object-level history.&#39;</span>
+
 <span class="sd">    :param d: is the input data.  d must be either a</span>
 <span class="sd">      :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`</span>
 <span class="sd">      object or the function will log an error to d and return a None.</span>
@@ -543,20 +550,6 @@
 <span class="sd">    output.  When False recovery will be done silently.  Note when</span>
 <span class="sd">    `short_segment_handling` is set to &quot;kill&quot; logging is not optional and</span>
 <span class="sd">    kill will always create an error log entry.</span>
-<span class="sd">    :param object_history: boolean to enable or disable saving object</span>
-<span class="sd">      level history.  Default is False.  Note this functionality is</span>
-<span class="sd">      implemented via the mspass_func_wrapper decorator.</span>
-<span class="sd">    :param alg_name:   When history is enabled this is the algorithm name</span>
-<span class="sd">      assigned to the stamp for applying this algorithm.</span>
-<span class="sd">      Default (&quot;WindowData&quot;) should normally be just used.</span>
-<span class="sd">      Note this functionality is implemented via the mspass_func_wrapper decorator.</span>
-<span class="sd">    :param ald_id:  algorithm id to assign to history record (used only if</span>
-<span class="sd">      object_history is set True.)</span>
-<span class="sd">      Note this functionality is implemented via the mspass_func_wrapper decorator.</span>
-<span class="sd">    :param dryrun:</span>
-<span class="sd">      Note this functionality is implemented via the mspass_func_wrapper decorator.</span>
-<span class="sd">    :param dryrun:</span>
-<span class="sd">      Note this functionality is implemented via the mspass_func_wrapper decorator.</span>
 
 <span class="sd">    :return: copy of d with sample range reduced to twin range.  Returns</span>
 <span class="sd">      an empty version of the parent data type (default constructor) if</span>
@@ -731,6 +724,9 @@
     <span class="n">alg_name</span><span class="o">=</span><span class="s2">&quot;WindowData&quot;</span><span class="p">,</span>
     <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">handles_ensembles</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">checks_arg0_type</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">handles_dead_data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Apply a window operation to cut out data within a specified time range</span>
@@ -900,18 +896,17 @@
 <span class="sd">      the input is marked dead</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="p">(</span><span class="n">TimeSeries</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">)):</span>
-        <span class="k">return</span> <span class="n">WindowDataAtomic</span><span class="p">(</span>
-            <span class="n">mspass_object</span><span class="p">,</span>
-            <span class="n">win_start</span><span class="p">,</span>
-            <span class="n">win_end</span><span class="p">,</span>
-            <span class="n">t0shift</span><span class="o">=</span><span class="n">t0shift</span><span class="p">,</span>
-            <span class="n">short_segment_handling</span><span class="o">=</span><span class="n">short_segment_handling</span><span class="p">,</span>
-            <span class="n">log_recoverable_errors</span><span class="o">=</span><span class="n">log_recoverable_errors</span><span class="p">,</span>
-            <span class="n">object_history</span><span class="o">=</span><span class="n">object_history</span><span class="p">,</span>
-            <span class="n">alg_name</span><span class="o">=</span><span class="n">alg_name</span><span class="p">,</span>
-            <span class="n">alg_id</span><span class="o">=</span><span class="n">alg_id</span><span class="p">,</span>
-            <span class="n">dryrun</span><span class="o">=</span><span class="n">dryrun</span><span class="p">,</span>
-        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
+            <span class="k">return</span> <span class="n">mspass_object</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">WindowDataAtomic</span><span class="p">(</span>
+                <span class="n">mspass_object</span><span class="p">,</span>
+                <span class="n">win_start</span><span class="p">,</span>
+                <span class="n">win_end</span><span class="p">,</span>
+                <span class="n">t0shift</span><span class="o">=</span><span class="n">t0shift</span><span class="p">,</span>
+                <span class="n">short_segment_handling</span><span class="o">=</span><span class="n">short_segment_handling</span><span class="p">,</span>
+                <span class="n">log_recoverable_errors</span><span class="o">=</span><span class="n">log_recoverable_errors</span><span class="p">,</span>
+            <span class="p">)</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="p">(</span><span class="n">TimeSeriesEnsemble</span><span class="p">,</span> <span class="n">SeismogramEnsemble</span><span class="p">)):</span>
         <span class="k">if</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
             <span class="k">return</span> <span class="n">mspass_object</span>
@@ -927,10 +922,6 @@
                             <span class="n">t0shift</span><span class="o">=</span><span class="n">t0shift</span><span class="p">,</span>
                             <span class="n">short_segment_handling</span><span class="o">=</span><span class="n">short_segment_handling</span><span class="p">,</span>
                             <span class="n">log_recoverable_errors</span><span class="o">=</span><span class="n">log_recoverable_errors</span><span class="p">,</span>
-                            <span class="n">object_history</span><span class="o">=</span><span class="n">object_history</span><span class="p">,</span>
-                            <span class="n">alg_name</span><span class="o">=</span><span class="n">alg_name</span><span class="p">,</span>
-                            <span class="n">alg_id</span><span class="o">=</span><span class="n">alg_id</span><span class="p">,</span>
-                            <span class="n">dryrun</span><span class="o">=</span><span class="n">dryrun</span><span class="p">,</span>
                         <span class="p">)</span>
                         <span class="k">if</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">live</span><span class="p">:</span>
                             <span class="n">nlive</span> <span class="o">+=</span> <span class="mi">1</span>
@@ -954,10 +945,6 @@
                             <span class="n">t0shift</span><span class="o">=</span><span class="n">t0shift</span><span class="p">,</span>
                             <span class="n">short_segment_handling</span><span class="o">=</span><span class="n">short_segment_handling</span><span class="p">,</span>
                             <span class="n">log_recoverable_errors</span><span class="o">=</span><span class="n">log_recoverable_errors</span><span class="p">,</span>
-                            <span class="n">object_history</span><span class="o">=</span><span class="n">object_history</span><span class="p">,</span>
-                            <span class="n">alg_name</span><span class="o">=</span><span class="n">alg_name</span><span class="p">,</span>
-                            <span class="n">alg_id</span><span class="o">=</span><span class="n">alg_id</span><span class="p">,</span>
-                            <span class="n">dryrun</span><span class="o">=</span><span class="n">dryrun</span><span class="p">,</span>
                         <span class="p">)</span>
                         <span class="n">ensout</span><span class="o">.</span><span class="n">member</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
                         <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">live</span><span class="p">:</span>
@@ -990,6 +977,9 @@
     <span class="n">alg_name</span><span class="o">=</span><span class="s2">&quot;WindowData_autopad&quot;</span><span class="p">,</span>
     <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">handles_ensembles</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">checks_arg0_type</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">handles_dead_data</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Windows an atomic data object with automatic padding if the</span>
@@ -1342,7 +1332,18 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">processor</span> <span class="o">=</span> <span class="n">_TopMute</span><span class="p">(</span><span class="n">t0</span><span class="p">,</span> <span class="n">t1</span><span class="p">,</span> <span class="nb">type</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">t0</span> <span class="o">=</span> <span class="n">t0</span>
 
-<div class="viewcode-block" id="TopMute.apply"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.window.TopMute.apply">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">instance</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="TopMute.apply"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.window.TopMute.apply">[docs]</a>    <span class="nd">@mspass_method_wrapper</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">d</span><span class="p">,</span>
+        <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">instance</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+        <span class="n">checks_arg0_type</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">handles_ensembles</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">handles_dead_data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Use thie method to apply the defined top mute to one of the MsPASS</span>
 <span class="sd">        atomic data objects. The method does a sanity check on the input</span>
@@ -1362,10 +1363,9 @@
 <span class="sd">          come from the global history manager or be set manually.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
-                <span class="s2">&quot;TopMute.apply:  usage error.  Input data must be a TimeSeries or Seismogram object&quot;</span><span class="p">,</span>
-                <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
-            <span class="p">)</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;TopMute.apply:  usage error.  Input data must be a TimeSeries or Seismogram object&quot;</span>
+            <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Actual type of arg=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">d</span><span class="p">))</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
             <span class="k">return</span> <span class="n">d</span>
         <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">t0</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">t0</span><span class="p">:</span>

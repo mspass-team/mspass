@@ -166,6 +166,9 @@
     <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">inplace_return</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">handles_ensembles</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">checks_arg0_type</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">handles_dead_data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">function_return_key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">):</span>
@@ -233,6 +236,9 @@
     <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">inplace_return</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">handles_ensembles</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">checks_arg0_type</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">handles_dead_data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">function_return_key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">):</span>
@@ -243,12 +249,20 @@
 <span class="sd">    to a relative time standard.  Examples are conversions to travel</span>
 <span class="sd">    time using an event origin time or shifting to an arrival time</span>
 <span class="sd">    reference frame. This operation simply switches the tref</span>
-<span class="sd">    variable and alters t0 by tshift.</span>
+<span class="sd">    variable and alters t0 by tshift.  Note the special feature</span>
+<span class="sd">    of how arg0 is handled.   If it is a string it assumed to be a</span>
+<span class="sd">    Metadata key to use to fetch the time shift value from the data object&#39;s</span>
+<span class="sd">    Metadata container.   If it is number it is used directly.&#39;</span>
 
 <span class="sd">    :param data: data object to be converted.</span>
 <span class="sd">    :type data: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`</span>
-<span class="sd">    :param tshift: time shift applied to data before switching data to relative time mode.</span>
-<span class="sd">    :type tshift: :class:`float`</span>
+<span class="sd">    :param tshift: used to define time shift to apply.   If value is string</span>
+<span class="sd">       the function assumes it is a metadata key it can use to extract the</span>
+<span class="sd">       requred value from the data&#39;s metadata container.  If it is a floating</span>
+<span class="sd">       point number it is used directly.   Anything else will result in a</span>
+<span class="sd">       TypeError exception.  If a string is used but the key is not defined</span>
+<span class="sd">       the datum will be killed with an elog message.</span>
+<span class="sd">    :type tshift: :class:`float` or a string to use as a metdata key (see above)</span>
 <span class="sd">    :param object_history: True to preserve the processing history. For details, refer to</span>
 <span class="sd">     :class:`~mspasspy.util.decorators.mspass_func_wrapper`.</span>
 <span class="sd">    :param alg_name: alg_name is the name the func we are gonna save while preserving the history.</span>
@@ -261,7 +275,22 @@
 <span class="sd">     return something that is appropriate to save as Metadata.  If so, use this argument to</span>
 <span class="sd">     define the key used to set that field in the data that is returned.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">data</span><span class="o">.</span><span class="n">ator</span><span class="p">(</span><span class="n">tshift</span><span class="p">)</span></div>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tshift</span><span class="p">,</span> <span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">)):</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">ator</span><span class="p">(</span><span class="n">tshift</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tshift</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">tshift</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+            <span class="n">timeshift</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">tshift</span><span class="p">]</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">ator</span><span class="p">(</span><span class="n">timeshift</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;arg0 string defines key=</span><span class="si">{}</span><span class="s2"> not defined in Metadata container of this datum</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">tshift</span>
+            <span class="p">)</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="s2">&quot;ator&quot;</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;ator:  usage error</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Invalid type for arg0=</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">tshift</span><span class="p">)))</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="rtoa"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.basic.rtoa">[docs]</a><span class="nd">@mspass_func_wrapper</span>
@@ -274,6 +303,9 @@
     <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">inplace_return</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">function_return_key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">handles_ensembles</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">checks_arg0_type</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">handles_dead_data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -314,6 +346,9 @@
     <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">inplace_return</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">function_return_key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">handles_ensembles</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">checks_arg0_type</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">handles_dead_data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -359,6 +394,9 @@
     <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">inplace_return</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">function_return_key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">handles_ensembles</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">checks_arg0_type</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">handles_dead_data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -416,6 +454,9 @@
     <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">inplace_return</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">function_return_key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">handles_ensembles</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">checks_arg0_type</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">handles_dead_data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -610,6 +651,9 @@
     <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">inplace_return</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">function_return_key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">handles_ensembles</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">checks_arg0_type</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">handles_dead_data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -645,12 +689,17 @@
     <span class="n">phi</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">angle_units</span><span class="o">=</span><span class="s2">&quot;degrees&quot;</span><span class="p">,</span>
     <span class="n">key_is_backazimuth</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="o">*</span><span class="n">args</span><span class="p">,</span>
     <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">alg_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">inplace_return</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">function_return_key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">handles_ensembles</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">checks_arg0_type</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">handles_dead_data</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Applies coordinate transform to RTZ version of ray coordinates.</span>
@@ -772,12 +821,17 @@
     <span class="n">phi</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">theta</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">angle_units</span><span class="o">=</span><span class="s2">&quot;degrees&quot;</span><span class="p">,</span>
+    <span class="o">*</span><span class="n">args</span><span class="p">,</span>
     <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">alg_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">inplace_return</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">function_return_key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">handles_ensembles</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">checks_arg0_type</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">handles_dead_data</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Applies coordinate transform to LQT version of ray coordinates.</span>
@@ -949,6 +1003,9 @@
     <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">inplace_return</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">function_return_key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">handles_ensembles</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">checks_arg0_type</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">handles_dead_data</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -999,6 +1056,9 @@
     <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">inplace_return</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">function_return_key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">handles_ensembles</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">checks_arg0_type</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">handles_dead_data</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1048,6 +1108,9 @@
     <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">inplace_return</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">function_return_key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">handles_ensembles</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">checks_arg0_type</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">handles_dead_data</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>

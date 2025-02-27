@@ -201,7 +201,8 @@
 
 <div class="viewcode-block" id="MTPowerSpectrumEngine.apply"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.MTPowerSpectrumEngine.MTPowerSpectrumEngine.apply">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        need to support vector input or a TimeSeries - returns a PowerSpectrum</span>
+<span class="sd">        needs to support vector input or a TimeSeries - returns a PowerSpectrum</span>
+<span class="sd">        Cannot use mspass decorator because it supports raw data vectors</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># All inputs end up filling a numpy array passed to MTSpec below</span>

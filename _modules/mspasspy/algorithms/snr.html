@@ -159,6 +159,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.ccore.algorithms.basic</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeWindow</span><span class="p">,</span> <span class="n">Butterworth</span><span class="p">,</span> <span class="n">_ExtractComponent</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.algorithms.signals</span><span class="w"> </span><span class="kn">import</span> <span class="nb">filter</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.algorithms.window</span><span class="w"> </span><span class="kn">import</span> <span class="n">WindowData</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.util.decorators</span><span class="w"> </span><span class="kn">import</span> <span class="n">mspass_func_wrapper</span>
 
 <span class="c1"># debug</span>
 <span class="c1"># import matplotlib.pyplot as plt</span>
@@ -401,13 +402,19 @@
         <span class="k">return</span> <span class="n">s</span> <span class="o">/</span> <span class="n">n</span>
 
 
-<div class="viewcode-block" id="snr"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.snr.snr">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">snr</span><span class="p">(</span>
+<div class="viewcode-block" id="snr"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.snr.snr">[docs]</a><span class="nd">@mspass_func_wrapper</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">snr</span><span class="p">(</span>
     <span class="n">data_object</span><span class="p">,</span>
     <span class="n">noise_window</span><span class="o">=</span><span class="n">TimeWindow</span><span class="p">(</span><span class="o">-</span><span class="mf">130.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">5.0</span><span class="p">),</span>
     <span class="n">signal_window</span><span class="o">=</span><span class="n">TimeWindow</span><span class="p">(</span><span class="o">-</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">120.0</span><span class="p">),</span>
     <span class="n">noise_metric</span><span class="o">=</span><span class="s2">&quot;mad&quot;</span><span class="p">,</span>
     <span class="n">signal_metric</span><span class="o">=</span><span class="s2">&quot;mad&quot;</span><span class="p">,</span>
     <span class="n">perc</span><span class="o">=</span><span class="mf">95.0</span><span class="p">,</span>
+    <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+    <span class="n">handles_ensembles</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">checks_arg0_type</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">handles_dead_data</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute time-domain based signal-to-noise ratio with a specified metric.</span>
@@ -555,6 +562,8 @@
     <span class="k">return</span> <span class="n">log_message</span>
 
 
+<span class="c1"># Do not use mspass_func_decorator here because it is mainly aninternal</span>
+<span class="c1"># engine used by more usable functions in this module</span>
 <div class="viewcode-block" id="FD_snr_estimator"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.snr.FD_snr_estimator">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">FD_snr_estimator</span><span class="p">(</span>
     <span class="n">data_object</span><span class="p">,</span>
     <span class="n">noise_window</span><span class="o">=</span><span class="n">TimeWindow</span><span class="p">(</span><span class="o">-</span><span class="mf">130.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">5.0</span><span class="p">),</span>
@@ -1041,7 +1050,8 @@
     <span class="k">return</span> <span class="p">[</span><span class="n">snrdata</span><span class="p">,</span> <span class="n">my_logger</span><span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="arrival_snr"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.snr.arrival_snr">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">arrival_snr</span><span class="p">(</span>
+<div class="viewcode-block" id="arrival_snr"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.snr.arrival_snr">[docs]</a><span class="nd">@mspass_func_wrapper</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">arrival_snr</span><span class="p">(</span>
     <span class="n">data_object</span><span class="p">,</span>
     <span class="n">noise_window</span><span class="o">=</span><span class="n">TimeWindow</span><span class="p">(</span><span class="o">-</span><span class="mf">130.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">5.0</span><span class="p">),</span>
     <span class="n">noise_spectrum_engine</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -1068,6 +1078,11 @@
         <span class="s2">&quot;filtered_MAD&quot;</span><span class="p">,</span>
         <span class="s2">&quot;filtered_perc&quot;</span><span class="p">,</span>
     <span class="p">],</span>
+    <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+    <span class="n">handles_ensembles</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">checks_arg0_type</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">handles_dead_data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Specialization of FD_snr_estimator.   A common situation where snr</span>
@@ -1200,7 +1215,8 @@
     <span class="k">return</span> <span class="n">data_object</span></div>
 
 
-<div class="viewcode-block" id="broadband_snr_QC"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.snr.broadband_snr_QC">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">broadband_snr_QC</span><span class="p">(</span>
+<div class="viewcode-block" id="broadband_snr_QC"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.snr.broadband_snr_QC">[docs]</a><span class="nd">@mspass_func_wrapper</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">broadband_snr_QC</span><span class="p">(</span>
     <span class="n">data_object</span><span class="p">,</span>
     <span class="n">component</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
     <span class="n">noise_window</span><span class="o">=</span><span class="n">TimeWindow</span><span class="p">(</span><span class="o">-</span><span class="mf">130.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">5.0</span><span class="p">),</span>
@@ -1232,6 +1248,11 @@
     <span class="n">taup_model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">source_collection</span><span class="o">=</span><span class="s2">&quot;source&quot;</span><span class="p">,</span>
     <span class="n">receiver_collection</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+    <span class="n">handles_ensembles</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">checks_arg0_type</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">handles_dead_data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute a series of metrics that can be used for quality control</span>
@@ -1337,8 +1358,7 @@
 <span class="sd">    :return:  the data_object modified by insertion of the snr QC data</span>
 <span class="sd">      in the object&#39;s Metadata under the key defined by metadata_output_key.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">data_object</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
-        <span class="k">return</span> <span class="n">data_object</span>
+
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data_object</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">):</span>
         <span class="c1"># We need to make a copy of a TimeSeries object to assure the only</span>
         <span class="c1"># thing we change is the Metadata we add to the return</span>
@@ -1368,6 +1388,8 @@
             <span class="o">+</span> <span class="s2">&quot;Input must be either TimeSeries or a Seismogram object&quot;</span><span class="p">,</span>
             <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Fatal</span><span class="p">,</span>
         <span class="p">)</span>
+    <span class="k">if</span> <span class="n">data_object</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
+        <span class="k">return</span> <span class="n">data_object</span>
     <span class="k">if</span> <span class="n">use_measured_arrival_time</span><span class="p">:</span>
         <span class="n">arrival_time</span> <span class="o">=</span> <span class="n">data_object</span><span class="p">[</span><span class="n">measured_arrival_time_key</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
@@ -1726,6 +1748,7 @@
 <span class="sd">    :type qc_subdoc_key:  string or None.  Default &quot;Parrival&quot;</span>
 <span class="sd">       is default of `broadband_arrival_QC`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">pts2box</span><span class="p">(</span><span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">,</span> <span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>

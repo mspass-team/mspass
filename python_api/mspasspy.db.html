@@ -4559,7 +4559,7 @@ one on one (matcher_list[x] -&gt; ret[x+1]).</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="mspasspy.db.normalize.normalize">
-<span class="sig-prename descclassname"><span class="pre">mspasspy.db.normalize.</span></span><span class="sig-name descname"><span class="pre">normalize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mspass_object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">matcher</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kill_on_failure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/normalize.html#normalize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.normalize.normalize" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">mspasspy.db.normalize.</span></span><span class="sig-name descname"><span class="pre">normalize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mspass_object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">matcher</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kill_on_failure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handles_ensembles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">checks_arg0_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handles_dead_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/normalize.html#normalize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.normalize.normalize" title="Permalink to this definition"></a></dt>
 <dd><p>Generic function to do in line normalization with dask/spark map operator.</p>
 <p>In MsPASS we use the normalized data model for receiver and source
 metadata.  The normalization can be done during any reads if the
@@ -4582,6 +4582,11 @@ that data within a workflow as follows:</p>
 <blockquote>
 <div><p>dataset = dataset.map(normalize,matcher)</p>
 </div></blockquote>
+<p>An important warning about ensembles. If the function receives an
+ensemble by default it will enter a loop to apply the normalization
+to all “member” objects of the ensemble.   If you need to insert
+the normalizatio parameters into the ensemble’s Metadata container
+instead of all the members set <cite>handles_ensembles=True</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -4594,15 +4599,14 @@ either TimeSeries</em><em> or </em><em>Seismogram objects.   Read the docstring
 carefully for your matcher choice for any limitations.</em>) – data to be normalized</p></li>
 <li><p><strong>matcher</strong> (<em>must be a concrete subclass</em><em> of </em><a class="reference internal" href="#mspasspy.db.normalize.BasicMatcher" title="mspasspy.db.normalize.BasicMatcher"><em>BasicMatcher</em></a>) – a generic matching function that is a subclass of
 BasicMatcher.   This function only calls the find_one method.</p></li>
-<li><p><strong>kill_on_failure</strong> – when True if the call to the find_one</p></li>
+<li><p><strong>kill_on_failure</strong> (<em>boolean</em>) – when True if the call to the find_one
+method of matcher fails the datum returned will be marked dead.</p></li>
+<li><p><strong>handles_ensembles</strong> – boolean controlling how the function is
+applied with ensembles - see above.</p></li>
 </ul>
 </dd>
-</dl>
-<p>method of matcher fails the datum returned will be marked dead.
-:type kill_on_failure:  boolean</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>copy of mspass_object.  dead data are returned immediately.</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>copy of mspass_object.  dead data are returned immediately.</p>
 </dd>
 </dl>
 <p>if kill_on_failure is true the result may be killed on return.</p>

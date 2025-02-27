@@ -194,12 +194,12 @@
 <dt class="sig sig-object py" id="mspasspy.graphics.BasicSeismicPlotter">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.graphics.</span></span><span class="sig-name descname"><span class="pre">BasicSeismicPlotter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/graphics.html#BasicSeismicPlotter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.graphics.BasicSeismicPlotter" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
-<p>Base class for MsPASS graphics objects used to visualize seismic 
-data with the geometry of time as the x axis.  That produces 
-graphics with seismograms horizontal as opposed to record sections 
+<p>Base class for MsPASS graphics objects used to visualize seismic
+data with the geometry of time as the x axis.  That produces
+graphics with seismograms horizontal as opposed to record sections
 where the time axis is y.</p>
 <p>This base class should never be instantiated by itself.   It contains
-methods that can be reused by different implementations in a class 
+methods that can be reused by different implementations in a class
 hierarchy.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.graphics.BasicSeismicPlotter.bottomup">
@@ -210,7 +210,7 @@ hierarchy.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.graphics.BasicSeismicPlotter.plot">
 <em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/graphics.html#BasicSeismicPlotter.plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.graphics.BasicSeismicPlotter.plot" title="Permalink to this definition"></a></dt>
-<dd><p>Alll concrete implementations must implement this method to do 
+<dd><p>Alll concrete implementations must implement this method to do
 some plotting.</p>
 </dd></dl>
 
@@ -236,11 +236,11 @@ from default of bottum upward.</p>
 <dt class="sig sig-object py" id="mspasspy.graphics.LargeEnsemblePlotter">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.graphics.</span></span><span class="sig-name descname"><span class="pre">LargeEnsemblePlotter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">members_per_frame</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/graphics.html#LargeEnsemblePlotter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.graphics.LargeEnsemblePlotter" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#mspasspy.graphics.SeismicPlotter" title="mspasspy.graphics.SeismicPlotter"><code class="xref py py-class docutils literal notranslate"><span class="pre">SeismicPlotter</span></code></a></p>
-<p>This is a special class to handle ensembles.   It forces a solution 
+<p>This is a special class to handle ensembles.   It forces a solution
 that can be mysterous for a naive use of the more general SeismicPlotter.
-That is, with a large ensemble the plot can easily come out a black 
-image when the number of ensemble members are of the order of 1/10 
-or more of the number of pixels defining the y axis.  The way thsi 
+That is, with a large ensemble the plot can easily come out a black
+image when the number of ensemble members are of the order of 1/10
+or more of the number of pixels defining the y axis.  The way thsi
 subclass addresses that is by forcing the following:</p>
 <blockquote>
 <div><ol class="arabic simple">
@@ -248,45 +248,45 @@ subclass addresses that is by forcing the following:</p>
 sac users can think of this like theh “perplot” argument used
 in the sac ppk function.</p></li>
 <li><p>It defaults to wiggle trace only plots to improve performance.</p></li>
-<li><p>It defaults to automatic scaling assuming that for many 
+<li><p>It defaults to automatic scaling assuming that for many
 inputs something always needs to be scaled</p></li>
 <li><p>It will only accept ensemble objects</p></li>
 </ol>
 </div></blockquote>
-<p>Note since this is a subclass of SeismicPlotter, Seismogram enembles 
+<p>Note since this is a subclass of SeismicPlotter, Seismogram enembles
 will be plotted in three different figure windows.</p>
-<p>Be warned large ensembles can produce a very large number of plots 
-with a single call to the plot method of this class.  With interactive 
-use you may need to click on a lot of windows to see all the data and 
-for notebooks you can quickly create a huge notebook.  All plotting 
+<p>Be warned large ensembles can produce a very large number of plots
+with a single call to the plot method of this class.  With interactive
+use you may need to click on a lot of windows to see all the data and
+for notebooks you can quickly create a huge notebook.  All plotting
 for large data sets must be done with caution.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.graphics.LargeEnsemblePlotter.plot">
 <span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ens</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip_the_dead</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/graphics.html#LargeEnsemblePlotter.plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.graphics.LargeEnsemblePlotter.plot" title="Permalink to this definition"></a></dt>
 <dd><p>Plots esembles in groups of size defined by the instance.</p>
-<p>This plot method overrides the plot method of SeismicPlotter 
-but actually uses the same functions to make the plots.  
-It does so  using a trick to run the “super” function.   
-When run interactively the function will block with 
-each frame until the window(s) is(are) closed.   In a notebook 
+<p>This plot method overrides the plot method of SeismicPlotter
+but actually uses the same functions to make the plots.
+It does so  using a trick to run the “super” function.
+When run interactively the function will block with
+each frame until the window(s) is(are) closed.   In a notebook
 the frames will all be rendered sequentially into the notebook.</p>
-<p>As far as I can tell a limitation of the matplotlib is that 
-to allow an event loop for zoom and pan operatios on the plot 
-the window has to be closed in interactive mode.  It would be 
-nice to not have to have the window have to pop up for each frame 
+<p>As far as I can tell a limitation of the matplotlib is that
+to allow an event loop for zoom and pan operatios on the plot
+the window has to be closed in interactive mode.  It would be
+nice to not have to have the window have to pop up for each frame
 but I (glp) can’t see how to do that - it may be impossible without
 a major rewrite.</p>
-<p>Note if the input ensemble is marked dead or has no live members 
-a informational message will be “printed” (print staement) and 
+<p>Note if the input ensemble is marked dead or has no live members
+a informational message will be “printed” (print staement) and
 nothing will be plotted.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>ens</strong> (<em>Must be either a TimeSeriesEnsemble</em><em> of </em><em>SeismogramEnsemle</em><em> 
+<li><p><strong>ens</strong> (<em>Must be either a TimeSeriesEnsemble</em><em> of </em><em>SeismogramEnsemle</em><em>
 or </em><em>the method will throw a TypeError exception.</em>) – Ensemble to be plotted</p></li>
-<li><p><strong>skip_the_dead</strong> – Boolean controllng how dead data are 
+<li><p><strong>skip_the_dead</strong> – Boolean controllng how dead data are
 handed.  When True (default) dead data will be silently skippped.
-When False all dead data will create an empty plot cell in 
+When False all dead data will create an empty plot cell in
 the position of the body.</p></li>
 </ul>
 </dd>
@@ -446,25 +446,25 @@ occur when the method is called with this value of newstyle.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.graphics.SeismicPlotter.get_3Censemble_gcf">
 <span class="sig-name descname"><span class="pre">get_3Censemble_gcf</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="reference internal" href="../_modules/mspasspy/graphics.html#SeismicPlotter.get_3Censemble_gcf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.graphics.SeismicPlotter.get_3Censemble_gcf" title="Permalink to this definition"></a></dt>
-<dd><p>Returns the matplotlb figure handles for handlng 
-SeismogramEnsemble data.  This plotter draws 3c data in three 
-different figure handles with number tags 0, 1, and 2 for 
-each component.  Useful method mainly for subclasses of 
+<dd><p>Returns the matplotlb figure handles for handlng
+SeismogramEnsemble data.  This plotter draws 3c data in three
+different figure handles with number tags 0, 1, and 2 for
+each component.  Useful method mainly for subclasses of
 this class.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.graphics.SeismicPlotter.get_plot_gcf">
 <span class="sig-name descname"><span class="pre">get_plot_gcf</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/graphics.html#SeismicPlotter.get_plot_gcf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.graphics.SeismicPlotter.get_plot_gcf" title="Permalink to this definition"></a></dt>
-<dd><p>Returns the matplotlib figure handle of the canvas used for all 
-plots but that for a SeismogramEnsemble.   Useful only for 
+<dd><p>Returns the matplotlib figure handle of the canvas used for all
+plots but that for a SeismogramEnsemble.   Useful only for
 subclasses that need to manipulate the handle.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.graphics.SeismicPlotter.plot">
 <span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/graphics.html#SeismicPlotter.plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.graphics.SeismicPlotter.plot" title="Permalink to this definition"></a></dt>
-<dd><p>Alll concrete implementations must implement this method to do 
+<dd><p>Alll concrete implementations must implement this method to do
 some plotting.</p>
 </dd></dl>
 
