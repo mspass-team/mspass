@@ -829,7 +829,7 @@ class Database(pymongo.database.Database):
                 if data_tag:
                     # silently drop any documents that do not have data tag
                     # and match input value
-                    if data_tag in object_doc and object_doc["data_tag"] == data_tag:
+                    if "data_tag" in doc and doc["data_tag"] == data_tag:
                         doclist.append(doc)
                 else:
                     doclist.append(doc)
