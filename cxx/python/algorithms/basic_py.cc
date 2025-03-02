@@ -82,14 +82,10 @@ PYBIND11_MODULE(basic, m) {
     They do not handle errors as gracefully */
     .def("apply",py::overload_cast<mspass::seismic::TimeSeries&>
          (&Butterworth::apply),
-         "Apply the predefined filter to a TimeSeries object",
-         py::call_guard<py::gil_scoped_release>()
-        )
+         "Apply the predefined filter to a TimeSeries object")
     .def("apply",py::overload_cast<mspass::seismic::Seismogram&>
          (&Butterworth::apply),
-         "Apply the predefined filter to a 3c Seismogram object",
-         py::call_guard<py::gil_scoped_release>()
-         )
+         "Apply the predefined filter to a 3c Seismogram object")
     .def("dt",&Butterworth::current_dt,
       "Current sample interval used for nondimensionalizing frequencies")
     .def("low_corner",&Butterworth::low_corner,"Return low frequency f3d point")
@@ -107,7 +103,6 @@ PYBIND11_MODULE(basic, m) {
       py::overload_cast<Seismogram&,std::string,TimeWindow>
           (&ArrivalTimeReference),
           "Shifts data so t=0 is a specified arrival time",
-      py::call_guard<py::gil_scoped_release>(),
       py::return_value_policy::copy,
       py::arg("d"),
       py::arg("key"),
@@ -118,7 +113,6 @@ PYBIND11_MODULE(basic, m) {
       py::overload_cast<Ensemble<Seismogram>&,std::string,TimeWindow>
           (&ArrivalTimeReference),
           "Shifts data so t=0 is a specified arrival time",
-      py::call_guard<py::gil_scoped_release>(),
       py::return_value_policy::copy,
       py::arg("d"),
       py::arg("key"),
@@ -129,7 +123,6 @@ PYBIND11_MODULE(basic, m) {
    * used for the Ensemble definition.   */
   m.def("_ExtractComponent",static_cast<TimeSeries(*)(const Seismogram&,const unsigned int)>(&ExtractComponent),
   	"Extract component as a TimeSeries object",
-      py::call_guard<py::gil_scoped_release>(),
       py::return_value_policy::copy,
       py::arg("tcs"),
       py::arg("component")
@@ -137,21 +130,18 @@ PYBIND11_MODULE(basic, m) {
 
   m.def("_ExtractComponent",static_cast<Ensemble<TimeSeries>(*)(const Ensemble<Seismogram>&,const unsigned int)>(&ExtractComponent),
   	"Extract one component from a 3C ensemble",
-      py::call_guard<py::gil_scoped_release>(),
       py::return_value_policy::copy,
       py::arg("d"),
       py::arg("component")
   );
 
   m.def("agc",&agc,"Automatic gain control a Seismogram",
-    py::call_guard<py::gil_scoped_release>(),
     py::return_value_policy::copy,
     py::arg("d"),
     py::arg("twin") )
   ;
   m.def("_WindowData",py::overload_cast<const TimeSeries&,const TimeWindow&>(&WindowData),
           "Reduce data to window inside original",
-    py::call_guard<py::gil_scoped_release>(),
     py::return_value_policy::copy,
     py::arg("d"),
     py::arg("twin") )
@@ -159,21 +149,18 @@ PYBIND11_MODULE(basic, m) {
 
   m.def("_WindowData3C",py::overload_cast<const Seismogram&,const TimeWindow&>(&WindowData),
               "Reduce data to window inside original",
-    py::call_guard<py::gil_scoped_release>(),
     py::return_value_policy::copy,
     py::arg("d"),
     py::arg("twin") )
   ;
 
   m.def("splice_segments",&splice_segments,"Splice a time sorted list of TimeSeries data into a continuous block",
-    py::call_guard<py::gil_scoped_release>(),
     py::return_value_policy::copy,
     py::arg("segments"),
     py::arg("save_history")
   );
 
   m.def("repair_overlaps",&repair_overlaps,"Attempt to remove redundant, matching overlapping data segments",
-    py::call_guard<py::gil_scoped_release>(),
     py::return_value_policy::copy,
     py::arg("segments")
   );
@@ -185,14 +172,12 @@ PYBIND11_MODULE(basic, m) {
 
   m.def("_bundle_seed_data",&bundle_seed_data,
     "Create SeismogramEnsemble from sorted TimeSeriesEnsemble",
-    py::call_guard<py::gil_scoped_release>(),
     py::return_value_policy::copy,
     py::arg("d") )
   ;
 
   m.def("_BundleSEEDGroup",&BundleSEEDGroup,
     "Bundle a seed grouping of TimeSeries into one or more Seismogram objects",
-    py::call_guard<py::gil_scoped_release>(),
     py::return_value_policy::copy,
     py::arg("d"),
     py::arg("i0"),
@@ -223,7 +208,6 @@ PYBIND11_MODULE(basic, m) {
 
       :param d: is the ensemble to be sorted.
     )mspass_doc",
-    py::call_guard<py::gil_scoped_release>(),
     py::arg("d") )
   ;
   py::class_<TimeWindow>(m,"TimeWindow","Simple description of a time window")
@@ -264,13 +248,9 @@ PYBIND11_MODULE(basic, m) {
     .def(py::init<>())
     .def(py::init<const double, const double, const double, const double>())
     .def("apply",py::overload_cast<TimeSeries&>(&LinearTaper::apply),
-      "Apply taper to a scalar TimeSeries object",
-      py::call_guard<py::gil_scoped_release>()
-      )
+      "Apply taper to a scalar TimeSeries object")
     .def("apply",py::overload_cast<Seismogram&>(&LinearTaper::apply),
-      "Apply taper to a Seismogram (3C) object",
-      py::call_guard<py::gil_scoped_release>()
-      )
+      "Apply taper to a Seismogram (3C) object")
     .def("get_t0head",&LinearTaper::get_t0head,
       "Return time of end of zero zone - taper sets data with time < this value 0")
     .def("get_t1head",&LinearTaper::get_t1head,
@@ -303,13 +283,9 @@ PYBIND11_MODULE(basic, m) {
     .def(py::init<>())
     .def(py::init<const double, const double, const double, const double>())
     .def("apply",py::overload_cast<TimeSeries&>(&CosineTaper::apply),
-            "Apply taper to a scalar TimeSeries object",
-           py::call_guard<py::gil_scoped_release>()
-      )
+            "Apply taper to a scalar TimeSeries object")
     .def("apply",py::overload_cast<Seismogram&>(&CosineTaper::apply),
-            "Apply taper to a Seismogram (3C) object",
-           py::call_guard<py::gil_scoped_release>()
-      )
+            "Apply taper to a Seismogram (3C) object")
     .def("get_t0head",&CosineTaper::get_t0head,
       "Return time of end of zero zone - taper sets data with time < this value 0")
     .def("get_t1head",&CosineTaper::get_t1head,
@@ -342,13 +318,9 @@ PYBIND11_MODULE(basic, m) {
     .def(py::init<>())
     .def(py::init<const std::vector<double>>())
     .def("apply",py::overload_cast<TimeSeries&>(&VectorTaper::apply),
-      "Apply taper to a scalar TimeSeries object",
-       py::call_guard<py::gil_scoped_release>()
-     )
+      "Apply taper to a scalar TimeSeries object")
     .def("apply",py::overload_cast<Seismogram&>(&VectorTaper::apply),
-        "Apply taper to a Seismogram (3C) object",
-         py::call_guard<py::gil_scoped_release>()
-    )
+        "Apply taper to a Seismogram (3C) object")
     .def(py::pickle(
       [](const VectorTaper& self)
       {
@@ -374,13 +346,9 @@ PYBIND11_MODULE(basic, m) {
     .def(py::init<const double, const double, const std::string>())
     .def(py::init<const TopMute&>())
     .def("apply",py::overload_cast<TimeSeries&>(&TopMute::apply),
-      "Apply to a TimeSeries object",
-      py::call_guard<py::gil_scoped_release>()
-    )
+      "Apply to a TimeSeries object")
     .def("apply",py::overload_cast<Seismogram&>(&TopMute::apply),
-      "Apply to a Seismogram object",
-      py::call_guard<py::gil_scoped_release>()
-    )
+      "Apply to a Seismogram object")
     .def("get_t0",&TopMute::get_t0,
       "Return the zero end time for marking the start of the mute")
     .def("get_t1",&TopMute::get_t1,

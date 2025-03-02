@@ -133,20 +133,20 @@ PYBIND11_MODULE(deconvolution, m) {
     .def("loadwavelet",&ScalarDecon::loadwavelet,py::arg("w"))
     .def("process",&ScalarDecon::process)
     .def("getresult",&ScalarDecon::getresult,
-            "Fetch vector of deconvolved data - after calling process",
-          py::call_guard<py::gil_scoped_release>())
+            "Fetch vector of deconvolved data - after calling process"
+        )
     .def("change_parameter",&ScalarDecon::changeparameter,"Change deconvolution parameters")
     .def("change_shaping_wavelet",&ScalarDecon::change_shaping_wavelet,
-            "Change the shaping wavelet applied to output",
-          py::call_guard<py::gil_scoped_release>())
+            "Change the shaping wavelet applied to output"
+        )
     .def("get_shaping_wavelet",&ScalarDecon::get_shaping_wavelet,
 	    "Get the shaping wavelet used by this operator")
     .def("actual_output",&ScalarDecon::actual_output,
-      "Return actual output of inverse*wavelet",
-      py::call_guard<py::gil_scoped_release>())
+      "Return actual output of inverse*wavelet"
+      )
     .def("ideal_output",&ScalarDecon::ideal_output,
-      "Return ideal output of for inverse",
-      py::call_guard<py::gil_scoped_release>())
+      "Return ideal output of for inverse"
+      )
     .def("inverse_wavelet",py::overload_cast<>(&ScalarDecon::inverse_wavelet))
     .def("inverse_wavelet",py::overload_cast<double>(&ScalarDecon::inverse_wavelet))
     .def("QCMetrics",&ScalarDecon::QCMetrics,"Return ideal output of for inverse")
@@ -155,11 +155,9 @@ PYBIND11_MODULE(deconvolution, m) {
     .def(py::init<const Metadata>())
     .def("changeparameter",&WaterLevelDecon::changeparameter,"Change operator parameters")
     .def("process",&WaterLevelDecon::process,
-      "Process previously loaded data",
-      py::call_guard<py::gil_scoped_release>())
+      "Process previously loaded data")
     .def("actual_output",&WaterLevelDecon::actual_output,
-      "Return actual output of inverse*wavelet",
-      py::call_guard<py::gil_scoped_release>())
+      "Return actual output of inverse*wavelet")
     .def("inverse_wavelet",py::overload_cast<>(&WaterLevelDecon::inverse_wavelet))
     .def("inverse_wavelet",py::overload_cast<double>(&WaterLevelDecon::inverse_wavelet))
     .def("QCMetrics",&WaterLevelDecon::QCMetrics,"Return ideal output of for inverse")
@@ -188,16 +186,13 @@ PYBIND11_MODULE(deconvolution, m) {
     .def(py::init<const Metadata>())
     .def("changeparameter",&LeastSquareDecon::changeparameter,"Change operator parameters")
     .def("process",&LeastSquareDecon::process,
-      "Process previously loaded data",
-      py::call_guard<py::gil_scoped_release>())
+      "Process previously loaded data")
     .def("actual_output",&LeastSquareDecon::actual_output,
-      "Return actual output of inverse*wavelet",
-      py::call_guard<py::gil_scoped_release>())
+      "Return actual output of inverse*wavelet")
     .def("inverse_wavelet",py::overload_cast<>(&LeastSquareDecon::inverse_wavelet))
     .def("inverse_wavelet",py::overload_cast<double>(&LeastSquareDecon::inverse_wavelet))
     .def("QCMetrics",&LeastSquareDecon::QCMetrics,
-      "Return ideal output of for inverse",
-      py::call_guard<py::gil_scoped_release>())
+      "Return ideal output of for inverse")
     .def(py::pickle(
       [](const LeastSquareDecon &self) {
         pybind11::gil_scoped_acquire acquire;
@@ -225,17 +220,13 @@ PYBIND11_MODULE(deconvolution, m) {
     .def(py::init<const Metadata>())
     .def("changeparameter",&MultiTaperSpecDivDecon::changeparameter,"Change operator parameters")
     .def("process",&MultiTaperSpecDivDecon::process,
-      "Process previously loaded data",
-      py::call_guard<py::gil_scoped_release>())
+      "Process previously loaded data")
     .def("loadnoise",&MultiTaperSpecDivDecon::loadnoise,
-      "Load noise data for regularization",
-      py::call_guard<py::gil_scoped_release>())
+      "Load noise data for regularization")
     .def("load",&MultiTaperSpecDivDecon::load,
-      "Load all data, wavelet, and noise",
-      py::call_guard<py::gil_scoped_release>())
+      "Load all data, wavelet, and noise")
     .def("actual_output",&MultiTaperSpecDivDecon::actual_output,
-      "Return actual output of inverse*wavelet",
-      py::call_guard<py::gil_scoped_release>())
+      "Return actual output of inverse*wavelet")
     .def("inverse_wavelet",py::overload_cast<>(&MultiTaperSpecDivDecon::inverse_wavelet))
     .def("inverse_wavelet",py::overload_cast<double>(&MultiTaperSpecDivDecon::inverse_wavelet))
     .def("QCMetrics",&MultiTaperSpecDivDecon::QCMetrics,"Return ideal output of for inverse")
@@ -275,15 +266,12 @@ PYBIND11_MODULE(deconvolution, m) {
     .def(py::init<const Metadata>())
     .def("changeparameter",&MultiTaperXcorDecon::changeparameter,"Change operator parameters")
     .def("process",&MultiTaperXcorDecon::process,
-      "Process previously loaded data",
-      py::call_guard<py::gil_scoped_release>())
+      "Process previously loaded data")
     .def("loadnoise",&MultiTaperXcorDecon::loadnoise,
-      "Load noise data for regularization",
-      py::call_guard<py::gil_scoped_release>())
+      "Load noise data for regularization")
     .def("load",&MultiTaperXcorDecon::load,"Load all data, wavelet, and noise")
     .def("actual_output",&MultiTaperXcorDecon::actual_output,
-      "Return actual output of inverse*wavelet",
-      py::call_guard<py::gil_scoped_release>())
+      "Return actual output of inverse*wavelet")
     .def("inverse_wavelet",py::overload_cast<>(&MultiTaperXcorDecon::inverse_wavelet))
     .def("inverse_wavelet",py::overload_cast<double>(&MultiTaperXcorDecon::inverse_wavelet))
     .def("QCMetrics",&MultiTaperXcorDecon::QCMetrics,"Return ideal output of for inverse")
@@ -339,30 +327,25 @@ PYBIND11_MODULE(deconvolution, m) {
     deleted*/
     .def("initialize_inverse_operator_TS",
         py::overload_cast<const TimeSeries&,const TimeSeries&>(&CNRDeconEngine::initialize_inverse_operator),
-        "Load required data to initialize frequency domain inverse operator - overloaded version using time domain noise vector",
-        py::call_guard<py::gil_scoped_release>())
+        "Load required data to initialize frequency domain inverse operator - overloaded version using time domain noise vector")
     .def("initialize_inverse_operator",
         py::overload_cast<const TimeSeries&,const PowerSpectrum&>(&CNRDeconEngine::initialize_inverse_operator),
-        "Load required data to initialize frequency domain inverse operator - overloaded version using precomputed power spectrum of noise",
-        py::call_guard<py::gil_scoped_release>())
+        "Load required data to initialize frequency domain inverse operator - overloaded version using precomputed power spectrum of noise")
     .def("process",&CNRDeconEngine::process,
-        "Deconvolve Seismogram data using inverse operator loaded previously - shape to specified bandwidth arg1 to arg2 frequency",
-        py::call_guard<py::gil_scoped_release>())
+        "Deconvolve Seismogram data using inverse operator loaded previously - shape to specified bandwidth arg1 to arg2 frequency")
     .def("get_operator_dt",&CNRDeconEngine::get_operator_dt,"Return operator sample interval")
     .def("compute_noise_spectrum",
         py::overload_cast<const TimeSeries&>(&CNRDeconEngine::compute_noise_spectrum),
-        "Computes a noise spectrum from a TimeSeries object using the same multitaper parameters as the inverse operator",
-        py::call_guard<py::gil_scoped_release>())
+        "Computes a noise spectrum from a TimeSeries object using the same multitaper parameters as the inverse operator"
+        )
+
     .def("compute_noise_spectrum_3C",
         py::overload_cast<const Seismogram&>(&CNRDeconEngine::compute_noise_spectrum),
-        "Computes a noise spectrum from a Seismogram object using the same multitaper parameters as the inverse operator with average of three components",
-        py::call_guard<py::gil_scoped_release>())
+        "Computes a noise spectrum from a Seismogram object using the same multitaper parameters as the inverse operator with average of three components")
     .def("ideal_output",&CNRDeconEngine::ideal_output,
-      "Return the ideal output of the currently loaded operator",
-      py::call_guard<py::gil_scoped_release>())
+      "Return the ideal output of the currently loaded operator")
     .def("actual_output",&CNRDeconEngine::actual_output,
-      "Return the actual output of the currently loaded operator",
-      py::call_guard<py::gil_scoped_release>())
+      "Return the actual output of the currently loaded operator")
     .def("inverse_wavelet",&CNRDeconEngine::inverse_wavelet,
         "Return the time-domain inverse operator computed form current frequency domain operator")
     .def("QCMetrics",&CNRDeconEngine::QCMetrics,"Return a Metadata container of QC metrics computed by this algorithm")
