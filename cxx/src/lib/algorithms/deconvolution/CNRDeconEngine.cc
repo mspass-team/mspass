@@ -513,8 +513,10 @@ Seismogram CNRDeconEngine::process(const Seismogram &d,
     t0_shift = round((-rfest.t0()) / rfest.dt());
     vector<double> wvec;
     wvec.reserve(FFTDeconOperator::nfft);
+    /* The set_npts method is assumed to not only set that attribute 
+     * but initialize the u matrix to a 3xnfft matrix.*/
     if (rfest.npts() != FFTDeconOperator::nfft)
-      rfest.u = dmatrix(3, FFTDeconOperator::nfft);
+      rfest.set_npts(FFTDeconOperator::nfft);
     int nhighsnr;
     double df;
     df = 1.0 / (operator_dt * static_cast<double>(FFTDeconOperator::nfft));
