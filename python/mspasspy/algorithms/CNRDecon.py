@@ -480,9 +480,12 @@ def CNRRFDecon(
         d.elog.log_error(err)
         d.kill()
     except Exception as generr:
-        d.elog.log_error("CNRDecon", "Unexpected exception", ErrorSeverity.Invalid)
-        d.elog.log_error("CNRDecon", str(generr), ErrorSeverity.Invalid)
+        message = "Unexpected exception:\n"
+        message += str(generr)
+        d.elog.log_error(alg, message, ErrorSeverity.Invalid)
         d.kill()
+        
+    
     # note d can be killed and returned or marked dead by the error handlers
     # in both cases we can't continue
     if d.dead():
@@ -491,6 +494,19 @@ def CNRRFDecon(
         else:
             return d
     else:
+        # some data problems cause NaN outputs for reasons not quite clear
+        # Hypothesis is caused by large data spikes from a mass recenter but 
+        # may not be the only cause.  This is a safety valve since NaN output 
+        # is always invalid
+        bad_values_mask = np.isnan(d.data) | np.isinf(d.data)
+        if np.count_nonzero(bad_values_mask)>0:
+            message = "numeric problems - decon output vector has NaN or Inf values\n"
+            message += "Known problem for certain types of bad data\n"
+            message += "If this occurs a lot check decon parameters"
+            d.elog.log_error(alg,message,ErrorSeverity.Invalid)
+            d.kill()
+            return [d, None, None]
+
         QCmd = engine.QCMetrics()
         # convert to a dict for posting
         QCmd = dict(QCmd)
