@@ -16,7 +16,7 @@ import numpy as np
 
 from mspasspy.util.decorators import mspass_func_wrapper
 from mspasspy.ccore.seismic import TimeSeries, Seismogram, SeismogramEnsemble
-from mspasspy.ccore.algorithms.basic import _WindowData3C
+from mspasspy.ccore.algorithms.basic import _WindowData3C, TimeWindow
 from mspasspy.ccore.utility import ErrorSeverity, MsPASSError
 from mspasspy.ccore.algorithms.deconvolution import CNRDeconEngine
 from mspasspy.algorithms.window import WindowData
@@ -414,6 +414,9 @@ def CNRRFDecon(
         # important to make  copy here as error conditions could clobber
         # origial
         d = Seismogram(seis)
+        # need to define this for window_output
+        if window_output:
+            signal_window = TimeWindow(seis.t0, seis.endtime())
 
     if noise_spectrum:
         if noise_spectrum.dead():
