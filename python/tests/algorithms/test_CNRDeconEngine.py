@@ -246,7 +246,7 @@ def verify_decon_output(d_decon, engine, wavelet):
         # in these tests the decon output is windowed so we need
         # to window dei
         dei = ExtractComponent(d_e, k)
-        dei = WindowData(dei, di.t0, di.endtime())
+        dei = WindowData(dei, di.t0, di.endtime(), short_segment_handling="pad")
         nrmdei = np.linalg.norm(dei.data)
         print("Expected output data vector norm=", nrmdei)
         dei.data /= nrmdei
