@@ -194,6 +194,7 @@ def CNRRFDecon(
     bandwidth_keys=["low_f_band_edge", "high_f_band_edge"],
     QCdata_key="CNRFDecon_properties",
     return_wavelet=False,
+    window_output=True,
     *args,
     object_history=False,
     alg_name="CNRRFDecon",
@@ -367,6 +368,12 @@ def CNRRFDecon(
         receiver function is returned.  When True the return is a tuple
         with 0 containing the RF estimate, 1 containing the actual_output
         of the operator and 1 containing the ideal outpu wavelet.
+    :param window_output:  boolean that when True (default) causes the 
+        output to be windowed in the range defined by signal_window.  
+        When False the output will normally be longer with the number of 
+        points being the fft size used internally.   That is, the fft 
+        is normally zero padded so some signal bleeds to samples between 
+        npts an the fft size.   False is largely reserved for debugging.
     :return:  `Seismogram` when return_wavelet is False and a tuple as
         described above if True.
 
@@ -518,6 +525,8 @@ def CNRRFDecon(
         pe = prediction_error(engine, w)
         QCmd["prediction_error"] = pe
         d[QCdata_key] = QCmd
+    if window_output:
+        d = _WindowData3C(d,signal_window)
     if return_wavelet:
         retval = []
         retval.append(d)
