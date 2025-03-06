@@ -362,15 +362,11 @@ PYBIND11_MODULE(deconvolution, m) {
       [](py::tuple t) {
         pybind11::gil_scoped_acquire acquire;
         CNRDeconEngine lsd;
-	try {
-            stringstream sstm(t[0].cast<std::string>());
-            boost::archive::text_iarchive artm(sstm);
-            artm >> lsd;
-        } catch (const boost::archive::archive_exception& e) {
-            std::cerr << "Archive exception: " << e.what() << std::endl;
-        } catch (const std::exception& e) {
-            std::cerr << "Standard exception: " << e.what() << std::endl;
-        }
+        stringstream sstm(t[0].cast<std::string>());
+        boost::archive::text_iarchive artm(sstm);
+        artm >> lsd;
+        std::cerr << "Archive exception: " << e.what() << std::endl;
+        std::cerr << "Standard exception: " << e.what() << std::endl;
         pybind11::gil_scoped_release release;
         return lsd;
       }
