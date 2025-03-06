@@ -368,6 +368,8 @@ PYBIND11_MODULE(deconvolution, m) {
       },
       [](py::tuple t) {
         pybind11::gil_scoped_acquire acquire;
+        CNRDeconEngine lsd;
+	try {
         // Debug: Print incoming tuple info
         std::cout << "[Deserialization] Received tuple: "
               << py::repr(t).cast<std::string>() << std::endl;
@@ -377,8 +379,12 @@ PYBIND11_MODULE(deconvolution, m) {
         stringstream sstm(data);
 	std::cout << "[Deserialization] Data length: " << data.size() << std::endl;
         boost::archive::text_iarchive artm(sstm);
-        CNRDeconEngine lsd;
         artm >> lsd;
+    } catch (const boost::archive::archive_exception& e) {
+        std::cerr << "Archive exception: " << e.what() << std::endl;
+    } catch (const std::exception& e) {
+        std::cerr << "Standard exception: " << e.what() << std::endl;
+    }
         pybind11::gil_scoped_release release;
         return lsd;
       }
