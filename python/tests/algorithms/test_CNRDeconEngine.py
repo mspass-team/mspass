@@ -303,7 +303,7 @@ def test_CNRRFDecon():
         noise_window=nw,
         return_wavelet=True,
         use_3C_noise=True,
-     )
+    )
     assert d_decon2.live
     assert aout.live
     assert iout.live
