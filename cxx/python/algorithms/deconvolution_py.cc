@@ -357,12 +357,6 @@ PYBIND11_MODULE(deconvolution, m) {
         artm<<self;
 	std::string data = sstm.str();
         pybind11::tuple r_tuple = py::make_tuple(py::bytes(data));
-        // Debug: Print tuple info
-        std::cout << "[Serialization] r_tuple: "
-              << py::repr(r_tuple).cast<std::string>() << std::endl;
-        std::cout << "[Serialization] r_tuple size: "
-              << r_tuple.size() << std::endl;
-	std::cout << "[Serialization] Data length: " << data.size() << std::endl;
         pybind11::gil_scoped_release release;
         return r_tuple;
       },
@@ -370,21 +364,15 @@ PYBIND11_MODULE(deconvolution, m) {
         pybind11::gil_scoped_acquire acquire;
         CNRDeconEngine lsd;
 	try {
-        // Debug: Print incoming tuple info
-        std::cout << "[Deserialization] Received tuple: "
-              << py::repr(t).cast<std::string>() << std::endl;
-        std::cout << "[Deserialization] Tuple size: "
-              << t.size() << std::endl;
-	std::string data = t[0].cast<py::bytes>().cast<std::string>();
-        stringstream sstm(data);
-	std::cout << "[Deserialization] Data length: " << data.size() << std::endl;
-        boost::archive::text_iarchive artm(sstm);
-        artm >> lsd;
-    } catch (const boost::archive::archive_exception& e) {
-        std::cerr << "Archive exception: " << e.what() << std::endl;
-    } catch (const std::exception& e) {
-        std::cerr << "Standard exception: " << e.what() << std::endl;
-    }
+            std::string data = t[0].cast<py::bytes>().cast<std::string>();
+            stringstream sstm(data);
+            boost::archive::text_iarchive artm(sstm);
+            artm >> lsd;
+        } catch (const boost::archive::archive_exception& e) {
+            std::cerr << "Archive exception: " << e.what() << std::endl;
+        } catch (const std::exception& e) {
+            std::cerr << "Standard exception: " << e.what() << std::endl;
+        }
         pybind11::gil_scoped_release release;
         return lsd;
       }
