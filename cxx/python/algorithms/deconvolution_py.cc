@@ -355,8 +355,7 @@ PYBIND11_MODULE(deconvolution, m) {
         stringstream sstm;
         boost::archive::text_oarchive artm(sstm);
         artm<<self;
-	std::string data = sstm.str();
-        pybind11::tuple r_tuple = py::make_tuple(py::bytes(data));
+        pybind11::tuple r_tuple = py::make_tuple(sstm.str());
         pybind11::gil_scoped_release release;
         return r_tuple;
       },
@@ -364,8 +363,7 @@ PYBIND11_MODULE(deconvolution, m) {
         pybind11::gil_scoped_acquire acquire;
         CNRDeconEngine lsd;
 	try {
-            std::string data = t[0].cast<py::bytes>().cast<std::string>();
-            stringstream sstm(data);
+            stringstream sstm(t[0].cast<std::string>());
             boost::archive::text_iarchive artm(sstm);
             artm >> lsd;
         } catch (const boost::archive::archive_exception& e) {
