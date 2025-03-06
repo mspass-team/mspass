@@ -355,12 +355,14 @@ PYBIND11_MODULE(deconvolution, m) {
         stringstream sstm;
         boost::archive::text_oarchive artm(sstm);
         artm<<self;
-        pybind11::tuple r_tuple = py::make_tuple(sstm.str());
+	std::string data = sstm.str();
+        pybind11::tuple r_tuple = py::make_tuple(py::bytes(data));
         // Debug: Print tuple info
         std::cout << "[Serialization] r_tuple: "
               << py::repr(r_tuple).cast<std::string>() << std::endl;
         std::cout << "[Serialization] r_tuple size: "
               << r_tuple.size() << std::endl;
+	std::cout << "[Serialization] Data length: " << data.size() << std::endl;
         pybind11::gil_scoped_release release;
         return r_tuple;
       },
@@ -371,7 +373,9 @@ PYBIND11_MODULE(deconvolution, m) {
               << py::repr(t).cast<std::string>() << std::endl;
         std::cout << "[Deserialization] Tuple size: "
               << t.size() << std::endl;
-        stringstream sstm(t[0].cast<std::string>());
+	std::string data = t[0].cast<py::bytes>().cast<std::string>();
+        stringstream sstm(data);
+	std::cout << "[Deserialization] Data length: " << data.size() << std::endl;
         boost::archive::text_iarchive artm(sstm);
         CNRDeconEngine lsd;
         artm >> lsd;
