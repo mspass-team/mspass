@@ -11,6 +11,7 @@ jobs:
         uses: psf/black@stable
         id: action_black
         with:
+          options: "--verbose"
           jupyter: true
           src: "./python"
       - name: Create Pull Request
