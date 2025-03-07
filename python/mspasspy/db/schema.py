@@ -402,9 +402,9 @@ class DatabaseSchema(SchemaBase):
             setattr(self, collection, schemadef)
             self._attr_dict[collection] = schemadef
             if "default" in self._raw["Database"][collection]:
-                self._default_dic[self._raw["Database"][collection]["default"]] = (
-                    collection
-                )
+                self._default_dic[
+                    self._raw["Database"][collection]["default"]
+                ] = collection
 
     def __setitem__(self, key, value):
         if not isinstance(value, DBSchemaDefinition):
