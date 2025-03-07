@@ -1,6 +1,7 @@
 """
 Functions for converting to and from MsPASS data types.
 """
+
 from typing import Collection
 import numpy as np
 import obspy.core
