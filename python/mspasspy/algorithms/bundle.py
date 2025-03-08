@@ -1,27 +1,27 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-This is a set of thin wrappers for C++ code to do a process we call 
-"bundling".   That is, a Seismogram object can be constructed from 
-3 TimeSeries objects spanning a common time period and having the 
-same sample rate but with orientation pointing in 3 linearly 
+This is a set of thin wrappers for C++ code to do a process we call
+"bundling".   That is, a Seismogram object can be constructed from
+3 TimeSeries objects spanning a common time period and having the
+same sample rate but with orientation pointing in 3 linearly
 independent directions.   There are a lot of complexities to assembling
-such data and manipulating the data objects, which is why the 
-process was implemented in C++.   The algorithms here are not completely 
+such data and manipulating the data objects, which is why the
+process was implemented in C++.   The algorithms here are not completely
 generic and will likely need additions at some future data for nonstandard
-data.  "standard" in this context means passive array data archived in 
+data.  "standard" in this context means passive array data archived in
 the SEED (Standard Earthquake Exchange Data) format (aka miniseed which is
-a standard subset of seed used for archives).  The algorithms here 
+a standard subset of seed used for archives).  The algorithms here
 depend upon seismic channels being uniquely defined by four metadata keys:
-net, sta, chan, and loc.   Bundles are formed by sorting data in the 
-following key order:  net, sta, loc, chan.   The algorithms here are 
-further limited to applications to ensembles that are the generalization 
+net, sta, chan, and loc.   Bundles are formed by sorting data in the
+following key order:  net, sta, loc, chan.   The algorithms here are
+further limited to applications to ensembles that are the generalization
 of a reflection seismology "shot gather".   That means an implict assumption
-is the ensembles contain data assembled from one and only one event so 
+is the ensembles contain data assembled from one and only one event so
 there is a one-to-one relationship between each channel and an event tag.
-if data from multiple events or something other than a shot gather 
-are to be handled used the BundleGroup function station by station 
-sorting the inputs by some other method to create triples of channels 
+if data from multiple events or something other than a shot gather
+are to be handled used the BundleGroup function station by station
+sorting the inputs by some other method to create triples of channels
 that can be merged into one Seismogram object.
 
 Created on Mon Jan 11 05:34:10 2021

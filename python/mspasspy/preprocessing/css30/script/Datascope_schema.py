@@ -10,27 +10,27 @@ Datascope_schema - builds pf file for MsPASS import/export
 
 .. topic::Description
 
-    This is a command line tool to generate a pf file that is the 
-    input file for the mspass `DatascopeDatabase` class.  The output 
-    pf is used by the constructor of that class to parse the fixed field, 
-    text files used by the Datascope database.   The pf file could be 
-    distributed with mspass but this allows more flexibility in adding 
-    additional tables not created by default.  
-    
-    This application requires a license for Antelope to run. Most 
-    MsPASS Users can simply use the default parameter file 
-    found in the MsPASS distribution.  That master was created with 
-    this program. 
+    This is a command line tool to generate a pf file that is the
+    input file for the mspass `DatascopeDatabase` class.  The output
+    pf is used by the constructor of that class to parse the fixed field,
+    text files used by the Datascope database.   The pf file could be
+    distributed with mspass but this allows more flexibility in adding
+    additional tables not created by default.
+
+    This application requires a license for Antelope to run. Most
+    MsPASS Users can simply use the default parameter file
+    found in the MsPASS distribution.  That master was created with
+    this program.
 
 .. topic::Arguments
 
     -pf:
-       Output to file defined by pffile instead of default 
+       Output to file defined by pffile instead of default
        "DatascopeDatabase.pf".
 
     -t:
-      List of tables to parse produce the output pf file. 
-      Default is a list of more standard tables. 
+      List of tables to parse produce the output pf file.
+      Default is a list of more standard tables.
 
 
 @author: Gary Pavlis

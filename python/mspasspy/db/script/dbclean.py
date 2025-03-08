@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-This file contains a python script that defines a command line 
+This file contains a python script that defines a command line
 tool we call dbclean.  dbclean is designed to fix errors detected
-with a companion command line tool called dbverify.  The options 
-of this tool largely map into errors or potential errors detected by 
-dbverify.  
+with a companion command line tool called dbverify.  The options
+of this tool largely map into errors or potential errors detected by
+dbverify.
 
 """
 import argparse

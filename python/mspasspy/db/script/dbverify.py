@@ -113,12 +113,12 @@ argument attached to the -t flag:
     * Run the required test on the channel collection
 
     dbverify mydb -c channel -t required -r lat lon elev hang vang starttime endtime
-    
+
     * Run the schema_check test on all standard collections fpr TimeSeries data
     dbverify mydb -c wf_TimeSeries channel source -t schema_check
-    
+
     * Rerun schema test on wf_TimeSeries to clarify errors
-    
+
     * impose a limit of only 100 documents to keep the output reasonable.
 
     dbverify mydb -c wf_TimeSeries -t schema_check -v -e 100
@@ -164,7 +164,7 @@ argument attached to the -t flag:
     detected it can be a challenge to see the problem from the output.
     Fortunately, such errors are rare unless a function has a bug or the input
     is created by some simulation method that doesn't set some attributes
-    correctly. 
+    correctly.
 
 .. seealso::
     The tests this program runs are python functions found in the module
