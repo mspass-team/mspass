@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-This module is a companion to a jupyter notebook tutorial documenting 
-the receiver function deconvolution algorithms in MsPASS.   It has a 
-string of frozen properties designed just for this tutorial so it is 
-best left in this location and used only by the tutorial or students of 
-the tutorial interested in what is under the hood.  
+This module is a companion to a jupyter notebook tutorial documenting
+the receiver function deconvolution algorithms in MsPASS.   It has a
+string of frozen properties designed just for this tutorial so it is
+best left in this location and used only by the tutorial or students of
+the tutorial interested in what is under the hood.
 
-The entire purpose of this module is to generate a set of synthetic 
+The entire purpose of this module is to generate a set of synthetic
 waveforms that can be used to demonstrate deconvolution methods.
 
 Created on Wed Dec 23 10:29:26 2020
