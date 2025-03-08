@@ -143,6 +143,7 @@
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Tools to define the schema of Metadata.</span>
 <span class="sd">&quot;&quot;&quot;</span>
+
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">yaml</span>
@@ -543,9 +544,9 @@
             <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collection</span><span class="p">,</span> <span class="n">schemadef</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_attr_dict</span><span class="p">[</span><span class="n">collection</span><span class="p">]</span> <span class="o">=</span> <span class="n">schemadef</span>
             <span class="k">if</span> <span class="s2">&quot;default&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_raw</span><span class="p">[</span><span class="s2">&quot;Database&quot;</span><span class="p">][</span><span class="n">collection</span><span class="p">]:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_default_dic</span><span class="p">[</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_raw</span><span class="p">[</span><span class="s2">&quot;Database&quot;</span><span class="p">][</span><span class="n">collection</span><span class="p">][</span><span class="s2">&quot;default&quot;</span><span class="p">]</span>
-                <span class="p">]</span> <span class="o">=</span> <span class="n">collection</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_default_dic</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_raw</span><span class="p">[</span><span class="s2">&quot;Database&quot;</span><span class="p">][</span><span class="n">collection</span><span class="p">][</span><span class="s2">&quot;default&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">collection</span>
+                <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">DBSchemaDefinition</span><span class="p">):</span>
@@ -1100,9 +1101,11 @@
         <span class="n">schema</span><span class="o">.</span><span class="n">Optional</span><span class="p">(</span><span class="s2">&quot;concept&quot;</span><span class="p">):</span> <span class="nb">str</span><span class="p">,</span>
         <span class="c1"># aliases can only be string or a list of string anything else will be converted automatically here</span>
         <span class="n">schema</span><span class="o">.</span><span class="n">Optional</span><span class="p">(</span><span class="s2">&quot;aliases&quot;</span><span class="p">):</span> <span class="n">schema</span><span class="o">.</span><span class="n">Use</span><span class="p">(</span>
-            <span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="p">[</span><span class="n">s</span><span class="p">]</span>
-            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span>
-            <span class="k">else</span> <span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">s</span><span class="p">]</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">list</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="p">))</span>
+            <span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="p">(</span>
+                <span class="p">[</span><span class="n">s</span><span class="p">]</span>
+                <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span>
+                <span class="k">else</span> <span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">s</span><span class="p">]</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">list</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="p">))</span>
+            <span class="p">)</span>
         <span class="p">),</span>
     <span class="p">}</span>
     <span class="n">common_md_schema</span> <span class="o">=</span> <span class="p">{</span>
@@ -1112,9 +1115,11 @@
         <span class="n">schema</span><span class="o">.</span><span class="n">Optional</span><span class="p">(</span><span class="s2">&quot;concept&quot;</span><span class="p">):</span> <span class="nb">str</span><span class="p">,</span>
         <span class="c1"># aliases can only be string or a list of string anything else will be converted automatically here</span>
         <span class="n">schema</span><span class="o">.</span><span class="n">Optional</span><span class="p">(</span><span class="s2">&quot;aliases&quot;</span><span class="p">):</span> <span class="n">schema</span><span class="o">.</span><span class="n">Use</span><span class="p">(</span>
-            <span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="p">[</span><span class="n">s</span><span class="p">]</span>
-            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span>
-            <span class="k">else</span> <span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">s</span><span class="p">]</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">list</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="p">))</span>
+            <span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="p">(</span>
+                <span class="p">[</span><span class="n">s</span><span class="p">]</span>
+                <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span>
+                <span class="k">else</span> <span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">s</span><span class="p">]</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">list</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="p">))</span>
+            <span class="p">)</span>
         <span class="p">),</span>
         <span class="n">schema</span><span class="o">.</span><span class="n">Optional</span><span class="p">(</span><span class="s2">&quot;readonly&quot;</span><span class="p">):</span> <span class="nb">bool</span><span class="p">,</span>
     <span class="p">}</span>

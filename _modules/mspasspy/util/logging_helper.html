@@ -183,9 +183,11 @@
                 <span class="n">data</span><span class="o">.</span><span class="n">new_map</span><span class="p">(</span>
                     <span class="n">alg_name</span><span class="p">,</span>
                     <span class="n">alg_id</span><span class="p">,</span>
-                    <span class="n">AtomicType</span><span class="o">.</span><span class="n">TIMESERIES</span>
-                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">)</span>
-                    <span class="k">else</span> <span class="n">AtomicType</span><span class="o">.</span><span class="n">SEISMOGRAM</span><span class="p">,</span>
+                    <span class="p">(</span>
+                        <span class="n">AtomicType</span><span class="o">.</span><span class="n">TIMESERIES</span>
+                        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">)</span>
+                        <span class="k">else</span> <span class="n">AtomicType</span><span class="o">.</span><span class="n">SEISMOGRAM</span>
+                    <span class="p">),</span>
                     <span class="n">ProcessingStatus</span><span class="o">.</span><span class="n">VOLATILE</span><span class="p">,</span>
                 <span class="p">)</span>
 
@@ -202,9 +204,11 @@
                     <span class="n">data</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">new_map</span><span class="p">(</span>
                         <span class="n">alg_name</span><span class="p">,</span>
                         <span class="n">alg_id</span><span class="p">,</span>
-                        <span class="n">AtomicType</span><span class="o">.</span><span class="n">TIMESERIES</span>
-                        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">TimeSeries</span><span class="p">)</span>
-                        <span class="k">else</span> <span class="n">AtomicType</span><span class="o">.</span><span class="n">SEISMOGRAM</span><span class="p">,</span>
+                        <span class="p">(</span>
+                            <span class="n">AtomicType</span><span class="o">.</span><span class="n">TIMESERIES</span>
+                            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">TimeSeries</span><span class="p">)</span>
+                            <span class="k">else</span> <span class="n">AtomicType</span><span class="o">.</span><span class="n">SEISMOGRAM</span>
+                        <span class="p">),</span>
                         <span class="n">ProcessingStatus</span><span class="o">.</span><span class="n">VOLATILE</span><span class="p">,</span>
                     <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
@@ -267,9 +271,11 @@
             <span class="n">data1</span><span class="o">.</span><span class="n">accumulate</span><span class="p">(</span>
                 <span class="n">alg_name</span><span class="p">,</span>
                 <span class="n">alg_id</span><span class="p">,</span>
-                <span class="n">AtomicType</span><span class="o">.</span><span class="n">TIMESERIES</span>
-                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">)</span>
-                <span class="k">else</span> <span class="n">AtomicType</span><span class="o">.</span><span class="n">SEISMOGRAM</span><span class="p">,</span>
+                <span class="p">(</span>
+                    <span class="n">AtomicType</span><span class="o">.</span><span class="n">TIMESERIES</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">)</span>
+                    <span class="k">else</span> <span class="n">AtomicType</span><span class="o">.</span><span class="n">SEISMOGRAM</span>
+                <span class="p">),</span>
                 <span class="n">data2</span><span class="p">,</span>
             <span class="p">)</span>
 
@@ -287,9 +293,11 @@
                 <span class="n">data1</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">accumulate</span><span class="p">(</span>
                     <span class="n">alg_name</span><span class="p">,</span>
                     <span class="n">alg_id</span><span class="p">,</span>
-                    <span class="n">AtomicType</span><span class="o">.</span><span class="n">TIMESERIES</span>
-                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data1</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">TimeSeries</span><span class="p">)</span>
-                    <span class="k">else</span> <span class="n">AtomicType</span><span class="o">.</span><span class="n">SEISMOGRAM</span><span class="p">,</span>
+                    <span class="p">(</span>
+                        <span class="n">AtomicType</span><span class="o">.</span><span class="n">TIMESERIES</span>
+                        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data1</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">TimeSeries</span><span class="p">)</span>
+                        <span class="k">else</span> <span class="n">AtomicType</span><span class="o">.</span><span class="n">SEISMOGRAM</span>
+                    <span class="p">),</span>
                     <span class="n">data2</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
                 <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>

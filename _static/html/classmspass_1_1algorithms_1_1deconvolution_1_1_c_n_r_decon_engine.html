@@ -409,114 +409,114 @@ gsl_fft_complex_workspace *&#160;</td><td class="memItemRight" valign="bottom"><
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  609</span>                                                                  {</div>
-<div class="line"><span class="lineno">  610</span>  <span class="keywordflow">if</span> (wavelet.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#aa96e795f96b5050996d791f5b6f3867d">dead</a>()) {</div>
-<div class="line"><span class="lineno">  611</span>    TimeSeries badout(wavelet);</div>
-<div class="line"><span class="lineno">  612</span>    badout.kill();</div>
-<div class="line"><span class="lineno">  613</span>    badout.set_npts(0);</div>
-<div class="line"><span class="lineno">  614</span>    badout.elog.log_error(</div>
-<div class="line"><span class="lineno">  615</span>        <span class="stringliteral">&quot;CRFDeconEngine::actual_output&quot;</span>,</div>
-<div class="line"><span class="lineno">  616</span>        <span class="stringliteral">&quot;received wavelet data via arg0 marked dead - cannot procede&quot;</span>,</div>
-<div class="line"><span class="lineno">  617</span>        ErrorSeverity::Invalid);</div>
-<div class="line"><span class="lineno">  618</span>    <span class="keywordflow">return</span> badout;</div>
-<div class="line"><span class="lineno">  619</span>  }</div>
-<div class="line"><span class="lineno">  620</span>  TimeSeries result(</div>
-<div class="line"><span class="lineno">  621</span>      wavelet); <span class="comment">// Use this to clone metadata and elog from wavelet</span></div>
-<div class="line"><span class="lineno">  622</span>  result.set_npts(FFTDeconOperator::nfft);</div>
-<div class="line"><span class="lineno">  623</span>  <span class="comment">/* Force these even though they are likely already defined as</span></div>
-<div class="line"><span class="lineno">  624</span><span class="comment">  in the parent wavelet TimeSeries. */</span></div>
-<div class="line"><span class="lineno">  625</span>  result.set_live();</div>
-<div class="line"><span class="lineno">  626</span>  <span class="comment">/* We always shift this wavelet to the center of the data vector.</span></div>
-<div class="line"><span class="lineno">  627</span><span class="comment">  We handle the time through the CoreTimeSeries object. */</span></div>
-<div class="line"><span class="lineno">  628</span>  <span class="keywordtype">int</span> i0 = FFTDeconOperator::nfft / 2;</div>
-<div class="line"><span class="lineno">  629</span>  result.set_t0(operator_dt * (-(<span class="keywordtype">double</span>)i0));</div>
-<div class="line"><span class="lineno">  630</span>  result.set_dt(this-&gt;operator_dt);</div>
-<div class="line"><span class="lineno">  631</span>  result.set_tref(TimeReferenceType::Relative);</div>
-<div class="line"><span class="lineno">  632</span>  <span class="comment">/* We need to require that wavelet time range is consistent with</span></div>
-<div class="line"><span class="lineno">  633</span><span class="comment">   * operator.   We assume relative time so we demand wavelet t0 be less</span></div>
-<div class="line"><span class="lineno">  634</span><span class="comment">   * than or equal to nff2/2 to assure a wavelet signal is in the</span></div>
-<div class="line"><span class="lineno">  635</span><span class="comment">   * the range -nfft/2 to nff2/2.  */</span></div>
-<div class="line"><span class="lineno">  636</span>  <span class="keywordtype">int</span> w_t0_lag;</div>
-<div class="line"><span class="lineno">  637</span>  w_t0_lag = wavelet.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#abe28ca2812a2ac21dd2196385ad106ab">sample_number</a>(0.0);</div>
-<div class="line"><span class="lineno">  638</span>  <span class="comment">/* We correct the relative phase of the input wavelet to that</span></div>
-<div class="line"><span class="lineno">  639</span><span class="comment">  saved when winv was created. */</span></div>
-<div class="line"><span class="lineno">  640</span>  w_t0_lag -= this-&gt;winv_t0_lag;</div>
-<div class="line"><span class="lineno">  641</span>  <span class="comment">/* note we handle two extremes differently*/</span></div>
-<div class="line"><span class="lineno">  642</span>  <span class="keywordflow">if</span> (w_t0_lag &gt;= FFTDeconOperator::nfft) {</div>
-<div class="line"><span class="lineno">  643</span>    stringstream ss;</div>
-<div class="line"><span class="lineno">  644</span>    ss &lt;&lt; <span class="stringliteral">&quot;actual_output method received wavelet with t0=&quot;</span> &lt;&lt; wavelet.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#a472074f3074d59f794d18017b010ab81">t0</a>()</div>
-<div class="line"><span class="lineno">  645</span>       &lt;&lt; <span class="stringliteral">&quot; that resolves to offset of &quot;</span> &lt;&lt; w_t0_lag &lt;&lt; <span class="stringliteral">&quot; samples&quot;</span> &lt;&lt; endl</div>
-<div class="line"><span class="lineno">  646</span>       &lt;&lt; <span class="stringliteral">&quot;That exceeds buffer for frequency domain calculation of size=&quot;</span></div>
-<div class="line"><span class="lineno">  647</span>       &lt;&lt; FFTDeconOperator::nfft &lt;&lt; endl</div>
-<div class="line"><span class="lineno">  648</span>       &lt;&lt; <span class="stringliteral">&quot;Cannot compute actual_output because we assume signal is in range &quot;</span></div>
-<div class="line"><span class="lineno">  649</span>          <span class="stringliteral">&quot;t&gt;0&quot;</span></div>
-<div class="line"><span class="lineno">  650</span>       &lt;&lt; endl;</div>
-<div class="line"><span class="lineno">  651</span>    result.elog.log_error(<span class="stringliteral">&quot;CNRDeconEngine::actual_output&quot;</span>, ss.str(),</div>
-<div class="line"><span class="lineno">  652</span>                          ErrorSeverity::Invalid);</div>
-<div class="line"><span class="lineno">  653</span>    result.kill();</div>
-<div class="line"><span class="lineno">  654</span>    result.set_npts(0);</div>
-<div class="line"><span class="lineno">  655</span>    <span class="keywordflow">return</span> result;</div>
-<div class="line"><span class="lineno">  656</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (w_t0_lag &gt; (FFTDeconOperator::nfft) / 2) {</div>
-<div class="line"><span class="lineno">  657</span>    stringstream ss;</div>
-<div class="line"><span class="lineno">  658</span>    ss &lt;&lt; <span class="stringliteral">&quot;Warning: actual output method received wavelet with t0=&quot;</span></div>
-<div class="line"><span class="lineno">  659</span>       &lt;&lt; wavelet.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#a472074f3074d59f794d18017b010ab81">t0</a>() &lt;&lt; <span class="stringliteral">&quot; that resolves to offset of &quot;</span> &lt;&lt; w_t0_lag</div>
-<div class="line"><span class="lineno">  660</span>       &lt;&lt; <span class="stringliteral">&quot; samples&quot;</span> &lt;&lt; endl</div>
-<div class="line"><span class="lineno">  661</span>       &lt;&lt; <span class="stringliteral">&quot;That exceeds the midpoint of the frequency domain buffer used by &quot;</span></div>
-<div class="line"><span class="lineno">  662</span>          <span class="stringliteral">&quot;this method=&quot;</span></div>
-<div class="line"><span class="lineno">  663</span>       &lt;&lt; FFTDeconOperator::nfft / 2 &lt;&lt; endl</div>
-<div class="line"><span class="lineno">  664</span>       &lt;&lt; <span class="stringliteral">&quot;Result may be incorrect as the function assumes the signal is after &quot;</span></div>
-<div class="line"><span class="lineno">  665</span>          <span class="stringliteral">&quot;time 0&quot;</span></div>
-<div class="line"><span class="lineno">  666</span>       &lt;&lt; endl;</div>
-<div class="line"><span class="lineno">  667</span>    result.elog.log_error(<span class="stringliteral">&quot;CNRDeconEngine::actual_output&quot;</span>, ss.str(),</div>
-<div class="line"><span class="lineno">  668</span>                          ErrorSeverity::Complaint);</div>
-<div class="line"><span class="lineno">  669</span>  }</div>
-<div class="line"><span class="lineno">  670</span> </div>
-<div class="line"><span class="lineno">  671</span>  <span class="keywordflow">try</span> {</div>
-<div class="line"><span class="lineno">  672</span>    std::vector&lt;double&gt; work;</div>
-<div class="line"><span class="lineno">  673</span>    <span class="keywordflow">if</span> (wavelet.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">npts</a>() == FFTDeconOperator::nfft) {</div>
-<div class="line"><span class="lineno">  674</span>      work = wavelet.<a class="code hl_variable" href="classmspass_1_1seismic_1_1_core_time_series.html#ab044edb3fe5fe734cb577a4434f390a2">s</a>;</div>
-<div class="line"><span class="lineno">  675</span>    } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  676</span>      work.reserve(FFTDeconOperator::nfft);</div>
-<div class="line"><span class="lineno">  677</span>      <span class="keywordtype">int</span> i, nend;</div>
-<div class="line"><span class="lineno">  678</span>      <span class="keywordflow">for</span> (i = 0; i &lt; FFTDeconOperator::nfft; ++i)</div>
-<div class="line"><span class="lineno">  679</span>        work.push_back(0.0);</div>
-<div class="line"><span class="lineno">  680</span>      <span class="keywordflow">if</span> (wavelet.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">npts</a>() &gt; FFTDeconOperator::nfft)</div>
-<div class="line"><span class="lineno">  681</span>        nend = FFTDeconOperator::nfft;</div>
-<div class="line"><span class="lineno">  682</span>      <span class="keywordflow">else</span></div>
-<div class="line"><span class="lineno">  683</span>        nend = wavelet.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">npts</a>();</div>
-<div class="line"><span class="lineno">  684</span>      <span class="keywordflow">for</span> (i = 0; i &lt; nend; ++i)</div>
-<div class="line"><span class="lineno">  685</span>        work[i] = wavelet.<a class="code hl_variable" href="classmspass_1_1seismic_1_1_core_time_series.html#ab044edb3fe5fe734cb577a4434f390a2">s</a>[i];</div>
-<div class="line"><span class="lineno">  686</span>    }</div>
-<div class="line"><span class="lineno">  687</span>    <span class="comment">/* This converts wavelet to zero phase - needed to preserve timing.*/</span></div>
-<div class="line"><span class="lineno">  688</span>    work = circular_shift(work, w_t0_lag);</div>
-<div class="line"><span class="lineno">  689</span>    ComplexArray W(FFTDeconOperator::nfft, &amp;(work[0]));</div>
-<div class="line"><span class="lineno">  690</span>    gsl_fft_complex_forward(W.ptr(), 1, FFTDeconOperator::nfft, wavetable,</div>
-<div class="line"><span class="lineno">  691</span>                            workspace);</div>
-<div class="line"><span class="lineno">  692</span>    ComplexArray ao_fft;</div>
-<div class="line"><span class="lineno">  693</span>    ao_fft = this-&gt;winv * W;</div>
-<div class="line"><span class="lineno">  694</span>    ComplexArray *stmp = this-&gt;shapingwavelet.<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html#ac922b603ff03a691075724bcd53e396f">wavelet</a>();</div>
-<div class="line"><span class="lineno">  695</span>    <span class="comment">/* We always apply the shaping wavelet - this perhaps should be optional</span></div>
-<div class="line"><span class="lineno">  696</span><span class="comment">    but probably better done with a none option for the shaping wavelet */</span></div>
-<div class="line"><span class="lineno">  697</span>    ao_fft = (*stmp) * ao_fft;</div>
-<div class="line"><span class="lineno">  698</span>    gsl_fft_complex_inverse(ao_fft.ptr(), 1, FFTDeconOperator::nfft, wavetable,</div>
-<div class="line"><span class="lineno">  699</span>                            workspace);</div>
-<div class="line"><span class="lineno">  700</span>    vector&lt;double&gt; ao;</div>
-<div class="line"><span class="lineno">  701</span>    ao.reserve(FFTDeconOperator::nfft);</div>
-<div class="line"><span class="lineno">  702</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> k = 0; k &lt; ao_fft.size(); ++k)</div>
-<div class="line"><span class="lineno">  703</span>      ao.push_back(ao_fft[k].real());</div>
-<div class="line"><span class="lineno">  704</span>    ao = circular_shift(ao, i0);</div>
-<div class="line"><span class="lineno">  705</span>    ao = normalize&lt;double&gt;(ao);</div>
-<div class="line"><span class="lineno">  706</span>    <span class="comment">/* set_npts always initializes the s buffer so it is more efficient to</span></div>
-<div class="line"><span class="lineno">  707</span><span class="comment">    copy ao elements rather than what was here before:</span></div>
-<div class="line"><span class="lineno">  708</span><span class="comment">      result.s=ao;</span></div>
-<div class="line"><span class="lineno">  709</span><span class="comment">    */</span></div>
-<div class="line"><span class="lineno">  710</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> k = 0; k &lt; FFTDeconOperator::nfft; ++k)</div>
-<div class="line"><span class="lineno">  711</span>      result.s[k] = ao[k];</div>
-<div class="line"><span class="lineno">  712</span>    <span class="keywordflow">return</span> result;</div>
-<div class="line"><span class="lineno">  713</span>  } <span class="keywordflow">catch</span> (...) {</div>
-<div class="line"><span class="lineno">  714</span>    <span class="keywordflow">throw</span>;</div>
-<div class="line"><span class="lineno">  715</span>  };</div>
-<div class="line"><span class="lineno">  716</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  611</span>                                                                  {</div>
+<div class="line"><span class="lineno">  612</span>  <span class="keywordflow">if</span> (wavelet.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#aa96e795f96b5050996d791f5b6f3867d">dead</a>()) {</div>
+<div class="line"><span class="lineno">  613</span>    TimeSeries badout(wavelet);</div>
+<div class="line"><span class="lineno">  614</span>    badout.kill();</div>
+<div class="line"><span class="lineno">  615</span>    badout.set_npts(0);</div>
+<div class="line"><span class="lineno">  616</span>    badout.elog.log_error(</div>
+<div class="line"><span class="lineno">  617</span>        <span class="stringliteral">&quot;CRFDeconEngine::actual_output&quot;</span>,</div>
+<div class="line"><span class="lineno">  618</span>        <span class="stringliteral">&quot;received wavelet data via arg0 marked dead - cannot procede&quot;</span>,</div>
+<div class="line"><span class="lineno">  619</span>        ErrorSeverity::Invalid);</div>
+<div class="line"><span class="lineno">  620</span>    <span class="keywordflow">return</span> badout;</div>
+<div class="line"><span class="lineno">  621</span>  }</div>
+<div class="line"><span class="lineno">  622</span>  TimeSeries result(</div>
+<div class="line"><span class="lineno">  623</span>      wavelet); <span class="comment">// Use this to clone metadata and elog from wavelet</span></div>
+<div class="line"><span class="lineno">  624</span>  result.set_npts(FFTDeconOperator::nfft);</div>
+<div class="line"><span class="lineno">  625</span>  <span class="comment">/* Force these even though they are likely already defined as</span></div>
+<div class="line"><span class="lineno">  626</span><span class="comment">  in the parent wavelet TimeSeries. */</span></div>
+<div class="line"><span class="lineno">  627</span>  result.set_live();</div>
+<div class="line"><span class="lineno">  628</span>  <span class="comment">/* We always shift this wavelet to the center of the data vector.</span></div>
+<div class="line"><span class="lineno">  629</span><span class="comment">  We handle the time through the CoreTimeSeries object. */</span></div>
+<div class="line"><span class="lineno">  630</span>  <span class="keywordtype">int</span> i0 = FFTDeconOperator::nfft / 2;</div>
+<div class="line"><span class="lineno">  631</span>  result.set_t0(operator_dt * (-(<span class="keywordtype">double</span>)i0));</div>
+<div class="line"><span class="lineno">  632</span>  result.set_dt(this-&gt;operator_dt);</div>
+<div class="line"><span class="lineno">  633</span>  result.set_tref(TimeReferenceType::Relative);</div>
+<div class="line"><span class="lineno">  634</span>  <span class="comment">/* We need to require that wavelet time range is consistent with</span></div>
+<div class="line"><span class="lineno">  635</span><span class="comment">   * operator.   We assume relative time so we demand wavelet t0 be less</span></div>
+<div class="line"><span class="lineno">  636</span><span class="comment">   * than or equal to nff2/2 to assure a wavelet signal is in the</span></div>
+<div class="line"><span class="lineno">  637</span><span class="comment">   * the range -nfft/2 to nff2/2.  */</span></div>
+<div class="line"><span class="lineno">  638</span>  <span class="keywordtype">int</span> w_t0_lag;</div>
+<div class="line"><span class="lineno">  639</span>  w_t0_lag = wavelet.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#abe28ca2812a2ac21dd2196385ad106ab">sample_number</a>(0.0);</div>
+<div class="line"><span class="lineno">  640</span>  <span class="comment">/* We correct the relative phase of the input wavelet to that</span></div>
+<div class="line"><span class="lineno">  641</span><span class="comment">  saved when winv was created. */</span></div>
+<div class="line"><span class="lineno">  642</span>  w_t0_lag -= this-&gt;winv_t0_lag;</div>
+<div class="line"><span class="lineno">  643</span>  <span class="comment">/* note we handle two extremes differently*/</span></div>
+<div class="line"><span class="lineno">  644</span>  <span class="keywordflow">if</span> (w_t0_lag &gt;= FFTDeconOperator::nfft) {</div>
+<div class="line"><span class="lineno">  645</span>    stringstream ss;</div>
+<div class="line"><span class="lineno">  646</span>    ss &lt;&lt; <span class="stringliteral">&quot;actual_output method received wavelet with t0=&quot;</span> &lt;&lt; wavelet.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#a472074f3074d59f794d18017b010ab81">t0</a>()</div>
+<div class="line"><span class="lineno">  647</span>       &lt;&lt; <span class="stringliteral">&quot; that resolves to offset of &quot;</span> &lt;&lt; w_t0_lag &lt;&lt; <span class="stringliteral">&quot; samples&quot;</span> &lt;&lt; endl</div>
+<div class="line"><span class="lineno">  648</span>       &lt;&lt; <span class="stringliteral">&quot;That exceeds buffer for frequency domain calculation of size=&quot;</span></div>
+<div class="line"><span class="lineno">  649</span>       &lt;&lt; FFTDeconOperator::nfft &lt;&lt; endl</div>
+<div class="line"><span class="lineno">  650</span>       &lt;&lt; <span class="stringliteral">&quot;Cannot compute actual_output because we assume signal is in range &quot;</span></div>
+<div class="line"><span class="lineno">  651</span>          <span class="stringliteral">&quot;t&gt;0&quot;</span></div>
+<div class="line"><span class="lineno">  652</span>       &lt;&lt; endl;</div>
+<div class="line"><span class="lineno">  653</span>    result.elog.log_error(<span class="stringliteral">&quot;CNRDeconEngine::actual_output&quot;</span>, ss.str(),</div>
+<div class="line"><span class="lineno">  654</span>                          ErrorSeverity::Invalid);</div>
+<div class="line"><span class="lineno">  655</span>    result.kill();</div>
+<div class="line"><span class="lineno">  656</span>    result.set_npts(0);</div>
+<div class="line"><span class="lineno">  657</span>    <span class="keywordflow">return</span> result;</div>
+<div class="line"><span class="lineno">  658</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (w_t0_lag &gt; (FFTDeconOperator::nfft) / 2) {</div>
+<div class="line"><span class="lineno">  659</span>    stringstream ss;</div>
+<div class="line"><span class="lineno">  660</span>    ss &lt;&lt; <span class="stringliteral">&quot;Warning: actual output method received wavelet with t0=&quot;</span></div>
+<div class="line"><span class="lineno">  661</span>       &lt;&lt; wavelet.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#a472074f3074d59f794d18017b010ab81">t0</a>() &lt;&lt; <span class="stringliteral">&quot; that resolves to offset of &quot;</span> &lt;&lt; w_t0_lag</div>
+<div class="line"><span class="lineno">  662</span>       &lt;&lt; <span class="stringliteral">&quot; samples&quot;</span> &lt;&lt; endl</div>
+<div class="line"><span class="lineno">  663</span>       &lt;&lt; <span class="stringliteral">&quot;That exceeds the midpoint of the frequency domain buffer used by &quot;</span></div>
+<div class="line"><span class="lineno">  664</span>          <span class="stringliteral">&quot;this method=&quot;</span></div>
+<div class="line"><span class="lineno">  665</span>       &lt;&lt; FFTDeconOperator::nfft / 2 &lt;&lt; endl</div>
+<div class="line"><span class="lineno">  666</span>       &lt;&lt; <span class="stringliteral">&quot;Result may be incorrect as the function assumes the signal is after &quot;</span></div>
+<div class="line"><span class="lineno">  667</span>          <span class="stringliteral">&quot;time 0&quot;</span></div>
+<div class="line"><span class="lineno">  668</span>       &lt;&lt; endl;</div>
+<div class="line"><span class="lineno">  669</span>    result.elog.log_error(<span class="stringliteral">&quot;CNRDeconEngine::actual_output&quot;</span>, ss.str(),</div>
+<div class="line"><span class="lineno">  670</span>                          ErrorSeverity::Complaint);</div>
+<div class="line"><span class="lineno">  671</span>  }</div>
+<div class="line"><span class="lineno">  672</span> </div>
+<div class="line"><span class="lineno">  673</span>  <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">  674</span>    std::vector&lt;double&gt; work;</div>
+<div class="line"><span class="lineno">  675</span>    <span class="keywordflow">if</span> (wavelet.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">npts</a>() == FFTDeconOperator::nfft) {</div>
+<div class="line"><span class="lineno">  676</span>      work = wavelet.<a class="code hl_variable" href="classmspass_1_1seismic_1_1_core_time_series.html#ab044edb3fe5fe734cb577a4434f390a2">s</a>;</div>
+<div class="line"><span class="lineno">  677</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  678</span>      work.reserve(FFTDeconOperator::nfft);</div>
+<div class="line"><span class="lineno">  679</span>      <span class="keywordtype">int</span> i, nend;</div>
+<div class="line"><span class="lineno">  680</span>      <span class="keywordflow">for</span> (i = 0; i &lt; FFTDeconOperator::nfft; ++i)</div>
+<div class="line"><span class="lineno">  681</span>        work.push_back(0.0);</div>
+<div class="line"><span class="lineno">  682</span>      <span class="keywordflow">if</span> (wavelet.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">npts</a>() &gt; FFTDeconOperator::nfft)</div>
+<div class="line"><span class="lineno">  683</span>        nend = FFTDeconOperator::nfft;</div>
+<div class="line"><span class="lineno">  684</span>      <span class="keywordflow">else</span></div>
+<div class="line"><span class="lineno">  685</span>        nend = wavelet.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">npts</a>();</div>
+<div class="line"><span class="lineno">  686</span>      <span class="keywordflow">for</span> (i = 0; i &lt; nend; ++i)</div>
+<div class="line"><span class="lineno">  687</span>        work[i] = wavelet.<a class="code hl_variable" href="classmspass_1_1seismic_1_1_core_time_series.html#ab044edb3fe5fe734cb577a4434f390a2">s</a>[i];</div>
+<div class="line"><span class="lineno">  688</span>    }</div>
+<div class="line"><span class="lineno">  689</span>    <span class="comment">/* This converts wavelet to zero phase - needed to preserve timing.*/</span></div>
+<div class="line"><span class="lineno">  690</span>    work = circular_shift(work, w_t0_lag);</div>
+<div class="line"><span class="lineno">  691</span>    ComplexArray W(FFTDeconOperator::nfft, &amp;(work[0]));</div>
+<div class="line"><span class="lineno">  692</span>    gsl_fft_complex_forward(W.ptr(), 1, FFTDeconOperator::nfft, wavetable,</div>
+<div class="line"><span class="lineno">  693</span>                            workspace);</div>
+<div class="line"><span class="lineno">  694</span>    ComplexArray ao_fft;</div>
+<div class="line"><span class="lineno">  695</span>    ao_fft = this-&gt;winv * W;</div>
+<div class="line"><span class="lineno">  696</span>    ComplexArray *stmp = this-&gt;shapingwavelet.<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html#ac922b603ff03a691075724bcd53e396f">wavelet</a>();</div>
+<div class="line"><span class="lineno">  697</span>    <span class="comment">/* We always apply the shaping wavelet - this perhaps should be optional</span></div>
+<div class="line"><span class="lineno">  698</span><span class="comment">    but probably better done with a none option for the shaping wavelet */</span></div>
+<div class="line"><span class="lineno">  699</span>    ao_fft = (*stmp) * ao_fft;</div>
+<div class="line"><span class="lineno">  700</span>    gsl_fft_complex_inverse(ao_fft.ptr(), 1, FFTDeconOperator::nfft, wavetable,</div>
+<div class="line"><span class="lineno">  701</span>                            workspace);</div>
+<div class="line"><span class="lineno">  702</span>    vector&lt;double&gt; ao;</div>
+<div class="line"><span class="lineno">  703</span>    ao.reserve(FFTDeconOperator::nfft);</div>
+<div class="line"><span class="lineno">  704</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> k = 0; k &lt; ao_fft.size(); ++k)</div>
+<div class="line"><span class="lineno">  705</span>      ao.push_back(ao_fft[k].real());</div>
+<div class="line"><span class="lineno">  706</span>    ao = circular_shift(ao, i0);</div>
+<div class="line"><span class="lineno">  707</span>    ao = normalize&lt;double&gt;(ao);</div>
+<div class="line"><span class="lineno">  708</span>    <span class="comment">/* set_npts always initializes the s buffer so it is more efficient to</span></div>
+<div class="line"><span class="lineno">  709</span><span class="comment">    copy ao elements rather than what was here before:</span></div>
+<div class="line"><span class="lineno">  710</span><span class="comment">      result.s=ao;</span></div>
+<div class="line"><span class="lineno">  711</span><span class="comment">    */</span></div>
+<div class="line"><span class="lineno">  712</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> k = 0; k &lt; FFTDeconOperator::nfft; ++k)</div>
+<div class="line"><span class="lineno">  713</span>      result.s[k] = ao[k];</div>
+<div class="line"><span class="lineno">  714</span>    <span class="keywordflow">return</span> result;</div>
+<div class="line"><span class="lineno">  715</span>  } <span class="keywordflow">catch</span> (...) {</div>
+<div class="line"><span class="lineno">  716</span>    <span class="keywordflow">throw</span>;</div>
+<div class="line"><span class="lineno">  717</span>  };</div>
+<div class="line"><span class="lineno">  718</span>}</div>
 <div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet_html_ac922b603ff03a691075724bcd53e396f"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html#ac922b603ff03a691075724bcd53e396f">mspass::algorithms::deconvolution::ShapingWavelet::wavelet</a></div><div class="ttdeci">ComplexArray * wavelet()</div><div class="ttdef"><b>Definition</b> ShapingWavelet.h:75</div></div>
 <div class="ttc" id="aclassmspass_1_1seismic_1_1_basic_time_series_html_a347b349bb4e1f0e65978dfcd45ae3472"><div class="ttname"><a href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">mspass::seismic::BasicTimeSeries::npts</a></div><div class="ttdeci">size_t npts() const</div><div class="ttdef"><b>Definition</b> BasicTimeSeries.h:171</div></div>
 <div class="ttc" id="aclassmspass_1_1seismic_1_1_basic_time_series_html_a472074f3074d59f794d18017b010ab81"><div class="ttname"><a href="classmspass_1_1seismic_1_1_basic_time_series.html#a472074f3074d59f794d18017b010ab81">mspass::seismic::BasicTimeSeries::t0</a></div><div class="ttdeci">double t0() const</div><div class="ttdef"><b>Definition</b> BasicTimeSeries.h:174</div></div>
@@ -679,14 +679,14 @@ gsl_fft_complex_workspace *&#160;</td><td class="memItemRight" valign="bottom"><
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  601</span>                                        {</div>
-<div class="line"><span class="lineno">  602</span>  <span class="keywordflow">try</span> {</div>
-<div class="line"><span class="lineno">  603</span>    CoreTimeSeries ideal_tmp = this-&gt;shapingwavelet.<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html#a5d213e187ff91de27d96e65b643bd71b">impulse_response</a>();</div>
-<div class="line"><span class="lineno">  604</span>    <span class="keywordflow">return</span> TimeSeries(ideal_tmp, <span class="stringliteral">&quot;Invalid&quot;</span>);</div>
-<div class="line"><span class="lineno">  605</span>  } <span class="keywordflow">catch</span> (...) {</div>
-<div class="line"><span class="lineno">  606</span>    <span class="keywordflow">throw</span>;</div>
-<div class="line"><span class="lineno">  607</span>  };</div>
-<div class="line"><span class="lineno">  608</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  603</span>                                        {</div>
+<div class="line"><span class="lineno">  604</span>  <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">  605</span>    CoreTimeSeries ideal_tmp = this-&gt;shapingwavelet.<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html#a5d213e187ff91de27d96e65b643bd71b">impulse_response</a>();</div>
+<div class="line"><span class="lineno">  606</span>    <span class="keywordflow">return</span> TimeSeries(ideal_tmp, <span class="stringliteral">&quot;Invalid&quot;</span>);</div>
+<div class="line"><span class="lineno">  607</span>  } <span class="keywordflow">catch</span> (...) {</div>
+<div class="line"><span class="lineno">  608</span>    <span class="keywordflow">throw</span>;</div>
+<div class="line"><span class="lineno">  609</span>  };</div>
+<div class="line"><span class="lineno">  610</span>}</div>
 <div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet_html_a5d213e187ff91de27d96e65b643bd71b"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html#a5d213e187ff91de27d96e65b643bd71b">mspass::algorithms::deconvolution::ShapingWavelet::impulse_response</a></div><div class="ttdeci">mspass::seismic::CoreTimeSeries impulse_response()</div><div class="ttdef"><b>Definition</b> ShapingWavelet.cc:265</div></div>
 </div><!-- fragment -->
 </div>
@@ -818,26 +818,26 @@ gsl_fft_complex_workspace *&#160;</td><td class="memItemRight" valign="bottom"><
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  718</span>                                                                 {</div>
-<div class="line"><span class="lineno">  719</span>  <span class="keywordflow">try</span> {</div>
-<div class="line"><span class="lineno">  720</span>    <span class="comment">/* Using the time shift of wavelet.t0() may be a bad idea here.  Will</span></div>
-<div class="line"><span class="lineno">  721</span><span class="comment">    need to sort that out in debugging behaviour*/</span></div>
-<div class="line"><span class="lineno">  722</span>    <span class="keywordtype">double</span> timeshift(tshift0);</div>
-<div class="line"><span class="lineno">  723</span>    timeshift += wavelet.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#a472074f3074d59f794d18017b010ab81">t0</a>();</div>
-<div class="line"><span class="lineno">  724</span>    timeshift -= operator_dt * ((double)this-&gt;winlength);</div>
-<div class="line"><span class="lineno">  725</span>    CoreTimeSeries invcore(this-&gt;<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a3473dc7f359332dbf5a685efe30a684b">FFTDeconOperator::FourierInverse</a>(</div>
-<div class="line"><span class="lineno">  726</span>        this-&gt;winv, *this-&gt;shapingwavelet.<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html#ac922b603ff03a691075724bcd53e396f">wavelet</a>(), operator_dt, timeshift));</div>
-<div class="line"><span class="lineno">  727</span>    TimeSeries result(invcore, <span class="stringliteral">&quot;Invalid&quot;</span>);</div>
-<div class="line"><span class="lineno">  728</span>    <span class="comment">/* Copy the error log from wavelet and post some information parameters</span></div>
-<div class="line"><span class="lineno">  729</span><span class="comment">    to metadata */</span></div>
-<div class="line"><span class="lineno">  730</span>    result.elog = wavelet.elog;</div>
-<div class="line"><span class="lineno">  731</span>    result.put(<span class="stringliteral">&quot;waveform_type&quot;</span>, <span class="stringliteral">&quot;deconvolution_inverse_wavelet&quot;</span>);</div>
-<div class="line"><span class="lineno">  732</span>    result.put(<span class="stringliteral">&quot;decon_type&quot;</span>, <span class="stringliteral">&quot;CNRDeconEngine&quot;</span>);</div>
-<div class="line"><span class="lineno">  733</span>    <span class="keywordflow">return</span> result;</div>
-<div class="line"><span class="lineno">  734</span>  } <span class="keywordflow">catch</span> (...) {</div>
-<div class="line"><span class="lineno">  735</span>    <span class="keywordflow">throw</span>;</div>
-<div class="line"><span class="lineno">  736</span>  };</div>
-<div class="line"><span class="lineno">  737</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  720</span>                                                                 {</div>
+<div class="line"><span class="lineno">  721</span>  <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">  722</span>    <span class="comment">/* Using the time shift of wavelet.t0() may be a bad idea here.  Will</span></div>
+<div class="line"><span class="lineno">  723</span><span class="comment">    need to sort that out in debugging behaviour*/</span></div>
+<div class="line"><span class="lineno">  724</span>    <span class="keywordtype">double</span> timeshift(tshift0);</div>
+<div class="line"><span class="lineno">  725</span>    timeshift += wavelet.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#a472074f3074d59f794d18017b010ab81">t0</a>();</div>
+<div class="line"><span class="lineno">  726</span>    timeshift -= operator_dt * ((double)this-&gt;winlength);</div>
+<div class="line"><span class="lineno">  727</span>    CoreTimeSeries invcore(this-&gt;<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a3473dc7f359332dbf5a685efe30a684b">FFTDeconOperator::FourierInverse</a>(</div>
+<div class="line"><span class="lineno">  728</span>        this-&gt;winv, *this-&gt;shapingwavelet.<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html#ac922b603ff03a691075724bcd53e396f">wavelet</a>(), operator_dt, timeshift));</div>
+<div class="line"><span class="lineno">  729</span>    TimeSeries result(invcore, <span class="stringliteral">&quot;Invalid&quot;</span>);</div>
+<div class="line"><span class="lineno">  730</span>    <span class="comment">/* Copy the error log from wavelet and post some information parameters</span></div>
+<div class="line"><span class="lineno">  731</span><span class="comment">    to metadata */</span></div>
+<div class="line"><span class="lineno">  732</span>    result.elog = wavelet.elog;</div>
+<div class="line"><span class="lineno">  733</span>    result.put(<span class="stringliteral">&quot;waveform_type&quot;</span>, <span class="stringliteral">&quot;deconvolution_inverse_wavelet&quot;</span>);</div>
+<div class="line"><span class="lineno">  734</span>    result.put(<span class="stringliteral">&quot;decon_type&quot;</span>, <span class="stringliteral">&quot;CNRDeconEngine&quot;</span>);</div>
+<div class="line"><span class="lineno">  735</span>    <span class="keywordflow">return</span> result;</div>
+<div class="line"><span class="lineno">  736</span>  } <span class="keywordflow">catch</span> (...) {</div>
+<div class="line"><span class="lineno">  737</span>    <span class="keywordflow">throw</span>;</div>
+<div class="line"><span class="lineno">  738</span>  };</div>
+<div class="line"><span class="lineno">  739</span>}</div>
 <div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_html_a3473dc7f359332dbf5a685efe30a684b"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a3473dc7f359332dbf5a685efe30a684b">mspass::algorithms::deconvolution::FFTDeconOperator::FourierInverse</a></div><div class="ttdeci">mspass::seismic::CoreTimeSeries FourierInverse(const ComplexArray &amp;winv, const ComplexArray &amp;sw, const double dt, const double t0parent)</div><div class="ttdoc">Return inverse wavelet for Fourier methods.</div><div class="ttdef"><b>Definition</b> FFTDeconOperator.cc:115</div></div>
 </div><!-- fragment -->
 </div>
@@ -948,70 +948,72 @@ gsl_fft_complex_workspace *&#160;</td><td class="memItemRight" valign="bottom"><
 <div class="line"><span class="lineno">  513</span>    t0_shift = round((-rfest.t0()) / rfest.dt());</div>
 <div class="line"><span class="lineno">  514</span>    vector&lt;double&gt; wvec;</div>
 <div class="line"><span class="lineno">  515</span>    wvec.reserve(FFTDeconOperator::nfft);</div>
-<div class="line"><span class="lineno">  516</span>    <span class="keywordflow">if</span> (rfest.npts() != FFTDeconOperator::nfft)</div>
-<div class="line"><span class="lineno">  517</span>      rfest.u = dmatrix(3, FFTDeconOperator::nfft);</div>
-<div class="line"><span class="lineno">  518</span>    <span class="keywordtype">int</span> nhighsnr;</div>
-<div class="line"><span class="lineno">  519</span>    <span class="keywordtype">double</span> df;</div>
-<div class="line"><span class="lineno">  520</span>    df = 1.0 / (operator_dt * <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(FFTDeconOperator::nfft));</div>
-<div class="line"><span class="lineno">  521</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> k = 0; k &lt; 3; ++k) {</div>
-<div class="line"><span class="lineno">  522</span>      TimeSeries work;</div>
-<div class="line"><span class="lineno">  523</span>      work = TimeSeries(ExtractComponent(d, k), <span class="stringliteral">&quot;Invalid&quot;</span>);</div>
-<div class="line"><span class="lineno">  524</span>      wvec.clear();</div>
-<div class="line"><span class="lineno">  525</span>      <span class="keywordtype">int</span> ntocopy = FFTDeconOperator::nfft;</div>
-<div class="line"><span class="lineno">  526</span>      <span class="keywordflow">if</span> (ntocopy &gt; work.npts())</div>
-<div class="line"><span class="lineno">  527</span>        ntocopy = work.npts();</div>
-<div class="line"><span class="lineno">  528</span>      <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = 0; j &lt; ntocopy; ++j)</div>
-<div class="line"><span class="lineno">  529</span>        wvec.push_back(work.s[j]);</div>
-<div class="line"><span class="lineno">  530</span>      <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = ntocopy; j &lt; FFTDeconOperator::nfft; ++j)</div>
-<div class="line"><span class="lineno">  531</span>        wvec.push_back(0.0);</div>
-<div class="line"><span class="lineno">  532</span> </div>
-<div class="line"><span class="lineno">  533</span>      ComplexArray numerator(FFTDeconOperator::nfft, &amp;(wvec[0]));</div>
-<div class="line"><span class="lineno">  534</span>      gsl_fft_complex_forward(numerator.ptr(), 1, FFTDeconOperator::nfft,</div>
-<div class="line"><span class="lineno">  535</span>                              wavetable, workspace);</div>
-<div class="line"><span class="lineno">  536</span>      <span class="comment">/* This loop computes QCMetrics of bandwidth fraction that</span></div>
-<div class="line"><span class="lineno">  537</span><span class="comment">      is above a defined snr floor - not necessarily the same as the</span></div>
-<div class="line"><span class="lineno">  538</span><span class="comment">      regularization floor used in computing the inverse */</span></div>
-<div class="line"><span class="lineno">  539</span>      <span class="keywordtype">double</span> snrmax;</div>
-<div class="line"><span class="lineno">  540</span>      snrmax = 1.0;</div>
-<div class="line"><span class="lineno">  541</span>      nhighsnr = 0;</div>
-<div class="line"><span class="lineno">  542</span>      <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = 0; j &lt; FFTDeconOperator::nfft / 2; ++j) {</div>
-<div class="line"><span class="lineno">  543</span>        <span class="keywordtype">double</span> f;</div>
-<div class="line"><span class="lineno">  544</span>        f = df * <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(j);</div>
-<div class="line"><span class="lineno">  545</span>        Complex64 z = numerator[j];</div>
-<div class="line"><span class="lineno">  546</span>        <span class="keywordtype">double</span> sigamp = abs(z);</div>
-<div class="line"><span class="lineno">  547</span>        <span class="keywordtype">double</span> namp = sqrt(psnoise.<a class="code hl_function" href="classmspass_1_1seismic_1_1_power_spectrum.html#a3d1e72618b8e88c5929839c5e8885859">power</a>(f));</div>
-<div class="line"><span class="lineno">  548</span>        <span class="keywordtype">double</span> snr = sigamp / namp;</div>
-<div class="line"><span class="lineno">  549</span> </div>
-<div class="line"><span class="lineno">  550</span>        <span class="keywordflow">if</span> (snr &gt; snrmax)</div>
-<div class="line"><span class="lineno">  551</span>          snrmax = snr;</div>
-<div class="line"><span class="lineno">  552</span>        <span class="keywordflow">if</span> (snr &gt; this-&gt;band_snr_floor)</div>
-<div class="line"><span class="lineno">  553</span>          ++nhighsnr;</div>
-<div class="line"><span class="lineno">  554</span>      }</div>
-<div class="line"><span class="lineno">  555</span>      signal_bandwidth_fraction[k] =</div>
-<div class="line"><span class="lineno">  556</span>          <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(nhighsnr) /</div>
-<div class="line"><span class="lineno">  557</span>          <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(FFTDeconOperator::nfft / 2);</div>
-<div class="line"><span class="lineno">  558</span>      peak_snr[k] = snrmax;</div>
-<div class="line"><span class="lineno">  559</span>      ComplexArray rftmp = numerator * winv;</div>
-<div class="line"><span class="lineno">  560</span>      rftmp = (*this-&gt;shapingwavelet.<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html#ac922b603ff03a691075724bcd53e396f">wavelet</a>()) * rftmp;</div>
-<div class="line"><span class="lineno">  561</span>      gsl_fft_complex_inverse(rftmp.ptr(), 1, FFTDeconOperator::nfft, wavetable,</div>
-<div class="line"><span class="lineno">  562</span>                              workspace);</div>
-<div class="line"><span class="lineno">  563</span>      wvec.clear();</div>
-<div class="line"><span class="lineno">  564</span>      <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = 0; j &lt; FFTDeconOperator::nfft; ++j)</div>
-<div class="line"><span class="lineno">  565</span>        wvec.push_back(rftmp[j].real());</div>
-<div class="line"><span class="lineno">  566</span>      <span class="comment">/* Note we used a time domain shift instead of using a linear phase</span></div>
-<div class="line"><span class="lineno">  567</span><span class="comment">      shift in the frequency domain because the time domain operator has a lower</span></div>
-<div class="line"><span class="lineno">  568</span><span class="comment">      operation count than the frequency domain algorithm and is thus more</span></div>
-<div class="line"><span class="lineno">  569</span><span class="comment">      efficient.*/</span></div>
-<div class="line"><span class="lineno">  570</span>      <span class="keywordflow">if</span> (t0_shift != 0)</div>
-<div class="line"><span class="lineno">  571</span>        wvec = circular_shift(wvec, -t0_shift);</div>
-<div class="line"><span class="lineno">  572</span>      <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = 0; j &lt; FFTDeconOperator::nfft; ++j)</div>
-<div class="line"><span class="lineno">  573</span>        rfest.u(k, j) = wvec[j];</div>
-<div class="line"><span class="lineno">  574</span>    }</div>
-<div class="line"><span class="lineno">  575</span>    <span class="keywordflow">return</span> rfest;</div>
-<div class="line"><span class="lineno">  576</span>  } <span class="keywordflow">catch</span> (...) {</div>
-<div class="line"><span class="lineno">  577</span>    <span class="keywordflow">throw</span>;</div>
-<div class="line"><span class="lineno">  578</span>  };</div>
-<div class="line"><span class="lineno">  579</span>}</div>
+<div class="line"><span class="lineno">  516</span>    <span class="comment">/* The set_npts method is assumed to not only set that attribute </span></div>
+<div class="line"><span class="lineno">  517</span><span class="comment">     * but initialize the u matrix to a 3xnfft matrix.*/</span></div>
+<div class="line"><span class="lineno">  518</span>    <span class="keywordflow">if</span> (rfest.npts() != FFTDeconOperator::nfft)</div>
+<div class="line"><span class="lineno">  519</span>      rfest.set_npts(FFTDeconOperator::nfft);</div>
+<div class="line"><span class="lineno">  520</span>    <span class="keywordtype">int</span> nhighsnr;</div>
+<div class="line"><span class="lineno">  521</span>    <span class="keywordtype">double</span> df;</div>
+<div class="line"><span class="lineno">  522</span>    df = 1.0 / (operator_dt * <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(FFTDeconOperator::nfft));</div>
+<div class="line"><span class="lineno">  523</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> k = 0; k &lt; 3; ++k) {</div>
+<div class="line"><span class="lineno">  524</span>      TimeSeries work;</div>
+<div class="line"><span class="lineno">  525</span>      work = TimeSeries(ExtractComponent(d, k), <span class="stringliteral">&quot;Invalid&quot;</span>);</div>
+<div class="line"><span class="lineno">  526</span>      wvec.clear();</div>
+<div class="line"><span class="lineno">  527</span>      <span class="keywordtype">int</span> ntocopy = FFTDeconOperator::nfft;</div>
+<div class="line"><span class="lineno">  528</span>      <span class="keywordflow">if</span> (ntocopy &gt; work.npts())</div>
+<div class="line"><span class="lineno">  529</span>        ntocopy = work.npts();</div>
+<div class="line"><span class="lineno">  530</span>      <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = 0; j &lt; ntocopy; ++j)</div>
+<div class="line"><span class="lineno">  531</span>        wvec.push_back(work.s[j]);</div>
+<div class="line"><span class="lineno">  532</span>      <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = ntocopy; j &lt; FFTDeconOperator::nfft; ++j)</div>
+<div class="line"><span class="lineno">  533</span>        wvec.push_back(0.0);</div>
+<div class="line"><span class="lineno">  534</span> </div>
+<div class="line"><span class="lineno">  535</span>      ComplexArray numerator(FFTDeconOperator::nfft, &amp;(wvec[0]));</div>
+<div class="line"><span class="lineno">  536</span>      gsl_fft_complex_forward(numerator.ptr(), 1, FFTDeconOperator::nfft,</div>
+<div class="line"><span class="lineno">  537</span>                              wavetable, workspace);</div>
+<div class="line"><span class="lineno">  538</span>      <span class="comment">/* This loop computes QCMetrics of bandwidth fraction that</span></div>
+<div class="line"><span class="lineno">  539</span><span class="comment">      is above a defined snr floor - not necessarily the same as the</span></div>
+<div class="line"><span class="lineno">  540</span><span class="comment">      regularization floor used in computing the inverse */</span></div>
+<div class="line"><span class="lineno">  541</span>      <span class="keywordtype">double</span> snrmax;</div>
+<div class="line"><span class="lineno">  542</span>      snrmax = 1.0;</div>
+<div class="line"><span class="lineno">  543</span>      nhighsnr = 0;</div>
+<div class="line"><span class="lineno">  544</span>      <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = 0; j &lt; FFTDeconOperator::nfft / 2; ++j) {</div>
+<div class="line"><span class="lineno">  545</span>        <span class="keywordtype">double</span> f;</div>
+<div class="line"><span class="lineno">  546</span>        f = df * <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(j);</div>
+<div class="line"><span class="lineno">  547</span>        Complex64 z = numerator[j];</div>
+<div class="line"><span class="lineno">  548</span>        <span class="keywordtype">double</span> sigamp = abs(z);</div>
+<div class="line"><span class="lineno">  549</span>        <span class="keywordtype">double</span> namp = sqrt(psnoise.<a class="code hl_function" href="classmspass_1_1seismic_1_1_power_spectrum.html#a3d1e72618b8e88c5929839c5e8885859">power</a>(f));</div>
+<div class="line"><span class="lineno">  550</span>        <span class="keywordtype">double</span> snr = sigamp / namp;</div>
+<div class="line"><span class="lineno">  551</span> </div>
+<div class="line"><span class="lineno">  552</span>        <span class="keywordflow">if</span> (snr &gt; snrmax)</div>
+<div class="line"><span class="lineno">  553</span>          snrmax = snr;</div>
+<div class="line"><span class="lineno">  554</span>        <span class="keywordflow">if</span> (snr &gt; this-&gt;band_snr_floor)</div>
+<div class="line"><span class="lineno">  555</span>          ++nhighsnr;</div>
+<div class="line"><span class="lineno">  556</span>      }</div>
+<div class="line"><span class="lineno">  557</span>      signal_bandwidth_fraction[k] =</div>
+<div class="line"><span class="lineno">  558</span>          <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(nhighsnr) /</div>
+<div class="line"><span class="lineno">  559</span>          <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(FFTDeconOperator::nfft / 2);</div>
+<div class="line"><span class="lineno">  560</span>      peak_snr[k] = snrmax;</div>
+<div class="line"><span class="lineno">  561</span>      ComplexArray rftmp = numerator * winv;</div>
+<div class="line"><span class="lineno">  562</span>      rftmp = (*this-&gt;shapingwavelet.<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html#ac922b603ff03a691075724bcd53e396f">wavelet</a>()) * rftmp;</div>
+<div class="line"><span class="lineno">  563</span>      gsl_fft_complex_inverse(rftmp.ptr(), 1, FFTDeconOperator::nfft, wavetable,</div>
+<div class="line"><span class="lineno">  564</span>                              workspace);</div>
+<div class="line"><span class="lineno">  565</span>      wvec.clear();</div>
+<div class="line"><span class="lineno">  566</span>      <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = 0; j &lt; FFTDeconOperator::nfft; ++j)</div>
+<div class="line"><span class="lineno">  567</span>        wvec.push_back(rftmp[j].real());</div>
+<div class="line"><span class="lineno">  568</span>      <span class="comment">/* Note we used a time domain shift instead of using a linear phase</span></div>
+<div class="line"><span class="lineno">  569</span><span class="comment">      shift in the frequency domain because the time domain operator has a lower</span></div>
+<div class="line"><span class="lineno">  570</span><span class="comment">      operation count than the frequency domain algorithm and is thus more</span></div>
+<div class="line"><span class="lineno">  571</span><span class="comment">      efficient.*/</span></div>
+<div class="line"><span class="lineno">  572</span>      <span class="keywordflow">if</span> (t0_shift != 0)</div>
+<div class="line"><span class="lineno">  573</span>        wvec = circular_shift(wvec, -t0_shift);</div>
+<div class="line"><span class="lineno">  574</span>      <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = 0; j &lt; FFTDeconOperator::nfft; ++j)</div>
+<div class="line"><span class="lineno">  575</span>        rfest.u(k, j) = wvec[j];</div>
+<div class="line"><span class="lineno">  576</span>    }</div>
+<div class="line"><span class="lineno">  577</span>    <span class="keywordflow">return</span> rfest;</div>
+<div class="line"><span class="lineno">  578</span>  } <span class="keywordflow">catch</span> (...) {</div>
+<div class="line"><span class="lineno">  579</span>    <span class="keywordflow">throw</span>;</div>
+<div class="line"><span class="lineno">  580</span>  };</div>
+<div class="line"><span class="lineno">  581</span>}</div>
 <div class="ttc" id="aclassmspass_1_1seismic_1_1_power_spectrum_html_a3d1e72618b8e88c5929839c5e8885859"><div class="ttname"><a href="classmspass_1_1seismic_1_1_power_spectrum.html#a3d1e72618b8e88c5929839c5e8885859">mspass::seismic::PowerSpectrum::power</a></div><div class="ttdeci">double power(const double f) const</div><div class="ttdoc">power at a given frequency.</div><div class="ttdef"><b>Definition</b> PowerSpectrum.cc:74</div></div>
 </div><!-- fragment -->
 </div>
@@ -1030,17 +1032,17 @@ gsl_fft_complex_workspace *&#160;</td><td class="memItemRight" valign="bottom"><
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  739</span>                                   {</div>
-<div class="line"><span class="lineno">  740</span>  Metadata result;</div>
-<div class="line"><span class="lineno">  741</span>  result.put(<span class="stringliteral">&quot;waveletbf&quot;</span>, this-&gt;regularization_bandwidth_fraction);</div>
-<div class="line"><span class="lineno">  742</span>  result.put(<span class="stringliteral">&quot;maxsnr0&quot;</span>, peak_snr[0]);</div>
-<div class="line"><span class="lineno">  743</span>  result.put(<span class="stringliteral">&quot;maxsnr1&quot;</span>, peak_snr[1]);</div>
-<div class="line"><span class="lineno">  744</span>  result.put(<span class="stringliteral">&quot;maxsnr2&quot;</span>, peak_snr[2]);</div>
-<div class="line"><span class="lineno">  745</span>  result.put(<span class="stringliteral">&quot;signalbf0&quot;</span>, signal_bandwidth_fraction[0]);</div>
-<div class="line"><span class="lineno">  746</span>  result.put(<span class="stringliteral">&quot;signalbf1&quot;</span>, signal_bandwidth_fraction[1]);</div>
-<div class="line"><span class="lineno">  747</span>  result.put(<span class="stringliteral">&quot;signalbf2&quot;</span>, signal_bandwidth_fraction[2]);</div>
-<div class="line"><span class="lineno">  748</span>  <span class="keywordflow">return</span> result;</div>
-<div class="line"><span class="lineno">  749</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  741</span>                                   {</div>
+<div class="line"><span class="lineno">  742</span>  Metadata result;</div>
+<div class="line"><span class="lineno">  743</span>  result.put(<span class="stringliteral">&quot;waveletbf&quot;</span>, this-&gt;regularization_bandwidth_fraction);</div>
+<div class="line"><span class="lineno">  744</span>  result.put(<span class="stringliteral">&quot;maxsnr0&quot;</span>, peak_snr[0]);</div>
+<div class="line"><span class="lineno">  745</span>  result.put(<span class="stringliteral">&quot;maxsnr1&quot;</span>, peak_snr[1]);</div>
+<div class="line"><span class="lineno">  746</span>  result.put(<span class="stringliteral">&quot;maxsnr2&quot;</span>, peak_snr[2]);</div>
+<div class="line"><span class="lineno">  747</span>  result.put(<span class="stringliteral">&quot;signalbf0&quot;</span>, signal_bandwidth_fraction[0]);</div>
+<div class="line"><span class="lineno">  748</span>  result.put(<span class="stringliteral">&quot;signalbf1&quot;</span>, signal_bandwidth_fraction[1]);</div>
+<div class="line"><span class="lineno">  749</span>  result.put(<span class="stringliteral">&quot;signalbf2&quot;</span>, signal_bandwidth_fraction[2]);</div>
+<div class="line"><span class="lineno">  750</span>  <span class="keywordflow">return</span> result;</div>
+<div class="line"><span class="lineno">  751</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
