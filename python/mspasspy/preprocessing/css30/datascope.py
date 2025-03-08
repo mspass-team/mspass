@@ -1,54 +1,54 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-This file contains a DatascopeDatabase class that can be used to 
-interaction with an Antelope(Datascope) flat file database.   It is not 
-intended to be a fully functional database handle.  It can, however, 
+This file contains a DatascopeDatabase class that can be used to
+interaction with an Antelope(Datascope) flat file database.   It is not
+intended to be a fully functional database handle.  It can, however,
 bu used as a base class to add additional functionality.
 
-The main point of this implementation is a mean to translate Antelope 
-tables that can be used for related seismic data processing.   The 
-two main known uses are:  (1) translating a table to a MongoDB 
-collection and (2) loadng a small table to create a normalizing 
+The main point of this implementation is a mean to translate Antelope
+tables that can be used for related seismic data processing.   The
+two main known uses are:  (1) translating a table to a MongoDB
+collection and (2) loadng a small table to create a normalizing
 operator via a subclass of the generic :class:`mspasspy.db.normalize.BasicMatcher`
-class.  Although not currently implementd it could also, for example, 
-but used to create a reader driven by a wfdisc table.  
+class.  Although not currently implementd it could also, for example,
+but used to create a reader driven by a wfdisc table.
 
-The "translation" model this class uses is to create a DataFrame 
-image of the a single table or what Antelope developers call a 
-database view.  The class only supports pandas DataFrame assuming that 
-tables are small enough to fit in memory.   An extremely good assumption 
-since Datascope uses that model.  Note, however, that if one needs to 
-create a giant table from many fragmented databases as is common with 
+The "translation" model this class uses is to create a DataFrame
+image of the a single table or what Antelope developers call a
+database view.  The class only supports pandas DataFrame assuming that
+tables are small enough to fit in memory.   An extremely good assumption
+since Datascope uses that model.  Note, however, that if one needs to
+create a giant table from many fragmented databases as is common with
 large network operations with Antelope, the  dask DataFrame `merge`
-method can be used to combine a string of multiple, common tables. 
+method can be used to combine a string of multiple, common tables.
 
-The inverse of writing a DataFrame to an Datascope table is also 
-supported via the `df2table` method.   The forward and inverse 
-translations can be used as the basis for workflows that 
-utilize both MsPASS an Antelope.   e.g. if you have a license 
-for Antelope you could use their database-driven event detection 
-and association algorithms to create a catalog and use MsPASS 
-for waveform processing that utilizes the catalog data.   
+The inverse of writing a DataFrame to an Datascope table is also
+supported via the `df2table` method.   The forward and inverse
+translations can be used as the basis for workflows that
+utilize both MsPASS an Antelope.   e.g. if you have a license
+for Antelope you could use their database-driven event detection
+and association algorithms to create a catalog and use MsPASS
+for waveform processing that utilizes the catalog data.
 
-The class constructor uses an Antelope pf file to define the 
-tables it knows how to parse.  A master pf for most tables is 
-distributed with mspass.   To parse uncommon tables not defined in 
-the master pf file you will need a license for antelope to run the 
-python script found in Antelope contrib and in mspass called 
-`Database_schema`.  We include a copy of that script in the 
-"scripts" directory one level below this one in the directory tree.  
+The class constructor uses an Antelope pf file to define the
+tables it knows how to parse.  A master pf for most tables is
+distributed with mspass.   To parse uncommon tables not defined in
+the master pf file you will need a license for antelope to run the
+python script found in Antelope contrib and in mspass called
+`Database_schema`.  We include a copy of that script in the
+"scripts" directory one level below this one in the directory tree.
 Be aware that script will not run, however, without a license for
-Antelope because it requires proprietary libraries supplied with Antelope. 
-An alternative for those unable to secure an antelope license is to 
-build the pf that script generates by hand.  You can use the 
+Antelope because it requires proprietary libraries supplied with Antelope.
+An alternative for those unable to secure an antelope license is to
+build the pf that script generates by hand.  You can use the
 standard version for css3.0 tables to see the clear pattern.
-It is VERY IMPORTANT to realize that if you build that pf by hand 
-you must list attributes in the "attributes Tbl" in the 
-left to right table order of the Datascope schema definition.  
-Readers will work if you violate that rule, but the writer will 
-scramble the output if you do and the result will almost certainly 
-by unreadable by Datascope.   
+It is VERY IMPORTANT to realize that if you build that pf by hand
+you must list attributes in the "attributes Tbl" in the
+left to right table order of the Datascope schema definition.
+Readers will work if you violate that rule, but the writer will
+scramble the output if you do and the result will almost certainly
+by unreadable by Datascope.
 
 
 @author: Gary L. Pavlis

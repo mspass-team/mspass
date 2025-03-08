@@ -670,9 +670,9 @@ class BasicGather(ABC):
                 else:
                     np.append(self.member_data, new_data, 1)
 
-        self.member_metadata.loc[
-            len(self.member_metadata.index)
-        ] = mspass_object.todict()
+        self.member_metadata.loc[len(self.member_metadata.index)] = (
+            mspass_object.todict()
+        )
         self.size += 1
 
     def starttime(self) -> list:

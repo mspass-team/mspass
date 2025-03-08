@@ -6,15 +6,22 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Check files using the black formatter
-        uses: rickstaa/action-black@v1
+        uses: psf/black@stable
         id: action_black
         with:
-          black_args: "."
+          options: "--verbose"
+          jupyter: true
+          src: "./python"
+      - name: Check for formatting changes
+        id: check-changes
+        run: |
+          git diff --quiet || changed=true && echo "has_changes=${changed:-false}" >> $GITHUB_OUTPUT
+          echo "Detected changes: ${{ steps.check-changes.outputs.has_changes }}"
       - name: Create Pull Request
-        if: steps.action_black.outputs.is_formatted == 'true'
-        uses: peter-evans/create-pull-request@v3
+        if: steps.check-changes.outputs.has_changes == 'true'
+        uses: peter-evans/create-pull-request@v7
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           title: "Format Python code with psf/black push"
@@ -23,7 +30,7 @@ jobs:
             There appear to be some python formatting errors in ${{ github.sha }}. This pull request
             uses the [psf/black](https://github.com/psf/black) formatter to fix these issues.
           base: ${{ github.head_ref }} # Creates pull request onto pull request or commit branch
-          branch: actions/black
+          branch: "black-formatting/${{ github.head_ref }}"
       #- name: Annotate diff changes using reviewdog
       #  if: steps.action_black.outputs.is_formatted == 'true'
       #  uses: reviewdog/action-suggester@v1

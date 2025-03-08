@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-This a pytest script to tesst the class called ApplyCalibEngine.  
+This a pytest script to tesst the class called ApplyCalibEngine.
 
 Created on Thu Jan 23 07:50:25 2025
 

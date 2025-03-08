@@ -16,7 +16,7 @@ import numpy as np
 
 from mspasspy.util.decorators import mspass_func_wrapper
 from mspasspy.ccore.seismic import TimeSeries, Seismogram, SeismogramEnsemble
-from mspasspy.ccore.algorithms.basic import _WindowData3C
+from mspasspy.ccore.algorithms.basic import _WindowData3C, TimeWindow
 from mspasspy.ccore.utility import ErrorSeverity, MsPASSError
 from mspasspy.ccore.algorithms.deconvolution import CNRDeconEngine
 from mspasspy.algorithms.window import WindowData
@@ -194,6 +194,7 @@ def CNRRFDecon(
     bandwidth_keys=["low_f_band_edge", "high_f_band_edge"],
     QCdata_key="CNRFDecon_properties",
     return_wavelet=False,
+    window_output=True,
     *args,
     object_history=False,
     alg_name="CNRRFDecon",
@@ -367,6 +368,12 @@ def CNRRFDecon(
         receiver function is returned.  When True the return is a tuple
         with 0 containing the RF estimate, 1 containing the actual_output
         of the operator and 1 containing the ideal outpu wavelet.
+    :param window_output:  boolean that when True (default) causes the
+        output to be windowed in the range defined by signal_window.
+        When False the output will normally be longer with the number of
+        points being the fft size used internally.   That is, the fft
+        is normally zero padded so some signal bleeds to samples between
+        npts an the fft size.   False is largely reserved for debugging.
     :return:  `Seismogram` when return_wavelet is False and a tuple as
         described above if True.
 
@@ -407,6 +414,9 @@ def CNRRFDecon(
         # important to make  copy here as error conditions could clobber
         # origial
         d = Seismogram(seis)
+        # need to define this for window_output
+        if window_output:
+            signal_window = TimeWindow(seis.t0, seis.endtime())
 
     if noise_spectrum:
         if noise_spectrum.dead():
@@ -480,9 +490,11 @@ def CNRRFDecon(
         d.elog.log_error(err)
         d.kill()
     except Exception as generr:
-        d.elog.log_error("CNRDecon", "Unexpected exception", ErrorSeverity.Invalid)
-        d.elog.log_error("CNRDecon", str(generr), ErrorSeverity.Invalid)
+        message = "Unexpected exception:\n"
+        message += str(generr)
+        d.elog.log_error(alg, message, ErrorSeverity.Invalid)
         d.kill()
+
     # note d can be killed and returned or marked dead by the error handlers
     # in both cases we can't continue
     if d.dead():
@@ -491,6 +503,19 @@ def CNRRFDecon(
         else:
             return d
     else:
+        # some data problems cause NaN outputs for reasons not quite clear
+        # Hypothesis is caused by large data spikes from a mass recenter but
+        # may not be the only cause.  This is a safety valve since NaN output
+        # is always invalid
+        bad_values_mask = np.isnan(d.data) | np.isinf(d.data)
+        if np.count_nonzero(bad_values_mask) > 0:
+            message = "numeric problems - decon output vector has NaN or Inf values\n"
+            message += "Known problem for certain types of bad data\n"
+            message += "If this occurs a lot check decon parameters"
+            d.elog.log_error(alg, message, ErrorSeverity.Invalid)
+            d.kill()
+            return [d, None, None]
+
         QCmd = engine.QCMetrics()
         # convert to a dict for posting
         QCmd = dict(QCmd)
@@ -502,6 +527,8 @@ def CNRRFDecon(
         pe = prediction_error(engine, w)
         QCmd["prediction_error"] = pe
         d[QCdata_key] = QCmd
+    if window_output:
+        d = _WindowData3C(d, signal_window)
     if return_wavelet:
         retval = []
         retval.append(d)

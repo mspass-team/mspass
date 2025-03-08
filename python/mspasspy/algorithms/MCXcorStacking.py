@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Module implementing a similar algorithm to dbxcor in python.  
+Module implementing a similar algorithm to dbxcor in python.
 
 Created on Tue Jul  9 05:37:40 2024
 

@@ -41,9 +41,11 @@ def info(data, alg_id, alg_name, target=None):
                 data.new_map(
                     alg_name,
                     alg_id,
-                    AtomicType.TIMESERIES
-                    if isinstance(data, TimeSeries)
-                    else AtomicType.SEISMOGRAM,
+                    (
+                        AtomicType.TIMESERIES
+                        if isinstance(data, TimeSeries)
+                        else AtomicType.SEISMOGRAM
+                    ),
                     ProcessingStatus.VOLATILE,
                 )
 
@@ -60,9 +62,11 @@ def info(data, alg_id, alg_name, target=None):
                     data.member[i].new_map(
                         alg_name,
                         alg_id,
-                        AtomicType.TIMESERIES
-                        if isinstance(data.member[i], TimeSeries)
-                        else AtomicType.SEISMOGRAM,
+                        (
+                            AtomicType.TIMESERIES
+                            if isinstance(data.member[i], TimeSeries)
+                            else AtomicType.SEISMOGRAM
+                        ),
                         ProcessingStatus.VOLATILE,
                     )
     else:
@@ -125,9 +129,11 @@ def reduce(data1, data2, alg_id, alg_name):
             data1.accumulate(
                 alg_name,
                 alg_id,
-                AtomicType.TIMESERIES
-                if isinstance(data1, TimeSeries)
-                else AtomicType.SEISMOGRAM,
+                (
+                    AtomicType.TIMESERIES
+                    if isinstance(data1, TimeSeries)
+                    else AtomicType.SEISMOGRAM
+                ),
                 data2,
             )
 
@@ -145,9 +151,11 @@ def reduce(data1, data2, alg_id, alg_name):
                 data1.member[i].accumulate(
                     alg_name,
                     alg_id,
-                    AtomicType.TIMESERIES
-                    if isinstance(data1.member[i], TimeSeries)
-                    else AtomicType.SEISMOGRAM,
+                    (
+                        AtomicType.TIMESERIES
+                        if isinstance(data1.member[i], TimeSeries)
+                        else AtomicType.SEISMOGRAM
+                    ),
                     data2.member[i],
                 )
     else:

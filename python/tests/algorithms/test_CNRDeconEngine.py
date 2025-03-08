@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-This module is a companion to a jupyter notebook tutorial documenting 
-the receiver function deconvolution algorithms in MsPASS.   It has a 
-string of frozen properties designed just for this tutorial so it is 
-best left in this location and used only by the tutorial or students of 
-the tutorial interested in what is under the hood.  
+This module is a companion to a jupyter notebook tutorial documenting
+the receiver function deconvolution algorithms in MsPASS.   It has a
+string of frozen properties designed just for this tutorial so it is
+best left in this location and used only by the tutorial or students of
+the tutorial interested in what is under the hood.
 
-The entire purpose of this module is to generate a set of synthetic 
+The entire purpose of this module is to generate a set of synthetic
 waveforms that can be used to demonstrate deconvolution methods.
 
 Created on Wed Dec 23 10:29:26 2020
@@ -246,7 +246,7 @@ def verify_decon_output(d_decon, engine, wavelet):
         # in these tests the decon output is windowed so we need
         # to window dei
         dei = ExtractComponent(d_e, k)
-        dei = WindowData(dei, di.t0, di.endtime())
+        dei = WindowData(dei, di.t0, di.endtime(), short_segment_handling="pad")
         nrmdei = np.linalg.norm(dei.data)
         print("Expected output data vector norm=", nrmdei)
         dei.data /= nrmdei
@@ -292,23 +292,23 @@ def test_CNRRFDecon():
     verify_decon_output(d_decon, engine, rfwavelet)
     # verify pickle of engine works -important for parallel processng
     # as dask and spark will pickle engine in map/reduce operators
-    # d = Seismogram(d0wn)
-    # rfwavelet - TimeSeries(rfwavelet0)
-    # dumpstring = pickle.dumps(engine)
-    # engine_cpy = pickle.loads(dumpstring)
-    # d_decon2, aout, iout = CNRRFDecon(
-    #    d,
-    #    engine_cpy,
-    #    signal_window=sw,
-    #    noise_window=nw,
-    #    return_wavelet=True,
-    #    use_3C_noise=True,
-    # )
-    # assert d_decon2.live
-    # assert aout.live
-    # assert iout.live
-    # assert d_decon2.npts == d_decon.npts
-    # assert np.isclose(d_decon.data, d_decon2.data).all()
+    d = Seismogram(d0wn)
+    rfwavelet - TimeSeries(rfwavelet0)
+    dumpstring = pickle.dumps(engine)
+    engine_cpy = pickle.loads(dumpstring)
+    d_decon2, aout, iout = CNRRFDecon(
+        d,
+        engine_cpy,
+        signal_window=sw,
+        noise_window=nw,
+        return_wavelet=True,
+        use_3C_noise=True,
+    )
+    assert d_decon2.live
+    assert aout.live
+    assert iout.live
+    assert d_decon2.npts == d_decon.npts
+    assert np.isclose(d_decon.data, d_decon2.data).all()
 
     # verify_decon_output(d_decon, engine, rfwavelet)
     # repeat with 1c noise estimate option and return wavelet off

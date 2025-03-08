@@ -1,6 +1,7 @@
 """
 Tools to define the schema of Metadata.
 """
+
 import os
 
 import yaml
@@ -401,9 +402,9 @@ class DatabaseSchema(SchemaBase):
             setattr(self, collection, schemadef)
             self._attr_dict[collection] = schemadef
             if "default" in self._raw["Database"][collection]:
-                self._default_dic[
-                    self._raw["Database"][collection]["default"]
-                ] = collection
+                self._default_dic[self._raw["Database"][collection]["default"]] = (
+                    collection
+                )
 
     def __setitem__(self, key, value):
         if not isinstance(value, DBSchemaDefinition):
@@ -958,9 +959,11 @@ def _get_schema_definition_schema(collection_name_list, name, ref):
         schema.Optional("concept"): str,
         # aliases can only be string or a list of string anything else will be converted automatically here
         schema.Optional("aliases"): schema.Use(
-            lambda s: [s]
-            if type(s) is str
-            else ([str(i) for i in s] if type(s) is list else str(s))
+            lambda s: (
+                [s]
+                if type(s) is str
+                else ([str(i) for i in s] if type(s) is list else str(s))
+            )
         ),
     }
     common_md_schema = {
@@ -970,9 +973,11 @@ def _get_schema_definition_schema(collection_name_list, name, ref):
         schema.Optional("concept"): str,
         # aliases can only be string or a list of string anything else will be converted automatically here
         schema.Optional("aliases"): schema.Use(
-            lambda s: [s]
-            if type(s) is str
-            else ([str(i) for i in s] if type(s) is list else str(s))
+            lambda s: (
+                [s]
+                if type(s) is str
+                else ([str(i) for i in s] if type(s) is list else str(s))
+            )
         ),
         schema.Optional("readonly"): bool,
     }

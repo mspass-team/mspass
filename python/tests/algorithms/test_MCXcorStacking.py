@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 Test module for new MCXcorStacking (MultiChannel Cross(X)-Correlation Stacking)
-functions.  
+functions.
 
 
 
