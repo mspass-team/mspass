@@ -3269,8 +3269,8 @@ class ArrivalMatcher(DataFrameCacheMatcher):
 def normalize(
     mspass_object,
     matcher,
-    kill_on_failure=True,
     *args,
+    kill_on_failure=True,
     handles_ensembles=False,
     checks_arg0_type=False,
     handles_dead_data=True,
