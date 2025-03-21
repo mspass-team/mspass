@@ -3269,12 +3269,10 @@ class ArrivalMatcher(DataFrameCacheMatcher):
 def normalize(
     mspass_object,
     matcher,
-    *args,
     kill_on_failure=True,
     handles_ensembles=False,
     checks_arg0_type=False,
     handles_dead_data=True,
-    **kwargs,
 ):
     """
     Generic function to do in line normalization with dask/spark map operator.
