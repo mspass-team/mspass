@@ -4226,128 +4226,158 @@ class Database(pymongo.database.Database):
             with open(fname, mode="rb") as fh:
                 if foff > 0:
                     fh.seek(foff)
-                flh = io.BytesIO(fh.read(nbytes))
-                st = obspy.read(flh, format=format)
-                if isinstance(mspass_object, TimeSeries):
-                    # st is a "stream" but it may contains multiple Trace objects gaps
-                    # but here we want only one TimeSeries, we merge these Trace objects and fill values for gaps
-                    # we post a complaint elog entry to the mspass_object if there are gaps in the stream
-                    if len(st) > 1:
-                        message = "WARNING:  gaps detected while reading file {} with format {} using obspy\n".format(
-                            fname, format
-                        )
-                        message += "Using specified fill defined in call to read_data"
-                        mspass_object.elog.log_error(
-                            "read_data",
-                            message,
-                            ErrorSeverity.Complaint,
-                        )
-                        st = st.merge(
-                            method=merge_method,
-                            fill_value=merge_fill_value,
-                            interpolation_samples=merge_interpolation_samples,
-                        )
-                    tr = st[0]
-                    # We can't use Trace2TimeSeries because we loose
-                    # all but miniseed metadata if we do that.
-                    # We do, however, need to compare post errors
-                    # if there is a mismatch
-                    if tr.stats.npts != mspass_object.npts:
-                        message = "Inconsistent number of data points (npts)\n"
-                        message += "Database npts={} but obspy reader created a vector {} points long\n".format(
-                            mspass_object.npts, tr.stats.npts
-                        )
-                        message += "Set to vector size defined by reader."
-                        mspass_object.elog.log_error(
-                            alg, message, ErrorSeverity.Complaint
-                        )
-                        mspass_object.set_npts(tr.stats.npts)
-                    if tr.stats.starttime.timestamp != mspass_object.t0:
-                        message = "Inconsistent starttimes detected\n"
-                        message += "Starttime in MongoDB document = {}\n".format(
-                            UTCDateTime(mspass_object.t0)
-                        )
-                        message += "Starttime returned by obspy reader = {}\n".format(
-                            tr.stats.starttime
-                        )
-                        message += "Set to time set by reader"
-                        mspass_object.elog.log_error(
-                            alg, message, ErrorSeverity.Complaint
-                        )
-                        mspass_object.set_t0(tr.stats.starttime.timestamp)
-                    if tr.stats.delta != mspass_object.dt:
-                        message = "Inconsistent sample intervals"
-                        message += "Database has delta={} but obspy reader set delta={}\n".format(
-                            mspass_object.dt, tr.stats.delta
-                        )
-                        message += "Set to value set by reader."
-                        mspass_object.elog.log_error(
-                            alg, message, ErrorSeverity.Complaint
-                        )
-                        mspass_object.dt = tr.stats.delta
-                    # be less dogmatic here as endtime is computed.
-                    # error only if computed time difference exceed half a sample
-                    if (
-                        abs(tr.stats.endtime.timestamp - mspass_object.endtime())
-                        > mspass_object.dt / 2.0
-                    ):
-                        message = "Inconsistent endtimes detected\n"
-                        message += (
-                            "Endtime expected from MongoDB document = {}\n".format(
-                                UTCDateTime(mspass_object.endtime())
+                try:
+                    flh = io.BytesIO(fh.read(nbytes))
+                    st = obspy.read(flh, format=format)
+                except TypeError as te:
+                    message = "BytesIO failed reading file={}\n".format(dfile)
+                    message += "Threw a TypeError with this content:  "
+                    message += str(te)
+                    mspass_object.kill()
+                    mspass_object.elog.log_error(
+                        "Database._read_from_dfile", message, ErrorSeverity.Invalid
+                    )
+                except Exception as e:
+                    # obspy seems to make all exceptions subclasses of this
+                    # inermediate, generic class.   The message seems to be
+                    # avaialble as here by using the str result.
+                    message = "obspy reader failed reading data with format=" + format
+                    message += "\nMessage posted:  " + str(e)
+                    # assume mspass_object has an elog and can accept kill
+                    mspass_object.kill()
+                    mspass_object.elog.log_error(
+                        "Database._read_from_dfile", message, ErrorSeverity.Invalid
+                    )
+                else:
+                    # land here if there are no read errors - normal data
+                    if isinstance(mspass_object, TimeSeries):
+                        # st is a "stream" but it may contains multiple Trace objects gaps
+                        # but here we want only one TimeSeries, we merge these Trace objects and fill values for gaps
+                        # we post a complaint elog entry to the mspass_object if there are gaps in the stream
+                        if len(st) > 1:
+                            message = "WARNING:  gaps detected while reading file {} with format {} using obspy\n".format(
+                                fname, format
                             )
-                        )
-                        message += "Endtime set by obspy reader = {}\n".format(
-                            tr.stats.endtime
-                        )
-                        message += "Endtime is derived in mspass and should have been repaired - cannot recover this datum so it was killed"
-                        mspass_object.elog.log_error(
-                            alg, message, ErrorSeverity.Invalid
-                        )
-                        mspass_object.kill()
+                            message += (
+                                "Using specified fill defined in call to read_data"
+                            )
+                            mspass_object.elog.log_error(
+                                "read_data",
+                                message,
+                                ErrorSeverity.Complaint,
+                            )
+                            st = st.merge(
+                                method=merge_method,
+                                fill_value=merge_fill_value,
+                                interpolation_samples=merge_interpolation_samples,
+                            )
+                        tr = st[0]
+                        # We can't use Trace2TimeSeries because we loose
+                        # all but miniseed metadata if we do that.
+                        # We do, however, need to compare post errors
+                        # if there is a mismatch
+                        if tr.stats.npts != mspass_object.npts:
+                            message = "Inconsistent number of data points (npts)\n"
+                            message += "Database npts={} but obspy reader created a vector {} points long\n".format(
+                                mspass_object.npts, tr.stats.npts
+                            )
+                            message += "Set to vector size defined by reader."
+                            mspass_object.elog.log_error(
+                                alg, message, ErrorSeverity.Complaint
+                            )
+                            mspass_object.set_npts(tr.stats.npts)
+                        if tr.stats.starttime.timestamp != mspass_object.t0:
+                            message = "Inconsistent starttimes detected\n"
+                            message += "Starttime in MongoDB document = {}\n".format(
+                                UTCDateTime(mspass_object.t0)
+                            )
+                            message += (
+                                "Starttime returned by obspy reader = {}\n".format(
+                                    tr.stats.starttime
+                                )
+                            )
+                            message += "Set to time set by reader"
+                            mspass_object.elog.log_error(
+                                alg, message, ErrorSeverity.Complaint
+                            )
+                            mspass_object.set_t0(tr.stats.starttime.timestamp)
+                        if tr.stats.delta != mspass_object.dt:
+                            message = "Inconsistent sample intervals"
+                            message += "Database has delta={} but obspy reader set delta={}\n".format(
+                                mspass_object.dt, tr.stats.delta
+                            )
+                            message += "Set to value set by reader."
+                            mspass_object.elog.log_error(
+                                alg, message, ErrorSeverity.Complaint
+                            )
+                            mspass_object.dt = tr.stats.delta
+                        # be less dogmatic here as endtime is computed.
+                        # error only if computed time difference exceed half a sample
+                        if (
+                            abs(tr.stats.endtime.timestamp - mspass_object.endtime())
+                            > mspass_object.dt / 2.0
+                        ):
+                            message = "Inconsistent endtimes detected\n"
+                            message += (
+                                "Endtime expected from MongoDB document = {}\n".format(
+                                    UTCDateTime(mspass_object.endtime())
+                                )
+                            )
+                            message += "Endtime set by obspy reader = {}\n".format(
+                                tr.stats.endtime
+                            )
+                            message += "Endtime is derived in mspass and should have been repaired - cannot recover this datum so it was killed"
+                            mspass_object.elog.log_error(
+                                alg, message, ErrorSeverity.Invalid
+                            )
+                            mspass_object.kill()
 
-                    # These two lines are needed to properly initialize
-                    # the DoubleVector before calling Trace2TimeSeries
-                    tr_data = tr.data.astype(
-                        "float64"
-                    )  #   Convert the nparray type to double, to match the DoubleVector
-                    mspass_object.npts = len(tr_data)
-                    mspass_object.data = DoubleVector(tr_data)
-                    # We can't use Trace2TimeSeries because we loose
-                    # all but miniseed metadata if we do that.
-                    # We do, however, need to compare post errors
-                    # if there is a mismatch
+                        # These two lines are needed to properly initialize
+                        # the DoubleVector before calling Trace2TimeSeries
+                        tr_data = tr.data.astype(
+                            "float64"
+                        )  #   Convert the nparray type to double, to match the DoubleVector
+                        mspass_object.npts = len(tr_data)
+                        mspass_object.data = DoubleVector(tr_data)
+                        # We can't use Trace2TimeSeries because we loose
+                        # all but miniseed metadata if we do that.
+                        # We do, however, need to compare post errors
+                        # if there is a mismatch
 
-                    if mspass_object.npts > 0:
-                        mspass_object.set_live()
-                    else:
-                        message = "Error during read with format={}\n".format(format)
-                        message += "Unable to reconstruct data vector"
-                        mspass_object.elog.log_error(
-                            alg, message, ErrorSeverity.Invalid
-                        )
-                        mspass_object.kill()
-                elif isinstance(mspass_object, Seismogram):
-                    # This was previous form.   The toSeismogram run as a
-                    # method is an unnecessary confusion and I don't think
-                    # setting npts or data are necessary given the code of
-                    # Stream2Seismogram - st.toSeismogram is an alias for that
-                    # This is almost but not quite equivalent to this:
-                    # mspass_object = Stream2Seismogram(st,cardinal=True)
-                    # Seems Stream2Seismogram does not properly handle
-                    # the data pointer
-                    sm = st.toSeismogram(cardinal=True)
-                    mspass_object.npts = sm.data.columns()
-                    mspass_object.data = sm.data
-                    if mspass_object.npts > 0:
-                        mspass_object.set_live()
-                    else:
-                        message = "Error during read with format={}\n".format(format)
-                        message += "Unable to reconstruct Seismogram data matrix"
-                        mspass_object.elog.log_error(
-                            alg, message, ErrorSeverity.Invalid
-                        )
-                        mspass_object.kill()
+                        if mspass_object.npts > 0:
+                            mspass_object.set_live()
+                        else:
+                            message = "Error during read with format={}\n".format(
+                                format
+                            )
+                            message += "Unable to reconstruct data vector"
+                            mspass_object.elog.log_error(
+                                alg, message, ErrorSeverity.Invalid
+                            )
+                            mspass_object.kill()
+                    elif isinstance(mspass_object, Seismogram):
+                        # This was previous form.   The toSeismogram run as a
+                        # method is an unnecessary confusion and I don't think
+                        # setting npts or data are necessary given the code of
+                        # Stream2Seismogram - st.toSeismogram is an alias for that
+                        # This is almost but not quite equivalent to this:
+                        # mspass_object = Stream2Seismogram(st,cardinal=True)
+                        # Seems Stream2Seismogram does not properly handle
+                        # the data pointer
+                        sm = st.toSeismogram(cardinal=True)
+                        mspass_object.npts = sm.data.columns()
+                        mspass_object.data = sm.data
+                        if mspass_object.npts > 0:
+                            mspass_object.set_live()
+                        else:
+                            message = "Error during read with format={}\n".format(
+                                format
+                            )
+                            message += "Unable to reconstruct Seismogram data matrix"
+                            mspass_object.elog.log_error(
+                                alg, message, ErrorSeverity.Invalid
+                            )
+                            mspass_object.kill()
 
     def _read_data_from_gridfs(self, mspass_object, gridfs_id):
         """

@@ -1,10 +1,3 @@
-# TODO based on Aug 15, 2022 group meeting
-"""
-1.  Add decorator for mspass history to normalize function - DONE
-2.  Change api to have find return a None on failure instead of an empty list
-3.  Biggest change is to consider how to do a pandas implementation.  That will
-best be done in a discussio page on github before commiting the revisions
-"""
 from mspasspy.db.normalize import (
     normalize,
     EqualityDBMatcher,
