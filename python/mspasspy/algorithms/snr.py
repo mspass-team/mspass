@@ -263,12 +263,12 @@ def _safe_snr_calculation(s, n):
 @mspass_func_wrapper
 def snr(
     data_object,
+    *args,
     noise_window=TimeWindow(-130.0, -5.0),
     signal_window=TimeWindow(-5.0, 120.0),
     noise_metric="mad",
     signal_metric="mad",
     perc=95.0,
-    *args,
     handles_ensembles=False,
     checks_arg0_type=False,
     handles_dead_data=False,
@@ -911,6 +911,7 @@ def FD_snr_estimator(
 @mspass_func_wrapper
 def arrival_snr(
     data_object,
+    *args,
     noise_window=TimeWindow(-130.0, -5.0),
     noise_spectrum_engine=None,
     signal_window=TimeWindow(-5.0, 120.0),
@@ -936,7 +937,6 @@ def arrival_snr(
         "filtered_MAD",
         "filtered_perc",
     ],
-    *args,
     handles_ensembles=False,
     checks_arg0_type=True,
     handles_dead_data=True,
@@ -1076,6 +1076,7 @@ def arrival_snr(
 @mspass_func_wrapper
 def broadband_snr_QC(
     data_object,
+    *args,
     component=2,
     noise_window=TimeWindow(-130.0, -5.0),
     noise_spectrum_engine=None,
@@ -1106,7 +1107,6 @@ def broadband_snr_QC(
     taup_model=None,
     source_collection="source",
     receiver_collection=None,
-    *args,
     handles_ensembles=False,
     checks_arg0_type=True,
     handles_dead_data=True,

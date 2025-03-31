@@ -79,13 +79,13 @@ def _post_amplitude(d, method, amp):
 # break this function.
 def scale(
     d,
+    *args,
     compute_from_window=False,
     window=None,
     method="peak",
     level=1.0,
     scale_by_section=False,
     use_mean=False,
-    *args,
     object_history=False,
     alg_name="scale",
     alg_id=None,
@@ -1194,9 +1194,9 @@ class TopMute:
     def apply(
         self,
         d,
+        *args,
         object_history=False,
         instance=None,
-        *args,
         checks_arg0_type=True,
         handles_ensembles=False,
         handles_dead_data=True,

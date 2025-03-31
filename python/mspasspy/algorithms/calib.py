@@ -156,9 +156,9 @@ class ApplyCalibEngine:
     def apply_calib(
         self,
         d,
+        *args,
         id_key="channel_id",
         kill_if_undefined=True,
-        *args,
         handles_ensembles=True,
         checks_arg0_type=True,
         handles_dead_data=True,

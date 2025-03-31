@@ -185,6 +185,7 @@ def prediction_error(engine, wavelet) -> float:
 def CNRRFDecon(
     seis,
     engine,
+    *args,
     component=2,
     noise_spectrum=None,
     signal_window=None,
@@ -195,7 +196,6 @@ def CNRRFDecon(
     QCdata_key="CNRFDecon_properties",
     return_wavelet=False,
     window_output=True,
-    *args,
     object_history=False,
     alg_name="CNRRFDecon",
     alg_id=None,
@@ -546,6 +546,7 @@ def CNRArrayDecon(
     ensemble,
     beam,
     engine,
+    *args,
     noise_window=None,
     signal_window=None,
     noise_spectrum=None,
@@ -555,7 +556,6 @@ def CNRArrayDecon(
     bandwidth_subdocument_key=None,
     bandwidth_keys=["low_f_band_edge", "high_f_band_edge"],
     return_wavelet=False,
-    *args,
     handles_ensembles=True,
     **kwargs,
 ) -> tuple:

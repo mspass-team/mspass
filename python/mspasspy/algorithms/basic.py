@@ -298,6 +298,7 @@ def rotate_to_standard(
 @mspass_func_wrapper
 def free_surface_transformation(
     data,
+    *args,
     uvec=None,
     vp0=None,
     vs0=None,
@@ -305,7 +306,6 @@ def free_surface_transformation(
     uy_key="uy",
     vp0_key="vp0",
     vs0_key="vs0",
-    *args,
     object_history=False,
     alg_name=None,
     alg_id=None,
@@ -543,11 +543,11 @@ def transform(
 @mspass_func_wrapper
 def transform_to_RTZ(
     data,
+    *args,
     key="seaz",
     phi=None,
     angle_units="degrees",
     key_is_backazimuth=True,
-    *args,
     object_history=False,
     alg_name=None,
     alg_id=None,
@@ -674,12 +674,12 @@ def transform_to_RTZ(
 @mspass_func_wrapper
 def transform_to_LQT(
     data,
+    *args,
     seaz_key="seaz",
     ema_key="ema",
     phi=None,
     theta=None,
     angle_units="degrees",
-    *args,
     object_history=False,
     alg_name=None,
     alg_id=None,
