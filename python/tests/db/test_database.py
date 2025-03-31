@@ -3189,7 +3189,7 @@ class TestDatabase:
         src_mseed_doc["storage_mode"] = "s3_continuous"
         src_mseed_doc["format"] = "mseed"
 
-        mseed_upload_key = "event_waveforms/2017/2017_005/CICAC__HNZ___2017005.ms"
+        mseed_upload_key = "continuous_waveforms/2017/2017_005/CICAC__HNZ___2017005.ms"
         s3_client.upload_file(
             Filename=mseed_path, Bucket=src_bucket, Key=mseed_upload_key
         )
