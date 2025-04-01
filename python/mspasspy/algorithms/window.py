@@ -578,6 +578,7 @@ def WindowData(
     log_recoverable_errors=True,
     overwrite_members=False,
     retain_dead_members=True,
+    *args,
     object_history=False,
     alg_name="WindowData",
     alg_id=None,
@@ -585,6 +586,7 @@ def WindowData(
     handles_ensembles=True,
     checks_arg0_type=True,
     handles_dead_data=True,
+    **kwargs,
 ):
     """
     Apply a window operation to cut out data within a specified time range
@@ -831,6 +833,7 @@ def WindowData_autopad(
     stime,
     etime,
     pad_fraction_cutoff=0.05,
+    *args,
     object_history=False,
     alg_name="WindowData_autopad",
     alg_id=None,
@@ -838,6 +841,7 @@ def WindowData_autopad(
     handles_ensembles=False,
     checks_arg0_type=True,
     handles_dead_data=False,
+    **kwargs,
 ):
     """
     Windows an atomic data object with automatic padding if the
@@ -1194,9 +1198,9 @@ class TopMute:
     def apply(
         self,
         d,
-        object_history=False,
         instance=None,
         *args,
+        object_history=False,
         checks_arg0_type=True,
         handles_ensembles=False,
         handles_dead_data=True,
