@@ -1198,7 +1198,6 @@ class TopMute:
     def apply(
         self,
         d,
-        instance=None,
         *args,
         object_history=False,
         checks_arg0_type=True,
@@ -1218,11 +1217,6 @@ class TopMute:
         :object_history:  It set true the function will add define this
           step as an map operation to preserve object level history.
           (default is False)
-        :param instance:   string defining the "instance" of this algorithm.
-          This parameter is needed only if object_history is set True.  It
-          is used to define which instance of this algrithm is being applied.
-          (In the C++ api this is what is called the algorithm id).  I can
-          come from the global history manager or be set manually.
         """
         if not isinstance(d, TimeSeries) and not isinstance(d, Seismogram):
             message = "TopMute.apply:  usage error.  Input data must be a TimeSeries or Seismogram object"
@@ -1240,31 +1234,4 @@ class TopMute:
             d.kill()
         else:
             self.processor.apply(d)
-            if object_history:
-                if instance == None:
-                    d.elog(
-                        "TopMute.apply",
-                        "Undefined instance argument - cannot save history data",
-                        ErrorSeverity.Complaint,
-                    )
-                elif d.is_empty():
-                    d.elog(
-                        "TopMute.apply",
-                        "Error log is empty.  Cannot be extended without a top level entry",
-                        ErrorSeverity.Complaint,
-                    )
-                else:
-                    if isinstance(d, Seismogram):
-                        d.new_map(
-                            "TopMute",
-                            instance,
-                            AtomicType.SEISMOGRAM,
-                            ProcessingStatus.VOLATILE,
-                        )
-                    else:
-                        d.new_map(
-                            "TopMute",
-                            instance,
-                            AtomicType.TIMESERIES,
-                            ProcessingStatus.VOLATILE,
-                        )
+        return d
