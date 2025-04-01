@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.4)
+cmake_minimum_required(VERSION 3.11)
 
 project(pybind11-download NONE)
 
@@ -11,7 +11,7 @@ ExternalProject_Add(
     https://github.com/pybind/pybind11.git
   GIT_TAG
     v2.10.1
-  CONFIGURE_COMMAND cmake -DCMAKE_INSTALL_PREFIX=${PROJECT_BINARY_DIR} -DPYBIND11_TEST=OFF .
+  CONFIGURE_COMMAND cmake -DCMAKE_POLICY_VERSION_MINIMUM=3.11 -DCMAKE_INSTALL_PREFIX=${PROJECT_BINARY_DIR} -DPYBIND11_TEST=OFF .
   BUILD_COMMAND make -j 8
   BUILD_IN_SOURCE 1
   INSTALL_COMMAND make install 
