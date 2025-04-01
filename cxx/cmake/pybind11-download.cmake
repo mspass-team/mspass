@@ -10,7 +10,7 @@ ExternalProject_Add(
   GIT_REPOSITORY
     https://github.com/pybind/pybind11.git
   GIT_TAG
-    v2.13.6
+    v2.10.1
   CONFIGURE_COMMAND cmake -DCMAKE_INSTALL_PREFIX=${PROJECT_BINARY_DIR} -DPYBIND11_TEST=OFF .
   BUILD_COMMAND make -j 8
   BUILD_IN_SOURCE 1
