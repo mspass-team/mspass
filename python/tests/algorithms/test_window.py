@@ -731,13 +731,13 @@ def test_WindowData_autopad():
         assert se.data[k, npts + 1] == 0.0
 
     # test handling of ensembles via the mspass_func_decorator
-    # note the function itself only handles atomic data 
+    # note the function itself only handles atomic data
     # Test only TimeSeriesEnsemble
     ens = TimeSeriesEnsemble(2)
     for i in range(2):
         ens.member.append(ts)
     ens.set_live()
-    ens = WindowData_autopad(ens,ts.time(10),ts.time(50))
+    ens = WindowData_autopad(ens, ts.time(10), ts.time(50))
     for i in range(2):
         assert ens.member[i].live
 
