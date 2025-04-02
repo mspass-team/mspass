@@ -3190,10 +3190,9 @@ class TestDatabase:
         src_mseed_doc["format"] = "mseed"
 
         mseed_upload_key = "continuous_waveforms/2017/2017_005/CICAC__HNZ___2017005.ms"
-        with open(mseed_path, "rb") as f:
-            s3_client.upload_file(
-                Filename=mseed_path, Bucket=src_bucket, Key=mseed_upload_key
-            )
+        s3_client.upload_file(
+            Filename=mseed_path, Bucket=src_bucket, Key=mseed_upload_key
+        )
         self.db.index_mseed_s3_continuous(
             s3_client,
             2017,
