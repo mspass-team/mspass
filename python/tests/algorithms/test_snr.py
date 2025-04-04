@@ -95,15 +95,15 @@ def test_snr_functions():
     swin = TimeWindow(-10.0, 50.0)
     # used for rms and mad for this test
     swin2 = TimeWindow(-0.5, 10.0)
-    snrrms = snr(ts, nwin, swin2, noise_metric="rms", signal_metric="rms")
+    snrrms = snr(ts, noise_window=nwin, signal_window=swin2, noise_metric="rms", signal_metric="rms")
     print("snr_rms=", snrrms)
-    snrpeak_rms = snr(ts, nwin, swin, noise_metric="rms", signal_metric="peak")
+    snrpeak_rms = snr(ts, noise_window=nwin, signal_window=swin, noise_metric="rms", signal_metric="peak")
     print("snr_peak-l2=", snrpeak_rms)
     tscpy = TimeSeries(ts)
-    snrmad_rms = snr(tscpy, nwin, swin2, noise_metric="rms", signal_metric="mad")
+    snrmad_rms = snr(tscpy, noise_window=nwin, signal_window=swin2, noise_metric="rms", signal_metric="mad")
     print("snr_mad-L2=", snrmad_rms)
     snrperc_rms = snr(
-        ts, nwin, swin, noise_metric="rms", signal_metric="perc", perc=0.95
+        ts, noise_window=nwin, signal_window=swin, noise_metric="rms", signal_metric="perc", perc=0.95
     )
     print("snr_perc95-L2=", snrperc_rms)
 
