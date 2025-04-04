@@ -191,7 +191,8 @@ ADD python /mspass/python
 ADD pyproject.toml /mspass/pyproject.toml
 ADD requirements.txt /mspass/requirements.txt
 ADD .git /mspass/.git
-RUN pip3 install -C--global-option=build -C--global-option=--debug /mspass -v \
+# Add seisbench dependency in the dev container for development purpose
+RUN pip3 install -C--global-option=build -C--global-option=--debug '/mspass[seisbench]' -v \
 	&& rm -rf /mspass/build /mspass/.git && docker-clean
 
 # Add docs and dependencies to build docs
