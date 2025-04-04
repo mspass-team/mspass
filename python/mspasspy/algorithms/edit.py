@@ -159,8 +159,8 @@ class MetadataGT(Executioner):
     def kill_if_true(
         self,
         d,
-        apply_to_members=False,
         *args,
+        apply_to_members=False,
         handles_ensembles=True,
         checks_arg0_type=True,
         **kwargs,
@@ -230,8 +230,8 @@ class MetadataGE(Executioner):
     def kill_if_true(
         self,
         d,
-        apply_to_members=False,
         *args,
+        apply_to_members=False,
         handles_ensembles=True,
         checks_arg0_type=True,
         **kwargs,
@@ -299,8 +299,8 @@ class MetadataLT(Executioner):
     def kill_if_true(
         self,
         d,
-        apply_to_members=False,
         *args,
+        apply_to_members=False,
         handles_ensembles=True,
         checks_arg0_type=True,
         **kwargs,
@@ -368,8 +368,8 @@ class MetadataLE(Executioner):
     def kill_if_true(
         self,
         d,
-        apply_to_members=False,
         *args,
+        apply_to_members=False,
         handles_ensembles=True,
         checks_arg0_type=True,
         **kwargs,
@@ -439,8 +439,8 @@ class MetadataEQ(Executioner):
     def kill_if_true(
         self,
         d,
-        apply_to_members=False,
         *args,
+        apply_to_members=False,
         handles_ensembles=True,
         checks_arg0_type=True,
         **kwargs,
@@ -510,8 +510,8 @@ class MetadataNE(Executioner):
     def kill_if_true(
         self,
         d,
-        apply_to_members=False,
         *args,
+        apply_to_members=False,
         handles_ensembles=True,
         checks_arg0_type=True,
         **kwargs,
@@ -571,8 +571,8 @@ class MetadataDefined(Executioner):
     def kill_if_true(
         self,
         d,
-        apply_to_members=False,
         *args,
+        apply_to_members=False,
         handles_ensembles=True,
         checks_arg0_type=True,
         **kwargs,
@@ -632,8 +632,8 @@ class MetadataUndefined(Executioner):
     def kill_if_true(
         self,
         d,
-        apply_to_members=False,
         *args,
+        apply_to_members=False,
         handles_ensembles=True,
         checks_arg0_type=True,
         **kwargs,
@@ -729,8 +729,8 @@ class MetadataInterval(Executioner):
     def kill_if_true(
         self,
         d,
-        apply_to_members=False,
         *args,
+        apply_to_members=False,
         handles_ensembles=True,
         checks_arg0_type=True,
         **kwargs,
@@ -851,8 +851,8 @@ class FiringSquad(Executioner):
     def kill_if_true(
         self,
         d,
-        apply_to_members=False,
         *args,
+        apply_to_members=False,
         handles_ensembles=True,
         checks_arg0_type=True,
         **kwargs,
@@ -1041,10 +1041,10 @@ class ChangeKey(MetadataOperator):
     def apply(
         self,
         d,
+        *args,
         apply_to_members=False,
         fast_mode=False,
         verbose=False,
-        *args,
         handles_enembles=True,
         **kwargs,
     ):
@@ -1138,8 +1138,8 @@ class SetValue(MetadataOperator):
     def apply(
         self,
         d,
-        apply_to_members=False,
         *args,
+        apply_to_members=False,
         handles_ensembles=True,
         checks_arg0_type=True,
         **kwargs,
@@ -1213,8 +1213,8 @@ class Add(MetadataOperator):
     def apply(
         self,
         d,
-        apply_to_members=False,
         *args,
+        apply_to_members=False,
         handles_ensembles=True,
         checks_arg0_type=True,
         **kwargs,
@@ -1299,8 +1299,8 @@ class Multiply(MetadataOperator):
     def apply(
         self,
         d,
-        apply_to_members=False,
         *args,
+        apply_to_members=False,
         handles_ensembles=True,
         checks_arg0_type=True,
         **kwargs,
@@ -1384,8 +1384,8 @@ class Subtract(MetadataOperator):
     def apply(
         self,
         d,
-        apply_to_members=False,
         *args,
+        apply_to_members=False,
         handles_ensembles=True,
         checks_arg0_type=True,
         **kwargs,
@@ -1470,8 +1470,8 @@ class Divide(MetadataOperator):
     def apply(
         self,
         d,
-        apply_to_members=False,
         *args,
+        apply_to_members=False,
         handles_ensembles=True,
         checks_arg0_type=True,
         **kwargs,
@@ -1563,8 +1563,8 @@ class IntegerDivide(MetadataOperator):
     def apply(
         self,
         d,
-        apply_to_members=False,
         *args,
+        apply_to_members=False,
         handles_ensembles=True,
         checks_arg0_type=True,
         **kwargs,
@@ -1660,8 +1660,8 @@ class Mod(MetadataOperator):
     def apply(
         self,
         d,
-        apply_to_members=False,
         *args,
+        apply_to_members=False,
         handles_ensembles=True,
         checks_arg0_type=True,
         **kwargs,
@@ -1761,8 +1761,8 @@ class Add2(MetadataOperator):
     def apply(
         self,
         d,
-        apply_to_members=False,
         *args,
+        apply_to_members=False,
         handles_ensembles=True,
         checks_arg0_type=True,
         **kwargs,
@@ -1869,8 +1869,8 @@ class Multiply2(MetadataOperator):
     def apply(
         self,
         d,
-        apply_to_members=False,
         *args,
+        apply_to_members=False,
         handles_ensembles=True,
         checks_arg0_type=True,
         **kwargs,
@@ -1977,8 +1977,8 @@ class Subtract2(MetadataOperator):
     def apply(
         self,
         d,
-        apply_to_members=False,
         *args,
+        apply_to_members=False,
         handles_ensembles=True,
         checks_arg0_type=True,
         **kwargs,
@@ -2085,8 +2085,8 @@ class Divide2(MetadataOperator):
     def apply(
         self,
         d,
-        apply_to_members=False,
         *args,
+        apply_to_members=False,
         handles_ensembles=True,
         checks_arg0_type=True,
         **kwargs,
@@ -2193,8 +2193,8 @@ class IntegerDivide2(MetadataOperator):
     def apply(
         self,
         d,
-        apply_to_members=False,
         *args,
+        apply_to_members=False,
         handles_ensembles=True,
         checks_arg0_type=True,
         **kwargs,
@@ -2301,8 +2301,8 @@ class Mod2(MetadataOperator):
     def apply(
         self,
         d,
-        apply_to_members=False,
         *args,
+        apply_to_members=False,
         handles_ensembles=True,
         checks_arg0_type=True,
         **kwargs,
@@ -2426,8 +2426,8 @@ class MetadataOperatorChain(MetadataOperator):
     def apply(
         self,
         d,
-        apply_to_members=False,
         *args,
+        apply_to_members=False,
         handles_ensembles=True,
         checks_arg0_type=True,
         **kwargs,

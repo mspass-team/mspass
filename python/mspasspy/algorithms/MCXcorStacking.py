@@ -199,6 +199,7 @@ def _compute_default_robust_window(
 def MCXcorPrepP(
     ensemble,
     noise_window,
+    *args,
     noise_metric="mad",
     initial_beam_metric="bandwidth",
     snr_doc_key="Parrival",
@@ -216,7 +217,6 @@ def MCXcorPrepP(
     search_window_fraction=0.9,
     minimum_coda_duration=5.0,
     correlation_window_start=-3.0,
-    *args,
     handles_ensembles=True,
     checks_arg0_type=True,
     handles_dead_data=True,
@@ -1097,6 +1097,7 @@ def beam_align(ensemble, beam, window=None, time_shift_limit=10.0):
 def align_and_stack(
     ensemble,
     beam,
+    *args,
     correlation_window=None,
     correlation_window_keys=["correlation_window_start", "correlation_window_end"],
     window_beam=True,
@@ -1112,7 +1113,6 @@ def align_and_stack(
     convergence=0.01,
     residual_norm_floor=0.1,
     demean_residuals=True,
-    *args,
     handles_ensembles=True,
     checks_arg0_type=True,
     handles_dead_data=True,
@@ -1858,6 +1858,7 @@ def phase_time(
 def post_MCXcor_metrics(
     d,
     beam,
+    *args,
     metrics={
         "arrival_time": "Ptime_xcor",
         "cross_correlation": "beam_correlation",
@@ -1867,7 +1868,6 @@ def post_MCXcor_metrics(
     window=None,
     phase_time_key="Ptime",
     time_shift_key="arrival_time_correction",
-    *args,
     handles_ensembles=False,
     checks_arg0_type=False,
     handles_dead_data=False,

@@ -253,7 +253,7 @@ def test_free_surface_transform():
     ux = umag * np.cos(u_phi)
     uy = umag * np.sin(u_phi)
     uvec = SlownessVector(ux, uy)
-    sout = free_surface_transformation(seis, uvec, 5.0, 3.5)
+    sout = free_surface_transformation(seis, uvec=uvec, vp0=5.0, vs0=3.5)
     ok = fstout_ok(sout)
     assert ok
     # verify fst properly sets the transformation matrix so
@@ -296,7 +296,7 @@ def test_free_surface_transform():
     seis = Seismogram(seis0)
     seis["vp0"] = 5.0
     seis["vs0"] = 3.5
-    sout = free_surface_transformation(seis, uvec)
+    sout = free_surface_transformation(seis, uvec=uvec)
     ok = fstout_ok(sout)
     assert ok
 

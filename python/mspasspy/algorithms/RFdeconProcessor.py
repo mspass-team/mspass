@@ -388,6 +388,7 @@ class RFdeconProcessor:
 @mspass_func_wrapper
 def RFdecon(
     d,
+    *args,
     engine=None,
     alg="LeastSquares",
     pf="RFdeconProcessor.pf",
@@ -396,7 +397,6 @@ def RFdecon(
     wcomp=2,
     ncomp=2,
     QCdocument_key="RFdecon_properties",
-    *args,
     object_history=False,
     alg_name="RFdecon",
     alg_id=None,
