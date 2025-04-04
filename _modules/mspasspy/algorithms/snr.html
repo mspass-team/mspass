@@ -405,12 +405,12 @@
 <div class="viewcode-block" id="snr"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.snr.snr">[docs]</a><span class="nd">@mspass_func_wrapper</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">snr</span><span class="p">(</span>
     <span class="n">data_object</span><span class="p">,</span>
+    <span class="o">*</span><span class="n">args</span><span class="p">,</span>
     <span class="n">noise_window</span><span class="o">=</span><span class="n">TimeWindow</span><span class="p">(</span><span class="o">-</span><span class="mf">130.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">5.0</span><span class="p">),</span>
     <span class="n">signal_window</span><span class="o">=</span><span class="n">TimeWindow</span><span class="p">(</span><span class="o">-</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">120.0</span><span class="p">),</span>
     <span class="n">noise_metric</span><span class="o">=</span><span class="s2">&quot;mad&quot;</span><span class="p">,</span>
     <span class="n">signal_metric</span><span class="o">=</span><span class="s2">&quot;mad&quot;</span><span class="p">,</span>
     <span class="n">perc</span><span class="o">=</span><span class="mf">95.0</span><span class="p">,</span>
-    <span class="o">*</span><span class="n">args</span><span class="p">,</span>
     <span class="n">handles_ensembles</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">checks_arg0_type</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">handles_dead_data</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -1053,6 +1053,7 @@
 <div class="viewcode-block" id="arrival_snr"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.snr.arrival_snr">[docs]</a><span class="nd">@mspass_func_wrapper</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">arrival_snr</span><span class="p">(</span>
     <span class="n">data_object</span><span class="p">,</span>
+    <span class="o">*</span><span class="n">args</span><span class="p">,</span>
     <span class="n">noise_window</span><span class="o">=</span><span class="n">TimeWindow</span><span class="p">(</span><span class="o">-</span><span class="mf">130.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">5.0</span><span class="p">),</span>
     <span class="n">noise_spectrum_engine</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">signal_window</span><span class="o">=</span><span class="n">TimeWindow</span><span class="p">(</span><span class="o">-</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">120.0</span><span class="p">),</span>
@@ -1078,7 +1079,6 @@
         <span class="s2">&quot;filtered_MAD&quot;</span><span class="p">,</span>
         <span class="s2">&quot;filtered_perc&quot;</span><span class="p">,</span>
     <span class="p">],</span>
-    <span class="o">*</span><span class="n">args</span><span class="p">,</span>
     <span class="n">handles_ensembles</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">checks_arg0_type</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">handles_dead_data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -1218,6 +1218,7 @@
 <div class="viewcode-block" id="broadband_snr_QC"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.snr.broadband_snr_QC">[docs]</a><span class="nd">@mspass_func_wrapper</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">broadband_snr_QC</span><span class="p">(</span>
     <span class="n">data_object</span><span class="p">,</span>
+    <span class="o">*</span><span class="n">args</span><span class="p">,</span>
     <span class="n">component</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
     <span class="n">noise_window</span><span class="o">=</span><span class="n">TimeWindow</span><span class="p">(</span><span class="o">-</span><span class="mf">130.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">5.0</span><span class="p">),</span>
     <span class="n">noise_spectrum_engine</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -1248,7 +1249,6 @@
     <span class="n">taup_model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">source_collection</span><span class="o">=</span><span class="s2">&quot;source&quot;</span><span class="p">,</span>
     <span class="n">receiver_collection</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="o">*</span><span class="n">args</span><span class="p">,</span>
     <span class="n">handles_ensembles</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">checks_arg0_type</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">handles_dead_data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
