@@ -454,11 +454,9 @@ def test_windowdata_exceptions():
     with pytest.raises(ValueError, match="illegal option"):
         d = WindowData(ts, 2, 3, short_segment_handling="notvalid")
     ts = TimeSeries(ts0)
-    # note this message actually comes from the decorator
-    # the error handler in WindowData to handle this can't be
-    # reached with the decorator enable.  Caution of the decorator
-    # changes this could break
-    with pytest.raises(TypeError, match="only accepts mspass object as data input"):
+    # WindowData handles both atomic and ensemble data \
+    # this exception is handled by the function itself, no the decorators
+    with pytest.raises(TypeError, match="Illegal type for arg0="):
         d = WindowData(0.0, 2.0, 3.0)
 
     # We don't test explicit kill mode.  That is default and assume
@@ -732,16 +730,16 @@ def test_WindowData_autopad():
         assert se.data[k, 0] == 0.0
         assert se.data[k, npts + 1] == 0.0
 
-    # test error handling for this function - not made a separate function
-    # as it isn't that complex
-    d_foo = TimeSeriesEnsemble(2)
-    d_foo.member.append(ts)
-    d_foo.set_live()
-    with pytest.raises(
-        TypeError, match="arg0 must be either a TimeSeries or Seismogram object"
-    ):
-        # need to send TimeSeriesEnsemble to bypass type check of function decorator
-        ts = WindowData_autopad(d_foo, se.time(10), se.time(50))
+    # test handling of ensembles via the mspass_func_decorator
+    # note the function itself only handles atomic data
+    # Test only TimeSeriesEnsemble
+    ens = TimeSeriesEnsemble(2)
+    for i in range(2):
+        ens.member.append(ts)
+    ens.set_live()
+    ens = WindowData_autopad(ens, ts.time(10), ts.time(50))
+    for i in range(2):
+        assert ens.member[i].live
 
     # only test this for TimeSeries - no reason to think it would behave differently for Seismogram
     ts = TimeSeries(ts0)
