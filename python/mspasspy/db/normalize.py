@@ -3271,10 +3271,10 @@ def normalize(
     matcher,
     *args,
     kill_on_failure=True,
-    handles_ensembles=False,
+    handles_ensembles=True,
     checks_arg0_type=False,
     handles_dead_data=True,
-    **kwargs,
+    **kwargs
 ):
     """
     Generic function to do in line normalization with dask/spark map operator.

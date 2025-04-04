@@ -121,6 +121,10 @@ class ApplyCalibEngine:
                                     if verbose:
                                         message += "units ok but sensitivity value is undefined"
                                         print(message)
+                                elif sens.value <= 0.0:
+                                    if verbose:
+                                        message += "sensitivity value is 0 or negative - treating as undefined"
+                                        print(message)
                                 else:
                                     id = doc["_id"]
                                     # inventory saves a "sensitivity" value
