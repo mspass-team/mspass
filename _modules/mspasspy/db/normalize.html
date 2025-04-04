@@ -3411,10 +3411,12 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">normalize</span><span class="p">(</span>
     <span class="n">mspass_object</span><span class="p">,</span>
     <span class="n">matcher</span><span class="p">,</span>
+    <span class="o">*</span><span class="n">args</span><span class="p">,</span>
     <span class="n">kill_on_failure</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">handles_ensembles</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">handles_ensembles</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">checks_arg0_type</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">handles_dead_data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generic function to do in line normalization with dask/spark map operator.</span>
