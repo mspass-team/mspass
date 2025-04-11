@@ -12,7 +12,6 @@ import subprocess
 #import mock_subprocess as subprocess
 import copy
 
-from mspasspy.ccore.utility import MsPASSError,ErrorSeverity
 
 class BasicMsPASSLauncher(ABC):
     """
@@ -100,13 +99,18 @@ class BasicMsPASSLauncher(ABC):
                 result_dic = yaml.safe_load(stream)
             return result_dic
         except yaml.YAMLError as e:
-            raise MsPASSError(
-                "Cannot parse configuration file: " + config_file, "Fatal"
-            ) from e
+            print(f"Failure parsing configuration file={config_file}")
+            print(f"Message posted: {e}")
+            raise RuntimeError("HPCClusterLauncher Constructor failed")
         except EnvironmentError as e:
-            raise MsPASSError(
-                "Cannot open configuraion file: " + config_file, "Fatal"
-            ) from e
+            print(f"Open failed on yaml file={config_file}")
+            print(f"Message posted: {e}")
+            raise RuntimeError("HPCClusterLauncher Constructor failed")
+        except Exception as e:
+            print(f"Unexpected exception thrown by yaml.safe_load")
+            print(f"Message posted: {e}")
+            raise RuntimeError("HPCClusterLauncher Constructor failed")
+
         
     @abstractmethod
     def launch(self):
@@ -253,7 +257,7 @@ class HPCClusterLauncher(BasicMsPASSLauncher):
                         message = message0
                         message += "scontrol command yielded an empty list of hostnames\n"
                         message += "Cannot continue"
-                        raise MsPASSError(message,ErrorSeverity.Fatal)
+                        raise RuntimeError(message)
                     else:
                         comout = subprocess.run(["hostname"],
                                                  capture_output=True,
@@ -261,23 +265,24 @@ class HPCClusterLauncher(BasicMsPASSLauncher):
                         hostlist=[comout.stdout]
                 # comout contans a list of host names. By default for 
                 # auto use the first in the list as primary
+                primary=hostlist[0].strip()   # needed because of appended newline
                 if ph=="auto":
-                    self.primary_node=copy.deepcopy(hostlist[0])
+                    self.primary_node=copy.deepcopy(primary)
                 else:
                     self.primary_node = ph
                 if dbh=="auto":
-                    self.database_host=copy.deepcopy(hostlist[0])
+                    self.database_host=copy.deepcopy(primary)
                 else:
                     self.database_host = dbh
                 if sh=="auto":
-                    self.scheduler_host = copy.deepcopy(hostlist[0])
+                    self.scheduler_host = copy.deepcopy(primary)
                 else:
                     self.scheduler_list = sh
                 if wh=="auto":
                     # note worker_hoss exclude primary
                     self.worker_hosts = []
                     for i in range(1,len(hostlist),1):
-                        self.worker_hosts.append(hostlist[i])
+                        self.worker_hosts.append(hostlist[i].strip())  # strip needed to remove newline
                             
                     if len(self.worker_hosts)<=0 and self.primary_node_workers==0:
                         message = message0
@@ -286,7 +291,7 @@ class HPCClusterLauncher(BasicMsPASSLauncher):
                         message += "but primary_node_workers was set to 0\n"
                         message += "To run on a single node set primary_node_workers to a postive value\n"
                         message += "To run on multiple nodes change your slurm commands at the top of this job"
-                        raise MsPASSError(message,ErrorSeverity.Fatal)
+                        raise RuntimeError(message)
                 if verbose:
                     print("Primary node name=",self.primary_node)
                     print("database hostname=",self.database_host)
@@ -313,7 +318,7 @@ class HPCClusterLauncher(BasicMsPASSLauncher):
             self.remote_worker_process = None
             self.jupyter_process=None
             if auto_launch:
-                self.launch()
+                self.launch(verbose=verbose)
         else:
             message = message0
             message += "Cannot handle job_scheduler={}\n".format(js)
@@ -328,7 +333,7 @@ class HPCClusterLauncher(BasicMsPASSLauncher):
         which shuts down all the containers as gracefully as possible.  
         """
         self.shutdown()
-    def launch(self):
+    def launch(self,verbose=False):
         """
         Call this method to launch all the MsPASS containized components.
         
@@ -348,6 +353,7 @@ class HPCClusterLauncher(BasicMsPASSLauncher):
         runline.append(self.container_env_flag)
         envlist = "MSPASS_ROLE=scheduler,MSPASS_WORK_DIR={}".format(self.working_directory)
         envlist += ",MSPASS_SCHEDULER={}".format(self.task_scheduler)
+        envlist += ",MSPASS_SCHEDULER_ADDRESS={}".format(self.primary_node)
         runline.append(envlist)
         runline.append(self.container)
         # We have to use this lower level function in subprocess 
@@ -360,7 +366,10 @@ class HPCClusterLauncher(BasicMsPASSLauncher):
                                     stderr=subprocess.PIPE,
                                     close_fds=True,
                                 )
-        print("Successfully launched scheduler")
+        if verbose:
+            print("Successfully launched scheduler")
+        print("Debug:  launch line")
+        print(runline)
         # now do a similar thing for database 
         # note this implementation doesn't handle shrarding
         runline = self._initialize_container_runargs()
@@ -377,7 +386,10 @@ class HPCClusterLauncher(BasicMsPASSLauncher):
                                     stderr=subprocess.PIPE,
                                     close_fds=True,
                                 )
-        print("Successfully launched db")
+        if verbose:
+            print("Successfully launched db")
+        print("Debug:  launch line")
+        print(runline)
         # Now launch workers on hosts that are not primaary host
         worker_run_args=self._build_worker_run_args()
         if len(worker_run_args)>0:
@@ -399,8 +411,9 @@ class HPCClusterLauncher(BasicMsPASSLauncher):
             envlist = "MSPASS_ROLE=worker,"
             envlist += "MSPASS_WORK_DIR={},".format(self.working_directory)
             envlist += "MSPASS_SCHEDULER_ADDRESS={},".format(self.scheduler_host)
+            envlist += "MSPASS_DB_ADDRESS={},".format(self.database_host)
             envlist += "MSPASS_WORKER_ARG=\"--nworkers={} --nthreads 1\"".format(self.primary_node_workers)
-            runline+=envlist
+            runline.append(envlist)
             runline.append(self.container)
             self.primary_worker_process = subprocess.Popen(runline,
                                         stdin=subprocess.PIPE,
@@ -408,6 +421,9 @@ class HPCClusterLauncher(BasicMsPASSLauncher):
                                         stderr=subprocess.PIPE,
                                         close_fds=True,
                                     )
+            print("Launched workers on primary node")
+            print("Debug:  launch line")
+            print(runline)
                     
 
     def status(self):
@@ -473,12 +489,17 @@ class HPCClusterLauncher(BasicMsPASSLauncher):
         for arg in crarg:
             runline.append(arg)
         runline.append("--env")
-        envlist = "MSPASS_ROLE=frontend,"
-        envlist += "MSPASS_WORK_DIR={}".format(self.working_directory)
+        envlist = "MSPASS_ROLE=frontend"
+        envlist += ",MSPASS_WORK_DIR={}".format(self.working_directory)
+        envlist += ",MSPASS_DB_ADDRESS={}".format(self.database_host)
+        envlist += ",MSPASS_SCHEDULER_ADDRESS={}".format(self.scheduler_host)
         runline.append(envlist)
         runline.append(self.container)
         runline.append("--batch")
         runline.append(pyscript)
+        print("running script")
+        print("Debug:  launch line")
+        print(runline)
         
         runout=subprocess.run(runline,capture_output=True,text=True)
         print("stdout from this job")
@@ -570,6 +591,7 @@ class HPCClusterLauncher(BasicMsPASSLauncher):
         envlist = "MSPASS_ROLE=worker,"
         envlist += "MSPASS_WORK_DIR={},".format(self.working_directory)
         envlist += "MSPASS_SCHEDULER_ADDRESS={},".format(self.scheduler_host)
+        envlist += "MSPASS_DB_ADDRESS={}".format(self.database_host)
         envlist += "MSPASS_WORKER_ARG=\"--nworkers={} --nthreads 1\"".format(self.workers_per_node)
         arglist.append(envlist)
         arglist.append(self.container)
