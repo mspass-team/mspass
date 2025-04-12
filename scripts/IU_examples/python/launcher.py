@@ -406,24 +406,33 @@ class HPCClusterLauncher(BasicMsPASSLauncher):
         if self.primary_node_workers>0:
             # we have to launch this container differently soo 
             # we have to prepare a somewhat different run line
+            # could not make this work with worker_arg unless we used 
+            # shell=True.   In that case we build a command line instead of 
+            # a list like runline
             runline = self._initialize_container_runargs()
-            runline.append(self.container_env_flag)
+            srun =""
+            for s in runline:
+                srun += s
+                srun += " "
+            srun += self.container_env_flag
+            srun += " "
             envlist = "MSPASS_ROLE=worker,"
             envlist += "MSPASS_WORK_DIR={},".format(self.working_directory)
+            #envlist += "MSPASS_SCHEDULER_ADDRESS={}".format(self.scheduler_host)
             envlist += "MSPASS_SCHEDULER_ADDRESS={},".format(self.scheduler_host)
-            envlist += "MSPASS_DB_ADDRESS={},".format(self.database_host)
-            envlist += "MSPASS_WORKER_ARG=\"--nworkers={} --nthreads 1\"".format(self.primary_node_workers)
-            runline.append(envlist)
-            runline.append(self.container)
-            self.primary_worker_process = subprocess.Popen(runline,
+            #envlist += "MSPASS_DB_ADDRESS={},".format(self.database_host)
+            envlist += 'MSPASS_WORKER_ARG="--nworkers={} --nthreads 1"'.format(self.primary_node_workers)
+            srun += envlist + " " + self.container
+            print("command line sent to Popen")
+            print(srun)
+            #self.primary_worker_process = subprocess.Popen(runline,
+            self.primary_worker_process = subprocess.Popen(srun,shell=True,
                                         stdin=subprocess.PIPE,
                                         stdout=subprocess.PIPE,
                                         stderr=subprocess.PIPE,
                                         close_fds=True,
                                     )
             print("Launched workers on primary node")
-            print("Debug:  launch line")
-            print(runline)
                     
 
     def status(self):
