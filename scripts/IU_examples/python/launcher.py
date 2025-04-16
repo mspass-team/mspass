@@ -433,10 +433,21 @@ class HPCClusterLauncher(BasicMsPASSLauncher):
                                         close_fds=True,
                                     )
             print("Launched workers on primary node")
-                    
+            
+        # Exit immmeditaly if any of the contaienrs  have exited
+        if self.status(verbose=False) == 0:
+            def stat_message(c):
+                if self.status(container=c,verbose=False):
+                    m = c + " container is running\n"
+                else:
+                    m = c + "container is NOT running\n"
+                return m
+            message = "HPCClusterLauncher:  cluster initiation failed\n"
+            for con in ["db","scheduler","primary_worker"]:
+                m = stat_message(con)
+                message += m
+            raise RuntimeError(message)
 
-    def status(self):
-        pass
     def shutdown(self):
         # shutdown in reverse order to start
         # first workers
@@ -535,8 +546,69 @@ class HPCClusterLauncher(BasicMsPASSLauncher):
         print(stdout)
         print(stderr)
 
-
+    def status(self,container="all",verbose=True)->int:
+        """
+        Check the status of one or more of the containers managed by this object.
         
+        We often need to know if a container is still running.   This method 
+        allows one to check if the required contaienrs to run mspass are 
+        running.  By default it checks all containers.  One can ask for only 
+        one using one of the key strings this function uses to define the 
+        instance of the mspass container.  Valid values for arg0 are:
+            "all" - check all
+            "db"  - check only the container running MongoDB
+            "scheduler" - check only the contaner running the dask or
+                or spark scheduler
+            "primary_worker" - check status of the worker container running on 
+                the primary node.  Note there is currently no support for 
+                workers spwaned on other nodes. 
+                
+        Any other values for arg0 will cause this method to throw a 
+        ValueError exception.
+        
+        :param container: container keywords noted above for arg0.  i.e. 
+           must be one of "db","scheduler", "primary_worker", or "all" (default)
+        :type container:  string
+        :param verbose:  boolean that when True (default) uses print to 
+           post a status message for container(s) requested.  When false 
+           prints nothing and assumes the return will be handled
+        :return:  int status.  1 means the container(s) tested were all 
+           running.  0 means one or more have died.
+        """
+        all_containers=["db","scheduler","primary_worker"]
+        if container=="all":
+            statlist=all_containers
+        else:
+            if container in all_containers:
+                statlist=[container]
+            else:
+                message = "HPCClusterLauncher.status:  component={}".format(container)
+                message += " invalid\n"
+                message += "Must be one of: "
+                for c in all_containers:
+                    message += c + " "
+                raise ValueError(message)
+        def verbose_message(container_name,poll_return):
+            if poll_return is None:
+                print(container_name," is running")
+            else:
+                print(container_name, " has exited with code=",poll_return)
+        retval=1
+        for container in statlist:
+            match container:
+                case "db":
+                    stat = self.dbserver_process.poll()
+                case "scheduler":
+                    stat = self.scheduler_process.poll()
+                case "primary_worker":
+                    stat = self.primary_worker_process.poll()
+            if verbose:
+                verbose_message(container,stat)
+            if stat:
+                retval = 0
+                
+        return retval
+                        
 
     def _initialize_container_runargs(self)->list:
         """
