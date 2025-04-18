@@ -500,7 +500,6 @@ class HPCClusterLauncher(BasicMsPASSLauncher):
         # this can be made more elaborate.  Here I just run 
         # a script
         print("Trying to run python script file=",pyscript)
-        runinput = "python {}".format(pyscript)
         runline=[]
         # I am going to hard code this for now 
         runline.append("apptainer")
@@ -692,5 +691,151 @@ class DesktopLauncher(BasicMsPASSLauncher):
     class for different scheulers.  That is appropriate because a single 
     container makes a lot of cluster baggage unnecessary.
     """
-     
+    def __init__(self,
+                 configuration="configuration_docker.yaml",
+                 host_os="MacOS",
+                 browser="FireFox",
+                 verbose=True,
+                 ):
+        """
+        Constructor for DesktopLauncher.
+        
+        This implementation uses docker compose.  The constructor does little
+        more than run the docker ocmpose comand using the input configuration 
+        file.
+        
+        :param configuration:  yaml file defining the docker compose 
+          configuration to launch containers.  See User Manual section 
+          title "Deply MsPASS with docker compose".
+        :type configuration: string  (must be a file name ending in ".yaml" or ".yml")
+        :param verbose:  boolean controling if the constructor print launch output. 
+          When False runs silently unless there is an exception.  When True the 
+          output of docker compose is captured and echoed to stdout of the 
+          calling python script.
+        """
+        self.configuration_file = configuration
+        runline=[]
+        runline.append("docker-compose")
+        runline.append("-f")
+        # could test the type of configuration to be str but docker-compose 
+        # will fail if this is not a valid file name
+        runline.append(self.configuration_file)
+        runline.append("up")
+        runline.append("-d")
+        runout=subprocess.run(runline,capture_output=True,text=True)
+        if verbose:
+            print("stdout from DecktopLauncher constructor")
+            print(runout.stdout)
+            print("stderr from DesktopLauncher constructor")
+            print(runout.stderr)
+        url = self.url()
+        match host_os:
+            case "MacOS":
+                launch_string = "open -a "+browser + " " + url
+            case "linux":
+                launch_string = browser + " " + url 
+            case "Window":
+                raise ValueError("DesktopLauncher constructor:  windows launcing not yet implemented")
 
+        self.browser_process = subprocess.Popen(launch_string,
+                                                shell=True,
+                                    stdin=subprocess.PIPE,
+                                    stdout=subprocess.PIPE,
+                                    stderr=subprocess.PIPE,
+                                    close_fds=True,
+                                )
+    def url(self)->str:
+        """
+        Runs docker-compos to extract url of jupyter server that is return.
+        """
+        runline=[]
+        runline.append("docker-compose")
+        runline.append("-f")
+        # could test the type of configuration to be str but docker-compose 
+        # will fail if this is not a valid file name
+        runline.append(self.configuration_file)
+        runline.append("logs")
+        runline.append("mspass-frontend")
+        frontend_query = subprocess.run(runline,capture_output=True,text=True)
+        query_out = frontend_query.stdout
+        url = extract_jupyter_url(query_out)
+        return url
+        
+           
+    def launch(self):
+        print("DesktopLauncher.lauch method is not needed")
+        print("constructor uses full construction is initialization concept")
+    def status(self):
+        # this is a p rototype command line shows mspas_fronend and 
+        # mspass_db return something tut scheduler and worker 
+        # return nothing - needs a different approach
+        runline=[]
+        runline.append("docker-compose")
+        runline.append("-f")
+        runline.append(self.configuration_file)
+        runline.append("logs")
+        runline.append("mspass_frontend")
+        runout=subprocess.run(runline,capture_output=True,text=True)
+        print(runout.stdout)
+    def run(self):
+        print("Desktop run method is not implemented for this class")
+        print("Mismatch in concept as DesktopLauncher is for interactive use with jupyter")
+    def shutdown(self,verbose=False):
+        self.browser_process.terminate()
+        runline=[]
+        runline.append("docker-compose")
+        runline.append("-f")
+        runline.append(self.configuration_file)
+        runline.append("down")
+        runout=subprocess.run(runline,capture_output=True,text=True)
+        if verbose:
+            print("stdout from DecktopLauncher.shutdown")
+            print(runout.stdout)
+            print("stderr from DesktopLauncher.shutdown")
+            print(runout.stderr)
+    def __del__(self):
+        """
+        Class destructor. 
+        
+        The destrutor is called when an object goes out of scope. 
+        This instance is little more than a call to self.shutdown()
+        which shuts down all the containers as gracefully as possible.  
+        """
+        self.shutdown()
+        
+
+def extract_jupyter_url(outstr)->str:
+    """
+    Parses output strng from launching jupyer lab to extract the url 
+    needed to connet to the jupyer server.
+    
+    Launchers can capture stdout from launching jupter with docker 
+    or aptainer and use this function to return the connection url 
+    to the jupyter server.  
+    
+    The algorithm used here is a simple search for the string "http://" 
+    that the current jupyter server posts.   Output has two options and 
+    the algorithm always selects the one with a ipv 4 address by veriying the 
+    line has three "." characters after http://.  
+    """
+    test_str="http://"
+    lines=outstr.splitlines()
+    url_lines=[]
+    for l in lines:
+        if test_str in l:
+            i = l.find(test_str)
+            url_lines.append(l[i:])
+
+    # select the first url with 3 or more "." symbols and assume 
+    # tha is a valid ipv4 address
+    for url in url_lines:
+        if url.count(".")>=3:
+            return url
+    
+    print("Error parsing jupyter server output:  returning default url with no token value")
+    return "http://localhost:8888"
+    
+            
+    
+            
+    
