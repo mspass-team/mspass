@@ -1,0 +1,119 @@
+#!/bin/bash
+# If your cluster uses slurm top needs to be some variant of this
+# Check documentation for additional arguments that may be required or desirable
+#SBATCH -J mspass           # Job name
+#SBATCH -o pavlis.o%j       # Name of stdout output file
+#SBATCH -N 4                # Total # of nodes - 4 for this example
+#SBATCH -n 4                # Total # of mpi tasks (normally the same as -N)
+#SBATCH --mem-per-cpu=25G          # necessary large memory jobs
+#SBATCH --cpus-per-task=8   # IU system allows multiple users on a node ask for 8
+#SBATCH -t 12:00:00         # Run time (hh:mm:ss)
+
+# Actual usage on IU system requires a project id with SBATCH -A directive.
+
+#Note using --exclusive in SBATCH caused very long wait times
+
+# This is a typical load line with module.   The equivalent functionality
+# locally may be different.  Functionality is like shell "dot" initialization
+# files
+module load apptainer
+module load openmpi
+module list
+
+# this is necessary to prevent random crashes of MongoDB with a 
+# Uncomment this for quartz - default is ok for bigred200
+# this example is or bigred2
+#ulimit -n 4096   # current max allowed on quartz.uits.iu.edu
+if [ 1$#==1 ]; then
+  notebook_file=$1
+else
+  while getopts "b:" flag
+    do
+        case "${flag}" in
+            b) notebook_file=${OPTARG};
+        esac
+    done
+fi
+cd /N/slate/pavlis/usarray
+echo Running $notebook_file
+
+export MSPASS_HOME=~/mspass
+# full path to the singularity container
+export MSPASS_CONTAINER=/N/slate/pavlis/containers/mspass_latest.sif
+# If needed list all file systems names that should be mounted when
+# the container boots.  Usually an explicit path is best to avoid 
+# errors from aliasing a directory name
+export APPTAINER_BIND=/N/slate/pavlis
+
+export MSPASS_WORK_DIR=/N/slate/pavlis/usarray
+export MSPASS_DB_DIR=/N/slate/pavlis/usarray/db
+export MSPASS_LOG_DIR=/N/slate/pavlis/usarray/logs
+export MSPASS_WORKER_DIR=/N/slate/pavlis/usarray/work
+export MSPASS_WORKER_ARG="--nworkers 8 --nthreads 1 --memory-limit=40G"
+
+
+
+if [ -z $MSPASS_RUNSCRIPT ] ; then
+    export MSPASS_RUNSCRIPT=/N/slate/pavlis/usarray/run_mspass.sh
+fi
+
+# delay in launching in some contexts 
+SLEEP_TIME=15
+APPTAINER_COM="apptainer run -B /N/slate/pavlis/usarray --home /N/slate/pavlis/usarray $MSPASS_CONTAINER"
+#### Set up networking ####
+# See User manual for guidance to adapt to other systems
+NODE_HOSTNAME=`hostname -s`
+# The approach used at TACC to get a unique port doesn't work on this cluster.
+# Using fixed ports hoping this won't cause collisions
+LOGIN_PORT=8888
+STATUS_PORT=8787
+echo "using login node port $LOGIN_PORT"
+
+mkdir -p $MSPASS_WORK_DIR
+cd $MSPASS_WORK_DIR
+pwd
+echo "Starting work at this time:"
+date
+
+# start a distributed scheduler container in the primary node
+APPTAINERENV_MSPASS_WORK_DIR=$MSPASS_WORK_DIR \
+APPTAINERENV_MSPASS_ROLE=scheduler $APPTAINER_COM &
+
+# get the all the hostnames of worker nodes (those != node running script)
+NODE_HOSTNAME=`hostname -s`
+echo "primary node $NODE_HOSTNAME"
+WORKER_LIST=`scontrol show hostname ${SLURM_NODELIST} | \
+             awk -vORS=, -v hostvar="$NODE_HOSTNAME" '{ if ($0!=hostvar) print $0 }' | \
+             sed 's/,$/\n/'`
+echo $WORKER_LIST
+
+# start worker container in each worker node
+APPTAINERENV_MSPASS_WORK_DIR=$MSPASS_WORK_DIR \
+  APPTAINERENV_MSPASS_SCHEDULER_ADDRESS=$NODE_HOSTNAME \
+  APPTAINERENV_MSPASS_ROLE=worker \
+  APPTAINERENV_MSPASS_WORKER_ARG=$MSPASS_WORKER_ARG \
+  mpiexec -n $((SLURM_NNODES-1)) -host $WORKER_LIST $APPTAINER_COM &
+echo "mpiexec -n $((SLURM_NNODES-1)) -host $WORKER_LIST $APPTAINER_COM "
+
+
+# start a db container in the primary node
+APPTAINERENV_MSPASS_DB_PATH=$DB_PATH \
+  APPTAINERENV_MSPASS_WORK_DIR=$MSPASS_WORK_DIR \
+  APPTAINERENV_MSPASS_ROLE=db $APPTAINER_COM &
+# ensure enough time for db instance to finish
+sleep 10
+
+# Launch the jupyter notebook frontend in the primary node.
+# This example always runs the notebook on startup and 
+# exits the job when the notebook code exits
+# DO NOT add a & to the end of this line.  We need the script to block until
+# the notebook exits
+
+APPTAINERENV_MSPASS_WORK_DIR=$MSPASS_WORK_DIR \
+  APPTAINERENV_MSPASS_SCHEDULER_ADDRESS=$NODE_HOSTNAME \
+  APPTAINERENV_MSPASS_DB_ADDRESS=$NODE_HOSTNAME \
+  APPTAINERENV_MSPASS_SLEEP_TIME=$SLEEP_TIME \
+  APPTAINERENV_MSPASS_ROLE=frontend $APPTAINER_COM --batch $notebook_file
+
+echo "Finished at this time:" 
+date
