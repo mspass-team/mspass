@@ -11,6 +11,7 @@ import os
 import subprocess
 #import mock_subprocess as subprocess
 import copy
+import time
 
 
 class BasicMsPASSLauncher(ABC):
@@ -729,6 +730,7 @@ class DesktopLauncher(BasicMsPASSLauncher):
             print("stderr from DesktopLauncher constructor")
             print(runout.stderr)
         url = self.url()
+        time.sleep(2)
         match host_os:
             case "MacOS":
                 launch_string = "open -a "+browser + " " + url
