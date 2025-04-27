@@ -1,0 +1,38 @@
+# These are parameters common to all launchers
+# they do, however, need to be customized or each site and user
+container:  /N/slate/pavlis/containers/mspass_latest.sif
+working_directory:  /N/scratch/pavlis/testing
+log_directory:  /N/scratch/pavlis/testing/logs
+database_directory:  /N/scratch/pavlis/testing/db
+worker_directory:  /N/scratch/pavlis/testing/work
+# these were not part of older shell script configuation
+workers_per_node: 64  
+# one can choose to launch workes on the master node by setting this 
+# value to a positive number
+primary_node_workers: 2
+cluster_subnet_name:  quartz.uits.iu.edu
+db_startup_delay:  10   # number of seconds to pause after launching MongoDB
+HPC_cluster: 
+    # This defines the host where python/jupyter and the scheduler will run
+    # In this implementation that is frozen
+    primary_host:  auto
+    # auto will run database on primary_host.  
+    # TODO:  mongo atlas url should be supported here
+    database_host:  auto
+    scheduler_host:  auto
+    worker_hosts:  auto
+    job_scheduler:  slurm
+    task_scheduler:  dask
+    container_run_command:  apptainer run
+    container_run_args:  -B /N/scratch/pavlis/testing --home /N/scratch/pavlis/testing
+    # flag to set environment variables - likely not to change but this is
+    # what apptainer uses
+    container_env_flag:  --env
+    # local version of mpiexec.  TACC has a nonstandard version
+    # currently there are not common args and teh launcher has to 
+    # append a number of things
+    worker_run_command:  mpiexec 
+    setup_tunnel: false
+    # this needs to be a shell script on current path.  
+    # executed only if setup_tunnel is set True
+    tunnel_setup_command:  tacc_mspass_com_setup.sh
