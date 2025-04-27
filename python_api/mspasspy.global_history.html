@@ -196,7 +196,7 @@ through mspass client’s methods.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the name of the algorithm</p></li>
-<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.11.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – the UUID of the combination of algorithm_name and parameters</p></li>
+<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.12.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – the UUID of the combination of algorithm_name and parameters</p></li>
 <li><p><strong>parameters</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the parameters of the algorithm</p></li>
 </ul>
 </dd>
@@ -211,7 +211,7 @@ through mspass client’s methods.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>job_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the name of the job</p></li>
-<li><p><strong>job_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.11.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – the UUID of the job</p></li>
+<li><p><strong>job_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.12.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – the UUID of the job</p></li>
 </ul>
 </dd>
 </dl>
@@ -224,7 +224,7 @@ through mspass client’s methods.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.11.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – the UUID of the combination of algorithm_name and parameters</p></li>
+<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.12.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – the UUID of the combination of algorithm_name and parameters</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the name of the algorithm</p></li>
 <li><p><strong>parameters</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the parameters of the algorithm</p></li>
 </ul>
@@ -239,7 +239,7 @@ through mspass client’s methods.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.11.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – the UUID of the combination of algorithm_name and parameters, used to find the records</p></li>
+<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.12.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – the UUID of the combination of algorithm_name and parameters, used to find the records</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the name of the algorithm user would like to set</p></li>
 <li><p><strong>parameters</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the parameters of the algorithm user would like to set</p></li>
 </ul>
@@ -265,7 +265,7 @@ will save the object level history.</p>
 <li><p><strong>func</strong> – target function</p></li>
 <li><p><strong>global_history</strong> (<a class="reference internal" href="#mspasspy.global_history.manager.GlobalHistoryManager" title="mspasspy.global_history.manager.GlobalHistoryManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">GlobalHistoryManager</span></code></a>) – a user specified global history manager</p></li>
 <li><p><strong>object_history</strong> – save the each object’s history in the fold when True</p></li>
-<li><p><strong>alg_id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>/<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.11.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – a user specified alg_id for the fold operation</p></li>
+<li><p><strong>alg_id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>/<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.12.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – a user specified alg_id for the fold operation</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – a user specified alg_name for the fold operation</p></li>
 <li><p><strong>parameters</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – a user specified parameters for the fold operation</p></li>
 </ul>
@@ -292,7 +292,7 @@ will save the object level history.</p>
 <li><p><strong>func</strong> – target function</p></li>
 <li><p><strong>global_history</strong> (<a class="reference internal" href="#mspasspy.global_history.manager.GlobalHistoryManager" title="mspasspy.global_history.manager.GlobalHistoryManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">GlobalHistoryManager</span></code></a>) – a user specified global history manager</p></li>
 <li><p><strong>object_history</strong> – save the each object’s history in the map when True</p></li>
-<li><p><strong>alg_id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>/<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.11.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – a user specified alg_id for the map operation</p></li>
+<li><p><strong>alg_id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>/<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.12.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – a user specified alg_id for the map operation</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – a user specified alg_name for the map operation</p></li>
 <li><p><strong>parameters</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – a user specified parameters for the map operation</p></li>
 </ul>
@@ -319,7 +319,7 @@ object_history to be True, then each mspass object in this map function will sav
 <li><p><strong>func</strong> – target function to which map passes each element of given iterable.</p></li>
 <li><p><strong>global_history</strong> (<a class="reference internal" href="#mspasspy.global_history.manager.GlobalHistoryManager" title="mspasspy.global_history.manager.GlobalHistoryManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">GlobalHistoryManager</span></code></a>) – a user specified global history manager</p></li>
 <li><p><strong>object_history</strong> – save the each object’s history in the map when True</p></li>
-<li><p><strong>alg_id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>/<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.11.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – a user specified alg_id for the map operation</p></li>
+<li><p><strong>alg_id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>/<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.12.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – a user specified alg_id for the map operation</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – a user specified alg_name for the map operation</p></li>
 <li><p><strong>parameters</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – a user specified parameters for the map operation</p></li>
 </ul>
@@ -347,7 +347,7 @@ to the items of iterable, from left to right, so as to reduce the iterable to a 
 <li><p><strong>func</strong> – target function</p></li>
 <li><p><strong>global_history</strong> (<a class="reference internal" href="#mspasspy.global_history.manager.GlobalHistoryManager" title="mspasspy.global_history.manager.GlobalHistoryManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">GlobalHistoryManager</span></code></a>) – a user specified global history manager</p></li>
 <li><p><strong>object_history</strong> – save the each object’s history in the reduce when True</p></li>
-<li><p><strong>alg_id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>/<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.11.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – a user specified alg_id for the reduce operation</p></li>
+<li><p><strong>alg_id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>/<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.12.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – a user specified alg_id for the reduce operation</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – a user specified alg_name for the reduce operation</p></li>
 <li><p><strong>parameters</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – a user specified parameters for the reduce operation</p></li>
 </ul>
@@ -374,7 +374,7 @@ will save the object level history.</p>
 <li><p><strong>func</strong> – target function</p></li>
 <li><p><strong>global_history</strong> (<a class="reference internal" href="#mspasspy.global_history.manager.GlobalHistoryManager" title="mspasspy.global_history.manager.GlobalHistoryManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">GlobalHistoryManager</span></code></a>) – a user specified global history manager</p></li>
 <li><p><strong>object_history</strong> – save the each object’s history in the map when True</p></li>
-<li><p><strong>alg_id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>/<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.11.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – a user specified alg_id for the map operation</p></li>
+<li><p><strong>alg_id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>/<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.12.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – a user specified alg_id for the map operation</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – a user specified alg_name for the map operation</p></li>
 <li><p><strong>parameters</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – a user specified parameters for the map operation</p></li>
 </ul>
@@ -401,7 +401,7 @@ will save the object level history.</p>
 <li><p><strong>func</strong> – target function</p></li>
 <li><p><strong>global_history</strong> (<a class="reference internal" href="#mspasspy.global_history.manager.GlobalHistoryManager" title="mspasspy.global_history.manager.GlobalHistoryManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">GlobalHistoryManager</span></code></a>) – a user specified global history manager</p></li>
 <li><p><strong>object_history</strong> – save the each object’s history in the reduce when True</p></li>
-<li><p><strong>alg_id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>/<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.11.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – a user specified alg_id for the reduce operation</p></li>
+<li><p><strong>alg_id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>/<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.12.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – a user specified alg_id for the reduce operation</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – a user specified alg_name for the reduce operation</p></li>
 <li><p><strong>parameters</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – a user specified parameters for the reduce operation</p></li>
 </ul>
