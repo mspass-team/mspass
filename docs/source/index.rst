@@ -27,6 +27,7 @@ package.
    :caption: Getting Started
 
    getting_started/quick_start
+   getting_started/mspass_desktop
    getting_started/run_mspass_with_docker
    getting_started/deploy_mspass_with_docker_compose
    getting_started/deploy_mspass_with_conda
