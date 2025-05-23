@@ -71,25 +71,25 @@ Running mspass-desktop
 Use the terminal application on your platform and navigate
 (i.e. use the cd command) to the working directory for your data set.
 
-.. note::
-  Currently there is no control where files written by mspass are written.
-  All are relative to the working directory from which you launch
-  mspass-desktop.   The application will create a `data` directory
-  which contains the database files, `logs` which contains log files
-  written by the different services run under docker compose, and a `work`
-  directory used as scratch space by dask.  It also creates an empty
-  `scoped` directory that is not used for this application of the
-  MsPASS framework.
+  .. note::
+    Currently there is no control where files written by mspass are written.
+    All are relative to the working directory from which you launch
+    mspass-desktop.   The application will create a `data` directory
+    which contains the database files, `logs` which contains log files
+    written by the different services run under docker compose, and a `work`
+    directory used as scratch space by dask.  It also creates an empty
+    `scoped` directory that is not used for this application of the
+    MsPASS framework.
 
-  Use the command line tool to launch the graphical user interface as follows:
+Use the command line tool to launch the graphical user interface as follows:
 
   .. code-block::
 
     mspass-desktop
 
-  That should bring up the following window:
+That should bring up the following window:
 
-  .. _desktop_startup_window:
+.. _desktop_startup_window:
 
 .. figure:: ../_static/figures/desktop_startup_window.tif
     :width: 600px
@@ -189,7 +189,7 @@ We can anticipate the following that might prove necessary:
        attributes.  The most likely service to cause a problem is the
        MongoDB container which is known to take a few seconds to launch
        on most desktops.
-    -  The default for *engine_startup_delay_time* is fairly conservative an
+    -  The default for *engine_startup_delay_time* is fairly conservative and
        causes a delay you will notice in launching the GUI.   If you have a
        fast machine that is usually lightly loaded you could try reducing the
        default if you are impatient.   If the launching process throws a python
