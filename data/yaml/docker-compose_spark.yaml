@@ -1,41 +1,20 @@
-version: '3'
-
 services:
 
-  mspass-dbmanager:
+  mspass-db:
     image: mspass/mspass
     volumes:
-      - "${PWD}:/home"
-    command: dockerize -wait tcp://mspass-shard-0:27017 -wait tcp://mspass-shard-1:27017 -timeout 240s /usr/sbin/start-mspass.sh
+      - "${PWD}/:/home"
     ports:
       - 27017:27017
-    depends_on:
-      - mspass-shard-0
-      - mspass-shard-1
     environment:
-      MSPASS_ROLE: dbmanager
-      MSPASS_SHARD_LIST: mspass-shard-0/mspass-shard-0:27017 mspass-shard-1/mspass-shard-1:27017
+      MSPASS_ROLE: db
       MONGODB_PORT: 27017
-  
-  mspass-shard-0:
-    hostname: mspass-shard-0
-    image: mspass/mspass
-    volumes:
-      - "${PWD}:/home"
-    environment:
-      MSPASS_ROLE: shard
-      MSPASS_SHARD_ID: 0
-      MONGODB_PORT: 27017
-  
-  mspass-shard-1:
-    hostname: mspass-shard-1
-    image: mspass/mspass
-    volumes:
-      - "${PWD}:/home"
-    environment:
-      MSPASS_ROLE: shard
-      MSPASS_SHARD_ID: 1
-      MONGODB_PORT: 27017
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet 
+      interval: 10s
+      timeout: 60s
+      retries: 5
+      start_period: 5s
 
   mspass-scheduler:
     image: mspass/mspass
