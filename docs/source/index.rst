@@ -24,13 +24,16 @@ package.
 
 .. toctree::
    :maxdepth: 1
-   :caption: Getting Started
+   :caption: Desktop Operation
 
-   getting_started/quick_start
    getting_started/mspass_desktop
-   getting_started/run_mspass_with_docker
-   getting_started/deploy_mspass_with_docker_compose
+   getting_started/command_line_desktop
    getting_started/deploy_mspass_with_conda
+
+.. toctree::
+   :maxdepth: 2
+   :caption:  Cluster Operations
+
    getting_started/deploy_mspass_on_HPC
    getting_started/deploy_mspass_with_conda_and_coiled
    getting_started/getting_started_overview
