@@ -91,7 +91,7 @@ That should bring up the following window:
 
 .. _desktop_startup_window:
 
-.. figure:: ../_static/figures/desktop_startup_window.tif
+.. figure:: ../_static/figures/desktop_startup_window.png
     :width: 600px
     :align: center
 
@@ -104,7 +104,7 @@ to the following:
 
 .. _desktop_operating_window:
 
-.. figure:: ../_static/figures/desktop_operating_window.tif
+.. figure:: ../_static/figures/desktop_operating_window.png
   :width: 600px
   :align: center
 
@@ -127,7 +127,7 @@ that should look like the following:
 
 .. _desktop_run_window:
 
-.. figure:: ../static_figures/desktop_run_window.tif
+.. figure:: ../static_figures/desktop_run_window.png
 
    Window launched by run button.
 
@@ -145,7 +145,7 @@ There is a known problem with :code:`mspass-desktop` running on MacOS
 created by a classic python package collision with the
 :code:`tkinter` module used to drive the :code:`mspass-desktop` GUI.
 If you are using an Apple computer and have an issue consult
-`this issue page<https://github.com/mspass-team/mspass_launcher/issues/7>`_
+`this issue page<https://github.com/mspass-team/mspass_launcher/issues/7>`__
 on GitHub for possible solutions.
 
 Need to Edit Configuration Files
@@ -170,7 +170,7 @@ We can anticipate the following that might prove necessary:
     run MsPASS.   If something goes wrong launching when
     :code:`docker compose`  launches the containers, which hopefully will
     be clear from error messages, you may need to edit this file.
-    Consult the `docker compose documentation<https://docs.docker.com/compose/>`_ for guidance.
+    Consult the `docker compose documentation<https://docs.docker.com/compose/>`__ for guidance.
 2.  The :code:`MsPASSDesktopGUI.yaml` file has a few parameters you may want
     to customize:
 
