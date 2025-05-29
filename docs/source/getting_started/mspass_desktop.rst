@@ -127,7 +127,7 @@ that should look like the following:
 
 .. _desktop_run_window:
 
-.. figure:: ../static_figures/desktop_run_window.png
+.. figure:: ../static/figures/desktop_run_window.png
 
    Window launched by run button.
 
