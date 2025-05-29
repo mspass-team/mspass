@@ -1,0 +1,19 @@
+One line descriptions of each file in this directory:
+
+compose.yaml - default docker composer configuration file (-f not needed)
+
+docker-compose_sharding.yaml - docker compose configuration illustrating sharding
+
+docker-compose_spark.yaml - like compose.yaml but enables spark instead of dask
+
+Janitor.yaml - default configuration for Janitor class
+
+MiniseedJanitor.yaml - Janitor configuration file to use on miniseed index
+
+mspass_fdsn.yaml - extension of mspass default schema adding fdsn extensions
+
+mspass_lite.yaml - abbreviated version of mspass.yaml schema
+
+mspass_s3.yaml - schema used in accessing AWS S3 objects
+
+mspass.yaml - default schema for MsPASS
