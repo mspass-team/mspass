@@ -321,6 +321,7 @@ def WindowDataAtomic(
     inside (inclusive of the endpoints) the range of the data.
 
     Handling of "short segments" has these elements:
+
     1.  If the window range is completely outside the range of
         the data the result is always killed and returned
         as a dead datum with no sample data. (d.npts=0)
@@ -607,6 +608,7 @@ def WindowData(
     inside (inclusive of the endpoints) the range of the data.
 
     Handling of "short segments" has these elements:
+
     1.  If the window range is completely outside the range of
         the data the result is always killed and returned
         as a dead datum with no sample data. (d.npts=0)
@@ -701,40 +703,40 @@ def WindowData(
       was retained as the original api did not have the string
       option.
     :type t0shift:  real number (float) or a string that defines a
-    Metadata container key.
+      Metadata container key.
     :param short_segment_handling: Defines method for handling data where
-    the requested interval is shorter than the requested window but does
-    have some overlap. `segment_handling_methods` must be one of the following:
-      `kill` - in this mode any issues cause the return to be marked dead
-               (this is the default)
-      'pad' -  in this mode return will have short segments will be padded
-               with zeros to define data of the required length.
-      'truncate' - in this mode short segments will be truncated on left
-                  and/or right to match actual data range.
-      Note that if the input time range does not overlap the requested
-      interval "kiLl" is always the behavior as by definition the result
-      is null.
-    :type short_segment_handle:  string (from list above)  Default is "kill".
-    Throws a ValueError exception of not one of the accepted values.
-    :param log_recoverable_errors:  When True (default) any recoverable
-    windowing error (meaning at least a partial overlap in time range)
-    will cause a log message to be posted to the elog container of the
-    output.  When False recovery will be done silently.  Note when
-    `short_segment_handling` is set to "kill" logging is not optional and
-    kill will always create an error log entry.
+      the requested interval is shorter than the requested window but does
+      have some overlap. `segment_handling_methods` must be one of the following:
+        `kill` - in this mode any issues cause the return to be marked dead
+                 (this is the default)
+        'pad' -  in this mode return will have short segments will be padded
+                 with zeros to define data of the required length.
+        'truncate' - in this mode short segments will be truncated on left
+                    and/or right to match actual data range.
+        Note that if the input time range does not overlap the requested
+        interval "kiLl" is always the behavior as by definition the result
+        is null.
+      :type short_segment_handle:  string (from list above)  Default is "kill".
+        Throws a ValueError exception of not one of the accepted values.
+      :param log_recoverable_errors:  When True (default) any recoverable
+        windowing error (meaning at least a partial overlap in time range)
+        will cause a log message to be posted to the elog container of the
+        output.  When False recovery will be done silently.  Note when
+        `short_segment_handling` is set to "kill" logging is not optional and
+        kill will always create an error log entry.
     :param overwrite_members:   controls handling of the member vector of
-    ensembles as described above.  When True the member atomic data will
-    be overwritten by the windowed version and the ensmble returned will
-    be a reference to the same container as the input.  When False
-    (the default) a new container is created and returned.  Note in that
-    mode dead data are copied to the same slot as the input unaltered.
-    This argument will be silently ignored if the input is an atomic
-    MsPASS seismic object.
+      ensembles as described above.  When True the member atomic data will
+      be overwritten by the windowed version and the ensmble returned will
+      be a reference to the same container as the input.  When False
+      (the default) a new container is created and returned.  Note in that
+      mode dead data are copied to the same slot as the input unaltered.
+      This argument will be silently ignored if the input is an atomic
+      MsPASS seismic object.
     :type overwrite_members:  boolean
     :param retain_dead_members:   Controls how dead data are handled with 
-    ensembles.  When True (default) dead ensemble members are copied verbatim 
-    to the output.  When False they are silently deleted. (see above for 
-    a more complete description).  This argument is ignored for Atomic data.
+      ensembles.  When True (default) dead ensemble members are copied verbatim 
+      to the output.  When False they are silently deleted. (see above for 
+      a more complete description).  This argument is ignored for Atomic data.
     :type retain_dead_members: boolean
     :param object_history: boolean to enable or disable saving object
       level history.  Default is False.  Note this functionality is
@@ -865,20 +867,20 @@ def WindowData_autopad(
 
     :param d:  atomic MsPASS seismic data object to be windowed.
     :type d:  works with either `TimeSeries` or `Seismogram`
-    objects.  Will raise a TypeError exception if d is not one of
-    the two atomic data types.
+      objects.  Will raise a TypeError exception if d is not one of
+      the two atomic data types.
     :param stime:  start time of window range
     :type stime:  float
     :param etime:  end time of window range
     :type etime:  float
     :param pad_fraction_cutoff:  limit for the
-    fraction of data with undefined values before the datum is
-    killed.   (see above)  If set to 0.0 this is an expensive way
-    to behave the same as WindowData
+      fraction of data with undefined values before the datum is
+      killed.   (see above)  If set to 0.0 this is an expensive way
+      to behave the same as WindowData
     :return:  object of the same type as d.   Will be marked dead
-    if the fraction of undefined data exceeds pad_fraction_cutoff.
-    Otherwise will return a data vector of constant size that may
-    be padded.
+      if the fraction of undefined data exceeds pad_fraction_cutoff.
+      Otherwise will return a data vector of constant size that may
+      be padded.
     """
     if not isinstance(d, (TimeSeries, Seismogram)):
         message = "WindowData_autopad:  arg0 must be either a TimeSeries or Seismogram object.  Actual type={}".format(
@@ -937,6 +939,7 @@ def merge(
 
     This algorithm treats two conditions as a fatal error and will throw
     a MsPASSError when the condition occurs:
+
         1.   It checks that the input array of TimeSeries data are in
              time order.
         2.   It checks that the inputs all have the same sample rate.
@@ -949,6 +952,7 @@ def merge(
 
     Other conditions can cause the output to be marked dead with an
     error message posted to the output's elog attribute.  These are:
+
         1.  This algorithm aims to produce an output with data stored in
             a continuous vector with a length defined by the total time
             span of the input.  Naive use can create enormously long
@@ -970,6 +974,7 @@ def merge(
     involked that is a C++ function with the name "repair_overlaps".
     The function was designed only to handle the following common
     situations.  How they are handled is different for each situation.
+
         1.  Duplicate waveform segments spanning a common time interval
             can exist in raw data and accidentally by indexing two copies
             the same data.   If the samples in the overlapping section

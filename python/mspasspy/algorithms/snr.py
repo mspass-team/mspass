@@ -55,6 +55,7 @@ def EstimateBandwidth(
     detection is defined as the point where the signal-to-noise ratio
     first falls below the value defined by the "snr_threshold" argument.
     The algorithm has two variants of note:
+
     1.  If no point in the snr curve exceeds the valued defined by
         "snr_threshold" the function returns immediately with all
         attributes of the `BandwidthData` object set to 0.
@@ -290,6 +291,7 @@ def snr(
     This function provides a generic api to measure a large range of metrics
     using one of four choices for measuring the norm of the data in the
     signal and noise windows:
+
         1.  rms - L2 norm
         2.  mad - median absolute difference, which is essentially the median amplitude in this context
         3.  perc - percentage norm ala seismic unix.  perc is defined at as the
@@ -403,11 +405,11 @@ def _reformat_mspass_error(
     :param mserr:  MsPASSError object caught with a try: except: block
 
     :param prefix_message:  string that becomes the first part of the revised
-    message posted.
+      message posted.
 
     :param suffix_message:  string that becomes a third line of the revised
-    message posted.  Note this string is always preceded by a newline so do not
-    put a newline in this arg unless you want a blank line.
+      message posted.  Note this string is always preceded by a newline so do not
+      put a newline in this arg unless you want a blank line.
 
     :return:  expand message string
 
@@ -1123,6 +1125,7 @@ def broadband_snr_QC(
     "arrival_snr" with some additional features.  See the docstring
     for that function for what those base features are.   Features this
     function adds not found in arrival_snr are:
+
         1.   This function allows Seismogram inputs.  Only TimeSeries
              data are handled by arrival_snr.
         2.   This function provides an option to compute arrival times
@@ -1372,6 +1375,7 @@ def save_snr_arrival(
     use_update, update_id and subdocument_key.   They interact in a way
     that is best summarized as a set of cases that procuce behavior
     you may want:
+
         1.  If save_collection is not the parent waveform collection,
             behavior is driven by use_update combined with subdocument_key.
             When use_update is False (default) the contents of doc_to_save

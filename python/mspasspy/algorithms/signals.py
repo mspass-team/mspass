@@ -49,12 +49,12 @@ def filter(
 
     :param data: input data, only mspasspy data objects are accepted, i.e. TimeSeries, Seismogram, Ensemble.
     :param type: type of filter, 'bandpass', 'bandstop', 'lowpass', 'highpass', 'lowpass_cheby_2', 'lowpass_fir',
-     'remez_fir'. You can refer to
-     `Obspy <https://docs.obspy.org/packages/autogen/obspy.core.trace.Trace.filter.html>` for details.
+      'remez_fir'. You can refer to
+      `Obspy <https://docs.obspy.org/packages/autogen/obspy.core.trace.Trace.filter.html>` for details.
     :type type: str
     :param args: extra arguments
     :param object_history: True to preserve the processing history. For details, refer to
-     :class:`~mspasspy.util.decorators.mspass_func_wrapper`.
+      :class:`~mspasspy.util.decorators.mspass_func_wrapper`.
     :param alg_name: alg_name is the name the func we are gonna save while preserving the history.
     :type alg_name: :class:`str`
     :param alg_id: alg_id is a unique id to record the usage of func while preserving the history.

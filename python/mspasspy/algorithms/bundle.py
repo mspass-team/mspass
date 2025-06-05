@@ -96,13 +96,13 @@ def BundleSEEDGroup(d, i0=0, iend=2):
     to assemble one or more bundles needed to build a Seismogram.  The
     algorithm used here is simple and ONLY works if the inputs have been
     sorted so the channels define a group of three unique channel codes.
-    For example,
-        HHE, HHN, HHZ
-    would form a typical seed channel grouping.
+    For example, HHE, HHN, HHZ, would form a typical seed channel grouping.
 
     The function will attempt to handle duplicates.  By that I mean
     if the group has two of the same channel code like these sequences:
+
         HHE, HHE, HHN, HHZ  or HHE, HHN, HHN, HHZ, HHZ
+
     If the duplicates are pure duplicates there is no complication and
     the result will be clean.   If the time spans of the duplicate
     channels are different the decision of which to use keys on a simple

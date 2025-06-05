@@ -107,11 +107,11 @@ class BasicResampler(ABC):
 
 
         :param d:   input mspass data object to be tested.   All that is
-        actually required is d have a "dt" attribute (i.e. d.dt is defined)
-        that is the sample interval for that datum.
+          actually required is d have a "dt" attribute (i.e. d.dt is defined)
+          that is the sample interval for that datum.
         :type d:   assumed to be a MsPASS atomic data object for which the
-        dt attribute is defined.  This method has no safeties to test
-        input type.  It will throw an exception if d.dt does not resolve.
+          dt attribute is defined.  This method has no safeties to test
+          input type.  It will throw an exception if d.dt does not resolve.
         """
         # internal use guarantees this can only be TimeSeries or Seismogram
         # so this resolves

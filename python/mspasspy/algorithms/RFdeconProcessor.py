@@ -41,7 +41,6 @@ class RFdeconProcessor:
     processor object will be passed as an argument to the RFdecon
     function that should appear as a function in a spark map call.
     """
-
     def __repr__(self) -> str:
         repr_str = "{type}(alg='{alg}', md='{md}')".format(
             type=str(self.__class__), alg=self.algorithm, md=self.md
@@ -111,14 +110,14 @@ class RFdeconProcessor:
         have no time base.
 
         :param d: input data (contents expected depend upon
-        value of dtype parameter).
+            value of dtype parameter).
         :param dtype: string defining the form d is expected
-          to be (see details above)
+            to be (see details above)
         :param component: component of Seismogram data to
-          load as data vector.  Ignored if dtype is raw_vector
-          or TimeSeries.
+            load as data vector.  Ignored if dtype is raw_vector
+            or TimeSeries.
         :param window: boolean controlling internally
-          defined windowing.  (see details above)
+            defined windowing.  (see details above)
 
         :return:  Nothing (not None nothing) is returned
         """
@@ -259,11 +258,11 @@ class RFdeconProcessor:
         defined for this operator.
 
         :return: Actual output of the operator as a ccore.TimeSeries object.
-        The Metadata of the return is bare bones.  The most important factor
-        about this result is that because actual output waveforms are normally
-        a zero phase wavelet of some kind the result is time shifted to be
-        centered (i.e. t0 is rounded n/2 where n is the length of the vector
-                  returned).
+            The Metadata of the return is bare bones.  The most important factor
+            about this result is that because actual output waveforms are normally
+            a zero phase wavelet of some kind the result is time shifted to be
+            centered (i.e. t0 is rounded n/2 where n is the length of the vector
+            returned).
         """
         if hasattr(self, "dvector"):
             self.processor.loaddata(DoubleVector(self.dvector))
@@ -348,7 +347,7 @@ class RFdeconProcessor:
         All the scalar decon methods implement that method.
 
         :param md: is a mspass.Metadata object containing required parameters
-        for the alternative algorithm.
+            for the alternative algorithm.
         """
         self.md = Metadata(md)
         self.processor.read_metadata(self.md)
@@ -436,87 +435,85 @@ def RFdecon(
     QCmetric attributes are algorithm dependent.
 
     The ProcessingHistory feature can optionally be enabled by
-    setting the save_history argument to True.   When enable one should
+    setting the save_history argument to True.   When enabled one should
     normally set a unique id for the algid argument.
 
-    :param d:  Seismogram input data.  See notes above about
-      time span of these data.
-    :type d:  Must be a `Seismogram` object or the function will throw
-      a TypeError exceptionl
+    :param d:  Seismogram input data.See notes above about time span of thesedata.
+    :type d:  Must be a Seismogram object or the function will throw a TypeError exception.
     :param engine:   optional instance of a RFdeconProcessor
-      object.   By default the function instantiates an instance of
-      a processor for each call to the function.   For algorithms
-      like the multitaper based algorithms with a high initialization
-      cost performance will improve by sending an instance to the
-      function via this argument.
-    :type engine:  None or an instance of `RFdeconProcessor`.
-      When None (default) an instance of an `RFdeconProcessor` is
-      created on entry based on the keyword defined by the `alg`
-      argument.   The algorithm built into the instance of
-      `RFdeconProcessor` is used if engine is not null.
+        object.   By default the function instantiates an instance of
+        a processor for each call to the function.   For algorithms
+        like the multitaper based algorithms with a high initialization
+        cost performance will improve by sending an instance to the
+        function via this argument.
+    :type engine:  None or an instance of RFdeconProcessor.
+        When None (default) an instance of an RFdeconProcessor is
+        created on entry based on the keyword defined by the alg
+        argument.   The algorithm built into the instance of
+        RFdeconProcessor is used if engine is not null.
     :param alg: The algorithm to be applied, used for initializing
-       a RFdeconProcessor object.  Ignored if `engine` is used.
+        a RFdeconProcessor object.  Ignored if engine is used.
     :param pf: The pf file to be parsed, used for inititalizing a
-       RFdeconProcessor.  Ignored if `engine` is used.
+        RFdeconProcessor.  Ignored if engine is used.
     :type pf:  string defining an absolute path for the file name
-       or a path relative to a directory defined by PFPATH.
+        or a path relative to a directory defined by PFPATH.
     :param wavelet:   vector of doubles (numpy array or the
-       std::vector container internal to TimeSeries object) defining
-       the wavelet to use to compute deconvolution operator.
-       Default is None which assumes processor was set up to use
-       a component of d as the wavelet estimate.
+        std::vector container internal to TimeSeries object) defining
+        the wavelet to use to compute deconvolution operator.
+        Default is None which assumes processor was set up to use
+        a component of d as the wavelet estimate.
     :type wavelet:  None or an iterable vector container
-       (in MsPASS that means a python array, a numpy array, or a DoubleVector)
+        (in MsPASS that means a python array, a numpy array, or a DoubleVector)
     :param noisedata:  vector of doubles (numpy array or the
-       std::vector container internal to TimeSeries object) defining
-       noise data to use for computing regularization.  Not all RF
-       estimation algorithms use noise estimators so this parameter
-       is optional.   It can also be extracted from d depending on
-       parameter file options.
+        std::vector container internal to TimeSeries object) defining
+        noise data to use for computing regularization.  Not all RF
+        estimation algorithms use noise estimators so this parameter
+        is optional.   It can also be extracted from d depending on
+        parameter file options.
     :type noisedata:  None or an iterable vector container
-       (in MsPASS that means a python array, a numpy array, or a DoubleVector)
+        (in MsPASS that means a python array, a numpy array, or a DoubleVector)
     :param wcomp:  When defined from Seismogram d the wavelet
-       estimate in conventional RFs is one of the components that
-       are most P wave dominated. That is always one of three
-       things:  Z, L of LQT, or the L component from the output of
-       Kennett's free surface transformation operator.  The
-       default is 2, which for ccore.Seismogram is always one of
-       the above.   This parameter would be changed only if the
-       data has undergone some novel transformation not yet invented
-       and the best wavelet estimate was on in 2 (3 with FORTRAN
-       and matlab numbering).
-     :type wcomp:  int (must 0, 1, or 2)
-     :param ncomp: component number to use to compute noise.  This is used
-       only if the algorithm in processor requires a noise estimate.
-       Normally it should be the same as wcomp and is by default (2).
-     :type ncomp:  int (must be 0, 1, or 2)
-     :param QCdocument_key:   A summary of the parameters defining the
+        estimate in conventional RFs is one of the components that
+        are most P wave dominated. That is always one of three
+        things:  Z, L of LQT, or the L component from the output of
+        Kennett's free surface transformation operator.  The
+        default is 2, which for ccore.Seismogram is always one of
+        the above.   This parameter would be changed only if the
+        data has undergone some novel transformation not yet invented
+        and the best wavelet estimate was on in 2 (3 with FORTRAN
+        and matlab numbering).
+    :type wcomp:  int (must 0, 1, or 2)
+    :param ncomp: component number to use to compute noise.  This is used
+        only if the algorithm in processor requires a noise estimate.
+        Normally it should be the same as wcomp and is by default (2).
+    :type ncomp:  int (must be 0, 1, or 2)
+    :param QCdocument_key:   A summary of the parameters defining the
         deconvolution operator (really a dump of the pf content used for
         creating the engine) and computed QC attributes are posted to a
         python dictionary.   That content is posted to the outputs
         Metadata container with the key defined by this argument.
         In MongoDB lingo that means when saved to the database the
         dictionary content associated with this key becomes a "subdocument".
-     :type QCdocument_key:  string (default is "RFdecon_properties")
-     :param object_history: boolean to enable or disable saving object
-           level history.  Default is False.  Note this functionality is
-           implemented via the mspass_func_wrapper decorator.
-     :param alg_name:   When history is enabled this is the algorithm name
-           assigned to the stamp for applying this algorithm.
-           Default ("WindowData") should normally be just used.
-           Note this functionality is implemented via the mspass_func_wrapper decorator.
-     :param ald_id:  algorithm id to assign to history record (used only if
-           object_history is set True.)
-           Note this functionality is implemented via the mspass_func_wrapper decorator.
-     :param dryrun:  When true only the arguments are checked for validity.
-           When true nothing is calculated and the original data are returned.
-           Note this functionality is implemented via the mspass_func_wrapper decorator.
+    :type QCdocument_key:  string (default is "RFdecon_properties")
+    :param object_history: boolean to enable or disable saving object
+        level history.  Default is False.  Note this functionality is
+        implemented via the mspass_func_wrapper decorator.
+    :param alg_name:   When history is enabled this is the algorithm name
+        assigned to the stamp for applying this algorithm.
+        Default ("WindowData") should normally be just used.
+        Note this functionality is implemented via the mspass_func_wrapper decorator.
+    :param ald_id:  algorithm id to assign to history record (used only if
+        object_history is set True.)
+        Note this functionality is implemented via the mspass_func_wrapper decorator.
+    :param dryrun:  When true only the arguments are checked for validity.
+        When true nothing is calculated and the original data are returned.
+        Note this functionality is implemented via the mspass_func_wrapper decorator.
 
     :return:  Normally returns Seismogram object containing the RF estimates.
-     The orientations are always the same as the input.  If `return-wavelets` is set
-     True returns a tuple with three components:  0 - `Seismogram` returned as with
-     default, 1 - ideal output wavelet `TimeSeries`, 2 - actual output wavelet
-     stored as a `TimeSeries` object.
+        The orientations are always the same as the input.  If `return-wavelets` is set
+        True returns a tuple with three components:  0 - `Seismogram` returned as with
+        default, 1 - ideal output wavelet `TimeSeries`, 2 - actual output wavelet
+        stored as a `TimeSeries` object.
     """
 
     if not isinstance(d, Seismogram):

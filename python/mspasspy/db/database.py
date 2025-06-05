@@ -238,7 +238,7 @@ class Database(pymongo.database.Database):
         raised if the collection already exists.   Useful mainly for advanced users tuning
         a polished workflow.
 
-        :Parameters:
+        Parameters:
           :param name: the name of the collection to create
           :param codec_options` (optional): An instance of
             :class:`~bson.codec_options.CodecOptions`. If ``None`` (the
@@ -1072,6 +1072,7 @@ class Database(pymongo.database.Database):
         :class:`mspasspy.ccore.seismic.SeismogramEnsemble`).  Handling
         multiple types while simultaneously supporting multiple abstractions
         of how the data are stored externally has some complexities.
+
         1.  All MsPASS data have multiple containers used internally
             to define different concepts.   In particular atomic data
             have a Metadata container we map to MongoDB documents directly,
@@ -1182,6 +1183,7 @@ class Database(pymongo.database.Database):
         There are some important implementation details related to
         the points above that are important to understand if you encounter
         issues using this algorithm.
+
         1.  Writing is always atomic.  Saving ensemble data is little more
             than an enhanced loop over data members.  By "enhanced" we mean
             two things:  (a)  any ensemble Metadata attributes are copied
@@ -1913,15 +1915,15 @@ class Database(pymongo.database.Database):
         :param collection: the name of collection to which document_id is
          expected to provide a unique match.  If not specified, uses the default wf collection
         :param tests: this should be a python list of test to apply by
-         name keywords.  Test nams allowed are 'xref', 'type',
-         and 'undefined'.   Default runs all tests.   Specify a subset of those
-         keywords to be more restrictive.
+           name keywords.  Test nams allowed are 'xref', 'type',
+           and 'undefined'.   Default runs all tests.   Specify a subset of those
+           keywords to be more restrictive.
         :type tests: :class:`list` of :class:`str`
 
         :return: a python dict keyed by a problematic key.  The value in each
           entry is the name of the failed test (i.e. 'xref', 'type', or 'undefined')
         :rtype: :class:`dict`
-        :excpetion: This method will throw a fatal error exception if the
+        :exception: This method will throw a fatal error exception if the
           id received does no match any document in the database.  That is
           intentional as the method should normally appear in a loop over
           ids found after query and the ids should then always be valid.
@@ -2094,17 +2096,17 @@ class Database(pymongo.database.Database):
 
         :param collection:  MongoDB collection to be updated
         :param keylist:  list of keys for elements of each document
-        that are to be deleted.   key are not test against schema
-        but all matches will be deleted.
+          that are to be deleted.   key are not test against schema
+          but all matches will be deleted.
         :param query: optional query string passed to find database
-        collection method.  Can be used to limit edits to documents
-        matching the query.  Default is the entire collection.
+          collection method.  Can be used to limit edits to documents
+          matching the query.  Default is the entire collection.
         :param verbose:  when ``True`` edit will produce a line of printed
-        output describing what was deleted.  Use this option only if
-        you know from dbverify the number of changes to be made are small.
+          output describing what was deleted.  Use this option only if
+          you know from dbverify the number of changes to be made are small.
 
         :return:  dict keyed by the keys of all deleted entries.  The value
-        of each entry is the number of documents the key was deleted from.
+          of each entry is the number of documents the key was deleted from.
         :rtype: :class:`dict`
         """
         dbcol = self[collection]
@@ -2144,17 +2146,17 @@ class Database(pymongo.database.Database):
         :param collection:  MongoDB collection to be updated
         :param rename_map:  remap definition dict used as described above.
         :param query: optional query string passed to find database
-        collection method.  Can be used to limit edits to documents
-        matching the query.  Default is the entire collection.
+          collection method.  Can be used to limit edits to documents
+          matching the query.  Default is the entire collection.
         :param verbose:  when true edit will produce a line of printed
-        output describing what was deleted.  Use this option only if
-        you know from dbverify the number of changes to be made are small.
-        When false the function runs silently.
+          output describing what was deleted.  Use this option only if
+          you know from dbverify the number of changes to be made are small.
+          When false the function runs silently.
 
         :return:  dict keyed by the keys of all changed entries.  The value
-        of each entry is the number of documents changed.  The keys are the
-        original keys.  displays of result should old and new keys using
-        the rename_map.
+          of each entry is the number of documents changed.  The keys are the
+          original keys.  displays of result should old and new keys using
+          the rename_map.
         """
         dbcol = self[collection]
         cursor = dbcol.find(query)
@@ -2206,12 +2208,12 @@ class Database(pymongo.database.Database):
 
         :param collection:  MongoDB collection to be updated
         :param query: optional query string passed to find database
-        collection method.  Can be used to limit edits to documents
-        matching the query.  Default is the entire collection.
+          collection method.  Can be used to limit edits to documents
+          matching the query.  Default is the entire collection.
         :param verbose:  when true edit will produce one or more lines of
-        printed output for each change it makes.  The default is false.
-        Needless verbose should be avoided unless you are certain the
-        number of changes it will make are small.
+          printed output for each change it makes.  The default is false.
+          Needless verbose should be avoided unless you are certain the
+          number of changes it will make are small.
         """
         dbcol = self[collection]
         schema = self.database_schema
@@ -2304,21 +2306,21 @@ class Database(pymongo.database.Database):
         documents scanned by the function.   Default will process the
         entire wf collection.
         :param verbose:  when True errors will be printed.  By default
-        the function works silently and you should use the output to
-        interact with any errors returned.
+          the function works silently and you should use the output to
+          interact with any errors returned.
         :param error_limit: Is a sanity check on the number of errors logged.
-        Errors of any type are limited to this number (default 1000).
-        The idea is errors should be rare and if this number is exceeded
-        you have a big problem you need to fix before scanning again.
-        The number should be large enough to catch all condition but
-        not so huge it become cumbersome.  With no limit or a memory
-        fault is even possible on a huge dataset.
+          Errors of any type are limited to this number (default 1000).
+          The idea is errors should be rare and if this number is exceeded
+          you have a big problem you need to fix before scanning again.
+          The number should be large enough to catch all condition but
+          not so huge it become cumbersome.  With no limit or a memory
+          fault is even possible on a huge dataset.
         :return:  returns a tuple with two lists.  Both lists are ObjectIds
-        of the scanned wf collection that have errors.  component 0
-        of the tuple contains ids of wf entries that have the normalization
-        id set but the id does not resolve with the normalization collection.
-        component 1 contains the ids of documents in the wf collection that
-        do not contain the normalization id key at all (a more common problem)
+          of the scanned wf collection that have errors.  component 0
+          of the tuple contains ids of wf entries that have the normalization
+          id set but the id does not resolve with the normalization collection.
+          component 1 contains the ids of documents in the wf collection that
+          do not contain the normalization id key at all (a more common problem)
 
         """
         # schema doesn't currently have a way to list normalized
@@ -2448,32 +2450,32 @@ class Database(pymongo.database.Database):
         by a workflow before starting a large job.
 
         :param collection:  MongoDB collection that is to be scanned
-        for errors.  Note with normalized data this function should be
-        run on the appropriate wf collection and all normalization
-        collections the wf collection needs to link to.
+          for errors.  Note with normalized data this function should be
+          run on the appropriate wf collection and all normalization
+          collections the wf collection needs to link to.
         :param query:  optional dict passed as a query to limit the
-        documents scanned by the function.   Default will process the
-        entire collection requested.
+          documents scanned by the function.   Default will process the
+          entire collection requested.
         :param verbose:  when True errors will be printed.   The default is
-        False and the function will do it's work silently.   Verbose is
-        most useful in an interactive python session where the function
-        is called directly.  Most users will run this function
-        as part of tests driven by the dbverify program.
+          False and the function will do it's work silently.   Verbose is
+          most useful in an interactive python session where the function
+          is called directly.  Most users will run this function
+          as part of tests driven by the dbverify program.
         :param error_limit: Is a sanity check the number of errors logged
-        The number of any type are limited to this number (default 1000).
-        The idea is errors should be rare and if this number is exceeded
-        you have a big problem you need to fix before scanning again.
-        The number should be large enough to catch all condition but
-        not so huge it become cumbersome.  With no limit or a memory
-        fault is even possible on a huge dataset.
+          The number of any type are limited to this number (default 1000).
+          The idea is errors should be rare and if this number is exceeded
+          you have a big problem you need to fix before scanning again.
+          The number should be large enough to catch all condition but
+          not so huge it become cumbersome.  With no limit or a memory
+          fault is even possible on a huge dataset.
         :return:  returns a tuple with two python dict containers.
-        The component 0 python dict contains details of type mismatch errors.
-        Component 1 contains details for data with undefined keys.
-        Both python dict containers are keyed by the ObjectId of the
-        document from which they were retrieved.  The values associated
-        with each entry are like MongoDB subdocuments.  That is, the value
-        return is itself a dict. The dict value contains key-value pairs
-        that defined the error (type mismatch for 0 and undefined for 1)
+          The component 0 python dict contains details of type mismatch errors.
+          Component 1 contains details for data with undefined keys.
+          Both python dict containers are keyed by the ObjectId of the
+          document from which they were retrieved.  The values associated
+          with each entry are like MongoDB subdocuments.  That is, the value
+          return is itself a dict. The dict value contains key-value pairs
+          that defined the error (type mismatch for 0 and undefined for 1)
 
         """
         if query is None:
@@ -2558,36 +2560,36 @@ class Database(pymongo.database.Database):
         station information is essential.
 
         :param collection:  MongoDB collection that is to be scanned
-        for errors.  Note with normalized data this function should be
-        run on the appropriate wf collection and all normalization
-        collections the wf collection needs to link to.
+          for errors.  Note with normalized data this function should be
+          run on the appropriate wf collection and all normalization
+          collections the wf collection needs to link to.
         :param keys:  is a list of strings that are to be checked
-        against the contents of the collection.  Note one of the first
-        things the function does is test for the validity of the keys.
-        If they are not defined in the schema the function will throw
-        a MsPASSError exception.
+          against the contents of the collection.  Note one of the first
+          things the function does is test for the validity of the keys.
+          If they are not defined in the schema the function will throw
+          a MsPASSError exception.
         :param query:  optional dict passed as a query to limit the
-        documents scanned by the function.   Default will process the
-        entire collection requested.
+          documents scanned by the function.   Default will process the
+          entire collection requested.
         :param verbose:  when True errors will be printed.   The default is
-        False and the function will do it's work silently.   Verbose is
-        most useful in an interactive python session where the function
-        is called directly.  Most users will run this function
-        as part of tests driven by the dbverify program.
+          False and the function will do it's work silently.   Verbose is
+          most useful in an interactive python session where the function
+          is called directly.  Most users will run this function
+          as part of tests driven by the dbverify program.
         :param error_limit: Is a sanity check the number of errors logged
-        The number of any type are limited to this number (default 1000).
-        The idea is errors should be rare and if this number is exceeded
-        you have a big problem you need to fix before scanning again.
-        The number should be large enough to catch all condition but
-        not so huge it become cumbersome.  With no limit or a memory
-        fault is even possible on a huge dataset.
+          The number of any type are limited to this number (default 1000).
+          The idea is errors should be rare and if this number is exceeded
+          you have a big problem you need to fix before scanning again.
+          The number should be large enough to catch all condition but
+          not so huge it become cumbersome.  With no limit or a memory
+          fault is even possible on a huge dataset.
         :return:  tuple with two components. Both components contain a
-        python dict container keyed by ObjectId of problem documents.
-        The values in the component 0 dict are themselves python dict
-        containers that are like MongoDB subdocuments).  The key-value
-        pairs in that dict are required data with a type mismatch with the schema.
-        The values in component 1 are python lists of keys that had
-        no assigned value but were defined as required.
+          python dict container keyed by ObjectId of problem documents.
+          The values in the component 0 dict are themselves python dict
+          containers that are like MongoDB subdocuments).  The key-value
+          pairs in that dict are required data with a type mismatch with the schema.
+          The values in component 1 are python lists of keys that had
+          no assigned value but were defined as required.
         """
         if len(keys) == 0:
             raise MsPASSError(
@@ -3916,7 +3918,7 @@ class Database(pymongo.database.Database):
         :param prev_history_object_id: the previous history object id (if it has).
         :type prev_history_object_id: :class:`bson.ObjectId.ObjectId`
         :param collection: the collection that you want to store the history object. If not specified, use the defined
-        collection in the schema.
+          collection in the schema.
         :return: current history_object_id.
         """
         if isinstance(mspass_object, TimeSeries):
@@ -3986,15 +3988,15 @@ class Database(pymongo.database.Database):
         :type mspass_object: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
         :param history_object_id: :class:`bson.ObjectId.ObjectId` or None (see above)
         :param alg_name:  algorithm name that should be the current node
-        of the history tree.  this should normaly be the name of th e
-        reader method/function.
+          of the history tree.  this should normaly be the name of th e
+          reader method/function.
         :param alg_id:  algorithm id to set for the current node
         :param define_as_raw:  when True and history_object_id is None
           the starting node of the history chain will be tagged as "raw".
           Ignored if history_object_id is used for a query.  Note on
           failure of such a query the chain will always have raw set false.
         :param collection: the collection that you want to load the processing history. If not specified, use the defined
-        collection in the schema.
+          collection in the schema.
         """
         # get the atomic type of the mspass object
         if isinstance(mspass_object, TimeSeries):
@@ -4070,7 +4072,7 @@ class Database(pymongo.database.Database):
         :param elog_id: the previous elog object id to be appended with.
         :type elog_id: :class:`bson.ObjectId.ObjectId`
         :param collection: the collection that you want to save the elogs. If not specified, use the defined
-        collection in the schema.
+          collection in the schema.
         :return: updated elog_id.
         """
         if isinstance(mspass_object, TimeSeries):
@@ -4967,7 +4969,7 @@ class Database(pymongo.database.Database):
             processing.   Default is SY which is used for synthetics.
             Set to None if if all are to be loaded.
         :verbose:  print informational lines if true.  If false
-        works silently)
+          works silently)
 
         :return:  tuple with
           0 - integer number of site documents saved
@@ -5224,18 +5226,18 @@ class Database(pymongo.database.Database):
         to return the raw data used to construct an Inventory.
 
         :param net:  network name query string.  Can be a single
-        unique net code or use MongoDB's expression query
-        mechanism (e.g. "{'$gt' : 42}).  Default is all
+          unique net code or use MongoDB's expression query
+          mechanism (e.g. "{'$gt' : 42}).  Default is all
         :param sta: statoin name query string.  Can be a single
-        station name or a MongoDB query expression.
+          station name or a MongoDB query expression.
         :param loc:  loc code to select.  Can be a single unique
-        location (e.g. '01') or a MongoDB expression query.
+          location (e.g. '01') or a MongoDB expression query.
         :param time:   limit return to stations with
-        startime<time<endtime.  Input is assumed an
-        epoch time NOT an obspy UTCDateTime. Use a conversion
-        to epoch time if necessary.
+          startime<time<endtime.  Input is assumed an
+          epoch time NOT an obspy UTCDateTime. Use a conversion
+          to epoch time if necessary.
         :return:  obspy Inventory of all stations matching the
-        query parameters
+          query parameters
         :rtype:  obspy Inventory
         """
         dbsite = self.site
@@ -5298,7 +5300,7 @@ class Database(pymongo.database.Database):
         :param net:  network name to match
         :param sta:  station name to match
         :param loc:   optional loc code to made (empty string ok and common)
-        default ignores loc in query.
+          default ignores loc in query.
         :param time: epoch time for requested metadata.  Default undefined
           and will cause the function to simply return the first document
           matching the name keys only.   (This is rarely what you want, but
@@ -5564,7 +5566,7 @@ class Database(pymongo.database.Database):
 
         :param cat: is the Catalog object to be saved
         :param verbose: Print informational data if true.
-        When false (default) it does it's work silently.
+          When false (default) it does it's work silently.
 
         :return: integer count of number of items saved
         """
@@ -5875,27 +5877,27 @@ class Database(pymongo.database.Database):
         database tables where nulls are a hole in the table.
 
         :param df: Pandas.Dataframe object, the input to be transfered into mongodb
-        documents
-        :param collection:  MongoDB collection name to be used to save the
-        (often subsetted) tuples of filename as documents in this collection.
+          documents
+          :param collection:  MongoDB collection name to be used to save the
+          (often subsetted) tuples of filename as documents in this collection.
         :param null_values:  is an optional dict defining null field values.
-        When used an == test is applied to each attribute with a key
-        defined in the null_vlaues python dict.  If == returns True, the
-        value will be set as None in dataframe. If your table has a lot of null
-        fields this option can save space, but readers must not require the null
-        field.  The default is None which it taken to mean there are no null
-        fields defined.
+          When used an == test is applied to each attribute with a key
+          defined in the null_vlaues python dict.  If == returns True, the
+          value will be set as None in dataframe. If your table has a lot of null
+          fields this option can save space, but readers must not require the null
+          field.  The default is None which it taken to mean there are no null
+          fields defined.
         :param one_to_one: a boolean to control if the set should be filtered by
-        rows.  The default is True which means every row in the dataframe will
-        create a single MongoDB document. If False the (normally reduced) set
-        of attributes defined by attributes_to_use will be filtered with the
-        panda/dask dataframe drop_duplicates method before converting the
-        dataframe to documents and saving them to MongoDB.  That approach
-        is important, for example, to filter things like Antelope "site" or
-        "sitechan" attributes created by a join to something like wfdisc and
-        saved as a text file to be processed by this function.
+          rows.  The default is True which means every row in the dataframe will
+          create a single MongoDB document. If False the (normally reduced) set
+          of attributes defined by attributes_to_use will be filtered with the
+          panda/dask dataframe drop_duplicates method before converting the
+          dataframe to documents and saving them to MongoDB.  That approach
+          is important, for example, to filter things like Antelope "site" or
+          "sitechan" attributes created by a join to something like wfdisc and
+          saved as a text file to be processed by this function.
         :param parallel:  a boolean that determine if dask api will be used for
-        operations on the dataframe, default is false.
+          operations on the dataframe, default is false.
         :return:  integer count of number of documents added to collection
         """
         dbcol = self[collection]
@@ -5954,65 +5956,65 @@ class Database(pymongo.database.Database):
         collection
 
         :param filename:  path to text file that is to be read to create the
-        table object that is to be processed (internally we use pandas or
-        dask dataframes)
-        :param collection:  MongoDB collection name to be used to save the
-        (often subsetted) tuples of filename as documents in this collection.
+          table object that is to be processed (internally we use pandas or
+          dask dataframes)
+          :param collection:  MongoDB collection name to be used to save the
+          (often subsetted) tuples of filename as documents in this collection.
         :param separator: The delimiter used for seperating fields,
-        the default is "\s+", which is the regular expression of "one or more
-        spaces".
-            For csv file, its value should be set to ','.
-            This parameter will be passed into pandas.read_csv or dask.dataframe.read_csv.
-            To learn more details about the usage, check the following links:
-            https://pandas.pydata.org/docs/reference/api/pandas.read_csv.html
-            https://docs.dask.org/en/latest/generated/dask.dataframe.read_csv.html
+          the default is "\s+", which is the regular expression of "one or more
+          spaces".
+              For csv file, its value should be set to ','.
+              This parameter will be passed into pandas.read_csv or dask.dataframe.read_csv.
+              To learn more details about the usage, check the following links:
+              https://pandas.pydata.org/docs/reference/api/pandas.read_csv.html
+              https://docs.dask.org/en/latest/generated/dask.dataframe.read_csv.html
         :param type_dict: pairs of each attribute and its type, usedd to validate
-        the type of each input item
+          the type of each input item
         :param header_line: defines the line to be used as the attribute names for
-        columns, if is < 0, an attribute_names is required. Please note that if an
-        attribute_names is provided, the attributes defined in header_line will
-        always be override.
+          columns, if is < 0, an attribute_names is required. Please note that if an
+          attribute_names is provided, the attributes defined in header_line will
+          always be override.
         :param attribute_names: This argument must be either a list of (unique)
-        string names to define the attribute name tags for each column of the
-        input table.   The length of the array must match the number of
-        columns in the input table or this function will throw a MsPASSError
-        exception.   This argument is None by default which means the
-        function will assume the line specified by the "header_line" argument as
-        column headers defining the attribute name.  If header_line is less
-        than 0 this argument will be required.  When header_line is >= 0
-        and this argument (attribute_names) is defined all the names in
-        this list will override those stored in the file at the specified
-        line number.
+          string names to define the attribute name tags for each column of the
+          input table.   The length of the array must match the number of
+          columns in the input table or this function will throw a MsPASSError
+          exception.   This argument is None by default which means the
+          function will assume the line specified by the "header_line" argument as
+          column headers defining the attribute name.  If header_line is less
+          than 0 this argument will be required.  When header_line is >= 0
+          and this argument (attribute_names) is defined all the names in
+          this list will override those stored in the file at the specified
+          line number.
         :param  rename_attributes:   This is expected to be a python dict
-        keyed by names matching those defined in the file or attribute_names
-        array (i.e. the panda/dataframe column index names) and values defining
-        strings to use to override the original names.   That usage, of course,
-        is most common to override names in a file.  If you want to change all
-        the name use a custom attributes_name array as noted above.  This
-        argument is mostly to rename a small number of anomalous names.
-        :param attributes_to_use:  If used this argument must define a list of
-        attribute names that define the subset of the dataframe dataframe
-        attributes that are to be saved.  For relational db users this is
-        effectively a "select" list of attribute names.  The default is
-        None which is taken to mean no selection is to be done.
+          keyed by names matching those defined in the file or attribute_names
+          array (i.e. the panda/dataframe column index names) and values defining
+          strings to use to override the original names.   That usage, of course,
+          is most common to override names in a file.  If you want to change all
+          the name use a custom attributes_name array as noted above.  This
+          argument is mostly to rename a small number of anomalous names.
+          :param attributes_to_use:  If used this argument must define a list of
+          attribute names that define the subset of the dataframe dataframe
+          attributes that are to be saved.  For relational db users this is
+          effectively a "select" list of attribute names.  The default is
+          None which is taken to mean no selection is to be done.
         :param one_to_one: is an important boolean use to control if the
-        output is or is not filtered by rows.  The default is True
-        which means every tuple in the input file will create a single row in
-        dataframe. (Useful, for example, to construct an wf_miniseed
-        collection css3.0 attributes.)  If False the (normally reduced) set
-        of attributes defined by attributes_to_use will be filtered with the
-        panda/dask dataframe drop_duplicates method.  That approach
-        is important, for example, to filter things like Antelope "site" or
-        "sitechan" attributes created by a join to something like wfdisc and
-        saved as a text file to be processed by this function.
-        :param parallel:  When true we use the dask dataframe operation.
-        The default is false meaning the simpler, identical api panda
-        operators are used.
+          output is or is not filtered by rows.  The default is True
+          which means every tuple in the input file will create a single row in
+          dataframe. (Useful, for example, to construct an wf_miniseed
+          collection css3.0 attributes.)  If False the (normally reduced) set
+          of attributes defined by attributes_to_use will be filtered with the
+          panda/dask dataframe drop_duplicates method.  That approach
+          is important, for example, to filter things like Antelope "site" or
+          "sitechan" attributes created by a join to something like wfdisc and
+          saved as a text file to be processed by this function.
+          :param parallel:  When true we use the dask dataframe operation.
+          The default is false meaning the simpler, identical api panda
+          operators are used.
         :param insert_column: a dictionary of new columns to add, and their value(s).
-        If the content is a single value, it can be passedto define a constant value
-        for the entire column of data. The content can also be a list, in that case,
-        the list should contain values that are to be set, and it must be the same
-        length as the number of tuples in the table.
+          If the content is a single value, it can be passedto define a constant value
+          for the entire column of data. The content can also be a list, in that case,
+          the list should contain values that are to be set, and it must be the same
+          length as the number of tuples in the table.
         :return:  Integer count of number of documents added to collection
         """
         df = Textfile2Dataframe(
@@ -6154,10 +6156,10 @@ class Database(pymongo.database.Database):
           position of the write. (Ignored when storage_mode == "gridfs")
 
         :exception:
-        1) will raise a TypeError if mspass_object is not a mspass seismic
-        data object (atomic or ensmebles).   That shouldnt' normally happen
-        for use within the Database class but Users could experiment with
-        custom writers that would use this class method.
+          1) will raise a TypeError if mspass_object is not a mspass seismic
+          data object (atomic or ensmebles).   That shouldnt' normally happen
+          for use within the Database class but Users could experiment with
+          custom writers that would use this class method.
         """
         # when datum is an ensemble the caller should use bring_out_your dead
         # before calling this method
@@ -6275,11 +6277,11 @@ class Database(pymongo.database.Database):
         :type dir:  string or None
 
         :param dfile:  file name to save the sample data for this object.
-          Default is None which initaties the following steps: if dfile
-         is defined in the current object's Metadata (key "dfile") the
-         string value retrieved with the dfile key is used as the file
-         name.  If not, a unique name will be generated with a uuid
-         generator
+           Default is None which initaties the following steps: if dfile
+           is defined in the current object's Metadata (key "dfile") the
+           string value retrieved with the dfile key is used as the file
+           name.  If not, a unique name will be generated with a uuid
+           generator
         :type dfile:  string or None
 
         :param format:  optional format name to write data.  See above for
@@ -6296,7 +6298,7 @@ class Database(pymongo.database.Database):
           needec by other docs to reconstruct data.
 
         :return:  copy of the input with Metadata modified to contain all
-        data required to reconstruct the object from the stored sample data.
+          data required to reconstruct the object from the stored sample data.
 
         """
         # return immediately if the datum is marked dead
@@ -6504,19 +6506,19 @@ class Database(pymongo.database.Database):
         used only by the main save_data method.
 
         :param mspass_object:  is a seismic data object to be saved.  Reiterate
-        it must not be marked dead and for ensembles no members should be
-        marked dead.  If they are you will, at best, save useless junk.
-        Results are better called unpredictable as the state of dead data is
-        undefined and could only be a default constructed object.
-
+          it must not be marked dead and for ensembles no members should be
+          marked dead.  If they are you will, at best, save useless junk.
+          Results are better called unpredictable as the state of dead data is
+          undefined and could only be a default constructed object.
+  
         :type mspass_object:  one of TimeSeries, Seismogram,
-        TimeSeriesEnsemble, or Seismogram Ensemble.
-
+          TimeSeriesEnsemble, or Seismogram Ensemble.
+  
         :param overwrite:  When set True if there is an existing datum
-        with a matching id for the attribute "gridfs_id", the existing datum
-        will be deleted before the new data is saved.  When False a new
-        set of documents will be created to hold the data in the gridfs
-        system.  Default is False.
+          with a matching id for the attribute "gridfs_id", the existing datum
+          will be deleted before the new data is saved.  When False a new
+          set of documents will be created to hold the data in the gridfs
+          system.  Default is False.
 
         :return: edited version of input (mspass_object).  Return changed
           only by adding metadata attributes "storage_mode" and "gridfs_id"
@@ -7590,7 +7592,7 @@ def index_mseed_file_parallel(db, *arg, **kwargs):
 
     :param db: The MsPass core database handle that we want to index into
     :param arg: All the arguments that users pass into the original
-    index_mseed_file method
+      index_mseed_file method
     :return: None or error message string
     """
     ret = None
@@ -7974,21 +7976,21 @@ def doc2md(
 
     :param doc:  document (dict) to be converted to Metadata
     :type doc:  python dict assumed (there is no internal test for efficiency)
-    An associative array with string keys operator [] are the main requirements.
-    e.g. this function might work with a Metadata container to apply
-    schema constraints.
+      An associative array with string keys operator [] are the main requirements.
+      e.g. this function might work with a Metadata container to apply
+      schema constraints.
 
     :param metadata_schema:  instance of MetadataSchema class that can
-    optionally be used to impose schema constraints.
+      optionally be used to impose schema constraints.
     :type metadata_schema:  :class:`mspasspy.db.schema.MetadataSchema`
 
     :param wfcol:  Collection name from which doc was retrieved.   It should
-    normally alreacy be known by the caller so we require it to be passed
-    with this required arg.
+      normally alreacy be known by the caller so we require it to be passed
+      with this required arg.
     :type wfcol:   string
 
     :param mode: read mode as described in detail in User's Manual.
-    Behavior for this function is as follows:
+      Behavior for this function is as follows:
         "promiscuous" - (default)  no checks are applied to any key-value
            pairs and the result is a one-to-one translation of the input.
         "cautious" - Type constraints in the schema are enforced and
@@ -8132,10 +8134,10 @@ def doclist2mdlist(
     by doc2md it is dropped and two thi
 
     :param doclist:  list of documents to be converted to Metadata with schema
-    constraints
+      constraints
     :type doclist:  any iterable container holding an array of dict containers
-    with rational content (i.e. expected to be a MongoDB document with attributes
-    defined for a set of seismic data objects.)
+      with rational content (i.e. expected to be a MongoDB document with attributes
+      defined for a set of seismic data objects.)
 
     ---other here --
 
