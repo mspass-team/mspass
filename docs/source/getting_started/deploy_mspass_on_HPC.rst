@@ -162,9 +162,11 @@ the container.
 
 Launching Services
 --------------------
+
 ^^^^^^^^^^^^^^^^^^^
 Python Launcher
 ^^^^^^^^^^^^^^^^^^^
+
 ~~~~~~~~~~~~~~
 Installation
 ~~~~~~~~~~~~~~
@@ -203,6 +205,7 @@ with pip as follows
   pip install --user mspass_launcher
 
 If you are using a virtual environment run pip in the desired environment.
+
 ~~~~~~~~~~~~~~~~~~~~~~
 Configuration
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -349,6 +352,7 @@ Important concepts that follow from the figure above are
 ^^^^^^^^^^^^^^^^^^^^^^^^
 Shell Script Run Option
 ^^^^^^^^^^^^^^^^^^^^^^^^
+
 ~~~~~~~~~~~~~~~~~~~
 Overview
 ~~~~~~~~~~~~~~~~~~~
@@ -383,7 +387,7 @@ supply a README file.
 If the files you need are not on github and you are aware of colleagues
 using mspass you may need to contact them and ask for their working
 startup scripts.   If you are a trailblazer, then you will need to jump
-to the section below titled `Setting Up Configuration Files on a new Cluster`_.
+to the section below titled :ref:`Setting Up Configuration Files on a new Cluster`.
 You can then use the next section for reference when you are actively
 working with MsPASS on that system.
 
@@ -396,6 +400,8 @@ is identical to that described above.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Edit template scripts
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+""""""""""""""
 Overview
 """"""""""""""
 HPC clusters are designed to run large jobs and are not well-suited to
@@ -422,6 +428,7 @@ run a mspass workflow.   The section heading titles below
 use the names of the template files.  You can, of course
 change any of the file names provided you know how they are used.
 
+"""""""""""""""""""""""
 mspass_setup.sh
 """""""""""""""""""""""
 Before you run your first job you will almost certainly need to
@@ -531,6 +538,7 @@ The last section
 of this document describes how that file may need to be modified if
 you are the first to use mspass on a cluster.
 
+"""""""""""""""""""
 job_script.sh
 """""""""""""""""""
 `job_script.sh` is the shell script you submit that runs your "job" on
@@ -699,8 +707,11 @@ For example:
 Here the primary node is MSPASS_SCHEDULER_ADDRESS, and the frontend is
 running on the node, it should be specified explicitly.
 
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Setting Up Configuration Files on a new Cluster
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+"""""""""""
 Overview
 """""""""""
 If you are a trailblazer at your institution and need to configure MsPASS for

@@ -336,7 +336,7 @@ a good reason to do so.
 
 - *image* is the name tag for the docker container being run.   There are
   multiple tags for different versions and a "dev" version found
-  `here<https://github.com/mspass-team/mspass/pkgs/container/mspass>`__.
+  `here <https://github.com/mspass-team/mspass/pkgs/container/mspass>`__ .
   If you need to run a different instance of the container you will
   need to change the value associated with *image* in the file.
 - The *mspass-worker* service has an attibute with the key
