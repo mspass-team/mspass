@@ -6515,10 +6515,10 @@ class Database(pymongo.database.Database):
           marked dead.  If they are you will, at best, save useless junk.
           Results are better called unpredictable as the state of dead data is
           undefined and could only be a default constructed object.
-  
+
         :type mspass_object:  one of TimeSeries, Seismogram,
           TimeSeriesEnsemble, or Seismogram Ensemble.
-  
+
         :param overwrite:  When set True if there is an existing datum
           with a matching id for the attribute "gridfs_id", the existing datum
           will be deleted before the new data is saved.  When False a new

@@ -211,7 +211,7 @@ def read_distributed_data(
            common source gathers (ensmebles) might be created
            using a list something like this:
 
-           .. code-block:: python 
+           .. code-block:: python
 
            [{"source_id" : ObjectId('64b917ce9aa746564e8ecbfd')},
             {"source_id" : ObjectId('64b917d69aa746564e8ecbfe')},

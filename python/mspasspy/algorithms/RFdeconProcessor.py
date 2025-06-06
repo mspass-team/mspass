@@ -41,6 +41,7 @@ class RFdeconProcessor:
     processor object will be passed as an argument to the RFdecon
     function that should appear as a function in a spark map call.
     """
+
     def __repr__(self) -> str:
         repr_str = "{type}(alg='{alg}', md='{md}')".format(
             type=str(self.__class__), alg=self.algorithm, md=self.md

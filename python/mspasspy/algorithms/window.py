@@ -1025,7 +1025,7 @@ def merge(
     one segment is followed by a start time of the next segment that is
     more than 1 sample in duration.  Specifically when
 
-    .. code-block:: text 
+    .. code-block:: text
 
        (segment[i+1].t0()-segment[i].endtime()) > 1.5*dt
 
@@ -1057,7 +1057,7 @@ def merge(
       and use the member attribute of the ensemble as the input.
       i.e. if ens is a TimeSeriesEnsemble use something like this:
 
-      .. code-block:: text 
+      .. code-block:: text
 
            outdata = merge(ens.member)
 
