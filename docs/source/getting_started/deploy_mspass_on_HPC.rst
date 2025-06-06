@@ -1,23 +1,24 @@
-.. _deploy_mspass_on_HPC:
+APPTAINER.. _deploy_mspass_on_HPC:
 
 Deploying MsPASS on an HPC cluster
 =====================================
 
 Overview
 -----------------
-First, by HPC (High-Performance Computing) we mean a cluster of multiple node
+First, by HPC (High-Performance Computing) we mean a cluster of multiple nodes
 linked by high speed interconnections designed for large-scale, parallel
 processing.  If you are not familiar with modern concepts of this type of
 hardware and how they interact in HPC systems you should first do
 some background reading started with the section in our Getting Started pages
 found at :ref:`getting_started_overview`.
 
-An axiom for working with MsPASS is that any workflow you need to
+An axiom for working with MsPASS on a cluster is that any workflow you
 develop should first be prototyped on a desktop system.
 HPC systems are by definition designed to run large jobs that run
 on multiple nodes and use many cores.   It is always best to test run
 any workflow on a subset of your data.   For most people that is
-easiest on their office desktop machine.  With that model you first construct the
+easiest on their office desktop machine.  With that model you
+should plan to first construct the
 python code defining your workflow within a jupyter notebook
 on your desktop machine, transfer that notebook
 to the HPC system you want to use for the (presumably) much larger data
@@ -27,25 +28,356 @@ Like your desktop system every HPC cluster has a set of local idioms.
 Examples, are file system directory names and variations in the
 software used to run jobs on the cluster.   If there are other people
 in your institute who use MsPASS on the same cluster, your job will be much
-easier.   If that is your situation then the section below titled
-`Running MsPASS with Existing Configuration Scripts`_ should get you started.
-If you are the first person
-in your institute to use MsPASS with the cluster you are using, you will
-need to do some nontrivial work to configure the cluster setup.  A sketch
-of that process is below in the section titled `Setting Up Configuration Files on a new Cluster`_.
-The background for what is needed to do a Configuration
-can be found in :ref:`getting_started_overview`.
+easier.  In that case, you may be able to adapt an existing run script
+and/or configuration files
+from a colleague and bypass much of this document.  If you are a pioneer
+in using MsPASS at your institution, you will need to read this more carefully.
 
-Running MsPASS with Existing Configuration Scripts
-------------------------------------------------------
+At present there are two different approaches to running MsPASS
+on HPC cluster:  (1) a python "launcher" method, and (2) a unix
+shell method.   Unless you are an expert in the bash scripting
+language, most users will likely find the python launcher an easier
+way to get started.   These two methods are described in separate sections below.
+First, however, it is necessary to describe some concepts you
+will need to understand to run a job with either method.
 
+HPC MsPASS Concepts
+---------------------
+The block diagram in Figure :numref:`hpcjobscheduler` is an abstraction of the fundamental components
+required to run a MsPASS job on an HPC system.  These components are not
+independent and it is necessary to understand how and when the different
+components in that diagram need to come into existence.
+
+1.  HPC clusters use the idea of "batch processing" that dates to the
+    earliest "supercompouters", which were then called "mainframe computers",
+    of the 1960s.  In modern HPC clusters that idea has evolved to
+    job submission software.  Users submit "jobs" to the cluster
+    through a command line interface with the "job" being defined by a file
+    that on all HPC systems today is a unix shell script.  The "jobs"
+    submitted are managed by a job scheduler (not to be confused with
+    the dask/spark scheduler used in MsPASS) that manages which of
+    many competing "jobs" will be run when.   The submission process
+    requires the user to specify the resources required for the
+    job (e.g. number of nodes/cores and minimum memory requirements)
+    and the amount of time those resources will be needed.  Unlike
+    time-shared access that is the norm for desktops, the job scheduler on
+    an HPC cluster guarantees exclusive access to the requested resources
+    for the time requested.  Figure :numref:`hpcjobscheduler` illustrates the concept
+    that the job scheduler selects a set of nodes, assigns them to
+    your "job", and starts to run your job script.   In this case of
+    MsPASS the actual physical hardware is abstracted to a
+    set of services that define the framework.  How those services
+    are apportioned between the available nodes is a configuration
+    issue.  Because different jobs you may submit require vastly
+    different resources (e.g. one node versus 10) this topic is
+    more complicated for HPC systems than a desktop where the resources
+    available are fixed.
+2.  It is important to realize that you need to think of the MsPASS framework
+    as four services:  *database (db), scheduler, worker(s),* and
+    *frontend*.  The first thing your "job" needs to do to run a MsPASS
+    workflow is to launch an instance of each of those services.
+    MsPASS implements these services as a run argument
+    to a standard "container".   On desktop systems the standard
+    application to run a container is a package called
+    `docker <https://docs.docker.com/get-docker/>`__.   For a variety of
+    reasons docker is not used on HPC clusters.  Instead the standard
+    container launcher on HPC is
+    `apptainer <https://apptainer.org/documentation/>`__.
+    (Note until around 2023 this application was called *singularity*.
+    Some sites may still run the legacy version.)  There are currently
+    two ways to launch these services:  (a) a python launcher and
+    (b) a unix shell script normally edited to become the job
+    script.
+3.  Once the services are all running a job normally start running
+    a python script that defines the MsPASS workflow.
+    That script can either be in the form of a plain python script
+    or a sequence of run boxes in a jupyter notebook.   In the
+    first case the job has to run a python interpreter on the
+    same node as the cluster *scheduler*.  With a jupyter notebook
+    the script is executed through the *frontend* service, which
+    is normally launched on the same node as the *scheduler*.
+
+.. _hpcjobscheduler:
+
+.. figure:: ../_static/figures/HPCJobScheduler.png
+    :width: 600px
+    :align: center
+
+    Conceptual diagram of how an HPC job scheduler allocates
+    a set of nodes (3 in this example) as resources to construct
+    a virtual cluster in MsPASS.  The lines with arrows show
+    illustrate that the physical hardware can be thought of as
+    inputs used to define the virtual cluster illustrated here
+    with the box with the label "MsPASS Abstraction".   How
+    the inputs are allocated to build that cluster is the
+    configuration problem that is the main topic of this section.
+
+Common Requirement
+----------------------
+At the time of this writing a software package called
+`apptainer <https://apptainer.org/documentation/>`__
+is the standard application for launching containerized applications
+like MsPASS on HPC clusters.   HPC systems do not use docker for security
+reasons because docker defaults to allowing processes in the container
+to run as root.  Apptainer, however, is compatible with docker
+in the sense that it can pull containers constructed with docker and
+build a file to run on the HPC cluster.   That is the approach we use
+in this section.
+
+Your first step is to login to a "head node", which means the host name
+you use to login to the cluster.
+HPC clusters commonly support a wide range of applications.
+As a result, all HPC clusters we
+know of have a software management system that controls what software
+is loaded in your environment.   A typical incantation is the following:
+
+.. code-block::
+
+    module load apptainer
+
+If apptainer is not available on your cluster, you will need to consult
+with system administrators to see if they run an alternative or are able to
+install apptainer.  For smaller, specialized clusters you can consider
+building a local instance of MsPASS that doesn't use the container if
+apptainer is a problem.   That is not recommended for a variety of reasons
+but is possible.
+
+Once your shell knows about apptainer you will need to create an instance of the MsPASS
+container.  Unless you have a quota problem we recommend you put
+the container file in the directory `~/mspass/containers`.   Assuming that
+directory exists the following commands can be used to generate your
+working copy of the MsPASS container:
+
+.. code-block::
+
+    cd ~/mspass/containers
+    apptainer build mspass_latest.sif docker://mspass/mspass
+
+When the command exits you should now see the file "mspass_latest.sif"
+in the current directory ("~mspass/containers" for the example).
+Note this is different from docker.  Docker caches container data in its
+own work space.  Apptainer creates a file, which in the case above
+we called "mspass_latest.sif", containing the data required to launch
+the container.
+
+Launching Services
+--------------------
+
+^^^^^^^^^^^^^^^^^^^
+Python Launcher
+^^^^^^^^^^^^^^^^^^^
+
+~~~~~~~~~~~~~~
+Installation
+~~~~~~~~~~~~~~
+The python launcher for MsPASS is distributed as part of a separate
+python package called :code:`mspass_launcher`.   If you are reading this
+you have probably already used this package to install
+:code:`mspass-desktop`.
+
+First you should check what the default python interpreter is for your installation
+using
+.. code-block::
+
+  python --version
+
+If the version is less than 3.10 we recommend you enable a higher version.
+A typical example with module is the following:
+
+.. code-block::
+
+  module load python/3.10.10
+
+where the actual tag you will use after "python" is likely different.
+Be aware the version must 3.10 or higher as this package uses
+the :code:`match-case` construct that was not available prior to 3.10.
+There are other options with virtual environments
+(notably :code:`pyenv` and :code:`conda env`),
+but you should use
+that approach only if you are familiar with how to work with virtual
+environments.
+
+We then recommend you install :code:`mspass_launcher` as a "local" package
+with pip as follows
+
+.. code-block::
+
+  pip install --user mspass_launcher
+
+If you are using a virtual environment run pip in the desired environment.
+
+~~~~~~~~~~~~~~~~~~~~~~
+Configuration
+~~~~~~~~~~~~~~~~~~~~~~
+Running the python launcher requires editing a configuration
+file.  The normal expectation is that file has the magic
+name :code:`HPCClusterLauncher.yaml` and an instance of that file
+is present in the job's run directory.
+If a colleague at your institution has run MsPASS we advise you to
+use it as a starting point.   If not, copy the master from the package
+install directory (see internet sources on where a --user packages are installed)
+or download the master from GitHub
+`here <https://github.com/mspass-team/mspass_launcher/blob/main/src/mspass_launcher/data/yaml/HPCClusterLauncher.yaml>`__.
+
+Edit that file for your installation and the requirements of your
+workflow.   Details on how to do that
+are found in :ref:`this document<hpc_cluster_configuration>`.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Prepare a job script
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+We assume the MsPASS script you will use to drive your data processing
+has been debugged previously and is in the form of either a
+jupyter notebook or a python run script.   In either case it is
+important to realize the process must not require any user input
+since by definition an HPC job runs in "batch" mode.
+
+A typical python job script would look like this:
+
+.. code-block::
+
+  #! /bin/bash
+
+  # ... Series of job scheduler resource definitions ...
+  module load apptainer
+  module load python/3.10.10  # optional - only needed if not using default python
+  cd *working_directory*
+  python << EOI
+  import hpc
+  launcher = hpc.HPCClusterLauncher()
+  launcher.run("myscript.py")
+  EOI
+
+where *working_directory* and the name "myscript.py" would by customized.
+
+Note the :code:`HPCClusterLauncher.run` method works with either
+a pure python script as in the above example or for a jupyter notebook
+file  (".ipynb" file name).   We reiterate, however, that a notebook
+file must be "runable" without intervention.
+
+Finally, you should also be aware that
+the constructor for the :code:`HPCClusterLauncher` object uses
+the default configuration file in the current directory.  As you use
+MsPASS for a range of projects you will likely develop multiple configuration
+files that specify, for example, different numbers of workers.  You
+can specify an alternative configuration file by giving a path to that
+file as arg0 or via the kwarg with key "configuration_file".
+For example, if you had a "configurations" directory in your home directory
+with an alternate file "quartz_4_node.yaml" you could change that line of the
+script to the following:
+
+.. code-block::
+
+  launcher = hpc.HPCClusterLauncher("~/configurations/quartz_4_node.yaml")
+
+or alternatively
+
+.. code-block::
+
+  launcher = hpc.HPCClusterLauncher(configuration_file="~/configurations/quartz_4_node.yaml")
+
+~~~~~~~~~~~~~~~~~~~~~~
+Job submission
+~~~~~~~~~~~~~~~~~~~~~~
+Once you have a "job script" like the example above prepared you
+need to "submit" the job to the cluster.   The command you use to do that
+will depend on the job scheduler used on that cluster.
+A common example today is a "slurm", but others are similar.
+The only difference is the incantations used to define resources
+and the command tool used to submit or monitor the progress of a job.
+
+As an example, assume the "job script" we prepared has the file name
+"myproject.job".  If you login to a head node on the cluster
+and cd to the directory where the job script is located you
+would submit it with "slurm" as follows:
+
+.. code-block::
+
+  sbatch myproject.job
+
+noting the the ".job" in that file name is not required.
+It was done in this illustration to clarify it not a regular bash
+script but a slurm job.  The general approach is the same for
+all other job schedulers but the command to submit the job
+will be different.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Understanding the python submission
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The way the :code:`HPCClusterLauncher` object works is
+potentially confusing because an instance of the class has to
+manage the virtual cluster it launches and submit jobs to that
+cluster.   A wiring diagram may aid your understanding is
+seen below in Figure :numref:`hpclauncherconcepts`.
+
+.. _hpclauncherconcepts:
+
+.. figure:: ../_static/figures/HPCLauncherConcepts.png
+    :width: 600px
+    :align: center
+
+    Simplified wiring diagram for MsPASS cluster abstraction using the
+    python launcher for HPC systems (:code:`HPCClusterLauncher`).
+    The figure emphasizes that :code:`HPCClusterLauncher`
+    launches containers that define MsPASS services:   db, scheduler,
+    worker(s), and frontend.  Note the "frontend" in this case is
+    little more than an alias for python (illlustrated) because in this context when the
+    :code:`HPCClusterLauncher.run`
+    method is called jupyter notebooks are first passed through :code:`nbconvert`
+    to convert the notebook to a python script
+    before being run with an instance of python run on the frontend
+    container.
+
+Important concepts that follow from the figure above are
+
+1.  A typical job runs on multiple nodes.  What service is run on what node is
+    configurable.  An exception is that the python run script always runs
+    on what we call the *primary node*.
+    It is normally the same node as the *scheduler* service.
+2.  A corollary of 1 is that all serial processing will run on the *primary* node
+    and compete for resources with any other service running on that node.
+3.  The python interpreter running your job intercepts parallel constructs and
+    submits them as task to "workers" managed by the
+    "scheduler" service. The workers may be processes running on the
+    same node as the scheduler or others designated as *worker* nodes.
+4.  The job script that launches the processing runs on the *primary* node, but
+    outside the container.   That means the job script operates in a completely
+    different python environment that the processing workflow that always run
+    inside the containers.  The is illustrated in the figure by showing the
+    job script as running on the *primary* node but outside the boundaries of
+    any of the service boxes.  In words, the job script above launches an instance of a
+    :code:`HPCClusterLauncher` and then executes our workflow python/noebook file
+    using the :code:`HPCClusterLauncher.run` method.
+
+^^^^^^^^^^^^^^^^^^^^^^^^
+Shell Script Run Option
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+~~~~~~~~~~~~~~~~~~~
+Overview
+~~~~~~~~~~~~~~~~~~~
+Prior to the 2025 the only way to run MsPASS on any
+system was a totally command line driven method.
+That was true for both desktop and clusters.
+The :code:`mspass-desktop` application
+described in :ref:`command_line_docker_desktop_operation` and the
+:code:`HPCClusterLauncher` class described above were
+developed to simplify running MsPASS.  This section
+describes an alternative, now legacy approach some may prefer.
+It uses a lengthy shell script to launch MsPASS on an HPC cluster.
+The process is conceptually identical, but uses bash
+instead of python to handle the launch process.  You may prefer this
+approach if you are an expert bash programmer or have used MsPASS
+previously in this mode.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Get a Copy of Configuration Scripts
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 You may first want to search the suite of configuration scripts found
 on github `here <https://github.com/mspass-team/mspass/tree/master/scripts>`__
 If the system you are using has a folder there you should download the
 scripts from the appropriate folder and you should be able to proceed
-without having too dig too deep into this section.
+without having to dig too deep into this section.
 We assume here the file name convention is the same as that for the
 set in the folder `template`.   If the file names for your institution
 are different you will have to do some additional work to puzzle out
@@ -55,48 +387,21 @@ supply a README file.
 If the files you need are not on github and you are aware of colleagues
 using mspass you may need to contact them and ask for their working
 startup scripts.   If you are a trailblazer, then you will need to jump
-to the section below titled `Setting Up Configuration Files on a new Cluster`_.
+to the section below titled :ref:`Setting Up Configuration Files on a new Cluster`.
 You can then use the next section for reference when you are actively
 working with MsPASS on that system.
 
-Build MsPASS Container with Singularity
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Singularity is a container implementation that is used on all HPC
-clusters we know of.   HPC systems do not use docker for security
-reasons because docker defaults to allowing processes in the container
-to run as root.  Singularity, however, is compatible with docker
-in the sense that it can pull containers constructed with docker and
-build a file to run on the HPC cluster.   That is the approach we use
-in this section.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Build MsPASS Container with Apptainer
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+You will need to build an apptainer file.  The process for this options
+is identical to that described above.
 
-Because HPC clusters commonly support a wide range of applications all
-HPC clusters we
-know of have a software management system that controls what software
-is loaded in your environment.   At TACC, where MsPASS was initially
-developed, they use a command line tool called `module`.  On TACC systems
-the proper incantation is the following:
-
-.. code-block::
-
-    module load tacc-singularity
-
-A more stock version might omit the "tacc-" part of that name.  Once your
-shell knows about singularity you can create an instance of the MsPASS
-container.  Unless you have a quota problem we recommend you put
-the container file in the directory `~/mspass/containers`.   Assuming that
-directory exists the following commands can be used to generate your
-working copy of the MsPASS container:
-
-.. code-block::
-
-    cd ~/mspass/containers
-    singularity build mspass_latest.sif docker://mspass/mspass
-
-When the command exits you should now see the file "mspass_latest.sif"
-in the current directory ("~mspass/containers" for the example).
-
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Edit template scripts
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+""""""""""""""
 Overview
 """"""""""""""
 HPC clusters are designed to run large jobs and are not well-suited to
@@ -108,7 +413,7 @@ It also assumes you aren't a trailblazer and you have a
 template "job script" you or someone else at your institute
 has created that you only need to modify.
 
-The standard way to run a mspass "job" on HPC systems is through a
+This section describes how to create a mspass "job" on HPC system as a
 set of unix shell scripts.   We use that model because all HPC
 centers use the unix shell as the "job control" language.   Old-timers
 from the days of mainframe computers from IBM and CDC may remember
@@ -123,6 +428,7 @@ run a mspass workflow.   The section heading titles below
 use the names of the template files.  You can, of course
 change any of the file names provided you know how they are used.
 
+"""""""""""""""""""""""
 mspass_setup.sh
 """""""""""""""""""""""
 Before you run your first job you will almost certainly need to
@@ -146,7 +452,7 @@ show here:
   export MSPASS_HOME=~/mspass
   export MSPASS_CONTAINER=${MSPASS_HOME}/containers/mspass_latest.sif
   # the container boots.  Usually an explicit path is best to avoid
-  export SINGULARITY_BIND=/N/slate/pavlis,/N/scratch/pavlis
+  export APPTAINER_BIND=/N/slate/pavlis,/N/scratch/pavlis
 
   export MSPASS_WORK_DIR=/N/slate/pavlis/test_scripts
   export MSPASS_DB_DIR=/N/scratch/pavlis/usarray/db
@@ -165,17 +471,17 @@ Notice that all this shell script does is set several environment
 variables that all begin with the string `MSPASS_`.
 The first one set is `MSPASS_HOME`.  It is used like many software packages to define the home
 base for the software.  In the MsPASS case it is used to define the
-location of the singularity container needed to run MsPASS.  If you
+location of the container needed to run MsPASS.  If you
 created a private copy of the container in the section above you will
 not need to alter this parameter at all.   If multiple people at your
 institute run MsPASS, there may be a master copy of the MsPASS container
 you can use in this definition.  If so insert that path for this parameter.
 
-The next line, which sets the environment variable `SINGULARITY_BIND`,
+The next line, which sets the environment variable `APPTAINER_BIND`,
 is a bit more obscure.   Full understanding of why that incatation
 is necessary requires the
 concept of how to "bind" a file system to the container.   A starting
-point is the singularity documentation found
+point is the apptainer documentation found
 `here <https://docs.sylabs.io/guides/3.5/user-guide/bind_paths_and_mounts.html>`__.
 Briefly, the idea is much like a file system "mount" in unix.
 The comma separated list of directory names will be visible to your
@@ -232,6 +538,7 @@ The last section
 of this document describes how that file may need to be modified if
 you are the first to use mspass on a cluster.
 
+"""""""""""""""""""
 job_script.sh
 """""""""""""""""""
 `job_script.sh` is the shell script you submit that runs your "job" on
@@ -273,7 +580,7 @@ unless you have no other option.
 
 The procedure for running MsPASS interactively is similar to that
 for running docker on a desktop system found in :ref:`run_mspass_with_docker`.
-There are two key differences:  (1) you launch MsPASS with singularity
+There are two key differences:  (1) you launch MsPASS with apptainer
 (or something else) instead of docker and (2) there are a lot of
 potential network issues this manual cannot fully cover.  This subsection
 is mainly aimed to address the first.  We provide only some initial suggestions
@@ -373,7 +680,7 @@ through some form of "gateway".   For example, Indiana University has
 a "Research Desktop" (RED) system that provides a way to run a window on your
 local system that makes appear like a linux desktop.   In that case,
 running an interactive job is exactly like running with docker except
-you use singularity and can run jobs on many nodes.
+you use singularity/apptainer and can run jobs on many nodes.
 In addition, the batch submission is not necessary and you can run
 the configuration shell script interactively.  For the RED example you
 can explicitly launch and "interactive job" that creates a terminal
@@ -388,7 +695,7 @@ Connection to the jupyter notebook server is then simple via a web browser
 running on top of the gateway.
 
 If running on distributed nodes, when starting the DB Client, the host name
-should be specified, it is defined as the environment variable MSPASS_SCHEDULER_ADDRESS. 
+should be specified, it is defined as the environment variable MSPASS_SCHEDULER_ADDRESS.
 For example:
 
 .. code-block:: python
@@ -397,11 +704,14 @@ For example:
     import os
     dbclient=DBClient(os.environ.get("MSPASS_SCHEDULER_ADDRESS"))
 
-Here the primary node is MSPASS_SCHEDULER_ADDRESS, and the frontend is 
+Here the primary node is MSPASS_SCHEDULER_ADDRESS, and the frontend is
 running on the node, it should be specified explicitly.
 
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Setting Up Configuration Files on a new Cluster
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+"""""""""""
 Overview
 """""""""""
 If you are a trailblazer at your institution and need to configure MsPASS for
@@ -454,14 +764,14 @@ script.
 How Different Roles are Run
 """""""""""""""""""""""""""""""""""
 Notice from :numref:`HPC_config_figure1` that all 4 roles are
-launched as separate instances of the singularity container.   In the script
+launched as separate instances of the container.   In the script
 they are all launched with variations of this following:
 
 .. code-block::
 
-  SING_COM="singularity run $MSPASS_CONTAINER"
-  SINGULARITYENV_MSPASS_WORK_DIR=$WORK_DIR \
-       SINGULARITYENV_MSPASS_ROLE=scheduler $SING_COM &
+  SING_COM="apptainer run $MSPASS_CONTAINER"
+  APPTAINERENV_MSPASS_WORK_DIR=$WORK_DIR \
+       APPTAINERENV_MSPASS_ROLE=scheduler $SING_COM &
 
 where we illustrate the definition of the symbol `SING_COM` for
 clarity only.  In the actual script that line appears earlier.
@@ -469,9 +779,9 @@ The above is the actual launch line for the scheduler.  Note the following
 that are used when each instance of the container is launched:
 
 -  The run command is preceded by a set of shell variable definitions
-   that all begin with the keyword `SINGULARITYENV`.   An odd feature of
-   singularity is any shell symbol it detects that begin with
-   `SINGULARITYENV` have that keyword stripped and the result posted to
+   that all begin with the keyword `APPTAINERENV`.   An odd feature of
+   apptainer is any shell symbol it detects that begin with
+   `APPTAINERENV` have that keyword stripped and the result posted to
    a shell environment variable that is available to the container boot script,
    which in mspass is called `start-mspass-sh`,
    (That shell script is not something you as user would ever change but
@@ -485,11 +795,11 @@ that are used when each instance of the container is launched:
    EXCEPT the jupyter notebook server that is the last line in the
    script.   That syntax is important.  It cause the shell running the
    script to block until the notebook exits.   When the master job
-   script exits singularity does the housecleaning to kill all the running
+   script exits apptainer does the housecleaning to kill all the running
    containers on multiple nodes running in the background.
 -  The instances of the container for the `db` and `frontend` role launch
    are similar to the scheduler example above but with different
-   SINGULARITYENV inputs.   The `worker` launching is different, however,
+   APPTAINERENV inputs.   The `worker` launching is different, however,
    and is the topic of the next section.
 
 Launching Workers
@@ -544,9 +854,9 @@ follows immediately after the above:
 
 .. code-block::
 
-  SINGULARITYENV_MSPASS_WORK_DIR=$WORK_DIR \
-    SINGULARITYENV_MSPASS_SCHEDULER_ADDRESS=$NODE_HOSTNAME \
-    SINGULARITYENV_MSPASS_ROLE=worker \
+  APPTAINERENV_MSPASS_WORK_DIR=$WORK_DIR \
+    APPTAINERENV_MSPASS_SCHEDULER_ADDRESS=$NODE_HOSTNAME \
+    APPTAINERENV_MSPASS_ROLE=worker \
     mpiexec -n $((SLURM_NNODES-1)) -host $WORKER_LIST $SING_COM &
 
 This uses the openmpi command line tool `mpiexec` to launch the

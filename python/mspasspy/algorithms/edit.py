@@ -107,11 +107,11 @@ class Executioner(ABC):
         :param d:  MsPASS data object to which elog message is to be
           written.
         :param testname: is the string assigned to the "algorithm" field
-        of the message posted to d.elog.
+          of the message posted to d.elog.
         :param message:  specialized message to post - this string is added
-        to an internal generic message.
+          to an internal generic message.
         :param severity:  ErrorSeverity to assign to elog message
-        (See ErrorLogger docstring).  Default is Informational
+          (See ErrorLogger docstring).  Default is Informational
         """
         if _input_is_valid(d):
             kill_message = "Killed by kill_if_true method.  Reason:\n"
@@ -146,10 +146,10 @@ class MetadataGT(Executioner):
         :param key:  key used for extracting a Metadata component for test
         :param value:  is the threshold value for the test.
         :param verbose:  if true informational messages will be posted to
-        the elog area of d.  When false (default) kills are silent.  That
-        default is intentioanl to reduce the size of elog data in large data
-        sets that often require extensive editing.  Set true if you need
-        details on why data were killed or for debugging.
+          the elog area of d.  When false (default) kills are silent.  That
+          default is intentioanl to reduce the size of elog data in large data
+          sets that often require extensive editing.  Set true if you need
+          details on why data were killed or for debugging.
         """
         self.key = key
         self.value = value
@@ -217,10 +217,10 @@ class MetadataGE(Executioner):
         :param key:  key used for extracting a Metadata component for test
         :param value:  is the threshold value for the test.
         :param verbose:  if true informational messages will be posted to
-        the elog area of d.  When false (default) kills are silent.  That
-        default is intentioanl to reduce the size of elog data in large data
-        sets that often require extensive editing.  Set true if you need
-        details on why data were killed or for debugging.
+          the elog area of d.  When false (default) kills are silent.  That
+          default is intentioanl to reduce the size of elog data in large data
+          sets that often require extensive editing.  Set true if you need
+          details on why data were killed or for debugging.
         """
         self.key = key
         self.value = value
@@ -286,10 +286,10 @@ class MetadataLT(Executioner):
         :param key:  key used for extracting a Metadata component for test
         :param value:  is the threshold value for the test.
         :param verbose:  if true informational messages will be posted to
-        the elog area of d.  When false (default) kills are silent.  That
-        default is intentioanl to reduce the size of elog data in large data
-        sets that often require extensive editing.  Set true if you need
-        details on why data were killed or for debugging.
+          the elog area of d.  When false (default) kills are silent.  That
+          default is intentioanl to reduce the size of elog data in large data
+          sets that often require extensive editing.  Set true if you need
+          details on why data were killed or for debugging.
         """
         self.key = key
         self.value = value
@@ -355,10 +355,10 @@ class MetadataLE(Executioner):
         :param key:  key used for extracting a Metadata component for test
         :param value:  is the threshold value for the test.
         :param verbose:  if true informational messages will be posted to
-        the elog area of d.  When false (default) kills are silent.  That
-        default is intentioanl to reduce the size of elog data in large data
-        sets that often require extensive editing.  Set true if you need
-        details on why data were killed or for debugging.
+          thee elog area of d.  When false (default) kills are silent.  That
+          default is intentioanl to reduce the size of elog data in large data
+          sets that often require extensive editing.  Set true if you need
+          details on why data were killed or for debugging.
         """
         self.key = key
         self.value = value
@@ -426,10 +426,10 @@ class MetadataEQ(Executioner):
         :param key:  key used for extracting a Metadata component for test
         :param value:  is the threshold value for the test.
         :param verbose:  if true informational messages will be posted to
-        the elog area of d.  When false (default) kills are silent.  That
-        default is intentioanl to reduce the size of elog data in large data
-        sets that often require extensive editing.  Set true if you need
-        details on why data were killed or for debugging.
+          the elog area of d.  When false (default) kills are silent.  That
+          default is intentioanl to reduce the size of elog data in large data
+          sets that often require extensive editing.  Set true if you need
+          details on why data were killed or for debugging.
         """
         self.key = key
         self.value = value
@@ -497,10 +497,10 @@ class MetadataNE(Executioner):
         :param key:  key used for extracting a Metadata component for test
         :param value:  is the threshold value for the test.
         :param verbose:  if true informational messages will be posted to
-        the elog area of d.  When false (default) kills are silent.  That
-        default is intentioanl to reduce the size of elog data in large data
-        sets that often require extensive editing.  Set true if you need
-        details on why data were killed or for debugging.
+          the elog area of d.  When false (default) kills are silent.  That
+          default is intentioanl to reduce the size of elog data in large data
+          sets that often require extensive editing.  Set true if you need
+          details on why data were killed or for debugging.
         """
         self.key = key
         self.value = value
@@ -559,10 +559,10 @@ class MetadataDefined(Executioner):
 
         :param key:  key used for existence test.
         :param verbose:  if true informational messages will be posted to
-        the elog area of d.  When false (default) kills are silent.  That
-        default is intentioanl to reduce the size of elog data in large data
-        sets that often require extensive editing.  Set true if you need
-        details on why data were killed or for debugging.
+          the elog area of d.  When false (default) kills are silent.  That
+          default is intentioanl to reduce the size of elog data in large data
+          sets that often require extensive editing.  Set true if you need
+          details on why data were killed or for debugging.
         """
         self.key = key
         self.verbose = verbose
@@ -620,10 +620,10 @@ class MetadataUndefined(Executioner):
 
         :param key:  key used for existence test.
         :param verbose:  if true informational messages will be posted to
-        the elog area of d.  When false (default) kills are silent.  That
-        default is intentioanl to reduce the size of elog data in large data
-        sets that often require extensive editing.  Set true if you need
-        details on why data were killed or for debugging.
+          the elog area of d.  When false (default) kills are silent.  That
+          default is intentioanl to reduce the size of elog data in large data
+          sets that often require extensive editing.  Set true if you need
+          details on why data were killed or for debugging.
         """
         self.key = key
         self.verbose = verbose
@@ -712,10 +712,10 @@ class MetadataInterval(Executioner):
           test is much more common than the opposite.  (e.g. retain source-receiver
           distances within specified range)
         :param verbose:  if true informational messages will be posted to
-        the elog area of d.  When false (default) kills are silent.  That
-        default is intentioanl to reduce the size of elog data in large data
-        sets that often require extensive editing.  Set true if you need
-        details on why data were killed or for debugging.
+          the elog area of d.  When false (default) kills are silent.  That
+          default is intentioanl to reduce the size of elog data in large data
+          sets that often require extensive editing.  Set true if you need
+          details on why data were killed or for debugging.
         """
         self.key = key
         self.lower_endpoint = lower_endpoint
@@ -1005,11 +1005,11 @@ class MetadataOperator(ABC):
         :param d:  MsPASS data object to which elog message is to be
           written.
         :param testname: is the string assigned to the "algorithm" field
-        of the message posted to d.elog.
+          of the message posted to d.elog.
         :param message:  specialized message to post - this string is added
-        to an internal generic message.
+          to an internal generic message.
         :param severity:  ErrorSeverity to assign to elog message
-        (See ErrorLogger docstring).  Default is Informational
+          (See ErrorLogger docstring).  Default is Informational
         """
         if _input_is_valid(d):
             edit_message = "Altered by apply method of this class.  Details:\n"
@@ -1117,6 +1117,8 @@ class SetValue(MetadataOperator):
 
     Example:  to set the value of key = 'a' to constant 2.0
 
+    .. code-block:: python
+
       op = SetValue('a',2.0)
       d = op.apply(d)
     """
@@ -1149,18 +1151,18 @@ class SetValue(MetadataOperator):
         Use of decorator adds common MsPASS arguments as call options.
 
         :param d:  datum to which operator is to be applied.  d must be a
-        valid MsPASS data object or this method will throw a fatal MsPASSError
-        exception.  If d is marked dead it will be silently ignored.
+          valid MsPASS data object or this method will throw a fatal MsPASSError
+          exception.  If d is marked dead it will be silently ignored.
         :param apply_to_members:  when true and d is an ensemble object the
-        operator is applied to the members.  When false the metadata for the
-        ensemble will be altered.  This parameter is ignored for atomic
-        data types.  Default is False.
+          operator is applied to the members.  When false the metadata for the
+          ensemble will be altered.  This parameter is ignored for atomic
+          data types.  Default is False.
 
         :return:  always returns a (usually) edited copy of the input d.
-        When the input d is dead the copy will always be unaltered.
-        Note the copy is a shallow copy which in python means we just return
-        the equivalent of a pointer to the caller.  Important for efficiency
-        as d can be very large for some ensembles.
+          When the input d is dead the copy will always be unaltered.
+          Note the copy is a shallow copy which in python means we just return
+          the equivalent of a pointer to the caller.  Important for efficiency
+          as d can be very large for some ensembles.
 
         """
         if _input_is_valid(d):
@@ -1200,6 +1202,8 @@ class Add(MetadataOperator):
     """
     Used to implement += operator on a specified Metadata key.
     Example:  to add 2 to data, d, with key='icdp' could use this
+
+    .. code-block:: python
 
       op = Add('icdp',2)
       d = op.apply(d)
@@ -1284,11 +1288,15 @@ class Add(MetadataOperator):
 class Multiply(MetadataOperator):
     """
     Used to implement *= operator on a specified Metadata key.
+
     Example:  to multiple metadata in, d, with key='Pamp' by 2.5
     you could use this
 
+    .. code-block:: python
+
       op = Multiply('Pamp',2.5)
       d = op.apply(d)
+
     """
 
     def __init__(self, key, value_to_multiply=1):
@@ -1371,6 +1379,8 @@ class Subtract(MetadataOperator):
     """
     Used to implement -= operator on a specified Metadata key.
     Example:  to subtract 2 from metadata, d, with key='icdp' could use this
+
+    .. code-block:: python
 
       op = Subtract('icdp',2)
       d = op.apply(d)
@@ -1457,6 +1467,8 @@ class Divide(MetadataOperator):
     Used to implement /= operator on a specified Metadata key.
     Example:  to divide metadata in, d, with key='Pamp' by 2.0
     you could use this
+
+    .. code-block:: python
 
       op = Divide('Pamp',2.-)
       d = op.apply(d)
@@ -1550,6 +1562,8 @@ class IntegerDivide(MetadataOperator):
 
     Example:  to apply integer division to metadata in, d, with key='icdp' by 5
     you could use this
+
+    .. code-block:: python
 
       op = IntegerDivide('icdp',5)
       d = op.apply(d)
@@ -1646,6 +1660,8 @@ class Mod(MetadataOperator):
 
     Example:  to convert the metadata associated with the key 'ichan' that
     are currently counting by 1 to numbers that cycle from 0 to 23 us this:
+
+    .. code-block:: python
 
       op = Mod('ix',24)
       d = op.apply(d)
@@ -1747,6 +1763,8 @@ class Add2(MetadataOperator):
     same although it is hard to conceive how that could be useful.
 
     Example:  to compute ix as the d['sx'] + d['chan'] use
+
+    .. code-block:: python
 
       op = Add2('ix1','sx','chan')
       d = op.apply(d)
@@ -1856,6 +1874,8 @@ class Multiply2(MetadataOperator):
 
     Example:  to compute ix as the d['sx'] * d['chan'] use
 
+    .. code-block:: python
+
       op = Multiply2('ix1','sx','chan')
       d = op.apply(d)
     """
@@ -1963,6 +1983,10 @@ class Subtract2(MetadataOperator):
     same although it is hard to conceive how that could be useful.
 
     Example:  to compute ix as the d['sx'] - d['chan'] use
+
+    .. code-block:: python
+
+    .. code-block:: python
 
       op = Subtract2('ix1','sx','chan')
       d = op.apply(d)
@@ -2072,6 +2096,10 @@ class Divide2(MetadataOperator):
 
     Example:  to compute ix as the d['sx'] / d['chan'] use
 
+    .. code-block:: python
+
+    .. code-block:: python
+
       op = Divide2('ix1','sx','chan')
       d = op.apply(d)
     """
@@ -2180,6 +2208,8 @@ class IntegerDivide2(MetadataOperator):
 
     Example:  to compute ix as the d['sx'] // d['chan'] use
 
+    .. code-block:: python
+
       op = IntegerDivide2('ix1','sx','chan')
       d = op.apply(d)
     """
@@ -2287,6 +2317,8 @@ class Mod2(MetadataOperator):
     same although it is hard to conceive how that could be useful.
 
     Example:  to compute ix as the d['sx'] % d['chan'] use
+
+    .. code-block:: python
 
       op = Mod2('ix1','sx','chan')
       d = op.apply(d)
@@ -2493,17 +2525,16 @@ def erase_metadata(d, keylist, apply_to_members=False):
     If false only the ensemble (global) metadata are handled.
 
     :param d:  must be a valid MsPASS data object. If not the function
-    will throw an exception.   If the datum is marked dead it will
-    silently just return the contents.
+        will throw an exception.   If the datum is marked dead it will
+        silently just return the contents.
 
     :param keylist:  python list of strings to use as keywords.  Any matching
-    keys the metadata of d will be cleared.
-
+        keys the metadata of d will be cleared.
     :param apply_to_members:  is a boolean controlling how the function
-    should handle ensembles.  Then set true the erase algorithm will be
-    applied in a loop over the member vector of an input ensemble.  When
-    False (default) only the ensemble's metadata is checked.  This parameter
-    is ignored if the input is an atomic data type.
+        should handle ensembles.  Then set true the erase algorithm will be
+        applied in a loop over the member vector of an input ensemble.  When
+        False (default) only the ensemble's metadata is checked.  This parameter
+        is ignored if the input is an atomic data type.
 
     :return:  edited copy of d
     """

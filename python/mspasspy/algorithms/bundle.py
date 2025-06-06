@@ -67,7 +67,7 @@ def bundle_seed_data(ensemble):
     :rtype:  SeismogramEnsemble
 
     :exception:  Can throw a MsPASSError for a number of conditions.
-    Caller should be enclosed in a handler if run on a large data set.
+        Caller should be enclosed in a handler if run on a large data set.
     """
     if not isinstance(ensemble, TimeSeriesEnsemble):
         raise MsPASSError(
@@ -96,13 +96,15 @@ def BundleSEEDGroup(d, i0=0, iend=2):
     to assemble one or more bundles needed to build a Seismogram.  The
     algorithm used here is simple and ONLY works if the inputs have been
     sorted so the channels define a group of three unique channel codes.
-    For example,
-        HHE, HHN, HHZ
-    would form a typical seed channel grouping.
+    For example, HHE, HHN, HHZ, would form a typical seed channel grouping.
 
     The function will attempt to handle duplicates.  By that I mean
     if the group has two of the same channel code like these sequences:
+
+    .. code-block:: text
+
         HHE, HHE, HHN, HHZ  or HHE, HHN, HHN, HHZ, HHZ
+
     If the duplicates are pure duplicates there is no complication and
     the result will be clean.   If the time spans of the duplicate
     channels are different the decision of which to use keys on a simple
@@ -117,10 +119,12 @@ def BundleSEEDGroup(d, i0=0, iend=2):
     three inputs with an inconsistent set of SEED names.   That "inconsistent"
     test is obscure and yet another example that SEED is a four letter word.
     Commentary aside, the rules are:
+
         1.  The net code must be defined and the same in all TimeSeries passed
         2.  The station (sta) code must also be the same for all inputs
         3.  Similarly the loc code must be the same in all inputs.
         4.  Finally, there is a more obscure test on channel names.  They must
+
     all have the same first two characters.   That is, BHE, BHN, BHN, BHZ
     is ok but BHE, BHN, BHZ, HHE will cause an immediate exit with no
     attempt to resolve the ambiguity - that is viewed a usage error in
@@ -129,6 +133,7 @@ def BundleSEEDGroup(d, i0=0, iend=2):
 
     In all cases where the bundling is not possible the function does not
     throw an exception but does four things:
+
         1.  Merges the Metadata of all inputs (uses the += operator so only the
             last values of duplicate keys will be preserved in the return)
         2.  If ProcessingHistory is defined in the input they history records  are
@@ -143,19 +148,19 @@ def BundleSEEDGroup(d, i0=0, iend=2):
     the outputs to the inputs will be posted to ProcessingHistory.
 
     :param d: This is assumed to be an array like object of TimeSeries data
-    that are to be used to build the Seismogram objects.  They must be
-    sorted as described above or the algorithm will fail.   Two typical
-    array like objects to use are the member attribute of a TimeSeriesEnsemble
-    or a python array constructed from a (sorted) collection of TimeSeries
-    objects.
+        that are to be used to build the Seismogram objects.  They must be
+        sorted as described above or the algorithm will fail.   Two typical
+        array like objects to use are the member attribute of a TimeSeriesEnsemble
+        or a python array constructed from a (sorted) collection of TimeSeries
+        objects.
     :param i0:  starting array position for constructing output(s).
-    The default is 0 which would be the normal request for an full ensemble
-    or a single grouping assembled by some other mechanism.  A nonzero is
-    useful to work through a larger container one Seismogram at a time.
+        The default is 0 which would be the normal request for an full ensemble
+        or a single grouping assembled by some other mechanism.  A nonzero is
+        useful to work through a larger container one Seismogram at a time.
     :param iend:  end array position.   The function will attempt to
-    assemble one or more Seismograms from TimeSeries in the range
-    d[i0] to d[iend].  Default is 2 for a single Seismogram without
-    duplicates.
+        assemble one or more Seismograms from TimeSeries in the range
+        d[i0] to d[iend].  Default is 2 for a single Seismogram without
+        duplicates.
     """
     d3c = _BundleSEEDGroup(d.member, i0, iend)
     return d3c

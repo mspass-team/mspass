@@ -37,22 +37,21 @@ def ExtractComponent(
     Or a TimeSeriesEnsemble object from a SeismogramEnsemble object
 
     :param data: data object to extract from.
-    :type data: either :class:`~mspasspy.ccore.seismic.Seismogram`
-     or :class:`~mspasspy.ccore.seismic.SeismogramEnsemble`
+    :type data: either :class:`~mspasspy.ccore.seismic.Seismogram or :class:`~mspasspy.ccore.seismic.SeismogramEnsemble`
     :param component: the index of component that will be extracted, it can only be 0, 1, or 2
     :type component: :class:`int`
-    :param object_history: True to preserve the processing history. For details, refer to
-     :class:`~mspasspy.util.decorators.mspass_func_wrapper`.
+    :param object_history: True to preserve the processing history. For details, refer
+        to :class:`~mspasspy.util.decorators.mspass_func_wrapper`.
     :param alg_name: alg_name is the name the func we are gonna save while preserving the history.
     :type alg_name: :class:`str`
     :param alg_id: alg_id is a unique id to record the usage of func while preserving the history.
     :type alg_id: :class:`bson.objectid.ObjectId`
     :param dryrun: True for dry-run, which return "OK". Used in the mspass_func_wrapper.
     :param inplace_return: True to return data in mspass_func_wrapper. This is set false to
-     handle exception directly in the function, without passing it to mspass_func_wrapper.
+        handle exception directly in the function, without passing it to mspass_func_wrapper.
     :param function_return_key:  Some functions one might want to wrap with this decorator
-     return something that is appropriate to save as Metadata.  If so, use this argument to
-     define the key used to set that field in the data that is returned.
+        return something that is appropriate to save as Metadata.  If so, use this argument to
+        define the key used to set that field in the data that is returned.
     """
     if isinstance(data, Seismogram):
         try:
@@ -115,14 +114,13 @@ def ator(
     :param data: data object to be converted.
     :type data: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
     :param tshift: used to define time shift to apply.   If value is string
-       the function assumes it is a metadata key it can use to extract the
-       requred value from the data's metadata container.  If it is a floating
-       point number it is used directly.   Anything else will result in a
-       TypeError exception.  If a string is used but the key is not defined
-       the datum will be killed with an elog message.
+        the function assumes it is a metadata key it can use to extract the
+        requred value from the data's metadata container.  If it is a floating
+        point number it is used directly.   Anything else will result in a
+        TypeError exception.  If a string is used but the key is not defined
+        the datum will be killed with an elog message.
     :type tshift: :class:`float` or a string to use as a metdata key (see above)
-    :param object_history: True to preserve the processing history. For details, refer to
-     :class:`~mspasspy.util.decorators.mspass_func_wrapper`.
+    :param object_history: set True to preserve the processing history.
     :param alg_name: alg_name is the name the func we are gonna save while preserving the history.
     :type alg_name: :class:`str`
     :param alg_id: alg_id is a unique id to record the usage of func while preserving the history.
@@ -130,8 +128,8 @@ def ator(
     :param dryrun: True for dry-run, which return "OK". Used in the mspass_func_wrapper.
     :param inplace_return: True to return data in mspass_func_wrapper. This is necessary to be used in mapreduce.
     :param function_return_key:  Some functions one might want to wrap with this decorator
-     return something that is appropriate to save as Metadata.  If so, use this argument to
-     define the key used to set that field in the data that is returned.
+        return something that is appropriate to save as Metadata.  If so, use this argument to
+        define the key used to set that field in the data that is returned.
     """
     if isinstance(tshift, (float, int)):
         data.ator(tshift)
@@ -178,8 +176,8 @@ def rtoa(
 
     :param data: data object to be converted.
     :type data: either :class:`~mspasspy.ccore.seismic.TimeSeries` or :class:`~mspasspy.ccore.seismic.Seismogram`
-    :param object_history: True to preserve the processing history. For details, refer to
-     :class:`~mspasspy.util.decorators.mspass_func_wrapper`.
+    :param object_history: True to preserve the processing history. For details, refer
+        to :class:`~mspasspy.util.decorators.mspass_func_wrapper`.
     :param alg_name: alg_name is the name the func we are gonna save while preserving the history.
     :type alg_name: :class:`str`
     :param alg_id: alg_id is a unique id to record the usage of func while preserving the history.
@@ -187,8 +185,8 @@ def rtoa(
     :param dryrun: True for dry-run, which return "OK". Used in the mspass_func_wrapper.
     :param inplace_return: True to return data in mspass_func_wrapper. This is necessary to be used in mapreduce.
     :param function_return_key:  Some functions one might want to wrap with this decorator
-     return something that is appropriate to save as Metadata.  If so, use this argument to
-     define the key used to set that field in the data that is returned.
+        return something that is appropriate to save as Metadata.  If so, use this argument to
+        define the key used to set that field in the data that is returned.
     """
     data.rtoa()
 
@@ -227,8 +225,8 @@ def rotate(
     :type data: :class:`~mspasspy.ccore.seismic.Seismogram`
     :param rotate_param: the parameter that defines the rotation.
     :type rotate_param: see above for details.
-    :param object_history: True to preserve the processing history. For details, refer to
-     :class:`~mspasspy.util.decorators.mspass_func_wrapper`.
+    :param object_history: True to preserve the processing history. For details, refer
+        to :class:`~mspasspy.util.decorators.mspass_func_wrapper`.
     :param alg_name: alg_name is the name the func we are gonna save while preserving the history.
     :type alg_name: :class:`str`
     :param alg_id: alg_id is a unique id to record the usage of func while preserving the history.
@@ -236,8 +234,8 @@ def rotate(
     :param dryrun: True for dry-run, which return "OK". Used in the mspass_func_wrapper.
     :param inplace_return: True to return data in mspass_func_wrapper. This is necessary to be used in mapreduce.
     :param function_return_key:  Some functions one might want to wrap with this decorator
-     return something that is appropriate to save as Metadata.  If so, use this argument to
-     define the key used to set that field in the data that is returned.
+        thing that is appropriate to save as Metadata.  If so, use this argument to
+        define the key used to set that field in the data that is returned.
     """
     data.rotate(rotate_param)
 
@@ -273,8 +271,8 @@ def rotate_to_standard(
 
     :param data: data object to be rotated.
     :type data: :class:`~mspasspy.ccore.seismic.Seismogram`
-    :param object_history: True to preserve the processing history. For details, refer to
-     :class:`~mspasspy.util.decorators.mspass_func_wrapper`.
+    :param object_history: True to preserve the processing history. For details, refer
+       to :class:`~mspasspy.util.decorators.mspass_func_wrapper`.
     :param alg_name: alg_name is the name the func we are gonna save while preserving the history.
     :type alg_name: :class:`str`
     :param alg_id: alg_id is a unique id to record the usage of func while preserving the history.
@@ -282,8 +280,8 @@ def rotate_to_standard(
     :param dryrun: True for dry-run, which return "OK". Used in the mspass_func_wrapper.
     :param inplace_return: True to return data in mspass_func_wrapper. This is necessary to be used in mapreduce.
     :param function_return_key:  Some functions one might want to wrap with this decorator
-     return something that is appropriate to save as Metadata.  If so, use this argument to
-     define the key used to set that field in the data that is returned.
+        return something that is appropriate to save as Metadata.  If so, use this argument to
+        define the key used to set that field in the data that is returned.
     :exception: :class:`~mspasspy.ccore.utility.MsPASSError` thrown if the an inversion of the
         transformation matrix is required and that matrix is singular.  This can happen if the
         transformation matrix is incorrectly defined or the actual data are coplanar.
@@ -371,38 +369,38 @@ def free_surface_transformation(
     paper.  The order is 0=SH, 1=SV, 2=L.
 
     :param data: data object to be transformed.  For ensembles the transformation
-    is applied to all members.  Note the Metadata fetch mechanism is the only
-    recommended way to handle ensembles.  An elog message will be posted
-    to the ensemble's elog container if you try to use a constant slowness
-    vector passed via uvec. It will not warn about constant vp0 and vs0
-    as that case is common.
-    :type data: :class:`~mspasspy.ccore.seismic.Seismogram` or
-    :class:`~mspasspy.ccore.seismic.SeismogramEnsemble`
+        is applied to all members.  Note the Metadata fetch mechanism is the only
+        recommended way to handle ensembles.  An elog message will be posted
+        to the ensemble's elog container if you try to use a constant slowness
+        vector passed via uvec. It will not warn about constant vp0 and vs0
+        as that case is common.
+    :type data: :class:`~mspasspy.ccore.seismic.Seismogram`
+        or :class:`~mspasspy.ccore.seismic.SeismogramEnsemble`
     :param ux_key:  key to use to fetch EW component of slowness vector
-    from Metadata container.  Default is "ux".
+        from Metadata container.  Default is "ux".
     :type ux_key:  string
     :param uy_key:  key to use to fetch NS component of slowness vector
-    from Metadata container.  Default is "uy".
+        from Metadata container.  Default is "uy".
     :type uy_key:  string
     :param vp0_key:  key to use to fetch free surface P wave velocity
-    from Metadata container.  Default is "vp0".
+        from Metadata container.  Default is "vp0".
     :type vp0_key:  string
     :param vs0_key: key to use to fetch free surface S wave velocity
-    from Metadata container.  Default is "vs0".
+        from Metadata container.  Default is "vs0".
     :type vs0_key:  string
     :param uvec: slowness vector of the incident wavefield defined via
-    custom C++ class :class:`~mspasspy.ccore.seismic.SlownessVector`.
-    Default is None which is taken as a signal to fetch the slowness vector
-    components from Metadata using ux_key and uy_key.
+        custom C++ class :class:`~mspasspy.ccore.seismic.SlownessVector`.
+        Default is None which is taken as a signal to fetch the slowness vector
+        components from Metadata using ux_key and uy_key.
     :type uvec: :class:`~mspasspy.ccore.seismic.SlownessVector`
     :param vp0: Surface P wave velocity.  Default is None which is taken
-    as a signal to fetch this quantity from Metadata using the vp0_key.
+        as a signal to fetch this quantity from Metadata using the vp0_key.
     :type vp0: :class:`float`
     :param vs0: Surface S wave velocity.  Default is None which is taken
-    as a signal to fetch this quantity from Metadata using the vs0_key.
+        as a signal to fetch this quantity from Metadata using the vs0_key.
     :type vs0: :class:`float`
-    :param object_history: True to preserve the processing history. For details, refer to
-     :class:`~mspasspy.util.decorators.mspass_func_wrapper`.
+    :param object_history: True to preserve the processing history. For details, refer
+        to :class:`~mspasspy.util.decorators.mspass_func_wrapper`.
     :param alg_name: alg_name is the name the func we are gonna save while preserving the history.
     :type alg_name: :class:`str`
     :param alg_id: alg_id is a unique id to record the usage of func while preserving the history.
@@ -410,8 +408,8 @@ def free_surface_transformation(
     :param dryrun: True for dry-run, which return "OK". Used in the mspass_func_wrapper.
     :param inplace_return: True to return data in mspass_func_wrapper. This is necessary to be used in mapreduce.
     :param function_return_key:  Some functions one might want to wrap with this decorator
-     return something that is appropriate to save as Metadata.  If so, use this argument to
-     define the key used to set that field in the data that is returned.
+        return something that is appropriate to save as Metadata.  If so, use this argument to
+        define the key used to set that field in the data that is returned.
     """
 
     if isinstance(data, Seismogram):
@@ -525,8 +523,8 @@ def transform(
     :type data: :class:`~mspasspy.ccore.seismic.Seismogram`
     :param matrix: a 3x3 matrix that defines the transformation.
     :type matrix: :class:`numpy.array`
-    :param object_history: True to preserve the processing history. For details, refer to
-     :class:`~mspasspy.util.decorators.mspass_func_wrapper`.
+    :param object_history: True to preserve the processing history. For details, refer
+        to :class:`~mspasspy.util.decorators.mspass_func_wrapper`.
     :param alg_name: alg_name is the name the func we are gonna save while preserving the history.
     :type alg_name: :class:`str`
     :param alg_id: alg_id is a unique id to record the usage of func while preserving the history.
@@ -534,8 +532,8 @@ def transform(
     :param dryrun: True for dry-run, which return "OK". Used in the mspass_func_wrapper.
     :param inplace_return: True to return data in mspass_func_wrapper. This is necessary to be used in mapreduce.
     :param function_return_key:  Some functions one might want to wrap with this decorator
-     return something that is appropriate to save as Metadata.  If so, use this argument to
-     define the key used to set that field in the data that is returned.
+        return something that is appropriate to save as Metadata.  If so, use this argument to
+        define the key used to set that field in the data that is returned.
     """
     data.transform(matrix)
 
@@ -579,24 +577,23 @@ def transform_to_RTZ(
     also set the "angle_units" argument to "radians".
 
     :param data:   data object to be transformed
-    :type data:  :class:`~mspasspy.ccore.seismic.Seismogram` or
-     :class:`~mspass.ccore.seismic.SeismogramEnsemble`.
+    :type data:  :class:`~mspasspy.ccore.seismic.Seismogram` or :class:`~mspass.ccore.seismic.SeismogramEnsemble`.
     :param key:  key to use to fetch back azimuth value (assumed degrees always)
     :type key:  string
     :param phi:   angle to rotate around vertical to define the transformation
-    (positive anticlockwise convention NOT azimuth convention)  Default is None
-    which means ignore this parameter and use key.  Setting this value to
-    something other than None causes the key method to be overridden.
+        (positive anticlockwise convention NOT azimuth convention)  Default is None
+        which means ignore this parameter and use key.  Setting this value to
+        something other than None causes the key method to be overridden.
     :type phi:  float
     :param angle_units:  should be either 'degrees' (default) or 'radians'.
-    An invalid value will be treated as an attempt to switch to radians
-    but will generate an elog warning message.  This argument is ignored unless
-    phi is not null (None type)
+        An invalid value will be treated as an attempt to switch to radians
+        but will generate an elog warning message.  This argument is ignored unless
+        phi is not null (None type)
     :type angle_units: string
     :param key_is_backazimuth: boolean that when True (default) assumes the
-    angle extrated with the key argument value is a backazimuth in degrees.
-    If set False, the angle will be assumed to be a rotation angle in
-    with the anticlockwise positive convention.
+        angle extrated with the key argument value is a backazimuth in degrees.
+        If set False, the angle will be assumed to be a rotation angle in
+        with the anticlockwise positive convention.
     :param alg_name: alg_name is the name the func we are gonna save while preserving the history.
     :type alg_name: :class:`str`
     :param alg_id: alg_id is a unique id to record the usage of func while preserving the history.
@@ -604,11 +601,11 @@ def transform_to_RTZ(
     :param dryrun: True for dry-run, which return "OK". Used in the mspass_func_wrapper.
     :param inplace_return: True to return data in mspass_func_wrapper. This is necessary to be used in mapreduce.
     :param function_return_key:  Some functions one might want to wrap with this decorator
-     return something that is appropriate to save as Metadata.  If so, use this argument to
-     define the key used to set that field in the data that is returned.
+        return something that is appropriate to save as Metadata.  If so, use this argument to
+        define the key used to set that field in the data that is returned.
 
     :return:  transformed version of input.  For ensembles the entire ensemble
-    is transformed.
+        is transformed.
     """
     if phi:
         if angle_units == "degrees":
@@ -701,6 +698,7 @@ def transform_to_LQT(
     and x3 - transverse (T) in direction to define a right handed coordinate
     system.  The function produces this transformation
     by the product f three transformation:
+
         1.  Uses rotate_to_standard to assure we start from cardinal directions.
         2.  Transformation to what might be called TQL using the Seismogram
             C++ method rotate using a SphericalCoordinate definition.
@@ -726,27 +724,28 @@ def transform_to_LQT(
     Note the operation handles the singular case of theta==0.0 where it
     simply uses the phi value and rotates the coordinates in a variant of
     RTZ (variant because order is different).
+
     :param seaz_key:  key to use to fetch back azimuth value (assumed degrees always)
     :type key:  string (default "seaz")
     :param ema_key:  key to use to fetch emergence angle defining L direction
-    relative to local vertical.
+        relative to local vertical.
     :type ema_key:  string (defautl "ema")
     :param phi:   angle to rotate around vertical to define the transformation
-    (positive anticlockwise convention NOT azimuth convention)  Default is None
-    which means ignore this parameter and use key.  Setting this value to
-    something other than None causes the Metadata fetch method to be overridden.
-    WARNING:  this is not backazimuth but angle relative to E direction.
-    Note that is not at all what is expected when using a Metadata key
+        (positive anticlockwise convention NOT azimuth convention)  Default is None
+        which means ignore this parameter and use key.  Setting this value to
+        something other than None causes the Metadata fetch method to be overridden.
+        WARNING:  this is not backazimuth but angle relative to E direction.
+        Note that is not at all what is expected when using a Metadata key
     :type phi:  float
     :param theta:   angle relative to local vertical for defining the L
-    coordinate direction.  It is the same as theta in spherical coordinates
-    with emergence angle pointing upward.  Default is None which causes the
-    algorithm to automatically assume the Metadata key method should be used.
+        coordinate direction.  It is the same as theta in spherical coordinates
+        with emergence angle pointing upward.  Default is None which causes the
+        algorithm to automatically assume the Metadata key method should be used.
     :type theta:  float
     :param angle_units:  should be either 'degrees' (default) or 'radians'.
-    An invalid value will be treated as an attempt to switch to radians
-    but will generate an elog warning message.  This argument is ignored unless
-    phi is not null (None type)
+        An invalid value will be treated as an attempt to switch to radians
+        but will generate an elog warning message.  This argument is ignored unless
+        phi is not null (None type)
     :type angle_units: string
     :param alg_name: alg_name is the name the func we are gonna save while preserving the history.
     :type alg_name: :class:`str`
@@ -755,11 +754,11 @@ def transform_to_LQT(
     :param dryrun: True for dry-run, which return "OK". Used in the mspass_func_wrapper.
     :param inplace_return: True to return data in mspass_func_wrapper. This is necessary to be used in mapreduce.
     :param function_return_key:  Some functions one might want to wrap with this decorator
-     return something that is appropriate to save as Metadata.  If so, use this argument to
-     define the key used to set that field in the data that is returned.
+        return something that is appropriate to save as Metadata.  If so, use this argument to
+        define the key used to set that field in the data that is returned.
 
      :return:  transformed version of input.  For ensembles the entire ensemble
-     is transformed.
+         is transformed.
     """
     if phi and theta:
         if angle_units == "degrees":
@@ -884,8 +883,8 @@ def linear_taper(
     :type t1tail: :class:`float`
     :param t0tail: t0 of the tail taper
     :type t0tail: :class:`float`
-    :param object_history: True to preserve the processing history. For details, refer to
-     :class:`~mspasspy.util.decorators.mspass_func_wrapper`.
+    :param object_history: True to preserve the processing history. For details, refer
+        to :class:`~mspasspy.util.decorators.mspass_func_wrapper`.
     :param alg_name: alg_name is the name the func we are gonna save while preserving the history.
     :type alg_name: :class:`str`
     :param alg_id: alg_id is a unique id to record the usage of func while preserving the history.
@@ -893,8 +892,8 @@ def linear_taper(
     :param dryrun: True for dry-run, which return "OK". Used in the mspass_func_wrapper.
     :param inplace_return: True to return data in mspass_func_wrapper. This is necessary to be used in mapreduce.
     :param function_return_key:  Some functions one might want to wrap with this decorator
-     return something that is appropriate to save as Metadata.  If so, use this argument to
-     define the key used to set that field in the data that is returned.
+        return something that is appropriate to save as Metadata.  If so, use this argument to
+        define the key used to set that field in the data that is returned.
     """
     taper = LinearTaper(t0head, t1head, t1tail, t0tail)
     taper.apply(data)
@@ -939,8 +938,8 @@ def cosine_taper(
     :type t1tail: :class:`float`
     :param t0tail: t0 of the tail taper
     :type t0tail: :class:`float`
-    :param object_history: True to preserve the processing history. For details, refer to
-     :class:`~mspasspy.util.decorators.mspass_func_wrapper`.
+    :param object_history: True to preserve the processing history. For details, refer
+        to :class:`~mspasspy.util.decorators.mspass_func_wrapper`.
     :param alg_name: alg_name is the name the func we are gonna save while preserving the history.
     :type alg_name: :class:`str`
     :param alg_id: alg_id is a unique id to record the usage of func while preserving the history.
@@ -948,8 +947,8 @@ def cosine_taper(
     :param dryrun: True for dry-run, which return "OK". Used in the mspass_func_wrapper.
     :param inplace_return: True to return data in mspass_func_wrapper. This is necessary to be used in mapreduce.
     :param function_return_key:  Some functions one might want to wrap with this decorator
-     return something that is appropriate to save as Metadata.  If so, use this argument to
-     define the key used to set that field in the data that is returned.
+        return something that is appropriate to save as Metadata.  If so, use this argument to
+        define the key used to set that field in the data that is returned.
     """
     taper = CosineTaper(t0head, t1head, t1tail, t0tail)
     taper.apply(data)
@@ -982,8 +981,8 @@ def vector_taper(
     :type data: either :class:`~mspasspy.ccore.seismic.TimeSeries` or :class:`~mspasspy.ccore.seismic.Seismogram`
     :param taper_array: the array that defines the taper
     :type taper_array: :class:`numpy.array`
-    :param object_history: True to preserve the processing history. For details, refer to
-     :class:`~mspasspy.util.decorators.mspass_func_wrapper`.
+    :param object_history: True to preserve the processing history. For details, refer
+        to :class:`~mspasspy.util.decorators.mspass_func_wrapper`.
     :param alg_name: alg_name is the name the func we are gonna save while preserving the history.
     :type alg_name: :class:`str`
     :param alg_id: alg_id is a unique id to record the usage of func while preserving the history.
@@ -991,8 +990,8 @@ def vector_taper(
     :param dryrun: True for dry-run, which return "OK". Used in the mspass_func_wrapper.
     :param inplace_return: True to return data in mspass_func_wrapper. This is necessary to be used in mapreduce.
     :param function_return_key:  Some functions one might want to wrap with this decorator
-     return something that is appropriate to save as Metadata.  If so, use this argument to
-     define the key used to set that field in the data that is returned.
+        return something that is appropriate to save as Metadata.  If so, use this argument to
+        define the key used to set that field in the data that is returned.
     """
     taper = VectorTaper(taper_array)
     taper.apply(data)

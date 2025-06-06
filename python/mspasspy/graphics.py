@@ -37,30 +37,31 @@ def wtva_raw(section, t0, dt, ranges=None, scale=1.0, color="k", normalize=False
     the name better reflects the functions use.
 
     Additional changes:
-        Pavlis Aug 27, 2020
-    Added a test that if color was a None only the wiggles will be drawn
+
+    August 27, 20240:  Pavlis Added a test that if color was a None only the wiggles will be drawn
     (i.e. no shading)
 
     Parameters:
 
-    * section :  2D array
+    :param section :  2D array
         matrix of traces (first dimension time, second dimension traces)
-    * t0 : float
+    :param t0 : float
         time of first sample (added for mspass - needed for passive data)
-    * dt : float
+    :param dt : float
         sample rate in seconds
-    * ranges : (x1, x2)
+    :param ranges : (x1, x2)
         min and max horizontal values (default trace number)
-    * scale : float
+    :param scale : float
         scale factor multiplied by the section values before plotting
-    * color : tuple of strings
+    :param color : tuple of strings
         Color for filling the wiggle, positive  and negative lobes.  If None
         draw only wiggle traces
-    * normalize :
+    :param normalize :
         True to normalizes all trace in the section using global max/min
         data will be in the range (-0.5, 0.5) zero centered
 
     .. warning::
+
         Slow for more than 200 traces, in this case decimate your
         data or use ``image_raw``.
 

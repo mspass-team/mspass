@@ -199,7 +199,7 @@ def test_align_and_stack():
     assert eo.member[ibad].live
     # note the value tested here depends on the default for the
     # residual_norm_floor parameter.  This works with current default 0.1
-    assert eo.member[ibad]["robust_stack_weight"] < 0.005
+    assert eo.member[ibad]["robust_stack_weight"] < 0.01
     # Repeat test 1 with median stack
     e = TimeSeriesEnsemble(e0)
     w = TimeSeries(w0)

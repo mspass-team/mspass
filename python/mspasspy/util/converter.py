@@ -120,7 +120,7 @@ def TimeSeries2Trace(ts):
     :type ts: :class:`~mspasspy.ccore.TimeSeries`
     :return: an obspy Trace object from conversion of d.  An empty Trace
         object will be returned if d was marked dead
-    :rtype: :class:`~obspy.core.trace.Trace`b
+    :rtype: :class:`~obspy.core.trace.Trace`
     """
     dresult = obspy.core.Trace()
     dresult.dead_mspass = True
@@ -393,8 +393,8 @@ def Stream2Seismogram(st, master=0, cardinal=False, azimuth="azimuth", dip="dip"
         cardinal is true
 
     :raise: Can throw either an AssertionError or MsPASSrror(currently defaulted to
-    pybind11's default RuntimeError.  Error message can be obtained by
-    calling the what method of RuntimeError).
+        pybind11's default RuntimeError.  Error message can be obtained by
+        calling the what method of RuntimeError).
     """
     # First make sure we have exactly 3 components
     assert len(st) == 3, "Stream length must be EXACTLY 3 for 3-components"
@@ -637,11 +637,11 @@ def Textfile2Dataframe(
     :param separator: The delimiter used for seperating fields,
       the default is "\s+", which is the regular expression of "one or more
       spaces".
-        For csv file, its value should be set to ','.
-        This parameter will be passed into pandas.read_csv or dask.dataframe.read_csv.
-        To learn more details about the usage, check the following links:
-        https://pandas.pydata.org/docs/reference/api/pandas.read_csv.html
-        https://docs.dask.org/en/latest/generated/dask.dataframe.read_csv.html
+      For csv file, its value should be set to ','.
+      This parameter will be passed into pandas.read_csv or dask.dataframe.read_csv.
+      To learn more details about the usage, check the following links:
+      https://pandas.pydata.org/docs/reference/api/pandas.read_csv.html
+      https://docs.dask.org/en/latest/generated/dask.dataframe.read_csv.html
     :param type_dict: pairs of each attribute and its type, usedd to validate
       the type of each input item
     :param header_line: defines the line to be used as the attribute names for

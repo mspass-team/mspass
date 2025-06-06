@@ -2395,11 +2395,11 @@ class OriginTimeDBMatcher(DatabaseMatcher):
     :param type:  list of strings defining collection keys
 
     :param aliases:  python dictionary defining alias names to apply
-     when fetching from a data object's Metadata container.   The key sense
-     of the mapping is important to keep straight.  The key of this
-     dictionary should match one  of the attributes in attributes_to_load
-     or load_if_defined.  The value the key defines should be the alias
-     used to fetch the comparable attribute from the data.
+       when fetching from a data object's Metadata container.   The key sense
+       of the mapping is important to keep straight.  The key of this
+       dictionary should match one  of the attributes in attributes_to_load
+       or load_if_defined.  The value the key defines should be the alias
+       used to fetch the comparable attribute from the data.
     :type aliaes:  python dictionary
 
     :param prepend_collection_name:  when True attributes returned in
@@ -3151,11 +3151,11 @@ class ArrivalMatcher(DataFrameCacheMatcher):
     :param type:  list of strings defining collection keyes
 
     :param aliases:  python dictionary defining alias names to apply
-     when fetching from a data object's Metadata container.   The key sense
-     of the mapping is important to keep straight.  The key of this
-     dictionary should match one  of the attributes in attributes_to_load
-     or load_if_defined.  The value the key defines should be the alias
-     used to fetch the comparable attribute from the data.
+       when fetching from a data object's Metadata container.   The key sense
+       of the mapping is important to keep straight.  The key of this
+       dictionary should match one  of the attributes in attributes_to_load
+       or load_if_defined.  The value the key defines should be the alias
+       used to fetch the comparable attribute from the data.
     :type aliaes:  python dictionary
 
     :param prepend_collection_name:  when True attributes returned in
@@ -3172,13 +3172,13 @@ class ArrivalMatcher(DataFrameCacheMatcher):
     :type require_unique_match:  boolean
 
     :param ensemble_starttime_key:  defines the key used to fetch a
-     start time for the interval test when processing with ensemble data.
-     Default is "starttime".
+       start time for the interval test when processing with ensemble data.
+       Default is "starttime".
     :type ensemble_starttime_key:  string
 
     :param ensemble_endtime_key:  defines the key used to fetch a
-     end time for the interval test when processing with ensemble data.
-     Default is "endtime".
+       end time for the interval test when processing with ensemble data.
+       Default is "endtime".
     :type ensemble_endtime_key:  string
 
     :param query:   optional query predicate.  That is, if set the
@@ -3325,7 +3325,7 @@ def normalize(
       applied with ensembles - see above.
 
     :return:  copy of mspass_object.  dead data are returned immediately.
-    if kill_on_failure is true the result may be killed on return.
+      if kill_on_failure is true the result may be killed on return.
     """
     if hasattr(mspass_object, "dead"):
         if mspass_object.dead():
@@ -3524,32 +3524,32 @@ def normalize_mseed(
     also called a "station").
 
     :param db: should be a MsPASS database handle containing at least
-    wf_miniseed and the collections defined by the norm_collection list.
+      wf_miniseed and the collections defined by the norm_collection list.
     :param blockssize:   To speed up updates this function uses the
-    bulk writer/updater methods of MongoDB that can be orders of
-    magnitude faster than one-at-a-time updates for setting
-    channel_id and site_id.  A user should not normally need to alter this
-    parameter.
+      bulk writer/updater methods of MongoDB that can be orders of
+      magnitude faster than one-at-a-time updates for setting
+      channel_id and site_id.  A user should not normally need to alter this
+      parameter.
     :param wfquery: is a query to apply to wf_miniseed.  The output of this
-    query defines the list of documents that the algorithm will attempt
-    to normalize as described above.  The default will process the entire
-    wf_miniseed collection (query set to an emtpy dict).
+      query defines the list of documents that the algorithm will attempt
+      to normalize as described above.  The default will process the entire
+      wf_miniseed collection (query set to an emtpy dict).
     :param normalize_channel:  boolean for handling channel collection.
-    When True (default) matches will be attempted with the channel collection
-    and when matches are found the associated channel document id will be
-    set in the associated wf_miniseed document as channel_id.
+      When True (default) matches will be attempted with the channel collection
+      and when matches are found the associated channel document id will be
+      set in the associated wf_miniseed document as channel_id.
     :param normalize_site:  boolean for handling site collection.
-    When True (default) matches will be attempted with the site collection
-    and when matches are found the associated site document id will
-    be set wf_miniseed document as site_id. Note at least one of
-    the two booleans normalize_channel and normalize_site must be set True
-    or the function will immediately abort.
+      When True (default) matches will be attempted with the site collection
+      and when matches are found the associated site document id will
+      be set wf_miniseed document as site_id. Note at least one of
+      the two booleans normalize_channel and normalize_site must be set True
+      or the function will immediately abort.
 
 
     :return: list with three integers.  0 is the number of documents processed in
-    wf_miniseed (output of query), 1 is the number with channel ids set,
-    and 2 contains the number of site documents set.  1 or 2 should
-    contain 0 if normalization for that collection was set false.
+      wf_miniseed (output of query), 1 is the number with channel ids set,
+      and 2 contains the number of site documents set.  1 or 2 should
+      contain 0 if normalization for that collection was set false.
     """
 
     if wfquery is None:
@@ -3613,6 +3613,7 @@ def _get_test_time(d, time):
     Otherwise (the time is None), we first try to get the start
     time from d. If start time is not defined in d, None is
     return to indicate the time field should be ignored.
+
         :param d: Data object with a Metadata container to extract the field
         :param time: the start time used for matching
         :return: the test_time extracted
@@ -3673,11 +3674,11 @@ def _load_as_df(db, collection, query, attributes_to_load, load_if_defined):
       If you want the entire collection specify None or an empty dictionary.
     :type query:  python dict defining a pymongo query or None.
     :param attributes_to_load: list of keys to extract of required attributes
-    to load from collection.   This function will abort if any document
-    does not contain one of these attributes.
+      to load from collection.   This function will abort if any document
+      does not contain one of these attributes.
     :param load_if_defined:  attributes loaded more cautiously.  If the
-    attributes for any of the keys in this list are not found in a document
-    the output dataframe has a Null defined for that cell.
+      attributes for any of the keys in this list are not found in a document
+      the output dataframe has a Null defined for that cell.
     """
     if query is None:
         query = dict()

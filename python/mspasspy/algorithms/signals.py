@@ -42,19 +42,20 @@ def filter(
     their API is inherited.  Because different types of filters are
     enabled by the setting of the "type" argument, what kwarg values are
     referenced depend upon the value of "type".   In particular, note:
+
         - "bandpass" requires values for "freqmin" and "freqmax as corner frequenices
         - "lowpass" requires only a value for "freq" to define the one corner
         - "highpass" also requres only the value "freq" for the low corner
+
     There are other options described in the obspy documentation.
 
     :param data: input data, only mspasspy data objects are accepted, i.e. TimeSeries, Seismogram, Ensemble.
     :param type: type of filter, 'bandpass', 'bandstop', 'lowpass', 'highpass', 'lowpass_cheby_2', 'lowpass_fir',
-     'remez_fir'. You can refer to
-     `Obspy <https://docs.obspy.org/packages/autogen/obspy.core.trace.Trace.filter.html>` for details.
+      'remez_fir'. You can refer to
+      `Obspy <https://docs.obspy.org/packages/autogen/obspy.core.trace.Trace.filter.html>` for details.
     :type type: str
     :param args: extra arguments
-    :param object_history: True to preserve the processing history. For details, refer to
-     :class:`~mspasspy.util.decorators.mspass_func_wrapper`.
+    :param object_history: True to preserve the processing history. For details, refer to :class:`~mspasspy.util.decorators.mspass_func_wrapper`.
     :param alg_name: alg_name is the name the func we are gonna save while preserving the history.
     :type alg_name: :class:`str`
     :param alg_id: alg_id is a unique id to record the usage of func while preserving the history.
@@ -181,12 +182,12 @@ def correlate(
 ):
     """
     Cross-correlation of two signals up to a specified maximal shift.
+
     :param a: first signal
     :param b: second signal
     :param shift: Number of samples to shift for cross correlation. The cross-correlation will consist of 2*shift+1 or
-     2*shift samples. The sample with zero shift will be in the middle.
-    :param object_history: True to preserve the processing history. For details, refer to
-     :class:`~mspasspy.util.decorators.mspass_func_wrapper_multi`.
+        2*shift samples. The sample with zero shift will be in the middle.
+    :param object_history: True to preserve the processing history. For details, refer to :class:`~mspasspy.util.decorators.mspass_func_wrapper_multi`.
     :param alg_name: alg_name is the name the func we are gonna save while preserving the history.
     :type alg_name: :class:`str`
     :param alg_id: alg_id is a unique id to record the usage of func while preserving the history.
@@ -194,11 +195,11 @@ def correlate(
     :param dryrun: True for dry-run, which return "OK". Used in the mspass_func_wrapper.
     :param demean: Demean data beforehand.
     :param normalize: Method for normalization of cross-correlation. One of 'naive' or None (True and False are
-     supported for backwards compatibility). 'naive' normalizes by the overall standard deviation. None does not normalize.
+        supported for backwards compatibility). 'naive' normalizes by the overall standard deviation. None does not normalize.
     :param method: Method to use to calculate the correlation. 'direct': The correlation is determined directly from
-     sums, the definition of correlation. 'fft' The Fast Fourier Transform is used to perform the correlation more
-     quickly. 'auto' Automatically chooses direct or Fourier method based on an estimate of which is faster.
-     (Only available for SciPy versions >= 0.19. For older Scipy version method defaults to 'fft'.)
+        sums, the definition of correlation. 'fft' The Fast Fourier Transform is used to perform the correlation more
+        quickly. 'auto' Automatically chooses direct or Fourier method based on an estimate of which is faster.
+        (Only available for SciPy versions >= 0.19. For older Scipy version method defaults to 'fft'.)
     :type a: :class:`~mspasspy.ccore.seismic.TimeSeries`
     :type b: :class:`~mspasspy.ccore.seismic.TimeSeries`
     :type shift: int

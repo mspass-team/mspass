@@ -107,11 +107,11 @@ class BasicResampler(ABC):
 
 
         :param d:   input mspass data object to be tested.   All that is
-        actually required is d have a "dt" attribute (i.e. d.dt is defined)
-        that is the sample interval for that datum.
+          actually required is d have a "dt" attribute (i.e. d.dt is defined)
+          that is the sample interval for that datum.
         :type d:   assumed to be a MsPASS atomic data object for which the
-        dt attribute is defined.  This method has no safeties to test
-        input type.  It will throw an exception if d.dt does not resolve.
+          dt attribute is defined.  This method has no safeties to test
+          input type.  It will throw an exception if d.dt does not resolve.
         """
         # internal use guarantees this can only be TimeSeries or Seismogram
         # so this resolves
@@ -149,7 +149,7 @@ class ScipyResampler(BasicResampler):
     something not an integer multiple or division from the input OR
     if you need to upsample data to match the rest of the data set
     (Note that is not usually a good idea unless the upsampling is followed
-     by a decimator to get all data to a lower, uniform sample rate.)
+    by a decimator to get all data to a lower, uniform sample rate.)
     A type example where that is essential is some old OBS data from
     Scripps instruments that had a sample rate that was a multiple of
     one of the more standard rates like 20 or 100.  Such data can be
