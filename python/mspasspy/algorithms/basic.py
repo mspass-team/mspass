@@ -40,7 +40,7 @@ def ExtractComponent(
     :type data: either :class:`~mspasspy.ccore.seismic.Seismogram or :class:`~mspasspy.ccore.seismic.SeismogramEnsemble`
     :param component: the index of component that will be extracted, it can only be 0, 1, or 2
     :type component: :class:`int`
-    :param object_history: True to preserve the processing history. For details, refer 
+    :param object_history: True to preserve the processing history. For details, refer
         to :class:`~mspasspy.util.decorators.mspass_func_wrapper`.
     :param alg_name: alg_name is the name the func we are gonna save while preserving the history.
     :type alg_name: :class:`str`
@@ -176,7 +176,7 @@ def rtoa(
 
     :param data: data object to be converted.
     :type data: either :class:`~mspasspy.ccore.seismic.TimeSeries` or :class:`~mspasspy.ccore.seismic.Seismogram`
-    :param object_history: True to preserve the processing history. For details, refer 
+    :param object_history: True to preserve the processing history. For details, refer
         to :class:`~mspasspy.util.decorators.mspass_func_wrapper`.
     :param alg_name: alg_name is the name the func we are gonna save while preserving the history.
     :type alg_name: :class:`str`
@@ -225,7 +225,7 @@ def rotate(
     :type data: :class:`~mspasspy.ccore.seismic.Seismogram`
     :param rotate_param: the parameter that defines the rotation.
     :type rotate_param: see above for details.
-    :param object_history: True to preserve the processing history. For details, refer 
+    :param object_history: True to preserve the processing history. For details, refer
         to :class:`~mspasspy.util.decorators.mspass_func_wrapper`.
     :param alg_name: alg_name is the name the func we are gonna save while preserving the history.
     :type alg_name: :class:`str`
@@ -271,7 +271,7 @@ def rotate_to_standard(
 
     :param data: data object to be rotated.
     :type data: :class:`~mspasspy.ccore.seismic.Seismogram`
-    :param object_history: True to preserve the processing history. For details, refer 
+    :param object_history: True to preserve the processing history. For details, refer
        to :class:`~mspasspy.util.decorators.mspass_func_wrapper`.
     :param alg_name: alg_name is the name the func we are gonna save while preserving the history.
     :type alg_name: :class:`str`
@@ -374,7 +374,7 @@ def free_surface_transformation(
         to the ensemble's elog container if you try to use a constant slowness
         vector passed via uvec. It will not warn about constant vp0 and vs0
         as that case is common.
-    :type data: :class:`~mspasspy.ccore.seismic.Seismogram` 
+    :type data: :class:`~mspasspy.ccore.seismic.Seismogram`
         or :class:`~mspasspy.ccore.seismic.SeismogramEnsemble`
     :param ux_key:  key to use to fetch EW component of slowness vector
         from Metadata container.  Default is "ux".
@@ -399,7 +399,7 @@ def free_surface_transformation(
     :param vs0: Surface S wave velocity.  Default is None which is taken
         as a signal to fetch this quantity from Metadata using the vs0_key.
     :type vs0: :class:`float`
-    :param object_history: True to preserve the processing history. For details, refer 
+    :param object_history: True to preserve the processing history. For details, refer
         to :class:`~mspasspy.util.decorators.mspass_func_wrapper`.
     :param alg_name: alg_name is the name the func we are gonna save while preserving the history.
     :type alg_name: :class:`str`
@@ -523,7 +523,7 @@ def transform(
     :type data: :class:`~mspasspy.ccore.seismic.Seismogram`
     :param matrix: a 3x3 matrix that defines the transformation.
     :type matrix: :class:`numpy.array`
-    :param object_history: True to preserve the processing history. For details, refer 
+    :param object_history: True to preserve the processing history. For details, refer
         to :class:`~mspasspy.util.decorators.mspass_func_wrapper`.
     :param alg_name: alg_name is the name the func we are gonna save while preserving the history.
     :type alg_name: :class:`str`
@@ -883,7 +883,7 @@ def linear_taper(
     :type t1tail: :class:`float`
     :param t0tail: t0 of the tail taper
     :type t0tail: :class:`float`
-    :param object_history: True to preserve the processing history. For details, refer 
+    :param object_history: True to preserve the processing history. For details, refer
         to :class:`~mspasspy.util.decorators.mspass_func_wrapper`.
     :param alg_name: alg_name is the name the func we are gonna save while preserving the history.
     :type alg_name: :class:`str`
@@ -938,7 +938,7 @@ def cosine_taper(
     :type t1tail: :class:`float`
     :param t0tail: t0 of the tail taper
     :type t0tail: :class:`float`
-    :param object_history: True to preserve the processing history. For details, refer 
+    :param object_history: True to preserve the processing history. For details, refer
         to :class:`~mspasspy.util.decorators.mspass_func_wrapper`.
     :param alg_name: alg_name is the name the func we are gonna save while preserving the history.
     :type alg_name: :class:`str`
@@ -981,7 +981,7 @@ def vector_taper(
     :type data: either :class:`~mspasspy.ccore.seismic.TimeSeries` or :class:`~mspasspy.ccore.seismic.Seismogram`
     :param taper_array: the array that defines the taper
     :type taper_array: :class:`numpy.array`
-    :param object_history: True to preserve the processing history. For details, refer 
+    :param object_history: True to preserve the processing history. For details, refer
         to :class:`~mspasspy.util.decorators.mspass_func_wrapper`.
     :param alg_name: alg_name is the name the func we are gonna save while preserving the history.
     :type alg_name: :class:`str`

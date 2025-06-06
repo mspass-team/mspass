@@ -3544,8 +3544,8 @@ def normalize_mseed(
       be set wf_miniseed document as site_id. Note at least one of
       the two booleans normalize_channel and normalize_site must be set True
       or the function will immediately abort.
-  
-  
+
+
     :return: list with three integers.  0 is the number of documents processed in
       wf_miniseed (output of query), 1 is the number with channel ids set,
       and 2 contains the number of site documents set.  1 or 2 should
