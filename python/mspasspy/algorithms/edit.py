@@ -1117,6 +1117,8 @@ class SetValue(MetadataOperator):
 
     Example:  to set the value of key = 'a' to constant 2.0
 
+    .. code-block:: python
+
       op = SetValue('a',2.0)
       d = op.apply(d)
     """
@@ -1201,6 +1203,8 @@ class Add(MetadataOperator):
     Used to implement += operator on a specified Metadata key.
     Example:  to add 2 to data, d, with key='icdp' could use this
 
+    .. code-block:: python
+
       op = Add('icdp',2)
       d = op.apply(d)
     """
@@ -1284,11 +1288,15 @@ class Add(MetadataOperator):
 class Multiply(MetadataOperator):
     """
     Used to implement *= operator on a specified Metadata key.
+
     Example:  to multiple metadata in, d, with key='Pamp' by 2.5
     you could use this
 
+    .. code-block:: python
+
       op = Multiply('Pamp',2.5)
       d = op.apply(d)
+
     """
 
     def __init__(self, key, value_to_multiply=1):
@@ -1371,6 +1379,8 @@ class Subtract(MetadataOperator):
     """
     Used to implement -= operator on a specified Metadata key.
     Example:  to subtract 2 from metadata, d, with key='icdp' could use this
+
+    .. code-block:: python
 
       op = Subtract('icdp',2)
       d = op.apply(d)
@@ -1457,6 +1467,8 @@ class Divide(MetadataOperator):
     Used to implement /= operator on a specified Metadata key.
     Example:  to divide metadata in, d, with key='Pamp' by 2.0
     you could use this
+
+    .. code-block:: python
 
       op = Divide('Pamp',2.-)
       d = op.apply(d)
@@ -1550,6 +1562,8 @@ class IntegerDivide(MetadataOperator):
 
     Example:  to apply integer division to metadata in, d, with key='icdp' by 5
     you could use this
+
+    .. code-block:: python
 
       op = IntegerDivide('icdp',5)
       d = op.apply(d)
@@ -1646,6 +1660,8 @@ class Mod(MetadataOperator):
 
     Example:  to convert the metadata associated with the key 'ichan' that
     are currently counting by 1 to numbers that cycle from 0 to 23 us this:
+
+    .. code-block:: python
 
       op = Mod('ix',24)
       d = op.apply(d)
@@ -1747,6 +1763,8 @@ class Add2(MetadataOperator):
     same although it is hard to conceive how that could be useful.
 
     Example:  to compute ix as the d['sx'] + d['chan'] use
+
+    .. code-block:: python
 
       op = Add2('ix1','sx','chan')
       d = op.apply(d)
@@ -1856,6 +1874,8 @@ class Multiply2(MetadataOperator):
 
     Example:  to compute ix as the d['sx'] * d['chan'] use
 
+    .. code-block:: python
+
       op = Multiply2('ix1','sx','chan')
       d = op.apply(d)
     """
@@ -1963,6 +1983,10 @@ class Subtract2(MetadataOperator):
     same although it is hard to conceive how that could be useful.
 
     Example:  to compute ix as the d['sx'] - d['chan'] use
+
+    .. code-block:: python
+
+    .. code-block:: python
 
       op = Subtract2('ix1','sx','chan')
       d = op.apply(d)
@@ -2072,6 +2096,10 @@ class Divide2(MetadataOperator):
 
     Example:  to compute ix as the d['sx'] / d['chan'] use
 
+    .. code-block:: python
+
+    .. code-block:: python
+
       op = Divide2('ix1','sx','chan')
       d = op.apply(d)
     """
@@ -2180,6 +2208,8 @@ class IntegerDivide2(MetadataOperator):
 
     Example:  to compute ix as the d['sx'] // d['chan'] use
 
+    .. code-block:: python
+
       op = IntegerDivide2('ix1','sx','chan')
       d = op.apply(d)
     """
@@ -2287,6 +2317,8 @@ class Mod2(MetadataOperator):
     same although it is hard to conceive how that could be useful.
 
     Example:  to compute ix as the d['sx'] % d['chan'] use
+
+    .. code-block:: python
 
       op = Mod2('ix1','sx','chan')
       d = op.apply(d)
@@ -2493,17 +2525,16 @@ def erase_metadata(d, keylist, apply_to_members=False):
     If false only the ensemble (global) metadata are handled.
 
     :param d:  must be a valid MsPASS data object. If not the function
-    will throw an exception.   If the datum is marked dead it will
-    silently just return the contents.
+        will throw an exception.   If the datum is marked dead it will
+        silently just return the contents.
 
     :param keylist:  python list of strings to use as keywords.  Any matching
-    keys the metadata of d will be cleared.
-
+        keys the metadata of d will be cleared.
     :param apply_to_members:  is a boolean controlling how the function
-    should handle ensembles.  Then set true the erase algorithm will be
-    applied in a loop over the member vector of an input ensemble.  When
-    False (default) only the ensemble's metadata is checked.  This parameter
-    is ignored if the input is an atomic data type.
+        should handle ensembles.  Then set true the erase algorithm will be
+        applied in a loop over the member vector of an input ensemble.  When
+        False (default) only the ensemble's metadata is checked.  This parameter
+        is ignored if the input is an atomic data type.
 
     :return:  edited copy of d
     """

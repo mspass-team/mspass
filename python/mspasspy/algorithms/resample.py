@@ -149,7 +149,7 @@ class ScipyResampler(BasicResampler):
     something not an integer multiple or division from the input OR
     if you need to upsample data to match the rest of the data set
     (Note that is not usually a good idea unless the upsampling is followed
-     by a decimator to get all data to a lower, uniform sample rate.)
+    by a decimator to get all data to a lower, uniform sample rate.)
     A type example where that is essential is some old OBS data from
     Scripps instruments that had a sample rate that was a multiple of
     one of the more standard rates like 20 or 100.  Such data can be

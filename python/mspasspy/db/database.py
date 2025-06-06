@@ -79,7 +79,11 @@ class Database(pymongo.database.Database):
 
     The class currently has only one constructor normally called with
     a variant of the following:
+
+    .. code-block:: python
+
       db=Database(dbclient,'mydatabase')
+
     where dbclient is either a MongoDB database client instance or
     (recommended) the MsPASS DBClient wrapper (a subclass of the
     pymongo client).  The second argument is the database "name"
@@ -265,6 +269,7 @@ class Database(pymongo.database.Database):
         All optional `create collection command`_ parameters should be passed
         as keyword arguments to this method. Valid options include, but are not
         limited to:
+
           ``size``: desired initial size for the collection (in
             bytes). For capped collections this size is the max
             size of the collection.

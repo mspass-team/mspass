@@ -174,6 +174,7 @@ def read_distributed_data(
     can be iterated very fast compared to one-by-one queries of the
     same data.  Why all that is relevant is that arg0 if this function is
     required to be one of three things to work well within these constraints:
+
         1. An instance of a mspass `Database` handle
            (:class:`mspasspy.db.database.Database`).  Default
            with this input is to read an entire collection.  Use the
@@ -209,12 +210,16 @@ def read_distributed_data(
            For example, a data set you want to process as a set of
            common source gathers (ensmebles) might be created
            using a list something like this:
+
+           .. code-block:: python 
+
            [{"source_id" : ObjectId('64b917ce9aa746564e8ecbfd')},
             {"source_id" : ObjectId('64b917d69aa746564e8ecbfe')},
             ... ]
 
     This function is more-or-less three algorithms that are run for
     each of the three cases above.   In the same order as above they are:
+
         1. With a Database input the function first iterates through the entire
            set of records defined for specified collection
            (passed via collection argument) constrained by the
@@ -288,6 +293,7 @@ def read_distributed_data(
     :class:`mspasspy.util.Undertaker.Undertaker` class.   Invalid, atomic data
     will be the same type as the other bag/rdd components but will have
     the following properties that can be used to distinguish them:
+
         1.  They will have the Metadata field "is_live" set False.
         2.  The data object itself will have the interal attribute "live"
             set False.
@@ -305,9 +311,9 @@ def read_distributed_data(
       functions behavor.  Note when set as a Database handle the cursor
       argument must be set.  Otherwise it is ignored.
     :type data: :class:`mspasspy.db.database.Database` or :class:`pandas.DataFrame`
-    or :class:`dask.dataframe.core.DataFrame` or :class:`pyspark.sql.dataframe.DataFrame`
-    for atomic data.  List of python dicts defining queries to read a
-    dataset of ensembles.
+      or :class:`dask.dataframe.core.DataFrame` or :class:`pyspark.sql.dataframe.DataFrame`
+      for atomic data.  List of python dicts defining queries to read a
+      dataset of ensembles.
 
     :param db:  Database handle for loading data.   Required input if
       reading from a dataframe or with ensemble reading via list of queries.
@@ -363,7 +369,7 @@ def read_distributed_data(
       that can be used as the normalization operator in the
       `normalize` function.
 
-     param normalize_ensemble:  This parameter should be used to
+     :param normalize_ensemble:  This parameter should be used to
        apply normalization to ensemble Metadata (attributes common to
        the entire ensemble.) It will be ignored if reading
        atomic data.  Otherwise it behaves like normalize and is
@@ -1267,6 +1273,7 @@ def write_distributed_data(
     in the need to reduce transactions that cause delays with the MongoDB 
     server.   This function tries to address these issues with two 
     approaches:
+
         1.   Since v2 it uses single function that handles writing the 
              sample data for a datum.   For atomic data that means a 
              single array but for ensembles it is the combination of all
@@ -1329,7 +1336,8 @@ def write_distributed_data(
     that also illustrates how this function is used as the terminator 
     of a chain of map-reduce operators.
 
-    ```
+    .. code-block:: python 
+
        mybag = read_distributed_data(db,collection='wf_TimeSeries')
        mybag = mybag.map(detrend)   # example
        # intermediate save
@@ -1338,7 +1346,6 @@ def write_distributed_data(
        mybag = mybag.map(filter,'lowpass',freq=1.0)
        # termination with this function
        wfids = write_distributed_data(mybag,db,collection='wf_TimeSeries')
-    ```   
 
     The `storage_mode` argument is a constant that defines how the 
     SAMPLE DATA are to be stored.  Currently this can be "file" or 
@@ -1396,14 +1403,14 @@ def write_distributed_data(
     :type storage_mode: :class:`str` 
 
     :param scheduler:  name of parallel scheduler being used by this writer. 
-      MsPASS currently support pyspark and dask.  If arg0 is an RDD 
-      scheduler must be "spark" and arg0 defines dask bag schduler must 
-      be "dask".   The function will raise a ValueError exception of 
-      scheduler and the type of arg0 are not consistent or if the 
-      value of scheduler is illegal.  Note with spark the context is 
-      not required because of how this algorithm is structured.
+        MsPASS currently support pyspark and dask.  If arg0 is an RDD 
+        scheduler must be "spark" and arg0 defines dask bag schduler must 
+        be "dask".   The function will raise a ValueError exception of 
+        scheduler and the type of arg0 are not consistent or if the 
+        value of scheduler is illegal.  Note with spark the context is 
+        not required because of how this algorithm is structured.
     :type scheduler:  string  Must be either "dask" or "spark".  Default 
-      is None which is is equivalent to the value of "dask".
+        is None which is is equivalent to the value of "dask".
 
     :param file_format: the format of the file. This can be one of the
         `supported formats <https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.write.html#supported-formats>`__
@@ -1426,11 +1433,11 @@ def write_distributed_data(
     :type overwrite:  boolean
 
     :param collectiion:   name of wf collection where the documents 
-       derived from the data are to be saved.  Standard values are 
-       "wf_TimeSeries" and "wf_Seismogram" for which a schema is defined in 
-       MsPASS.   Normal use should specify one or the other.   The default is 
-       "wf_TimeSeries"  but normal usage should specify this argument 
-       explicitly for clarity in reuse. 
+        derived from the data are to be saved.  Standard values are 
+        "wf_TimeSeries" and "wf_Seismogram" for which a schema is defined in 
+        MsPASS.   Normal use should specify one or the other.   The default is 
+        "wf_TimeSeries"  but normal usage should specify this argument 
+        explicitly for clarity in reuse. 
     :type collection:  :class:`str`
 
     :param exclude_keys: Metadata can often become contaminated with
@@ -1451,61 +1458,61 @@ def write_distributed_data(
     :type data_tag: :class:`str`
 
     :param post_elog:   boolean controlling how error log messages are 
-       handled.  When False (default) error log messages get posted in 
-       single transactions with MongoDB to the "elog" collection.   
-       When set True error log entries will be posted to as subdocuments to 
-       the wf collection entry for each datum.   Setting post_elog True 
-       is most useful if you anticipate a run will generate a large number of 
-       error that could throttle processing with a large number of 
-       one-at-a-time document saves.  For normal use with small number of 
-       errors it is easier to review error issue by inspecting the elog
-       collection than having to query the larger wf collection.
+        handled.  When False (default) error log messages get posted in 
+        single transactions with MongoDB to the "elog" collection.   
+        When set True error log entries will be posted to as subdocuments to 
+        the wf collection entry for each datum.   Setting post_elog True 
+        is most useful if you anticipate a run will generate a large number of 
+        error that could throttle processing with a large number of 
+        one-at-a-time document saves.  For normal use with small number of 
+        errors it is easier to review error issue by inspecting the elog
+        collection than having to query the larger wf collection.
 
-     :param save_history:  When set True (default is False) write will 
-       save any object-level history data saved within the input data objects.
-       The related boolean (described below) called post_history controls 
-       how such data is saved if this option is enable.  Note post_history 
-       is ignored unless save_history is True.
+    :param save_history:  When set True (default is False) write will 
+        save any object-level history data saved within the input data objects.
+        The related boolean (described below) called post_history controls 
+        how such data is saved if this option is enable.  Note post_history 
+        is ignored unless save_history is True.
 
-     :param post_history:  boolean similar to post_elog for handling 
-       object-level history data.  It is, however, only handled if the 
-       related boolean "save_history" is set True. When post_history is 
-       set True the history data will be saved as a subdocument in the wf
-       document saved for each live, atomic datum (note for ensembles 
-       that means all live members).   When False each atomic datum 
-       will generate a insert_one transaction with MongoDB and save the 
-       history data in  the "history" collection.  It then sets the 
-       attribute with key "history_id" to the ObjectId of the saved 
-       document.  The default for this argument is True to avoid 
-       accidentally throttling workflows on large data sets.  The default 
-       for save_history is False so overall default behavior is to drop 
-       any history data. 
+    :param post_history:  boolean similar to post_elog for handling 
+        object-level history data.  It is, however, only handled if the 
+        related boolean "save_history" is set True. When post_history is 
+        set True the history data will be saved as a subdocument in the wf
+        document saved for each live, atomic datum (note for ensembles 
+        that means all live members).   When False each atomic datum 
+        will generate a insert_one transaction with MongoDB and save the 
+        history data in  the "history" collection.  It then sets the 
+        attribute with key "history_id" to the ObjectId of the saved 
+        document.  The default for this argument is True to avoid 
+        accidentally throttling workflows on large data sets.  The default 
+        for save_history is False so overall default behavior is to drop 
+        any history data. 
 
-     :param cremate:  boolean controlling handling of dead data.  
-       When True dead data will be passed to the `cremate` 
-       method of :class:`mspasspy.util.Undertaker` which leaves only 
-       ashes to nothing in the return.   When False (default) the 
-       `bury` method will be called instead which saves a skeleton 
-       (error log and Metadata content) of the results in the "cemetery" 
-       collection.
+    :param cremate:  boolean controlling handling of dead data.  
+        When True dead data will be passed to the `cremate` 
+        method of :class:`mspasspy.util.Undertaker` which leaves only 
+        ashes to nothing in the return.   When False (default) the 
+        `bury` method will be called instead which saves a skeleton 
+        (error log and Metadata content) of the results in the "cemetery" 
+        collection.
 
-     :param normalizing_collections:  list of collection names dogmatically treated
-          as normalizing collection names.  The keywords in the list are used 
-          to always (i.e. for all modes) erase any attribute with a key name 
-          of the form `collection_attribute where `collection` is one of the collection 
-          names in this list and attribute is any string.  Attribute names with the "_" 
-          separator are saved unless the collection field matches one one of the 
-          strings (e.g. "channel_vang" will be erased before saving to the 
-          wf collection while "foo_bar" will not be erased.)  This list should 
-          ONLY be changed if a different schema than the default mspass schema 
-          is used and different names are used for normalizing collections.  
-          (e.g. if one added a "shot" collection to the schema the list would need 
-          to be changed to at least add "shot".)
+    :param normalizing_collections:  list of collection names dogmatically treated
+        as normalizing collection names.  The keywords in the list are used 
+        to always (i.e. for all modes) erase any attribute with a key name 
+        of the form `collection_attribute where `collection` is one of the collection 
+        names in this list and attribute is any string.  Attribute names with the "_" 
+        separator are saved unless the collection field matches one one of the 
+        strings (e.g. "channel_vang" will be erased before saving to the 
+        wf collection while "foo_bar" will not be erased.)  This list should 
+        ONLY be changed if a different schema than the default mspass schema 
+        is used and different names are used for normalizing collections.  
+        (e.g. if one added a "shot" collection to the schema the list would need 
+        to be changed to at least add "shot".)
      :type normalizing_collection:  list if strings defining collection names.
 
      :param alg_name:  do not change
      :param alg_id:  algorithm id for object-level history.  Normally
-       assigned by global history manager.
+         assigned by global history manager.
 
     """
     # We don't do type check on the data argument assuming dask or

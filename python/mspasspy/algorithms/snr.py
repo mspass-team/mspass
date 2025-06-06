@@ -452,6 +452,8 @@ def FD_snr_estimator(
     of this function is the return of `EstimateBandwidth` translated to
     keyp-value pairs.   Those are:
 
+    .. code-block:: text
+
       *low_f_band_edge* - lowest frequency exceeding threshold
       *high_f_band_edge* - highest frequency exeeding threshold
       *high_f_band_edge_snr* and *low_f_band_edge_snr* are the snr values
@@ -588,8 +590,8 @@ def FD_snr_estimator(
       of the optional snr metrics discussed above. Typos in names will create
       log messages but will not cause the function to abort.
     :type optional_metrics:  should be a list of strings matching the set of
-       required keywords.  Default is None which means none of the optional
-       metrics will be computed.
+      required keywords.  Default is None which means none of the optional
+      metrics will be computed.
     :param save_spectra:   If set True (default is False) the function
       will pickle the computed noise and signal spectra and save the
       strings created along with a set of related metadata defining the
@@ -1006,7 +1008,7 @@ def arrival_snr(
       "Parrival".   The idea is if multiple phases are being analyzed
       each phase should have a different key set by this argument
       (e.g. if PP were also being analyzed in the same workflow you
-       might use a key like "PParrival").
+      might use a key like "PParrival").
     :return:  a copy of data_object with the the results stored under
       the key defined by the metadata_output_key argument.
     """

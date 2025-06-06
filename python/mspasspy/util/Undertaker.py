@@ -21,6 +21,7 @@ programming joke, but are remarkably useful mnemonics for the functionality
 they provide.
 
 Concepts of this class are:
+
 1.  Data marked as "dead" in MsPASS are always considered invalid and
     should not be used as part of a final product that is the goal of a workflow.
 2.  What made the data invalid cannot be known without additional information.
@@ -117,16 +118,16 @@ class Undertaker:
       MsPaSs.
 
     :param regular_data_collection:  collection where we bury regular
-    dead bodies.  Default "cemetery"
+      dead bodies.  Default "cemetery"
     :type regular_data_collection:  string
 
     :param aborted_data_collection:  collection where aborted data documents
-    are buried.   Default "abortions"
+      are buried.   Default "abortions"
     :type aborted_data_collection:  string
 
     :param data_tag:   tag to attach to each document.  Normally would
-    be the same as the data_tag used for a particular save operation
-    for data not marked dead.
+      be the same as the data_tag used for a particular save operation
+      for data not marked dead.
     """
 
     def __init__(
@@ -191,22 +192,25 @@ class Undertaker:
         standardizes the method of how to do that and what is saved
         as the shell of a dead datum.  That "shell" is always a minimum
         of two things:
+
             1.  All elog entries - essential to understand why datum was killed
             2.  The content of the Metadata container saved under a
                 subdocument called "tombstone".
+
         If save_history is set True and the datum has history records
         they will also be saved.
 
         It is important to realize this method acts like an overloaded
         c++ method in that it accepts multiple data types, but handles
         them differently.
+
         1.  Atomic data (TimeSeries or Seismogram) marked dead
             generate a document saved to the specified collection and
             an (optional) history document.   If the mummify_atomic_data
             parameter is set True (the default) the returned copy of the
             data will be processed with the "mummify" method of this class.
             (That means the sample data are discarded and the array is set
-             to zero length).
+            to zero length).
         2.  Ensembles have to handle two different situations.   If the
             entire ensemble is marked dead, all members are treated as
             dead and then processed through this method by a recursive
@@ -520,6 +524,9 @@ class Undertaker:
         saved as a document in a collection set by the constructor
         (self.aborted_data_collection) that defaults to "abortions".
         The documents saved have up to 3 key-value pairs:
+
+        .. code-block:: text
+
             "tombstone" - contents are a subdocument (dict) of the
               wf document that was aborted during construction.
             "logdata" - any error log records left by the reeader that failed.
@@ -531,22 +538,22 @@ class Undertaker:
 
         :param doc_or_datum:  container defining the aborted fetus.
         :type doc_or_datum:  Must be one of `TimeSeries`, `Seismogram`, `Metadata`,
-        or a python dict.   For the seismic data objects any content in
-        the ErrorLogger will be saved.   For dict input an application
-        should post a message to the dict with some appropriate (custom)
-        key to preserve a cause for the abortion.
+          or a python dict.   For the seismic data objects any content in
+          the ErrorLogger will be saved.   For dict input an application
+          should post a message to the dict with some appropriate (custom)
+          key to preserve a cause for the abortion.
 
         :param type: string description of the type of data object
-        to associate with dict input.  Default for this parameter is None
-        and it is not referenced at all for normal input of TimeSeries
-        and Seismogram objects.  It is ONLY referenced if arg0 is a
-        dict. If type is None and the input is a dict the value assigned to
-        the "type" key in the abortions document is "unknown".   The
-        escape for "unknown" makes the method bombproof but may make the
-        saved documents ambiguous.
+          to associate with dict input.  Default for this parameter is None
+          and it is not referenced at all for normal input of TimeSeries
+          and Seismogram objects.  It is ONLY referenced if arg0 is a
+          dict. If type is None and the input is a dict the value assigned to
+          the "type" key in the abortions document is "unknown".   The
+          escape for "unknown" makes the method bombproof but may make the
+          saved documents ambiguous.
 
         :exception:  throws a TypeError if arg0 does not obey type
-        list described above.
+          list described above.
         """
         insertion_doc = dict()
         if self.data_tag:
@@ -589,11 +596,12 @@ class Undertaker:
         because of the use of the "is_abortion" Metadata attribute in
         our readers.   Could be more complex so this design assures
         separation of the concept from the implementation.
+
         :param d:  datum to be tested.
         :type d: TimeSeries or Seismogram.  We do test for this as the
-        cost is small and a TypeError will be thrown if d is not either of
-        these types.  Considered bypassing the test but better to
-        make the package more robust.
+          cost is small and a TypeError will be thrown if d is not either of
+          these types.  Considered bypassing the test but better to
+          make the package more robust.
 
         :return: boolean True if datum is an abortion, False othewise.
         """

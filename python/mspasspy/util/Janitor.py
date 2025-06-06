@@ -287,8 +287,8 @@ class Janitor:
         attributes defined as a keeper.
 
         :param key:  key of the attribute to add to a the list of keeper
-           names in this Janitor.   Note if the name already exists in
-           the list this method does nothing.
+          names in this Janitor.   Note if the name already exists in
+          the list this method does nothing.
         :type key:  str
         :param keeper_type:  defines the data to to which key should be
           added.  Normal use is one the following keywword whose use

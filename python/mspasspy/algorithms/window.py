@@ -36,6 +36,7 @@ def ensemble_error_post(d, alg, message, severity):
     object that throws an exception this function will post the message
     posted to all ensemble members.  It silently does nothing if the
     ensemble is empty.
+
     :param d: is the ensemble data to be handled.  It print and error message
       and returns doing nothing if d is not one of the known ensemble
       objects.
@@ -340,6 +341,9 @@ def WindowDataAtomic(
         the `short_segment_handling` string.  It must be
         one of only three possible values or the function
         will abort with a ValueError exception:
+
+        .. code-block:: text
+
         "kill" - (default) does not recovery attempt and will
                  kill any data with time inconsistencies.
         "truncate" - this truncates to the output to the
@@ -366,10 +370,10 @@ def WindowDataAtomic(
 
     Note:  This function should not normally be used.  WindowData
     calls it directy for atomic inputs and adds only a tiny overhead.
-    It can still be used as long as you don't need object-level history.'
+    It can still be used as long as you don't need object-level history.
 
-    :param d: is the input data.  d must be either a
-      :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
+    :param d: is the input data.  d must be either
+      a :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
       object or the function will log an error to d and return a None.
     :param twin_start: defines the start of timeWindow to be cut
     :type twin_start: :class:`float`
@@ -388,27 +392,31 @@ def WindowDataAtomic(
       was retained as the original api did not have the string
       option.
     :type t0shift:  real number (float) or a string that defines a
-    Metadata container key.
+      Metadata container key.
     :param short_segment_handling: Defines method for handling data where
-    the requested interval is shorter than the requested window but does
-    have some overlap. `segment_handling_methods` must be one of the following:
+      the requested interval is shorter than the requested window but does
+      have some overlap. `segment_handling_methods` must be one of the following:
+
+      .. code-block:: text
+
       `kill` - in this mode any issues cause the return to be marked dead
                (this is the default)
       'pad' -  in this mode return will have short segments will be padded
                with zeros to define data of the required length.
       'truncate' - in this mode short segments will be truncated on left
                   and/or right to match actual data range.
+
       Note that if the input time range does not overlap the requested
-      interval "kiLl" is always the behavior as by definition the result
+      interval "kill" is always the behavior as by definition the result
       is null.
     :type short_segment_handle:  string (from list above)  Default is "kill".
-    Throws a ValueError exception of not one of the accepted values.
+      Throws a ValueError exception of not one of the accepted values.
     :param log_recoverable_errors:  When True (default) any recoverable
-    windowing error (meaning at least a partial overlap in time range)
-    will cause a log message to be posted to the elog container of the
-    output.  When False recovery will be done silently.  Note when
-    `short_segment_handling` is set to "kill" logging is not optional and
-    kill will always create an error log entry.
+      windowing error (meaning at least a partial overlap in time range)
+      will cause a log message to be posted to the elog container of the
+      output.  When False recovery will be done silently.  Note when
+      `short_segment_handling` is set to "kill" logging is not optional and
+      kill will always create an error log entry.
 
     :return: copy of d with sample range reduced to twin range.  Returns
       an empty version of the parent data type (default constructor) if
@@ -627,6 +635,9 @@ def WindowData(
         the `short_segment_handling` string.  It must be
         one of only three possible values or the function
         will abort with a ValueError exception:
+
+        .. code-block:: text
+
         "kill" - (default) does not recovery attempt and will
                  kill any data with time inconsistencies.
         "truncate" - this truncates to the output to the
@@ -664,24 +675,24 @@ def WindowData(
     Note the description of subsample time handling in the
     related docstring for `WindowDataAtomic`.   For ensembles
     each member output preserves subsample timing.
-    
+
     Finally, how the function handles data marked dead is \
-    important.  For atomic data the is no complexity.  
+    important.  For atomic data the is no complexity.
     dead is dead and the function just immediately returns
-    a reference to the input.  For ensembles some members 
-    can be dead or the entire ensemble can be marked dead. 
+    a reference to the input.  For ensembles some members
+    can be dead or the entire ensemble can be marked dead.
     If the ensemble is marked dead the function immediately
-    returns a reference to the input.  If any members are 
-    dead the result will depend on the boolean argument 
-    "retain_data_members".  When True (the default) dead 
-    members will be copied verbatim to the output.   
-    If False the dead members will be SILENTLY deleted.  
-    The False option is only recommended if the windowing is 
-    internal to a function and the windowed output will be 
-    discarded during processing.  Otherwise the error log of why 
-    data were killed will be lost.   If you need to save 
-    memory by clearing dead bodies use the `Undertaker` 
-    class to bury the dead and retain the error log data.  
+    returns a reference to the input.  If any members are
+    dead the result will depend on the boolean argument
+    "retain_data_members".  When True (the default) dead
+    members will be copied verbatim to the output.
+    If False the dead members will be SILENTLY deleted.
+    The False option is only recommended if the windowing is
+    internal to a function and the windowed output will be
+    discarded during processing.  Otherwise the error log of why
+    data were killed will be lost.   If you need to save
+    memory by clearing dead bodies use the `Undertaker`
+    class to bury the dead and retain the error log data.
 
     :param d: is the input data.  d must be either a
       :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
@@ -707,23 +718,27 @@ def WindowData(
     :param short_segment_handling: Defines method for handling data where
       the requested interval is shorter than the requested window but does
       have some overlap. `segment_handling_methods` must be one of the following:
+
+      .. code-block:: text
+
         `kill` - in this mode any issues cause the return to be marked dead
                  (this is the default)
         'pad' -  in this mode return will have short segments will be padded
                  with zeros to define data of the required length.
         'truncate' - in this mode short segments will be truncated on left
                     and/or right to match actual data range.
-        Note that if the input time range does not overlap the requested
-        interval "kiLl" is always the behavior as by definition the result
-        is null.
-      :type short_segment_handle:  string (from list above)  Default is "kill".
-        Throws a ValueError exception of not one of the accepted values.
-      :param log_recoverable_errors:  When True (default) any recoverable
-        windowing error (meaning at least a partial overlap in time range)
-        will cause a log message to be posted to the elog container of the
-        output.  When False recovery will be done silently.  Note when
-        `short_segment_handling` is set to "kill" logging is not optional and
-        kill will always create an error log entry.
+
+      Note that if the input time range does not overlap the requested
+      interval "kiLl" is always the behavior as by definition the result
+      is null.
+    :type short_segment_handle:  string (from list above)  Default is "kill".
+      Throws a ValueError exception of not one of the accepted values.
+    :param log_recoverable_errors:  When True (default) any recoverable
+      windowing error (meaning at least a partial overlap in time range)
+      will cause a log message to be posted to the elog container of the
+      output.  When False recovery will be done silently.  Note when
+      `short_segment_handling` is set to "kill" logging is not optional and
+      kill will always create an error log entry.
     :param overwrite_members:   controls handling of the member vector of
       ensembles as described above.  When True the member atomic data will
       be overwritten by the windowed version and the ensmble returned will
@@ -733,9 +748,9 @@ def WindowData(
       This argument will be silently ignored if the input is an atomic
       MsPASS seismic object.
     :type overwrite_members:  boolean
-    :param retain_dead_members:   Controls how dead data are handled with 
-      ensembles.  When True (default) dead ensemble members are copied verbatim 
-      to the output.  When False they are silently deleted. (see above for 
+    :param retain_dead_members:   Controls how dead data are handled with
+      ensembles.  When True (default) dead ensemble members are copied verbatim
+      to the output.  When False they are silently deleted. (see above for
       a more complete description).  This argument is ignored for Atomic data.
     :type retain_dead_members: boolean
     :param object_history: boolean to enable or disable saving object
@@ -945,6 +960,7 @@ def merge(
         2.   It checks that the inputs all have the same sample rate.
         3.   If fix_overlaps is False if an overlap is found it
              is considered an exception.
+
     Either of these conditions will cause the function to throw an
     exception.  The assumption is that either is a user error created
     by failing to reading the directions that emphasize this requirement
@@ -1008,7 +1024,11 @@ def merge(
     gap is defined in this algorithm as any section where the endtime of
     one segment is followed by a start time of the next segment that is
     more than 1 sample in duration.  Specifically when
+
+    .. code-block:: text 
+
        (segment[i+1].t0()-segment[i].endtime()) > 1.5*dt
+
     The result depends on values of the (optional) windowing arguments
     starttime and endtime and the boolean "zero_gaps" argument.
     If windowing is enabled (done by changing
@@ -1036,7 +1056,11 @@ def merge(
       many may find it more convenient to bundle data into a TimeSeriesEnsemble
       and use the member attribute of the ensemble as the input.
       i.e. if ens is a TimeSeriesEnsemble use something like this:
+
+      .. code-block:: text 
+
            outdata = merge(ens.member)
+
     :param starttime: (optional) start time to apply for windowing the
       output.  Default is None which means the output will be created
       as the merge of all the inputs.  When set WindowData is applied
@@ -1063,12 +1087,11 @@ def merge(
       gap positions posted to the Metadata of the output.  See above
       for details.
     :param zero_gaps:  boolean controlling how gaps are to be handled.
-    See above for details of the algorithm.
+      See above for details of the algorithm.
     :type zero_gaps:  boolean (default False)
     :param object_history: boolean to enable or disable saving object
       level history.  Default is False.  Note this functionality is
       implemented via the mspass_func_wrapper decorator.
-
     :return: TimeSeries in the range defined by the time span of the input
       vector of segments or if starttime or endtime are specified a reduced
       time range.  The result may be marked dead for a variety of reasons
@@ -1219,6 +1242,7 @@ class TopMute:
         reason is in that situation the data would be completely zeroed
         anyway and it is better to define it dead and leave an error message
         than to completely null data.
+
         :param d:  input atomic MsPASS data object (TimeSeries or Seismogram)
         :object_history:  It set true the function will add define this
           step as an map operation to preserve object level history.

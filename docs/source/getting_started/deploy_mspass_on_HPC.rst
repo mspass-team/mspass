@@ -79,10 +79,10 @@ components in that diagram need to come into existence.
     MsPASS implements these services as a run argument
     to a standard "container".   On desktop systems the standard
     application to run a container is a package called
-    `docker<https://docs.docker.com/get-docker/>`__.   For a variety of
+    `docker <https://docs.docker.com/get-docker/>`__.   For a variety of
     reasons docker is not used on HPC clusters.  Instead the standard
     container launcher on HPC is
-    `apptainer<https://apptainer.org/documentation/>`__.
+    `apptainer <https://apptainer.org/documentation/>`__.
     (Note until around 2023 this application was called *singularity*.
     Some sites may still run the legacy version.)  There are currently
     two ways to launch these services:  (a) a python launcher and
@@ -115,7 +115,7 @@ components in that diagram need to come into existence.
 Common Requirement
 ----------------------
 At the time of this writing a software package called
-`apptainer<https://apptainer.org/documentation/>`__
+`apptainer <https://apptainer.org/documentation/>`__
 is the standard application for launching containerized applications
 like MsPASS on HPC clusters.   HPC systems do not use docker for security
 reasons because docker defaults to allowing processes in the container
@@ -217,7 +217,7 @@ If a colleague at your institution has run MsPASS we advise you to
 use it as a starting point.   If not, copy the master from the package
 install directory (see internet sources on where a --user packages are installed)
 or download the master from GitHub
-`here<https://github.com/mspass-team/mspass_launcher/blob/main/src/mspass_launcher/data/yaml/HPCClusterLauncher.yaml>`__.
+`here <https://github.com/mspass-team/mspass_launcher/blob/main/src/mspass_launcher/data/yaml/HPCClusterLauncher.yaml>`__.
 
 Edit that file for your installation and the requirements of your
 workflow.   Details on how to do that
