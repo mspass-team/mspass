@@ -49,13 +49,15 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
     
-              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Desktop Operation</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/quick_start.html">Getting Started in a Nutshell</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/run_mspass_with_docker.html">Run MsPASS with Docker</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_docker_compose.html">Deploy MsPASS with Docker Compose</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/mspass_desktop.html">Running MsPASS on a Desktop Computer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/command_line_desktop.html">Command Line Docker Desktop Operation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_conda.html">Deploy MsPASS with Conda</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_conda.html#advanced-setup-considerations">Advanced Setup Considerations</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Cluster Operations</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_on_HPC.html">Deploying MsPASS on an HPC cluster</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_conda_and_coiled.html">Deploy MsPASS with Conda and Coiled</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started/getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
@@ -92,6 +94,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/header_math.html">Header (Metadata) Math</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/graphics.html">Graphics in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/signal_to_noise.html">Signal to Noise Ratio Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/arrival_time_measurement.html">Arrival Time Measurement Techniques in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
@@ -209,7 +212,7 @@
 <span class="sd">    :rtype:  SeismogramEnsemble</span>
 
 <span class="sd">    :exception:  Can throw a MsPASSError for a number of conditions.</span>
-<span class="sd">    Caller should be enclosed in a handler if run on a large data set.</span>
+<span class="sd">        Caller should be enclosed in a handler if run on a large data set.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ensemble</span><span class="p">,</span> <span class="n">TimeSeriesEnsemble</span><span class="p">):</span>
         <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
@@ -238,13 +241,15 @@
 <span class="sd">    to assemble one or more bundles needed to build a Seismogram.  The</span>
 <span class="sd">    algorithm used here is simple and ONLY works if the inputs have been</span>
 <span class="sd">    sorted so the channels define a group of three unique channel codes.</span>
-<span class="sd">    For example,</span>
-<span class="sd">        HHE, HHN, HHZ</span>
-<span class="sd">    would form a typical seed channel grouping.</span>
+<span class="sd">    For example, HHE, HHN, HHZ, would form a typical seed channel grouping.</span>
 
 <span class="sd">    The function will attempt to handle duplicates.  By that I mean</span>
 <span class="sd">    if the group has two of the same channel code like these sequences:</span>
+
+<span class="sd">    .. code-block:: text</span>
+
 <span class="sd">        HHE, HHE, HHN, HHZ  or HHE, HHN, HHN, HHZ, HHZ</span>
+
 <span class="sd">    If the duplicates are pure duplicates there is no complication and</span>
 <span class="sd">    the result will be clean.   If the time spans of the duplicate</span>
 <span class="sd">    channels are different the decision of which to use keys on a simple</span>
@@ -259,10 +264,12 @@
 <span class="sd">    three inputs with an inconsistent set of SEED names.   That &quot;inconsistent&quot;</span>
 <span class="sd">    test is obscure and yet another example that SEED is a four letter word.</span>
 <span class="sd">    Commentary aside, the rules are:</span>
+
 <span class="sd">        1.  The net code must be defined and the same in all TimeSeries passed</span>
 <span class="sd">        2.  The station (sta) code must also be the same for all inputs</span>
 <span class="sd">        3.  Similarly the loc code must be the same in all inputs.</span>
 <span class="sd">        4.  Finally, there is a more obscure test on channel names.  They must</span>
+
 <span class="sd">    all have the same first two characters.   That is, BHE, BHN, BHN, BHZ</span>
 <span class="sd">    is ok but BHE, BHN, BHZ, HHE will cause an immediate exit with no</span>
 <span class="sd">    attempt to resolve the ambiguity - that is viewed a usage error in</span>
@@ -271,6 +278,7 @@
 
 <span class="sd">    In all cases where the bundling is not possible the function does not</span>
 <span class="sd">    throw an exception but does four things:</span>
+
 <span class="sd">        1.  Merges the Metadata of all inputs (uses the += operator so only the</span>
 <span class="sd">            last values of duplicate keys will be preserved in the return)</span>
 <span class="sd">        2.  If ProcessingHistory is defined in the input they history records  are</span>
@@ -285,19 +293,19 @@
 <span class="sd">    the outputs to the inputs will be posted to ProcessingHistory.</span>
 
 <span class="sd">    :param d: This is assumed to be an array like object of TimeSeries data</span>
-<span class="sd">    that are to be used to build the Seismogram objects.  They must be</span>
-<span class="sd">    sorted as described above or the algorithm will fail.   Two typical</span>
-<span class="sd">    array like objects to use are the member attribute of a TimeSeriesEnsemble</span>
-<span class="sd">    or a python array constructed from a (sorted) collection of TimeSeries</span>
-<span class="sd">    objects.</span>
+<span class="sd">        that are to be used to build the Seismogram objects.  They must be</span>
+<span class="sd">        sorted as described above or the algorithm will fail.   Two typical</span>
+<span class="sd">        array like objects to use are the member attribute of a TimeSeriesEnsemble</span>
+<span class="sd">        or a python array constructed from a (sorted) collection of TimeSeries</span>
+<span class="sd">        objects.</span>
 <span class="sd">    :param i0:  starting array position for constructing output(s).</span>
-<span class="sd">    The default is 0 which would be the normal request for an full ensemble</span>
-<span class="sd">    or a single grouping assembled by some other mechanism.  A nonzero is</span>
-<span class="sd">    useful to work through a larger container one Seismogram at a time.</span>
+<span class="sd">        The default is 0 which would be the normal request for an full ensemble</span>
+<span class="sd">        or a single grouping assembled by some other mechanism.  A nonzero is</span>
+<span class="sd">        useful to work through a larger container one Seismogram at a time.</span>
 <span class="sd">    :param iend:  end array position.   The function will attempt to</span>
-<span class="sd">    assemble one or more Seismograms from TimeSeries in the range</span>
-<span class="sd">    d[i0] to d[iend].  Default is 2 for a single Seismogram without</span>
-<span class="sd">    duplicates.</span>
+<span class="sd">        assemble one or more Seismograms from TimeSeries in the range</span>
+<span class="sd">        d[i0] to d[iend].  Default is 2 for a single Seismogram without</span>
+<span class="sd">        duplicates.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">d3c</span> <span class="o">=</span> <span class="n">_BundleSEEDGroup</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">member</span><span class="p">,</span> <span class="n">i0</span><span class="p">,</span> <span class="n">iend</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">d3c</span></div>

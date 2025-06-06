@@ -49,13 +49,15 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
     
-              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Desktop Operation</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/quick_start.html">Getting Started in a Nutshell</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/run_mspass_with_docker.html">Run MsPASS with Docker</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_docker_compose.html">Deploy MsPASS with Docker Compose</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/mspass_desktop.html">Running MsPASS on a Desktop Computer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/command_line_desktop.html">Command Line Docker Desktop Operation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_conda.html">Deploy MsPASS with Conda</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_conda.html#advanced-setup-considerations">Advanced Setup Considerations</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Cluster Operations</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_on_HPC.html">Deploying MsPASS on an HPC cluster</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_conda_and_coiled.html">Deploy MsPASS with Conda and Coiled</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started/getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
@@ -92,6 +94,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/header_math.html">Header (Metadata) Math</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/graphics.html">Graphics in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/signal_to_noise.html">Signal to Noise Ratio Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/arrival_time_measurement.html">Arrival Time Measurement Techniques in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
@@ -2537,11 +2540,11 @@
 <span class="sd">    :param type:  list of strings defining collection keys</span>
 
 <span class="sd">    :param aliases:  python dictionary defining alias names to apply</span>
-<span class="sd">     when fetching from a data object&#39;s Metadata container.   The key sense</span>
-<span class="sd">     of the mapping is important to keep straight.  The key of this</span>
-<span class="sd">     dictionary should match one  of the attributes in attributes_to_load</span>
-<span class="sd">     or load_if_defined.  The value the key defines should be the alias</span>
-<span class="sd">     used to fetch the comparable attribute from the data.</span>
+<span class="sd">       when fetching from a data object&#39;s Metadata container.   The key sense</span>
+<span class="sd">       of the mapping is important to keep straight.  The key of this</span>
+<span class="sd">       dictionary should match one  of the attributes in attributes_to_load</span>
+<span class="sd">       or load_if_defined.  The value the key defines should be the alias</span>
+<span class="sd">       used to fetch the comparable attribute from the data.</span>
 <span class="sd">    :type aliaes:  python dictionary</span>
 
 <span class="sd">    :param prepend_collection_name:  when True attributes returned in</span>
@@ -3293,11 +3296,11 @@
 <span class="sd">    :param type:  list of strings defining collection keyes</span>
 
 <span class="sd">    :param aliases:  python dictionary defining alias names to apply</span>
-<span class="sd">     when fetching from a data object&#39;s Metadata container.   The key sense</span>
-<span class="sd">     of the mapping is important to keep straight.  The key of this</span>
-<span class="sd">     dictionary should match one  of the attributes in attributes_to_load</span>
-<span class="sd">     or load_if_defined.  The value the key defines should be the alias</span>
-<span class="sd">     used to fetch the comparable attribute from the data.</span>
+<span class="sd">       when fetching from a data object&#39;s Metadata container.   The key sense</span>
+<span class="sd">       of the mapping is important to keep straight.  The key of this</span>
+<span class="sd">       dictionary should match one  of the attributes in attributes_to_load</span>
+<span class="sd">       or load_if_defined.  The value the key defines should be the alias</span>
+<span class="sd">       used to fetch the comparable attribute from the data.</span>
 <span class="sd">    :type aliaes:  python dictionary</span>
 
 <span class="sd">    :param prepend_collection_name:  when True attributes returned in</span>
@@ -3314,13 +3317,13 @@
 <span class="sd">    :type require_unique_match:  boolean</span>
 
 <span class="sd">    :param ensemble_starttime_key:  defines the key used to fetch a</span>
-<span class="sd">     start time for the interval test when processing with ensemble data.</span>
-<span class="sd">     Default is &quot;starttime&quot;.</span>
+<span class="sd">       start time for the interval test when processing with ensemble data.</span>
+<span class="sd">       Default is &quot;starttime&quot;.</span>
 <span class="sd">    :type ensemble_starttime_key:  string</span>
 
 <span class="sd">    :param ensemble_endtime_key:  defines the key used to fetch a</span>
-<span class="sd">     end time for the interval test when processing with ensemble data.</span>
-<span class="sd">     Default is &quot;endtime&quot;.</span>
+<span class="sd">       end time for the interval test when processing with ensemble data.</span>
+<span class="sd">       Default is &quot;endtime&quot;.</span>
 <span class="sd">    :type ensemble_endtime_key:  string</span>
 
 <span class="sd">    :param query:   optional query predicate.  That is, if set the</span>
@@ -3467,7 +3470,7 @@
 <span class="sd">      applied with ensembles - see above.</span>
 
 <span class="sd">    :return:  copy of mspass_object.  dead data are returned immediately.</span>
-<span class="sd">    if kill_on_failure is true the result may be killed on return.</span>
+<span class="sd">      if kill_on_failure is true the result may be killed on return.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="s2">&quot;dead&quot;</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
@@ -3666,32 +3669,32 @@
 <span class="sd">    also called a &quot;station&quot;).</span>
 
 <span class="sd">    :param db: should be a MsPASS database handle containing at least</span>
-<span class="sd">    wf_miniseed and the collections defined by the norm_collection list.</span>
+<span class="sd">      wf_miniseed and the collections defined by the norm_collection list.</span>
 <span class="sd">    :param blockssize:   To speed up updates this function uses the</span>
-<span class="sd">    bulk writer/updater methods of MongoDB that can be orders of</span>
-<span class="sd">    magnitude faster than one-at-a-time updates for setting</span>
-<span class="sd">    channel_id and site_id.  A user should not normally need to alter this</span>
-<span class="sd">    parameter.</span>
+<span class="sd">      bulk writer/updater methods of MongoDB that can be orders of</span>
+<span class="sd">      magnitude faster than one-at-a-time updates for setting</span>
+<span class="sd">      channel_id and site_id.  A user should not normally need to alter this</span>
+<span class="sd">      parameter.</span>
 <span class="sd">    :param wfquery: is a query to apply to wf_miniseed.  The output of this</span>
-<span class="sd">    query defines the list of documents that the algorithm will attempt</span>
-<span class="sd">    to normalize as described above.  The default will process the entire</span>
-<span class="sd">    wf_miniseed collection (query set to an emtpy dict).</span>
+<span class="sd">      query defines the list of documents that the algorithm will attempt</span>
+<span class="sd">      to normalize as described above.  The default will process the entire</span>
+<span class="sd">      wf_miniseed collection (query set to an emtpy dict).</span>
 <span class="sd">    :param normalize_channel:  boolean for handling channel collection.</span>
-<span class="sd">    When True (default) matches will be attempted with the channel collection</span>
-<span class="sd">    and when matches are found the associated channel document id will be</span>
-<span class="sd">    set in the associated wf_miniseed document as channel_id.</span>
+<span class="sd">      When True (default) matches will be attempted with the channel collection</span>
+<span class="sd">      and when matches are found the associated channel document id will be</span>
+<span class="sd">      set in the associated wf_miniseed document as channel_id.</span>
 <span class="sd">    :param normalize_site:  boolean for handling site collection.</span>
-<span class="sd">    When True (default) matches will be attempted with the site collection</span>
-<span class="sd">    and when matches are found the associated site document id will</span>
-<span class="sd">    be set wf_miniseed document as site_id. Note at least one of</span>
-<span class="sd">    the two booleans normalize_channel and normalize_site must be set True</span>
-<span class="sd">    or the function will immediately abort.</span>
+<span class="sd">      When True (default) matches will be attempted with the site collection</span>
+<span class="sd">      and when matches are found the associated site document id will</span>
+<span class="sd">      be set wf_miniseed document as site_id. Note at least one of</span>
+<span class="sd">      the two booleans normalize_channel and normalize_site must be set True</span>
+<span class="sd">      or the function will immediately abort.</span>
 
 
 <span class="sd">    :return: list with three integers.  0 is the number of documents processed in</span>
-<span class="sd">    wf_miniseed (output of query), 1 is the number with channel ids set,</span>
-<span class="sd">    and 2 contains the number of site documents set.  1 or 2 should</span>
-<span class="sd">    contain 0 if normalization for that collection was set false.</span>
+<span class="sd">      wf_miniseed (output of query), 1 is the number with channel ids set,</span>
+<span class="sd">      and 2 contains the number of site documents set.  1 or 2 should</span>
+<span class="sd">      contain 0 if normalization for that collection was set false.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">if</span> <span class="n">wfquery</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -3755,6 +3758,7 @@
 <span class="sd">    Otherwise (the time is None), we first try to get the start</span>
 <span class="sd">    time from d. If start time is not defined in d, None is</span>
 <span class="sd">    return to indicate the time field should be ignored.</span>
+
 <span class="sd">        :param d: Data object with a Metadata container to extract the field</span>
 <span class="sd">        :param time: the start time used for matching</span>
 <span class="sd">        :return: the test_time extracted</span>
@@ -3815,11 +3819,11 @@
 <span class="sd">      If you want the entire collection specify None or an empty dictionary.</span>
 <span class="sd">    :type query:  python dict defining a pymongo query or None.</span>
 <span class="sd">    :param attributes_to_load: list of keys to extract of required attributes</span>
-<span class="sd">    to load from collection.   This function will abort if any document</span>
-<span class="sd">    does not contain one of these attributes.</span>
+<span class="sd">      to load from collection.   This function will abort if any document</span>
+<span class="sd">      does not contain one of these attributes.</span>
 <span class="sd">    :param load_if_defined:  attributes loaded more cautiously.  If the</span>
-<span class="sd">    attributes for any of the keys in this list are not found in a document</span>
-<span class="sd">    the output dataframe has a Null defined for that cell.</span>
+<span class="sd">      attributes for any of the keys in this list are not found in a document</span>
+<span class="sd">      the output dataframe has a Null defined for that cell.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">query</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">query</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>

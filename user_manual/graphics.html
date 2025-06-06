@@ -52,13 +52,15 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
     
-              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Desktop Operation</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/quick_start.html">Getting Started in a Nutshell</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/run_mspass_with_docker.html">Run MsPASS with Docker</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_docker_compose.html">Deploy MsPASS with Docker Compose</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/mspass_desktop.html">Running MsPASS on a Desktop Computer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/command_line_desktop.html">Command Line Docker Desktop Operation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda.html">Deploy MsPASS with Conda</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda.html#advanced-setup-considerations">Advanced Setup Considerations</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Cluster Operations</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_HPC.html">Deploying MsPASS on an HPC cluster</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda_and_coiled.html">Deploy MsPASS with Conda and Coiled</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
@@ -102,6 +104,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="signal_to_noise.html">Signal to Noise Ratio Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="arrival_time_measurement.html">Arrival Time Measurement Techniques in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
@@ -293,7 +296,7 @@ to run that tutorial and review the sphynx documentation on the
 <figure class="align-center" id="id1">
 <span id="wt-figure"></span><a class="reference internal image-reference" href="../_images/wt_example.png"><img alt="../_images/wt_example.png" src="../_images/wt_example.png" style="width: 600px;" /></a>
 <figcaption>
-<p><span class="caption-number">Fig. 9 </span><span class="caption-text">Figure 1. Example of wiggle trace plot created by
+<p><span class="caption-number">Fig. 14 </span><span class="caption-text">Figure 1. Example of wiggle trace plot created by
 <a class="reference internal" href="../python_api/mspasspy.graphics.html#mspasspy.graphics.SeismicPlotter" title="mspasspy.graphics.SeismicPlotter"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.graphics.SeismicPlotter</span></code></a>.  This type of plot
 is created with the “style” set to “wt”.
 (Set with <a class="reference internal" href="../python_api/mspasspy.graphics.html#mspasspy.graphics.SeismicPlotter.change_style" title="mspasspy.graphics.SeismicPlotter.change_style"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mspasspy.graphics.SeismicPlotter.change_style()</span></code></a> method)</span><a class="headerlink" href="#id1" title="Permalink to this image"></a></p>
@@ -302,7 +305,7 @@ is created with the “style” set to “wt”.
 <figure class="align-center" id="id2">
 <span id="wtva-figure"></span><a class="reference internal image-reference" href="../_images/wtva_example.png"><img alt="../_images/wtva_example.png" src="../_images/wtva_example.png" style="width: 600px;" /></a>
 <figcaption>
-<p><span class="caption-number">Fig. 10 </span><span class="caption-text">Figure 2.  Example of wiggle variable area trace plot created by
+<p><span class="caption-number">Fig. 15 </span><span class="caption-text">Figure 2.  Example of wiggle variable area trace plot created by
 <a class="reference internal" href="../python_api/mspasspy.graphics.html#mspasspy.graphics.SeismicPlotter" title="mspasspy.graphics.SeismicPlotter"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.graphics.SeismicPlotter</span></code></a>.  The data plotted
 are the same as Figure 1.  This type of plot
 is created with the “style” set to “wtva”
@@ -312,7 +315,7 @@ is created with the “style” set to “wtva”
 <figure class="align-center" id="id3">
 <span id="wtvaimg-figure"></span><a class="reference internal image-reference" href="../_images/wtvaimg_example.png"><img alt="../_images/wtvaimg_example.png" src="../_images/wtvaimg_example.png" style="width: 600px;" /></a>
 <figcaption>
-<p><span class="caption-number">Fig. 11 </span><span class="caption-text">Figure 3.  Example of wiggle trace variable area with an image overlay created by
+<p><span class="caption-number">Fig. 16 </span><span class="caption-text">Figure 3.  Example of wiggle trace variable area with an image overlay created by
 <a class="reference internal" href="../python_api/mspasspy.graphics.html#mspasspy.graphics.SeismicPlotter" title="mspasspy.graphics.SeismicPlotter"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.graphics.SeismicPlotter</span></code></a>.  The data plotted
 are the same as Figure 1.  This type of plot
 is created with the “style” set to “wtvaimg”.
@@ -322,7 +325,7 @@ is created with the “style” set to “wtvaimg”.
 <figure class="align-center" id="id4">
 <span id="img-figure"></span><a class="reference internal image-reference" href="../_images/img_example.png"><img alt="../_images/img_example.png" src="../_images/img_example.png" style="width: 600px;" /></a>
 <figcaption>
-<p><span class="caption-number">Fig. 12 </span><span class="caption-text">Figure 4.  Example of image plot created by
+<p><span class="caption-number">Fig. 17 </span><span class="caption-text">Figure 4.  Example of image plot created by
 <a class="reference internal" href="../python_api/mspasspy.graphics.html#mspasspy.graphics.SeismicPlotter" title="mspasspy.graphics.SeismicPlotter"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.graphics.SeismicPlotter</span></code></a>.  The data plotted
 are the same as Figure 1.  This type of plot
 is created with the “style” set to “img”.

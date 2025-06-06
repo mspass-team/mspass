@@ -52,13 +52,15 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
     
-              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Desktop Operation</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/quick_start.html">Getting Started in a Nutshell</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/run_mspass_with_docker.html">Run MsPASS with Docker</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_docker_compose.html">Deploy MsPASS with Docker Compose</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/mspass_desktop.html">Running MsPASS on a Desktop Computer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/command_line_desktop.html">Command Line Docker Desktop Operation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda.html">Deploy MsPASS with Conda</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda.html#advanced-setup-considerations">Advanced Setup Considerations</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Cluster Operations</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_HPC.html">Deploying MsPASS on an HPC cluster</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda_and_coiled.html">Deploy MsPASS with Conda and Coiled</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
@@ -109,6 +111,7 @@
 <li class="toctree-l1"><a class="reference internal" href="header_math.html">Header (Metadata) Math</a></li>
 <li class="toctree-l1"><a class="reference internal" href="graphics.html">Graphics in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="signal_to_noise.html">Signal to Noise Ratio Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="arrival_time_measurement.html">Arrival Time Measurement Techniques in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
@@ -368,11 +371,11 @@ multiple elements illustrated in the figure below.   Although these
 objects should be thought of as a single entity the individual
 parts are handled differently in reading because they define different concepts
 and are subject to different read, write, and storage rules.
-<a class="reference internal" href="#crud-operations-figure1"><span class="std std-numref">Fig. 8</span></a> illustrates this fragmentation:</p>
+<a class="reference internal" href="#crud-operations-figure1"><span class="std std-numref">Fig. 13</span></a> illustrates this fragmentation:</p>
 <figure class="align-center" id="id1">
 <span id="crud-operations-figure1"></span><a class="reference internal image-reference" href="../_images/CRUD_operations_figure1.png"><img alt="../_images/CRUD_operations_figure1.png" src="../_images/CRUD_operations_figure1.png" style="width: 600px;" /></a>
 <figcaption>
-<p><span class="caption-number">Fig. 8 </span><span class="caption-text">Schematic diagram of how different parts of a data object are handled.
+<p><span class="caption-number">Fig. 13 </span><span class="caption-text">Schematic diagram of how different parts of a data object are handled.
 The red box around the center of the figure shows a schematic of the
 data components when a data object is constructed in memory.  The
 boxes in the right-hand (black) box illustrate that the different

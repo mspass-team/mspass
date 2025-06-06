@@ -52,13 +52,15 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
     
-              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Desktop Operation</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/quick_start.html">Getting Started in a Nutshell</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/run_mspass_with_docker.html">Run MsPASS with Docker</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_docker_compose.html">Deploy MsPASS with Docker Compose</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/mspass_desktop.html">Running MsPASS on a Desktop Computer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/command_line_desktop.html">Command Line Docker Desktop Operation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda.html">Deploy MsPASS with Conda</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda.html#advanced-setup-considerations">Advanced Setup Considerations</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Cluster Operations</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_HPC.html">Deploying MsPASS on an HPC cluster</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda_and_coiled.html">Deploy MsPASS with Conda and Coiled</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
@@ -95,6 +97,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/header_math.html">Header (Metadata) Math</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/graphics.html">Graphics in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/signal_to_noise.html">Signal to Noise Ratio Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/arrival_time_measurement.html">Arrival Time Measurement Techniques in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
@@ -571,52 +574,28 @@ github for the 0.5 version.  Only the documentation was changed
 to clarify this ancestory.  We also changed the name from
 seismic_wiggle to wtva_raw to mesh more cleanly with mspass as
 the name better reflects the functions use.</p>
-<dl class="simple">
-<dt>Additional changes:</dt><dd><p>Pavlis Aug 27, 2020</p>
-</dd>
-</dl>
-<p>Added a test that if color was a None only the wiggles will be drawn
+<p>Additional changes:</p>
+<p>August 27, 20240:  Pavlis Added a test that if color was a None only the wiggles will be drawn
 (i.e. no shading)</p>
 <p>Parameters:</p>
-<ul class="simple">
-<li><dl class="simple">
-<dt>section<span class="classifier">2D array</span></dt><dd><p>matrix of traces (first dimension time, second dimension traces)</p>
+<dl class="simple">
+<dt>:param section<span class="classifier">2D array</span></dt><dd><p>matrix of traces (first dimension time, second dimension traces)</p>
 </dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>t0<span class="classifier">float</span></dt><dd><p>time of first sample (added for mspass - needed for passive data)</p>
+<dt>:param t0<span class="classifier">float</span></dt><dd><p>time of first sample (added for mspass - needed for passive data)</p>
 </dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>dt<span class="classifier">float</span></dt><dd><p>sample rate in seconds</p>
+<dt>:param dt<span class="classifier">float</span></dt><dd><p>sample rate in seconds</p>
 </dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>ranges<span class="classifier">(x1, x2)</span></dt><dd><p>min and max horizontal values (default trace number)</p>
+<dt>:param ranges<span class="classifier">(x1, x2)</span></dt><dd><p>min and max horizontal values (default trace number)</p>
 </dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>scale<span class="classifier">float</span></dt><dd><p>scale factor multiplied by the section values before plotting</p>
+<dt>:param scale<span class="classifier">float</span></dt><dd><p>scale factor multiplied by the section values before plotting</p>
 </dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>color<span class="classifier">tuple of strings</span></dt><dd><p>Color for filling the wiggle, positive  and negative lobes.  If None
+<dt>:param color<span class="classifier">tuple of strings</span></dt><dd><p>Color for filling the wiggle, positive  and negative lobes.  If None
 draw only wiggle traces</p>
 </dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>normalize :</dt><dd><p>True to normalizes all trace in the section using global max/min
+<dt>:param normalize :</dt><dd><p>True to normalizes all trace in the section using global max/min
 data will be in the range (-0.5, 0.5) zero centered</p>
 </dd>
 </dl>
-</li>
-</ul>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>Slow for more than 200 traces, in this case decimate your

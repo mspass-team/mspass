@@ -52,13 +52,15 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
     
-              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Desktop Operation</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/quick_start.html">Getting Started in a Nutshell</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/run_mspass_with_docker.html">Run MsPASS with Docker</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_docker_compose.html">Deploy MsPASS with Docker Compose</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/mspass_desktop.html">Running MsPASS on a Desktop Computer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/command_line_desktop.html">Command Line Docker Desktop Operation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda.html">Deploy MsPASS with Conda</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda.html#advanced-setup-considerations">Advanced Setup Considerations</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Cluster Operations</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_HPC.html">Deploying MsPASS on an HPC cluster</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda_and_coiled.html">Deploy MsPASS with Conda and Coiled</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
@@ -95,6 +97,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/header_math.html">Header (Metadata) Math</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/graphics.html">Graphics in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/signal_to_noise.html">Signal to Noise Ratio Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/arrival_time_measurement.html">Arrival Time Measurement Techniques in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
@@ -351,9 +354,9 @@ requirements and/or provide aliasing.</p></li>
 </ol>
 <p>The class currently has only one constructor normally called with
 a variant of the following:</p>
-<blockquote>
-<div><p>db=Database(dbclient,’mydatabase’)</p>
-</div></blockquote>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">db</span><span class="o">=</span><span class="n">Database</span><span class="p">(</span><span class="n">dbclient</span><span class="p">,</span><span class="s1">&#39;mydatabase&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
 <p>where dbclient is either a MongoDB database client instance or
 (recommended) the MsPASS DBClient wrapper (a subclass of the
 pymongo client).  The second argument is the database “name”
@@ -483,9 +486,8 @@ only be used to specify options on
 creation. <a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/pymongo/errors.html#pymongo.errors.CollectionInvalid" title="(in PyMongo v4.13.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">CollectionInvalid</span></code></a> will be
 raised if the collection already exists.   Useful mainly for advanced users tuning
 a polished workflow.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><dl class="field-list simple">
+<dl class="simple">
+<dt>Parameters:</dt><dd><dl class="field-list simple">
 <dt class="field-odd">param name<span class="colon">:</span></dt>
 <dd class="field-odd"><p>the name of the collection to create</p>
 </dd>
@@ -745,25 +747,19 @@ normalize module.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>net</strong> – network name to match</p></li>
 <li><p><strong>sta</strong> – station name to match</p></li>
-<li><p><strong>loc</strong> – optional loc code to made (empty string ok and common)</p></li>
-</ul>
-</dd>
-</dl>
-<p>default ignores loc in query.
-:param time: epoch time for requested metadata.  Default undefined</p>
-<blockquote>
-<div><p>and will cause the function to simply return the first document
+<li><p><strong>loc</strong> – optional loc code to made (empty string ok and common)
+default ignores loc in query.</p></li>
+<li><p><strong>time</strong> – epoch time for requested metadata.  Default undefined
+and will cause the function to simply return the first document
 matching the name keys only.   (This is rarely what you want, but
-there is no standard default for this argument.)</p>
-</div></blockquote>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>verbose</strong> – When True (the default) this method will issue a
+there is no standard default for this argument.)</p></li>
+<li><p><strong>verbose</strong> – When True (the default) this method will issue a
 print warning message when the match is ambiguous - multiple
 docs match the specified keys.   When set False such warnings
 will be suppressed.  Use false only if you know the duplicates
 are harmless and you are running on a large data set and
-you want to reduce the log size.</p>
+you want to reduce the log size.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>MongoDB doc matching query</p>
@@ -1410,22 +1406,28 @@ inventory object that is returned.  Use load_stations
 to return the raw data used to construct an Inventory.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>net</strong> – network name query string.  Can be a single</p>
-</dd>
-</dl>
-<p>unique net code or use MongoDB’s expression query
-mechanism (e.g. “{‘$gt’ : 42}).  Default is all
-:param sta: statoin name query string.  Can be a single
-station name or a MongoDB query expression.
-:param loc:  loc code to select.  Can be a single unique
-location (e.g. ‘01’) or a MongoDB expression query.
-:param time:   limit return to stations with
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>net</strong> – network name query string.  Can be a single
+unique net code or use MongoDB’s expression query
+mechanism (e.g. “{‘$gt’ : 42}).  Default is all</p></li>
+<li><p><strong>sta</strong> – statoin name query string.  Can be a single
+station name or a MongoDB query expression.</p></li>
+<li><p><strong>loc</strong> – loc code to select.  Can be a single unique
+location (e.g. ‘01’) or a MongoDB expression query.</p></li>
+<li><p><strong>time</strong> – limit return to stations with
 startime&lt;time&lt;endtime.  Input is assumed an
 epoch time NOT an obspy UTCDateTime. Use a conversion
-to epoch time if necessary.
-:return:  obspy Inventory of all stations matching the
-query parameters
-:rtype:  obspy Inventory</p>
+to epoch time if necessary.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>obspy Inventory of all stations matching the
+query parameters</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>obspy Inventory</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -1441,14 +1443,12 @@ will be preformed if duplicates are a major issue.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>cat</strong> – is the Catalog object to be saved</p></li>
-<li><p><strong>verbose</strong> – Print informational data if true.</p></li>
+<li><p><strong>verbose</strong> – Print informational data if true.
+When false (default) it does it’s work silently.</p></li>
 </ul>
 </dd>
-</dl>
-<p>When false (default) it does it’s work silently.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>integer count of number of items saved</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>integer count of number of items saved</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1465,18 +1465,16 @@ data objects in MsPASS.   That is, what we call atomic data
 two atomic types ():class:<cite>mspasspy.ccore.seismic.TimeSeriesEnsemble</cite> and
 <a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.SeismogramEnsemble" title="mspasspy.ccore.seismic.SeismogramEnsemble"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.SeismogramEnsemble</span></code></a>).  Handling
 multiple types while simultaneously supporting multiple abstractions
-of how the data are stored externally has some complexities.
-1.  All MsPASS data have multiple containers used internally</p>
-<blockquote>
-<div><p>to define different concepts.   In particular atomic data
+of how the data are stored externally has some complexities.</p>
+<ol class="arabic">
+<li><p>All MsPASS data have multiple containers used internally
+to define different concepts.   In particular atomic data
 have a Metadata container we map to MongoDB documents directly,
 sample data that is the largest data component that we handle
 multiple ways, error log data, and (optional) object-level
 history data.  Ensembles are groups of atomic data but they also
 contain a Metadata and error log container common with content
-common to the group.</p>
-</div></blockquote>
-<ol class="arabic" start="2">
+common to the group.</p></li>
 <li><p>With seismic data the size is normally dominated by the
 sample data that are stored internally as a vector container
 for <cite>TimeSeries</cite> objects and a matrix for <cite>Seismogram</cite> objects.
@@ -1582,16 +1580,14 @@ as simple as possible while providing mechanisms to make it work
 as efficiently as possible.</p>
 <p>There are some important implementation details related to
 the points above that are important to understand if you encounter
-issues using this algorithm.
-1.  Writing is always atomic.  Saving ensemble data is little more</p>
-<blockquote>
-<div><p>than an enhanced loop over data members.  By “enhanced” we mean
+issues using this algorithm.</p>
+<ol class="arabic">
+<li><p>Writing is always atomic.  Saving ensemble data is little more
+than an enhanced loop over data members.  By “enhanced” we mean
 two things:  (a)  any ensemble Metadata attributes are copied
 to the documents saved for each member, and (b) dead data have
 to be handled differently but the handling is a simple conditional
-of “if live” with dead data handled the same as atomic bodies.</p>
-</div></blockquote>
-<ol class="arabic" start="2">
+of “if live” with dead data handled the same as atomic bodies.</p></li>
 <li><p>Atomic saves handle four components of the MsPASS data objects
 differently.   The first thing saved is always the sample data.
 How that is done depends upon the storage mode and format
@@ -1870,20 +1866,19 @@ consistent with DataFrame implemenations that mimic relational
 database tables where nulls are a hole in the table.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>df</strong> – Pandas.Dataframe object, the input to be transfered into mongodb</p>
-</dd>
-</dl>
-<p>documents
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df</strong> – Pandas.Dataframe object, the input to be transfered into mongodb
+documents
 :param collection:  MongoDB collection name to be used to save the
-(often subsetted) tuples of filename as documents in this collection.
-:param null_values:  is an optional dict defining null field values.
+(often subsetted) tuples of filename as documents in this collection.</p></li>
+<li><p><strong>null_values</strong> – is an optional dict defining null field values.
 When used an == test is applied to each attribute with a key
 defined in the null_vlaues python dict.  If == returns True, the
 value will be set as None in dataframe. If your table has a lot of null
 fields this option can save space, but readers must not require the null
 field.  The default is None which it taken to mean there are no null
-fields defined.
-:param one_to_one: a boolean to control if the set should be filtered by
+fields defined.</p></li>
+<li><p><strong>one_to_one</strong> – a boolean to control if the set should be filtered by
 rows.  The default is True which means every row in the dataframe will
 create a single MongoDB document. If False the (normally reduced) set
 of attributes defined by attributes_to_use will be filtered with the
@@ -1891,10 +1886,15 @@ panda/dask dataframe drop_duplicates method before converting the
 dataframe to documents and saving them to MongoDB.  That approach
 is important, for example, to filter things like Antelope “site” or
 “sitechan” attributes created by a join to something like wfdisc and
-saved as a text file to be processed by this function.
-:param parallel:  a boolean that determine if dask api will be used for
-operations on the dataframe, default is false.
-:return:  integer count of number of documents added to collection</p>
+saved as a text file to be processed by this function.</p></li>
+<li><p><strong>parallel</strong> – a boolean that determine if dask api will be used for
+operations on the dataframe, default is false.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>integer count of number of documents added to collection</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -2039,20 +2039,18 @@ processing.   Default is SY which is used for synthetics.
 Set to None if if all are to be loaded.</p>
 </dd>
 <dt class="field-odd">Verbose<span class="colon">:</span></dt>
-<dd class="field-odd"><p>print informational lines if true.  If false</p>
+<dd class="field-odd"><p>print informational lines if true.  If false
+works silently)</p>
 </dd>
-</dl>
-<p>works silently)</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>tuple with
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>tuple with
 0 - integer number of site documents saved
 1 -integer number of channel documents saved
 2 - number of distinct site (net,sta,loc) items processed
 3 - number of distinct channel items processed</p>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>tuple</p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2067,14 +2065,13 @@ into a mongodb collection. This function consists of two steps:
 collection</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>filename</strong> – path to text file that is to be read to create the</p>
-</dd>
-</dl>
-<p>table object that is to be processed (internally we use pandas or
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filename</strong> – path to text file that is to be read to create the
+table object that is to be processed (internally we use pandas or
 dask dataframes)
 :param collection:  MongoDB collection name to be used to save the
-(often subsetted) tuples of filename as documents in this collection.
-:param separator: The delimiter used for seperating fields,
+(often subsetted) tuples of filename as documents in this collection.</p></li>
+<li><p><strong>separator</strong> – <p>The delimiter used for seperating fields,
 the default is “s+”, which is the regular expression of “one or more
 spaces”.</p>
 <blockquote>
@@ -2084,17 +2081,14 @@ To learn more details about the usage, check the following links:
 <a class="reference external" href="https://pandas.pydata.org/docs/reference/api/pandas.read_csv.html">https://pandas.pydata.org/docs/reference/api/pandas.read_csv.html</a>
 <a class="reference external" href="https://docs.dask.org/en/latest/generated/dask.dataframe.read_csv.html">https://docs.dask.org/en/latest/generated/dask.dataframe.read_csv.html</a></p>
 </div></blockquote>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>type_dict</strong> – pairs of each attribute and its type, usedd to validate</p>
-</dd>
-</dl>
-<p>the type of each input item
-:param header_line: defines the line to be used as the attribute names for
+</p></li>
+<li><p><strong>type_dict</strong> – pairs of each attribute and its type, usedd to validate
+the type of each input item</p></li>
+<li><p><strong>header_line</strong> – defines the line to be used as the attribute names for
 columns, if is &lt; 0, an attribute_names is required. Please note that if an
 attribute_names is provided, the attributes defined in header_line will
-always be override.
-:param attribute_names: This argument must be either a list of (unique)
+always be override.</p></li>
+<li><p><strong>attribute_names</strong> – This argument must be either a list of (unique)
 string names to define the attribute name tags for each column of the
 input table.   The length of the array must match the number of
 columns in the input table or this function will throw a MsPASSError
@@ -2104,8 +2098,8 @@ column headers defining the attribute name.  If header_line is less
 than 0 this argument will be required.  When header_line is &gt;= 0
 and this argument (attribute_names) is defined all the names in
 this list will override those stored in the file at the specified
-line number.
-:param  rename_attributes:   This is expected to be a python dict
+line number.</p></li>
+<li><p><strong>rename_attributes</strong> – This is expected to be a python dict
 keyed by names matching those defined in the file or attribute_names
 array (i.e. the panda/dataframe column index names) and values defining
 strings to use to override the original names.   That usage, of course,
@@ -2116,8 +2110,8 @@ argument is mostly to rename a small number of anomalous names.
 attribute names that define the subset of the dataframe dataframe
 attributes that are to be saved.  For relational db users this is
 effectively a “select” list of attribute names.  The default is
-None which is taken to mean no selection is to be done.
-:param one_to_one: is an important boolean use to control if the
+None which is taken to mean no selection is to be done.</p></li>
+<li><p><strong>one_to_one</strong> – is an important boolean use to control if the
 output is or is not filtered by rows.  The default is True
 which means every tuple in the input file will create a single row in
 dataframe. (Useful, for example, to construct an wf_miniseed
@@ -2129,13 +2123,18 @@ is important, for example, to filter things like Antelope “site” or
 saved as a text file to be processed by this function.
 :param parallel:  When true we use the dask dataframe operation.
 The default is false meaning the simpler, identical api panda
-operators are used.
-:param insert_column: a dictionary of new columns to add, and their value(s).
+operators are used.</p></li>
+<li><p><strong>insert_column</strong> – a dictionary of new columns to add, and their value(s).
 If the content is a single value, it can be passedto define a constant value
 for the entire column of data. The content can also be a list, in that case,
 the list should contain values that are to be set, and it must be the same
-length as the number of tuples in the table.
-:return:  Integer count of number of documents added to collection</p>
+length as the number of tuples in the table.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Integer count of number of documents added to collection</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -2402,7 +2401,7 @@ entry is the name of the failed test (i.e. ‘xref’, ‘type’, or ‘undefin
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></p>
 </dd>
-<dt class="field-even">Excpetion<span class="colon">:</span></dt>
+<dt class="field-even">Exception<span class="colon">:</span></dt>
 <dd class="field-even"><p>This method will throw a fatal error exception if the
 id received does no match any document in the database.  That is
 intentional as the method should normally appear in a loop over
@@ -2437,52 +2436,40 @@ expected to be used.  This function builds the Metadata container
 that is used in all readers to drive the construction of atomic
 data objects.  See below for a description of what different settings
 of mode.</p>
-<dl class="field-list simple">
+<dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>doc</strong> (<em>python dict assumed</em><em> (</em><em>there is no internal test for efficiency</em><em>)</em>) – document (dict) to be converted to Metadata</p>
-</dd>
-</dl>
-<p>An associative array with string keys operator [] are the main requirements.
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>doc</strong> (<em>python dict assumed</em><em> (</em><em>there is no internal test for efficiency</em><em>)
+</em><em>An associative array with string keys operator</em><em> [</em><em>] </em><em>are the main requirements.
 e.g. this function might work with a Metadata container to apply
-schema constraints.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>metadata_schema</strong> – instance of MetadataSchema class that can</p>
+schema constraints.</em>) – document (dict) to be converted to Metadata</p></li>
+<li><p><strong>metadata_schema</strong> (<a class="reference internal" href="#mspasspy.db.schema.MetadataSchema" title="mspasspy.db.schema.MetadataSchema"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.schema.MetadataSchema</span></code></a>) – instance of MetadataSchema class that can
+optionally be used to impose schema constraints.</p></li>
+<li><p><strong>wfcol</strong> (<em>string</em>) – Collection name from which doc was retrieved.   It should
+normally alreacy be known by the caller so we require it to be passed
+with this required arg.</p></li>
+<li><p><strong>mode</strong> (<em>string</em><em> (</em><em>must match one</em><em> of </em><em>the above</em><em> or </em><em>the function will throw
+a ValueError exception.</em>) – <p>read mode as described in detail in User’s Manual.
+Behavior for this function is as follows:</p>
+<blockquote>
+<div><dl class="simple">
+<dt>”promiscuous” - (default)  no checks are applied to any key-value</dt><dd><p>pairs and the result is a one-to-one translation of the input.</p>
 </dd>
-</dl>
-<p>optionally be used to impose schema constraints.
-:type metadata_schema:  <a class="reference internal" href="#mspasspy.db.schema.MetadataSchema" title="mspasspy.db.schema.MetadataSchema"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.schema.MetadataSchema</span></code></a></p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>wfcol</strong> – Collection name from which doc was retrieved.   It should</p>
-</dd>
-</dl>
-<p>normally alreacy be known by the caller so we require it to be passed
-with this required arg.
-:type wfcol:   string</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>mode</strong> – read mode as described in detail in User’s Manual.</p>
-</dd>
-</dl>
-<dl class="simple">
-<dt>Behavior for this function is as follows:</dt><dd><dl class="simple">
-<dt>“promiscuous” - (default)  no checks are applied to any key-value</dt><dd><p>pairs and the result is a one-to-one translation of the input.</p>
-</dd>
-<dt>“cautious” - Type constraints in the schema are enforced and</dt><dd><p>automatically conveted if possible.  If conversion is needed
+<dt>”cautious” - Type constraints in the schema are enforced and</dt><dd><p>automatically conveted if possible.  If conversion is needed
 and fails the live/dead boolan in the return will be set to
 signal this datum should be killed.  There will also be elog entries.</p>
 </dd>
-<dt>“pedantic” - type conversions are strongly enforced.  If any</dt><dd><p>type mismatch of a value occurs the live/dead boolean returned
+<dt>”pedantic” - type conversions are strongly enforced.  If any</dt><dd><p>type mismatch of a value occurs the live/dead boolean returned
 will be set to signal a kill and there will be one or more
 error messages in the elog return.</p>
 </dd>
 </dl>
+</div></blockquote>
+</p></li>
+</ul>
 </dd>
-</dl>
-<dl class="field-list">
-<dt class="field-odd">Return 3-component tuple<span class="colon">:</span></dt>
-<dd class="field-odd"><p>0 = converted Metadata container,
+<dt class="field-even">Return 3-component tuple<span class="colon">:</span></dt>
+<dd class="field-even"><p>0 = converted Metadata container,
 1 - boolean equivalent to “live”.  i.e. if True the results is valid
 while if False constructing an object from the result is ill advised,
 2 - ErrorLogger object containing in error messages.  Callers should</p>
@@ -2515,13 +2502,12 @@ a datum as bad with a kill return.  When a document is “killed”
 by doc2md it is dropped and two thi</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>doclist</strong> – list of documents to be converted to Metadata with schema</p>
+<dd class="field-odd"><p><strong>doclist</strong> (<em>any iterable container holding an array</em><em> of </em><em>dict containers
+with rational content</em><em> (</em><em>i.e. expected to be a MongoDB document with attributes
+defined for a set</em><em> of </em><em>seismic data objects.</em><em>)</em>) – list of documents to be converted to Metadata with schema
+constraints</p>
 </dd>
 </dl>
-<p>constraints
-:type doclist:  any iterable container holding an array of dict containers
-with rational content (i.e. expected to be a MongoDB document with attributes
-defined for a set of seismic data objects.)</p>
 <p>—other here –</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -2648,12 +2634,14 @@ User would need to scan the RDD/bag to search for thing not None for errors.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>db</strong> – The MsPass core database handle that we want to index into</p></li>
-<li><p><strong>arg</strong> – All the arguments that users pass into the original</p></li>
+<li><p><strong>arg</strong> – All the arguments that users pass into the original
+index_mseed_file method</p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None or error message string</p>
+</dd>
 </dl>
-<p>index_mseed_file method
-:return: None or error message string</p>
 </dd></dl>
 
 <dl class="py function">
@@ -4606,10 +4594,10 @@ applied with ensembles - see above.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>copy of mspass_object.  dead data are returned immediately.</p>
+<dd class="field-even"><p>copy of mspass_object.  dead data are returned immediately.
+if kill_on_failure is true the result may be killed on return.</p>
 </dd>
 </dl>
-<p>if kill_on_failure is true the result may be killed on return.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -4635,37 +4623,37 @@ data refer to common attributes of one seismic observatory (commonly
 also called a “station”).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>db</strong> – should be a MsPASS database handle containing at least</p>
-</dd>
-</dl>
-<p>wf_miniseed and the collections defined by the norm_collection list.
-:param blockssize:   To speed up updates this function uses the
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>db</strong> – should be a MsPASS database handle containing at least
+wf_miniseed and the collections defined by the norm_collection list.</p></li>
+<li><p><strong>blockssize</strong> – To speed up updates this function uses the
 bulk writer/updater methods of MongoDB that can be orders of
 magnitude faster than one-at-a-time updates for setting
 channel_id and site_id.  A user should not normally need to alter this
-parameter.
-:param wfquery: is a query to apply to wf_miniseed.  The output of this
+parameter.</p></li>
+<li><p><strong>wfquery</strong> – is a query to apply to wf_miniseed.  The output of this
 query defines the list of documents that the algorithm will attempt
 to normalize as described above.  The default will process the entire
-wf_miniseed collection (query set to an emtpy dict).
-:param normalize_channel:  boolean for handling channel collection.
+wf_miniseed collection (query set to an emtpy dict).</p></li>
+<li><p><strong>normalize_channel</strong> – boolean for handling channel collection.
 When True (default) matches will be attempted with the channel collection
 and when matches are found the associated channel document id will be
-set in the associated wf_miniseed document as channel_id.
-:param normalize_site:  boolean for handling site collection.
+set in the associated wf_miniseed document as channel_id.</p></li>
+<li><p><strong>normalize_site</strong> – boolean for handling site collection.
 When True (default) matches will be attempted with the site collection
 and when matches are found the associated site document id will
 be set wf_miniseed document as site_id. Note at least one of
 the two booleans normalize_channel and normalize_site must be set True
-or the function will immediately abort.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>list with three integers.  0 is the number of documents processed in</p>
+or the function will immediately abort.</p></li>
+</ul>
 </dd>
-</dl>
-<p>wf_miniseed (output of query), 1 is the number with channel ids set,
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>list with three integers.  0 is the number of documents processed in
+wf_miniseed (output of query), 1 is the number with channel ids set,
 and 2 contains the number of site documents set.  1 or 2 should
 contain 0 if normalization for that collection was set false.</p>
+</dd>
+</dl>
 </dd></dl>
 
 </section>

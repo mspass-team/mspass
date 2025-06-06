@@ -1,0 +1,382 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Running MsPASS on a Desktop Computer &mdash; MsPASS 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=f6245a2f"></script>
+      <script src="../_static/doctools.js?v=888ff710"></script>
+      <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Command Line Docker Desktop Operation" href="command_line_desktop.html" />
+    <link rel="prev" title="MsPASS Documentation" href="../index.html" />  
+
+  <style>
+    .wy-nav-content { max-width: 1600px; }
+  </style>
+
+  
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            MsPASS
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Desktop Operation</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Running MsPASS on a Desktop Computer</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#install-mspass-desktop-application">Install MsPASS Desktop Application</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#install-docker">Install docker</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#launch-docker">Launch docker</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#get-the-mspass-container">Get the MsPASS container</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#verify-python-version">Verify python version</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#install-mspass-desktop">Install mspass-desktop</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#running-mspass-desktop">Running mspass-desktop</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#potential-issues">Potential Issues</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#gui-launches-but-is-incomplete">GUI launches but is incomplete</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#need-to-edit-configuration-files">Need to Edit Configuration Files</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="command_line_desktop.html">Command Line Docker Desktop Operation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deploy_mspass_with_conda.html">Deploy MsPASS with Conda</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deploy_mspass_with_conda.html#advanced-setup-considerations">Advanced Setup Considerations</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Cluster Operations</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="deploy_mspass_on_HPC.html">Deploying MsPASS on an HPC cluster</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deploy_mspass_with_conda_and_coiled.html">Deploy MsPASS with Conda and Coiled</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/introduction.html">Introduction</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Data Management</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/database_concepts.html">Database Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/normalization.html">Normalization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/importing_tabular_data.html">Importing Tabular Data</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Seismic Data Objects</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/data_object_design_concepts.html">Data Object Design Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/numpy_scipy_interface.html">Using numpy/scipy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/obspy_interface.html">Using ObsPy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/time_standard_constraints.html">Time Standard Constraints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/processing_history_concepts.html">Processing History Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/continuous_data.html">Continuous Data Handling with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/schema_choices.html">What database schema should I use?</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Data Processing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/algorithms.html">Algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/importing_data.html">Importing Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/handling_errors.html">Handling Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/data_editing.html">Data Editing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/cleaning_metadata.html">Cleaning Inconsistent Metadata</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/header_math.html">Header (Metadata) Math</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/graphics.html">Graphics in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/signal_to_noise.html">Signal to Noise Ratio Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/arrival_time_measurement.html">Arrival Time Measurement Techniques in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/parallel_processing.html">Parallel Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/memory_management.html">Memory Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/io.html">I/O in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/parallel_io.html">Parallel IO in MsPASS</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">FAQ</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/FAQ.html">Frequency Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/development_strategies.html">How do I develop a new workflow from scratch?</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../python_api/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cxx_api/index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mspass_schema/mspass_schema.html">MsPASS Schema</a></li>
+</ul>
+
+    <a href= "../genindex.html">Index</a>
+  
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">MsPASS</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Running MsPASS on a Desktop Computer</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/mspass-team/mspass/blob/master/docs/source/getting_started/mspass_desktop.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="running-mspass-on-a-desktop-computer">
+<span id="mspass-desktop"></span><h1>Running MsPASS on a Desktop Computer<a class="headerlink" href="#running-mspass-on-a-desktop-computer" title="Permalink to this heading"></a></h1>
+<section id="install-mspass-desktop-application">
+<h2>Install MsPASS Desktop Application<a class="headerlink" href="#install-mspass-desktop-application" title="Permalink to this heading"></a></h2>
+<section id="install-docker">
+<h3>Install docker<a class="headerlink" href="#install-docker" title="Permalink to this heading"></a></h3>
+<p>The desktop application to launch MsPASS requires <code class="code docutils literal notranslate"><span class="pre">docker</span> <span class="pre">desktop</span></code>.  If
+docker is not already installed on your desktop machine you will need to do so.
+Docker is free for non-commercial users.
+Installers for all standard desktop operating systems can be found on the
+<a class="reference external" href="https://docs.docker.com/get-docker/">docker web site</a>.</p>
+</section>
+<section id="launch-docker">
+<h3>Launch docker<a class="headerlink" href="#launch-docker" title="Permalink to this heading"></a></h3>
+<p>Documentation for operating docker for each platform can be found
+on hyperlinks from the download page.   Note on linux docker
+implementation is normally set up as a daemon and managed with command line tools.
+After an initial install on linux you may need to reboot your desktop or
+manually start the daemon.
+MacOS and Windows use a graphical user interface that you may need to
+launch manually by the usual double-click or start procedure for
+applications.  See the docker documentation for guidance on your platform.</p>
+</section>
+<section id="get-the-mspass-container">
+<h3>Get the MsPASS container<a class="headerlink" href="#get-the-mspass-container" title="Permalink to this heading"></a></h3>
+<p>Use the command line interface to “pull” the MsPASS container using
+the following incantation:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">pull</span> <span class="n">mspass</span><span class="o">/</span><span class="n">mspass</span>
+</pre></div>
+</div>
+</section>
+<section id="verify-python-version">
+<h3>Verify python version<a class="headerlink" href="#verify-python-version" title="Permalink to this heading"></a></h3>
+<p>The MsPASS desktop application requires a version of python of
+3.10 or above.  Verify what you have running as follow:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="o">--</span><span class="n">version</span>
+</pre></div>
+</div>
+<p>If necessary, upgrade your version of python to 3.10 or above.   Note if you
+use a python virtual environment management package like conda or pyenv, which we would
+advise, you may want to create a <code class="code docutils literal notranslate"><span class="pre">mspass</span></code> environment that uses an acceptable version
+of python and runs the rest of this procedure from that environment.</p>
+</section>
+<section id="install-mspass-desktop">
+<h3>Install mspass-desktop<a class="headerlink" href="#install-mspass-desktop" title="Permalink to this heading"></a></h3>
+<p>If you are using an pyenv or conda make sure the appropriate environment is
+active.  You can then install the mspass desktop application with pip
+as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">mspass_launcher</span>
+</pre></div>
+</div>
+<p>If you aren’t using anaconda or pyenv with a special virtual environment, we suggest you use this variant:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">--</span><span class="n">user</span> <span class="n">mspass_launcher</span>
+</pre></div>
+</div>
+<p>That will install the package under <code class="code docutils literal notranslate"><span class="pre">~/.local</span></code>, which is usually appropriate for a single user desktop.</p>
+</section>
+</section>
+<section id="running-mspass-desktop">
+<h2>Running mspass-desktop<a class="headerlink" href="#running-mspass-desktop" title="Permalink to this heading"></a></h2>
+<p>Use the terminal application on your platform and navigate
+(i.e. use the cd command) to the working directory for your data set.</p>
+<blockquote>
+<div><div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Currently there is no control where files written by mspass are written.
+All are relative to the working directory from which you launch
+mspass-desktop.   The application will create a <cite>data</cite> directory
+which contains the database files, <cite>logs</cite> which contains log files
+written by the different services run under docker compose, and a <cite>work</cite>
+directory used as scratch space by dask.  It also creates an empty
+<cite>scoped</cite> directory that is not used for this application of the
+MsPASS framework.</p>
+</div>
+</div></blockquote>
+<p>Use the command line tool to launch the graphical user interface as follows:</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mspass</span><span class="o">-</span><span class="n">desktop</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>That should bring up the following window:</p>
+<figure class="align-center" id="id1">
+<span id="desktop-startup-window"></span><a class="reference internal image-reference" href="../_images/desktop_startup_window.png"><img alt="../_images/desktop_startup_window.png" src="../_images/desktop_startup_window.png" style="width: 600px;" /></a>
+<figcaption>
+<p><span class="caption-number">Fig. 1 </span><span class="caption-text">Initial window created by running mspass-desktop.   Note only the
+launch button is active and all the status widgets are red to
+indicate that service is down.</span><a class="headerlink" href="#id1" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<p>Push the “Launch” button and the display should change to something similar
+to the following:</p>
+<figure class="align-center" id="id2">
+<span id="desktop-operating-window"></span><a class="reference internal image-reference" href="../_images/desktop_operating_window.png"><img alt="../_images/desktop_operating_window.png" src="../_images/desktop_operating_window.png" style="width: 600px;" /></a>
+<figcaption>
+<p><span class="caption-number">Fig. 2 </span><span class="caption-text">MsPASS desktop window with all services running.   Note the status
+widgets show green when that service is running.  If any turn red
+during operation the system will be be functional.</span><a class="headerlink" href="#id2" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<p>For interactive use with jupyter lab, push the “Jupyter” button.   It
+should launch a browser tab with jupyter lab running.</p>
+<p>Note that after pushing the “Jupyter” button the center frame of the GUI
+with the label “Jupyter URL” should contain the text of the URL that
+defines a connection to the jupter server.   If the jupyter auto launch fails you can
+copy that url and paste it into a browser window to obtain a jupyter
+lab window for running mspass.</p>
+<p>If you have an existing python script you want to just run, push the
+“Run” button on the MsPASS desktop GUI.  That will create a new window
+that should look like the following:</p>
+<figure class="align-default" id="id3">
+<span id="desktop-run-window"></span><img alt="../_images/desktop_run_window.png" src="../_images/desktop_run_window.png" />
+<figcaption>
+<p><span class="caption-number">Fig. 3 </span><span class="caption-text">Window launched by run button.</span><a class="headerlink" href="#id3" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<p>Enter the name of your script in the box with the label
+“File name of python file to be run” and push the “Run it” button.
+Any output of that script will appear in the terminal window from which
+you launched mspass-desktop.   If you need to capture the output
+consider using a tool like the unix “script” command.</p>
+</section>
+<section id="potential-issues">
+<h2>Potential Issues<a class="headerlink" href="#potential-issues" title="Permalink to this heading"></a></h2>
+<section id="gui-launches-but-is-incomplete">
+<h3>GUI launches but is incomplete<a class="headerlink" href="#gui-launches-but-is-incomplete" title="Permalink to this heading"></a></h3>
+<p>There is a known problem with <code class="code docutils literal notranslate"><span class="pre">mspass-desktop</span></code> running on MacOS
+created by a classic python package collision with the
+<code class="code docutils literal notranslate"><span class="pre">tkinter</span></code> module used to drive the <code class="code docutils literal notranslate"><span class="pre">mspass-desktop</span></code> GUI.
+If you are using an Apple computer and have an issue consult
+<a class="reference external" href="https://github.com/mspass-team/mspass_launcher/issues/7">this issue page</a>
+on GitHub for possible solutions.</p>
+</section>
+<section id="need-to-edit-configuration-files">
+<h3>Need to Edit Configuration Files<a class="headerlink" href="#need-to-edit-configuration-files" title="Permalink to this heading"></a></h3>
+<p>In most cases the default configuration files will not need to be changed.
+If you encounter problems with the launching or running <code class="code docutils literal notranslate"><span class="pre">mspass-desktop</span></code>,
+you may want to look through the configuration files and see if
+editing the files could provide a solution,</p>
+<p>If you need to alter the master configuration files, we recommend you
+first copy the master files somewhere else in case you need to restore the
+originals.
+By default, the application will look for a directory
+<code class="code docutils literal notranslate"><span class="pre">./data/yaml</span></code> where “.” is the location where the python library
+code for <code class="code docutils literal notranslate"><span class="pre">mspass_launcher</span></code> was installed by pip.  After making a
+copy the simplest approach is to edit the files there directly.</p>
+<p>We can anticipate the following that might prove necessary:</p>
+<ol class="arabic simple">
+<li><p>The <code class="code docutils literal notranslate"><span class="pre">DesktopCluster.yaml</span></code> file is read directly by
+<code class="code docutils literal notranslate"><span class="pre">docker</span> <span class="pre">compose</span></code> to launch the local cluster service needed to
+run MsPASS.   If something goes wrong launching when
+<code class="code docutils literal notranslate"><span class="pre">docker</span> <span class="pre">compose</span></code>  launches the containers, which hopefully will
+be clear from error messages, you may need to edit this file.
+Consult the <a class="reference external" href="https://docs.docker.com/compose/">docker compose documentation</a> for guidance.</p></li>
+<li><p>The <code class="code docutils literal notranslate"><span class="pre">MsPASSDesktopGUI.yaml</span></code> file has a few parameters you may want
+to customize:</p>
+<ul class="simple">
+<li><p>The <em>web_browser</em> attribute is “firefox” by default.   If you want to
+use a different browser enter a different name after the
+<em>web_browser</em> keyword.  “Safari” (Note capital S) is known
+to work on MacOS, but anything else will be an adventure.  Note a key
+thing is the name needs to resolvable by the command line interface.
+Note, especially, that for a Mac that is not just the browser name.
+e.g. on a Mac you would open firefox from a terminal this way:
+<code class="code docutils literal notranslate"><span class="pre">open</span> <span class="pre">-a</span> <span class="pre">firefox</span></code>.   The Windows interface is currently
+adventure land.</p></li>
+<li><p>The two attributes <em>minimum_window_size_x</em> and <em>minimum_window_size_y</em>
+set the base GUI size in pixels.   If you have an unusually high
+resolution or low resolution screen, you may want to change these
+attributes.  The most likely service to cause a problem is the
+MongoDB container which is known to take a few seconds to launch
+on most desktops.</p></li>
+<li><p>The default for <em>engine_startup_delay_time</em> is fairly conservative and
+causes a delay you will notice in launching the GUI.   If you have a
+fast machine that is usually lightly loaded you could try reducing the
+default if you are impatient.   If the launching process throws a python
+error exception hinting at a startup issue, consider increasing this
+parameter.</p></li>
+<li><p>The default for <em>status_monitor_time_interval</em> is 10 s.  That parameter
+defines how frequently the services launched by :code: <cite>docker compose</cite>
+are checked for state-of-health.   That checking does not seem to be a
+heavy load so reducing that interval might be helpful if you are having
+a problem with a crashing container.</p></li>
+</ul>
+</li>
+</ol>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../index.html" class="btn btn-neutral float-left" title="MsPASS Documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="command_line_desktop.html" class="btn btn-neutral float-right" title="Command Line Docker Desktop Operation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020-2021, Ian Wang.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

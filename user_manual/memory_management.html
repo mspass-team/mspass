@@ -53,13 +53,15 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
     
-              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Desktop Operation</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/quick_start.html">Getting Started in a Nutshell</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/run_mspass_with_docker.html">Run MsPASS with Docker</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_docker_compose.html">Deploy MsPASS with Docker Compose</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/mspass_desktop.html">Running MsPASS on a Desktop Computer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/command_line_desktop.html">Command Line Docker Desktop Operation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda.html">Deploy MsPASS with Conda</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda.html#advanced-setup-considerations">Advanced Setup Considerations</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Cluster Operations</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_HPC.html">Deploying MsPASS on an HPC cluster</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda_and_coiled.html">Deploy MsPASS with Conda and Coiled</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
@@ -96,6 +98,7 @@
 <li class="toctree-l1"><a class="reference internal" href="header_math.html">Header (Metadata) Math</a></li>
 <li class="toctree-l1"><a class="reference internal" href="graphics.html">Graphics in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="signal_to_noise.html">Signal to Noise Ratio Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="arrival_time_measurement.html">Arrival Time Measurement Techniques in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
@@ -238,7 +241,7 @@ The DAG for this workflow is illustrated below</p>
 <figure class="align-center" id="id2">
 <span id="dag-figure"></span><a class="reference internal image-reference" href="../_images/MapDAGFigure.png"><img alt="../_images/MapDAGFigure.png" src="../_images/MapDAGFigure.png" style="width: 600px;" /></a>
 <figcaption>
-<p><span class="caption-number">Fig. 13 </span><span class="caption-text">Block diagram illustration of DAG defined by example workflow.
+<p><span class="caption-number">Fig. 18 </span><span class="caption-text">Block diagram illustration of DAG defined by example workflow.
 The example shows how work would be partitions with five processors
 and five partitions.   The labels at the top are function names
 matching those used in the python code above.   Each box denotes an
@@ -298,7 +301,7 @@ for this example).</p>
 <figure class="align-center" id="id3">
 <span id="twoprocessoranimation-figure"></span><a class="reference internal image-reference" href="../_images/MapProcessing.gif"><img alt="../_images/MapProcessing.gif" src="../_images/MapProcessing.gif" style="width: 600px;" /></a>
 <figcaption>
-<p><span class="caption-number">Fig. 14 </span><span class="caption-text">Animated gif illustrating data flow for the same five partition
+<p><span class="caption-number">Fig. 19 </span><span class="caption-text">Animated gif illustrating data flow for the same five partition
 data set as illustrated above with only two processors.  The animation
 illustrates how the scheduler would assign each processor a data partition.
 Each worker sequentially processes one data object at a time as illustrated
@@ -660,7 +663,7 @@ reduce(fold) operation by the Metadata key <cite>source_id</cite>:</p>
 <figure class="align-center" id="id4">
 <span id="reduce-figure"></span><a class="reference internal image-reference" href="../_images/ReduceFigure.png"><img alt="../_images/ReduceFigure.png" src="../_images/ReduceFigure.png" style="width: 600px;" /></a>
 <figcaption>
-<p><span class="caption-number">Fig. 15 </span><span class="caption-text">Data flow diagram for example reduce operation to stack two
+<p><span class="caption-number">Fig. 20 </span><span class="caption-text">Data flow diagram for example reduce operation to stack two
 sources with a bag/rdd made up of atomic TimeSeries data with
 five partitions.   Dashed lines show concept of how partitions
 divide up the container of data illustrated as a stack of black

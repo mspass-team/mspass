@@ -49,13 +49,15 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
     
-              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Desktop Operation</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/quick_start.html">Getting Started in a Nutshell</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/run_mspass_with_docker.html">Run MsPASS with Docker</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_docker_compose.html">Deploy MsPASS with Docker Compose</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/mspass_desktop.html">Running MsPASS on a Desktop Computer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/command_line_desktop.html">Command Line Docker Desktop Operation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_conda.html">Deploy MsPASS with Conda</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_conda.html#advanced-setup-considerations">Advanced Setup Considerations</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Cluster Operations</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_on_HPC.html">Deploying MsPASS on an HPC cluster</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_conda_and_coiled.html">Deploy MsPASS with Conda and Coiled</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started/getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
@@ -92,6 +94,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/header_math.html">Header (Metadata) Math</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/graphics.html">Graphics in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/signal_to_noise.html">Signal to Noise Ratio Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/arrival_time_measurement.html">Arrival Time Measurement Techniques in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
@@ -253,14 +256,14 @@
 <span class="sd">        have no time base.</span>
 
 <span class="sd">        :param d: input data (contents expected depend upon</span>
-<span class="sd">        value of dtype parameter).</span>
+<span class="sd">            value of dtype parameter).</span>
 <span class="sd">        :param dtype: string defining the form d is expected</span>
-<span class="sd">          to be (see details above)</span>
+<span class="sd">            to be (see details above)</span>
 <span class="sd">        :param component: component of Seismogram data to</span>
-<span class="sd">          load as data vector.  Ignored if dtype is raw_vector</span>
-<span class="sd">          or TimeSeries.</span>
+<span class="sd">            load as data vector.  Ignored if dtype is raw_vector</span>
+<span class="sd">            or TimeSeries.</span>
 <span class="sd">        :param window: boolean controlling internally</span>
-<span class="sd">          defined windowing.  (see details above)</span>
+<span class="sd">            defined windowing.  (see details above)</span>
 
 <span class="sd">        :return:  Nothing (not None nothing) is returned</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -401,11 +404,11 @@
 <span class="sd">        defined for this operator.</span>
 
 <span class="sd">        :return: Actual output of the operator as a ccore.TimeSeries object.</span>
-<span class="sd">        The Metadata of the return is bare bones.  The most important factor</span>
-<span class="sd">        about this result is that because actual output waveforms are normally</span>
-<span class="sd">        a zero phase wavelet of some kind the result is time shifted to be</span>
-<span class="sd">        centered (i.e. t0 is rounded n/2 where n is the length of the vector</span>
-<span class="sd">                  returned).</span>
+<span class="sd">            The Metadata of the return is bare bones.  The most important factor</span>
+<span class="sd">            about this result is that because actual output waveforms are normally</span>
+<span class="sd">            a zero phase wavelet of some kind the result is time shifted to be</span>
+<span class="sd">            centered (i.e. t0 is rounded n/2 where n is the length of the vector</span>
+<span class="sd">            returned).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;dvector&quot;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">processor</span><span class="o">.</span><span class="n">loaddata</span><span class="p">(</span><span class="n">DoubleVector</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dvector</span><span class="p">))</span>
@@ -490,7 +493,7 @@
 <span class="sd">        All the scalar decon methods implement that method.</span>
 
 <span class="sd">        :param md: is a mspass.Metadata object containing required parameters</span>
-<span class="sd">        for the alternative algorithm.</span>
+<span class="sd">            for the alternative algorithm.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">md</span> <span class="o">=</span> <span class="n">Metadata</span><span class="p">(</span><span class="n">md</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">processor</span><span class="o">.</span><span class="n">read_metadata</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">md</span><span class="p">)</span></div>
@@ -578,87 +581,85 @@
 <span class="sd">    QCmetric attributes are algorithm dependent.</span>
 
 <span class="sd">    The ProcessingHistory feature can optionally be enabled by</span>
-<span class="sd">    setting the save_history argument to True.   When enable one should</span>
+<span class="sd">    setting the save_history argument to True.   When enabled one should</span>
 <span class="sd">    normally set a unique id for the algid argument.</span>
 
-<span class="sd">    :param d:  Seismogram input data.  See notes above about</span>
-<span class="sd">      time span of these data.</span>
-<span class="sd">    :type d:  Must be a `Seismogram` object or the function will throw</span>
-<span class="sd">      a TypeError exceptionl</span>
+<span class="sd">    :param d:  Seismogram input data.See notes above about time span of thesedata.</span>
+<span class="sd">    :type d:  Must be a Seismogram object or the function will throw a TypeError exception.</span>
 <span class="sd">    :param engine:   optional instance of a RFdeconProcessor</span>
-<span class="sd">      object.   By default the function instantiates an instance of</span>
-<span class="sd">      a processor for each call to the function.   For algorithms</span>
-<span class="sd">      like the multitaper based algorithms with a high initialization</span>
-<span class="sd">      cost performance will improve by sending an instance to the</span>
-<span class="sd">      function via this argument.</span>
-<span class="sd">    :type engine:  None or an instance of `RFdeconProcessor`.</span>
-<span class="sd">      When None (default) an instance of an `RFdeconProcessor` is</span>
-<span class="sd">      created on entry based on the keyword defined by the `alg`</span>
-<span class="sd">      argument.   The algorithm built into the instance of</span>
-<span class="sd">      `RFdeconProcessor` is used if engine is not null.</span>
+<span class="sd">        object.   By default the function instantiates an instance of</span>
+<span class="sd">        a processor for each call to the function.   For algorithms</span>
+<span class="sd">        like the multitaper based algorithms with a high initialization</span>
+<span class="sd">        cost performance will improve by sending an instance to the</span>
+<span class="sd">        function via this argument.</span>
+<span class="sd">    :type engine:  None or an instance of RFdeconProcessor.</span>
+<span class="sd">        When None (default) an instance of an RFdeconProcessor is</span>
+<span class="sd">        created on entry based on the keyword defined by the alg</span>
+<span class="sd">        argument.   The algorithm built into the instance of</span>
+<span class="sd">        RFdeconProcessor is used if engine is not null.</span>
 <span class="sd">    :param alg: The algorithm to be applied, used for initializing</span>
-<span class="sd">       a RFdeconProcessor object.  Ignored if `engine` is used.</span>
+<span class="sd">        a RFdeconProcessor object.  Ignored if engine is used.</span>
 <span class="sd">    :param pf: The pf file to be parsed, used for inititalizing a</span>
-<span class="sd">       RFdeconProcessor.  Ignored if `engine` is used.</span>
+<span class="sd">        RFdeconProcessor.  Ignored if engine is used.</span>
 <span class="sd">    :type pf:  string defining an absolute path for the file name</span>
-<span class="sd">       or a path relative to a directory defined by PFPATH.</span>
+<span class="sd">        or a path relative to a directory defined by PFPATH.</span>
 <span class="sd">    :param wavelet:   vector of doubles (numpy array or the</span>
-<span class="sd">       std::vector container internal to TimeSeries object) defining</span>
-<span class="sd">       the wavelet to use to compute deconvolution operator.</span>
-<span class="sd">       Default is None which assumes processor was set up to use</span>
-<span class="sd">       a component of d as the wavelet estimate.</span>
+<span class="sd">        std::vector container internal to TimeSeries object) defining</span>
+<span class="sd">        the wavelet to use to compute deconvolution operator.</span>
+<span class="sd">        Default is None which assumes processor was set up to use</span>
+<span class="sd">        a component of d as the wavelet estimate.</span>
 <span class="sd">    :type wavelet:  None or an iterable vector container</span>
-<span class="sd">       (in MsPASS that means a python array, a numpy array, or a DoubleVector)</span>
+<span class="sd">        (in MsPASS that means a python array, a numpy array, or a DoubleVector)</span>
 <span class="sd">    :param noisedata:  vector of doubles (numpy array or the</span>
-<span class="sd">       std::vector container internal to TimeSeries object) defining</span>
-<span class="sd">       noise data to use for computing regularization.  Not all RF</span>
-<span class="sd">       estimation algorithms use noise estimators so this parameter</span>
-<span class="sd">       is optional.   It can also be extracted from d depending on</span>
-<span class="sd">       parameter file options.</span>
+<span class="sd">        std::vector container internal to TimeSeries object) defining</span>
+<span class="sd">        noise data to use for computing regularization.  Not all RF</span>
+<span class="sd">        estimation algorithms use noise estimators so this parameter</span>
+<span class="sd">        is optional.   It can also be extracted from d depending on</span>
+<span class="sd">        parameter file options.</span>
 <span class="sd">    :type noisedata:  None or an iterable vector container</span>
-<span class="sd">       (in MsPASS that means a python array, a numpy array, or a DoubleVector)</span>
+<span class="sd">        (in MsPASS that means a python array, a numpy array, or a DoubleVector)</span>
 <span class="sd">    :param wcomp:  When defined from Seismogram d the wavelet</span>
-<span class="sd">       estimate in conventional RFs is one of the components that</span>
-<span class="sd">       are most P wave dominated. That is always one of three</span>
-<span class="sd">       things:  Z, L of LQT, or the L component from the output of</span>
-<span class="sd">       Kennett&#39;s free surface transformation operator.  The</span>
-<span class="sd">       default is 2, which for ccore.Seismogram is always one of</span>
-<span class="sd">       the above.   This parameter would be changed only if the</span>
-<span class="sd">       data has undergone some novel transformation not yet invented</span>
-<span class="sd">       and the best wavelet estimate was on in 2 (3 with FORTRAN</span>
-<span class="sd">       and matlab numbering).</span>
-<span class="sd">     :type wcomp:  int (must 0, 1, or 2)</span>
-<span class="sd">     :param ncomp: component number to use to compute noise.  This is used</span>
-<span class="sd">       only if the algorithm in processor requires a noise estimate.</span>
-<span class="sd">       Normally it should be the same as wcomp and is by default (2).</span>
-<span class="sd">     :type ncomp:  int (must be 0, 1, or 2)</span>
-<span class="sd">     :param QCdocument_key:   A summary of the parameters defining the</span>
+<span class="sd">        estimate in conventional RFs is one of the components that</span>
+<span class="sd">        are most P wave dominated. That is always one of three</span>
+<span class="sd">        things:  Z, L of LQT, or the L component from the output of</span>
+<span class="sd">        Kennett&#39;s free surface transformation operator.  The</span>
+<span class="sd">        default is 2, which for ccore.Seismogram is always one of</span>
+<span class="sd">        the above.   This parameter would be changed only if the</span>
+<span class="sd">        data has undergone some novel transformation not yet invented</span>
+<span class="sd">        and the best wavelet estimate was on in 2 (3 with FORTRAN</span>
+<span class="sd">        and matlab numbering).</span>
+<span class="sd">    :type wcomp:  int (must 0, 1, or 2)</span>
+<span class="sd">    :param ncomp: component number to use to compute noise.  This is used</span>
+<span class="sd">        only if the algorithm in processor requires a noise estimate.</span>
+<span class="sd">        Normally it should be the same as wcomp and is by default (2).</span>
+<span class="sd">    :type ncomp:  int (must be 0, 1, or 2)</span>
+<span class="sd">    :param QCdocument_key:   A summary of the parameters defining the</span>
 <span class="sd">        deconvolution operator (really a dump of the pf content used for</span>
 <span class="sd">        creating the engine) and computed QC attributes are posted to a</span>
 <span class="sd">        python dictionary.   That content is posted to the outputs</span>
 <span class="sd">        Metadata container with the key defined by this argument.</span>
 <span class="sd">        In MongoDB lingo that means when saved to the database the</span>
 <span class="sd">        dictionary content associated with this key becomes a &quot;subdocument&quot;.</span>
-<span class="sd">     :type QCdocument_key:  string (default is &quot;RFdecon_properties&quot;)</span>
-<span class="sd">     :param object_history: boolean to enable or disable saving object</span>
-<span class="sd">           level history.  Default is False.  Note this functionality is</span>
-<span class="sd">           implemented via the mspass_func_wrapper decorator.</span>
-<span class="sd">     :param alg_name:   When history is enabled this is the algorithm name</span>
-<span class="sd">           assigned to the stamp for applying this algorithm.</span>
-<span class="sd">           Default (&quot;WindowData&quot;) should normally be just used.</span>
-<span class="sd">           Note this functionality is implemented via the mspass_func_wrapper decorator.</span>
-<span class="sd">     :param ald_id:  algorithm id to assign to history record (used only if</span>
-<span class="sd">           object_history is set True.)</span>
-<span class="sd">           Note this functionality is implemented via the mspass_func_wrapper decorator.</span>
-<span class="sd">     :param dryrun:  When true only the arguments are checked for validity.</span>
-<span class="sd">           When true nothing is calculated and the original data are returned.</span>
-<span class="sd">           Note this functionality is implemented via the mspass_func_wrapper decorator.</span>
+<span class="sd">    :type QCdocument_key:  string (default is &quot;RFdecon_properties&quot;)</span>
+<span class="sd">    :param object_history: boolean to enable or disable saving object</span>
+<span class="sd">        level history.  Default is False.  Note this functionality is</span>
+<span class="sd">        implemented via the mspass_func_wrapper decorator.</span>
+<span class="sd">    :param alg_name:   When history is enabled this is the algorithm name</span>
+<span class="sd">        assigned to the stamp for applying this algorithm.</span>
+<span class="sd">        Default (&quot;WindowData&quot;) should normally be just used.</span>
+<span class="sd">        Note this functionality is implemented via the mspass_func_wrapper decorator.</span>
+<span class="sd">    :param ald_id:  algorithm id to assign to history record (used only if</span>
+<span class="sd">        object_history is set True.)</span>
+<span class="sd">        Note this functionality is implemented via the mspass_func_wrapper decorator.</span>
+<span class="sd">    :param dryrun:  When true only the arguments are checked for validity.</span>
+<span class="sd">        When true nothing is calculated and the original data are returned.</span>
+<span class="sd">        Note this functionality is implemented via the mspass_func_wrapper decorator.</span>
 
 <span class="sd">    :return:  Normally returns Seismogram object containing the RF estimates.</span>
-<span class="sd">     The orientations are always the same as the input.  If `return-wavelets` is set</span>
-<span class="sd">     True returns a tuple with three components:  0 - `Seismogram` returned as with</span>
-<span class="sd">     default, 1 - ideal output wavelet `TimeSeries`, 2 - actual output wavelet</span>
-<span class="sd">     stored as a `TimeSeries` object.</span>
+<span class="sd">        The orientations are always the same as the input.  If `return-wavelets` is set</span>
+<span class="sd">        True returns a tuple with three components:  0 - `Seismogram` returned as with</span>
+<span class="sd">        default, 1 - ideal output wavelet `TimeSeries`, 2 - actual output wavelet</span>
+<span class="sd">        stored as a `TimeSeries` object.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">):</span>

@@ -49,13 +49,15 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
     
-              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Desktop Operation</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/quick_start.html">Getting Started in a Nutshell</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/run_mspass_with_docker.html">Run MsPASS with Docker</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_docker_compose.html">Deploy MsPASS with Docker Compose</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/mspass_desktop.html">Running MsPASS on a Desktop Computer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/command_line_desktop.html">Command Line Docker Desktop Operation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_conda.html">Deploy MsPASS with Conda</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_conda.html#advanced-setup-considerations">Advanced Setup Considerations</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Cluster Operations</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_on_HPC.html">Deploying MsPASS on an HPC cluster</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_conda_and_coiled.html">Deploy MsPASS with Conda and Coiled</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started/getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
@@ -92,6 +94,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/header_math.html">Header (Metadata) Math</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/graphics.html">Graphics in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/signal_to_noise.html">Signal to Noise Ratio Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/arrival_time_measurement.html">Arrival Time Measurement Techniques in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
@@ -221,7 +224,11 @@
 
 <span class="sd">    The class currently has only one constructor normally called with</span>
 <span class="sd">    a variant of the following:</span>
+
+<span class="sd">    .. code-block:: python</span>
+
 <span class="sd">      db=Database(dbclient,&#39;mydatabase&#39;)</span>
+
 <span class="sd">    where dbclient is either a MongoDB database client instance or</span>
 <span class="sd">    (recommended) the MsPASS DBClient wrapper (a subclass of the</span>
 <span class="sd">    pymongo client).  The second argument is the database &quot;name&quot;</span>
@@ -380,7 +387,7 @@
 <span class="sd">        raised if the collection already exists.   Useful mainly for advanced users tuning</span>
 <span class="sd">        a polished workflow.</span>
 
-<span class="sd">        :Parameters:</span>
+<span class="sd">        Parameters:</span>
 <span class="sd">          :param name: the name of the collection to create</span>
 <span class="sd">          :param codec_options` (optional): An instance of</span>
 <span class="sd">            :class:`~bson.codec_options.CodecOptions`. If ``None`` (the</span>
@@ -407,6 +414,7 @@
 <span class="sd">        All optional `create collection command`_ parameters should be passed</span>
 <span class="sd">        as keyword arguments to this method. Valid options include, but are not</span>
 <span class="sd">        limited to:</span>
+
 <span class="sd">          ``size``: desired initial size for the collection (in</span>
 <span class="sd">            bytes). For capped collections this size is the max</span>
 <span class="sd">            size of the collection.</span>
@@ -1214,6 +1222,7 @@
 <span class="sd">        :class:`mspasspy.ccore.seismic.SeismogramEnsemble`).  Handling</span>
 <span class="sd">        multiple types while simultaneously supporting multiple abstractions</span>
 <span class="sd">        of how the data are stored externally has some complexities.</span>
+
 <span class="sd">        1.  All MsPASS data have multiple containers used internally</span>
 <span class="sd">            to define different concepts.   In particular atomic data</span>
 <span class="sd">            have a Metadata container we map to MongoDB documents directly,</span>
@@ -1324,6 +1333,7 @@
 <span class="sd">        There are some important implementation details related to</span>
 <span class="sd">        the points above that are important to understand if you encounter</span>
 <span class="sd">        issues using this algorithm.</span>
+
 <span class="sd">        1.  Writing is always atomic.  Saving ensemble data is little more</span>
 <span class="sd">            than an enhanced loop over data members.  By &quot;enhanced&quot; we mean</span>
 <span class="sd">            two things:  (a)  any ensemble Metadata attributes are copied</span>
@@ -2055,15 +2065,15 @@
 <span class="sd">        :param collection: the name of collection to which document_id is</span>
 <span class="sd">         expected to provide a unique match.  If not specified, uses the default wf collection</span>
 <span class="sd">        :param tests: this should be a python list of test to apply by</span>
-<span class="sd">         name keywords.  Test nams allowed are &#39;xref&#39;, &#39;type&#39;,</span>
-<span class="sd">         and &#39;undefined&#39;.   Default runs all tests.   Specify a subset of those</span>
-<span class="sd">         keywords to be more restrictive.</span>
+<span class="sd">           name keywords.  Test nams allowed are &#39;xref&#39;, &#39;type&#39;,</span>
+<span class="sd">           and &#39;undefined&#39;.   Default runs all tests.   Specify a subset of those</span>
+<span class="sd">           keywords to be more restrictive.</span>
 <span class="sd">        :type tests: :class:`list` of :class:`str`</span>
 
 <span class="sd">        :return: a python dict keyed by a problematic key.  The value in each</span>
 <span class="sd">          entry is the name of the failed test (i.e. &#39;xref&#39;, &#39;type&#39;, or &#39;undefined&#39;)</span>
 <span class="sd">        :rtype: :class:`dict`</span>
-<span class="sd">        :excpetion: This method will throw a fatal error exception if the</span>
+<span class="sd">        :exception: This method will throw a fatal error exception if the</span>
 <span class="sd">          id received does no match any document in the database.  That is</span>
 <span class="sd">          intentional as the method should normally appear in a loop over</span>
 <span class="sd">          ids found after query and the ids should then always be valid.</span>
@@ -2236,17 +2246,17 @@
 
 <span class="sd">        :param collection:  MongoDB collection to be updated</span>
 <span class="sd">        :param keylist:  list of keys for elements of each document</span>
-<span class="sd">        that are to be deleted.   key are not test against schema</span>
-<span class="sd">        but all matches will be deleted.</span>
+<span class="sd">          that are to be deleted.   key are not test against schema</span>
+<span class="sd">          but all matches will be deleted.</span>
 <span class="sd">        :param query: optional query string passed to find database</span>
-<span class="sd">        collection method.  Can be used to limit edits to documents</span>
-<span class="sd">        matching the query.  Default is the entire collection.</span>
+<span class="sd">          collection method.  Can be used to limit edits to documents</span>
+<span class="sd">          matching the query.  Default is the entire collection.</span>
 <span class="sd">        :param verbose:  when ``True`` edit will produce a line of printed</span>
-<span class="sd">        output describing what was deleted.  Use this option only if</span>
-<span class="sd">        you know from dbverify the number of changes to be made are small.</span>
+<span class="sd">          output describing what was deleted.  Use this option only if</span>
+<span class="sd">          you know from dbverify the number of changes to be made are small.</span>
 
 <span class="sd">        :return:  dict keyed by the keys of all deleted entries.  The value</span>
-<span class="sd">        of each entry is the number of documents the key was deleted from.</span>
+<span class="sd">          of each entry is the number of documents the key was deleted from.</span>
 <span class="sd">        :rtype: :class:`dict`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">dbcol</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">collection</span><span class="p">]</span>
@@ -2286,17 +2296,17 @@
 <span class="sd">        :param collection:  MongoDB collection to be updated</span>
 <span class="sd">        :param rename_map:  remap definition dict used as described above.</span>
 <span class="sd">        :param query: optional query string passed to find database</span>
-<span class="sd">        collection method.  Can be used to limit edits to documents</span>
-<span class="sd">        matching the query.  Default is the entire collection.</span>
+<span class="sd">          collection method.  Can be used to limit edits to documents</span>
+<span class="sd">          matching the query.  Default is the entire collection.</span>
 <span class="sd">        :param verbose:  when true edit will produce a line of printed</span>
-<span class="sd">        output describing what was deleted.  Use this option only if</span>
-<span class="sd">        you know from dbverify the number of changes to be made are small.</span>
-<span class="sd">        When false the function runs silently.</span>
+<span class="sd">          output describing what was deleted.  Use this option only if</span>
+<span class="sd">          you know from dbverify the number of changes to be made are small.</span>
+<span class="sd">          When false the function runs silently.</span>
 
 <span class="sd">        :return:  dict keyed by the keys of all changed entries.  The value</span>
-<span class="sd">        of each entry is the number of documents changed.  The keys are the</span>
-<span class="sd">        original keys.  displays of result should old and new keys using</span>
-<span class="sd">        the rename_map.</span>
+<span class="sd">          of each entry is the number of documents changed.  The keys are the</span>
+<span class="sd">          original keys.  displays of result should old and new keys using</span>
+<span class="sd">          the rename_map.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">dbcol</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">collection</span><span class="p">]</span>
         <span class="n">cursor</span> <span class="o">=</span> <span class="n">dbcol</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
@@ -2348,12 +2358,12 @@
 
 <span class="sd">        :param collection:  MongoDB collection to be updated</span>
 <span class="sd">        :param query: optional query string passed to find database</span>
-<span class="sd">        collection method.  Can be used to limit edits to documents</span>
-<span class="sd">        matching the query.  Default is the entire collection.</span>
+<span class="sd">          collection method.  Can be used to limit edits to documents</span>
+<span class="sd">          matching the query.  Default is the entire collection.</span>
 <span class="sd">        :param verbose:  when true edit will produce one or more lines of</span>
-<span class="sd">        printed output for each change it makes.  The default is false.</span>
-<span class="sd">        Needless verbose should be avoided unless you are certain the</span>
-<span class="sd">        number of changes it will make are small.</span>
+<span class="sd">          printed output for each change it makes.  The default is false.</span>
+<span class="sd">          Needless verbose should be avoided unless you are certain the</span>
+<span class="sd">          number of changes it will make are small.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">dbcol</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">collection</span><span class="p">]</span>
         <span class="n">schema</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span>
@@ -2446,21 +2456,21 @@
 <span class="sd">        documents scanned by the function.   Default will process the</span>
 <span class="sd">        entire wf collection.</span>
 <span class="sd">        :param verbose:  when True errors will be printed.  By default</span>
-<span class="sd">        the function works silently and you should use the output to</span>
-<span class="sd">        interact with any errors returned.</span>
+<span class="sd">          the function works silently and you should use the output to</span>
+<span class="sd">          interact with any errors returned.</span>
 <span class="sd">        :param error_limit: Is a sanity check on the number of errors logged.</span>
-<span class="sd">        Errors of any type are limited to this number (default 1000).</span>
-<span class="sd">        The idea is errors should be rare and if this number is exceeded</span>
-<span class="sd">        you have a big problem you need to fix before scanning again.</span>
-<span class="sd">        The number should be large enough to catch all condition but</span>
-<span class="sd">        not so huge it become cumbersome.  With no limit or a memory</span>
-<span class="sd">        fault is even possible on a huge dataset.</span>
+<span class="sd">          Errors of any type are limited to this number (default 1000).</span>
+<span class="sd">          The idea is errors should be rare and if this number is exceeded</span>
+<span class="sd">          you have a big problem you need to fix before scanning again.</span>
+<span class="sd">          The number should be large enough to catch all condition but</span>
+<span class="sd">          not so huge it become cumbersome.  With no limit or a memory</span>
+<span class="sd">          fault is even possible on a huge dataset.</span>
 <span class="sd">        :return:  returns a tuple with two lists.  Both lists are ObjectIds</span>
-<span class="sd">        of the scanned wf collection that have errors.  component 0</span>
-<span class="sd">        of the tuple contains ids of wf entries that have the normalization</span>
-<span class="sd">        id set but the id does not resolve with the normalization collection.</span>
-<span class="sd">        component 1 contains the ids of documents in the wf collection that</span>
-<span class="sd">        do not contain the normalization id key at all (a more common problem)</span>
+<span class="sd">          of the scanned wf collection that have errors.  component 0</span>
+<span class="sd">          of the tuple contains ids of wf entries that have the normalization</span>
+<span class="sd">          id set but the id does not resolve with the normalization collection.</span>
+<span class="sd">          component 1 contains the ids of documents in the wf collection that</span>
+<span class="sd">          do not contain the normalization id key at all (a more common problem)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># schema doesn&#39;t currently have a way to list normalized</span>
@@ -2590,32 +2600,32 @@
 <span class="sd">        by a workflow before starting a large job.</span>
 
 <span class="sd">        :param collection:  MongoDB collection that is to be scanned</span>
-<span class="sd">        for errors.  Note with normalized data this function should be</span>
-<span class="sd">        run on the appropriate wf collection and all normalization</span>
-<span class="sd">        collections the wf collection needs to link to.</span>
+<span class="sd">          for errors.  Note with normalized data this function should be</span>
+<span class="sd">          run on the appropriate wf collection and all normalization</span>
+<span class="sd">          collections the wf collection needs to link to.</span>
 <span class="sd">        :param query:  optional dict passed as a query to limit the</span>
-<span class="sd">        documents scanned by the function.   Default will process the</span>
-<span class="sd">        entire collection requested.</span>
+<span class="sd">          documents scanned by the function.   Default will process the</span>
+<span class="sd">          entire collection requested.</span>
 <span class="sd">        :param verbose:  when True errors will be printed.   The default is</span>
-<span class="sd">        False and the function will do it&#39;s work silently.   Verbose is</span>
-<span class="sd">        most useful in an interactive python session where the function</span>
-<span class="sd">        is called directly.  Most users will run this function</span>
-<span class="sd">        as part of tests driven by the dbverify program.</span>
+<span class="sd">          False and the function will do it&#39;s work silently.   Verbose is</span>
+<span class="sd">          most useful in an interactive python session where the function</span>
+<span class="sd">          is called directly.  Most users will run this function</span>
+<span class="sd">          as part of tests driven by the dbverify program.</span>
 <span class="sd">        :param error_limit: Is a sanity check the number of errors logged</span>
-<span class="sd">        The number of any type are limited to this number (default 1000).</span>
-<span class="sd">        The idea is errors should be rare and if this number is exceeded</span>
-<span class="sd">        you have a big problem you need to fix before scanning again.</span>
-<span class="sd">        The number should be large enough to catch all condition but</span>
-<span class="sd">        not so huge it become cumbersome.  With no limit or a memory</span>
-<span class="sd">        fault is even possible on a huge dataset.</span>
+<span class="sd">          The number of any type are limited to this number (default 1000).</span>
+<span class="sd">          The idea is errors should be rare and if this number is exceeded</span>
+<span class="sd">          you have a big problem you need to fix before scanning again.</span>
+<span class="sd">          The number should be large enough to catch all condition but</span>
+<span class="sd">          not so huge it become cumbersome.  With no limit or a memory</span>
+<span class="sd">          fault is even possible on a huge dataset.</span>
 <span class="sd">        :return:  returns a tuple with two python dict containers.</span>
-<span class="sd">        The component 0 python dict contains details of type mismatch errors.</span>
-<span class="sd">        Component 1 contains details for data with undefined keys.</span>
-<span class="sd">        Both python dict containers are keyed by the ObjectId of the</span>
-<span class="sd">        document from which they were retrieved.  The values associated</span>
-<span class="sd">        with each entry are like MongoDB subdocuments.  That is, the value</span>
-<span class="sd">        return is itself a dict. The dict value contains key-value pairs</span>
-<span class="sd">        that defined the error (type mismatch for 0 and undefined for 1)</span>
+<span class="sd">          The component 0 python dict contains details of type mismatch errors.</span>
+<span class="sd">          Component 1 contains details for data with undefined keys.</span>
+<span class="sd">          Both python dict containers are keyed by the ObjectId of the</span>
+<span class="sd">          document from which they were retrieved.  The values associated</span>
+<span class="sd">          with each entry are like MongoDB subdocuments.  That is, the value</span>
+<span class="sd">          return is itself a dict. The dict value contains key-value pairs</span>
+<span class="sd">          that defined the error (type mismatch for 0 and undefined for 1)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">query</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -2700,36 +2710,36 @@
 <span class="sd">        station information is essential.</span>
 
 <span class="sd">        :param collection:  MongoDB collection that is to be scanned</span>
-<span class="sd">        for errors.  Note with normalized data this function should be</span>
-<span class="sd">        run on the appropriate wf collection and all normalization</span>
-<span class="sd">        collections the wf collection needs to link to.</span>
+<span class="sd">          for errors.  Note with normalized data this function should be</span>
+<span class="sd">          run on the appropriate wf collection and all normalization</span>
+<span class="sd">          collections the wf collection needs to link to.</span>
 <span class="sd">        :param keys:  is a list of strings that are to be checked</span>
-<span class="sd">        against the contents of the collection.  Note one of the first</span>
-<span class="sd">        things the function does is test for the validity of the keys.</span>
-<span class="sd">        If they are not defined in the schema the function will throw</span>
-<span class="sd">        a MsPASSError exception.</span>
+<span class="sd">          against the contents of the collection.  Note one of the first</span>
+<span class="sd">          things the function does is test for the validity of the keys.</span>
+<span class="sd">          If they are not defined in the schema the function will throw</span>
+<span class="sd">          a MsPASSError exception.</span>
 <span class="sd">        :param query:  optional dict passed as a query to limit the</span>
-<span class="sd">        documents scanned by the function.   Default will process the</span>
-<span class="sd">        entire collection requested.</span>
+<span class="sd">          documents scanned by the function.   Default will process the</span>
+<span class="sd">          entire collection requested.</span>
 <span class="sd">        :param verbose:  when True errors will be printed.   The default is</span>
-<span class="sd">        False and the function will do it&#39;s work silently.   Verbose is</span>
-<span class="sd">        most useful in an interactive python session where the function</span>
-<span class="sd">        is called directly.  Most users will run this function</span>
-<span class="sd">        as part of tests driven by the dbverify program.</span>
+<span class="sd">          False and the function will do it&#39;s work silently.   Verbose is</span>
+<span class="sd">          most useful in an interactive python session where the function</span>
+<span class="sd">          is called directly.  Most users will run this function</span>
+<span class="sd">          as part of tests driven by the dbverify program.</span>
 <span class="sd">        :param error_limit: Is a sanity check the number of errors logged</span>
-<span class="sd">        The number of any type are limited to this number (default 1000).</span>
-<span class="sd">        The idea is errors should be rare and if this number is exceeded</span>
-<span class="sd">        you have a big problem you need to fix before scanning again.</span>
-<span class="sd">        The number should be large enough to catch all condition but</span>
-<span class="sd">        not so huge it become cumbersome.  With no limit or a memory</span>
-<span class="sd">        fault is even possible on a huge dataset.</span>
+<span class="sd">          The number of any type are limited to this number (default 1000).</span>
+<span class="sd">          The idea is errors should be rare and if this number is exceeded</span>
+<span class="sd">          you have a big problem you need to fix before scanning again.</span>
+<span class="sd">          The number should be large enough to catch all condition but</span>
+<span class="sd">          not so huge it become cumbersome.  With no limit or a memory</span>
+<span class="sd">          fault is even possible on a huge dataset.</span>
 <span class="sd">        :return:  tuple with two components. Both components contain a</span>
-<span class="sd">        python dict container keyed by ObjectId of problem documents.</span>
-<span class="sd">        The values in the component 0 dict are themselves python dict</span>
-<span class="sd">        containers that are like MongoDB subdocuments).  The key-value</span>
-<span class="sd">        pairs in that dict are required data with a type mismatch with the schema.</span>
-<span class="sd">        The values in component 1 are python lists of keys that had</span>
-<span class="sd">        no assigned value but were defined as required.</span>
+<span class="sd">          python dict container keyed by ObjectId of problem documents.</span>
+<span class="sd">          The values in the component 0 dict are themselves python dict</span>
+<span class="sd">          containers that are like MongoDB subdocuments).  The key-value</span>
+<span class="sd">          pairs in that dict are required data with a type mismatch with the schema.</span>
+<span class="sd">          The values in component 1 are python lists of keys that had</span>
+<span class="sd">          no assigned value but were defined as required.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">keys</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
@@ -4058,7 +4068,7 @@
 <span class="sd">        :param prev_history_object_id: the previous history object id (if it has).</span>
 <span class="sd">        :type prev_history_object_id: :class:`bson.ObjectId.ObjectId`</span>
 <span class="sd">        :param collection: the collection that you want to store the history object. If not specified, use the defined</span>
-<span class="sd">        collection in the schema.</span>
+<span class="sd">          collection in the schema.</span>
 <span class="sd">        :return: current history_object_id.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">):</span>
@@ -4128,15 +4138,15 @@
 <span class="sd">        :type mspass_object: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`</span>
 <span class="sd">        :param history_object_id: :class:`bson.ObjectId.ObjectId` or None (see above)</span>
 <span class="sd">        :param alg_name:  algorithm name that should be the current node</span>
-<span class="sd">        of the history tree.  this should normaly be the name of th e</span>
-<span class="sd">        reader method/function.</span>
+<span class="sd">          of the history tree.  this should normaly be the name of th e</span>
+<span class="sd">          reader method/function.</span>
 <span class="sd">        :param alg_id:  algorithm id to set for the current node</span>
 <span class="sd">        :param define_as_raw:  when True and history_object_id is None</span>
 <span class="sd">          the starting node of the history chain will be tagged as &quot;raw&quot;.</span>
 <span class="sd">          Ignored if history_object_id is used for a query.  Note on</span>
 <span class="sd">          failure of such a query the chain will always have raw set false.</span>
 <span class="sd">        :param collection: the collection that you want to load the processing history. If not specified, use the defined</span>
-<span class="sd">        collection in the schema.</span>
+<span class="sd">          collection in the schema.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># get the atomic type of the mspass object</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">):</span>
@@ -4212,7 +4222,7 @@
 <span class="sd">        :param elog_id: the previous elog object id to be appended with.</span>
 <span class="sd">        :type elog_id: :class:`bson.ObjectId.ObjectId`</span>
 <span class="sd">        :param collection: the collection that you want to save the elogs. If not specified, use the defined</span>
-<span class="sd">        collection in the schema.</span>
+<span class="sd">          collection in the schema.</span>
 <span class="sd">        :return: updated elog_id.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">):</span>
@@ -5109,7 +5119,7 @@
 <span class="sd">            processing.   Default is SY which is used for synthetics.</span>
 <span class="sd">            Set to None if if all are to be loaded.</span>
 <span class="sd">        :verbose:  print informational lines if true.  If false</span>
-<span class="sd">        works silently)</span>
+<span class="sd">          works silently)</span>
 
 <span class="sd">        :return:  tuple with</span>
 <span class="sd">          0 - integer number of site documents saved</span>
@@ -5366,18 +5376,18 @@
 <span class="sd">        to return the raw data used to construct an Inventory.</span>
 
 <span class="sd">        :param net:  network name query string.  Can be a single</span>
-<span class="sd">        unique net code or use MongoDB&#39;s expression query</span>
-<span class="sd">        mechanism (e.g. &quot;{&#39;$gt&#39; : 42}).  Default is all</span>
+<span class="sd">          unique net code or use MongoDB&#39;s expression query</span>
+<span class="sd">          mechanism (e.g. &quot;{&#39;$gt&#39; : 42}).  Default is all</span>
 <span class="sd">        :param sta: statoin name query string.  Can be a single</span>
-<span class="sd">        station name or a MongoDB query expression.</span>
+<span class="sd">          station name or a MongoDB query expression.</span>
 <span class="sd">        :param loc:  loc code to select.  Can be a single unique</span>
-<span class="sd">        location (e.g. &#39;01&#39;) or a MongoDB expression query.</span>
+<span class="sd">          location (e.g. &#39;01&#39;) or a MongoDB expression query.</span>
 <span class="sd">        :param time:   limit return to stations with</span>
-<span class="sd">        startime&lt;time&lt;endtime.  Input is assumed an</span>
-<span class="sd">        epoch time NOT an obspy UTCDateTime. Use a conversion</span>
-<span class="sd">        to epoch time if necessary.</span>
+<span class="sd">          startime&lt;time&lt;endtime.  Input is assumed an</span>
+<span class="sd">          epoch time NOT an obspy UTCDateTime. Use a conversion</span>
+<span class="sd">          to epoch time if necessary.</span>
 <span class="sd">        :return:  obspy Inventory of all stations matching the</span>
-<span class="sd">        query parameters</span>
+<span class="sd">          query parameters</span>
 <span class="sd">        :rtype:  obspy Inventory</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">dbsite</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">site</span>
@@ -5440,7 +5450,7 @@
 <span class="sd">        :param net:  network name to match</span>
 <span class="sd">        :param sta:  station name to match</span>
 <span class="sd">        :param loc:   optional loc code to made (empty string ok and common)</span>
-<span class="sd">        default ignores loc in query.</span>
+<span class="sd">          default ignores loc in query.</span>
 <span class="sd">        :param time: epoch time for requested metadata.  Default undefined</span>
 <span class="sd">          and will cause the function to simply return the first document</span>
 <span class="sd">          matching the name keys only.   (This is rarely what you want, but</span>
@@ -5706,7 +5716,7 @@
 
 <span class="sd">        :param cat: is the Catalog object to be saved</span>
 <span class="sd">        :param verbose: Print informational data if true.</span>
-<span class="sd">        When false (default) it does it&#39;s work silently.</span>
+<span class="sd">          When false (default) it does it&#39;s work silently.</span>
 
 <span class="sd">        :return: integer count of number of items saved</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -6017,27 +6027,27 @@
 <span class="sd">        database tables where nulls are a hole in the table.</span>
 
 <span class="sd">        :param df: Pandas.Dataframe object, the input to be transfered into mongodb</span>
-<span class="sd">        documents</span>
-<span class="sd">        :param collection:  MongoDB collection name to be used to save the</span>
-<span class="sd">        (often subsetted) tuples of filename as documents in this collection.</span>
+<span class="sd">          documents</span>
+<span class="sd">          :param collection:  MongoDB collection name to be used to save the</span>
+<span class="sd">          (often subsetted) tuples of filename as documents in this collection.</span>
 <span class="sd">        :param null_values:  is an optional dict defining null field values.</span>
-<span class="sd">        When used an == test is applied to each attribute with a key</span>
-<span class="sd">        defined in the null_vlaues python dict.  If == returns True, the</span>
-<span class="sd">        value will be set as None in dataframe. If your table has a lot of null</span>
-<span class="sd">        fields this option can save space, but readers must not require the null</span>
-<span class="sd">        field.  The default is None which it taken to mean there are no null</span>
-<span class="sd">        fields defined.</span>
+<span class="sd">          When used an == test is applied to each attribute with a key</span>
+<span class="sd">          defined in the null_vlaues python dict.  If == returns True, the</span>
+<span class="sd">          value will be set as None in dataframe. If your table has a lot of null</span>
+<span class="sd">          fields this option can save space, but readers must not require the null</span>
+<span class="sd">          field.  The default is None which it taken to mean there are no null</span>
+<span class="sd">          fields defined.</span>
 <span class="sd">        :param one_to_one: a boolean to control if the set should be filtered by</span>
-<span class="sd">        rows.  The default is True which means every row in the dataframe will</span>
-<span class="sd">        create a single MongoDB document. If False the (normally reduced) set</span>
-<span class="sd">        of attributes defined by attributes_to_use will be filtered with the</span>
-<span class="sd">        panda/dask dataframe drop_duplicates method before converting the</span>
-<span class="sd">        dataframe to documents and saving them to MongoDB.  That approach</span>
-<span class="sd">        is important, for example, to filter things like Antelope &quot;site&quot; or</span>
-<span class="sd">        &quot;sitechan&quot; attributes created by a join to something like wfdisc and</span>
-<span class="sd">        saved as a text file to be processed by this function.</span>
+<span class="sd">          rows.  The default is True which means every row in the dataframe will</span>
+<span class="sd">          create a single MongoDB document. If False the (normally reduced) set</span>
+<span class="sd">          of attributes defined by attributes_to_use will be filtered with the</span>
+<span class="sd">          panda/dask dataframe drop_duplicates method before converting the</span>
+<span class="sd">          dataframe to documents and saving them to MongoDB.  That approach</span>
+<span class="sd">          is important, for example, to filter things like Antelope &quot;site&quot; or</span>
+<span class="sd">          &quot;sitechan&quot; attributes created by a join to something like wfdisc and</span>
+<span class="sd">          saved as a text file to be processed by this function.</span>
 <span class="sd">        :param parallel:  a boolean that determine if dask api will be used for</span>
-<span class="sd">        operations on the dataframe, default is false.</span>
+<span class="sd">          operations on the dataframe, default is false.</span>
 <span class="sd">        :return:  integer count of number of documents added to collection</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">dbcol</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">collection</span><span class="p">]</span>
@@ -6096,65 +6106,65 @@
 <span class="sd">        collection</span>
 
 <span class="sd">        :param filename:  path to text file that is to be read to create the</span>
-<span class="sd">        table object that is to be processed (internally we use pandas or</span>
-<span class="sd">        dask dataframes)</span>
-<span class="sd">        :param collection:  MongoDB collection name to be used to save the</span>
-<span class="sd">        (often subsetted) tuples of filename as documents in this collection.</span>
+<span class="sd">          table object that is to be processed (internally we use pandas or</span>
+<span class="sd">          dask dataframes)</span>
+<span class="sd">          :param collection:  MongoDB collection name to be used to save the</span>
+<span class="sd">          (often subsetted) tuples of filename as documents in this collection.</span>
 <span class="sd">        :param separator: The delimiter used for seperating fields,</span>
-<span class="sd">        the default is &quot;\s+&quot;, which is the regular expression of &quot;one or more</span>
-<span class="sd">        spaces&quot;.</span>
-<span class="sd">            For csv file, its value should be set to &#39;,&#39;.</span>
-<span class="sd">            This parameter will be passed into pandas.read_csv or dask.dataframe.read_csv.</span>
-<span class="sd">            To learn more details about the usage, check the following links:</span>
-<span class="sd">            https://pandas.pydata.org/docs/reference/api/pandas.read_csv.html</span>
-<span class="sd">            https://docs.dask.org/en/latest/generated/dask.dataframe.read_csv.html</span>
+<span class="sd">          the default is &quot;\s+&quot;, which is the regular expression of &quot;one or more</span>
+<span class="sd">          spaces&quot;.</span>
+<span class="sd">              For csv file, its value should be set to &#39;,&#39;.</span>
+<span class="sd">              This parameter will be passed into pandas.read_csv or dask.dataframe.read_csv.</span>
+<span class="sd">              To learn more details about the usage, check the following links:</span>
+<span class="sd">              https://pandas.pydata.org/docs/reference/api/pandas.read_csv.html</span>
+<span class="sd">              https://docs.dask.org/en/latest/generated/dask.dataframe.read_csv.html</span>
 <span class="sd">        :param type_dict: pairs of each attribute and its type, usedd to validate</span>
-<span class="sd">        the type of each input item</span>
+<span class="sd">          the type of each input item</span>
 <span class="sd">        :param header_line: defines the line to be used as the attribute names for</span>
-<span class="sd">        columns, if is &lt; 0, an attribute_names is required. Please note that if an</span>
-<span class="sd">        attribute_names is provided, the attributes defined in header_line will</span>
-<span class="sd">        always be override.</span>
+<span class="sd">          columns, if is &lt; 0, an attribute_names is required. Please note that if an</span>
+<span class="sd">          attribute_names is provided, the attributes defined in header_line will</span>
+<span class="sd">          always be override.</span>
 <span class="sd">        :param attribute_names: This argument must be either a list of (unique)</span>
-<span class="sd">        string names to define the attribute name tags for each column of the</span>
-<span class="sd">        input table.   The length of the array must match the number of</span>
-<span class="sd">        columns in the input table or this function will throw a MsPASSError</span>
-<span class="sd">        exception.   This argument is None by default which means the</span>
-<span class="sd">        function will assume the line specified by the &quot;header_line&quot; argument as</span>
-<span class="sd">        column headers defining the attribute name.  If header_line is less</span>
-<span class="sd">        than 0 this argument will be required.  When header_line is &gt;= 0</span>
-<span class="sd">        and this argument (attribute_names) is defined all the names in</span>
-<span class="sd">        this list will override those stored in the file at the specified</span>
-<span class="sd">        line number.</span>
+<span class="sd">          string names to define the attribute name tags for each column of the</span>
+<span class="sd">          input table.   The length of the array must match the number of</span>
+<span class="sd">          columns in the input table or this function will throw a MsPASSError</span>
+<span class="sd">          exception.   This argument is None by default which means the</span>
+<span class="sd">          function will assume the line specified by the &quot;header_line&quot; argument as</span>
+<span class="sd">          column headers defining the attribute name.  If header_line is less</span>
+<span class="sd">          than 0 this argument will be required.  When header_line is &gt;= 0</span>
+<span class="sd">          and this argument (attribute_names) is defined all the names in</span>
+<span class="sd">          this list will override those stored in the file at the specified</span>
+<span class="sd">          line number.</span>
 <span class="sd">        :param  rename_attributes:   This is expected to be a python dict</span>
-<span class="sd">        keyed by names matching those defined in the file or attribute_names</span>
-<span class="sd">        array (i.e. the panda/dataframe column index names) and values defining</span>
-<span class="sd">        strings to use to override the original names.   That usage, of course,</span>
-<span class="sd">        is most common to override names in a file.  If you want to change all</span>
-<span class="sd">        the name use a custom attributes_name array as noted above.  This</span>
-<span class="sd">        argument is mostly to rename a small number of anomalous names.</span>
-<span class="sd">        :param attributes_to_use:  If used this argument must define a list of</span>
-<span class="sd">        attribute names that define the subset of the dataframe dataframe</span>
-<span class="sd">        attributes that are to be saved.  For relational db users this is</span>
-<span class="sd">        effectively a &quot;select&quot; list of attribute names.  The default is</span>
-<span class="sd">        None which is taken to mean no selection is to be done.</span>
+<span class="sd">          keyed by names matching those defined in the file or attribute_names</span>
+<span class="sd">          array (i.e. the panda/dataframe column index names) and values defining</span>
+<span class="sd">          strings to use to override the original names.   That usage, of course,</span>
+<span class="sd">          is most common to override names in a file.  If you want to change all</span>
+<span class="sd">          the name use a custom attributes_name array as noted above.  This</span>
+<span class="sd">          argument is mostly to rename a small number of anomalous names.</span>
+<span class="sd">          :param attributes_to_use:  If used this argument must define a list of</span>
+<span class="sd">          attribute names that define the subset of the dataframe dataframe</span>
+<span class="sd">          attributes that are to be saved.  For relational db users this is</span>
+<span class="sd">          effectively a &quot;select&quot; list of attribute names.  The default is</span>
+<span class="sd">          None which is taken to mean no selection is to be done.</span>
 <span class="sd">        :param one_to_one: is an important boolean use to control if the</span>
-<span class="sd">        output is or is not filtered by rows.  The default is True</span>
-<span class="sd">        which means every tuple in the input file will create a single row in</span>
-<span class="sd">        dataframe. (Useful, for example, to construct an wf_miniseed</span>
-<span class="sd">        collection css3.0 attributes.)  If False the (normally reduced) set</span>
-<span class="sd">        of attributes defined by attributes_to_use will be filtered with the</span>
-<span class="sd">        panda/dask dataframe drop_duplicates method.  That approach</span>
-<span class="sd">        is important, for example, to filter things like Antelope &quot;site&quot; or</span>
-<span class="sd">        &quot;sitechan&quot; attributes created by a join to something like wfdisc and</span>
-<span class="sd">        saved as a text file to be processed by this function.</span>
-<span class="sd">        :param parallel:  When true we use the dask dataframe operation.</span>
-<span class="sd">        The default is false meaning the simpler, identical api panda</span>
-<span class="sd">        operators are used.</span>
+<span class="sd">          output is or is not filtered by rows.  The default is True</span>
+<span class="sd">          which means every tuple in the input file will create a single row in</span>
+<span class="sd">          dataframe. (Useful, for example, to construct an wf_miniseed</span>
+<span class="sd">          collection css3.0 attributes.)  If False the (normally reduced) set</span>
+<span class="sd">          of attributes defined by attributes_to_use will be filtered with the</span>
+<span class="sd">          panda/dask dataframe drop_duplicates method.  That approach</span>
+<span class="sd">          is important, for example, to filter things like Antelope &quot;site&quot; or</span>
+<span class="sd">          &quot;sitechan&quot; attributes created by a join to something like wfdisc and</span>
+<span class="sd">          saved as a text file to be processed by this function.</span>
+<span class="sd">          :param parallel:  When true we use the dask dataframe operation.</span>
+<span class="sd">          The default is false meaning the simpler, identical api panda</span>
+<span class="sd">          operators are used.</span>
 <span class="sd">        :param insert_column: a dictionary of new columns to add, and their value(s).</span>
-<span class="sd">        If the content is a single value, it can be passedto define a constant value</span>
-<span class="sd">        for the entire column of data. The content can also be a list, in that case,</span>
-<span class="sd">        the list should contain values that are to be set, and it must be the same</span>
-<span class="sd">        length as the number of tuples in the table.</span>
+<span class="sd">          If the content is a single value, it can be passedto define a constant value</span>
+<span class="sd">          for the entire column of data. The content can also be a list, in that case,</span>
+<span class="sd">          the list should contain values that are to be set, and it must be the same</span>
+<span class="sd">          length as the number of tuples in the table.</span>
 <span class="sd">        :return:  Integer count of number of documents added to collection</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">df</span> <span class="o">=</span> <span class="n">Textfile2Dataframe</span><span class="p">(</span>
@@ -6296,10 +6306,10 @@
 <span class="sd">          position of the write. (Ignored when storage_mode == &quot;gridfs&quot;)</span>
 
 <span class="sd">        :exception:</span>
-<span class="sd">        1) will raise a TypeError if mspass_object is not a mspass seismic</span>
-<span class="sd">        data object (atomic or ensmebles).   That shouldnt&#39; normally happen</span>
-<span class="sd">        for use within the Database class but Users could experiment with</span>
-<span class="sd">        custom writers that would use this class method.</span>
+<span class="sd">          1) will raise a TypeError if mspass_object is not a mspass seismic</span>
+<span class="sd">          data object (atomic or ensmebles).   That shouldnt&#39; normally happen</span>
+<span class="sd">          for use within the Database class but Users could experiment with</span>
+<span class="sd">          custom writers that would use this class method.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># when datum is an ensemble the caller should use bring_out_your dead</span>
         <span class="c1"># before calling this method</span>
@@ -6417,11 +6427,11 @@
 <span class="sd">        :type dir:  string or None</span>
 
 <span class="sd">        :param dfile:  file name to save the sample data for this object.</span>
-<span class="sd">          Default is None which initaties the following steps: if dfile</span>
-<span class="sd">         is defined in the current object&#39;s Metadata (key &quot;dfile&quot;) the</span>
-<span class="sd">         string value retrieved with the dfile key is used as the file</span>
-<span class="sd">         name.  If not, a unique name will be generated with a uuid</span>
-<span class="sd">         generator</span>
+<span class="sd">           Default is None which initaties the following steps: if dfile</span>
+<span class="sd">           is defined in the current object&#39;s Metadata (key &quot;dfile&quot;) the</span>
+<span class="sd">           string value retrieved with the dfile key is used as the file</span>
+<span class="sd">           name.  If not, a unique name will be generated with a uuid</span>
+<span class="sd">           generator</span>
 <span class="sd">        :type dfile:  string or None</span>
 
 <span class="sd">        :param format:  optional format name to write data.  See above for</span>
@@ -6438,7 +6448,7 @@
 <span class="sd">          needec by other docs to reconstruct data.</span>
 
 <span class="sd">        :return:  copy of the input with Metadata modified to contain all</span>
-<span class="sd">        data required to reconstruct the object from the stored sample data.</span>
+<span class="sd">          data required to reconstruct the object from the stored sample data.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># return immediately if the datum is marked dead</span>
@@ -6646,19 +6656,19 @@
 <span class="sd">        used only by the main save_data method.</span>
 
 <span class="sd">        :param mspass_object:  is a seismic data object to be saved.  Reiterate</span>
-<span class="sd">        it must not be marked dead and for ensembles no members should be</span>
-<span class="sd">        marked dead.  If they are you will, at best, save useless junk.</span>
-<span class="sd">        Results are better called unpredictable as the state of dead data is</span>
-<span class="sd">        undefined and could only be a default constructed object.</span>
+<span class="sd">          it must not be marked dead and for ensembles no members should be</span>
+<span class="sd">          marked dead.  If they are you will, at best, save useless junk.</span>
+<span class="sd">          Results are better called unpredictable as the state of dead data is</span>
+<span class="sd">          undefined and could only be a default constructed object.</span>
 
 <span class="sd">        :type mspass_object:  one of TimeSeries, Seismogram,</span>
-<span class="sd">        TimeSeriesEnsemble, or Seismogram Ensemble.</span>
+<span class="sd">          TimeSeriesEnsemble, or Seismogram Ensemble.</span>
 
 <span class="sd">        :param overwrite:  When set True if there is an existing datum</span>
-<span class="sd">        with a matching id for the attribute &quot;gridfs_id&quot;, the existing datum</span>
-<span class="sd">        will be deleted before the new data is saved.  When False a new</span>
-<span class="sd">        set of documents will be created to hold the data in the gridfs</span>
-<span class="sd">        system.  Default is False.</span>
+<span class="sd">          with a matching id for the attribute &quot;gridfs_id&quot;, the existing datum</span>
+<span class="sd">          will be deleted before the new data is saved.  When False a new</span>
+<span class="sd">          set of documents will be created to hold the data in the gridfs</span>
+<span class="sd">          system.  Default is False.</span>
 
 <span class="sd">        :return: edited version of input (mspass_object).  Return changed</span>
 <span class="sd">          only by adding metadata attributes &quot;storage_mode&quot; and &quot;gridfs_id&quot;</span>
@@ -7732,7 +7742,7 @@
 
 <span class="sd">    :param db: The MsPass core database handle that we want to index into</span>
 <span class="sd">    :param arg: All the arguments that users pass into the original</span>
-<span class="sd">    index_mseed_file method</span>
+<span class="sd">      index_mseed_file method</span>
 <span class="sd">    :return: None or error message string</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">ret</span> <span class="o">=</span> <span class="kc">None</span>
@@ -8116,21 +8126,21 @@
 
 <span class="sd">    :param doc:  document (dict) to be converted to Metadata</span>
 <span class="sd">    :type doc:  python dict assumed (there is no internal test for efficiency)</span>
-<span class="sd">    An associative array with string keys operator [] are the main requirements.</span>
-<span class="sd">    e.g. this function might work with a Metadata container to apply</span>
-<span class="sd">    schema constraints.</span>
+<span class="sd">      An associative array with string keys operator [] are the main requirements.</span>
+<span class="sd">      e.g. this function might work with a Metadata container to apply</span>
+<span class="sd">      schema constraints.</span>
 
 <span class="sd">    :param metadata_schema:  instance of MetadataSchema class that can</span>
-<span class="sd">    optionally be used to impose schema constraints.</span>
+<span class="sd">      optionally be used to impose schema constraints.</span>
 <span class="sd">    :type metadata_schema:  :class:`mspasspy.db.schema.MetadataSchema`</span>
 
 <span class="sd">    :param wfcol:  Collection name from which doc was retrieved.   It should</span>
-<span class="sd">    normally alreacy be known by the caller so we require it to be passed</span>
-<span class="sd">    with this required arg.</span>
+<span class="sd">      normally alreacy be known by the caller so we require it to be passed</span>
+<span class="sd">      with this required arg.</span>
 <span class="sd">    :type wfcol:   string</span>
 
 <span class="sd">    :param mode: read mode as described in detail in User&#39;s Manual.</span>
-<span class="sd">    Behavior for this function is as follows:</span>
+<span class="sd">      Behavior for this function is as follows:</span>
 <span class="sd">        &quot;promiscuous&quot; - (default)  no checks are applied to any key-value</span>
 <span class="sd">           pairs and the result is a one-to-one translation of the input.</span>
 <span class="sd">        &quot;cautious&quot; - Type constraints in the schema are enforced and</span>
@@ -8274,10 +8284,10 @@
 <span class="sd">    by doc2md it is dropped and two thi</span>
 
 <span class="sd">    :param doclist:  list of documents to be converted to Metadata with schema</span>
-<span class="sd">    constraints</span>
+<span class="sd">      constraints</span>
 <span class="sd">    :type doclist:  any iterable container holding an array of dict containers</span>
-<span class="sd">    with rational content (i.e. expected to be a MongoDB document with attributes</span>
-<span class="sd">    defined for a set of seismic data objects.)</span>
+<span class="sd">      with rational content (i.e. expected to be a MongoDB document with attributes</span>
+<span class="sd">      defined for a set of seismic data objects.)</span>
 
 <span class="sd">    ---other here --</span>
 

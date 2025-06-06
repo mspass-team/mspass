@@ -49,13 +49,15 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
     
-              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Desktop Operation</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/quick_start.html">Getting Started in a Nutshell</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/run_mspass_with_docker.html">Run MsPASS with Docker</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_docker_compose.html">Deploy MsPASS with Docker Compose</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/mspass_desktop.html">Running MsPASS on a Desktop Computer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/command_line_desktop.html">Command Line Docker Desktop Operation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_conda.html">Deploy MsPASS with Conda</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_conda.html#advanced-setup-considerations">Advanced Setup Considerations</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Cluster Operations</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_on_HPC.html">Deploying MsPASS on an HPC cluster</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_conda_and_coiled.html">Deploy MsPASS with Conda and Coiled</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started/getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
@@ -92,6 +94,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/header_math.html">Header (Metadata) Math</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/graphics.html">Graphics in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/signal_to_noise.html">Signal to Noise Ratio Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/arrival_time_measurement.html">Arrival Time Measurement Techniques in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
@@ -262,7 +265,7 @@
 <span class="sd">    :type ts: :class:`~mspasspy.ccore.TimeSeries`</span>
 <span class="sd">    :return: an obspy Trace object from conversion of d.  An empty Trace</span>
 <span class="sd">        object will be returned if d was marked dead</span>
-<span class="sd">    :rtype: :class:`~obspy.core.trace.Trace`b</span>
+<span class="sd">    :rtype: :class:`~obspy.core.trace.Trace`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">dresult</span> <span class="o">=</span> <span class="n">obspy</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">Trace</span><span class="p">()</span>
     <span class="n">dresult</span><span class="o">.</span><span class="n">dead_mspass</span> <span class="o">=</span> <span class="kc">True</span>
@@ -535,8 +538,8 @@
 <span class="sd">        cardinal is true</span>
 
 <span class="sd">    :raise: Can throw either an AssertionError or MsPASSrror(currently defaulted to</span>
-<span class="sd">    pybind11&#39;s default RuntimeError.  Error message can be obtained by</span>
-<span class="sd">    calling the what method of RuntimeError).</span>
+<span class="sd">        pybind11&#39;s default RuntimeError.  Error message can be obtained by</span>
+<span class="sd">        calling the what method of RuntimeError).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># First make sure we have exactly 3 components</span>
     <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">st</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;Stream length must be EXACTLY 3 for 3-components&quot;</span>
@@ -779,11 +782,11 @@
 <span class="sd">    :param separator: The delimiter used for seperating fields,</span>
 <span class="sd">      the default is &quot;\s+&quot;, which is the regular expression of &quot;one or more</span>
 <span class="sd">      spaces&quot;.</span>
-<span class="sd">        For csv file, its value should be set to &#39;,&#39;.</span>
-<span class="sd">        This parameter will be passed into pandas.read_csv or dask.dataframe.read_csv.</span>
-<span class="sd">        To learn more details about the usage, check the following links:</span>
-<span class="sd">        https://pandas.pydata.org/docs/reference/api/pandas.read_csv.html</span>
-<span class="sd">        https://docs.dask.org/en/latest/generated/dask.dataframe.read_csv.html</span>
+<span class="sd">      For csv file, its value should be set to &#39;,&#39;.</span>
+<span class="sd">      This parameter will be passed into pandas.read_csv or dask.dataframe.read_csv.</span>
+<span class="sd">      To learn more details about the usage, check the following links:</span>
+<span class="sd">      https://pandas.pydata.org/docs/reference/api/pandas.read_csv.html</span>
+<span class="sd">      https://docs.dask.org/en/latest/generated/dask.dataframe.read_csv.html</span>
 <span class="sd">    :param type_dict: pairs of each attribute and its type, usedd to validate</span>
 <span class="sd">      the type of each input item</span>
 <span class="sd">    :param header_line: defines the line to be used as the attribute names for</span>

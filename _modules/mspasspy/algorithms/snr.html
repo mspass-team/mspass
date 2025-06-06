@@ -49,13 +49,15 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
     
-              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Desktop Operation</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/quick_start.html">Getting Started in a Nutshell</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/run_mspass_with_docker.html">Run MsPASS with Docker</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_docker_compose.html">Deploy MsPASS with Docker Compose</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/mspass_desktop.html">Running MsPASS on a Desktop Computer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/command_line_desktop.html">Command Line Docker Desktop Operation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_conda.html">Deploy MsPASS with Conda</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_conda.html#advanced-setup-considerations">Advanced Setup Considerations</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Cluster Operations</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_on_HPC.html">Deploying MsPASS on an HPC cluster</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_conda_and_coiled.html">Deploy MsPASS with Conda and Coiled</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started/getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
@@ -92,6 +94,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/header_math.html">Header (Metadata) Math</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/graphics.html">Graphics in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/signal_to_noise.html">Signal to Noise Ratio Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/arrival_time_measurement.html">Arrival Time Measurement Techniques in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
@@ -197,6 +200,7 @@
 <span class="sd">    detection is defined as the point where the signal-to-noise ratio</span>
 <span class="sd">    first falls below the value defined by the &quot;snr_threshold&quot; argument.</span>
 <span class="sd">    The algorithm has two variants of note:</span>
+
 <span class="sd">    1.  If no point in the snr curve exceeds the valued defined by</span>
 <span class="sd">        &quot;snr_threshold&quot; the function returns immediately with all</span>
 <span class="sd">        attributes of the `BandwidthData` object set to 0.</span>
@@ -432,6 +436,7 @@
 <span class="sd">    This function provides a generic api to measure a large range of metrics</span>
 <span class="sd">    using one of four choices for measuring the norm of the data in the</span>
 <span class="sd">    signal and noise windows:</span>
+
 <span class="sd">        1.  rms - L2 norm</span>
 <span class="sd">        2.  mad - median absolute difference, which is essentially the median amplitude in this context</span>
 <span class="sd">        3.  perc - percentage norm ala seismic unix.  perc is defined at as the</span>
@@ -545,11 +550,11 @@
 <span class="sd">    :param mserr:  MsPASSError object caught with a try: except: block</span>
 
 <span class="sd">    :param prefix_message:  string that becomes the first part of the revised</span>
-<span class="sd">    message posted.</span>
+<span class="sd">      message posted.</span>
 
 <span class="sd">    :param suffix_message:  string that becomes a third line of the revised</span>
-<span class="sd">    message posted.  Note this string is always preceded by a newline so do not</span>
-<span class="sd">    put a newline in this arg unless you want a blank line.</span>
+<span class="sd">      message posted.  Note this string is always preceded by a newline so do not</span>
+<span class="sd">      put a newline in this arg unless you want a blank line.</span>
 
 <span class="sd">    :return:  expand message string</span>
 
@@ -591,6 +596,8 @@
 <span class="sd">    computes all depend upon that bandwidth estimate.  The default return</span>
 <span class="sd">    of this function is the return of `EstimateBandwidth` translated to</span>
 <span class="sd">    keyp-value pairs.   Those are:</span>
+
+<span class="sd">    .. code-block:: text</span>
 
 <span class="sd">      *low_f_band_edge* - lowest frequency exceeding threshold</span>
 <span class="sd">      *high_f_band_edge* - highest frequency exeeding threshold</span>
@@ -728,8 +735,8 @@
 <span class="sd">      of the optional snr metrics discussed above. Typos in names will create</span>
 <span class="sd">      log messages but will not cause the function to abort.</span>
 <span class="sd">    :type optional_metrics:  should be a list of strings matching the set of</span>
-<span class="sd">       required keywords.  Default is None which means none of the optional</span>
-<span class="sd">       metrics will be computed.</span>
+<span class="sd">      required keywords.  Default is None which means none of the optional</span>
+<span class="sd">      metrics will be computed.</span>
 <span class="sd">    :param save_spectra:   If set True (default is False) the function</span>
 <span class="sd">      will pickle the computed noise and signal spectra and save the</span>
 <span class="sd">      strings created along with a set of related metadata defining the</span>
@@ -1146,7 +1153,7 @@
 <span class="sd">      &quot;Parrival&quot;.   The idea is if multiple phases are being analyzed</span>
 <span class="sd">      each phase should have a different key set by this argument</span>
 <span class="sd">      (e.g. if PP were also being analyzed in the same workflow you</span>
-<span class="sd">       might use a key like &quot;PParrival&quot;).</span>
+<span class="sd">      might use a key like &quot;PParrival&quot;).</span>
 <span class="sd">    :return:  a copy of data_object with the the results stored under</span>
 <span class="sd">      the key defined by the metadata_output_key argument.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1265,6 +1272,7 @@
 <span class="sd">    &quot;arrival_snr&quot; with some additional features.  See the docstring</span>
 <span class="sd">    for that function for what those base features are.   Features this</span>
 <span class="sd">    function adds not found in arrival_snr are:</span>
+
 <span class="sd">        1.   This function allows Seismogram inputs.  Only TimeSeries</span>
 <span class="sd">             data are handled by arrival_snr.</span>
 <span class="sd">        2.   This function provides an option to compute arrival times</span>
@@ -1514,6 +1522,7 @@
 <span class="sd">    use_update, update_id and subdocument_key.   They interact in a way</span>
 <span class="sd">    that is best summarized as a set of cases that procuce behavior</span>
 <span class="sd">    you may want:</span>
+
 <span class="sd">        1.  If save_collection is not the parent waveform collection,</span>
 <span class="sd">            behavior is driven by use_update combined with subdocument_key.</span>
 <span class="sd">            When use_update is False (default) the contents of doc_to_save</span>

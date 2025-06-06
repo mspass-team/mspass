@@ -1,0 +1,280 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HPCClusterLauncher Configuration &mdash; MsPASS 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=f6245a2f"></script>
+      <script src="../_static/doctools.js?v=888ff710"></script>
+      <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />  
+
+  <style>
+    .wy-nav-content { max-width: 1600px; }
+  </style>
+
+  
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            MsPASS
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Desktop Operation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="mspass_desktop.html">Running MsPASS on a Desktop Computer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="command_line_desktop.html">Command Line Docker Desktop Operation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deploy_mspass_with_conda.html">Deploy MsPASS with Conda</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deploy_mspass_with_conda.html#advanced-setup-considerations">Advanced Setup Considerations</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Cluster Operations</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="deploy_mspass_on_HPC.html">Deploying MsPASS on an HPC cluster</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deploy_mspass_with_conda_and_coiled.html">Deploy MsPASS with Conda and Coiled</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/introduction.html">Introduction</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Data Management</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/database_concepts.html">Database Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/normalization.html">Normalization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/importing_tabular_data.html">Importing Tabular Data</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Seismic Data Objects</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/data_object_design_concepts.html">Data Object Design Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/numpy_scipy_interface.html">Using numpy/scipy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/obspy_interface.html">Using ObsPy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/time_standard_constraints.html">Time Standard Constraints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/processing_history_concepts.html">Processing History Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/continuous_data.html">Continuous Data Handling with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/schema_choices.html">What database schema should I use?</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Data Processing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/algorithms.html">Algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/importing_data.html">Importing Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/handling_errors.html">Handling Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/data_editing.html">Data Editing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/cleaning_metadata.html">Cleaning Inconsistent Metadata</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/header_math.html">Header (Metadata) Math</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/graphics.html">Graphics in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/signal_to_noise.html">Signal to Noise Ratio Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/arrival_time_measurement.html">Arrival Time Measurement Techniques in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/parallel_processing.html">Parallel Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/memory_management.html">Memory Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/io.html">I/O in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/parallel_io.html">Parallel IO in MsPASS</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">FAQ</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/FAQ.html">Frequency Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/development_strategies.html">How do I develop a new workflow from scratch?</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../python_api/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cxx_api/index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mspass_schema/mspass_schema.html">MsPASS Schema</a></li>
+</ul>
+
+    <a href= "../genindex.html">Index</a>
+  
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">MsPASS</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">HPCClusterLauncher Configuration</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/mspass-team/mspass/blob/master/docs/source/getting_started/HPCClusterLauncher_configuration.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="hpcclusterlauncher-configuration">
+<span id="hpc-cluster-configuration"></span><h1>HPCClusterLauncher Configuration<a class="headerlink" href="#hpcclusterlauncher-configuration" title="Permalink to this heading"></a></h1>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this heading"></a></h2>
+<p>This document gives details of configurations parameters
+needed to launch a valid instance of the
+<code class="code docutils literal notranslate"><span class="pre">HPCClusterLauncher</span></code> object.  This document has
+two section:</p>
+<ol class="arabic simple">
+<li><p>General parameters that can be thought of as generic system
+configuration parameters. The keys for all these attributes are
+in the top level of the yaml file hierarchy.</p></li>
+<li><p>Parameters that define this particular instance of a virtual
+cluster.   All these parameters are at level 2 of the yaml file
+under the key <code class="code docutils literal notranslate"><span class="pre">HPC_Cluster</span></code>.</p></li>
+</ol>
+</section>
+<section id="general-attributes">
+<h2>General attributes<a class="headerlink" href="#general-attributes" title="Permalink to this heading"></a></h2>
+<section id="file-parameters">
+<h3>File parameters<a class="headerlink" href="#file-parameters" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p><em>container</em>  path to the file created by running <code class="code docutils literal notranslate"><span class="pre">apptainer</span> <span class="pre">build</span></code>.</p></li>
+<li><p><em>working_directory</em>  should be the path to the working directory for this
+project.  This is the directory a job script would usually run a
+cd command to make it the current directory for the job.  It is needed in this
+context to assure the containers all are rooted at a common point.</p></li>
+<li><p><em>log_directory</em> will contain the log files created by the services run in
+the containers.</p></li>
+<li><p><em>database_directory</em>  data directory for MongoDB.  MongoDB stores is information
+in data files that live in this directory.  If the system has file systems with
+different speeds use the fastest available as database performance can usually
+io bound.</p></li>
+<li><p><em>worker_directory</em> worker containers require a scratch space to “spill” in some
+contexts when memory use is tight.  This directory should be unique to make it
+easy to clear this debris after a given run.</p></li>
+</ul>
+<section id="general-system-parameters">
+<h4>General system parameters<a class="headerlink" href="#general-system-parameters" title="Permalink to this heading"></a></h4>
+<ul class="simple">
+<li><p><em>workers_per_node</em> is the number of worker processes that should be launched
+on each dedicated, worker node.   In most cases this should be the number of
+cores per node.   When working with large ensembles we have found it helpful at
+times to reduce this number to avoid memory faults.</p></li>
+<li><p><em>primary_node_worker</em> if set nonzero a worker container with this many
+worker processes will be launched on the primary node.   This options is
+most useful on newer systems with enough cores that there are idle cpu cycles
+not consumed by the database or scheduler services that currently are always
+run on the primary node.</p></li>
+<li><p><em>cluster_subnet_name</em> is what the name implies.   Cluster nodes are
+normally connected in a common subnet and this should provide the name to
+allow the job components to communicate correctly.</p></li>
+<li><p><em>db_startup_delay</em> is the number of seconds to wait after launching the db
+container.   This is necessary because the MongoDB server startup is not trivial
+and many MsPASS jobs initiate a connection to MongoDB at the top of the
+run script.   The default is conservative, but for typical HPC jobs that can
+run for hours is relatively unimportant.</p></li>
+</ul>
+</section>
+</section>
+</section>
+<section id="hpc-cluster-parameters">
+<h2>HPC_cluster parameters<a class="headerlink" href="#hpc-cluster-parameters" title="Permalink to this heading"></a></h2>
+<p>This set of parameters must be found in the yaml file hierarchy under
+the key <em>HPC_cluster</em> as can be seen in the template file.</p>
+<ul class="simple">
+<li><p><em>job_scheduler</em> is the name of the job scheduler.  Currently the only
+job scheduler that has been tested with <code class="code docutils literal notranslate"><span class="pre">HPCClusterLauncher</span></code> is slurm.
+You may have to alter the python code of <code class="code docutils literal notranslate"><span class="pre">HPCClusterLauncher</span></code> if a
+different job scheduler is used on your cluster.</p></li>
+<li><p><em>primary_host</em>, <em>database_host</em>, <em>scheduler_host</em>, and <em>worker_hosts</em> should
+normally be set to “auto”.  When <em>primary_host</em> set to auto it is set to the
+first node returned by querying the job scheduler.
+If <em>database_host</em> or <em>scheduler_host</em> are set to “auto” that service will
+be run on the node set as primary.  When <em>worker_hosts</em> is set as “auto”
+worker containers with <em>workers_per_node</em> processes will be launched on
+all nodes not defined as the primary node.</p></li>
+<li><p><em>container_run_command</em> is the command string used to launch a container.</p></li>
+<li><p><em>container_run_args</em> is a string of secondary arguments required to launch
+a container.</p></li>
+<li><p><em>container_env_flag</em> is passed as a flag when launching containers
+to control what is launched.  As described in the section on the shell
+script launch option the service a container runs is defined by
+environment variable values passed with the <em>contaienr_run_command</em>.</p></li>
+<li><p><em>worker_run_command</em> is the command line program used to launch programs
+on other nodes.  Currently the only known mechanism is to use mpiexec.
+This attribute is an option only because some sites may use a special
+version of mpiexec that may have a different name.</p></li>
+<li><p><em>setup_tunnel</em> and <em>tunnel_setup_command</em> are linked. <em>tunnel_setup_command</em>
+is only used if <em>setup_tunnel</em> is set True.  The purpose of <em>tunnel_setup_command</em>
+is to enable external communications to MsPASS from outside the cluster,
+It is necessary to set this up if you want to connect to dask diagnostics
+or run an interactive job with one or more compute nodes. For guidance on
+how to construct this shell script look at the shell-based launchers
+found <a href="#id1"><span class="problematic" id="id2">`here on GitHub&lt;https://github.com/mspass-team/mspass/tree/master/scripts&gt;`__</span></a>.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The variables <em>container_run_command</em>, <em>container_run_args</em>, and
+<em>container_env_flag</em> in the template file work only for
+apptainer.  If using the older singularity implementation the
+syntax is identical but “apptainer” should change to “singularity”.
+The command line options for the two implementations are currently
+identical.   If a different container launcher is used at your site
+you may need to alter the python code of <code class="code docutils literal notranslate"><span class="pre">HPCClusterLauncher</span></code>.</p>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020-2021, Ian Wang.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

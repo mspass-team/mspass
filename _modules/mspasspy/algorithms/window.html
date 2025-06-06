@@ -49,13 +49,15 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
     
-              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Desktop Operation</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/quick_start.html">Getting Started in a Nutshell</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/run_mspass_with_docker.html">Run MsPASS with Docker</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_docker_compose.html">Deploy MsPASS with Docker Compose</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/mspass_desktop.html">Running MsPASS on a Desktop Computer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/command_line_desktop.html">Command Line Docker Desktop Operation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_conda.html">Deploy MsPASS with Conda</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_conda.html#advanced-setup-considerations">Advanced Setup Considerations</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Cluster Operations</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_on_HPC.html">Deploying MsPASS on an HPC cluster</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_conda_and_coiled.html">Deploy MsPASS with Conda and Coiled</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started/getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
@@ -92,6 +94,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/header_math.html">Header (Metadata) Math</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/graphics.html">Graphics in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/signal_to_noise.html">Signal to Noise Ratio Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/arrival_time_measurement.html">Arrival Time Measurement Techniques in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
@@ -178,6 +181,7 @@
 <span class="sd">    object that throws an exception this function will post the message</span>
 <span class="sd">    posted to all ensemble members.  It silently does nothing if the</span>
 <span class="sd">    ensemble is empty.</span>
+
 <span class="sd">    :param d: is the ensemble data to be handled.  It print and error message</span>
 <span class="sd">      and returns doing nothing if d is not one of the known ensemble</span>
 <span class="sd">      objects.</span>
@@ -463,6 +467,7 @@
 <span class="sd">    inside (inclusive of the endpoints) the range of the data.</span>
 
 <span class="sd">    Handling of &quot;short segments&quot; has these elements:</span>
+
 <span class="sd">    1.  If the window range is completely outside the range of</span>
 <span class="sd">        the data the result is always killed and returned</span>
 <span class="sd">        as a dead datum with no sample data. (d.npts=0)</span>
@@ -481,6 +486,9 @@
 <span class="sd">        the `short_segment_handling` string.  It must be</span>
 <span class="sd">        one of only three possible values or the function</span>
 <span class="sd">        will abort with a ValueError exception:</span>
+
+<span class="sd">        .. code-block:: text</span>
+
 <span class="sd">        &quot;kill&quot; - (default) does not recovery attempt and will</span>
 <span class="sd">                 kill any data with time inconsistencies.</span>
 <span class="sd">        &quot;truncate&quot; - this truncates to the output to the</span>
@@ -507,10 +515,10 @@
 
 <span class="sd">    Note:  This function should not normally be used.  WindowData</span>
 <span class="sd">    calls it directy for atomic inputs and adds only a tiny overhead.</span>
-<span class="sd">    It can still be used as long as you don&#39;t need object-level history.&#39;</span>
+<span class="sd">    It can still be used as long as you don&#39;t need object-level history.</span>
 
-<span class="sd">    :param d: is the input data.  d must be either a</span>
-<span class="sd">      :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`</span>
+<span class="sd">    :param d: is the input data.  d must be either</span>
+<span class="sd">      a :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`</span>
 <span class="sd">      object or the function will log an error to d and return a None.</span>
 <span class="sd">    :param twin_start: defines the start of timeWindow to be cut</span>
 <span class="sd">    :type twin_start: :class:`float`</span>
@@ -529,27 +537,31 @@
 <span class="sd">      was retained as the original api did not have the string</span>
 <span class="sd">      option.</span>
 <span class="sd">    :type t0shift:  real number (float) or a string that defines a</span>
-<span class="sd">    Metadata container key.</span>
+<span class="sd">      Metadata container key.</span>
 <span class="sd">    :param short_segment_handling: Defines method for handling data where</span>
-<span class="sd">    the requested interval is shorter than the requested window but does</span>
-<span class="sd">    have some overlap. `segment_handling_methods` must be one of the following:</span>
+<span class="sd">      the requested interval is shorter than the requested window but does</span>
+<span class="sd">      have some overlap. `segment_handling_methods` must be one of the following:</span>
+
+<span class="sd">      .. code-block:: text</span>
+
 <span class="sd">      `kill` - in this mode any issues cause the return to be marked dead</span>
 <span class="sd">               (this is the default)</span>
 <span class="sd">      &#39;pad&#39; -  in this mode return will have short segments will be padded</span>
 <span class="sd">               with zeros to define data of the required length.</span>
 <span class="sd">      &#39;truncate&#39; - in this mode short segments will be truncated on left</span>
 <span class="sd">                  and/or right to match actual data range.</span>
+
 <span class="sd">      Note that if the input time range does not overlap the requested</span>
-<span class="sd">      interval &quot;kiLl&quot; is always the behavior as by definition the result</span>
+<span class="sd">      interval &quot;kill&quot; is always the behavior as by definition the result</span>
 <span class="sd">      is null.</span>
 <span class="sd">    :type short_segment_handle:  string (from list above)  Default is &quot;kill&quot;.</span>
-<span class="sd">    Throws a ValueError exception of not one of the accepted values.</span>
+<span class="sd">      Throws a ValueError exception of not one of the accepted values.</span>
 <span class="sd">    :param log_recoverable_errors:  When True (default) any recoverable</span>
-<span class="sd">    windowing error (meaning at least a partial overlap in time range)</span>
-<span class="sd">    will cause a log message to be posted to the elog container of the</span>
-<span class="sd">    output.  When False recovery will be done silently.  Note when</span>
-<span class="sd">    `short_segment_handling` is set to &quot;kill&quot; logging is not optional and</span>
-<span class="sd">    kill will always create an error log entry.</span>
+<span class="sd">      windowing error (meaning at least a partial overlap in time range)</span>
+<span class="sd">      will cause a log message to be posted to the elog container of the</span>
+<span class="sd">      output.  When False recovery will be done silently.  Note when</span>
+<span class="sd">      `short_segment_handling` is set to &quot;kill&quot; logging is not optional and</span>
+<span class="sd">      kill will always create an error log entry.</span>
 
 <span class="sd">    :return: copy of d with sample range reduced to twin range.  Returns</span>
 <span class="sd">      an empty version of the parent data type (default constructor) if</span>
@@ -749,6 +761,7 @@
 <span class="sd">    inside (inclusive of the endpoints) the range of the data.</span>
 
 <span class="sd">    Handling of &quot;short segments&quot; has these elements:</span>
+
 <span class="sd">    1.  If the window range is completely outside the range of</span>
 <span class="sd">        the data the result is always killed and returned</span>
 <span class="sd">        as a dead datum with no sample data. (d.npts=0)</span>
@@ -767,6 +780,9 @@
 <span class="sd">        the `short_segment_handling` string.  It must be</span>
 <span class="sd">        one of only three possible values or the function</span>
 <span class="sd">        will abort with a ValueError exception:</span>
+
+<span class="sd">        .. code-block:: text</span>
+
 <span class="sd">        &quot;kill&quot; - (default) does not recovery attempt and will</span>
 <span class="sd">                 kill any data with time inconsistencies.</span>
 <span class="sd">        &quot;truncate&quot; - this truncates to the output to the</span>
@@ -804,24 +820,24 @@
 <span class="sd">    Note the description of subsample time handling in the</span>
 <span class="sd">    related docstring for `WindowDataAtomic`.   For ensembles</span>
 <span class="sd">    each member output preserves subsample timing.</span>
-<span class="sd">    </span>
+
 <span class="sd">    Finally, how the function handles data marked dead is \</span>
-<span class="sd">    important.  For atomic data the is no complexity.  </span>
+<span class="sd">    important.  For atomic data the is no complexity.</span>
 <span class="sd">    dead is dead and the function just immediately returns</span>
-<span class="sd">    a reference to the input.  For ensembles some members </span>
-<span class="sd">    can be dead or the entire ensemble can be marked dead. </span>
+<span class="sd">    a reference to the input.  For ensembles some members</span>
+<span class="sd">    can be dead or the entire ensemble can be marked dead.</span>
 <span class="sd">    If the ensemble is marked dead the function immediately</span>
-<span class="sd">    returns a reference to the input.  If any members are </span>
-<span class="sd">    dead the result will depend on the boolean argument </span>
-<span class="sd">    &quot;retain_data_members&quot;.  When True (the default) dead </span>
-<span class="sd">    members will be copied verbatim to the output.   </span>
-<span class="sd">    If False the dead members will be SILENTLY deleted.  </span>
-<span class="sd">    The False option is only recommended if the windowing is </span>
-<span class="sd">    internal to a function and the windowed output will be </span>
-<span class="sd">    discarded during processing.  Otherwise the error log of why </span>
-<span class="sd">    data were killed will be lost.   If you need to save </span>
-<span class="sd">    memory by clearing dead bodies use the `Undertaker` </span>
-<span class="sd">    class to bury the dead and retain the error log data.  </span>
+<span class="sd">    returns a reference to the input.  If any members are</span>
+<span class="sd">    dead the result will depend on the boolean argument</span>
+<span class="sd">    &quot;retain_data_members&quot;.  When True (the default) dead</span>
+<span class="sd">    members will be copied verbatim to the output.</span>
+<span class="sd">    If False the dead members will be SILENTLY deleted.</span>
+<span class="sd">    The False option is only recommended if the windowing is</span>
+<span class="sd">    internal to a function and the windowed output will be</span>
+<span class="sd">    discarded during processing.  Otherwise the error log of why</span>
+<span class="sd">    data were killed will be lost.   If you need to save</span>
+<span class="sd">    memory by clearing dead bodies use the `Undertaker`</span>
+<span class="sd">    class to bury the dead and retain the error log data.</span>
 
 <span class="sd">    :param d: is the input data.  d must be either a</span>
 <span class="sd">      :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`</span>
@@ -843,40 +859,44 @@
 <span class="sd">      was retained as the original api did not have the string</span>
 <span class="sd">      option.</span>
 <span class="sd">    :type t0shift:  real number (float) or a string that defines a</span>
-<span class="sd">    Metadata container key.</span>
+<span class="sd">      Metadata container key.</span>
 <span class="sd">    :param short_segment_handling: Defines method for handling data where</span>
-<span class="sd">    the requested interval is shorter than the requested window but does</span>
-<span class="sd">    have some overlap. `segment_handling_methods` must be one of the following:</span>
-<span class="sd">      `kill` - in this mode any issues cause the return to be marked dead</span>
-<span class="sd">               (this is the default)</span>
-<span class="sd">      &#39;pad&#39; -  in this mode return will have short segments will be padded</span>
-<span class="sd">               with zeros to define data of the required length.</span>
-<span class="sd">      &#39;truncate&#39; - in this mode short segments will be truncated on left</span>
-<span class="sd">                  and/or right to match actual data range.</span>
+<span class="sd">      the requested interval is shorter than the requested window but does</span>
+<span class="sd">      have some overlap. `segment_handling_methods` must be one of the following:</span>
+
+<span class="sd">      .. code-block:: text</span>
+
+<span class="sd">        `kill` - in this mode any issues cause the return to be marked dead</span>
+<span class="sd">                 (this is the default)</span>
+<span class="sd">        &#39;pad&#39; -  in this mode return will have short segments will be padded</span>
+<span class="sd">                 with zeros to define data of the required length.</span>
+<span class="sd">        &#39;truncate&#39; - in this mode short segments will be truncated on left</span>
+<span class="sd">                    and/or right to match actual data range.</span>
+
 <span class="sd">      Note that if the input time range does not overlap the requested</span>
 <span class="sd">      interval &quot;kiLl&quot; is always the behavior as by definition the result</span>
 <span class="sd">      is null.</span>
 <span class="sd">    :type short_segment_handle:  string (from list above)  Default is &quot;kill&quot;.</span>
-<span class="sd">    Throws a ValueError exception of not one of the accepted values.</span>
+<span class="sd">      Throws a ValueError exception of not one of the accepted values.</span>
 <span class="sd">    :param log_recoverable_errors:  When True (default) any recoverable</span>
-<span class="sd">    windowing error (meaning at least a partial overlap in time range)</span>
-<span class="sd">    will cause a log message to be posted to the elog container of the</span>
-<span class="sd">    output.  When False recovery will be done silently.  Note when</span>
-<span class="sd">    `short_segment_handling` is set to &quot;kill&quot; logging is not optional and</span>
-<span class="sd">    kill will always create an error log entry.</span>
+<span class="sd">      windowing error (meaning at least a partial overlap in time range)</span>
+<span class="sd">      will cause a log message to be posted to the elog container of the</span>
+<span class="sd">      output.  When False recovery will be done silently.  Note when</span>
+<span class="sd">      `short_segment_handling` is set to &quot;kill&quot; logging is not optional and</span>
+<span class="sd">      kill will always create an error log entry.</span>
 <span class="sd">    :param overwrite_members:   controls handling of the member vector of</span>
-<span class="sd">    ensembles as described above.  When True the member atomic data will</span>
-<span class="sd">    be overwritten by the windowed version and the ensmble returned will</span>
-<span class="sd">    be a reference to the same container as the input.  When False</span>
-<span class="sd">    (the default) a new container is created and returned.  Note in that</span>
-<span class="sd">    mode dead data are copied to the same slot as the input unaltered.</span>
-<span class="sd">    This argument will be silently ignored if the input is an atomic</span>
-<span class="sd">    MsPASS seismic object.</span>
+<span class="sd">      ensembles as described above.  When True the member atomic data will</span>
+<span class="sd">      be overwritten by the windowed version and the ensmble returned will</span>
+<span class="sd">      be a reference to the same container as the input.  When False</span>
+<span class="sd">      (the default) a new container is created and returned.  Note in that</span>
+<span class="sd">      mode dead data are copied to the same slot as the input unaltered.</span>
+<span class="sd">      This argument will be silently ignored if the input is an atomic</span>
+<span class="sd">      MsPASS seismic object.</span>
 <span class="sd">    :type overwrite_members:  boolean</span>
-<span class="sd">    :param retain_dead_members:   Controls how dead data are handled with </span>
-<span class="sd">    ensembles.  When True (default) dead ensemble members are copied verbatim </span>
-<span class="sd">    to the output.  When False they are silently deleted. (see above for </span>
-<span class="sd">    a more complete description).  This argument is ignored for Atomic data.</span>
+<span class="sd">    :param retain_dead_members:   Controls how dead data are handled with</span>
+<span class="sd">      ensembles.  When True (default) dead ensemble members are copied verbatim</span>
+<span class="sd">      to the output.  When False they are silently deleted. (see above for</span>
+<span class="sd">      a more complete description).  This argument is ignored for Atomic data.</span>
 <span class="sd">    :type retain_dead_members: boolean</span>
 <span class="sd">    :param object_history: boolean to enable or disable saving object</span>
 <span class="sd">      level history.  Default is False.  Note this functionality is</span>
@@ -1007,20 +1027,20 @@
 
 <span class="sd">    :param d:  atomic MsPASS seismic data object to be windowed.</span>
 <span class="sd">    :type d:  works with either `TimeSeries` or `Seismogram`</span>
-<span class="sd">    objects.  Will raise a TypeError exception if d is not one of</span>
-<span class="sd">    the two atomic data types.</span>
+<span class="sd">      objects.  Will raise a TypeError exception if d is not one of</span>
+<span class="sd">      the two atomic data types.</span>
 <span class="sd">    :param stime:  start time of window range</span>
 <span class="sd">    :type stime:  float</span>
 <span class="sd">    :param etime:  end time of window range</span>
 <span class="sd">    :type etime:  float</span>
 <span class="sd">    :param pad_fraction_cutoff:  limit for the</span>
-<span class="sd">    fraction of data with undefined values before the datum is</span>
-<span class="sd">    killed.   (see above)  If set to 0.0 this is an expensive way</span>
-<span class="sd">    to behave the same as WindowData</span>
+<span class="sd">      fraction of data with undefined values before the datum is</span>
+<span class="sd">      killed.   (see above)  If set to 0.0 this is an expensive way</span>
+<span class="sd">      to behave the same as WindowData</span>
 <span class="sd">    :return:  object of the same type as d.   Will be marked dead</span>
-<span class="sd">    if the fraction of undefined data exceeds pad_fraction_cutoff.</span>
-<span class="sd">    Otherwise will return a data vector of constant size that may</span>
-<span class="sd">    be padded.</span>
+<span class="sd">      if the fraction of undefined data exceeds pad_fraction_cutoff.</span>
+<span class="sd">      Otherwise will return a data vector of constant size that may</span>
+<span class="sd">      be padded.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="p">(</span><span class="n">TimeSeries</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">)):</span>
         <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;WindowData_autopad:  arg0 must be either a TimeSeries or Seismogram object.  Actual type=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
@@ -1079,11 +1099,13 @@
 
 <span class="sd">    This algorithm treats two conditions as a fatal error and will throw</span>
 <span class="sd">    a MsPASSError when the condition occurs:</span>
+
 <span class="sd">        1.   It checks that the input array of TimeSeries data are in</span>
 <span class="sd">             time order.</span>
 <span class="sd">        2.   It checks that the inputs all have the same sample rate.</span>
 <span class="sd">        3.   If fix_overlaps is False if an overlap is found it</span>
 <span class="sd">             is considered an exception.</span>
+
 <span class="sd">    Either of these conditions will cause the function to throw an</span>
 <span class="sd">    exception.  The assumption is that either is a user error created</span>
 <span class="sd">    by failing to reading the directions that emphasize this requirement</span>
@@ -1091,6 +1113,7 @@
 
 <span class="sd">    Other conditions can cause the output to be marked dead with an</span>
 <span class="sd">    error message posted to the output&#39;s elog attribute.  These are:</span>
+
 <span class="sd">        1.  This algorithm aims to produce an output with data stored in</span>
 <span class="sd">            a continuous vector with a length defined by the total time</span>
 <span class="sd">            span of the input.  Naive use can create enormously long</span>
@@ -1112,6 +1135,7 @@
 <span class="sd">    involked that is a C++ function with the name &quot;repair_overlaps&quot;.</span>
 <span class="sd">    The function was designed only to handle the following common</span>
 <span class="sd">    situations.  How they are handled is different for each situation.</span>
+
 <span class="sd">        1.  Duplicate waveform segments spanning a common time interval</span>
 <span class="sd">            can exist in raw data and accidentally by indexing two copies</span>
 <span class="sd">            the same data.   If the samples in the overlapping section</span>
@@ -1145,7 +1169,11 @@
 <span class="sd">    gap is defined in this algorithm as any section where the endtime of</span>
 <span class="sd">    one segment is followed by a start time of the next segment that is</span>
 <span class="sd">    more than 1 sample in duration.  Specifically when</span>
+
+<span class="sd">    .. code-block:: text</span>
+
 <span class="sd">       (segment[i+1].t0()-segment[i].endtime()) &gt; 1.5*dt</span>
+
 <span class="sd">    The result depends on values of the (optional) windowing arguments</span>
 <span class="sd">    starttime and endtime and the boolean &quot;zero_gaps&quot; argument.</span>
 <span class="sd">    If windowing is enabled (done by changing</span>
@@ -1173,7 +1201,11 @@
 <span class="sd">      many may find it more convenient to bundle data into a TimeSeriesEnsemble</span>
 <span class="sd">      and use the member attribute of the ensemble as the input.</span>
 <span class="sd">      i.e. if ens is a TimeSeriesEnsemble use something like this:</span>
+
+<span class="sd">      .. code-block:: text</span>
+
 <span class="sd">           outdata = merge(ens.member)</span>
+
 <span class="sd">    :param starttime: (optional) start time to apply for windowing the</span>
 <span class="sd">      output.  Default is None which means the output will be created</span>
 <span class="sd">      as the merge of all the inputs.  When set WindowData is applied</span>
@@ -1200,12 +1232,11 @@
 <span class="sd">      gap positions posted to the Metadata of the output.  See above</span>
 <span class="sd">      for details.</span>
 <span class="sd">    :param zero_gaps:  boolean controlling how gaps are to be handled.</span>
-<span class="sd">    See above for details of the algorithm.</span>
+<span class="sd">      See above for details of the algorithm.</span>
 <span class="sd">    :type zero_gaps:  boolean (default False)</span>
 <span class="sd">    :param object_history: boolean to enable or disable saving object</span>
 <span class="sd">      level history.  Default is False.  Note this functionality is</span>
 <span class="sd">      implemented via the mspass_func_wrapper decorator.</span>
-
 <span class="sd">    :return: TimeSeries in the range defined by the time span of the input</span>
 <span class="sd">      vector of segments or if starttime or endtime are specified a reduced</span>
 <span class="sd">      time range.  The result may be marked dead for a variety of reasons</span>
@@ -1356,6 +1387,7 @@
 <span class="sd">        reason is in that situation the data would be completely zeroed</span>
 <span class="sd">        anyway and it is better to define it dead and leave an error message</span>
 <span class="sd">        than to completely null data.</span>
+
 <span class="sd">        :param d:  input atomic MsPASS data object (TimeSeries or Seismogram)</span>
 <span class="sd">        :object_history:  It set true the function will add define this</span>
 <span class="sd">          step as an map operation to preserve object level history.</span>

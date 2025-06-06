@@ -1,0 +1,814 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Arrival Time Measurement Techniques in MsPASS &mdash; MsPASS 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=f6245a2f"></script>
+      <script src="../_static/doctools.js?v=888ff710"></script>
+      <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=f281be69"></script>
+      <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Adapting an Existing Algorithm to MsPASS" href="adapting_algorithms.html" />
+    <link rel="prev" title="Signal to Noise Ratio Estimation" href="signal_to_noise.html" />  
+
+  <style>
+    .wy-nav-content { max-width: 1600px; }
+  </style>
+
+  
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            MsPASS
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Desktop Operation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/mspass_desktop.html">Running MsPASS on a Desktop Computer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/command_line_desktop.html">Command Line Docker Desktop Operation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda.html">Deploy MsPASS with Conda</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda.html#advanced-setup-considerations">Advanced Setup Considerations</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Cluster Operations</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_HPC.html">Deploying MsPASS on an HPC cluster</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda_and_coiled.html">Deploy MsPASS with Conda and Coiled</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Data Management</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="database_concepts.html">Database Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="normalization.html">Normalization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="importing_tabular_data.html">Importing Tabular Data</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Seismic Data Objects</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="data_object_design_concepts.html">Data Object Design Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="numpy_scipy_interface.html">Using numpy/scipy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="obspy_interface.html">Using ObsPy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="time_standard_constraints.html">Time Standard Constraints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="processing_history_concepts.html">Processing History Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="continuous_data.html">Continuous Data Handling with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="schema_choices.html">What database schema should I use?</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Data Processing</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="algorithms.html">Algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="importing_data.html">Importing Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="handling_errors.html">Handling Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_editing.html">Data Editing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cleaning_metadata.html">Cleaning Inconsistent Metadata</a></li>
+<li class="toctree-l1"><a class="reference internal" href="header_math.html">Header (Metadata) Math</a></li>
+<li class="toctree-l1"><a class="reference internal" href="graphics.html">Graphics in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="signal_to_noise.html">Signal to Noise Ratio Estimation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Arrival Time Measurement Techniques in MsPASS</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#gary-l-pavlis"><em>Gary L. Pavlis</em></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#teleseismic-arrival-time-measurement">Teleseismic Arrival Time Measurement</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#fundamentals">Fundamentals</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#mspass-multichannel-correlation-method">MsPASS Multichannel Correlation Method</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#data-preparation">Data Preparation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#algorithm-background">Algorithm Background</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mspass-automation">MsPASS Automation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#teleseismic-p-wave-automatation">Teleseismic P-wave automatation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#robust-stacking">Robust stacking</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#examples">Examples</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#local-earthquake-arrival-time-measurement">Local Earthquake Arrival Time Measurement</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id4">Fundamentals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#obspy-picking">Obspy Picking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#monitoring-network-software">Monitoring Network Software</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mspass-phasenet-picking">MsPASS Phasenet Picking</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="parallel_processing.html">Parallel Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="memory_management.html">Memory Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="io.html">I/O in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parallel_io.html">Parallel IO in MsPASS</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">FAQ</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="FAQ.html">Frequency Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development_strategies.html">How do I develop a new workflow from scratch?</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../python_api/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cxx_api/index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mspass_schema/mspass_schema.html">MsPASS Schema</a></li>
+</ul>
+
+    <a href= "../genindex.html">Index</a>
+  
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">MsPASS</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Arrival Time Measurement Techniques in MsPASS</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/mspass-team/mspass/blob/master/docs/source/user_manual/arrival_time_measurement.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="arrival-time-measurement-techniques-in-mspass">
+<span id="arrival-time-measurement"></span><h1>Arrival Time Measurement Techniques in MsPASS<a class="headerlink" href="#arrival-time-measurement-techniques-in-mspass" title="Permalink to this heading"></a></h1>
+<section id="gary-l-pavlis">
+<h2><em>Gary L. Pavlis</em><a class="headerlink" href="#gary-l-pavlis" title="Permalink to this heading"></a></h2>
+</section>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this heading"></a></h2>
+<p>Arrival time measurements are the oldest and most fundamental data of
+seismology.  They are the fundamental data used to produce all
+current generation earthquake catalogs and were used in one
+way or the other in everything we know about earth structure
+from seismic waves.  There are two fundamentally different
+problems a research computing framework like MsPASS needs to address
+to support the near universal dependence of seismology research on
+arrival time data:</p>
+<ol class="arabic simple">
+<li><p>Data management tools to efficiently handle all types of timing data.</p></li>
+<li><p>Tools to measure timing relationships from waveform data.
+Note there are two classes of timing measurements that we
+need to handle:  (a) absolute time tags like traditional
+phase picks, and (b)relative timing relationships between parts of the
+same waveform or between two or more different waveforms.</p></li>
+</ol>
+<p>For item 1, the fact that timing data of one kind or another are a universal
+concept of seismology means that every scientist has a set of both
+specialized and generic tools they use for handling their data.
+For that reason the role MsPASS can play for most people is as a tool
+for low-level data handling used in combination with one or more
+other tools they use as a component of their research.   For that reason
+much of the issue with item 1 is an import/export problem.  One of
+the most important features of the MongoDB database in MsPASS is the
+complete flexibility it provides in what it stores.  It provides a
+generic way to store any format of timing data we have yet encountered.
+Every source we know of stores such data either as a set of text
+files or as tables in a relational database.   Import/export of such
+data is discussed in the <a class="reference internal" href="importing_tabular_data.html#importing-tabular-data"><span class="std std-ref">Importing Tabular Data</span></a>
+section of the MsPASS documentation.</p>
+<p>This section is focused mainly on item 2.  That is, it describes tools in MsPASS
+for creating arrival time measurements from waveform data.  We emphasize,
+on the other hand, that there are multiple commerical and open-source systems for
+processing and data management of traditional earthquake monitoring
+networks.  We view the problem of earthquake catalog generation a solved
+problem best done by one those systems that were designed specifically
+to do that job well.   MsPASS is a system for more specialized research
+problems.  The tools currently available are:</p>
+<ol class="arabic simple">
+<li><p>A multichannel correlation algorithm building on earlier work by
+<a class="reference external" href="https://doi.org/10.1016/j.cageo.2009.10.008">Pavlis and Vernon (2011)</a>.
+That algorithm can be used for estimating travel time residuals
+for teleseismic phases.  It also computes a robust stack of the
+inputs after they are time aligned by cross-correlation.  It differs
+from the original application as it is designed for automated
+processing while the original application was used with an integrated
+graphical user interface.</p></li>
+<li><p>Obspy has several picking method described
+<a class="reference external" href="https://docs.obspy.org/tutorial/code_snippets/trigger_tutorial.html">here</a>.
+Below we discuss how they can be used with data managed by MsPASS.</p></li>
+<li><p>TODO:  depending on progress note new phasenet implementation.</p></li>
+</ol>
+<p>The rest of this section has subsections on each of the items above.</p>
+</section>
+<section id="teleseismic-arrival-time-measurement">
+<h2>Teleseismic Arrival Time Measurement<a class="headerlink" href="#teleseismic-arrival-time-measurement" title="Permalink to this heading"></a></h2>
+<section id="fundamentals">
+<h3>Fundamentals<a class="headerlink" href="#fundamentals" title="Permalink to this heading"></a></h3>
+<p>There are some fundamental properties of teleseismic body-wave data
+that any algorithm for working with such signals has be aware:</p>
+<ol class="arabic simple">
+<li><p>Teleseismic body-wave signals vary in space at spatial scales far larger than
+signals from local and regional events.  The reasons are a fundamental
+property of the earth and a topic outside the scope of this manual.
+The key fact, however, is that coherent processing of signals from local
+and regional events can only be done over the scale of one or two
+wavelengths.  In constrast, many studies demonatrate coherent processing of
+teleseismic P and S waves are possible over distances of thousands of
+kilometers, which correspond to hundreds of wavelengths.</p></li>
+<li><p>The combination of source spectrum dependence on magnitude and
+the strong frequency dependence of the microseisms
+create variations in data spectra that can create
+large errors in measurements if not handled
+properly.  One perspective is that a large fraction of traditional signal
+processing algorithms inherited from oil and gas processing have explicit
+or implicit assumptions that noise is “white”.   Modern broadband
+data noise is anything but white.   It is very “colored” by
+microseisms.  Similarly, traditional algorithms from oil and gas
+processing have an implict assumption the source is constant for
+all data.  That is rarely true with earthquake data (the only
+exception is repeating earthquakes).  As a result a fundamental
+thing teleseismic processing must handle is that the
+the optimal bandwidth for signal processing
+is always dependent on earthquake magnitude and the noise
+spectrum of the seismic station being analyzed.</p></li>
+</ol>
+<p>A corollary of item 2 is that any any automated
+processing algorithm needs to be “robust”.  In this case that means
+it will automatically handle a mix of data of variable quality
+and extreme outliers.  In my experience automated arrival time
+estimation of any type can be treated as two different problems
+best handled by different processing algorithms:</p>
+<ol class="arabic simple">
+<li><p>Automated discarding of the lost causes.  Data can be a lost
+cause for a long list of reasons from the completely dead channel
+or always noisy channel to a one-up problem created by some
+local noise source the overwhelms the signal you want to see
+during a time window of interest.</p></li>
+<li><p>Robust handling of data with signals of variable quality.  For the largest
+earthquakes this is a minor concern.  The issue is fundamental, however,
+for the smallest events that may have usable signals only on a fraction
+of the receivers being processed.   Unfortunately, due the magnitude
+frequency relationship there are always far more of the marginal
+signals to handle than the larger, easier ones.</p></li>
+</ol>
+<p>The approach in MsPASS is shaped by my experience in developing and using
+the <em>dbxcor</em> program described in
+<a class="reference external" href="https://doi.org/10.1016/j.cageo.2009.10.008">Pavlis and Vernon (2011)</a>.
+In <em>dbxcor</em> we addressed both of these issues with the graphical user
+interface.  The key idea was to iteratively improve a stack of the
+array data by repeating the steps of (a) compute a robust stack,
+(b) sort by some quality metric, (c) kill the junk, and repeat until
+satisified.   MsPASS provides tools for accomplishing that same
+process in an automated workflow.  Examples showing how the tools
+can be linked together to accomplish that are found in mspass tutorials.
+I would emphasize, however, the tools there are not the last word on this
+problem and creative solutions are needed to improve performance and
+efficiency.   In particular, using machine learning to auto-edit
+data is an obvious and likely valuable way to accomplish auto-editing.</p>
+</section>
+</section>
+<section id="mspass-multichannel-correlation-method">
+<h2>MsPASS Multichannel Correlation Method<a class="headerlink" href="#mspass-multichannel-correlation-method" title="Permalink to this heading"></a></h2>
+<section id="data-preparation">
+<h3>Data Preparation<a class="headerlink" href="#data-preparation" title="Permalink to this heading"></a></h3>
+<p>An assumption of the multichannel correlation algorithm in MsPASS is that the
+data have been preprocessed through some variation of the following
+steps:</p>
+<ol class="arabic simple">
+<li><p>The working dataset is a version of a common-source gather.  By that
+I mean the data set is indexed in a way that all the waveforms linked to
+a particular seismic source can be assembled into a set of ensembles.
+For parallel processing that means the data set is an RDD/bag of ensembles.   The
+members of the ensembles are assumed to span a time range around the
+seismic phase that is to be analyzed.</p></li>
+<li><p>All waveforms are <a class="reference internal" href="normalization.html#normalization"><span class="std std-ref">normalized</span></a> that will allow load source and
+receiver coordinates to be loaded from the database during
+the initial read operation or within the workflow when needed.</p></li>
+<li><p>Although not required, I have found that in practice all
+waveforms in the ensemble should normally have some basic low-level processing.
+For high quality data like USArray data that can be as simple as
+demean and scaling the data by a constant to compensate for gain
+variations.  For more heterogenous data a more sophisticated response
+correction may be necessary to assure the data are all normalized to
+a common response.</p></li>
+<li><p>The data are required to be resampled to a common sample rate to
+run the main processor called
+<a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.MCXcorStacking.align_and_stack" title="mspasspy.algorithms.MCXcorStacking.align_and_stack"><code class="xref py py-func docutils literal notranslate"><span class="pre">align_and_stack</span></code></a>.
+The generic MsPASS function to accomplish this task is
+called <a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.resample.resample" title="mspasspy.algorithms.resample.resample"><code class="xref py py-func docutils literal notranslate"><span class="pre">resample</span></code></a>.</p></li>
+<li><p>Time tags need to be defined in the Metadata container of
+each waveform to define at least
+an initial estimate of the arrival time of the phase of interest.
+These can be previously measured arrivals that are to be refined or
+model-based estimates computed from source coordinates, receiver coordinates,
+and an earth model.  The MsPASS tutorial notebooks contain
+many examples of how to do this using obspy’s tau-p travel time
+calculator.</p></li>
+<li><p>The data should be shifted from UTC times to what in the
+docstrings we call the “arrival time refernence” frame.   That is,
+we expect the data have been shifted with the function
+<code class="xref py py-func docutils literal notranslate"><span class="pre">ator&lt;mspasspy.alorithms.basic.ator()</span></code> with the shift
+time as the initial arrival time estimate set previously.
+That means a plot using the <cite>time_axis_method</cite> for each atomic
+datum will have 0 as the initial arrival time estimate.</p></li>
+<li><p>The working ensembles are
+<code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeriesEnsemble&lt;mspasspy.ccore.seismic.TimeSeriesEnsemble</span></code>
+objects containing a component of data appropriate for the phase
+being analyzed.   For P data that can be simple vertical components
+while for S it always demands the data were processed to
+<a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">Seismogram</span></code></a> objects
+and oriented to radial or transverse components.  For most modern
+data I would recommend all data be assembled to begin with as
+<code class="xref py py-class docutils literal notranslate"><span class="pre">SeismogramEnsemble&lt;mspasspy.ccore.seismic.SeismogramEnsemble</span></code>
+objects, rotated to LQT or with the
+<a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.basic.free_surface_transformation" title="mspasspy.algorithms.basic.free_surface_transformation"><code class="xref py py-func docutils literal notranslate"><span class="pre">free_surface_transformation</span></code></a>
+operator, and then the approprate component extracted using the
+<code class="xref py py-func docutils literal notranslate"><span class="pre">ExtractComponent&lt;mpsasspy.algorithms.basic.ExtractComponent()</span></code>
+function.</p></li>
+<li><p>The data should be passed through the algorithm called
+<a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.snr.broadband_snr_QC" title="mspasspy.algorithms.snr.broadband_snr_QC"><code class="xref py py-func docutils literal notranslate"><span class="pre">broadband_snr_QC</span></code></a>.
+That function computes Metadata attributes that
+are required for two purposes described below:
+(a) a single value that can be used as he “best” signal used as a
+seed for the multichannel algorithm, and (b) a pair of attributes that
+can be used to filter the data to an optimal frequency band for
+each ensemble.   Plug in replacements are possible but would
+require careful looks at the python functions that utilize those
+attributes in the <cite>MCXcorStacking</cite> module.</p></li>
+</ol>
+</section>
+<section id="algorithm-background">
+<h3>Algorithm Background<a class="headerlink" href="#algorithm-background" title="Permalink to this heading"></a></h3>
+<p>The top-level function for processing teleseismic body waves is
+<a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.MCXcorStacking.align_and_stack" title="mspasspy.algorithms.MCXcorStacking.align_and_stack"><code class="xref py py-func docutils literal notranslate"><span class="pre">align_and_stack</span></code></a>.
+As the name suggests, it does two distinctly different tasks:</p>
+<ol class="arabic simple">
+<li><p>Aligns a set of input waveforms by cross-correlation so all the waveforms
+match as closely as possible when plotted on a common, relative time base.
+(see e.g. Figure 1 of
+<a class="reference external" href="https://doi.org/10.1016/j.cageo.2009.10.008">Pavlis and Vernon (2011)</a>)</p></li>
+<li><p>Produce a robust stack of the time-aligned data.  After the first
+alignment stage the robust stack is used as the correlation reference.
+The algorithm name contains “MCXcor” which is shorthand for
+“Multichannel X(cross-)correlation” to contrast it with pairwise
+cross-correlation algorithms following the older work of
+<a href="#id5"><span class="problematic" id="id6">`VandeCarr and Crosson (1990)&lt;TODO:LOOK UP DOI&gt;`__</span></a>.</p></li>
+</ol>
+<p>Any user who needs to use the
+<a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.MCXcorStacking.align_and_stack" title="mspasspy.algorithms.MCXcorStacking.align_and_stack"><code class="xref py py-func docutils literal notranslate"><span class="pre">align_and_stack</span></code></a>
+function of MsPASS should plan to have a copy of the
+<a class="reference external" href="https://doi.org/10.1016/j.cageo.2009.10.008">Pavlis and Vernon (2011)</a>
+paper for reference.   The primary theory behind
+<a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.MCXcorStacking.align_and_stack" title="mspasspy.algorithms.MCXcorStacking.align_and_stack"><code class="xref py py-func docutils literal notranslate"><span class="pre">align_and_stack</span></code></a>
+is documented in that paper.
+There are, however, some large differences between the MsPASS
+implementation and the publication.
+<a class="reference external" href="https://doi.org/10.1016/j.cageo.2009.10.008">Pavlis and Vernon’s paper(2011)</a>
+describes an analyst tool for measuring teleseismic body wave phase arrival times using
+multichannel cross-correlation they called <em>dbxcor</em>.   <em>dbxcor</em> has an integrated
+grapical user interface that allows the user to set some key processing
+parameters interactively and graphically edit the data to discard
+bad and unacceptably noisy data.
+<a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.MCXcorStacking.align_and_stack" title="mspasspy.algorithms.MCXcorStacking.align_and_stack"><code class="xref py py-func docutils literal notranslate"><span class="pre">align_and_stack</span></code></a>,
+in contrast, was designed as a purely automated tool that could be
+applied to large data sets and produce quality results without any human
+intervention.  The next section documents the current algorithms used
+to automate what was done interactively in <em>dbxcor</em>.   Note this topic
+is a research area that could be improved with alternative algorithms.
+For example, it is an obvious candidate for machine learning.</p>
+</section>
+<section id="mspass-automation">
+<h3>MsPASS Automation<a class="headerlink" href="#mspass-automation" title="Permalink to this heading"></a></h3>
+<p>Adapting the algorithm of <em>dbxcor</em> to work as an automated tool required
+developing algorithms to define three key parameters <em>dbxcor</em> required
+the user to set via the graphical user interface:</p>
+<ol class="arabic simple">
+<li><p>The algorithm used for cross-correlation ultimately uses the
+array stack to correlate with each signal in an input
+<code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeriesEnsemble&lt;mspasspy.ccore.seismic.TimeSeriesEnsemble</span></code>.
+However, to start the interative sequence the input ensemble has
+to be time aligned to first order or the stack will be grossly distorted.
+<em>dbxcor</em> solved that issue by requiring the user to select the signal
+in the ensemble that would be used for initial correlations.
+The MsPASS implementation uses a python function in the module
+<cite>mspasspy.algorithms.deconvolution.MCXcorStacking</cite> called
+<code class="xref py py-func docutils literal notranslate"><span class="pre">extract_initial_beam_estimate</span></code>.
+That function is designed to use the output of the MsPASS function
+<a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.snr.broadband_snr_QC" title="mspasspy.algorithms.snr.broadband_snr_QC"><code class="xref py py-func docutils literal notranslate"><span class="pre">broadband_snr_QC</span></code></a>, which
+creates a “subdocument” (aka python dictionary) with a specified key
+containing a suite of waveform signal-to-noise estimate attributes.
+<code class="xref py py-func docutils literal notranslate"><span class="pre">extract_initial_beam_estimate</span></code>
+uses the datum with the largest value of specified attribute as the
+initial stack estimate.</p></li>
+<li><p>The algorithm requires a definition of what I call the
+<em>correlation time window</em>.   As noted above, the first stage of the
+multichannel algorithm is to align the data by cross-correlation
+with the current estimate of the stack (aka <em>beam</em> - a jargon
+term in array processing).  For automated processing it is never
+a good idea to use a fixed window that is the duration of the
+input signals for two reasons:  (a) variations in source properties
+(size, location, near source structure, and source complexity) drastically vary the
+optimal duration for correlation, and (b) interference from
+secondary phases (e.g. P or pP or even S for teleseismic P) is
+a nearly universal problem unless the initial data time span was
+carefully trimed previously.
+The MsPASS solution to setting this time window uses a coda duration
+estimation algorithm appropriate only for teleseismic P wave data.
+That function is used within the higher level function called
+<code class="xref py py-func docutils literal notranslate"><span class="pre">MCXcorPrepP</span></code>
+discussed below.  The algorithm used there automatically avoids
+interference from pP or P phases phases and sets the end time of the
+correlation window passed on a well established coda decay algorithm.
+Specifically, the envelope of each signal is computed and the algorithm
+searches backward in time until the envelop exceeds an amplitude
+threshold based on a specified signal-to-noise ratio.  In
+<code class="xref py py-func docutils literal notranslate"><span class="pre">MCXcorPrepP</span></code>
+the correlation window is derived from an average
+(multiple estimates of center are supported) coda duration from all
+ensemble members.</p></li>
+<li><p>The algorithm requires a different time indow that in our original
+paper we called the <em>robust time window</em>.   The <em>robust time window</em>
+is the time window used to define the robust stack I discuss below.
+The idea of the robust stack is to create a stack that automatically
+discards outliers and focuses on the better data while
+reducing the impact of low signal-to-noise data.
+Experience with <em>dbxcor</em> has shown that for reliable results the
+<em>robust time window</em> needs to be smaller than the time window
+defined for the <em>correlation time window</em>.  A rule of thumb I
+always suggested for interactive processing is to define the robust
+window as the first 2 or 3 cycles of the dominate frequency of the
+phase being analyzed.   For P wave data
+<code class="xref py py-func docutils literal notranslate"><span class="pre">MCXcorPrepP</span></code>
+standardizes this rule of thumb in an internal function called
+<code class="xref py py-func docutils literal notranslate"><span class="pre">compute_default_robust_window</span></code>.
+That algorithm is more-or-less a generalization of the “rule of thumb”
+I noted for dbxcor.  It sets the <em>robust window</em> as specified number of
+cycles of an input frequency.  I recommend that normally be set as the
+low frequency band edge computed by
+<a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.snr.broadband_snr_QC" title="mspasspy.algorithms.snr.broadband_snr_QC"><code class="xref py py-func docutils literal notranslate"><span class="pre">broadband_snr_QC</span></code></a>.
+An alternative appropriate for most data is a fixed time window spanning
+a time range from a small negative number large enough to exceed the
+maximum residual from earth model time estimates (typically from -2 to -1 s)
+to a few seconds (2 or 3 times the duration of the center frequency of the
+traditional short-period band).  A fixed window preforms well on smaller
+events that have significant signal only in the short period band but will
+work badly on large events.   As a result an alternative is to process the
+data with different robust window lengths for different magnitude ranges.</p></li>
+</ol>
+</section>
+</section>
+<section id="teleseismic-p-wave-automatation">
+<h2>Teleseismic P-wave automatation<a class="headerlink" href="#teleseismic-p-wave-automatation" title="Permalink to this heading"></a></h2>
+<p>For teleseismic P wave data the above automated algorithms are encapsulated in a single
+function called
+<code class="xref py py-func docutils literal notranslate"><span class="pre">MCXcorPrepP</span></code>.
+It provides a top-level interface for automatically setting the required
+inputs to run the
+<code class="xref py py-func docutils literal notranslate"><span class="pre">align_and_stack</span></code>
+function.
+The parameters this function defines are discussed in the section above.
+See the docstring for the function for guidance on use and examples
+below and in the mspass tutorial repository.</p>
+</section>
+<section id="robust-stacking">
+<h2>Robust stacking<a class="headerlink" href="#robust-stacking" title="Permalink to this heading"></a></h2>
+<p><code class="xref py py-func docutils literal notranslate"><span class="pre">align_and_stack</span></code>
+has several tuneable parameters that were a fixed constants in the original
+<em>dbxcor</em> program.   To understand the context it might be helpful
+show here the full function signature for <cite>align_and_stack</cite>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">align_and_stack</span><span class="p">(</span>
+  <span class="n">ensemble</span><span class="p">,</span>
+  <span class="n">beam</span><span class="p">,</span>
+  <span class="n">correlation_window</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+  <span class="n">correlation_window_keys</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;correlation_window_start&quot;</span><span class="p">,</span> <span class="s2">&quot;correlation_window_end&quot;</span><span class="p">],</span>
+  <span class="n">window_beam</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+  <span class="n">robust_stack_window</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+  <span class="n">robust_stack_window_keys</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;robust_window_start&quot;</span><span class="p">,</span> <span class="s2">&quot;robust_window_end&quot;</span><span class="p">],</span>
+  <span class="n">robust_stack_method</span><span class="o">=</span><span class="s2">&quot;dbxcor&quot;</span><span class="p">,</span>
+  <span class="n">use_median_initial_stack</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+  <span class="n">output_stack_window</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+  <span class="n">robust_weight_key</span><span class="o">=</span><span class="s2">&quot;robust_stack_weight&quot;</span><span class="p">,</span>
+  <span class="n">time_shift_key</span><span class="o">=</span><span class="s2">&quot;arrival_time_correction&quot;</span><span class="p">,</span>
+  <span class="n">time_shift_limit</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
+  <span class="n">abort_irregular_sampling</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+  <span class="n">convergence</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span>
+  <span class="n">residual_norm_floor</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+  <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+</pre></div>
+</div>
+<p>The parameters of note are:</p>
+<ol class="arabic simple">
+<li><p><em>use_median_initial_stack</em> sets what the rather verbose name implies.
+That is, by default the initial stack for each robust stack is
+the median stack of the ensemble time aligned to the beam computed
+in the previous iteration.  The default is known to be dead stable
+and is still recommended. When False the beam computed in the
+previous iteration is used as the initial stack estimate.</p></li>
+<li><p><em>residual_norm_floor</em> implements a concept not recognized when
+we developed the original <em>dbxcor</em> program.
+It relates to a
+subtle feature of the robust weighting scheme we discussed in
+the original paper but we didn’t realize then how the concept this
+parameter implements would impact the results.  In <em>dbxcor</em> it was
+fixed constant.  To understand its use this is the weight formula
+used in <cite>align_and_stack</cite> that is enabled when <em>robust_stack_method</em>
+is set to the (default) of “dbxcor”:</p></li>
+</ol>
+<div class="math notranslate nohighlight">
+\[w_i = \frac{1}{\| \mathbf{r}_i \|}
+\frac{\mid \mathbf{b} \cdot \mathbf{d}_i \mid}
+{ \| \mathbf{d}_i}\]</div>
+<p>where <span class="math notranslate nohighlight">\(\mathbf{r}_i = \mathbf{d}_i - (\mathbf{b} \cdot \mathbf{d}_i )\mathbf{b}\)</span>.
+As we noted in the original paper there can be an issue for very consistent
+data if <span class="math notranslate nohighlight">\(\mid \mathbf{r}_i \mid\)</span> gets too small.   A floor on that
+value is required, for example, with simulation data with no variance at all
+divide by zero floating point error.  There is a more subtle issue that we now
+know has a major impact on the result.  To understand why it is helpful to
+note something we didn’t recognize when the <em>dbxcor</em> paper was published.
+That is, the second term in the weight formula,
+<span class="math notranslate nohighlight">\(\frac{\mid \mathbf{b} \cdot \mathbf{d}_i \mid}{ \| \mathbf{d}_i}\)</span>,
+should be understood as the peak value of the cross-correlation function
+between the <span class="math notranslate nohighlight">\(i^{th}\)</span> datum
+with the beam (stack).   Hence, the <em>dbxcor</em> weight function is the
+product of the a cross-correlation weight and inverse of the residual norm term.
+As we noted in the original paper
+the residual term makes the weighting more aggressively
+downweight any datum that differs significantly from the stack
+That is desirable and a reason this algorithm can handle wildly variable
+quality data.  The dark side to recognize, however, is that it makes
+the result strongly history dependent.   The default behavior enabled by
+having <em>use_median_initial_stack</em> set True, is to produce a stack that
+is close to the median stack.   How “close” is controlled by the
+setting of <em>residual_norm_floor</em>.   When <em>residual_norm_floor</em> is
+1.0 the residual weighting term is disabled.  As you make the floor smaller
+and smaller the result will approach a pure median stack.  The default 0.1
+is appropriate for quality data.   For ensembles with a large fraction of
+marginal signals a smaller value may be appropriate.  More on this topic
+can be found in the (HYPERLINK) notebook that addresses this topic.  Finally,
+note that if <em>use_median_initial_stack</em> is set False and <em>residual_norm_floor</em>
+is small the stack will tend to converge to the signal the datum used as
+the initial beam (normally that selected by
+<code class="xref py py-func docutils literal notranslate"><span class="pre">MCXcorPrepP</span></code>).</p>
+<section id="examples">
+<h3>Examples<a class="headerlink" href="#examples" title="Permalink to this heading"></a></h3>
+<p>This example shows the skeleton of a
+serial job reading from data that were previously
+preprocessed to bundle data into <cite>Seismogram</cite> objects.
+It is a “skeleton” as it shows the typical steps to process
+data with the multichannel correlation algorithm, but is far
+from complete and untested.  The idea is you can use this as a
+starting point to work with your data set:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">prep_ensemble</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
+<span class="w">  </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">  Does requires preprocessing of an input SeismogramEnsemble.</span>
+<span class="sd">  This function is specialized to this workflow with</span>
+<span class="sd">  function call arguments fixed.   A more generic function</span>
+<span class="sd">  would use kwargs to change some arguments.</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+  <span class="n">qcnw</span> <span class="o">=</span> <span class="n">TimeWindow</span><span class="p">(</span><span class="o">-</span><span class="mf">120.0</span><span class="p">,</span><span class="o">-</span><span class="mf">5.0</span><span class="p">)</span>
+  <span class="n">qcsw</span> <span class="o">=</span> <span class="n">TimeWindow</span><span class="p">(</span><span class="o">-</span><span class="mf">5.0</span><span class="p">,</span><span class="mf">60.0</span><span class="p">)</span>
+  <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">member</span><span class="p">)):</span>
+    <span class="c1"># d is shorthand used for readability of this example</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
+      <span class="k">continue</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">rotate_to_standard</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+    <span class="c1"># assume default handling of input slowness using Metadata</span>
+    <span class="c1"># attributes ux an uy set previously</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">free_surface_transformation</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">vp0</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span><span class="n">vs0</span><span class="o">=</span><span class="mf">3.5</span><span class="p">)</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">broadband_snr_QC</span><span class="p">(</span><span class="n">d</span><span class="p">,</span>
+      <span class="n">noise_window</span><span class="o">=</span><span class="n">qcnw</span><span class="p">,</span>
+      <span class="n">signal_window</span><span class="o">=</span><span class="n">qcsw</span><span class="p">,</span>
+      <span class="n">use_measured_arrival_time</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+      <span class="n">measured_arrival_time_key</span><span class="o">=</span><span class="s2">&quot;Ptime&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">e</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="n">d</span>
+<span class="k">return</span> <span class="n">e</span>
+
+<span class="c1">######################### MAIN ############</span>
+<span class="c1"># assume db is Database handle object</span>
+<span class="n">site_matcher</span><span class="o">=</span><span class="n">ObjectIdMatcher</span><span class="p">(</span><span class="n">db</span><span class="p">,</span>
+  <span class="n">collection</span><span class="o">=</span><span class="s1">&#39;site&#39;</span><span class="p">,</span>
+  <span class="n">attributes_to_load</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;lat&#39;</span><span class="p">,</span><span class="s1">&#39;lon&#39;</span><span class="p">,</span><span class="s1">&#39;elev&#39;</span><span class="p">,</span><span class="s1">&#39;_id&#39;</span><span class="p">])</span>
+<span class="n">source_matcher</span><span class="o">=</span><span class="n">ObjectIdMatcher</span><span class="p">(</span><span class="n">db</span><span class="p">,</span>
+  <span class="n">collection</span><span class="o">=</span><span class="s1">&#39;source&#39;</span><span class="p">,</span>
+  <span class="n">attributes_to_load</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;lat&#39;</span><span class="p">,</span><span class="s1">&#39;lon&#39;</span><span class="p">,</span><span class="s1">&#39;depth&#39;</span><span class="p">,</span><span class="s1">&#39;time&#39;</span><span class="p">])</span>
+
+<span class="n">srcids</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_Seismogram</span><span class="o">.</span><span class="n">distinct</span><span class="p">(</span><span class="s1">&#39;source_id&#39;</span><span class="p">)</span>
+<span class="n">nw</span> <span class="o">=</span> <span class="n">TimeWindow</span><span class="p">(</span><span class="o">-</span><span class="mf">100.0</span><span class="p">,</span><span class="o">-</span><span class="mf">5.0</span><span class="p">)</span>
+<span class="c1"># code above would define a query and run find to generate cursor</span>
+<span class="k">for</span> <span class="n">sid</span> <span class="ow">in</span> <span class="n">srcids</span><span class="p">:</span>
+  <span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_Seismogram</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s1">&#39;source_id&#39;</span> <span class="p">:</span> <span class="n">sid</span><span class="p">})</span>
+  <span class="n">ens</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span><span class="n">cursor</span><span class="p">,</span>
+    <span class="n">collection</span><span class="o">=</span><span class="s1">&#39;wf_Seismogram&#39;</span><span class="p">,</span>
+    <span class="n">normalize</span><span class="o">=</span><span class="p">[</span><span class="n">site_matcher</span><span class="p">,</span><span class="n">source_matcher</span><span class="p">],</span>
+    <span class="p">)</span>
+  <span class="n">ens</span> <span class="o">=</span> <span class="n">prep_ensemble</span><span class="p">(</span><span class="n">ens</span><span class="p">)</span>
+  <span class="n">ens</span> <span class="o">=</span> <span class="n">ExtractComponent</span><span class="p">(</span><span class="n">ens</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+  <span class="n">ens</span> <span class="o">=</span> <span class="n">MCXcorPrepP</span><span class="p">(</span><span class="n">ens</span><span class="p">,</span>
+    <span class="n">nw</span><span class="p">,</span>
+    <span class="n">station_collection</span><span class="o">=</span><span class="s1">&#39;site&#39;</span><span class="p">,</span>
+  <span class="p">)</span>
+  <span class="n">beam</span> <span class="o">=</span> <span class="n">extract_initial_beam_estimate</span><span class="p">(</span><span class="n">ens</span><span class="p">)</span>
+  <span class="n">ens</span><span class="p">,</span><span class="n">beam</span> <span class="o">=</span> <span class="n">align_and_stack</span><span class="p">(</span><span class="n">ens</span><span class="p">,</span><span class="n">beam</span><span class="p">)</span>
+  <span class="n">db</span><span class="o">.</span><span class="n">save_data</span><span class="p">(</span><span class="n">ens</span><span class="p">,</span><span class="n">collection</span><span class="o">=</span><span class="s1">&#39;wf_TimeSeries&#39;</span><span class="p">,</span><span class="n">data_tag</span><span class="o">=</span><span class="s1">&#39;MCXcorProcessed&#39;</span><span class="p">)</span>
+  <span class="n">db</span><span class="o">.</span><span class="n">save_data</span><span class="p">(</span><span class="n">beam</span><span class="p">,</span><span class="n">collection</span><span class="o">=</span><span class="s1">&#39;wf_TimeSeries&#39;</span><span class="p">,</span><span class="n">data_tag</span><span class="o">=</span><span class="s1">&#39;MCXcorProcessed&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<section id="local-earthquake-arrival-time-measurement">
+<h4>Local Earthquake Arrival Time Measurement<a class="headerlink" href="#local-earthquake-arrival-time-measurement" title="Permalink to this heading"></a></h4>
+</section>
+</section>
+</section>
+<section id="id4">
+<h2>Fundamentals<a class="headerlink" href="#id4" title="Permalink to this heading"></a></h2>
+<p>Processing local earthquake data has similarities to processing
+teleseismic data, but there are some fundamental ones that
+require very different handling:</p>
+<ol class="arabic simple">
+<li><p>Local earthquake signals can only be processed by coherent signal
+processing methods like that used in
+<a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.MCXcorStacking.align_and_stack" title="mspasspy.algorithms.MCXcorStacking.align_and_stack"><code class="xref py py-func docutils literal notranslate"><span class="pre">align_and_stack</span></code></a>
+for dense arrays of stations.   For most of the Earth that means
+a group of instruments with an aperture of the order of 1 km or less.</p></li>
+<li><p>Common receiver gathers of sources located in a small volume of the
+order of a few square km can sometimes be processed with coherent
+processing like that used in
+<a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.MCXcorStacking.align_and_stack" title="mspasspy.algorithms.MCXcorStacking.align_and_stack"><code class="xref py py-func docutils literal notranslate"><span class="pre">align_and_stack</span></code></a>.
+In practice that tends to work only for events of a similar size and
+focal mechanism.</p></li>
+</ol>
+<p>An under-appreciated, in my opinion, fundamental property of the Earth
+is that local earthquake signals are so fundamentally different from
+teleseismic signals.   The reason is not actually known but the
+prevailing model is that waves with frequencies over around 1 Hz
+are more strongly scattered than the lower frequency signals
+that define teleseismic body wave phases.   There is indirect evidence
+that the crust and near-surface are the main source of the stronger
+scattering but that may be an observational gap due to the fact that
+no seismic sources have been observed from deeps deeper than around 600 km.
+In any case, from a data processing perspective, coherent
+wavefield processing of local earthquake data is rarely feasible and
+other approaches have proven more successful.  The methods currently
+available can be grouped into three broad categories:</p>
+<ol class="arabic simple">
+<li><p>Traditional analyst-based picking.  In the dark ages of seismology
+that means times measured from paper records.  In the digital data era that
+has always meant manual picks made from a computer screen with a
+graphical user interface.  That approach has been the bread-and-butter
+of seismic network operations worldwide for decades.</p></li>
+<li><p>Automated waveform processing methods using some for of <em>detector</em> and
+<em>associator</em>.   By <em>detector</em> I mean an algorithm like the tried and true
+sta/lta detector that has been the standard since the earliest days of
+digital seismic network operations.   A detector flags a signal transient
+based on looking at one and only one channel of data.  An <em>associator</em>
+is an algorithm that collects a group of <em>detector</em> outputs and
+makes a decision on which detections are possible seismic events
+that should be processed to estimate a possible location.   All modern
+associators have an integrated, fast preliminar earthquake location
+algorithm.   The net output is a preliminary earthquake location and
+the set of detections that are consistent with that location.  In
+almost all cases a large fraction of detections are discarded as
+spurious by a good associator.</p></li>
+</ol>
+<p>The detector/associator paradigm are the core functions of local and
+regional seismic network operations.  As stated multiple times in this
+User Manual, MsPASS was not designed to address the seismic network operation
+problem.  Multiple, robust software systems exist to address this problem
+both in the private and open-source worlds.  MsPASS views this a solved
+problem best handled by other tools if done on a large scale.  On the other hand,
+I know from experience a typical research problem may need to do some
+form of manual or automated picking of local earthquake data.  The
+remainder of this section addresses how MsPASS can be used in combination
+with some other packages for addressing that issue.</p>
+</section>
+<section id="obspy-picking">
+<h2>Obspy Picking<a class="headerlink" href="#obspy-picking" title="Permalink to this heading"></a></h2>
+<p>Obspy has no graphical analyst workstation for manual picks.
+They do support a fairly extensive set of <em>detector</em> functions and a
+crude <em>associator</em>.  Those are best understood by reading their
+<a class="reference external" href="https://docs.obspy.org/tutorial/code_snippets/trigger_tutorial.html">Tigger/Detector Tutorial</a>.
+In general obspy, like MsPASS, was not designed to handle network
+operations and is suitable only for handling small data sets with a
+lot of manual intervention to handle the deficiency of their
+associator.</p>
+</section>
+<section id="monitoring-network-software">
+<h2>Monitoring Network Software<a class="headerlink" href="#monitoring-network-software" title="Permalink to this heading"></a></h2>
+<p>A large fraction of research problems in seismology may need to
+use one of the specialized packages used for seismic network operations.
+At present the ones I know of are:</p>
+<ol class="arabic simple">
+<li><p>In the US scientists at academic institutions can obtain a license
+for the commercial package called
+<a class="reference external" href="https:www.brtt.com">antelope</a> provided they are not the operators
+of an operational seismic network.   Antelope has a full suite of
+network processing capabilities.  For research applications a particularly
+valuable feature is its capability to operate the real-time system on
+previously recorded data.   Antelope uses a nonstandard relational
+database called <cite>Datascope</cite> that uses ascii files to hold the
+relational database tables.   Because I am a long term user of
+Antelope I developed a specialized python class for handling
+these tables called
+<a class="reference internal" href="../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.datascope.DatascopeDatabase" title="mspasspy.preprocessing.css30.datascope.DatascopeDatabase"><code class="xref py py-class docutils literal notranslate"><span class="pre">DatascopeDatabase</span></code></a>.
+It can be used to import and internally manage antelope database
+tables.  How to do that is discussed in the
+<a class="reference internal" href="importing_tabular_data.html#importing-tabular-data"><span class="std std-ref">Importing Tabular Data</span></a>
+section of this manual.  Using Antelope for processing is a larger
+topic addressed in Antelope’s documentation.</p></li>
+<li><p><a class="reference external" href="http://www.earthwormcentral.org/">earthworm</a> is an open-source
+earthquake monitoring system used by most earthquake monitoring
+networks in the U.S. that are supported by the U.S. Geological Survey.
+Earthworm builds on several applications originally developed by
+the U.S. Geological Survey that have been around for decades.
+A type example is
+<a class="reference external" href="http://www.earthwormcentral.org/documentation4/USER_GUIDE/hypoinverse.html">Hypoinverse</a>.
+It also includes a suite of real-time applications maintained by a commercial
+company called <a class="reference external" href="https://www.isti.com/products-offerings/earthworm">ISTI</a>,
+who also serve as a contractor to maintain the package.   Although I
+have limited and old experience with Earthworm it appears the package
+still does not use a database but uses a file system hierarchy to
+manage data.  If that is correct, using data managed by an
+Earthworm system will require developing custom file readers for
+Metadata.  Miniseed waveform data can be indexed as normal for MsPASS.
+This is a type example of a place someone in the Earthworm community
+could help by contributing import/export tools for Earthworm.</p></li>
+<li><p><a class="reference external" href="https://www.seiscomp.de/doc/">seiscomp</a> is more-or-less the European
+equivalent of Earthworm.   It has similar functionality for
+real-time data acquisition, detection, event association, and location.
+It also has a collction of graphical user interface tools useful
+for network operations.  I have zero experience with seiscomp but
+the same statement I made about Earthworm applies:   this is a place
+someone from the Seiscomp community could help MsPASS development by
+producing import/export functions from that system.</p></li>
+</ol>
+</section>
+<section id="mspass-phasenet-picking">
+<h2>MsPASS Phasenet Picking<a class="headerlink" href="#mspass-phasenet-picking" title="Permalink to this heading"></a></h2>
+<p>THIS PACKAGE IS UNDER DEVELOPMENT.   LOOK FOR FUTURE UPDATES IN THIS SECTION
+WHEN THAT CODE IS RELEASED.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="signal_to_noise.html" class="btn btn-neutral float-left" title="Signal to Noise Ratio Estimation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="adapting_algorithms.html" class="btn btn-neutral float-right" title="Adapting an Existing Algorithm to MsPASS" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020-2021, Ian Wang.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

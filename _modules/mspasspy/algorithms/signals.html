@@ -49,13 +49,15 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
     
-              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Desktop Operation</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/quick_start.html">Getting Started in a Nutshell</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/run_mspass_with_docker.html">Run MsPASS with Docker</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_docker_compose.html">Deploy MsPASS with Docker Compose</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/mspass_desktop.html">Running MsPASS on a Desktop Computer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/command_line_desktop.html">Command Line Docker Desktop Operation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_conda.html">Deploy MsPASS with Conda</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_conda.html#advanced-setup-considerations">Advanced Setup Considerations</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Cluster Operations</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_on_HPC.html">Deploying MsPASS on an HPC cluster</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_conda_and_coiled.html">Deploy MsPASS with Conda and Coiled</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started/getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
@@ -92,6 +94,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/header_math.html">Header (Metadata) Math</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/graphics.html">Graphics in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/signal_to_noise.html">Signal to Noise Ratio Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/arrival_time_measurement.html">Arrival Time Measurement Techniques in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
@@ -184,19 +187,20 @@
 <span class="sd">    their API is inherited.  Because different types of filters are</span>
 <span class="sd">    enabled by the setting of the &quot;type&quot; argument, what kwarg values are</span>
 <span class="sd">    referenced depend upon the value of &quot;type&quot;.   In particular, note:</span>
+
 <span class="sd">        - &quot;bandpass&quot; requires values for &quot;freqmin&quot; and &quot;freqmax as corner frequenices</span>
 <span class="sd">        - &quot;lowpass&quot; requires only a value for &quot;freq&quot; to define the one corner</span>
 <span class="sd">        - &quot;highpass&quot; also requres only the value &quot;freq&quot; for the low corner</span>
+
 <span class="sd">    There are other options described in the obspy documentation.</span>
 
 <span class="sd">    :param data: input data, only mspasspy data objects are accepted, i.e. TimeSeries, Seismogram, Ensemble.</span>
 <span class="sd">    :param type: type of filter, &#39;bandpass&#39;, &#39;bandstop&#39;, &#39;lowpass&#39;, &#39;highpass&#39;, &#39;lowpass_cheby_2&#39;, &#39;lowpass_fir&#39;,</span>
-<span class="sd">     &#39;remez_fir&#39;. You can refer to</span>
-<span class="sd">     `Obspy &lt;https://docs.obspy.org/packages/autogen/obspy.core.trace.Trace.filter.html&gt;` for details.</span>
+<span class="sd">      &#39;remez_fir&#39;. You can refer to</span>
+<span class="sd">      `Obspy &lt;https://docs.obspy.org/packages/autogen/obspy.core.trace.Trace.filter.html&gt;` for details.</span>
 <span class="sd">    :type type: str</span>
 <span class="sd">    :param args: extra arguments</span>
-<span class="sd">    :param object_history: True to preserve the processing history. For details, refer to</span>
-<span class="sd">     :class:`~mspasspy.util.decorators.mspass_func_wrapper`.</span>
+<span class="sd">    :param object_history: True to preserve the processing history. For details, refer to :class:`~mspasspy.util.decorators.mspass_func_wrapper`.</span>
 <span class="sd">    :param alg_name: alg_name is the name the func we are gonna save while preserving the history.</span>
 <span class="sd">    :type alg_name: :class:`str`</span>
 <span class="sd">    :param alg_id: alg_id is a unique id to record the usage of func while preserving the history.</span>
@@ -323,12 +327,12 @@
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Cross-correlation of two signals up to a specified maximal shift.</span>
+
 <span class="sd">    :param a: first signal</span>
 <span class="sd">    :param b: second signal</span>
 <span class="sd">    :param shift: Number of samples to shift for cross correlation. The cross-correlation will consist of 2*shift+1 or</span>
-<span class="sd">     2*shift samples. The sample with zero shift will be in the middle.</span>
-<span class="sd">    :param object_history: True to preserve the processing history. For details, refer to</span>
-<span class="sd">     :class:`~mspasspy.util.decorators.mspass_func_wrapper_multi`.</span>
+<span class="sd">        2*shift samples. The sample with zero shift will be in the middle.</span>
+<span class="sd">    :param object_history: True to preserve the processing history. For details, refer to :class:`~mspasspy.util.decorators.mspass_func_wrapper_multi`.</span>
 <span class="sd">    :param alg_name: alg_name is the name the func we are gonna save while preserving the history.</span>
 <span class="sd">    :type alg_name: :class:`str`</span>
 <span class="sd">    :param alg_id: alg_id is a unique id to record the usage of func while preserving the history.</span>
@@ -336,11 +340,11 @@
 <span class="sd">    :param dryrun: True for dry-run, which return &quot;OK&quot;. Used in the mspass_func_wrapper.</span>
 <span class="sd">    :param demean: Demean data beforehand.</span>
 <span class="sd">    :param normalize: Method for normalization of cross-correlation. One of &#39;naive&#39; or None (True and False are</span>
-<span class="sd">     supported for backwards compatibility). &#39;naive&#39; normalizes by the overall standard deviation. None does not normalize.</span>
+<span class="sd">        supported for backwards compatibility). &#39;naive&#39; normalizes by the overall standard deviation. None does not normalize.</span>
 <span class="sd">    :param method: Method to use to calculate the correlation. &#39;direct&#39;: The correlation is determined directly from</span>
-<span class="sd">     sums, the definition of correlation. &#39;fft&#39; The Fast Fourier Transform is used to perform the correlation more</span>
-<span class="sd">     quickly. &#39;auto&#39; Automatically chooses direct or Fourier method based on an estimate of which is faster.</span>
-<span class="sd">     (Only available for SciPy versions &gt;= 0.19. For older Scipy version method defaults to &#39;fft&#39;.)</span>
+<span class="sd">        sums, the definition of correlation. &#39;fft&#39; The Fast Fourier Transform is used to perform the correlation more</span>
+<span class="sd">        quickly. &#39;auto&#39; Automatically chooses direct or Fourier method based on an estimate of which is faster.</span>
+<span class="sd">        (Only available for SciPy versions &gt;= 0.19. For older Scipy version method defaults to &#39;fft&#39;.)</span>
 <span class="sd">    :type a: :class:`~mspasspy.ccore.seismic.TimeSeries`</span>
 <span class="sd">    :type b: :class:`~mspasspy.ccore.seismic.TimeSeries`</span>
 <span class="sd">    :type shift: int</span>

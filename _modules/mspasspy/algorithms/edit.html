@@ -49,13 +49,15 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
     
-              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Desktop Operation</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/quick_start.html">Getting Started in a Nutshell</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/run_mspass_with_docker.html">Run MsPASS with Docker</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_docker_compose.html">Deploy MsPASS with Docker Compose</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/mspass_desktop.html">Running MsPASS on a Desktop Computer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/command_line_desktop.html">Command Line Docker Desktop Operation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_conda.html">Deploy MsPASS with Conda</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_conda.html#advanced-setup-considerations">Advanced Setup Considerations</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Cluster Operations</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_on_HPC.html">Deploying MsPASS on an HPC cluster</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_conda_and_coiled.html">Deploy MsPASS with Conda and Coiled</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started/getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
@@ -92,6 +94,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/header_math.html">Header (Metadata) Math</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/graphics.html">Graphics in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/signal_to_noise.html">Signal to Noise Ratio Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/arrival_time_measurement.html">Arrival Time Measurement Techniques in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
@@ -249,11 +252,11 @@
 <span class="sd">        :param d:  MsPASS data object to which elog message is to be</span>
 <span class="sd">          written.</span>
 <span class="sd">        :param testname: is the string assigned to the &quot;algorithm&quot; field</span>
-<span class="sd">        of the message posted to d.elog.</span>
+<span class="sd">          of the message posted to d.elog.</span>
 <span class="sd">        :param message:  specialized message to post - this string is added</span>
-<span class="sd">        to an internal generic message.</span>
+<span class="sd">          to an internal generic message.</span>
 <span class="sd">        :param severity:  ErrorSeverity to assign to elog message</span>
-<span class="sd">        (See ErrorLogger docstring).  Default is Informational</span>
+<span class="sd">          (See ErrorLogger docstring).  Default is Informational</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">_input_is_valid</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
             <span class="n">kill_message</span> <span class="o">=</span> <span class="s2">&quot;Killed by kill_if_true method.  Reason:</span><span class="se">\n</span><span class="s2">&quot;</span>
@@ -288,10 +291,10 @@
 <span class="sd">        :param key:  key used for extracting a Metadata component for test</span>
 <span class="sd">        :param value:  is the threshold value for the test.</span>
 <span class="sd">        :param verbose:  if true informational messages will be posted to</span>
-<span class="sd">        the elog area of d.  When false (default) kills are silent.  That</span>
-<span class="sd">        default is intentioanl to reduce the size of elog data in large data</span>
-<span class="sd">        sets that often require extensive editing.  Set true if you need</span>
-<span class="sd">        details on why data were killed or for debugging.</span>
+<span class="sd">          the elog area of d.  When false (default) kills are silent.  That</span>
+<span class="sd">          default is intentioanl to reduce the size of elog data in large data</span>
+<span class="sd">          sets that often require extensive editing.  Set true if you need</span>
+<span class="sd">          details on why data were killed or for debugging.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="n">key</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
@@ -359,10 +362,10 @@
 <span class="sd">        :param key:  key used for extracting a Metadata component for test</span>
 <span class="sd">        :param value:  is the threshold value for the test.</span>
 <span class="sd">        :param verbose:  if true informational messages will be posted to</span>
-<span class="sd">        the elog area of d.  When false (default) kills are silent.  That</span>
-<span class="sd">        default is intentioanl to reduce the size of elog data in large data</span>
-<span class="sd">        sets that often require extensive editing.  Set true if you need</span>
-<span class="sd">        details on why data were killed or for debugging.</span>
+<span class="sd">          the elog area of d.  When false (default) kills are silent.  That</span>
+<span class="sd">          default is intentioanl to reduce the size of elog data in large data</span>
+<span class="sd">          sets that often require extensive editing.  Set true if you need</span>
+<span class="sd">          details on why data were killed or for debugging.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="n">key</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
@@ -428,10 +431,10 @@
 <span class="sd">        :param key:  key used for extracting a Metadata component for test</span>
 <span class="sd">        :param value:  is the threshold value for the test.</span>
 <span class="sd">        :param verbose:  if true informational messages will be posted to</span>
-<span class="sd">        the elog area of d.  When false (default) kills are silent.  That</span>
-<span class="sd">        default is intentioanl to reduce the size of elog data in large data</span>
-<span class="sd">        sets that often require extensive editing.  Set true if you need</span>
-<span class="sd">        details on why data were killed or for debugging.</span>
+<span class="sd">          the elog area of d.  When false (default) kills are silent.  That</span>
+<span class="sd">          default is intentioanl to reduce the size of elog data in large data</span>
+<span class="sd">          sets that often require extensive editing.  Set true if you need</span>
+<span class="sd">          details on why data were killed or for debugging.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="n">key</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
@@ -497,10 +500,10 @@
 <span class="sd">        :param key:  key used for extracting a Metadata component for test</span>
 <span class="sd">        :param value:  is the threshold value for the test.</span>
 <span class="sd">        :param verbose:  if true informational messages will be posted to</span>
-<span class="sd">        the elog area of d.  When false (default) kills are silent.  That</span>
-<span class="sd">        default is intentioanl to reduce the size of elog data in large data</span>
-<span class="sd">        sets that often require extensive editing.  Set true if you need</span>
-<span class="sd">        details on why data were killed or for debugging.</span>
+<span class="sd">          thee elog area of d.  When false (default) kills are silent.  That</span>
+<span class="sd">          default is intentioanl to reduce the size of elog data in large data</span>
+<span class="sd">          sets that often require extensive editing.  Set true if you need</span>
+<span class="sd">          details on why data were killed or for debugging.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="n">key</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
@@ -568,10 +571,10 @@
 <span class="sd">        :param key:  key used for extracting a Metadata component for test</span>
 <span class="sd">        :param value:  is the threshold value for the test.</span>
 <span class="sd">        :param verbose:  if true informational messages will be posted to</span>
-<span class="sd">        the elog area of d.  When false (default) kills are silent.  That</span>
-<span class="sd">        default is intentioanl to reduce the size of elog data in large data</span>
-<span class="sd">        sets that often require extensive editing.  Set true if you need</span>
-<span class="sd">        details on why data were killed or for debugging.</span>
+<span class="sd">          the elog area of d.  When false (default) kills are silent.  That</span>
+<span class="sd">          default is intentioanl to reduce the size of elog data in large data</span>
+<span class="sd">          sets that often require extensive editing.  Set true if you need</span>
+<span class="sd">          details on why data were killed or for debugging.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="n">key</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
@@ -639,10 +642,10 @@
 <span class="sd">        :param key:  key used for extracting a Metadata component for test</span>
 <span class="sd">        :param value:  is the threshold value for the test.</span>
 <span class="sd">        :param verbose:  if true informational messages will be posted to</span>
-<span class="sd">        the elog area of d.  When false (default) kills are silent.  That</span>
-<span class="sd">        default is intentioanl to reduce the size of elog data in large data</span>
-<span class="sd">        sets that often require extensive editing.  Set true if you need</span>
-<span class="sd">        details on why data were killed or for debugging.</span>
+<span class="sd">          the elog area of d.  When false (default) kills are silent.  That</span>
+<span class="sd">          default is intentioanl to reduce the size of elog data in large data</span>
+<span class="sd">          sets that often require extensive editing.  Set true if you need</span>
+<span class="sd">          details on why data were killed or for debugging.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="n">key</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
@@ -701,10 +704,10 @@
 
 <span class="sd">        :param key:  key used for existence test.</span>
 <span class="sd">        :param verbose:  if true informational messages will be posted to</span>
-<span class="sd">        the elog area of d.  When false (default) kills are silent.  That</span>
-<span class="sd">        default is intentioanl to reduce the size of elog data in large data</span>
-<span class="sd">        sets that often require extensive editing.  Set true if you need</span>
-<span class="sd">        details on why data were killed or for debugging.</span>
+<span class="sd">          the elog area of d.  When false (default) kills are silent.  That</span>
+<span class="sd">          default is intentioanl to reduce the size of elog data in large data</span>
+<span class="sd">          sets that often require extensive editing.  Set true if you need</span>
+<span class="sd">          details on why data were killed or for debugging.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="n">key</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">verbose</span>
@@ -762,10 +765,10 @@
 
 <span class="sd">        :param key:  key used for existence test.</span>
 <span class="sd">        :param verbose:  if true informational messages will be posted to</span>
-<span class="sd">        the elog area of d.  When false (default) kills are silent.  That</span>
-<span class="sd">        default is intentioanl to reduce the size of elog data in large data</span>
-<span class="sd">        sets that often require extensive editing.  Set true if you need</span>
-<span class="sd">        details on why data were killed or for debugging.</span>
+<span class="sd">          the elog area of d.  When false (default) kills are silent.  That</span>
+<span class="sd">          default is intentioanl to reduce the size of elog data in large data</span>
+<span class="sd">          sets that often require extensive editing.  Set true if you need</span>
+<span class="sd">          details on why data were killed or for debugging.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="n">key</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">verbose</span>
@@ -854,10 +857,10 @@
 <span class="sd">          test is much more common than the opposite.  (e.g. retain source-receiver</span>
 <span class="sd">          distances within specified range)</span>
 <span class="sd">        :param verbose:  if true informational messages will be posted to</span>
-<span class="sd">        the elog area of d.  When false (default) kills are silent.  That</span>
-<span class="sd">        default is intentioanl to reduce the size of elog data in large data</span>
-<span class="sd">        sets that often require extensive editing.  Set true if you need</span>
-<span class="sd">        details on why data were killed or for debugging.</span>
+<span class="sd">          the elog area of d.  When false (default) kills are silent.  That</span>
+<span class="sd">          default is intentioanl to reduce the size of elog data in large data</span>
+<span class="sd">          sets that often require extensive editing.  Set true if you need</span>
+<span class="sd">          details on why data were killed or for debugging.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="n">key</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lower_endpoint</span> <span class="o">=</span> <span class="n">lower_endpoint</span>
@@ -1147,11 +1150,11 @@
 <span class="sd">        :param d:  MsPASS data object to which elog message is to be</span>
 <span class="sd">          written.</span>
 <span class="sd">        :param testname: is the string assigned to the &quot;algorithm&quot; field</span>
-<span class="sd">        of the message posted to d.elog.</span>
+<span class="sd">          of the message posted to d.elog.</span>
 <span class="sd">        :param message:  specialized message to post - this string is added</span>
-<span class="sd">        to an internal generic message.</span>
+<span class="sd">          to an internal generic message.</span>
 <span class="sd">        :param severity:  ErrorSeverity to assign to elog message</span>
-<span class="sd">        (See ErrorLogger docstring).  Default is Informational</span>
+<span class="sd">          (See ErrorLogger docstring).  Default is Informational</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">_input_is_valid</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
             <span class="n">edit_message</span> <span class="o">=</span> <span class="s2">&quot;Altered by apply method of this class.  Details:</span><span class="se">\n</span><span class="s2">&quot;</span>
@@ -1259,6 +1262,8 @@
 
 <span class="sd">    Example:  to set the value of key = &#39;a&#39; to constant 2.0</span>
 
+<span class="sd">    .. code-block:: python</span>
+
 <span class="sd">      op = SetValue(&#39;a&#39;,2.0)</span>
 <span class="sd">      d = op.apply(d)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1291,18 +1296,18 @@
 <span class="sd">        Use of decorator adds common MsPASS arguments as call options.</span>
 
 <span class="sd">        :param d:  datum to which operator is to be applied.  d must be a</span>
-<span class="sd">        valid MsPASS data object or this method will throw a fatal MsPASSError</span>
-<span class="sd">        exception.  If d is marked dead it will be silently ignored.</span>
+<span class="sd">          valid MsPASS data object or this method will throw a fatal MsPASSError</span>
+<span class="sd">          exception.  If d is marked dead it will be silently ignored.</span>
 <span class="sd">        :param apply_to_members:  when true and d is an ensemble object the</span>
-<span class="sd">        operator is applied to the members.  When false the metadata for the</span>
-<span class="sd">        ensemble will be altered.  This parameter is ignored for atomic</span>
-<span class="sd">        data types.  Default is False.</span>
+<span class="sd">          operator is applied to the members.  When false the metadata for the</span>
+<span class="sd">          ensemble will be altered.  This parameter is ignored for atomic</span>
+<span class="sd">          data types.  Default is False.</span>
 
 <span class="sd">        :return:  always returns a (usually) edited copy of the input d.</span>
-<span class="sd">        When the input d is dead the copy will always be unaltered.</span>
-<span class="sd">        Note the copy is a shallow copy which in python means we just return</span>
-<span class="sd">        the equivalent of a pointer to the caller.  Important for efficiency</span>
-<span class="sd">        as d can be very large for some ensembles.</span>
+<span class="sd">          When the input d is dead the copy will always be unaltered.</span>
+<span class="sd">          Note the copy is a shallow copy which in python means we just return</span>
+<span class="sd">          the equivalent of a pointer to the caller.  Important for efficiency</span>
+<span class="sd">          as d can be very large for some ensembles.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">_input_is_valid</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
@@ -1342,6 +1347,8 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Used to implement += operator on a specified Metadata key.</span>
 <span class="sd">    Example:  to add 2 to data, d, with key=&#39;icdp&#39; could use this</span>
+
+<span class="sd">    .. code-block:: python</span>
 
 <span class="sd">      op = Add(&#39;icdp&#39;,2)</span>
 <span class="sd">      d = op.apply(d)</span>
@@ -1426,11 +1433,15 @@
 <div class="viewcode-block" id="Multiply"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Multiply">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">Multiply</span><span class="p">(</span><span class="n">MetadataOperator</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Used to implement *= operator on a specified Metadata key.</span>
+
 <span class="sd">    Example:  to multiple metadata in, d, with key=&#39;Pamp&#39; by 2.5</span>
 <span class="sd">    you could use this</span>
 
+<span class="sd">    .. code-block:: python</span>
+
 <span class="sd">      op = Multiply(&#39;Pamp&#39;,2.5)</span>
 <span class="sd">      d = op.apply(d)</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value_to_multiply</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
@@ -1513,6 +1524,8 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Used to implement -= operator on a specified Metadata key.</span>
 <span class="sd">    Example:  to subtract 2 from metadata, d, with key=&#39;icdp&#39; could use this</span>
+
+<span class="sd">    .. code-block:: python</span>
 
 <span class="sd">      op = Subtract(&#39;icdp&#39;,2)</span>
 <span class="sd">      d = op.apply(d)</span>
@@ -1599,6 +1612,8 @@
 <span class="sd">    Used to implement /= operator on a specified Metadata key.</span>
 <span class="sd">    Example:  to divide metadata in, d, with key=&#39;Pamp&#39; by 2.0</span>
 <span class="sd">    you could use this</span>
+
+<span class="sd">    .. code-block:: python</span>
 
 <span class="sd">      op = Divide(&#39;Pamp&#39;,2.-)</span>
 <span class="sd">      d = op.apply(d)</span>
@@ -1692,6 +1707,8 @@
 
 <span class="sd">    Example:  to apply integer division to metadata in, d, with key=&#39;icdp&#39; by 5</span>
 <span class="sd">    you could use this</span>
+
+<span class="sd">    .. code-block:: python</span>
 
 <span class="sd">      op = IntegerDivide(&#39;icdp&#39;,5)</span>
 <span class="sd">      d = op.apply(d)</span>
@@ -1788,6 +1805,8 @@
 
 <span class="sd">    Example:  to convert the metadata associated with the key &#39;ichan&#39; that</span>
 <span class="sd">    are currently counting by 1 to numbers that cycle from 0 to 23 us this:</span>
+
+<span class="sd">    .. code-block:: python</span>
 
 <span class="sd">      op = Mod(&#39;ix&#39;,24)</span>
 <span class="sd">      d = op.apply(d)</span>
@@ -1889,6 +1908,8 @@
 <span class="sd">    same although it is hard to conceive how that could be useful.</span>
 
 <span class="sd">    Example:  to compute ix as the d[&#39;sx&#39;] + d[&#39;chan&#39;] use</span>
+
+<span class="sd">    .. code-block:: python</span>
 
 <span class="sd">      op = Add2(&#39;ix1&#39;,&#39;sx&#39;,&#39;chan&#39;)</span>
 <span class="sd">      d = op.apply(d)</span>
@@ -1998,6 +2019,8 @@
 
 <span class="sd">    Example:  to compute ix as the d[&#39;sx&#39;] * d[&#39;chan&#39;] use</span>
 
+<span class="sd">    .. code-block:: python</span>
+
 <span class="sd">      op = Multiply2(&#39;ix1&#39;,&#39;sx&#39;,&#39;chan&#39;)</span>
 <span class="sd">      d = op.apply(d)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -2105,6 +2128,10 @@
 <span class="sd">    same although it is hard to conceive how that could be useful.</span>
 
 <span class="sd">    Example:  to compute ix as the d[&#39;sx&#39;] - d[&#39;chan&#39;] use</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">    .. code-block:: python</span>
 
 <span class="sd">      op = Subtract2(&#39;ix1&#39;,&#39;sx&#39;,&#39;chan&#39;)</span>
 <span class="sd">      d = op.apply(d)</span>
@@ -2214,6 +2241,10 @@
 
 <span class="sd">    Example:  to compute ix as the d[&#39;sx&#39;] / d[&#39;chan&#39;] use</span>
 
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">    .. code-block:: python</span>
+
 <span class="sd">      op = Divide2(&#39;ix1&#39;,&#39;sx&#39;,&#39;chan&#39;)</span>
 <span class="sd">      d = op.apply(d)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -2322,6 +2353,8 @@
 
 <span class="sd">    Example:  to compute ix as the d[&#39;sx&#39;] // d[&#39;chan&#39;] use</span>
 
+<span class="sd">    .. code-block:: python</span>
+
 <span class="sd">      op = IntegerDivide2(&#39;ix1&#39;,&#39;sx&#39;,&#39;chan&#39;)</span>
 <span class="sd">      d = op.apply(d)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -2429,6 +2462,8 @@
 <span class="sd">    same although it is hard to conceive how that could be useful.</span>
 
 <span class="sd">    Example:  to compute ix as the d[&#39;sx&#39;] % d[&#39;chan&#39;] use</span>
+
+<span class="sd">    .. code-block:: python</span>
 
 <span class="sd">      op = Mod2(&#39;ix1&#39;,&#39;sx&#39;,&#39;chan&#39;)</span>
 <span class="sd">      d = op.apply(d)</span>
@@ -2635,17 +2670,16 @@
 <span class="sd">    If false only the ensemble (global) metadata are handled.</span>
 
 <span class="sd">    :param d:  must be a valid MsPASS data object. If not the function</span>
-<span class="sd">    will throw an exception.   If the datum is marked dead it will</span>
-<span class="sd">    silently just return the contents.</span>
+<span class="sd">        will throw an exception.   If the datum is marked dead it will</span>
+<span class="sd">        silently just return the contents.</span>
 
 <span class="sd">    :param keylist:  python list of strings to use as keywords.  Any matching</span>
-<span class="sd">    keys the metadata of d will be cleared.</span>
-
+<span class="sd">        keys the metadata of d will be cleared.</span>
 <span class="sd">    :param apply_to_members:  is a boolean controlling how the function</span>
-<span class="sd">    should handle ensembles.  Then set true the erase algorithm will be</span>
-<span class="sd">    applied in a loop over the member vector of an input ensemble.  When</span>
-<span class="sd">    False (default) only the ensemble&#39;s metadata is checked.  This parameter</span>
-<span class="sd">    is ignored if the input is an atomic data type.</span>
+<span class="sd">        should handle ensembles.  Then set true the erase algorithm will be</span>
+<span class="sd">        applied in a loop over the member vector of an input ensemble.  When</span>
+<span class="sd">        False (default) only the ensemble&#39;s metadata is checked.  This parameter</span>
+<span class="sd">        is ignored if the input is an atomic data type.</span>
 
 <span class="sd">    :return:  edited copy of d</span>
 <span class="sd">    &quot;&quot;&quot;</span>

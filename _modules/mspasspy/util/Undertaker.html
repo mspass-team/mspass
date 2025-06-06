@@ -49,13 +49,15 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
     
-              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Desktop Operation</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/quick_start.html">Getting Started in a Nutshell</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/run_mspass_with_docker.html">Run MsPASS with Docker</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_docker_compose.html">Deploy MsPASS with Docker Compose</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/mspass_desktop.html">Running MsPASS on a Desktop Computer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/command_line_desktop.html">Command Line Docker Desktop Operation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_conda.html">Deploy MsPASS with Conda</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_conda.html#advanced-setup-considerations">Advanced Setup Considerations</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Cluster Operations</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_on_HPC.html">Deploying MsPASS on an HPC cluster</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_conda_and_coiled.html">Deploy MsPASS with Conda and Coiled</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started/getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
@@ -92,6 +94,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/header_math.html">Header (Metadata) Math</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/graphics.html">Graphics in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/signal_to_noise.html">Signal to Noise Ratio Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/arrival_time_measurement.html">Arrival Time Measurement Techniques in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
@@ -163,6 +166,7 @@
 <span class="sd">they provide.</span>
 
 <span class="sd">Concepts of this class are:</span>
+
 <span class="sd">1.  Data marked as &quot;dead&quot; in MsPASS are always considered invalid and</span>
 <span class="sd">    should not be used as part of a final product that is the goal of a workflow.</span>
 <span class="sd">2.  What made the data invalid cannot be known without additional information.</span>
@@ -259,16 +263,16 @@
 <span class="sd">      MsPaSs.</span>
 
 <span class="sd">    :param regular_data_collection:  collection where we bury regular</span>
-<span class="sd">    dead bodies.  Default &quot;cemetery&quot;</span>
+<span class="sd">      dead bodies.  Default &quot;cemetery&quot;</span>
 <span class="sd">    :type regular_data_collection:  string</span>
 
 <span class="sd">    :param aborted_data_collection:  collection where aborted data documents</span>
-<span class="sd">    are buried.   Default &quot;abortions&quot;</span>
+<span class="sd">      are buried.   Default &quot;abortions&quot;</span>
 <span class="sd">    :type aborted_data_collection:  string</span>
 
 <span class="sd">    :param data_tag:   tag to attach to each document.  Normally would</span>
-<span class="sd">    be the same as the data_tag used for a particular save operation</span>
-<span class="sd">    for data not marked dead.</span>
+<span class="sd">      be the same as the data_tag used for a particular save operation</span>
+<span class="sd">      for data not marked dead.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
@@ -333,22 +337,25 @@
 <span class="sd">        standardizes the method of how to do that and what is saved</span>
 <span class="sd">        as the shell of a dead datum.  That &quot;shell&quot; is always a minimum</span>
 <span class="sd">        of two things:</span>
+
 <span class="sd">            1.  All elog entries - essential to understand why datum was killed</span>
 <span class="sd">            2.  The content of the Metadata container saved under a</span>
 <span class="sd">                subdocument called &quot;tombstone&quot;.</span>
+
 <span class="sd">        If save_history is set True and the datum has history records</span>
 <span class="sd">        they will also be saved.</span>
 
 <span class="sd">        It is important to realize this method acts like an overloaded</span>
 <span class="sd">        c++ method in that it accepts multiple data types, but handles</span>
 <span class="sd">        them differently.</span>
+
 <span class="sd">        1.  Atomic data (TimeSeries or Seismogram) marked dead</span>
 <span class="sd">            generate a document saved to the specified collection and</span>
 <span class="sd">            an (optional) history document.   If the mummify_atomic_data</span>
 <span class="sd">            parameter is set True (the default) the returned copy of the</span>
 <span class="sd">            data will be processed with the &quot;mummify&quot; method of this class.</span>
 <span class="sd">            (That means the sample data are discarded and the array is set</span>
-<span class="sd">             to zero length).</span>
+<span class="sd">            to zero length).</span>
 <span class="sd">        2.  Ensembles have to handle two different situations.   If the</span>
 <span class="sd">            entire ensemble is marked dead, all members are treated as</span>
 <span class="sd">            dead and then processed through this method by a recursive</span>
@@ -662,6 +669,9 @@
 <span class="sd">        saved as a document in a collection set by the constructor</span>
 <span class="sd">        (self.aborted_data_collection) that defaults to &quot;abortions&quot;.</span>
 <span class="sd">        The documents saved have up to 3 key-value pairs:</span>
+
+<span class="sd">        .. code-block:: text</span>
+
 <span class="sd">            &quot;tombstone&quot; - contents are a subdocument (dict) of the</span>
 <span class="sd">              wf document that was aborted during construction.</span>
 <span class="sd">            &quot;logdata&quot; - any error log records left by the reeader that failed.</span>
@@ -673,22 +683,22 @@
 
 <span class="sd">        :param doc_or_datum:  container defining the aborted fetus.</span>
 <span class="sd">        :type doc_or_datum:  Must be one of `TimeSeries`, `Seismogram`, `Metadata`,</span>
-<span class="sd">        or a python dict.   For the seismic data objects any content in</span>
-<span class="sd">        the ErrorLogger will be saved.   For dict input an application</span>
-<span class="sd">        should post a message to the dict with some appropriate (custom)</span>
-<span class="sd">        key to preserve a cause for the abortion.</span>
+<span class="sd">          or a python dict.   For the seismic data objects any content in</span>
+<span class="sd">          the ErrorLogger will be saved.   For dict input an application</span>
+<span class="sd">          should post a message to the dict with some appropriate (custom)</span>
+<span class="sd">          key to preserve a cause for the abortion.</span>
 
 <span class="sd">        :param type: string description of the type of data object</span>
-<span class="sd">        to associate with dict input.  Default for this parameter is None</span>
-<span class="sd">        and it is not referenced at all for normal input of TimeSeries</span>
-<span class="sd">        and Seismogram objects.  It is ONLY referenced if arg0 is a</span>
-<span class="sd">        dict. If type is None and the input is a dict the value assigned to</span>
-<span class="sd">        the &quot;type&quot; key in the abortions document is &quot;unknown&quot;.   The</span>
-<span class="sd">        escape for &quot;unknown&quot; makes the method bombproof but may make the</span>
-<span class="sd">        saved documents ambiguous.</span>
+<span class="sd">          to associate with dict input.  Default for this parameter is None</span>
+<span class="sd">          and it is not referenced at all for normal input of TimeSeries</span>
+<span class="sd">          and Seismogram objects.  It is ONLY referenced if arg0 is a</span>
+<span class="sd">          dict. If type is None and the input is a dict the value assigned to</span>
+<span class="sd">          the &quot;type&quot; key in the abortions document is &quot;unknown&quot;.   The</span>
+<span class="sd">          escape for &quot;unknown&quot; makes the method bombproof but may make the</span>
+<span class="sd">          saved documents ambiguous.</span>
 
 <span class="sd">        :exception:  throws a TypeError if arg0 does not obey type</span>
-<span class="sd">        list described above.</span>
+<span class="sd">          list described above.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">insertion_doc</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_tag</span><span class="p">:</span>
@@ -731,11 +741,12 @@
 <span class="sd">        because of the use of the &quot;is_abortion&quot; Metadata attribute in</span>
 <span class="sd">        our readers.   Could be more complex so this design assures</span>
 <span class="sd">        separation of the concept from the implementation.</span>
+
 <span class="sd">        :param d:  datum to be tested.</span>
 <span class="sd">        :type d: TimeSeries or Seismogram.  We do test for this as the</span>
-<span class="sd">        cost is small and a TypeError will be thrown if d is not either of</span>
-<span class="sd">        these types.  Considered bypassing the test but better to</span>
-<span class="sd">        make the package more robust.</span>
+<span class="sd">          cost is small and a TypeError will be thrown if d is not either of</span>
+<span class="sd">          these types.  Considered bypassing the test but better to</span>
+<span class="sd">          make the package more robust.</span>
 
 <span class="sd">        :return: boolean True if datum is an abortion, False othewise.</span>
 <span class="sd">        &quot;&quot;&quot;</span>

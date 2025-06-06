@@ -52,13 +52,15 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
     
-              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Desktop Operation</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/quick_start.html">Getting Started in a Nutshell</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/run_mspass_with_docker.html">Run MsPASS with Docker</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_docker_compose.html">Deploy MsPASS with Docker Compose</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/mspass_desktop.html">Running MsPASS on a Desktop Computer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/command_line_desktop.html">Command Line Docker Desktop Operation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda.html">Deploy MsPASS with Conda</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda.html#advanced-setup-considerations">Advanced Setup Considerations</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Cluster Operations</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_HPC.html">Deploying MsPASS on an HPC cluster</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda_and_coiled.html">Deploy MsPASS with Conda and Coiled</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
@@ -95,6 +97,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/header_math.html">Header (Metadata) Math</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/graphics.html">Graphics in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/signal_to_noise.html">Signal to Noise Ratio Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/arrival_time_measurement.html">Arrival Time Measurement Techniques in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
@@ -308,12 +311,15 @@ of python dict containers that are ASSUMED to be a set of
 queries that defined the grouping of the ensembles.
 For example, a data set you want to process as a set of
 common source gathers (ensmebles) might be created
-using a list something like this:
-[{“source_id” : ObjectId(‘64b917ce9aa746564e8ecbfd’)},</p>
-<blockquote>
-<div><p>{“source_id” : ObjectId(‘64b917d69aa746564e8ecbfe’)},
+using a list something like this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+<dl class="simple">
+<dt>[{“source_id”<span class="classifier">ObjectId(‘64b917ce9aa746564e8ecbfd’)},</span></dt><dd><p>{“source_id” : ObjectId(‘64b917d69aa746564e8ecbfe’)},
 … ]</p>
-</div></blockquote>
+</dd>
+</dl>
 </li>
 </ol>
 </div></blockquote>
@@ -409,18 +415,14 @@ An ensemble return will be marked dead only if all its members are found
 to be marked dead.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>data</strong> (<a class="reference internal" href="mspasspy.db.html#mspasspy.db.database.Database" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.database.Database</span></code></a> or <code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code>) – variable type arguement used to drive construction as
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<a class="reference internal" href="mspasspy.db.html#mspasspy.db.database.Database" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.database.Database</span></code></a> or <code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code>
+or <code class="xref py py-class docutils literal notranslate"><span class="pre">dask.dataframe.core.DataFrame</span></code> or <code class="xref py py-class docutils literal notranslate"><span class="pre">pyspark.sql.dataframe.DataFrame</span></code>
+for atomic data.  List of python dicts defining queries to read a
+dataset of ensembles.) – variable type arguement used to drive construction as
 described above.  See above for how this argument drives the
 functions behavor.  Note when set as a Database handle the cursor
-argument must be set.  Otherwise it is ignored.</p>
-</dd>
-</dl>
-<p>or <code class="xref py py-class docutils literal notranslate"><span class="pre">dask.dataframe.core.DataFrame</span></code> or <code class="xref py py-class docutils literal notranslate"><span class="pre">pyspark.sql.dataframe.DataFrame</span></code>
-for atomic data.  List of python dicts defining queries to read a
-dataset of ensembles.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
+argument must be set.  Otherwise it is ignored.</p></li>
 <li><p><strong>db</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.Database</span></code>.  Can be None (default)
 only if the data parameter contains the database handle.  Other uses
 require this argument to be set.) – Database handle for loading data.   Required input if
@@ -680,18 +682,16 @@ the best approach at present is to use the <cite>save_data</cite> method of
 the <cite>Database</cite> class in a variant of the following (dask) example
 that also illustrates how this function is used as the terminator 
 of a chain of map-reduce operators.</p>
-<dl class="simple">
-<dt><a href="#id1"><span class="problematic" id="id2">``</span></a><a href="#id3"><span class="problematic" id="id4">`</span></a></dt><dd><p>mybag = read_distributed_data(db,collection=’wf_TimeSeries’)
-mybag = mybag.map(detrend)   # example
-# intermediate save
-mybag = mybag.map(db.save_data,collection=”wf_TimeSeries”)
-# more processing - trivial example
-mybag = mybag.map(filter,’lowpass’,freq=1.0)
-# termination with this function
-wfids = write_distributed_data(mybag,db,collection=’wf_TimeSeries’)</p>
-</dd>
-</dl>
-<p><a href="#id5"><span class="problematic" id="id6">``</span></a><a href="#id7"><span class="problematic" id="id8">`</span></a></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">mybag</span> <span class="o">=</span> <span class="n">read_distributed_data</span><span class="p">(</span><span class="n">db</span><span class="p">,</span><span class="n">collection</span><span class="o">=</span><span class="s1">&#39;wf_TimeSeries&#39;</span><span class="p">)</span>
+<span class="n">mybag</span> <span class="o">=</span> <span class="n">mybag</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">detrend</span><span class="p">)</span>   <span class="c1"># example</span>
+<span class="c1"># intermediate save</span>
+<span class="n">mybag</span> <span class="o">=</span> <span class="n">mybag</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">save_data</span><span class="p">,</span><span class="n">collection</span><span class="o">=</span><span class="s2">&quot;wf_TimeSeries&quot;</span><span class="p">)</span>
+<span class="c1"># more processing - trivial example</span>
+<span class="n">mybag</span> <span class="o">=</span> <span class="n">mybag</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="nb">filter</span><span class="p">,</span><span class="s1">&#39;lowpass&#39;</span><span class="p">,</span><span class="n">freq</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+<span class="c1"># termination with this function</span>
+<span class="n">wfids</span> <span class="o">=</span> <span class="n">write_distributed_data</span><span class="p">(</span><span class="n">mybag</span><span class="p">,</span><span class="n">db</span><span class="p">,</span><span class="n">collection</span><span class="o">=</span><span class="s1">&#39;wf_TimeSeries&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
 <p>The <cite>storage_mode</cite> argument is a constant that defines how the 
 SAMPLE DATA are to be stored.  Currently this can be “file” or 
 “gridfs”, but be aware future evolution may extend the options.  
@@ -784,8 +784,8 @@ to have the list be as large as necessary to eliminate any potential
 debris.</p></li>
 <li><p><strong>data_tag</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – a user specified “data_tag” key.  See above and
 User’s manual for guidance on how the use of this option.</p></li>
-<li><p><strong>post_elog</strong> – <dl class="simple">
-<dt>boolean controlling how error log messages are </dt><dd><p>handled.  When False (default) error log messages get posted in 
+<li><p><strong>post_elog</strong> – boolean controlling how error log messages are 
+handled.  When False (default) error log messages get posted in 
 single transactions with MongoDB to the “elog” collection.   
 When set True error log entries will be posted to as subdocuments to 
 the wf collection entry for each datum.   Setting post_elog True 
@@ -793,19 +793,13 @@ is most useful if you anticipate a run will generate a large number of
 error that could throttle processing with a large number of 
 one-at-a-time document saves.  For normal use with small number of 
 errors it is easier to review error issue by inspecting the elog
-collection than having to query the larger wf collection.</p>
-</dd>
-</dl>
-<dl class="field-list simple">
-<dt class="field-odd">param save_history<span class="colon">:</span></dt>
-<dd class="field-odd"><p>When set True (default is False) write will 
+collection than having to query the larger wf collection.</p></li>
+<li><p><strong>save_history</strong> – When set True (default is False) write will 
 save any object-level history data saved within the input data objects.
 The related boolean (described below) called post_history controls 
 how such data is saved if this option is enable.  Note post_history 
-is ignored unless save_history is True.</p>
-</dd>
-<dt class="field-even">param post_history<span class="colon">:</span></dt>
-<dd class="field-even"><p>boolean similar to post_elog for handling 
+is ignored unless save_history is True.</p></li>
+<li><p><strong>post_history</strong> – boolean similar to post_elog for handling 
 object-level history data.  It is, however, only handled if the 
 related boolean “save_history” is set True. When post_history is 
 set True the history data will be saved as a subdocument in the wf
@@ -817,20 +811,16 @@ attribute with key “history_id” to the ObjectId of the saved
 document.  The default for this argument is True to avoid 
 accidentally throttling workflows on large data sets.  The default 
 for save_history is False so overall default behavior is to drop 
-any history data.</p>
-</dd>
-<dt class="field-odd">param cremate<span class="colon">:</span></dt>
-<dd class="field-odd"><p>boolean controlling handling of dead data.  
+any history data.</p></li>
+<li><p><strong>cremate</strong> – boolean controlling handling of dead data.  
 When True dead data will be passed to the <cite>cremate</cite> 
 method of <a class="reference internal" href="mspasspy.util.html#module-mspasspy.util.Undertaker" title="mspasspy.util.Undertaker"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.util.Undertaker</span></code></a> which leaves only 
 ashes to nothing in the return.   When False (default) the 
 <cite>bury</cite> method will be called instead which saves a skeleton 
 (error log and Metadata content) of the results in the “cemetery” 
-collection.</p>
-</dd>
-<dt class="field-even">param normalizing_collections<span class="colon">:</span></dt>
-<dd class="field-even"><p>list of collection names dogmatically treated
-as normalizing collection names.  The keywords in the list are used 
+collection.</p></li>
+<li><p><strong>normalizing_collections</strong> – <dl class="simple">
+<dt>list of collection names dogmatically treated</dt><dd><p>as normalizing collection names.  The keywords in the list are used 
 to always (i.e. for all modes) erase any attribute with a key name 
 of the form <cite>collection_attribute where `collection</cite> is one of the collection 
 names in this list and attribute is any string.  Attribute names with the “_” 
@@ -842,6 +832,8 @@ is used and different names are used for normalizing collections.
 (e.g. if one added a “shot” collection to the schema the list would need 
 to be changed to at least add “shot”.)</p>
 </dd>
+</dl>
+<dl class="field-list simple">
 <dt class="field-odd">type normalizing_collection<span class="colon">:</span></dt>
 <dd class="field-odd"><p>list if strings defining collection names.</p>
 </dd>

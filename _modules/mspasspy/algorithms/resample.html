@@ -49,13 +49,15 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
     
-              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Desktop Operation</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/quick_start.html">Getting Started in a Nutshell</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/run_mspass_with_docker.html">Run MsPASS with Docker</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_docker_compose.html">Deploy MsPASS with Docker Compose</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/mspass_desktop.html">Running MsPASS on a Desktop Computer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/command_line_desktop.html">Command Line Docker Desktop Operation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_conda.html">Deploy MsPASS with Conda</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_conda.html#advanced-setup-considerations">Advanced Setup Considerations</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Cluster Operations</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_on_HPC.html">Deploying MsPASS on an HPC cluster</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_conda_and_coiled.html">Deploy MsPASS with Conda and Coiled</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started/getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
@@ -92,6 +94,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/header_math.html">Header (Metadata) Math</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/graphics.html">Graphics in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/signal_to_noise.html">Signal to Noise Ratio Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/arrival_time_measurement.html">Arrival Time Measurement Techniques in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
@@ -249,11 +252,11 @@
 
 
 <span class="sd">        :param d:   input mspass data object to be tested.   All that is</span>
-<span class="sd">        actually required is d have a &quot;dt&quot; attribute (i.e. d.dt is defined)</span>
-<span class="sd">        that is the sample interval for that datum.</span>
+<span class="sd">          actually required is d have a &quot;dt&quot; attribute (i.e. d.dt is defined)</span>
+<span class="sd">          that is the sample interval for that datum.</span>
 <span class="sd">        :type d:   assumed to be a MsPASS atomic data object for which the</span>
-<span class="sd">        dt attribute is defined.  This method has no safeties to test</span>
-<span class="sd">        input type.  It will throw an exception if d.dt does not resolve.</span>
+<span class="sd">          dt attribute is defined.  This method has no safeties to test</span>
+<span class="sd">          input type.  It will throw an exception if d.dt does not resolve.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># internal use guarantees this can only be TimeSeries or Seismogram</span>
         <span class="c1"># so this resolves</span>
@@ -291,7 +294,7 @@
 <span class="sd">    something not an integer multiple or division from the input OR</span>
 <span class="sd">    if you need to upsample data to match the rest of the data set</span>
 <span class="sd">    (Note that is not usually a good idea unless the upsampling is followed</span>
-<span class="sd">     by a decimator to get all data to a lower, uniform sample rate.)</span>
+<span class="sd">    by a decimator to get all data to a lower, uniform sample rate.)</span>
 <span class="sd">    A type example where that is essential is some old OBS data from</span>
 <span class="sd">    Scripps instruments that had a sample rate that was a multiple of</span>
 <span class="sd">    one of the more standard rates like 20 or 100.  Such data can be</span>

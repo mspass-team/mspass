@@ -22,7 +22,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Getting Started in a Nutshell" href="getting_started/quick_start.html" />  
+    <link rel="next" title="Running MsPASS on a Desktop Computer" href="getting_started/mspass_desktop.html" />  
 
   <style>
     .wy-nav-content { max-width: 1600px; }
@@ -51,13 +51,15 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
     
-              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Desktop Operation</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="getting_started/quick_start.html">Getting Started in a Nutshell</a></li>
-<li class="toctree-l1"><a class="reference internal" href="getting_started/run_mspass_with_docker.html">Run MsPASS with Docker</a></li>
-<li class="toctree-l1"><a class="reference internal" href="getting_started/deploy_mspass_with_docker_compose.html">Deploy MsPASS with Docker Compose</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started/mspass_desktop.html">Running MsPASS on a Desktop Computer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started/command_line_desktop.html">Command Line Docker Desktop Operation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="getting_started/deploy_mspass_with_conda.html">Deploy MsPASS with Conda</a></li>
 <li class="toctree-l1"><a class="reference internal" href="getting_started/deploy_mspass_with_conda.html#advanced-setup-considerations">Advanced Setup Considerations</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Cluster Operations</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="getting_started/deploy_mspass_on_HPC.html">Deploying MsPASS on an HPC cluster</a></li>
 <li class="toctree-l1"><a class="reference internal" href="getting_started/deploy_mspass_with_conda_and_coiled.html">Deploy MsPASS with Conda and Coiled</a></li>
 <li class="toctree-l1"><a class="reference internal" href="getting_started/getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
@@ -94,6 +96,7 @@
 <li class="toctree-l1"><a class="reference internal" href="user_manual/header_math.html">Header (Metadata) Math</a></li>
 <li class="toctree-l1"><a class="reference internal" href="user_manual/graphics.html">Graphics in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="user_manual/signal_to_noise.html">Signal to Noise Ratio Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user_manual/arrival_time_measurement.html">Arrival Time Measurement Techniques in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="user_manual/adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
@@ -157,16 +160,39 @@ toolkit, with extension built on a rewrite of the
 <a class="reference external" href="http://www.indiana.edu/~pavlab/software/seispp/html/index.html">SEISPP</a>
 package.</p>
 <div class="toctree-wrapper compound">
-<p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<p class="caption" role="heading"><span class="caption-text">Desktop Operation</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="getting_started/quick_start.html">Getting Started in a Nutshell</a></li>
-<li class="toctree-l1"><a class="reference internal" href="getting_started/run_mspass_with_docker.html">Run MsPASS with Docker</a></li>
-<li class="toctree-l1"><a class="reference internal" href="getting_started/deploy_mspass_with_docker_compose.html">Deploy MsPASS with Docker Compose</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started/mspass_desktop.html">Running MsPASS on a Desktop Computer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started/command_line_desktop.html">Command Line Docker Desktop Operation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="getting_started/deploy_mspass_with_conda.html">Deploy MsPASS with Conda</a></li>
 <li class="toctree-l1"><a class="reference internal" href="getting_started/deploy_mspass_with_conda.html#advanced-setup-considerations">Advanced Setup Considerations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="getting_started/deploy_mspass_on_HPC.html">Deploying MsPASS on an HPC cluster</a></li>
-<li class="toctree-l1"><a class="reference internal" href="getting_started/deploy_mspass_with_conda_and_coiled.html">Deploy MsPASS with Conda and Coiled</a></li>
-<li class="toctree-l1"><a class="reference internal" href="getting_started/getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Cluster Operations</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="getting_started/deploy_mspass_on_HPC.html">Deploying MsPASS on an HPC cluster</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/deploy_mspass_on_HPC.html#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/deploy_mspass_on_HPC.html#hpc-mspass-concepts">HPC MsPASS Concepts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/deploy_mspass_on_HPC.html#common-requirement">Common Requirement</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/deploy_mspass_on_HPC.html#launching-services">Launching Services</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started/deploy_mspass_with_conda_and_coiled.html">Deploy MsPASS with Conda and Coiled</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/deploy_mspass_with_conda_and_coiled.html#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/deploy_mspass_with_conda_and_coiled.html#install-coiled">1. Install Coiled</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/deploy_mspass_with_conda_and_coiled.html#connect-to-your-cloud">2. Connect to your cloud</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/deploy_mspass_with_conda_and_coiled.html#get-mspass-conda-package">3. Get MsPASS Conda package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/deploy_mspass_with_conda_and_coiled.html#run-mspass">4. Run MsPASS</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started/getting_started_overview.html">MsPASS Virtual Cluster Concepts</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/getting_started_overview.html#audience">Audience</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/getting_started_overview.html#fundamental-concepts">Fundamental Concepts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/getting_started_overview.html#mspass-configuration">MsPASS Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/getting_started_overview.html#hpc-job-submission">HPC Job Submission</a></li>
+</ul>
+</li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
@@ -208,6 +234,7 @@ package.</p>
 <li class="toctree-l1"><a class="reference internal" href="user_manual/header_math.html">Header (Metadata) Math</a></li>
 <li class="toctree-l1"><a class="reference internal" href="user_manual/graphics.html">Graphics in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="user_manual/signal_to_noise.html">Signal to Noise Ratio Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user_manual/arrival_time_measurement.html">Arrival Time Measurement Techniques in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="user_manual/adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
 </ul>
 </div>
@@ -245,7 +272,7 @@ package.</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="getting_started/quick_start.html" class="btn btn-neutral float-right" title="Getting Started in a Nutshell" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="getting_started/mspass_desktop.html" class="btn btn-neutral float-right" title="Running MsPASS on a Desktop Computer" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

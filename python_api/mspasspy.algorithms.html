@@ -52,13 +52,15 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
     
-              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Desktop Operation</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/quick_start.html">Getting Started in a Nutshell</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/run_mspass_with_docker.html">Run MsPASS with Docker</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_docker_compose.html">Deploy MsPASS with Docker Compose</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/mspass_desktop.html">Running MsPASS on a Desktop Computer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/command_line_desktop.html">Command Line Docker Desktop Operation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda.html">Deploy MsPASS with Conda</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda.html#advanced-setup-considerations">Advanced Setup Considerations</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Cluster Operations</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_HPC.html">Deploying MsPASS on an HPC cluster</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda_and_coiled.html">Deploy MsPASS with Conda and Coiled</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
@@ -95,6 +97,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/header_math.html">Header (Metadata) Math</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/graphics.html">Graphics in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/signal_to_noise.html">Signal to Noise Ratio Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/arrival_time_measurement.html">Arrival Time Measurement Techniques in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
@@ -1270,8 +1273,8 @@ in replacement for the MsPASS class of the same name.   The MsPASS
 version is in C++ and there are some collisions in concept.  It should
 be used only in a python script where it might be useful to use
 features of Prieto’s library not available in the cruder implementation
-in MsPASS.   (e.g. adaptive weights in multitaper power spectrum estimation).</p>
-<p>The biggest collision in concept is that the MsPASS version with this class
+in MsPASS.   (e.g. adaptive weights in multitaper power spectrum estimation).
+The biggest collision in concept is that the MsPASS version with this class
 name was designed to be created and moved around to avoid the overhead of
 recreating the Slepian tapers on each use.  Prieto’s class creates these
 in the constructor but caches a number of things when first created that
@@ -1287,7 +1290,7 @@ instance if something that invalidates the previous call has changed.</p>
 argument defines the size of the eigentapers so it defines the size of
 input time series the object expect to process.</p></li>
 <li><p><strong>tbp</strong> – multitaper time-bandwidth product</p></li>
-<li><p><strong>number_tapers</strong> – number of tapers to use for estimators (See Prieto’s)
+<li><p><strong>number_tapers</strong> – number of tapers to use for estimators (See Prieto’s
 documentation for details)</p></li>
 <li><p><strong>nfft</strong> – optional size of the fft work arrays to use.  nfft should be
 greater than or equal winsize.  When greater zero padding is used in the
@@ -1378,29 +1381,27 @@ that all algorithms call their QCmetrics method of processor
 and push them to the headers of the deconvolved output.
 QCmetric attributes are algorithm dependent.</p>
 <p>The ProcessingHistory feature can optionally be enabled by
-setting the save_history argument to True.   When enable one should
+setting the save_history argument to True.   When enabled one should
 normally set a unique id for the algid argument.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>d</strong> (Must be a <cite>Seismogram</cite> object or the function will throw
-a TypeError exceptionl) – Seismogram input data.  See notes above about
-time span of these data.</p></li>
-<li><p><strong>engine</strong> (None or an instance of <cite>RFdeconProcessor</cite>.
-When None (default) an instance of an <cite>RFdeconProcessor</cite> is
-created on entry based on the keyword defined by the <cite>alg</cite>
-argument.   The algorithm built into the instance of
-<cite>RFdeconProcessor</cite> is used if engine is not null.) – optional instance of a RFdeconProcessor
+<li><p><strong>d</strong> (<em>Must be a Seismogram object</em><em> or </em><em>the function will throw a TypeError exception.</em>) – Seismogram input data.See notes above about time span of thesedata.</p></li>
+<li><p><strong>engine</strong> (<em>None</em><em> or </em><em>an instance</em><em> of </em><em>RFdeconProcessor.
+When None</em><em> (</em><em>default</em><em>) </em><em>an instance</em><em> of </em><em>an RFdeconProcessor is
+created on entry based on the keyword defined by the alg
+argument.   The algorithm built into the instance</em><em> of
+</em><em>RFdeconProcessor is used if engine is not null.</em>) – optional instance of a RFdeconProcessor
 object.   By default the function instantiates an instance of
 a processor for each call to the function.   For algorithms
 like the multitaper based algorithms with a high initialization
 cost performance will improve by sending an instance to the
 function via this argument.</p></li>
 <li><p><strong>alg</strong> – The algorithm to be applied, used for initializing
-a RFdeconProcessor object.  Ignored if <cite>engine</cite> is used.</p></li>
+a RFdeconProcessor object.  Ignored if engine is used.</p></li>
 <li><p><strong>pf</strong> (<em>string defining an absolute path for the file name</em><em>
 or </em><em>a path relative to a directory defined by PFPATH.</em>) – The pf file to be parsed, used for inititalizing a
-RFdeconProcessor.  Ignored if <cite>engine</cite> is used.</p></li>
+RFdeconProcessor.  Ignored if engine is used.</p></li>
 <li><p><strong>wavelet</strong> (<em>None</em><em> or </em><em>an iterable vector container</em><em>
 (</em><em>in MsPASS that means a python array</em><em>, </em><em>a numpy array</em><em>, or </em><em>a DoubleVector</em><em>)</em>) – vector of doubles (numpy array or the
 std::vector container internal to TimeSeries object) defining
@@ -1414,8 +1415,8 @@ noise data to use for computing regularization.  Not all RF
 estimation algorithms use noise estimators so this parameter
 is optional.   It can also be extracted from d depending on
 parameter file options.</p></li>
-<li><p><strong>wcomp</strong> – <dl class="simple">
-<dt>When defined from Seismogram d the wavelet</dt><dd><p>estimate in conventional RFs is one of the components that
+<li><p><strong>wcomp</strong> (<em>int</em><em> (</em><em>must 0</em><em>, </em><em>1</em><em>, or </em><em>2</em><em>)</em>) – When defined from Seismogram d the wavelet
+estimate in conventional RFs is one of the components that
 are most P wave dominated. That is always one of three
 things:  Z, L of LQT, or the L component from the output of
 Kennett’s free surface transformation operator.  The
@@ -1423,56 +1424,30 @@ default is 2, which for ccore.Seismogram is always one of
 the above.   This parameter would be changed only if the
 data has undergone some novel transformation not yet invented
 and the best wavelet estimate was on in 2 (3 with FORTRAN
-and matlab numbering).</p>
-</dd>
-</dl>
-<dl class="field-list simple">
-<dt class="field-odd">type wcomp<span class="colon">:</span></dt>
-<dd class="field-odd"><p>int (must 0, 1, or 2)</p>
-</dd>
-<dt class="field-even">param ncomp<span class="colon">:</span></dt>
-<dd class="field-even"><p>component number to use to compute noise.  This is used
+and matlab numbering).</p></li>
+<li><p><strong>ncomp</strong> (<em>int</em><em> (</em><em>must be 0</em><em>, </em><em>1</em><em>, or </em><em>2</em><em>)</em>) – component number to use to compute noise.  This is used
 only if the algorithm in processor requires a noise estimate.
-Normally it should be the same as wcomp and is by default (2).</p>
-</dd>
-<dt class="field-odd">type ncomp<span class="colon">:</span></dt>
-<dd class="field-odd"><p>int (must be 0, 1, or 2)</p>
-</dd>
-<dt class="field-even">param QCdocument_key<span class="colon">:</span></dt>
-<dd class="field-even"><p>A summary of the parameters defining the
+Normally it should be the same as wcomp and is by default (2).</p></li>
+<li><p><strong>QCdocument_key</strong> (<em>string</em><em> (</em><em>default is &quot;RFdecon_properties&quot;</em><em>)</em>) – A summary of the parameters defining the
 deconvolution operator (really a dump of the pf content used for
 creating the engine) and computed QC attributes are posted to a
 python dictionary.   That content is posted to the outputs
 Metadata container with the key defined by this argument.
 In MongoDB lingo that means when saved to the database the
-dictionary content associated with this key becomes a “subdocument”.</p>
-</dd>
-<dt class="field-odd">type QCdocument_key<span class="colon">:</span></dt>
-<dd class="field-odd"><p>string (default is “RFdecon_properties”)</p>
-</dd>
-<dt class="field-even">param object_history<span class="colon">:</span></dt>
-<dd class="field-even"><p>boolean to enable or disable saving object
+dictionary content associated with this key becomes a “subdocument”.</p></li>
+<li><p><strong>object_history</strong> – boolean to enable or disable saving object
 level history.  Default is False.  Note this functionality is
-implemented via the mspass_func_wrapper decorator.</p>
-</dd>
-<dt class="field-odd">param alg_name<span class="colon">:</span></dt>
-<dd class="field-odd"><p>When history is enabled this is the algorithm name
+implemented via the mspass_func_wrapper decorator.</p></li>
+<li><p><strong>alg_name</strong> – When history is enabled this is the algorithm name
 assigned to the stamp for applying this algorithm.
 Default (“WindowData”) should normally be just used.
-Note this functionality is implemented via the mspass_func_wrapper decorator.</p>
-</dd>
-<dt class="field-even">param ald_id<span class="colon">:</span></dt>
-<dd class="field-even"><p>algorithm id to assign to history record (used only if
+Note this functionality is implemented via the mspass_func_wrapper decorator.</p></li>
+<li><p><strong>ald_id</strong> – algorithm id to assign to history record (used only if
 object_history is set True.)
-Note this functionality is implemented via the mspass_func_wrapper decorator.</p>
-</dd>
-<dt class="field-odd">param dryrun<span class="colon">:</span></dt>
-<dd class="field-odd"><p>When true only the arguments are checked for validity.
+Note this functionality is implemented via the mspass_func_wrapper decorator.</p></li>
+<li><p><strong>dryrun</strong> – When true only the arguments are checked for validity.
 When true nothing is calculated and the original data are returned.
-Note this functionality is implemented via the mspass_func_wrapper decorator.</p>
-</dd>
-</dl>
-</p></li>
+Note this functionality is implemented via the mspass_func_wrapper decorator.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1516,16 +1491,14 @@ the wavelet.  By design it is an approximation of the shaping wavelet
 defined for this operator.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Actual output of the operator as a ccore.TimeSeries object.</p>
-</dd>
-</dl>
-<p>The Metadata of the return is bare bones.  The most important factor
+<dd class="field-odd"><p>Actual output of the operator as a ccore.TimeSeries object.
+The Metadata of the return is bare bones.  The most important factor
 about this result is that because actual output waveforms are normally
 a zero phase wavelet of some kind the result is time shifted to be
-centered (i.e. t0 is rounded n/2 where n is the length of the vector</p>
-<blockquote>
-<div><p>returned).</p>
-</div></blockquote>
+centered (i.e. t0 is rounded n/2 where n is the length of the vector
+returned).</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -1550,10 +1523,10 @@ more than call the read_metadata of the already loaded processor.
 All the scalar decon methods implement that method.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>md</strong> – is a mspass.Metadata object containing required parameters</p>
+<dd class="field-odd"><p><strong>md</strong> – is a mspass.Metadata object containing required parameters
+for the alternative algorithm.</p>
 </dd>
 </dl>
-<p>for the alternative algorithm.</p>
 </dd></dl>
 
 <dl class="py property">
@@ -1614,17 +1587,11 @@ combination is not possible since raw_vector data
 have no time base.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>d</strong> – input data (contents expected depend upon</p>
-</dd>
-</dl>
-<p>value of dtype parameter).
-:param dtype: string defining the form d is expected</p>
-<blockquote>
-<div><p>to be (see details above)</p>
-</div></blockquote>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
+<li><p><strong>d</strong> – input data (contents expected depend upon
+value of dtype parameter).</p></li>
+<li><p><strong>dtype</strong> – string defining the form d is expected
+to be (see details above)</p></li>
 <li><p><strong>component</strong> – component of Seismogram data to
 load as data vector.  Ignored if dtype is raw_vector
 or TimeSeries.</p></li>
@@ -1672,11 +1639,10 @@ Or a TimeSeriesEnsemble object from a SeismogramEnsemble object</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>data</strong> (either <a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">Seismogram</span></code></a>
-or <a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.SeismogramEnsemble" title="mspasspy.ccore.seismic.SeismogramEnsemble"><code class="xref py py-class docutils literal notranslate"><span class="pre">SeismogramEnsemble</span></code></a>) – data object to extract from.</p></li>
+<li><p><strong>data</strong> (either <code class="xref py py-class docutils literal notranslate"><span class="pre">SeismogramEnsemble</span></code>) – data object to extract from.</p></li>
 <li><p><strong>component</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – the index of component that will be extracted, it can only be 0, 1, or 2</p></li>
-<li><p><strong>object_history</strong> – True to preserve the processing history. For details, refer to
-<code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code>.</p></li>
+<li><p><strong>object_history</strong> – True to preserve the processing history. For details, refer
+to <code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code>.</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
 <li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.13.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
 <li><p><strong>dryrun</strong> – True for dry-run, which return “OK”. Used in the mspass_func_wrapper.</p></li>
@@ -1712,8 +1678,7 @@ requred value from the data’s metadata container.  If it is a floating
 point number it is used directly.   Anything else will result in a
 TypeError exception.  If a string is used but the key is not defined
 the datum will be killed with an elog message.</p></li>
-<li><p><strong>object_history</strong> – True to preserve the processing history. For details, refer to
-<code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code>.</p></li>
+<li><p><strong>object_history</strong> – set True to preserve the processing history.</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
 <li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.13.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
 <li><p><strong>dryrun</strong> – True for dry-run, which return “OK”. Used in the mspass_func_wrapper.</p></li>
@@ -1744,8 +1709,8 @@ only one sided.</p>
 <li><p><strong>t1head</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – t1 of the head taper</p></li>
 <li><p><strong>t1tail</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – t1 of the tail taper</p></li>
 <li><p><strong>t0tail</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – t0 of the tail taper</p></li>
-<li><p><strong>object_history</strong> – True to preserve the processing history. For details, refer to
-<code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code>.</p></li>
+<li><p><strong>object_history</strong> – True to preserve the processing history. For details, refer
+to <code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code>.</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
 <li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.13.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
 <li><p><strong>dryrun</strong> – True for dry-run, which return “OK”. Used in the mspass_func_wrapper.</p></li>
@@ -1809,46 +1774,32 @@ the members.</p>
 paper.  The order is 0=SH, 1=SV, 2=L.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>data</strong> – data object to be transformed.  For ensembles the transformation</p>
-</dd>
-</dl>
-<p>is applied to all members.  Note the Metadata fetch mechanism is the only
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">Seismogram</span></code></a>
+or <a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.SeismogramEnsemble" title="mspasspy.ccore.seismic.SeismogramEnsemble"><code class="xref py py-class docutils literal notranslate"><span class="pre">SeismogramEnsemble</span></code></a>) – data object to be transformed.  For ensembles the transformation
+is applied to all members.  Note the Metadata fetch mechanism is the only
 recommended way to handle ensembles.  An elog message will be posted
 to the ensemble’s elog container if you try to use a constant slowness
 vector passed via uvec. It will not warn about constant vp0 and vs0
-as that case is common.
-:type data: <a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">Seismogram</span></code></a> or
-<a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.SeismogramEnsemble" title="mspasspy.ccore.seismic.SeismogramEnsemble"><code class="xref py py-class docutils literal notranslate"><span class="pre">SeismogramEnsemble</span></code></a>
-:param ux_key:  key to use to fetch EW component of slowness vector
-from Metadata container.  Default is “ux”.
-:type ux_key:  string
-:param uy_key:  key to use to fetch NS component of slowness vector
-from Metadata container.  Default is “uy”.
-:type uy_key:  string
-:param vp0_key:  key to use to fetch free surface P wave velocity
-from Metadata container.  Default is “vp0”.
-:type vp0_key:  string
-:param vs0_key: key to use to fetch free surface S wave velocity
-from Metadata container.  Default is “vs0”.
-:type vs0_key:  string
-:param uvec: slowness vector of the incident wavefield defined via
+as that case is common.</p></li>
+<li><p><strong>ux_key</strong> (<em>string</em>) – key to use to fetch EW component of slowness vector
+from Metadata container.  Default is “ux”.</p></li>
+<li><p><strong>uy_key</strong> (<em>string</em>) – key to use to fetch NS component of slowness vector
+from Metadata container.  Default is “uy”.</p></li>
+<li><p><strong>vp0_key</strong> (<em>string</em>) – key to use to fetch free surface P wave velocity
+from Metadata container.  Default is “vp0”.</p></li>
+<li><p><strong>vs0_key</strong> (<em>string</em>) – key to use to fetch free surface S wave velocity
+from Metadata container.  Default is “vs0”.</p></li>
+<li><p><strong>uvec</strong> (<a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.SlownessVector" title="mspasspy.ccore.seismic.SlownessVector"><code class="xref py py-class docutils literal notranslate"><span class="pre">SlownessVector</span></code></a>) – slowness vector of the incident wavefield defined via
 custom C++ class <a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.SlownessVector" title="mspasspy.ccore.seismic.SlownessVector"><code class="xref py py-class docutils literal notranslate"><span class="pre">SlownessVector</span></code></a>.
 Default is None which is taken as a signal to fetch the slowness vector
-components from Metadata using ux_key and uy_key.
-:type uvec: <a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.SlownessVector" title="mspasspy.ccore.seismic.SlownessVector"><code class="xref py py-class docutils literal notranslate"><span class="pre">SlownessVector</span></code></a>
-:param vp0: Surface P wave velocity.  Default is None which is taken
-as a signal to fetch this quantity from Metadata using the vp0_key.
-:type vp0: <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>
-:param vs0: Surface S wave velocity.  Default is None which is taken
-as a signal to fetch this quantity from Metadata using the vs0_key.
-:type vs0: <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>
-:param object_history: True to preserve the processing history. For details, refer to</p>
-<blockquote>
-<div><p><code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code>.</p>
-</div></blockquote>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
+components from Metadata using ux_key and uy_key.</p></li>
+<li><p><strong>vp0</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – Surface P wave velocity.  Default is None which is taken
+as a signal to fetch this quantity from Metadata using the vp0_key.</p></li>
+<li><p><strong>vs0</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – Surface S wave velocity.  Default is None which is taken
+as a signal to fetch this quantity from Metadata using the vs0_key.</p></li>
+<li><p><strong>object_history</strong> – True to preserve the processing history. For details, refer
+to <code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code>.</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
 <li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.13.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
 <li><p><strong>dryrun</strong> – True for dry-run, which return “OK”. Used in the mspass_func_wrapper.</p></li>
@@ -1877,8 +1828,8 @@ right. Setting t0 == t1 will disable the taper on the specified end (e.g., t0hea
 <li><p><strong>t1head</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – t1 of the head taper</p></li>
 <li><p><strong>t1tail</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – t1 of the tail taper</p></li>
 <li><p><strong>t0tail</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – t0 of the tail taper</p></li>
-<li><p><strong>object_history</strong> – True to preserve the processing history. For details, refer to
-<code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code>.</p></li>
+<li><p><strong>object_history</strong> – True to preserve the processing history. For details, refer
+to <code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code>.</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
 <li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.13.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
 <li><p><strong>dryrun</strong> – True for dry-run, which return “OK”. Used in the mspass_func_wrapper.</p></li>
@@ -1908,14 +1859,14 @@ related rotate with it.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>data</strong> (<a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">Seismogram</span></code></a>) – data object to be rotated.</p></li>
 <li><p><strong>rotate_param</strong> (<em>see above for details.</em>) – the parameter that defines the rotation.</p></li>
-<li><p><strong>object_history</strong> – True to preserve the processing history. For details, refer to
-<code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code>.</p></li>
+<li><p><strong>object_history</strong> – True to preserve the processing history. For details, refer
+to <code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code>.</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
 <li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.13.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
 <li><p><strong>dryrun</strong> – True for dry-run, which return “OK”. Used in the mspass_func_wrapper.</p></li>
 <li><p><strong>inplace_return</strong> – True to return data in mspass_func_wrapper. This is necessary to be used in mapreduce.</p></li>
 <li><p><strong>function_return_key</strong> – Some functions one might want to wrap with this decorator
-return something that is appropriate to save as Metadata.  If so, use this argument to
+thing that is appropriate to save as Metadata.  If so, use this argument to
 define the key used to set that field in the data that is returned.</p></li>
 </ul>
 </dd>
@@ -1939,8 +1890,8 @@ datum return will be marked dead.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>data</strong> (<a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">Seismogram</span></code></a>) – data object to be rotated.</p></li>
-<li><p><strong>object_history</strong> – True to preserve the processing history. For details, refer to
-<code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code>.</p></li>
+<li><p><strong>object_history</strong> – True to preserve the processing history. For details, refer
+to <code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code>.</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
 <li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.13.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
 <li><p><strong>dryrun</strong> – True for dry-run, which return “OK”. Used in the mspass_func_wrapper.</p></li>
@@ -1972,8 +1923,8 @@ internally stored time shift attribute.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>data</strong> (either <a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeries</span></code></a> or <a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">Seismogram</span></code></a>) – data object to be converted.</p></li>
-<li><p><strong>object_history</strong> – True to preserve the processing history. For details, refer to
-<code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code>.</p></li>
+<li><p><strong>object_history</strong> – True to preserve the processing history. For details, refer
+to <code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code>.</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
 <li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.13.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
 <li><p><strong>dryrun</strong> – True for dry-run, which return “OK”. Used in the mspass_func_wrapper.</p></li>
@@ -1998,8 +1949,8 @@ transformations to data.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>data</strong> (<a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">Seismogram</span></code></a>) – data object to be transformed.</p></li>
 <li><p><strong>matrix</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.array</span></code>) – a 3x3 matrix that defines the transformation.</p></li>
-<li><p><strong>object_history</strong> – True to preserve the processing history. For details, refer to
-<code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code>.</p></li>
+<li><p><strong>object_history</strong> – True to preserve the processing history. For details, refer
+to <code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code>.</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
 <li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.13.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
 <li><p><strong>dryrun</strong> – True for dry-run, which return “OK”. Used in the mspass_func_wrapper.</p></li>
@@ -2049,46 +2000,46 @@ approach is used radian values can to used if you also set
 the argument “angle_units” to “radians”.</p>
 <p>Note the operation handles the singular case of theta==0.0 where it
 simply uses the phi value and rotates the coordinates in a variant of
-RTZ (variant because order is different).
-:param seaz_key:  key to use to fetch back azimuth value (assumed degrees always)
-:type key:  string (default “seaz”)
-:param ema_key:  key to use to fetch emergence angle defining L direction
-relative to local vertical.
-:type ema_key:  string (defautl “ema”)
-:param phi:   angle to rotate around vertical to define the transformation
+RTZ (variant because order is different).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>seaz_key</strong> – key to use to fetch back azimuth value (assumed degrees always)</p></li>
+<li><p><strong>ema_key</strong> (<em>string</em><em> (</em><em>defautl &quot;ema&quot;</em><em>)</em>) – key to use to fetch emergence angle defining L direction
+relative to local vertical.</p></li>
+<li><p><strong>phi</strong> (<em>float</em>) – angle to rotate around vertical to define the transformation
 (positive anticlockwise convention NOT azimuth convention)  Default is None
 which means ignore this parameter and use key.  Setting this value to
 something other than None causes the Metadata fetch method to be overridden.
 WARNING:  this is not backazimuth but angle relative to E direction.
-Note that is not at all what is expected when using a Metadata key
-:type phi:  float
-:param theta:   angle relative to local vertical for defining the L
+Note that is not at all what is expected when using a Metadata key</p></li>
+<li><p><strong>theta</strong> (<em>float</em>) – angle relative to local vertical for defining the L
 coordinate direction.  It is the same as theta in spherical coordinates
 with emergence angle pointing upward.  Default is None which causes the
-algorithm to automatically assume the Metadata key method should be used.
-:type theta:  float
-:param angle_units:  should be either ‘degrees’ (default) or ‘radians’.
+algorithm to automatically assume the Metadata key method should be used.</p></li>
+<li><p><strong>angle_units</strong> (<em>string</em>) – should be either ‘degrees’ (default) or ‘radians’.
 An invalid value will be treated as an attempt to switch to radians
 but will generate an elog warning message.  This argument is ignored unless
-phi is not null (None type)
-:type angle_units: string
-:param alg_name: alg_name is the name the func we are gonna save while preserving the history.
-:type alg_name: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
-:param alg_id: alg_id is a unique id to record the usage of func while preserving the history.
-:type alg_id: <a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.13.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>
-:param dryrun: True for dry-run, which return “OK”. Used in the mspass_func_wrapper.
-:param inplace_return: True to return data in mspass_func_wrapper. This is necessary to be used in mapreduce.
-:param function_return_key:  Some functions one might want to wrap with this decorator</p>
-<blockquote>
-<div><p>return something that is appropriate to save as Metadata.  If so, use this argument to
+phi is not null (None type)</p></li>
+<li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
+<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.13.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
+<li><p><strong>dryrun</strong> – True for dry-run, which return “OK”. Used in the mspass_func_wrapper.</p></li>
+<li><p><strong>inplace_return</strong> – True to return data in mspass_func_wrapper. This is necessary to be used in mapreduce.</p></li>
+<li><p><strong>function_return_key</strong> – <dl class="simple">
+<dt>Some functions one might want to wrap with this decorator</dt><dd><p>return something that is appropriate to save as Metadata.  If so, use this argument to
 define the key used to set that field in the data that is returned.</p>
-<dl class="field-list simple">
-<dt class="field-odd">return<span class="colon">:</span></dt>
-<dd class="field-odd"><p>transformed version of input.  For ensembles the entire ensemble</p>
 </dd>
 </dl>
-<p>is transformed.</p>
-</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">return<span class="colon">:</span></dt>
+<dd class="field-odd"><p>transformed version of input.  For ensembles the entire ensemble
+is transformed.</p>
+</dd>
+</dl>
+</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
@@ -2113,43 +2064,34 @@ also set the “angle_units” argument to “radians”.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>data</strong> (<a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">Seismogram</span></code></a> or
-<code class="xref py py-class docutils literal notranslate"><span class="pre">SeismogramEnsemble</span></code>.) – data object to be transformed</p></li>
+<li><p><strong>data</strong> (<a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">Seismogram</span></code></a> or <code class="xref py py-class docutils literal notranslate"><span class="pre">SeismogramEnsemble</span></code>.) – data object to be transformed</p></li>
 <li><p><strong>key</strong> (<em>string</em>) – key to use to fetch back azimuth value (assumed degrees always)</p></li>
-<li><p><strong>phi</strong> – angle to rotate around vertical to define the transformation</p></li>
-</ul>
-</dd>
-</dl>
-<p>(positive anticlockwise convention NOT azimuth convention)  Default is None
+<li><p><strong>phi</strong> (<em>float</em>) – angle to rotate around vertical to define the transformation
+(positive anticlockwise convention NOT azimuth convention)  Default is None
 which means ignore this parameter and use key.  Setting this value to
-something other than None causes the key method to be overridden.
-:type phi:  float
-:param angle_units:  should be either ‘degrees’ (default) or ‘radians’.
+something other than None causes the key method to be overridden.</p></li>
+<li><p><strong>angle_units</strong> (<em>string</em>) – should be either ‘degrees’ (default) or ‘radians’.
 An invalid value will be treated as an attempt to switch to radians
 but will generate an elog warning message.  This argument is ignored unless
-phi is not null (None type)
-:type angle_units: string
-:param key_is_backazimuth: boolean that when True (default) assumes the
+phi is not null (None type)</p></li>
+<li><p><strong>key_is_backazimuth</strong> – boolean that when True (default) assumes the
 angle extrated with the key argument value is a backazimuth in degrees.
 If set False, the angle will be assumed to be a rotation angle in
-with the anticlockwise positive convention.
-:param alg_name: alg_name is the name the func we are gonna save while preserving the history.
-:type alg_name: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
-:param alg_id: alg_id is a unique id to record the usage of func while preserving the history.
-:type alg_id: <a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.13.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>
-:param dryrun: True for dry-run, which return “OK”. Used in the mspass_func_wrapper.
-:param inplace_return: True to return data in mspass_func_wrapper. This is necessary to be used in mapreduce.
-:param function_return_key:  Some functions one might want to wrap with this decorator</p>
-<blockquote>
-<div><p>return something that is appropriate to save as Metadata.  If so, use this argument to
-define the key used to set that field in the data that is returned.</p>
-</div></blockquote>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>transformed version of input.  For ensembles the entire ensemble</p>
+with the anticlockwise positive convention.</p></li>
+<li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
+<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.13.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
+<li><p><strong>dryrun</strong> – True for dry-run, which return “OK”. Used in the mspass_func_wrapper.</p></li>
+<li><p><strong>inplace_return</strong> – True to return data in mspass_func_wrapper. This is necessary to be used in mapreduce.</p></li>
+<li><p><strong>function_return_key</strong> – Some functions one might want to wrap with this decorator
+return something that is appropriate to save as Metadata.  If so, use this argument to
+define the key used to set that field in the data that is returned.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>transformed version of input.  For ensembles the entire ensemble
+is transformed.</p>
 </dd>
 </dl>
-<p>is transformed.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -2164,8 +2106,8 @@ data of the same length as the taper defined in the operator.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>data</strong> (either <a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeries</span></code></a> or <a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">Seismogram</span></code></a>) – data object to be processed.</p></li>
 <li><p><strong>taper_array</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.array</span></code>) – the array that defines the taper</p></li>
-<li><p><strong>object_history</strong> – True to preserve the processing history. For details, refer to
-<code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code>.</p></li>
+<li><p><strong>object_history</strong> – True to preserve the processing history. For details, refer
+to <code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code>.</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
 <li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.13.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
 <li><p><strong>dryrun</strong> – True for dry-run, which return “OK”. Used in the mspass_func_wrapper.</p></li>
@@ -2217,16 +2159,12 @@ directly test for linear independence but depends upon channel codes
 to assemble one or more bundles needed to build a Seismogram.  The
 algorithm used here is simple and ONLY works if the inputs have been
 sorted so the channels define a group of three unique channel codes.
-For example,</p>
-<blockquote>
-<div><p>HHE, HHN, HHZ</p>
-</div></blockquote>
-<p>would form a typical seed channel grouping.</p>
+For example, HHE, HHN, HHZ, would form a typical seed channel grouping.</p>
 <p>The function will attempt to handle duplicates.  By that I mean
 if the group has two of the same channel code like these sequences:</p>
-<blockquote>
-<div><p>HHE, HHE, HHN, HHZ  or HHE, HHN, HHN, HHZ, HHZ</p>
-</div></blockquote>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>HHE, HHE, HHN, HHZ  or HHE, HHN, HHN, HHZ, HHZ
+</pre></div>
+</div>
 <p>If the duplicates are pure duplicates there is no complication and
 the result will be clean.   If the time spans of the duplicate
 channels are different the decision of which to use keys on a simple
@@ -2271,22 +2209,24 @@ components in a group have a nonempty ProcessingHistory the data to link
 the outputs to the inputs will be posted to ProcessingHistory.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>d</strong> – This is assumed to be an array like object of TimeSeries data</p>
-</dd>
-</dl>
-<p>that are to be used to build the Seismogram objects.  They must be
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>d</strong> – This is assumed to be an array like object of TimeSeries data
+that are to be used to build the Seismogram objects.  They must be
 sorted as described above or the algorithm will fail.   Two typical
 array like objects to use are the member attribute of a TimeSeriesEnsemble
 or a python array constructed from a (sorted) collection of TimeSeries
-objects.
-:param i0:  starting array position for constructing output(s).
+objects.</p></li>
+<li><p><strong>i0</strong> – starting array position for constructing output(s).
 The default is 0 which would be the normal request for an full ensemble
 or a single grouping assembled by some other mechanism.  A nonzero is
-useful to work through a larger container one Seismogram at a time.
-:param iend:  end array position.   The function will attempt to
+useful to work through a larger container one Seismogram at a time.</p></li>
+<li><p><strong>iend</strong> – end array position.   The function will attempt to
 assemble one or more Seismograms from TimeSeries in the range
 d[i0] to d[iend].  Default is 2 for a single Seismogram without
-duplicates.</p>
+duplicates.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
@@ -2326,10 +2266,10 @@ rotate_to_standard method on each Seismogram before any use.</p>
 <dd class="field-odd"><p><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.SeismogramEnsemble" title="mspasspy.ccore.seismic.SeismogramEnsemble">SeismogramEnsemble</a></p>
 </dd>
 <dt class="field-even">Exception<span class="colon">:</span></dt>
-<dd class="field-even"><p>Can throw a MsPASSError for a number of conditions.</p>
+<dd class="field-even"><p>Can throw a MsPASSError for a number of conditions.
+Caller should be enclosed in a handler if run on a large data set.</p>
 </dd>
 </dl>
-<p>Caller should be enclosed in a handler if run on a large data set.</p>
 </dd></dl>
 
 </section>
@@ -2424,10 +2364,10 @@ members that fail the match will be killed.</p></li>
 <dd><p>Bases: <a class="reference internal" href="#mspasspy.algorithms.edit.MetadataOperator" title="mspasspy.algorithms.edit.MetadataOperator"><code class="xref py py-class docutils literal notranslate"><span class="pre">MetadataOperator</span></code></a></p>
 <p>Used to implement += operator on a specified Metadata key.
 Example:  to add 2 to data, d, with key=’icdp’ could use this</p>
-<blockquote>
-<div><p>op = Add(‘icdp’,2)
-d = op.apply(d)</p>
-</div></blockquote>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">op</span> <span class="o">=</span> <span class="n">Add</span><span class="p">(</span><span class="s1">&#39;icdp&#39;</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">d</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+</pre></div>
+</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.algorithms.edit.Add.apply">
 <span class="sig-name descname"><span class="pre">apply</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">apply_to_members</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handles_ensembles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">checks_arg0_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/edit.html#Add.apply"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.edit.Add.apply" title="Permalink to this definition"></a></dt>
@@ -2499,10 +2439,10 @@ left hand side (key0) are always set by this operator unless that
 input was previously marked dead.  Further key1 and key2 can be the
 same although it is hard to conceive how that could be useful.</p>
 <p>Example:  to compute ix as the d[‘sx’] + d[‘chan’] use</p>
-<blockquote>
-<div><p>op = Add2(‘ix1’,’sx’,’chan’)
-d = op.apply(d)</p>
-</div></blockquote>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">op</span> <span class="o">=</span> <span class="n">Add2</span><span class="p">(</span><span class="s1">&#39;ix1&#39;</span><span class="p">,</span><span class="s1">&#39;sx&#39;</span><span class="p">,</span><span class="s1">&#39;chan&#39;</span><span class="p">)</span>
+<span class="n">d</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+</pre></div>
+</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.algorithms.edit.Add2.apply">
 <span class="sig-name descname"><span class="pre">apply</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">apply_to_members</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handles_ensembles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">checks_arg0_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/edit.html#Add2.apply"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.edit.Add2.apply" title="Permalink to this definition"></a></dt>
@@ -2621,10 +2561,10 @@ Because it is an abstract base we have to have this stub.</p>
 <p>Used to implement /= operator on a specified Metadata key.
 Example:  to divide metadata in, d, with key=’Pamp’ by 2.0
 you could use this</p>
-<blockquote>
-<div><p>op = Divide(‘Pamp’,2.-)
-d = op.apply(d)</p>
-</div></blockquote>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">op</span> <span class="o">=</span> <span class="n">Divide</span><span class="p">(</span><span class="s1">&#39;Pamp&#39;</span><span class="p">,</span><span class="mf">2.</span><span class="o">-</span><span class="p">)</span>
+<span class="n">d</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+</pre></div>
+</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.algorithms.edit.Divide.apply">
 <span class="sig-name descname"><span class="pre">apply</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">apply_to_members</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handles_ensembles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">checks_arg0_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/edit.html#Divide.apply"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.edit.Divide.apply" title="Permalink to this definition"></a></dt>
@@ -2696,10 +2636,13 @@ left hand side (key0) are always set by this operator unless that
 input was previously marked dead.  Further key1 and key2 can be the
 same although it is hard to conceive how that could be useful.</p>
 <p>Example:  to compute ix as the d[‘sx’] / d[‘chan’] use</p>
-<blockquote>
-<div><p>op = Divide2(‘ix1’,’sx’,’chan’)
-d = op.apply(d)</p>
-</div></blockquote>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">op</span> <span class="o">=</span> <span class="n">Divide2</span><span class="p">(</span><span class="s1">&#39;ix1&#39;</span><span class="p">,</span><span class="s1">&#39;sx&#39;</span><span class="p">,</span><span class="s1">&#39;chan&#39;</span><span class="p">)</span>
+<span class="n">d</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+</pre></div>
+</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.algorithms.edit.Divide2.apply">
 <span class="sig-name descname"><span class="pre">apply</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">apply_to_members</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handles_ensembles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">checks_arg0_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/edit.html#Divide2.apply"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.edit.Divide2.apply" title="Permalink to this definition"></a></dt>
@@ -2800,15 +2743,15 @@ verbose is set true.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>d</strong> – MsPASS data object to which elog message is to be
 written.</p></li>
-<li><p><strong>testname</strong> – is the string assigned to the “algorithm” field</p></li>
+<li><p><strong>testname</strong> – is the string assigned to the “algorithm” field
+of the message posted to d.elog.</p></li>
+<li><p><strong>message</strong> – specialized message to post - this string is added
+to an internal generic message.</p></li>
+<li><p><strong>severity</strong> – ErrorSeverity to assign to elog message
+(See ErrorLogger docstring).  Default is Informational</p></li>
 </ul>
 </dd>
 </dl>
-<p>of the message posted to d.elog.
-:param message:  specialized message to post - this string is added
-to an internal generic message.
-:param severity:  ErrorSeverity to assign to elog message
-(See ErrorLogger docstring).  Default is Informational</p>
 </dd></dl>
 
 </dd></dl>
@@ -2853,10 +2796,10 @@ also IntegerDivide is the complement to Mod which returns the remainder
 of such a division.</p>
 <p>Example:  to apply integer division to metadata in, d, with key=’icdp’ by 5
 you could use this</p>
-<blockquote>
-<div><p>op = IntegerDivide(‘icdp’,5)
-d = op.apply(d)</p>
-</div></blockquote>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">op</span> <span class="o">=</span> <span class="n">IntegerDivide</span><span class="p">(</span><span class="s1">&#39;icdp&#39;</span><span class="p">,</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">d</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+</pre></div>
+</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.algorithms.edit.IntegerDivide.apply">
 <span class="sig-name descname"><span class="pre">apply</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">apply_to_members</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handles_ensembles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">checks_arg0_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/edit.html#IntegerDivide.apply"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.edit.IntegerDivide.apply" title="Permalink to this definition"></a></dt>
@@ -2928,10 +2871,10 @@ left hand side (key0) are always set by this operator unless that
 input was previously marked dead.  Further key1 and key2 can be the
 same although it is hard to conceive how that could be useful.</p>
 <p>Example:  to compute ix as the d[‘sx’] // d[‘chan’] use</p>
-<blockquote>
-<div><p>op = IntegerDivide2(‘ix1’,’sx’,’chan’)
-d = op.apply(d)</p>
-</div></blockquote>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">op</span> <span class="o">=</span> <span class="n">IntegerDivide2</span><span class="p">(</span><span class="s1">&#39;ix1&#39;</span><span class="p">,</span><span class="s1">&#39;sx&#39;</span><span class="p">,</span><span class="s1">&#39;chan&#39;</span><span class="p">)</span>
+<span class="n">d</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+</pre></div>
+</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.algorithms.edit.IntegerDivide2.apply">
 <span class="sig-name descname"><span class="pre">apply</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">apply_to_members</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handles_ensembles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">checks_arg0_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/edit.html#IntegerDivide2.apply"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.edit.IntegerDivide2.apply" title="Permalink to this definition"></a></dt>
@@ -3288,15 +3231,15 @@ verbose is set true.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>d</strong> – MsPASS data object to which elog message is to be
 written.</p></li>
-<li><p><strong>testname</strong> – is the string assigned to the “algorithm” field</p></li>
+<li><p><strong>testname</strong> – is the string assigned to the “algorithm” field
+of the message posted to d.elog.</p></li>
+<li><p><strong>message</strong> – specialized message to post - this string is added
+to an internal generic message.</p></li>
+<li><p><strong>severity</strong> – ErrorSeverity to assign to elog message
+(See ErrorLogger docstring).  Default is Informational</p></li>
 </ul>
 </dd>
 </dl>
-<p>of the message posted to d.elog.
-:param message:  specialized message to post - this string is added
-to an internal generic message.
-:param severity:  ErrorSeverity to assign to elog message
-(See ErrorLogger docstring).  Default is Informational</p>
 </dd></dl>
 
 </dd></dl>
@@ -3389,10 +3332,10 @@ geometries.</p>
 for integer attributes.</p>
 <p>Example:  to convert the metadata associated with the key ‘ichan’ that
 are currently counting by 1 to numbers that cycle from 0 to 23 us this:</p>
-<blockquote>
-<div><p>op = Mod(‘ix’,24)
-d = op.apply(d)</p>
-</div></blockquote>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">op</span> <span class="o">=</span> <span class="n">Mod</span><span class="p">(</span><span class="s1">&#39;ix&#39;</span><span class="p">,</span><span class="mi">24</span><span class="p">)</span>
+<span class="n">d</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+</pre></div>
+</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.algorithms.edit.Mod.apply">
 <span class="sig-name descname"><span class="pre">apply</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">apply_to_members</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handles_ensembles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">checks_arg0_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/edit.html#Mod.apply"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.edit.Mod.apply" title="Permalink to this definition"></a></dt>
@@ -3464,10 +3407,10 @@ left hand side (key0) are always set by this operator unless that
 input was previously marked dead.  Further key1 and key2 can be the
 same although it is hard to conceive how that could be useful.</p>
 <p>Example:  to compute ix as the d[‘sx’] % d[‘chan’] use</p>
-<blockquote>
-<div><p>op = Mod2(‘ix1’,’sx’,’chan’)
-d = op.apply(d)</p>
-</div></blockquote>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">op</span> <span class="o">=</span> <span class="n">Mod2</span><span class="p">(</span><span class="s1">&#39;ix1&#39;</span><span class="p">,</span><span class="s1">&#39;sx&#39;</span><span class="p">,</span><span class="s1">&#39;chan&#39;</span><span class="p">)</span>
+<span class="n">d</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+</pre></div>
+</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.algorithms.edit.Mod2.apply">
 <span class="sig-name descname"><span class="pre">apply</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">apply_to_members</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handles_ensembles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">checks_arg0_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/edit.html#Mod2.apply"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.edit.Mod2.apply" title="Permalink to this definition"></a></dt>
@@ -3527,13 +3470,13 @@ of testing for validity of the operation.</p>
 <dt class="sig sig-object py" id="mspasspy.algorithms.edit.Multiply">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.edit.</span></span><span class="sig-name descname"><span class="pre">Multiply</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value_to_multiply</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/edit.html#Multiply"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.edit.Multiply" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#mspasspy.algorithms.edit.MetadataOperator" title="mspasspy.algorithms.edit.MetadataOperator"><code class="xref py py-class docutils literal notranslate"><span class="pre">MetadataOperator</span></code></a></p>
-<p>Used to implement <a href="#id9"><span class="problematic" id="id10">*</span></a>= operator on a specified Metadata key.
-Example:  to multiple metadata in, d, with key=’Pamp’ by 2.5
+<p>Used to implement <a href="#id9"><span class="problematic" id="id10">*</span></a>= operator on a specified Metadata key.</p>
+<p>Example:  to multiple metadata in, d, with key=’Pamp’ by 2.5
 you could use this</p>
-<blockquote>
-<div><p>op = Multiply(‘Pamp’,2.5)
-d = op.apply(d)</p>
-</div></blockquote>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">op</span> <span class="o">=</span> <span class="n">Multiply</span><span class="p">(</span><span class="s1">&#39;Pamp&#39;</span><span class="p">,</span><span class="mf">2.5</span><span class="p">)</span>
+<span class="n">d</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+</pre></div>
+</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.algorithms.edit.Multiply.apply">
 <span class="sig-name descname"><span class="pre">apply</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">apply_to_members</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handles_ensembles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">checks_arg0_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/edit.html#Multiply.apply"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.edit.Multiply.apply" title="Permalink to this definition"></a></dt>
@@ -3605,10 +3548,10 @@ left hand side (key0) are always set by this operator unless that
 input was previously marked dead.  Further key1 and key2 can be the
 same although it is hard to conceive how that could be useful.</p>
 <p>Example:  to compute ix as the d[‘sx’] * d[‘chan’] use</p>
-<blockquote>
-<div><p>op = Multiply2(‘ix1’,’sx’,’chan’)
-d = op.apply(d)</p>
-</div></blockquote>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">op</span> <span class="o">=</span> <span class="n">Multiply2</span><span class="p">(</span><span class="s1">&#39;ix1&#39;</span><span class="p">,</span><span class="s1">&#39;sx&#39;</span><span class="p">,</span><span class="s1">&#39;chan&#39;</span><span class="p">)</span>
+<span class="n">d</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+</pre></div>
+</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.algorithms.edit.Multiply2.apply">
 <span class="sig-name descname"><span class="pre">apply</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">apply_to_members</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handles_ensembles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">checks_arg0_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/edit.html#Multiply2.apply"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.edit.Multiply2.apply" title="Permalink to this definition"></a></dt>
@@ -3672,10 +3615,10 @@ of testing for validity of the operation.</p>
 existing value of Metadata associated with the key defined in the
 operator always be overwritten.</p>
 <p>Example:  to set the value of key = ‘a’ to constant 2.0</p>
-<blockquote>
-<div><p>op = SetValue(‘a’,2.0)
-d = op.apply(d)</p>
-</div></blockquote>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">op</span> <span class="o">=</span> <span class="n">SetValue</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span><span class="mf">2.0</span><span class="p">)</span>
+<span class="n">d</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+</pre></div>
+</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.algorithms.edit.SetValue.apply">
 <span class="sig-name descname"><span class="pre">apply</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">apply_to_members</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handles_ensembles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">checks_arg0_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/edit.html#SetValue.apply"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.edit.SetValue.apply" title="Permalink to this definition"></a></dt>
@@ -3683,24 +3626,24 @@ d = op.apply(d)</p>
 Use of decorator adds common MsPASS arguments as call options.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>d</strong> – datum to which operator is to be applied.  d must be a</p>
-</dd>
-</dl>
-<p>valid MsPASS data object or this method will throw a fatal MsPASSError
-exception.  If d is marked dead it will be silently ignored.
-:param apply_to_members:  when true and d is an ensemble object the
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>d</strong> – datum to which operator is to be applied.  d must be a
+valid MsPASS data object or this method will throw a fatal MsPASSError
+exception.  If d is marked dead it will be silently ignored.</p></li>
+<li><p><strong>apply_to_members</strong> – when true and d is an ensemble object the
 operator is applied to the members.  When false the metadata for the
 ensemble will be altered.  This parameter is ignored for atomic
-data types.  Default is False.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>always returns a (usually) edited copy of the input d.</p>
+data types.  Default is False.</p></li>
+</ul>
 </dd>
-</dl>
-<p>When the input d is dead the copy will always be unaltered.
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>always returns a (usually) edited copy of the input d.
+When the input d is dead the copy will always be unaltered.
 Note the copy is a shallow copy which in python means we just return
 the equivalent of a pointer to the caller.  Important for efficiency
 as d can be very large for some ensembles.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -3735,10 +3678,10 @@ be implemented even if they do nothing.</p>
 <dd><p>Bases: <a class="reference internal" href="#mspasspy.algorithms.edit.MetadataOperator" title="mspasspy.algorithms.edit.MetadataOperator"><code class="xref py py-class docutils literal notranslate"><span class="pre">MetadataOperator</span></code></a></p>
 <p>Used to implement -= operator on a specified Metadata key.
 Example:  to subtract 2 from metadata, d, with key=’icdp’ could use this</p>
-<blockquote>
-<div><p>op = Subtract(‘icdp’,2)
-d = op.apply(d)</p>
-</div></blockquote>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">op</span> <span class="o">=</span> <span class="n">Subtract</span><span class="p">(</span><span class="s1">&#39;icdp&#39;</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">d</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+</pre></div>
+</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.algorithms.edit.Subtract.apply">
 <span class="sig-name descname"><span class="pre">apply</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">apply_to_members</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handles_ensembles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">checks_arg0_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/edit.html#Subtract.apply"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.edit.Subtract.apply" title="Permalink to this definition"></a></dt>
@@ -3810,10 +3753,13 @@ left hand side (key0) are always set by this operator unless that
 input was previously marked dead.  Further key1 and key2 can be the
 same although it is hard to conceive how that could be useful.</p>
 <p>Example:  to compute ix as the d[‘sx’] - d[‘chan’] use</p>
-<blockquote>
-<div><p>op = Subtract2(‘ix1’,’sx’,’chan’)
-d = op.apply(d)</p>
-</div></blockquote>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">op</span> <span class="o">=</span> <span class="n">Subtract2</span><span class="p">(</span><span class="s1">&#39;ix1&#39;</span><span class="p">,</span><span class="s1">&#39;sx&#39;</span><span class="p">,</span><span class="s1">&#39;chan&#39;</span><span class="p">)</span>
+<span class="n">d</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+</pre></div>
+</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.algorithms.edit.Subtract2.apply">
 <span class="sig-name descname"><span class="pre">apply</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">apply_to_members</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handles_ensembles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">checks_arg0_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/edit.html#Subtract2.apply"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.edit.Subtract2.apply" title="Permalink to this definition"></a></dt>
@@ -3879,29 +3825,21 @@ all the algorithm will run on the metadata of each member in a loop.
 If false only the ensemble (global) metadata are handled.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>d</strong> – must be a valid MsPASS data object. If not the function</p>
-</dd>
-</dl>
-<p>will throw an exception.   If the datum is marked dead it will
-silently just return the contents.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>keylist</strong> – python list of strings to use as keywords.  Any matching</p>
-</dd>
-</dl>
-<p>keys the metadata of d will be cleared.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>apply_to_members</strong> – is a boolean controlling how the function</p>
-</dd>
-</dl>
-<p>should handle ensembles.  Then set true the erase algorithm will be
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>d</strong> – must be a valid MsPASS data object. If not the function
+will throw an exception.   If the datum is marked dead it will
+silently just return the contents.</p></li>
+<li><p><strong>keylist</strong> – python list of strings to use as keywords.  Any matching
+keys the metadata of d will be cleared.</p></li>
+<li><p><strong>apply_to_members</strong> – is a boolean controlling how the function
+should handle ensembles.  Then set true the erase algorithm will be
 applied in a loop over the member vector of an input ensemble.  When
 False (default) only the ensemble’s metadata is checked.  This parameter
-is ignored if the input is an atomic data type.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>edited copy of d</p>
+is ignored if the input is an atomic data type.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>edited copy of d</p>
 </dd>
 </dl>
 </dd></dl>
@@ -3974,14 +3912,13 @@ a decimator operator is not feasible.  (e.g. needing to create
 10 sps data from 25 sps input.)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>d</strong> – input mspass data object to be tested.   All that is</p>
+<dd class="field-odd"><p><strong>d</strong> (<em>assumed to be a MsPASS atomic data object for which the
+dt attribute is defined.  This method has no safeties to test
+input type.  It will throw an exception if d.dt does not resolve.</em>) – input mspass data object to be tested.   All that is
+actually required is d have a “dt” attribute (i.e. d.dt is defined)
+that is the sample interval for that datum.</p>
 </dd>
 </dl>
-<p>actually required is d have a “dt” attribute (i.e. d.dt is defined)
-that is the sample interval for that datum.
-:type d:   assumed to be a MsPASS atomic data object for which the
-dt attribute is defined.  This method has no safeties to test
-input type.  It will throw an exception if d.dt does not resolve.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -4075,11 +4012,9 @@ documentation you can easily find with a web search.   A key point
 about this algorithm is that unlike decimate it allows resampling to
 something not an integer multiple or division from the input OR
 if you need to upsample data to match the rest of the data set
-(Note that is not usually a good idea unless the upsampling is followed</p>
-<blockquote>
-<div><p>by a decimator to get all data to a lower, uniform sample rate.)</p>
-</div></blockquote>
-<p>A type example where that is essential is some old OBS data from
+(Note that is not usually a good idea unless the upsampling is followed
+by a decimator to get all data to a lower, uniform sample rate.)
+A type example where that is essential is some old OBS data from
 Scripps instruments that had a sample rate that was a multiple of
 one of the more standard rates like 20 or 100.  Such data can be
 downsampled immediately too something like 10 sps with this operator
@@ -4180,18 +4115,15 @@ entire application in a map operator.</p></li>
 <dl class="py function">
 <dt class="sig sig-object py" id="mspasspy.algorithms.signals.correlate">
 <span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.signals.</span></span><span class="sig-name descname"><span class="pre">correlate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shift</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'correlate'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dryrun</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">demean</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'naive'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'auto'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/signals.html#correlate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.signals.correlate" title="Permalink to this definition"></a></dt>
-<dd><p>Cross-correlation of two signals up to a specified maximal shift.
-:param a: first signal
-:param b: second signal
-:param shift: Number of samples to shift for cross correlation. The cross-correlation will consist of 2*shift+1 or</p>
-<blockquote>
-<div><p>2*shift samples. The sample with zero shift will be in the middle.</p>
-</div></blockquote>
+<dd><p>Cross-correlation of two signals up to a specified maximal shift.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>object_history</strong> – True to preserve the processing history. For details, refer to
-<code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper_multi</span></code>.</p></li>
+<li><p><strong>a</strong> (<a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeries</span></code></a>) – first signal</p></li>
+<li><p><strong>b</strong> (<a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeries</span></code></a>) – second signal</p></li>
+<li><p><strong>shift</strong> (<em>int</em>) – Number of samples to shift for cross correlation. The cross-correlation will consist of 2*shift+1 or
+2*shift samples. The sample with zero shift will be in the middle.</p></li>
+<li><p><strong>object_history</strong> – True to preserve the processing history. For details, refer to <code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper_multi</span></code>.</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
 <li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.13.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
 <li><p><strong>dryrun</strong> – True for dry-run, which return “OK”. Used in the mspass_func_wrapper.</p></li>
@@ -4278,8 +4210,7 @@ referenced depend upon the value of “type”.   In particular, note:</p>
 ‘remez_fir’. You can refer to
 <cite>Obspy &lt;https://docs.obspy.org/packages/autogen/obspy.core.trace.Trace.filter.html&gt;</cite> for details.</p></li>
 <li><p><strong>args</strong> – extra arguments</p></li>
-<li><p><strong>object_history</strong> – True to preserve the processing history. For details, refer to
-<code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code>.</p></li>
+<li><p><strong>object_history</strong> – True to preserve the processing history. For details, refer to <code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code>.</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
 <li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.13.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
 <li><p><strong>dryrun</strong> – True for dry-run, which return “OK”. Used in the mspass_func_wrapper.</p></li>
@@ -4375,13 +4306,11 @@ by the “f0” argument.  The basic idea is it hunts up and down the
 frequency axis until it detects the band edge.   The “band edge”
 detection is defined as the point where the signal-to-noise ratio
 first falls below the value defined by the “snr_threshold” argument.
-The algorithm has two variants of note:
-1.  If no point in the snr curve exceeds the valued defined by</p>
-<blockquote>
-<div><p>“snr_threshold” the function returns immediately with all
-attributes of the <cite>BandwidthData</cite> object set to 0.</p>
-</div></blockquote>
-<ol class="arabic simple" start="2">
+The algorithm has two variants of note:</p>
+<ol class="arabic simple">
+<li><p>If no point in the snr curve exceeds the valued defined by
+“snr_threshold” the function returns immediately with all
+attributes of the <cite>BandwidthData</cite> object set to 0.</p></li>
 <li><p>If the snr value at f0 does not exceed the threshold it searches down
 until it finds a value exceeding the threshold.  In that situation
 it marks the first point found as the high frequency band
@@ -4451,21 +4380,17 @@ for how the bandwidth is estimated.  The metrics this function
 computes all depend upon that bandwidth estimate.  The default return
 of this function is the return of <cite>EstimateBandwidth</cite> translated to
 keyp-value pairs.   Those are:</p>
-<blockquote>
-<div><p><em>low_f_band_edge</em> - lowest frequency exceeding threshold
-<em>high_f_band_edge</em> - highest frequency exeeding threshold
-<em>high_f_band_edge_snr</em> and <em>low_f_band_edge_snr</em> are the snr values</p>
-<blockquote>
-<div><p>at the band edges</p>
-</div></blockquote>
-<dl class="simple">
-<dt><em>spectrum_frequency_range</em> - total frequency band for estimate</dt><dd><p>(really just 0 to Nyquist).</p>
-</dd>
-<dt><em>bandwidth</em> - bandwidth of estimate in dB.</dt><dd><p>i.e. 20*log10(high_f_band_edge/low_f_band_edge)</p>
-</dd>
-</dl>
-<p><em>bandwidth_fraction</em> - bandwidth/spectrum_frequency_range</p>
-</div></blockquote>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>*low_f_band_edge* - lowest frequency exceeding threshold
+*high_f_band_edge* - highest frequency exeeding threshold
+*high_f_band_edge_snr* and *low_f_band_edge_snr* are the snr values
+  at the band edges
+*spectrum_frequency_range* - total frequency band for estimate
+  (really just 0 to Nyquist).
+*bandwidth* - bandwidth of estimate in dB.
+  i.e. 20*log10(high_f_band_edge/low_f_band_edge)
+*bandwidth_fraction* - bandwidth/spectrum_frequency_range
+</pre></div>
+</div>
 <p>A set of optional metrics can be computed.  All optional metrics use
 the bandwidth estimates in one way or another.   Optional metrics are
 defined by the following keywords passed through a list (actually
@@ -4664,15 +4589,12 @@ null means FD_snr_estimator couldn’t detect a signal and the algorithm
 failed.   When False the datum is returned silently but
 will have no snr data defined in a dict stored with the key
 metadata_output_key (i.e. that attribute will be undefined in output)</p></li>
-<li><p><strong>metadata_output_key</strong> – <p>is a string used as a key under which the
+<li><p><strong>metadata_output_key</strong> – is a string used as a key under which the
 subdocument (python dict) created internally is stored.  Default is
 “Parrival”.   The idea is if multiple phases are being analyzed
 each phase should have a different key set by this argument
-(e.g. if PP were also being analyzed in the same workflow you</p>
-<blockquote>
-<div><p>might use a key like “PParrival”).</p>
-</div></blockquote>
-</p></li>
+(e.g. if PP were also being analyzed in the same workflow you
+might use a key like “PParrival”).</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -5088,13 +5010,17 @@ data range.  If the starttime of the data is greater than t0 for
 the mute the datum is killed and an error posted to elog.  The
 reason is in that situation the data would be completely zeroed
 anyway and it is better to define it dead and leave an error message
-than to completely null data.
-:param d:  input atomic MsPASS data object (TimeSeries or Seismogram)
-:object_history:  It set true the function will add define this</p>
-<blockquote>
-<div><p>step as an map operation to preserve object level history.
+than to completely null data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>d</strong> – input atomic MsPASS data object (TimeSeries or Seismogram)</p>
+</dd>
+<dt class="field-even">Object_history<span class="colon">:</span></dt>
+<dd class="field-even"><p>It set true the function will add define this
+step as an map operation to preserve object level history.
 (default is False)</p>
-</div></blockquote>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -5117,13 +5043,11 @@ is involved if you want to recover something.   To be specific
 a “short segment” means the requested time span for a the
 window operation form win_start to win_end is not completely
 inside (inclusive of the endpoints) the range of the data.</p>
-<p>Handling of “short segments” has these elements:
-1.  If the window range is completely outside the range of</p>
-<blockquote>
-<div><p>the data the result is always killed and returned
-as a dead datum with no sample data. (d.npts=0)</p>
-</div></blockquote>
-<ol class="arabic" start="2">
+<p>Handling of “short segments” has these elements:</p>
+<ol class="arabic">
+<li><p>If the window range is completely outside the range of
+the data the result is always killed and returned
+as a dead datum with no sample data. (d.npts=0)</p></li>
 <li><p>Behavior if there is the window range overlaps but
 has boundaries outside the data range depends on the setting
 of the argument <cite>short_segment_handling</cite> and the
@@ -5138,12 +5062,13 @@ silently.   That can be useful in some algorithms
 handled.  What defines possible recovery is set by
 the <cite>short_segment_handling</cite> string.  It must be
 one of only three possible values or the function
-will abort with a ValueError exception:
-“kill” - (default) does not recovery attempt and will</p>
-<blockquote>
-<div><p>kill any data with time inconsistencies.</p>
-</div></blockquote>
+will abort with a ValueError exception:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
 <dl class="simple">
+<dt>“kill” - (default) does not recovery attempt and will</dt><dd><p>kill any data with time inconsistencies.</p>
+</dd>
 <dt>“truncate” - this truncates to the output to the</dt><dd><p>time range max(d.t0,win.starttime) to
 min(d.endtime(),win.endtime).</p>
 </dd>
@@ -5179,21 +5104,21 @@ reduce the memory footprint.</p>
 <p>Note the description of subsample time handling in the
 related docstring for <cite>WindowDataAtomic</cite>.   For ensembles
 each member output preserves subsample timing.</p>
-<p>Finally, how the function handles data marked dead is     important.  For atomic data the is no complexity.  
+<p>Finally, how the function handles data marked dead is     important.  For atomic data the is no complexity.
 dead is dead and the function just immediately returns
-a reference to the input.  For ensembles some members 
-can be dead or the entire ensemble can be marked dead. 
+a reference to the input.  For ensembles some members
+can be dead or the entire ensemble can be marked dead.
 If the ensemble is marked dead the function immediately
-returns a reference to the input.  If any members are 
-dead the result will depend on the boolean argument 
-“retain_data_members”.  When True (the default) dead 
-members will be copied verbatim to the output.   
-If False the dead members will be SILENTLY deleted.  
-The False option is only recommended if the windowing is 
-internal to a function and the windowed output will be 
-discarded during processing.  Otherwise the error log of why 
-data were killed will be lost.   If you need to save 
-memory by clearing dead bodies use the <cite>Undertaker</cite> 
+returns a reference to the input.  If any members are
+dead the result will depend on the boolean argument
+“retain_data_members”.  When True (the default) dead
+members will be copied verbatim to the output.
+If False the dead members will be SILENTLY deleted.
+The False option is only recommended if the windowing is
+internal to a function and the windowed output will be
+discarded during processing.  Otherwise the error log of why
+data were killed will be lost.   If you need to save
+memory by clearing dead bodies use the <cite>Undertaker</cite>
 class to bury the dead and retain the error log data.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -5203,7 +5128,8 @@ class to bury the dead and retain the error log data.</p>
 object or the function will log an error to d and return a None.</p></li>
 <li><p><strong>twin_start</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – defines the start of timeWindow to be cut</p></li>
 <li><p><strong>twin_end</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – defines the end of timeWindow to be cut</p></li>
-<li><p><strong>t0shift</strong> (<em>real number</em><em> (</em><em>float</em><em>) or </em><em>a string that defines a</em>) – is an optional time shift to apply to the time window.
+<li><p><strong>t0shift</strong> (<em>real number</em><em> (</em><em>float</em><em>) or </em><em>a string that defines a
+Metadata container key.</em>) – is an optional time shift to apply to the time window.
 This parameter is convenient to avoid conversions to relative time.
 A typical example would be to set t0shift to an arrival time and let
 the window define time relative to that arrival time.  Default is None
@@ -5215,57 +5141,42 @@ key for fetching a time from a datum’s Metadata container.
 Note the name t0shift is a bit inconsistent with this usage but
 was retained as the original api did not have the string
 option.</p></li>
-</ul>
-</dd>
-</dl>
-<p>Metadata container key.
-:param short_segment_handling: Defines method for handling data where
+<li><p><strong>short_segment_handling</strong> – <p>Defines method for handling data where
 the requested interval is shorter than the requested window but does
 have some overlap. <cite>segment_handling_methods</cite> must be one of the following:</p>
-<blockquote>
-<div><dl class="simple">
-<dt><cite>kill</cite> - in this mode any issues cause the return to be marked dead</dt><dd><p>(this is the default)</p>
-</dd>
-<dt>‘pad’ -  in this mode return will have short segments will be padded</dt><dd><p>with zeros to define data of the required length.</p>
-</dd>
-<dt>‘truncate’ - in this mode short segments will be truncated on left</dt><dd><p>and/or right to match actual data range.</p>
-</dd>
-</dl>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>`kill` - in this mode any issues cause the return to be marked dead
+         (this is the default)
+&#39;pad&#39; -  in this mode return will have short segments will be padded
+         with zeros to define data of the required length.
+&#39;truncate&#39; - in this mode short segments will be truncated on left
+            and/or right to match actual data range.
+</pre></div>
+</div>
 <p>Note that if the input time range does not overlap the requested
 interval “kiLl” is always the behavior as by definition the result
 is null.</p>
-</div></blockquote>
-<dl class="field-list simple">
-</dl>
-<p>Throws a ValueError exception of not one of the accepted values.
-:param log_recoverable_errors:  When True (default) any recoverable
+</p></li>
+<li><p><strong>log_recoverable_errors</strong> – When True (default) any recoverable
 windowing error (meaning at least a partial overlap in time range)
 will cause a log message to be posted to the elog container of the
 output.  When False recovery will be done silently.  Note when
 <cite>short_segment_handling</cite> is set to “kill” logging is not optional and
-kill will always create an error log entry.
-:param overwrite_members:   controls handling of the member vector of
+kill will always create an error log entry.</p></li>
+<li><p><strong>overwrite_members</strong> (<em>boolean</em>) – controls handling of the member vector of
 ensembles as described above.  When True the member atomic data will
 be overwritten by the windowed version and the ensmble returned will
 be a reference to the same container as the input.  When False
 (the default) a new container is created and returned.  Note in that
 mode dead data are copied to the same slot as the input unaltered.
 This argument will be silently ignored if the input is an atomic
-MsPASS seismic object.
-:type overwrite_members:  boolean
-:param retain_dead_members:   Controls how dead data are handled with 
-ensembles.  When True (default) dead ensemble members are copied verbatim 
-to the output.  When False they are silently deleted. (see above for 
-a more complete description).  This argument is ignored for Atomic data.
-:type retain_dead_members: boolean
-:param object_history: boolean to enable or disable saving object</p>
-<blockquote>
-<div><p>level history.  Default is False.  Note this functionality is
-implemented via the mspass_func_wrapper decorator.</p>
-</div></blockquote>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
+MsPASS seismic object.</p></li>
+<li><p><strong>retain_dead_members</strong> (<em>boolean</em>) – Controls how dead data are handled with
+ensembles.  When True (default) dead ensemble members are copied verbatim
+to the output.  When False they are silently deleted. (see above for
+a more complete description).  This argument is ignored for Atomic data.</p></li>
+<li><p><strong>object_history</strong> – boolean to enable or disable saving object
+level history.  Default is False.  Note this functionality is
+implemented via the mspass_func_wrapper decorator.</p></li>
 <li><p><strong>alg_name</strong> – When history is enabled this is the algorithm name
 assigned to the stamp for applying this algorithm.
 Default (“WindowData”) should normally be just used.
@@ -5302,13 +5213,11 @@ is involved if you want to recover something.   To be specific
 a “short segment” means the requested time span for a the
 window operation form win_start to win_end is not completely
 inside (inclusive of the endpoints) the range of the data.</p>
-<p>Handling of “short segments” has these elements:
-1.  If the window range is completely outside the range of</p>
-<blockquote>
-<div><p>the data the result is always killed and returned
-as a dead datum with no sample data. (d.npts=0)</p>
-</div></blockquote>
-<ol class="arabic" start="2">
+<p>Handling of “short segments” has these elements:</p>
+<ol class="arabic">
+<li><p>If the window range is completely outside the range of
+the data the result is always killed and returned
+as a dead datum with no sample data. (d.npts=0)</p></li>
 <li><p>Behavior if there is the window range overlaps but
 has boundaries outside the data range depends on the setting
 of the argument <cite>short_segment_handling</cite> and the
@@ -5323,12 +5232,13 @@ silently.   That can be useful in some algorithms
 handled.  What defines possible recovery is set by
 the <cite>short_segment_handling</cite> string.  It must be
 one of only three possible values or the function
-will abort with a ValueError exception:
-“kill” - (default) does not recovery attempt and will</p>
-<blockquote>
-<div><p>kill any data with time inconsistencies.</p>
-</div></blockquote>
+will abort with a ValueError exception:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
 <dl class="simple">
+<dt>“kill” - (default) does not recovery attempt and will</dt><dd><p>kill any data with time inconsistencies.</p>
+</dd>
 <dt>“truncate” - this truncates to the output to the</dt><dd><p>time range max(d.t0,win.starttime) to
 min(d.endtime(),win.endtime).</p>
 </dd>
@@ -5354,16 +5264,17 @@ time method (endtime is a special case for sample npts-1)
 will have subsample accuracy.</p>
 <p>Note:  This function should not normally be used.  WindowData
 calls it directy for atomic inputs and adds only a tiny overhead.
-It can still be used as long as you don’t need object-level history.’</p>
+It can still be used as long as you don’t need object-level history.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>d</strong> – is the input data.  d must be either a
-<a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.TimeSeries</span></code></a> or <a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.Seismogram</span></code></a>
+<li><p><strong>d</strong> – is the input data.  d must be either
+a <a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.TimeSeries</span></code></a> or <a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.Seismogram</span></code></a>
 object or the function will log an error to d and return a None.</p></li>
 <li><p><strong>twin_start</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – defines the start of timeWindow to be cut</p></li>
 <li><p><strong>twin_end</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – defines the end of timeWindow to be cut</p></li>
-<li><p><strong>t0shift</strong> (<em>real number</em><em> (</em><em>float</em><em>) or </em><em>a string that defines a</em>) – is an optional time shift to apply to the time window.
+<li><p><strong>t0shift</strong> (<em>real number</em><em> (</em><em>float</em><em>) or </em><em>a string that defines a
+Metadata container key.</em>) – is an optional time shift to apply to the time window.
 This parameter is convenient to avoid conversions to relative time.
 A typical example would be to set t0shift to an arrival time and let
 the window define time relative to that arrival time.  Default is None
@@ -5375,38 +5286,34 @@ key for fetching a time from a datum’s Metadata container.
 Note the name t0shift is a bit inconsistent with this usage but
 was retained as the original api did not have the string
 option.</p></li>
-</ul>
-</dd>
-</dl>
-<p>Metadata container key.
-:param short_segment_handling: Defines method for handling data where
+<li><p><strong>short_segment_handling</strong> – <p>Defines method for handling data where
 the requested interval is shorter than the requested window but does
 have some overlap. <cite>segment_handling_methods</cite> must be one of the following:</p>
-<blockquote>
-<div><dl class="simple">
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+<dl class="simple">
 <dt><cite>kill</cite> - in this mode any issues cause the return to be marked dead</dt><dd><p>(this is the default)</p>
 </dd>
-<dt>‘pad’ -  in this mode return will have short segments will be padded</dt><dd><p>with zeros to define data of the required length.</p>
+<dt>’pad’ -  in this mode return will have short segments will be padded</dt><dd><p>with zeros to define data of the required length.</p>
 </dd>
-<dt>‘truncate’ - in this mode short segments will be truncated on left</dt><dd><p>and/or right to match actual data range.</p>
+<dt>’truncate’ - in this mode short segments will be truncated on left</dt><dd><p>and/or right to match actual data range.</p>
 </dd>
 </dl>
 <p>Note that if the input time range does not overlap the requested
-interval “kiLl” is always the behavior as by definition the result
+interval “kill” is always the behavior as by definition the result
 is null.</p>
-</div></blockquote>
-<dl class="field-list simple">
-</dl>
-<p>Throws a ValueError exception of not one of the accepted values.
-:param log_recoverable_errors:  When True (default) any recoverable
+</p></li>
+<li><p><strong>log_recoverable_errors</strong> – When True (default) any recoverable
 windowing error (meaning at least a partial overlap in time range)
 will cause a log message to be posted to the elog container of the
 output.  When False recovery will be done silently.  Note when
 <cite>short_segment_handling</cite> is set to “kill” logging is not optional and
-kill will always create an error log entry.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>copy of d with sample range reduced to twin range.  Returns
+kill will always create an error log entry.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>copy of d with sample range reduced to twin range.  Returns
 an empty version of the parent data type (default constructor) if
 the input is marked dead</p>
 </dd>
@@ -5435,23 +5342,25 @@ the result will be returned marked dead with an elog entry
 highlighting the problem.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>d</strong> (works with either <cite>TimeSeries</cite> or <cite>Seismogram</cite>) – atomic MsPASS seismic data object to be windowed.</p>
-</dd>
-</dl>
-<p>objects.  Will raise a TypeError exception if d is not one of
-the two atomic data types.
-:param stime:  start time of window range
-:type stime:  float
-:param etime:  end time of window range
-:type etime:  float
-:param pad_fraction_cutoff:  limit for the
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>d</strong> (works with either <cite>TimeSeries</cite> or <cite>Seismogram</cite>
+objects.  Will raise a TypeError exception if d is not one of
+the two atomic data types.) – atomic MsPASS seismic data object to be windowed.</p></li>
+<li><p><strong>stime</strong> (<em>float</em>) – start time of window range</p></li>
+<li><p><strong>etime</strong> (<em>float</em>) – end time of window range</p></li>
+<li><p><strong>pad_fraction_cutoff</strong> – limit for the
 fraction of data with undefined values before the datum is
 killed.   (see above)  If set to 0.0 this is an expensive way
-to behave the same as WindowData
-:return:  object of the same type as d.   Will be marked dead
+to behave the same as WindowData</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>object of the same type as d.   Will be marked dead
 if the fraction of undefined data exceeds pad_fraction_cutoff.
 Otherwise will return a data vector of constant size that may
 be padded.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
@@ -5461,15 +5370,13 @@ be padded.</p>
 blocks for ensemble objects.  If a function is called on an ensemble
 object that throws an exception this function will post the message
 posted to all ensemble members.  It silently does nothing if the
-ensemble is empty.
-:param d: is the ensemble data to be handled.  It print and error message</p>
-<blockquote>
-<div><p>and returns doing nothing if d is not one of the known ensemble
-objects.</p>
-</div></blockquote>
+ensemble is empty.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
+<li><p><strong>d</strong> – is the ensemble data to be handled.  It print and error message
+and returns doing nothing if d is not one of the known ensemble
+objects.</p></li>
 <li><p><strong>alg</strong> – is the algorithm name posted to elog on each member</p></li>
 <li><p><strong>message</strong> – is the string posted to all members</p></li>
 <li><p><strong>severity</strong> – is the error severity level</p></li>
@@ -5573,9 +5480,9 @@ it detects.</p></li>
 gap is defined in this algorithm as any section where the endtime of
 one segment is followed by a start time of the next segment that is
 more than 1 sample in duration.  Specifically when</p>
-<blockquote>
-<div><p>(segment[i+1].t0()-segment[i].endtime()) &gt; 1.5*dt</p>
-</div></blockquote>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>(segment[i+1].t0()-segment[i].endtime()) &gt; 1.5*dt
+</pre></div>
+</div>
 <p>The result depends on values of the (optional) windowing arguments
 starttime and endtime and the boolean “zero_gaps” argument.
 If windowing is enabled (done by changing
@@ -5612,25 +5519,20 @@ all segments.</p></li>
 is detected the algorithm will attempt to repair the overlap
 to yield a continuous time series vectgor if it determined to have
 matching data.  See description above for more details.</p></li>
-<li><p><strong>zero_gaps</strong> – When set False, which is the default, any gaps
+<li><p><strong>zero_gaps</strong> (<em>boolean</em><em> (</em><em>default False</em><em>)</em>) – When set False, which is the default, any gaps
 detected in the output window will cause the return to be marked
 dead.  When set True, gaps will be zeroed and with a record of
 gap positions posted to the Metadata of the output.  See above
 for details.</p></li>
-<li><p><strong>zero_gaps</strong> – boolean controlling how gaps are to be handled.</p></li>
+<li><p><strong>zero_gaps</strong> – boolean controlling how gaps are to be handled.
+See above for details of the algorithm.</p></li>
+<li><p><strong>object_history</strong> – boolean to enable or disable saving object
+level history.  Default is False.  Note this functionality is
+implemented via the mspass_func_wrapper decorator.</p></li>
 </ul>
 </dd>
-</dl>
-<p>See above for details of the algorithm.
-:type zero_gaps:  boolean (default False)
-:param object_history: boolean to enable or disable saving object</p>
-<blockquote>
-<div><p>level history.  Default is False.  Note this functionality is
-implemented via the mspass_func_wrapper decorator.</p>
-</div></blockquote>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>TimeSeries in the range defined by the time span of the input
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>TimeSeries in the range defined by the time span of the input
 vector of segments or if starttime or endtime are specified a reduced
 time range.  The result may be marked dead for a variety of reasons
 with error messages explaining why in the return elog attribute.</p>

@@ -52,13 +52,15 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
     
-              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Desktop Operation</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/quick_start.html">Getting Started in a Nutshell</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/run_mspass_with_docker.html">Run MsPASS with Docker</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_docker_compose.html">Deploy MsPASS with Docker Compose</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/mspass_desktop.html">Running MsPASS on a Desktop Computer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/command_line_desktop.html">Command Line Docker Desktop Operation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda.html">Deploy MsPASS with Conda</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda.html#advanced-setup-considerations">Advanced Setup Considerations</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Cluster Operations</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_HPC.html">Deploying MsPASS on an HPC cluster</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda_and_coiled.html">Deploy MsPASS with Conda and Coiled</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
@@ -95,6 +97,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/header_math.html">Header (Metadata) Math</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/graphics.html">Graphics in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/signal_to_noise.html">Signal to Noise Ratio Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/arrival_time_measurement.html">Arrival Time Measurement Techniques in MsPASS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
@@ -366,11 +369,11 @@ cardinal is true</p></li>
 </ul>
 </dd>
 <dt class="field-even">Raise<span class="colon">:</span></dt>
-<dd class="field-even"><p>Can throw either an AssertionError or MsPASSrror(currently defaulted to</p>
+<dd class="field-even"><p>Can throw either an AssertionError or MsPASSrror(currently defaulted to
+pybind11’s default RuntimeError.  Error message can be obtained by
+calling the what method of RuntimeError).</p>
 </dd>
 </dl>
-<p>pybind11’s default RuntimeError.  Error message can be obtained by
-calling the what method of RuntimeError).</p>
 </dd></dl>
 
 <dl class="py function">
@@ -402,17 +405,14 @@ transfered back to a pandas dataframe for the consistency.</p>
 <li><p><strong>filename</strong> – path to text file that is to be read to create the
 table object that is to be processed (internally we use pandas or
 dask dataframes)</p></li>
-<li><p><strong>separator</strong> – <p>The delimiter used for seperating fields,
+<li><p><strong>separator</strong> – The delimiter used for seperating fields,
 the default is “s+”, which is the regular expression of “one or more
-spaces”.</p>
-<blockquote>
-<div><p>For csv file, its value should be set to ‘,’.
+spaces”.
+For csv file, its value should be set to ‘,’.
 This parameter will be passed into pandas.read_csv or dask.dataframe.read_csv.
 To learn more details about the usage, check the following links:
 <a class="reference external" href="https://pandas.pydata.org/docs/reference/api/pandas.read_csv.html">https://pandas.pydata.org/docs/reference/api/pandas.read_csv.html</a>
-<a class="reference external" href="https://docs.dask.org/en/latest/generated/dask.dataframe.read_csv.html">https://docs.dask.org/en/latest/generated/dask.dataframe.read_csv.html</a></p>
-</div></blockquote>
-</p></li>
+<a class="reference external" href="https://docs.dask.org/en/latest/generated/dask.dataframe.read_csv.html">https://docs.dask.org/en/latest/generated/dask.dataframe.read_csv.html</a></p></li>
 <li><p><strong>type_dict</strong> – pairs of each attribute and its type, usedd to validate
 the type of each input item</p></li>
 <li><p><strong>header_line</strong> – defines the line to be used as the attribute names for
@@ -492,7 +492,7 @@ python uses call by reference d may thus be altered.</p>
 object will be returned if d was marked dead</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>:class:<a href="#id1"><span class="problematic" id="id2">`</span></a>~obspy.core.trace.Trace`b</p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.trace.Trace.html#obspy.core.trace.Trace" title="(in ObsPy v1.4.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Trace</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1168,26 +1168,16 @@ User’s who might want to pull MsPASS apart and use this class
 separately could do so with an alternative Database extension than
 MsPaSs.) – Should be an instance of  mspasspy.db.Database that is
 used to save the remains of any bodies.</p></li>
-<li><p><strong>regular_data_collection</strong> – collection where we bury regular</p></li>
+<li><p><strong>regular_data_collection</strong> (<em>string</em>) – collection where we bury regular
+dead bodies.  Default “cemetery”</p></li>
+<li><p><strong>aborted_data_collection</strong> (<em>string</em>) – collection where aborted data documents
+are buried.   Default “abortions”</p></li>
+<li><p><strong>data_tag</strong> – tag to attach to each document.  Normally would
+be the same as the data_tag used for a particular save operation
+for data not marked dead.</p></li>
 </ul>
 </dd>
 </dl>
-<p>dead bodies.  Default “cemetery”
-:type regular_data_collection:  string</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>aborted_data_collection</strong> – collection where aborted data documents</p>
-</dd>
-</dl>
-<p>are buried.   Default “abortions”
-:type aborted_data_collection:  string</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>data_tag</strong> – tag to attach to each document.  Normally would</p>
-</dd>
-</dl>
-<p>be the same as the data_tag used for a particular save operation
-for data not marked dead.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.util.Undertaker.Undertaker.bring_out_your_dead">
 <span class="sig-name descname"><span class="pre">bring_out_your_dead</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bury</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mummify_atomic_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/Undertaker.html#Undertaker.bring_out_your_dead"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.Undertaker.Undertaker.bring_out_your_dead" title="Permalink to this definition"></a></dt>
@@ -1246,19 +1236,15 @@ subdocument called “tombstone”.</p></li>
 they will also be saved.</p>
 <p>It is important to realize this method acts like an overloaded
 c++ method in that it accepts multiple data types, but handles
-them differently.
-1.  Atomic data (TimeSeries or Seismogram) marked dead</p>
-<blockquote>
-<div><p>generate a document saved to the specified collection and
+them differently.</p>
+<ol class="arabic simple">
+<li><p>Atomic data (TimeSeries or Seismogram) marked dead
+generate a document saved to the specified collection and
 an (optional) history document.   If the mummify_atomic_data
 parameter is set True (the default) the returned copy of the
 data will be processed with the “mummify” method of this class.
-(That means the sample data are discarded and the array is set</p>
-<blockquote>
-<div><p>to zero length).</p>
-</div></blockquote>
-</div></blockquote>
-<ol class="arabic simple" start="2">
+(That means the sample data are discarded and the array is set
+to zero length).</p></li>
 <li><p>Ensembles have to handle two different situations.   If the
 entire ensemble is marked dead, all members are treated as
 dead and then processed through this method by a recursive
@@ -1326,47 +1312,39 @@ seismic data object a TypeError will be thrown.</p>
 saved as a document in a collection set by the constructor
 (self.aborted_data_collection) that defaults to “abortions”.
 The documents saved have up to 3 key-value pairs:</p>
-<blockquote>
-<div><dl class="simple">
-<dt>“tombstone” - contents are a subdocument (dict) of the</dt><dd><p>wf document that was aborted during construction.</p>
-</dd>
-</dl>
-<p>“logdata” - any error log records left by the reeader that failed.
-“type” -  string describing the expected type of data object</p>
-<blockquote>
-<div><p>that a reader was attempting to construct.   In rare
-situations it could be set to “unknown” if
-Undertaker._handle_abortion is called on a raw document
-and type is not set (see parameters below)</p>
-</div></blockquote>
-</div></blockquote>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>&quot;tombstone&quot; - contents are a subdocument (dict) of the
+  wf document that was aborted during construction.
+&quot;logdata&quot; - any error log records left by the reeader that failed.
+&quot;type&quot; -  string describing the expected type of data object
+  that a reader was attempting to construct.   In rare
+  situations it could be set to &quot;unknown&quot; if
+  Undertaker._handle_abortion is called on a raw document
+  and type is not set (see parameters below)
+</pre></div>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>doc_or_datum</strong> (Must be one of <cite>TimeSeries</cite>, <cite>Seismogram</cite>, <cite>Metadata</cite>,) – container defining the aborted fetus.</p>
-</dd>
-</dl>
-<p>or a python dict.   For the seismic data objects any content in
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>doc_or_datum</strong> (Must be one of <cite>TimeSeries</cite>, <cite>Seismogram</cite>, <cite>Metadata</cite>,
+or a python dict.   For the seismic data objects any content in
 the ErrorLogger will be saved.   For dict input an application
 should post a message to the dict with some appropriate (custom)
-key to preserve a cause for the abortion.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>type</strong> – string description of the type of data object</p>
-</dd>
-</dl>
-<p>to associate with dict input.  Default for this parameter is None
+key to preserve a cause for the abortion.) – container defining the aborted fetus.</p></li>
+<li><p><strong>type</strong> – string description of the type of data object
+to associate with dict input.  Default for this parameter is None
 and it is not referenced at all for normal input of TimeSeries
 and Seismogram objects.  It is ONLY referenced if arg0 is a
 dict. If type is None and the input is a dict the value assigned to
 the “type” key in the abortions document is “unknown”.   The
 escape for “unknown” makes the method bombproof but may make the
-saved documents ambiguous.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Exception<span class="colon">:</span></dt>
-<dd class="field-odd"><p>throws a TypeError if arg0 does not obey type</p>
+saved documents ambiguous.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Exception<span class="colon">:</span></dt>
+<dd class="field-even"><p>throws a TypeError if arg0 does not obey type
+list described above.</p>
 </dd>
 </dl>
-<p>list described above.</p>
 </dd></dl>
 
 <dl class="py method">
