@@ -66,22 +66,21 @@ def extract_initial_beam_estimate(
     :param ensemble:   ensemble to be scanned
     :type ensemble:  `TimeSeriesEnsemble`
     :param metric:   quality metric to use for selecting member to use
-    as return.  Always scans for the maximum of specified value as it
-    assume the value is some norm measure.   Accepted values at present
-    are all those computed by `broadband_snr_QC`:  bandwidth,
-    filtered_envelope, filtered_L2, filtered_Linf, or filtered_perc.
-    Default is "bandwidth".   A ValueError exception will be thrown
-    if not one of those values.
+      as return.  Always scans for the maximum of specified value as it
+      assume the value is some norm measure.   Accepted values at present
+      are all those computed by `broadband_snr_QC`:  bandwidth,
+      filtered_envelope, filtered_L2, filtered_Linf, or filtered_perc.
+      Default is "bandwidth".   A ValueError exception will be thrown
+      if not one of those values.
     :type metric:  string
     :param subdoc_key:   `broadband_snr_QC` normally posts output to
-    a subdocument (dictionary).  This is the key that is used to
-    extract that subdocument from each member.   Default is "Parrival"
-    which is the default of `broadband_snr_QC`.
+      a subdocument (dictionary).  This is the key that is used to
+      extract that subdocument from each member.   Default is "Parrival"
+      which is the default of `broadband_snr_QC`.
     :type subdoc_key:  string
     :return:  `TimeSeries` that is a copy of the ensemble member with
-    the largest value of the requested member.   A default constructed, dead datum
-    is returned if the algorithm failed.
-
+      the largest value of the requested member.   A default constructed, dead datum
+      is returned if the algorithm failed.
     """
     if ensemble.dead():
         return TimeSeries()
@@ -146,10 +145,10 @@ def estimate_ensemble_bandwidth(
     :param ensemble:  ensemble of data to be scanned
     :type ensemble:  `TimeSeriesEnsemble`
     :param srn_doc_key:  subdocument key of attributes computed by
-    `broadband_snr_QC` to fetch as estimates of low and high frequency
-    edges.
+      `broadband_snr_QC` to fetch as estimates of low and high frequency
+      edges.
     :type snr_doc_key:  string (default "Parrival" = default of
-    `broadband_snr_QC`)
+      `broadband_snr_QC`)
     """
     if ensemble.dead():
         return [0.0, 0.0, 0]
@@ -245,6 +244,7 @@ def MCXcorPrepP(
     data exist and be accessible with the key defined by the argument
     "snr_doc_key".   The data in that dictionary are used in the following
     algorithms run within this function:
+
     1.  The working bandwidth of the data is established by computing the median
         of the attributes "low_f_band_edge" and "high_f_band_edge" extracted from
         each live member.  Those frequencies are computed using the function in this module
@@ -297,98 +297,97 @@ def MCXcorPrepP(
     were marked live in the input.
 
     :param ensemble:   input ensemble of data to use.  As noted above it
-    must have been processed with `broadband_snr_QC` or this function will
-    return a null result.  The function makes a tacit assumption that all
-    the members of this ensemble are in relative time with 0 of each member
-    being an estimate of the P wave arrival time.  It does no tests to
-    validate this assumption so the assumption is wrong you will, at best,
-    get junk as output.
+      must have been processed with `broadband_snr_QC` or this function will
+      return a null result.  The function makes a tacit assumption that all
+      the members of this ensemble are in relative time with 0 of each member
+      being an estimate of the P wave arrival time.  It does no tests to
+      validate this assumption so the assumption is wrong you will, at best,
+      get junk as output.
     :type ensemble: `TimeSeriesEnsemble`  Note for most uses this is the
-    output of ExtractComponent of a `SeismogramEnsemble` processed with
-    `broadband_snr_QC` that is the longitudinal component for the P phase.
+      output of ExtractComponent of a `SeismogramEnsemble` processed with
+      `broadband_snr_QC` that is the longitudinal component for the P phase.
     :param noise_window:  time window defining the section of each
-    ensemble member that is to be treated as "noise" for estimating
-    a relative noise level.
+      ensemble member that is to be treated as "noise" for estimating
+      a relative noise level.
     :type noise_window:  `TimeWindow` tacitly expected to be time relative
-    to a measure of the P wave arrival time.
+      to a measure of the P wave arrival time.
     :param noise_metric:  vector norm metric to use for measuring the
-    amplitude of the noise extracted from the data in the range defined by
-    noise_window.
+      amplitude of the noise extracted from the data in the range defined by
+      noise_window.
     :type noise_metric: string (Must be one of:  "mad" (default), "rms",
-    or "peak").  Any other string will cause the function to throw a ValueError
-    exception.
+      or "peak").  Any other string will cause the function to throw a ValueError
+      exception.
     :param initial_beam_metric:  key of attribute to extract from the
-    output of `broadband_snr_QC` used to select initial beam signal.
-    This argument is passed to the `extract_initial_beam_estimate` function for
-    as the "metric" argument of that function.
+      output of `broadband_snr_QC` used to select initial beam signal.
+      This argument is passed to the `extract_initial_beam_estimate` function for
+      as the "metric" argument of that function.
     :param initial_beam_metric:  string (default "bandwidth").  For a list of
-    allowed values see the docstring of `extract_initial_beam_estimate`.
+      allowed values see the docstring of `extract_initial_beam_estimate`.
     :param snr_doc_key:  key to use to fetch the subdocument containing the
-    output of `broadband_snr_QC`.
+      output of `broadband_snr_QC`.
     :type snr_doc_key:  string (default "Parrival" which is the default of
-    `broadband_snr_QC`).
+      `broadband_snr_QC`).
     :param low_f_corner: force the low frequency corner for the output data
-    bandwidth to this value.   When defined, the internal call to
-    `estimate_ensemble_bandwidth` is bypassed and the output data are filtered
-    between the value defined by low_f_corner and high_f_corner.
+      bandwidth to this value.   When defined, the internal call to
+      `estimate_ensemble_bandwidth` is bypassed and the output data are filtered
+      between the value defined by low_f_corner and high_f_corner.
     :type low_f_corner:  float (default None which is interpreted to mean
-    scan ensemble to estimate the frequency range)
+      scan ensemble to estimate the frequency range)
     :param high_f_corner: force the high frequency corner for the output data
-    bandwidth to this value.   When defined, the internal call to
-    `estimate_ensemble_bandwidth` is bypassed and the output data are filtered
-    between the value defined by low_f_corner and high_f_corner.
+      bandwidth to this value.   When defined, the internal call to
+      `estimate_ensemble_bandwidth` is bypassed and the output data are filtered
+      between the value defined by low_f_corner and high_f_corner.
     :type high_f_corner:  float (default None which is interpreted to mean
-    scan ensemble to estimate the frequency range)
-    :param npoles:  number of poles to use for the Butterworth bandpass
-    filter.
+      scan ensemble to estimate the frequency range)
+    :param npoles:  number of poles to use for the Butterworth bandpass filter.
     :type npoles:  integer (default 4)
     :param set_phases: boolean that if set True (default) the P phase time s
-    P, pP (if defined), and PP (if defined) are computed and posted to the
-    output of each ensemble member.  If False the algorith assumes the
-    same quantities were previously calculated and can be fetched from the
-    member TimeSeries Metadata container using keys defined by Ptime_key,
-    pPtimme_key, and PPtime_key.
+      P, pP (if defined), and PP (if defined) are computed and posted to the
+      output of each ensemble member.  If False the algorith assumes the
+      same quantities were previously calculated and can be fetched from the
+      member TimeSeries Metadata container using keys defined by Ptime_key,
+      pPtimme_key, and PPtime_key.
     :param Ptime_key:
     :param pPtime_key:
     :param PPtime_key:  These three arguments define alternative keys that
-    will be used to fetch (if set_phases is false) or post (if set_phases is True)
-    computed P, pP, and PP times to each member's Metadata container.
-    Changing any of these values not really advised when set_phases is True.
-    These are most useful if the phase arrival times were previously
-    computed or measured and posted with different keys.
+      will be used to fetch (if set_phases is false) or post (if set_phases is True)
+      computed P, pP, and PP times to each member's Metadata container.
+      Changing any of these values not really advised when set_phases is True.
+      These are most useful if the phase arrival times were previously
+      computed or measured and posted with different keys.
     :param station_collection:   MonogDB collection name used to fetch
-    receiver coordinate data.   Normal practice in MsPASS is to save
-    receiver Metadata in two channels called "channel" and "site" and
-    to load the coordinate data through normalization when the data are
-    loaded.  The MsPASS convention defines data loaded by normalization
-    with a leading collection name.  e.g. the "lat" value extracted from a
-    "channel" document would be posted to the data as "channel_lat".
-    The same value, however, loaded from "site" would be tagged "site_lat".
-    The default for this argument is "channel" which means the algorithm
-    will require the attributes "channel_lat" and "channel_lon" as the
-    receiver coordinates (in degrees).  The standard alternative is to
-    define `station_collection="site"`, in which case the function will
-    use "site_lat" and "site_lon".
+      receiver coordinate data.   Normal practice in MsPASS is to save
+      receiver Metadata in two channels called "channel" and "site" and
+      to load the coordinate data through normalization when the data are
+      loaded.  The MsPASS convention defines data loaded by normalization
+      with a leading collection name.  e.g. the "lat" value extracted from a
+      "channel" document would be posted to the data as "channel_lat".
+      The same value, however, loaded from "site" would be tagged "site_lat".
+      The default for this argument is "channel" which means the algorithm
+      will require the attributes "channel_lat" and "channel_lon" as the
+      receiver coordinates (in degrees).  The standard alternative is to
+      define `station_collection="site"`, in which case the function will
+      use "site_lat" and "site_lon".
     :type station_collection:  string (default "channel")
     :param search_window_fraction:   The window for defining the
-    correlation window is determined by running the internal
-    `_coda_duration` function on each ensemble member and computing the
-    range from the median of the ranges computed from all the ensemble
-    members.  Each coda search, however, is constrained by the time so f
-    pP and/or PP.   As noted above the function uses the pP time for
-    events with depths greater than 100 km but PP for shallow sources.
-    To allow for hypocenter errors  the duration defined by
-    P to pP or P to PP is multiplied by this factor to define the
-    search start for the coda estimation.
+      correlation window is determined by running the internal
+      `_coda_duration` function on each ensemble member and computing the
+      range from the median of the ranges computed from all the ensemble
+      members.  Each coda search, however, is constrained by the time so f
+      pP and/or PP.   As noted above the function uses the pP time for
+      events with depths greater than 100 km but PP for shallow sources.
+      To allow for hypocenter errors  the duration defined by
+      P to pP or P to PP is multiplied by this factor to define the
+      search start for the coda estimation.
     :type search_window_fraction: float (default 0.9)
     :param minimum_coda_duration:   if the estimate of coda duration
-    computed internally is less than this value the correlation window
-    is set to this value - relative time from P.
-    :type minimum_coda_duration:  float (5.0 seconds)
+      computed internally is less than this value the correlation window
+      is set to this value - relative time from P.
+      :type minimum_coda_duration:  float (5.0 seconds)
     :param correlation_window_start:  the time of the correlation window
-    set in the output "beam" is fixed as this value.   It is normally
-    a negative number defining a time before P that no signal is likely to
-    have an arrival before this relative time.
+      set in the output "beam" is fixed as this value.   It is normally
+      a negative number defining a time before P that no signal is likely to
+      have an arrival before this relative time.
     :type correlation_window_start:  float (default -3.0)
     """
     alg = "MCXcorPrepP"
@@ -603,20 +602,20 @@ def dbxcor_weights(ensemble, stack, residual_norm_floor=0.1):
     for that datum.
 
     :param ensemble:  `TimeSeriesEnsemble` of data from which weights are to
-    be computed.
+      be computed.
     :type ensemble:  Assumed to be a `TimeSeriesEnsemble`.  No type checking
-    is done so if input is wrong an exception will occur but what is thown
-    will depend on what ensemble actually is.
+      is done so if input is wrong an exception will occur but what is thown
+      will depend on what ensemble actually is.
     :param stack:  TimeSeries containing stack to be used to compute weights.
-    The method returns robust weights relative to the vector of data in
-    this object.
+      The method returns robust weights relative to the vector of data in
+      this object.
     :type stack:  `TimeSeries`.
     :param residual_norm_floor:  nondimensional floor in the ratio norm2(r)/norm2(d)
-    used as described above.  Default is 0.1 which is reasonable for high snr
-    signals.   Data with irregular quality can profit from smaller values of this parameter.
+      used as described above.  Default is 0.1 which is reasonable for high snr
+      signals.   Data with irregular quality can profit from smaller values of this parameter.
     :type residual_norm_floor:  float
     :return: numpy vector of weights parallel with ensemble.member.  Dead
-    members will have a negative weight in this vector.
+      members will have a negative weight in this vector.
     """
     norm_floor = np.finfo(np.float32).eps * stack.npts
     N = len(ensemble.member)
@@ -956,14 +955,14 @@ def _dbxcor_stacker(
     as it has no safties and assumes ensemble and stack0 are what it expects.
 
     :param ensemble:  TimeSeriesEnsemble assumed to have constant data
-    range and sample interval and not contain any dead data.
+      range and sample interval and not contain any dead data.
     :param stack0:  TimeSeries of initial stack estimate - assumed to have
-    same data vector length as all ensemble members.
+      same data vector length as all ensemble members.
     :param eps:  relative norm convergence criteria.  Stop iteration when
-    norm(delta stack data)/norm(stack.data)<eps.
+      norm(delta stack data)/norm(stack.data)<eps.
     :param maxiterations:  maximum number of iterations (default 20)
     :param residual_norm_floor: floor on residuals used to compute dbxcor weight
-    function.  See docstring for `dbxcor_weights` for details.
+      function.  See docstring for `dbxcor_weights` for details.
     :type residual_norm_floor:   float (default 0.01)
     """
     stack = TimeSeries(stack0)
@@ -2187,36 +2186,36 @@ def _coda_duration(ts, level, t0=0.0, search_start=None) -> TimeWindow:
     argument.
 
     :param ts:  Datum to be processed.   The function will return a null
-    result (zero length window) if ts.t0> t0 (argument value).  The sample
-    data is assumed filtered to an appropriate band where the envelope will
-    properly define the coda.
+      result (zero length window) if ts.t0> t0 (argument value).  The sample
+      data is assumed filtered to an appropriate band where the envelope will
+      properly define the coda.
     :type ts: `TimeSeries` is assumed.  There is not explicit type checking
-    but a type mismatch will always cause an error.
+      but a type mismatch will always cause an error.
     :param level:  amplitude of where the backward time search will be
-    terminated.   This value should normally be computed from a background
-    noise estimate.
+      terminated.   This value should normally be computed from a background
+      noise estimate.
     :type level:   float
     :param t0:  beginning of coda search interval.  This time is mainly used
-    as the failed search.  That is, if the level never rises above the
-    value defined by the `level` argument a zero length window will be
-    returned with start and end both set to this value.   If the value
-    is inconsistent with the start time of the data it is reset to the
-    time of the first data sample.
+      as the failed search.  That is, if the level never rises above the
+      value defined by the `level` argument a zero length window will be
+      returned with start and end both set to this value.   If the value
+      is inconsistent with the start time of the data it is reset to the
+      time of the first data sample.
     :type t0:  float (default 0.0 - appropriate for normal use with data
-    time shifted so 0 is a P or S phase arrival time)
+      time shifted so 0 is a P or S phase arrival time)
     :param search_start:  optional time to start backward search.
-    The default, which is defined with a None type, is to start the search
-    at ts.endtime().  If a value is given and it exceeds ts.endtime()
-    the search will silently be truncated to start at ts.endtime().
-    Similarly if `search_start` is less than ts.t0 the search will also
-    be silently reset to the ts.endtime().
+      The default, which is defined with a None type, is to start the search
+      at ts.endtime().  If a value is given and it exceeds ts.endtime()
+      the search will silently be truncated to start at ts.endtime().
+      Similarly if `search_start` is less than ts.t0 the search will also
+      be silently reset to the ts.endtime().
     :type search_start:  float (time - either relative time or an epoch time)
     :return:  `TimeWindow` object with window `end` value defining the
-    end of the coda.  window.end-window.start is a measure of coda duration.
-    Returns a zero length window if the amplitude never exceeds the
-    valued defined by the `level` parameter.   Not the start value may
-    be different from the input t0 value if the data start time (ts.t0) is
-    greater than the value defined by the `t0` argument.
+      end of the coda.  window.end-window.start is a measure of coda duration.
+      Returns a zero length window if the amplitude never exceeds the
+      valued defined by the `level` parameter.   Not the start value may
+      be different from the input t0 value if the data start time (ts.t0) is
+      greater than the value defined by the `t0` argument.
     """
     # silently handle inconsistencies in t0 and search_start
     # perhaps should have these issue an elog complaint
@@ -2280,13 +2279,13 @@ def _set_phases(
              receiver.  In that case the only other required source property
              is "source_time" - event origin time.
     :param d:  seismic datum to process.   This datum requires source and
-    receiver metadata attributes as noted above
+      receiver metadata attributes as noted above
     :type d:   Assumed to be a `TimeSeries`.   That is not tested as this is
-    an internal function.  Use outside the module should assure input is
-    a `TimeSeries` or create an error handler for exceptions.
+      an internal function.  Use outside the module should assure input is
+      a `TimeSeries` or create an error handler for exceptions.
     :param model:   an instance of an obspy TauPyModel object used to
-    compute times.
-    :type model:   obspy TauPyModel object
+      compute times.
+      :type model:   obspy TauPyModel object
     :param Ptime_key:  key used to set the pP arrival time.
     :type pPtime_key:  string (default "pPtime")
     :param pPtime_key:  key used to set the P arrival time.
@@ -2294,16 +2293,16 @@ def _set_phases(
     :param PPtime_key:  key used to set the PP arrival time.
     :type PPtime_key:  string (default "PPtime")
     :param station_collection:   normalizing collection used to define
-    receiver coordinates.   Used only to create names for coordinates.
-    e.g. if set to "site" expects to find "site_lat" while if set to
-    default "channel" would expect to find "channel_lat".
+      receiver coordinates.   Used only to create names for coordinates.
+      e.g. if set to "site" expects to find "site_lat" while if set to
+      default "channel" would expect to find "channel_lat".
     :type station_collection:  string (default "channel")
     :param default_depth:   source depth to use if the attribute "source_depth"
-    is not defined.   This is a rare recovery to handle the case where
-    the epicenter and origin time are defined but the depth is not.
+      is not defined.   This is a rare recovery to handle the case where
+      the epicenter and origin time are defined but the depth is not.
     :type default_depth:  float
     :return:  `TimeSeries` copy of input with model-based arrival times posted
-    to Metadata container with the specified keys.
+      to Metadata container with the specified keys.
     """
     if d.dead():
         return d

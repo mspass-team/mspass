@@ -629,19 +629,19 @@ class Database(pymongo.database.Database):
           the keys to be cleared.
 
         :param collection:  Specify the collection name for this read.
-           In MsPASS the equivalent of header attributes are stored in
-           MongoDB documents contained in a "collection".   The assumption
-           is a given collection only contains documents for one of the
-           two atomic types defined in MsPASS:  `TimeSeries` or `Seismogram`.
-           The data type for collections defined by the schema is an
-           attribute that the reader tests to define the type of atomic
-           objects to be constructed (Note ensembles are assembled from
-           atomic objects by recursive calls the this same read method.)
-           The default is "wf_TimeSeries", but we recommend always defining
-           this argument for clarity and stability in the event the default
-           would change.
-         :type collection:   :class:`str` defining a collection that must be
-           defined in the schema.  If not, the function will abort the job.
+          In MsPASS the equivalent of header attributes are stored in
+          MongoDB documents contained in a "collection".   The assumption
+          is a given collection only contains documents for one of the
+          two atomic types defined in MsPASS:  `TimeSeries` or `Seismogram`.
+          The data type for collections defined by the schema is an
+          attribute that the reader tests to define the type of atomic
+          objects to be constructed (Note ensembles are assembled from
+          atomic objects by recursive calls the this same read method.)
+          The default is "wf_TimeSeries", but we recommend always defining
+          this argument for clarity and stability in the event the default
+          would change.
+        :type collection:   :class:`str` defining a collection that must be
+          defined in the schema.  If not, the function will abort the job.
 
         :param data_tag:  The definition of a dataset can become ambiguous
           when partially processed data are saved within a workflow.   A common
@@ -1327,9 +1327,9 @@ class Database(pymongo.database.Database):
           :class:`mspasspy.ccore.seismic.TimeSeriesEnsemble`, or
           :class:`mspasspy.ccore.seismic.SeismogramEnsemble`
         :param return_data: When True return a (usually edited) copy
-        of the data received.   When False, the default, return only
-        a requested subset of the attributes in the wf document saved
-        for this datum.s
+          of the data received.   When False, the default, return only
+          a requested subset of the attributes in the wf document saved
+          for this datum.s
         :param return_list:  list of keys for attributes to extract
           and set for return python dictionary when return_data is False.
           Ignored if return_data is True.   Be warned for ensembles the
@@ -3530,10 +3530,10 @@ class Database(pymongo.database.Database):
         :param exclude_keys: the metadata attributes you want to exclude from being updated.
         :type exclude_keys: a :class:`list` of :class:`str`
         :param exclude_objects: a list of indexes, where each specifies a object in the ensemble you want to
-        exclude from being saved. The index starts at 0.
+            exclude from being saved. The index starts at 0.
         :type exclude_objects: :class:`list`
         :param collection: the collection name you want to use. If not specified, use the defined collection in the metadata
-        schema.
+            schema.
         :param ignore_metadata_changed_test: if specify as ``True``, we do not check the whether attributes we want to update are in the Metadata.modified() set. Default to be ``False``.
         :param data_tag: a user specified "data_tag" key to tag the saved wf document.
         :type data_tag: :class:`str`

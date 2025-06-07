@@ -37,24 +37,42 @@ def filter(
     Applies a time invariant filter to a MsPASS data object.
 
     This entry is a wrapper around the obspy filter function.  It accepts the
-    same arguments as the obspy function and runs the same implementation.
-    See their documentation for details, but note the idiosyncracy of
-    their API is inherited.  Because different types of filters are
-    enabled by the setting of the "type" argument, what kwarg values are
-    referenced depend upon the value of "type".   In particular, note:
+    same arguments as the obspy function and runs the same implementation
+    with the same idiosyncracies of their implementation.   Refer to their
+    documentation for details, but because this function is so fundamental
+    for data processing we note a few key points.
 
-        - "bandpass" requires values for "freqmin" and "freqmax as corner frequenices
-        - "lowpass" requires only a value for "freq" to define the one corner
-        - "highpass" also requres only the value "freq" for the low corner
+    The "type" argument is required by their implementation and must be one
+    of the following:  *bandpass*, *lowpass*, or *highpass*.  A confusing
+    feature is that different kwarg values are required for different values
+    of "type" that are not consistent.   Requirements for the different
+    acceptable values of "type" are:
 
-    There are other options described in the obspy documentation.
+    - If `type=="bandpass"` you must specify `freqmin` and `freqmax` values for
+      the passband with units of Hz.  You can optionally change the (integer)
+      value `corners` to specify the number of poles of the Butterworth
+      filter this option implies.   Note there is also a `zerophase` boolean
+      that if set True (default is false for minimum phase) causes the function
+      to apply a zerophase Butterworth instead of the default minimum phase
+      version.
+    - If `type=="lowpass"` you must specify only one corner but with a different
+      keyword of `freq`.   `corners` and `zerophase` are the same same as for
+      the "bandpass" option.  Again this option implies a Butterworth filter.
+    - If `type=="highpass"` the function behaves like "lowpass" except the
+      value of `freq` is the low frequency corner versus the high frequency
+      corner for lowpass.   `corners` and `zerophase` are the same same as for
+      the "bandpass" option.  Again this option implies a Butterworth filter.
+
+    There are also `bandstop`, `lowpass_fir`, `lowpass_cheby_2`, and
+    `remez_fir` options for the "type" argument.   See the obspy documentation
+    if you want to use these more obscure options.
 
     :param data: input data, only mspasspy data objects are accepted, i.e. TimeSeries, Seismogram, Ensemble.
     :param type: type of filter, 'bandpass', 'bandstop', 'lowpass', 'highpass', 'lowpass_cheby_2', 'lowpass_fir',
-      'remez_fir'. You can refer to
+      'remez_fir'. as noted above You can refer to
       `Obspy <https://docs.obspy.org/packages/autogen/obspy.core.trace.Trace.filter.html>` for details.
     :type type: str
-    :param args: extra arguments
+    :param args: extra arguments - see above as type value determines what is required here.
     :param object_history: True to preserve the processing history. For details, refer to :class:`~mspasspy.util.decorators.mspass_func_wrapper`.
     :param alg_name: alg_name is the name the func we are gonna save while preserving the history.
     :type alg_name: :class:`str`

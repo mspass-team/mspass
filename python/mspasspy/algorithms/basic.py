@@ -212,14 +212,21 @@ def rotate(
 
     This function can apply three different types of rotation depending on the type of parameter given.
     If a :class:`~mspasspy.ccore.utility.SphericalCoordinate` is given, it will rotate the data
-    into a coordinate system defined by the direction defined by the spherical coordinate.  The data are
+    into a coordinate system defined by the direction defined by the spherical coordinate.  That is, the data are
     rotated such that x1 becomes the transverse component, x2 becomes radial, and x3 becomes longitudinal.
 
-    If an unite vector of three components that defines the direction of x3 direction (longitudinal) is give,
-    it will turn the vector into a :class:`~mspasspy.ccore.utility.SphericalCoordinate` object and calles the
-    related rotate with it.
+    A variant is that the :code:`rotate_parameter` can be defined as a
+    three-component unit vector (i.e. assumed normalized so L2 norm is 1.0).
+    In that case the unit vector is treated as the expected P ray emergence
+    angle used to define the equivalent class:`~mspasspy.ccore.utility.SphericalCoordinate`
+    object as described above.  An important limitation at the present is if
+    used this way the vector must be defined as a
+    :class:`~mspasspy.ccore.seismic.DoubleVector`.  Numpy or python array
+    objects will not work but cause a TypeError exception to be thrown.
 
-    If a :class:`float` number is given, it will rotate the horizontal components by this much angle in radians.
+    If a :class:`float` number is given for `rotate_parameter`, this function
+    will rotate the horizontal components by this angle in radians.  Note the
+    polarity is geographic convention as clockwise angle from north.   
 
     :param data: data object to be rotated.
     :type data: :class:`~mspasspy.ccore.seismic.Seismogram`

@@ -243,8 +243,8 @@ A typical python job script would look like this:
   module load python/3.10.10  # optional - only needed if not using default python
   cd *working_directory*
   python << EOI
-  import hpc
-  launcher = hpc.HPCClusterLauncher()
+  from mspass_launcher.hpc import HPCClusterLauncher
+  launcher = HPCClusterLauncher()
   launcher.run("myscript.py")
   EOI
 

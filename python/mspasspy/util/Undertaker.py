@@ -525,16 +525,14 @@ class Undertaker:
         (self.aborted_data_collection) that defaults to "abortions".
         The documents saved have up to 3 key-value pairs:
 
-        .. code-block:: text
-
-            "tombstone" - contents are a subdocument (dict) of the
-              wf document that was aborted during construction.
-            "logdata" - any error log records left by the reeader that failed.
-            "type" -  string describing the expected type of data object
-              that a reader was attempting to construct.   In rare
-              situations it could be set to "unknown" if
-              Undertaker._handle_abortion is called on a raw document
-              and type is not set (see parameters below)
+        - "tombstone" - contents are a subdocument (dict) of the
+          wf document that was aborted during construction.
+        - "logdata" - any error log records left by the reeader that failed.
+        - "type" -  string describing the expected type of data object
+          that a reader was attempting to construct.   In rare
+          situations it could be set to "unknown" if
+          Undertaker._handle_abortion is called on a raw document
+          and type is not set (see parameters below)
 
         :param doc_or_datum:  container defining the aborted fetus.
         :type doc_or_datum:  Must be one of `TimeSeries`, `Seismogram`, `Metadata`,

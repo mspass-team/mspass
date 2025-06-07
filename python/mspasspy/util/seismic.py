@@ -27,9 +27,9 @@ def print_metadata(d, indent=2):
 
     :param d:  datum for which the Metadata is to be printed.
     :type d:  any subclass of `mspasspy.ccore.Metadata` or a
-    python dictionary (the container used for documents returned
-    by pymongo).  If d is anything else a TypeError exception
-    will be thrown.
+      python dictionary (the container used for documents returned
+      by pymongo).  If d is anything else a TypeError exception
+      will be thrown.
     :param indent:   indentation argument for json printing
     :type indent:  integer (default 2)
     """
@@ -95,23 +95,23 @@ def regularize_sampling(ensemble, dt_expected, Nsamp=10000, abort_on_error=False
     and need to be robust for what might otherwise be considered a user error.
 
     :param ensemble:  ensemble container of data to be scanned for irregular
-    sampling.
+      sampling.
     :type ensemble:  `TimeSeriesEnsemble` or `SeismogramEnsemble`.   The
-    function does not test for type and will abort with an undefined method
-    error if sent anything else.
+      function does not test for type and will abort with an undefined method
+      error if sent anything else.
     :param dt_expected:  constant data sample interval expected.
     :type dt_expected:  float
     :param Nsamp:   Nominal number of samples expected in the ensemble members.
-    This number is used to compute the soft test to allow for slippery clocks
-    discussed above.   (Default 10000) e = regularize_sampling(e,dt)
-    assert e.live
+      This number is used to compute the soft test to allow for slippery clocks
+      discussed above.   (Default 10000) e = regularize_sampling(e,dt)
+      assert e.live
     :type Nsamp:  integer
     :param abort_on_error:  Controls what the function does if it
-    encountered a datum with a sample interval different that dt_expected.
-    When True the function aborts with a ValueError exception if ANY
-    ensemble member does not have a matching sample interval.  When
-    False (the default) the function uses the MsPASS error logging
-    to hold a message an kills any member datum with a problem.
+      encountered a datum with a sample interval different that dt_expected.
+      When True the function aborts with a ValueError exception if ANY
+      ensemble member does not have a matching sample interval.  When
+      False (the default) the function uses the MsPASS error logging
+      to hold a message an kills any member datum with a problem.
     :type abort_on_error:  boolean
 
     """
@@ -162,18 +162,20 @@ def ensemble_time_range(ensemble, metric="inner") -> TimeWindow:
     time range.
     :type ensemble:  `TimeSeriesEnsemble` or `SeismogramEnsemble`.
     :param metric:   measure to use to define the time range.
-    Accepted values are:
-      "inner" - (default) return range defined by largest
-          start time to smallest end time.
-      "outer" - return range defined by minimum start time and
-          largest end time (maximum time span of data)
-      "median" - return range as the median of the extracted
-          vectors of start time and end time values.
-      "mean" - return range as arithmetic average of
-          start and end time vectors
+      Accepted values are:
+
+      - "inner" - (default) return range defined by largest
+        start time to smallest end time.
+      - "outer" - return range defined by minimum start time and
+        largest end time (maximum time span of data)
+      - "median" - return range as the median of the extracted
+        vectors of start time and end time values.
+      - "mean" - return range as arithmetic average of
+        start and end time vectors
+
     :return:  `TimeWindow` object with start and end times.  If the
-    ensemble has all dead member the default constructed TimeWindow
-    object will be returned which has zero length.
+      ensemble has all dead member the default constructed TimeWindow
+      object will be returned which has zero length.
     """
     if not isinstance(ensemble, (TimeSeriesEnsemble, SeismogramEnsemble)):
         message = "ensemble_time_range:   illegal type for arg0={}\n".format(

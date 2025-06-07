@@ -342,17 +342,9 @@ def WindowDataAtomic(
         one of only three possible values or the function
         will abort with a ValueError exception:
 
-        .. code-block:: text
-
-        "kill" - (default) does not recovery attempt and will
-                 kill any data with time inconsistencies.
-        "truncate" - this truncates to the output to the
-                time range max(d.t0,win.starttime) to
-                min(d.endtime(),win.endtime).
-        "pad" - will cause the function to have data in
-                the span define dby win_start to win_end but
-                the sections where the data are undefined will
-                be set to zeros.
+        -  "kill" (default) does not recovery attempt and will kill any data with time inconsistencies.
+        -  "truncate" - this truncates to the output to the time range max(d.t0,win.starttime) to min(d.endtime(),win.endtime).
+        -  "pad" - will cause the function to have data in the span define dby win_start to win_end but the sections where the data are undefined will be set to zeros.
 
     Users should also be aware that this function preserves subsample timing
     in modern earthquake data.   All seismic reflection processing
