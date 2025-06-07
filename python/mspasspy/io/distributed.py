@@ -211,7 +211,7 @@ def read_distributed_data(
            common source gathers (ensmebles) might be created
            using a list something like this:
 
-           .. code-block:: python
+    .. code-block:: python
 
            [{"source_id" : ObjectId('64b917ce9aa746564e8ecbfd')},
             {"source_id" : ObjectId('64b917d69aa746564e8ecbfe')},
@@ -1269,74 +1269,74 @@ def write_distributed_data(
     Saving data from a parallel container (i.e. bag/rdd) is a different
     problem from a serial writer.  Bottlenecks are likely with
     communication delays talking to the MonboDB server and
-    complexities of file based io.   Further, there are efficiency issues 
-    in the need to reduce transactions that cause delays with the MongoDB 
-    server.   This function tries to address these issues with two 
+    complexities of file based io.   Further, there are efficiency issues
+    in the need to reduce transactions that cause delays with the MongoDB
+    server.   This function tries to address these issues with two
     approaches:
 
-        1.   Since v2 it uses single function that handles writing the 
-             sample data for a datum.   For atomic data that means a 
+        1.   Since v2 it uses single function that handles writing the
+             sample data for a datum.   For atomic data that means a
              single array but for ensembles it is the combination of all
-             arrays in the ensemble "member" containers.   The writing 
+             arrays in the ensemble "member" containers.   The writing
              functions are passed through a map operator
-             so writing is a parallelized per worker.  Note the function 
-             also abstracts how the data are written with different 
-             things done depending on the "storage_mode" attribute 
+             so writing is a parallelized per worker.  Note the function
+             also abstracts how the data are written with different
+             things done depending on the "storage_mode" attribute
              that can optionally be defined for each atomic object.
-        2.   After the sample data are saved we use a MongoDB 
-             "update_many" operator with the "many" defined by the 
-             partition size.  That reduces database transaction delays 
-             by 1/object_per_partition.  For ensembles the partitioning 
-             is natural with bulk writes controlled by the number of 
-             ensemble members. 
+        2.   After the sample data are saved we use a MongoDB
+             "update_many" operator with the "many" defined by the
+             partition size.  That reduces database transaction delays
+             by 1/object_per_partition.  For ensembles the partitioning
+             is natural with bulk writes controlled by the number of
+             ensemble members.
 
-    The function also handles data marked dead in a standardized way 
-    though the use of the :class:`mspasspy.util.Undertaker` now 
-    defined within the Database class handle.   The default will 
-    call the `bury` method on all dead data which leaves a document 
-    containing the datum's Metadata and and error log messages in 
-    a collection called "cemetery".   If the `cremate` argument is 
-    set True dead data will be vaporized and no trace of them will 
-    appear in output.  
+    The function also handles data marked dead in a standardized way
+    though the use of the :class:`mspasspy.util.Undertaker` now
+    defined within the Database class handle.   The default will
+    call the `bury` method on all dead data which leaves a document
+    containing the datum's Metadata and and error log messages in
+    a collection called "cemetery".   If the `cremate` argument is
+    set True dead data will be vaporized and no trace of them will
+    appear in output.
 
-    To further reduce database traffic the function has two 
-    (boolean) options called `post_elog` and `post_history`.  
-    When set True the elog and/or object-level history data will 
-    be posted as subdocuments in the output collection instead of 
-    the normal (at least as defined by the Database handle) way 
-    these data are saved (In Database the error log is saved to the 
+    To further reduce database traffic the function has two
+    (boolean) options called `post_elog` and `post_history`.
+    When set True the elog and/or object-level history data will
+    be posted as subdocuments in the output collection instead of
+    the normal (at least as defined by the Database handle) way
+    these data are saved (In Database the error log is saved to the
     "elog" collection and the history data is saved to "history".)
     Note post_history is ignored unless the related `save_history`
     argument is changed from the default False ot True.
 
-    A peculiarity that is a consequence of python's "duck typing" is that 
-    the user must give the writer some hints about the type of data objects 
-    it is expected to handle.  Rather than specify a type argument, 
+    A peculiarity that is a consequence of python's "duck typing" is that
+    the user must give the writer some hints about the type of data objects
+    it is expected to handle.  Rather than specify a type argument,
     the type is inferred from two arguments that are necessary anyway:
-    (1)  the `collection` argument value, and (2) the boolean 
-    `data_are_atomic`.   The idea is that `collection` is used to 
-    determine of the writer is handling TimeSeries or Seismogram 
+    (1)  the `collection` argument value, and (2) the boolean
+    `data_are_atomic`.   The idea is that `collection` is used to
+    determine of the writer is handling TimeSeries or Seismogram
     objects ("wf_TimeSeries" or "wf_Seismogram" values respectively)\
-    and the boolean is used, as the name implies, to infer if the 
-    data are atomic or ensembles.  
+    and the boolean is used, as the name implies, to infer if the
+    data are atomic or ensembles.
 
-    This function should only be used as the terminal step 
+    This function should only be used as the terminal step
     of a parallel workflow (i.e. a chain of map/reduce operators).
-    This function will ALWAYS initiate a lazy computation on such a chain of 
-    operators because it calls the "compute" method for dask and the 
-    "collect" method of spark before returning.  It then always returns 
-    a list of ObjectIds of  live, saved data.   The function is dogmatic 
-    about that because the return can never be a bag/RDD of the the 
+    This function will ALWAYS initiate a lazy computation on such a chain of
+    operators because it calls the "compute" method for dask and the
+    "collect" method of spark before returning.  It then always returns
+    a list of ObjectIds of  live, saved data.   The function is dogmatic
+    about that because the return can never be a bag/RDD of the the
     data.
 
-    If your workflow requires an intermediate save (i.e. saving data 
+    If your workflow requires an intermediate save (i.e. saving data
     in an intermediate step within a chain of map/reduce opeators)
-    the best approach at present is to use the `save_data` method of 
+    the best approach at present is to use the `save_data` method of
     the `Database` class in a variant of the following (dask) example
-    that also illustrates how this function is used as the terminator 
+    that also illustrates how this function is used as the terminator
     of a chain of map-reduce operators.
 
-    .. code-block:: python 
+    .. code-block:: python
 
        mybag = read_distributed_data(db,collection='wf_TimeSeries')
        mybag = mybag.map(detrend)   # example
@@ -1347,34 +1347,34 @@ def write_distributed_data(
        # termination with this function
        wfids = write_distributed_data(mybag,db,collection='wf_TimeSeries')
 
-    The `storage_mode` argument is a constant that defines how the 
-    SAMPLE DATA are to be stored.  Currently this can be "file" or 
-    "gridfs", but be aware future evolution may extend the options.  
-    "gridfs" is the default as the only complexity it has is a speed 
-    throttle by requiring the sample data to move through MongoDB and 
-    the potential to overflow the file system where the database is stored. 
-    (See User's Manual for more on this topic.).   Most users, however, 
-    likely want to use the "file" option for that parameter.  There are, 
+    The `storage_mode` argument is a constant that defines how the
+    SAMPLE DATA are to be stored.  Currently this can be "file" or
+    "gridfs", but be aware future evolution may extend the options.
+    "gridfs" is the default as the only complexity it has is a speed
+    throttle by requiring the sample data to move through MongoDB and
+    the potential to overflow the file system where the database is stored.
+    (See User's Manual for more on this topic.).   Most users, however,
+    likely want to use the "file" option for that parameter.  There are,
     however, some caveats in that use that users MUST be aware of before
-    using that option with large data sets.   Since V2 of MsPASS 
-    the file save process was made more robust by allowing a chain of 
-    options for how the actual file name where data is stored is set.  
-    The algorithm used here is a private method in 
-    :class:`mspasspy.db.Database` called `_save_sample_data_to_file`. 
-    When used here that that function is passed a None type for dir and 
-    dfile.   The EXPECTED use is that you as a user should set the 
-    dir and dfile attribute for EVERY datum in the bag/RDD this function is 
-    asked to handle.  That allows each atomic datum to define what the 
-    file destination is.  For ensembles normal behavior is to require the 
-    entire ensemble content to be saved in one file defined by the dir 
-    and dfile values in the ensemble's Metadata container.  
-    THE WARNING is that to be robust the file writer will alway default 
-    a value for dir and dfile.  The default dir is the run directory. 
-    The default dfile (if not set) is a unique name created by a 
-    uuid generator.  Care must be taken in file writes to make sure 
-    you don't create huge numbers of files that overflow directories or 
-    similar file system errors that are all to easy to do with large 
-    data set saves.  See the User Manual for examples of how to set 
+    using that option with large data sets.   Since V2 of MsPASS
+    the file save process was made more robust by allowing a chain of
+    options for how the actual file name where data is stored is set.
+    The algorithm used here is a private method in
+    :class:`mspasspy.db.Database` called `_save_sample_data_to_file`.
+    When used here that that function is passed a None type for dir and
+    dfile.   The EXPECTED use is that you as a user should set the
+    dir and dfile attribute for EVERY datum in the bag/RDD this function is
+    asked to handle.  That allows each atomic datum to define what the
+    file destination is.  For ensembles normal behavior is to require the
+    entire ensemble content to be saved in one file defined by the dir
+    and dfile values in the ensemble's Metadata container.
+    THE WARNING is that to be robust the file writer will alway default
+    a value for dir and dfile.  The default dir is the run directory.
+    The default dfile (if not set) is a unique name created by a
+    uuid generator.  Care must be taken in file writes to make sure
+    you don't create huge numbers of files that overflow directories or
+    similar file system errors that are all to easy to do with large
+    data set saves.  See the User Manual for examples of how to set
     output file names for a large data set.
 
     :param data: parallel container of data to be written
@@ -1395,21 +1395,21 @@ def write_distributed_data(
     :param storage_mode: Must be either "gridfs" or "file.  When set to
         "gridfs" the waveform data are stored internally and managed by
         MongoDB.  If set to "file" the data will be stored in a file system.
-        File names are derived from attributes with the tags "dir" and 
-        "dfile" in the standard way.   Any datum for which dir or dfile 
-        aren't defined will default to the behaviour of the Database 
-        class method `save_data`.  See the docstring for details but the 
+        File names are derived from attributes with the tags "dir" and
+        "dfile" in the standard way.   Any datum for which dir or dfile
+        aren't defined will default to the behaviour of the Database
+        class method `save_data`.  See the docstring for details but the
         concept is it will always be bombproof even if not ideal.
-    :type storage_mode: :class:`str` 
+    :type storage_mode: :class:`str`
 
-    :param scheduler:  name of parallel scheduler being used by this writer. 
-        MsPASS currently support pyspark and dask.  If arg0 is an RDD 
-        scheduler must be "spark" and arg0 defines dask bag schduler must 
-        be "dask".   The function will raise a ValueError exception of 
-        scheduler and the type of arg0 are not consistent or if the 
-        value of scheduler is illegal.  Note with spark the context is 
+    :param scheduler:  name of parallel scheduler being used by this writer.
+        MsPASS currently support pyspark and dask.  If arg0 is an RDD
+        scheduler must be "spark" and arg0 defines dask bag schduler must
+        be "dask".   The function will raise a ValueError exception of
+        scheduler and the type of arg0 are not consistent or if the
+        value of scheduler is illegal.  Note with spark the context is
         not required because of how this algorithm is structured.
-    :type scheduler:  string  Must be either "dask" or "spark".  Default 
+    :type scheduler:  string  Must be either "dask" or "spark".  Default
         is None which is is equivalent to the value of "dask".
 
     :param file_format: the format of the file. This can be one of the
@@ -1432,12 +1432,12 @@ def write_distributed_data(
         storage_mode is set to gridfs.
     :type overwrite:  boolean
 
-    :param collectiion:   name of wf collection where the documents 
-        derived from the data are to be saved.  Standard values are 
-        "wf_TimeSeries" and "wf_Seismogram" for which a schema is defined in 
-        MsPASS.   Normal use should specify one or the other.   The default is 
-        "wf_TimeSeries"  but normal usage should specify this argument 
-        explicitly for clarity in reuse. 
+    :param collectiion:   name of wf collection where the documents
+        derived from the data are to be saved.  Standard values are
+        "wf_TimeSeries" and "wf_Seismogram" for which a schema is defined in
+        MsPASS.   Normal use should specify one or the other.   The default is
+        "wf_TimeSeries"  but normal usage should specify this argument
+        explicitly for clarity in reuse.
     :type collection:  :class:`str`
 
     :param exclude_keys: Metadata can often become contaminated with
@@ -1457,56 +1457,56 @@ def write_distributed_data(
         User's manual for guidance on how the use of this option.
     :type data_tag: :class:`str`
 
-    :param post_elog:   boolean controlling how error log messages are 
-        handled.  When False (default) error log messages get posted in 
-        single transactions with MongoDB to the "elog" collection.   
-        When set True error log entries will be posted to as subdocuments to 
-        the wf collection entry for each datum.   Setting post_elog True 
-        is most useful if you anticipate a run will generate a large number of 
-        error that could throttle processing with a large number of 
-        one-at-a-time document saves.  For normal use with small number of 
+    :param post_elog:   boolean controlling how error log messages are
+        handled.  When False (default) error log messages get posted in
+        single transactions with MongoDB to the "elog" collection.
+        When set True error log entries will be posted to as subdocuments to
+        the wf collection entry for each datum.   Setting post_elog True
+        is most useful if you anticipate a run will generate a large number of
+        error that could throttle processing with a large number of
+        one-at-a-time document saves.  For normal use with small number of
         errors it is easier to review error issue by inspecting the elog
         collection than having to query the larger wf collection.
 
-    :param save_history:  When set True (default is False) write will 
+    :param save_history:  When set True (default is False) write will
         save any object-level history data saved within the input data objects.
-        The related boolean (described below) called post_history controls 
-        how such data is saved if this option is enable.  Note post_history 
+        The related boolean (described below) called post_history controls
+        how such data is saved if this option is enable.  Note post_history
         is ignored unless save_history is True.
 
-    :param post_history:  boolean similar to post_elog for handling 
-        object-level history data.  It is, however, only handled if the 
-        related boolean "save_history" is set True. When post_history is 
+    :param post_history:  boolean similar to post_elog for handling
+        object-level history data.  It is, however, only handled if the
+        related boolean "save_history" is set True. When post_history is
         set True the history data will be saved as a subdocument in the wf
-        document saved for each live, atomic datum (note for ensembles 
-        that means all live members).   When False each atomic datum 
-        will generate a insert_one transaction with MongoDB and save the 
-        history data in  the "history" collection.  It then sets the 
-        attribute with key "history_id" to the ObjectId of the saved 
-        document.  The default for this argument is True to avoid 
-        accidentally throttling workflows on large data sets.  The default 
-        for save_history is False so overall default behavior is to drop 
-        any history data. 
+        document saved for each live, atomic datum (note for ensembles
+        that means all live members).   When False each atomic datum
+        will generate a insert_one transaction with MongoDB and save the
+        history data in  the "history" collection.  It then sets the
+        attribute with key "history_id" to the ObjectId of the saved
+        document.  The default for this argument is True to avoid
+        accidentally throttling workflows on large data sets.  The default
+        for save_history is False so overall default behavior is to drop
+        any history data.
 
-    :param cremate:  boolean controlling handling of dead data.  
-        When True dead data will be passed to the `cremate` 
-        method of :class:`mspasspy.util.Undertaker` which leaves only 
-        ashes to nothing in the return.   When False (default) the 
-        `bury` method will be called instead which saves a skeleton 
-        (error log and Metadata content) of the results in the "cemetery" 
+    :param cremate:  boolean controlling handling of dead data.
+        When True dead data will be passed to the `cremate`
+        method of :class:`mspasspy.util.Undertaker` which leaves only
+        ashes to nothing in the return.   When False (default) the
+        `bury` method will be called instead which saves a skeleton
+        (error log and Metadata content) of the results in the "cemetery"
         collection.
 
     :param normalizing_collections:  list of collection names dogmatically treated
-        as normalizing collection names.  The keywords in the list are used 
-        to always (i.e. for all modes) erase any attribute with a key name 
-        of the form `collection_attribute where `collection` is one of the collection 
-        names in this list and attribute is any string.  Attribute names with the "_" 
-        separator are saved unless the collection field matches one one of the 
-        strings (e.g. "channel_vang" will be erased before saving to the 
-        wf collection while "foo_bar" will not be erased.)  This list should 
-        ONLY be changed if a different schema than the default mspass schema 
-        is used and different names are used for normalizing collections.  
-        (e.g. if one added a "shot" collection to the schema the list would need 
+        as normalizing collection names.  The keywords in the list are used
+        to always (i.e. for all modes) erase any attribute with a key name
+        of the form `collection_attribute where `collection` is one of the collection
+        names in this list and attribute is any string.  Attribute names with the "_"
+        separator are saved unless the collection field matches one one of the
+        strings (e.g. "channel_vang" will be erased before saving to the
+        wf collection while "foo_bar" will not be erased.)  This list should
+        ONLY be changed if a different schema than the default mspass schema
+        is used and different names are used for normalizing collections.
+        (e.g. if one added a "shot" collection to the schema the list would need
         to be changed to at least add "shot".)
      :type normalizing_collection:  list if strings defining collection names.
 
