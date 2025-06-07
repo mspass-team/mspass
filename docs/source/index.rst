@@ -29,6 +29,7 @@ package.
    getting_started/mspass_desktop
    getting_started/command_line_desktop
    getting_started/deploy_mspass_with_conda
+   getting_started/advanced_setup_considerations
 
 .. toctree::
    :maxdepth: 2
