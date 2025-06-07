@@ -226,7 +226,7 @@ def rotate(
 
     If a :class:`float` number is given for `rotate_parameter`, this function
     will rotate the horizontal components by this angle in radians.  Note the
-    polarity is geographic convention as clockwise angle from north.   
+    polarity is geographic convention as clockwise angle from north.
 
     :param data: data object to be rotated.
     :type data: :class:`~mspasspy.ccore.seismic.Seismogram`
