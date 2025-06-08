@@ -54,7 +54,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started/mspass_desktop.html">Running MsPASS on a Desktop Computer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started/command_line_desktop.html">Command Line Docker Desktop Operation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_conda.html">Deploy MsPASS with Conda</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_conda.html#advanced-setup-considerations">Advanced Setup Considerations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/advanced_setup_considerations.html">Advanced Setup Considerations</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Cluster Operations</span></p>
 <ul>
@@ -774,19 +774,19 @@
 <span class="sd">          the keys to be cleared.</span>
 
 <span class="sd">        :param collection:  Specify the collection name for this read.</span>
-<span class="sd">           In MsPASS the equivalent of header attributes are stored in</span>
-<span class="sd">           MongoDB documents contained in a &quot;collection&quot;.   The assumption</span>
-<span class="sd">           is a given collection only contains documents for one of the</span>
-<span class="sd">           two atomic types defined in MsPASS:  `TimeSeries` or `Seismogram`.</span>
-<span class="sd">           The data type for collections defined by the schema is an</span>
-<span class="sd">           attribute that the reader tests to define the type of atomic</span>
-<span class="sd">           objects to be constructed (Note ensembles are assembled from</span>
-<span class="sd">           atomic objects by recursive calls the this same read method.)</span>
-<span class="sd">           The default is &quot;wf_TimeSeries&quot;, but we recommend always defining</span>
-<span class="sd">           this argument for clarity and stability in the event the default</span>
-<span class="sd">           would change.</span>
-<span class="sd">         :type collection:   :class:`str` defining a collection that must be</span>
-<span class="sd">           defined in the schema.  If not, the function will abort the job.</span>
+<span class="sd">          In MsPASS the equivalent of header attributes are stored in</span>
+<span class="sd">          MongoDB documents contained in a &quot;collection&quot;.   The assumption</span>
+<span class="sd">          is a given collection only contains documents for one of the</span>
+<span class="sd">          two atomic types defined in MsPASS:  `TimeSeries` or `Seismogram`.</span>
+<span class="sd">          The data type for collections defined by the schema is an</span>
+<span class="sd">          attribute that the reader tests to define the type of atomic</span>
+<span class="sd">          objects to be constructed (Note ensembles are assembled from</span>
+<span class="sd">          atomic objects by recursive calls the this same read method.)</span>
+<span class="sd">          The default is &quot;wf_TimeSeries&quot;, but we recommend always defining</span>
+<span class="sd">          this argument for clarity and stability in the event the default</span>
+<span class="sd">          would change.</span>
+<span class="sd">        :type collection:   :class:`str` defining a collection that must be</span>
+<span class="sd">          defined in the schema.  If not, the function will abort the job.</span>
 
 <span class="sd">        :param data_tag:  The definition of a dataset can become ambiguous</span>
 <span class="sd">          when partially processed data are saved within a workflow.   A common</span>
@@ -1472,9 +1472,9 @@
 <span class="sd">          :class:`mspasspy.ccore.seismic.TimeSeriesEnsemble`, or</span>
 <span class="sd">          :class:`mspasspy.ccore.seismic.SeismogramEnsemble`</span>
 <span class="sd">        :param return_data: When True return a (usually edited) copy</span>
-<span class="sd">        of the data received.   When False, the default, return only</span>
-<span class="sd">        a requested subset of the attributes in the wf document saved</span>
-<span class="sd">        for this datum.s</span>
+<span class="sd">          of the data received.   When False, the default, return only</span>
+<span class="sd">          a requested subset of the attributes in the wf document saved</span>
+<span class="sd">          for this datum.s</span>
 <span class="sd">        :param return_list:  list of keys for attributes to extract</span>
 <span class="sd">          and set for return python dictionary when return_data is False.</span>
 <span class="sd">          Ignored if return_data is True.   Be warned for ensembles the</span>
@@ -3675,10 +3675,10 @@
 <span class="sd">        :param exclude_keys: the metadata attributes you want to exclude from being updated.</span>
 <span class="sd">        :type exclude_keys: a :class:`list` of :class:`str`</span>
 <span class="sd">        :param exclude_objects: a list of indexes, where each specifies a object in the ensemble you want to</span>
-<span class="sd">        exclude from being saved. The index starts at 0.</span>
+<span class="sd">            exclude from being saved. The index starts at 0.</span>
 <span class="sd">        :type exclude_objects: :class:`list`</span>
 <span class="sd">        :param collection: the collection name you want to use. If not specified, use the defined collection in the metadata</span>
-<span class="sd">        schema.</span>
+<span class="sd">            schema.</span>
 <span class="sd">        :param ignore_metadata_changed_test: if specify as ``True``, we do not check the whether attributes we want to update are in the Metadata.modified() set. Default to be ``False``.</span>
 <span class="sd">        :param data_tag: a user specified &quot;data_tag&quot; key to tag the saved wf document.</span>
 <span class="sd">        :type data_tag: :class:`str`</span>

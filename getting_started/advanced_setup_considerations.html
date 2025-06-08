@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>HPCClusterLauncher Configuration &mdash; MsPASS 0.0.1 documentation</title>
+  <title>Advanced Setup Considerations &mdash; MsPASS 0.0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -21,7 +21,9 @@
       <script src="../_static/copybutton.js?v=f281be69"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" />  
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Deploying MsPASS on an HPC cluster" href="deploy_mspass_on_HPC.html" />
+    <link rel="prev" title="Deploy MsPASS with Conda" href="deploy_mspass_with_conda.html" />  
 
   <style>
     .wy-nav-content { max-width: 1600px; }
@@ -51,11 +53,18 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
     
               <p class="caption" role="heading"><span class="caption-text">Desktop Operation</span></p>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="mspass_desktop.html">Running MsPASS on a Desktop Computer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="command_line_desktop.html">Command Line Docker Desktop Operation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="deploy_mspass_with_conda.html">Deploy MsPASS with Conda</a></li>
-<li class="toctree-l1"><a class="reference internal" href="advanced_setup_considerations.html">Advanced Setup Considerations</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Advanced Setup Considerations</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#handling-conda-and-pip-installations">Handling Conda and pip installations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#conda-vs-pip-precedence">Conda vs. pip Precedence</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#understanding-pip-and-conda">Understanding pip and Conda</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Cluster Operations</span></p>
 <ul>
@@ -133,9 +142,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">HPCClusterLauncher Configuration</li>
+      <li class="breadcrumb-item active">Advanced Setup Considerations</li>
       <li class="wy-breadcrumbs-aside">
-              <a href="https://github.com/mspass-team/mspass/blob/master/docs/source/getting_started/HPCClusterLauncher_configuration.rst" class="fa fa-github"> Edit on GitHub</a>
+              <a href="https://github.com/mspass-team/mspass/blob/master/docs/source/getting_started/advanced_setup_considerations.rst" class="fa fa-github"> Edit on GitHub</a>
       </li>
   </ul>
   <hr/>
@@ -143,119 +152,52 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="hpcclusterlauncher-configuration">
-<span id="hpc-cluster-configuration"></span><h1>HPCClusterLauncher Configuration<a class="headerlink" href="#hpcclusterlauncher-configuration" title="Permalink to this heading"></a></h1>
-<section id="overview">
-<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this heading"></a></h2>
-<p>This document gives details of configurations parameters
-needed to launch a valid instance of the
-<code class="code docutils literal notranslate"><span class="pre">HPCClusterLauncher</span></code> object.  This document has
-two section:</p>
-<ol class="arabic simple">
-<li><p>General parameters that can be thought of as generic system
-configuration parameters. The keys for all these attributes are
-in the top level of the yaml file hierarchy.</p></li>
-<li><p>Parameters that define this particular instance of a virtual
-cluster.   All these parameters are at level 2 of the yaml file
-under the key <code class="code docutils literal notranslate"><span class="pre">HPC_Cluster</span></code>.</p></li>
-</ol>
-</section>
-<section id="general-attributes">
-<h2>General attributes<a class="headerlink" href="#general-attributes" title="Permalink to this heading"></a></h2>
-<section id="file-parameters">
-<h3>File parameters<a class="headerlink" href="#file-parameters" title="Permalink to this heading"></a></h3>
-<ul class="simple">
-<li><p><em>container</em>  path to the file created by running <code class="code docutils literal notranslate"><span class="pre">apptainer</span> <span class="pre">build</span></code>.</p></li>
-<li><p><em>working_directory</em>  should be the path to the working directory for this
-project.  This is the directory a job script would usually run a
-cd command to make it the current directory for the job.  It is needed in this
-context to assure the containers all are rooted at a common point.</p></li>
-<li><p><em>log_directory</em> will contain the log files created by the services run in
-the containers.</p></li>
-<li><p><em>database_directory</em>  data directory for MongoDB.  MongoDB stores is information
-in data files that live in this directory.  If the system has file systems with
-different speeds use the fastest available as database performance can usually
-io bound.</p></li>
-<li><p><em>worker_directory</em> worker containers require a scratch space to “spill” in some
-contexts when memory use is tight.  This directory should be unique to make it
-easy to clear this debris after a given run.</p></li>
-</ul>
-<section id="general-system-parameters">
-<h4>General system parameters<a class="headerlink" href="#general-system-parameters" title="Permalink to this heading"></a></h4>
-<ul class="simple">
-<li><p><em>workers_per_node</em> is the number of worker processes that should be launched
-on each dedicated, worker node.   In most cases this should be the number of
-cores per node.   When working with large ensembles we have found it helpful at
-times to reduce this number to avoid memory faults.</p></li>
-<li><p><em>primary_node_worker</em> if set nonzero a worker container with this many
-worker processes will be launched on the primary node.   This options is
-most useful on newer systems with enough cores that there are idle cpu cycles
-not consumed by the database or scheduler services that currently are always
-run on the primary node.</p></li>
-<li><p><em>cluster_subnet_name</em> is what the name implies.   Cluster nodes are
-normally connected in a common subnet and this should provide the name to
-allow the job components to communicate correctly.</p></li>
-<li><p><em>db_startup_delay</em> is the number of seconds to wait after launching the db
-container.   This is necessary because the MongoDB server startup is not trivial
-and many MsPASS jobs initiate a connection to MongoDB at the top of the
-run script.   The default is conservative, but for typical HPC jobs that can
-run for hours is relatively unimportant.</p></li>
-</ul>
-</section>
-</section>
-</section>
-<section id="hpc-cluster-parameters">
-<h2>HPC_cluster parameters<a class="headerlink" href="#hpc-cluster-parameters" title="Permalink to this heading"></a></h2>
-<p>This set of parameters must be found in the yaml file hierarchy under
-the key <em>HPC_cluster</em> as can be seen in the template file.</p>
-<ul class="simple">
-<li><p><em>job_scheduler</em> is the name of the job scheduler.  Currently the only
-job scheduler that has been tested with <code class="code docutils literal notranslate"><span class="pre">HPCClusterLauncher</span></code> is slurm.
-You may have to alter the python code of <code class="code docutils literal notranslate"><span class="pre">HPCClusterLauncher</span></code> if a
-different job scheduler is used on your cluster.</p></li>
-<li><p><em>primary_host</em>, <em>database_host</em>, <em>scheduler_host</em>, and <em>worker_hosts</em> should
-normally be set to “auto”.  When <em>primary_host</em> set to auto it is set to the
-first node returned by querying the job scheduler.
-If <em>database_host</em> or <em>scheduler_host</em> are set to “auto” that service will
-be run on the node set as primary.  When <em>worker_hosts</em> is set as “auto”
-worker containers with <em>workers_per_node</em> processes will be launched on
-all nodes not defined as the primary node.</p></li>
-<li><p><em>container_run_command</em> is the command string used to launch a container.</p></li>
-<li><p><em>container_run_args</em> is a string of secondary arguments required to launch
-a container.</p></li>
-<li><p><em>container_env_flag</em> is passed as a flag when launching containers
-to control what is launched.  As described in the section on the shell
-script launch option the service a container runs is defined by
-environment variable values passed with the <em>contaienr_run_command</em>.</p></li>
-<li><p><em>worker_run_command</em> is the command line program used to launch programs
-on other nodes.  Currently the only known mechanism is to use mpiexec.
-This attribute is an option only because some sites may use a special
-version of mpiexec that may have a different name.</p></li>
-<li><p><em>setup_tunnel</em> and <em>tunnel_setup_command</em> are linked. <em>tunnel_setup_command</em>
-is only used if <em>setup_tunnel</em> is set True.  The purpose of <em>tunnel_setup_command</em>
-is to enable external communications to MsPASS from outside the cluster,
-It is necessary to set this up if you want to connect to dask diagnostics
-or run an interactive job with one or more compute nodes. For guidance on
-how to construct this shell script look at the shell-based launchers
-found <a href="#id1"><span class="problematic" id="id2">`here on GitHub&lt;https://github.com/mspass-team/mspass/tree/master/scripts&gt;`__</span></a>.</p></li>
-</ul>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>The variables <em>container_run_command</em>, <em>container_run_args</em>, and
-<em>container_env_flag</em> in the template file work only for
-apptainer.  If using the older singularity implementation the
-syntax is identical but “apptainer” should change to “singularity”.
-The command line options for the two implementations are currently
-identical.   If a different container launcher is used at your site
-you may need to alter the python code of <code class="code docutils literal notranslate"><span class="pre">HPCClusterLauncher</span></code>.</p>
+  <section id="advanced-setup-considerations">
+<span id="id1"></span><h1>Advanced Setup Considerations<a class="headerlink" href="#advanced-setup-considerations" title="Permalink to this heading"></a></h1>
+<section id="handling-conda-and-pip-installations">
+<h2>Handling Conda and pip installations<a class="headerlink" href="#handling-conda-and-pip-installations" title="Permalink to this heading"></a></h2>
+<p>When building MsPASS from the source, it is common to use pip to install the Python bindings after compiling the C++ core.
+The recommended command from the root of the source tree is:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>--user<span class="w"> </span>./
+</pre></div>
 </div>
+<p>This command installs MsPASS locally within the user’s <code class="docutils literal notranslate"><span class="pre">~/.local</span></code> directory on Linux systems.
+The behavior on macOS should be similar, although slight variations in directory structures can occur.</p>
+<section id="conda-vs-pip-precedence">
+<h3>Conda vs. pip Precedence<a class="headerlink" href="#conda-vs-pip-precedence" title="Permalink to this heading"></a></h3>
+<p>If both a local pip installation (in <code class="docutils literal notranslate"><span class="pre">~/.local</span></code>) and a Conda environment installation exist,
+the system’s behavior depends on the environment configuration and the order of paths in the <code class="docutils literal notranslate"><span class="pre">PATH</span></code> environment variable.
+Typically, Python packages installed with <code class="docutils literal notranslate"><span class="pre">--user</span></code> are placed in a path that has precedence over Conda environments.
+You can verify which installation is currently active by using:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>which<span class="w"> </span>python
+python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import mspasspy; print(mspasspy.__path__)&quot;</span>
+</pre></div>
+</div>
+<p>This will show you the path of the Python interpreter and the location of the MsPASS module being used, helping you determine which version is being prioritized.</p>
+</section>
+<section id="understanding-pip-and-conda">
+<h3>Understanding pip and Conda<a class="headerlink" href="#understanding-pip-and-conda" title="Permalink to this heading"></a></h3>
+<p>While both pip and Conda are package managers, they handle package installations differently.
+Conda manages packages and the environment to which they are installed, ensuring compatibility and avoiding conflicts.
+pip, on the other hand, installs Python packages and may not consider the broader environment, leading to potential conflicts.</p>
+<ul class="simple">
+<li><p><strong>Use Conda for environments and binary dependencies</strong>: It is best to use Conda to create environments and manage packages that have binary dependencies.</p></li>
+<li><p><strong>Use pip for Python-only packages not available on Conda</strong>: If a package is only available via pip and does not have complex dependencies, it can be safely installed in a Conda environment.</p></li>
+</ul>
+<p><strong>Best Practices</strong>:
+Avoid using <code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">pip</span> <span class="pre">install</span></code> as it may change files that are managed by the system’s package manager, potentially leading to inconsistent states.
+Always prefer installing packages within a user environment (<code class="docutils literal notranslate"><span class="pre">--user</span></code>) or within a virtual environment managed by Conda or virtualenv.</p>
+</section>
 </section>
 </section>
 
 
            </div>
           </div>
-          <footer>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="deploy_mspass_with_conda.html" class="btn btn-neutral float-left" title="Deploy MsPASS with Conda" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="deploy_mspass_on_HPC.html" class="btn btn-neutral float-right" title="Deploying MsPASS on an HPC cluster" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
 
   <hr/>
 

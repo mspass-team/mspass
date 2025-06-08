@@ -22,7 +22,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Deploying MsPASS on an HPC cluster" href="deploy_mspass_on_HPC.html" />
+    <link rel="next" title="Advanced Setup Considerations" href="advanced_setup_considerations.html" />
     <link rel="prev" title="Command Line Docker Desktop Operation" href="command_line_desktop.html" />  
 
   <style>
@@ -68,14 +68,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#setting-up-mongodb">Setting up MongoDB</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="#advanced-setup-considerations">Advanced Setup Considerations</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#handling-conda-and-pip-installations">Handling Conda and pip installations</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#conda-vs-pip-precedence">Conda vs. pip Precedence</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#understanding-pip-and-conda">Understanding pip and Conda</a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="advanced_setup_considerations.html">Advanced Setup Considerations</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Cluster Operations</span></p>
 <ul>
@@ -234,51 +227,13 @@ When launched, the MsPASS container will automatically create a <code class="doc
 If port 27017 is already in use on your system, modify this parameter as necessary.</p>
 </section>
 </section>
-<section id="advanced-setup-considerations">
-<h1>Advanced Setup Considerations<a class="headerlink" href="#advanced-setup-considerations" title="Permalink to this heading"></a></h1>
-<section id="handling-conda-and-pip-installations">
-<h2>Handling Conda and pip installations<a class="headerlink" href="#handling-conda-and-pip-installations" title="Permalink to this heading"></a></h2>
-<p>When building MsPASS from the source, it is common to use pip to install the Python bindings after compiling the C++ core.
-The recommended command from the root of the source tree is:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>--user<span class="w"> </span>./
-</pre></div>
-</div>
-<p>This command installs MsPASS locally within the user’s <code class="docutils literal notranslate"><span class="pre">~/.local</span></code> directory on Linux systems.
-The behavior on macOS should be similar, although slight variations in directory structures can occur.</p>
-<section id="conda-vs-pip-precedence">
-<h3>Conda vs. pip Precedence<a class="headerlink" href="#conda-vs-pip-precedence" title="Permalink to this heading"></a></h3>
-<p>If both a local pip installation (in <code class="docutils literal notranslate"><span class="pre">~/.local</span></code>) and a Conda environment installation exist,
-the system’s behavior depends on the environment configuration and the order of paths in the <code class="docutils literal notranslate"><span class="pre">PATH</span></code> environment variable.
-Typically, Python packages installed with <code class="docutils literal notranslate"><span class="pre">--user</span></code> are placed in a path that has precedence over Conda environments.
-You can verify which installation is currently active by using:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>which<span class="w"> </span>python
-python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import mspasspy; print(mspasspy.__path__)&quot;</span>
-</pre></div>
-</div>
-<p>This will show you the path of the Python interpreter and the location of the MsPASS module being used, helping you determine which version is being prioritized.</p>
-</section>
-<section id="understanding-pip-and-conda">
-<h3>Understanding pip and Conda<a class="headerlink" href="#understanding-pip-and-conda" title="Permalink to this heading"></a></h3>
-<p>While both pip and Conda are package managers, they handle package installations differently.
-Conda manages packages and the environment to which they are installed, ensuring compatibility and avoiding conflicts.
-pip, on the other hand, installs Python packages and may not consider the broader environment, leading to potential conflicts.</p>
-<ul class="simple">
-<li><p><strong>Use Conda for environments and binary dependencies</strong>: It is best to use Conda to create environments and manage packages that have binary dependencies.</p></li>
-<li><p><strong>Use pip for Python-only packages not available on Conda</strong>: If a package is only available via pip and does not have complex dependencies, it can be safely installed in a Conda environment.</p></li>
-</ul>
-<p><strong>Best Practices</strong>:
-Avoid using <code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">pip</span> <span class="pre">install</span></code> as it may change files that are managed by the system’s package manager, potentially leading to inconsistent states.
-Always prefer installing packages within a user environment (<code class="docutils literal notranslate"><span class="pre">--user</span></code>) or within a virtual environment managed by Conda or virtualenv.</p>
-</section>
-</section>
-</section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="command_line_desktop.html" class="btn btn-neutral float-left" title="Command Line Docker Desktop Operation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="deploy_mspass_on_HPC.html" class="btn btn-neutral float-right" title="Deploying MsPASS on an HPC cluster" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="advanced_setup_considerations.html" class="btn btn-neutral float-right" title="Advanced Setup Considerations" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

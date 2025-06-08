@@ -57,7 +57,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/mspass_desktop.html">Running MsPASS on a Desktop Computer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/command_line_desktop.html">Command Line Docker Desktop Operation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda.html">Deploy MsPASS with Conda</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda.html#advanced-setup-considerations">Advanced Setup Considerations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/advanced_setup_considerations.html">Advanced Setup Considerations</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Cluster Operations</span></p>
 <ul>
@@ -979,27 +979,27 @@ values.</p>
 </dl>
 <p>time range.
 :type ensemble:  <cite>TimeSeriesEnsemble</cite> or <cite>SeismogramEnsemble</cite>.
-:param metric:   measure to use to define the time range.
-Accepted values are:</p>
+:param metric:   measure to use to define the time range.</p>
 <blockquote>
-<div><dl class="simple">
-<dt>“inner” - (default) return range defined by largest</dt><dd><p>start time to smallest end time.</p>
-</dd>
-<dt>“outer” - return range defined by minimum start time and</dt><dd><p>largest end time (maximum time span of data)</p>
-</dd>
-<dt>“median” - return range as the median of the extracted</dt><dd><p>vectors of start time and end time values.</p>
-</dd>
-<dt>“mean” - return range as arithmetic average of</dt><dd><p>start and end time vectors</p>
-</dd>
-</dl>
+<div><p>Accepted values are:</p>
+<ul class="simple">
+<li><p>“inner” - (default) return range defined by largest
+start time to smallest end time.</p></li>
+<li><p>“outer” - return range defined by minimum start time and
+largest end time (maximum time span of data)</p></li>
+<li><p>“median” - return range as the median of the extracted
+vectors of start time and end time values.</p></li>
+<li><p>“mean” - return range as arithmetic average of
+start and end time vectors</p></li>
+</ul>
 </div></blockquote>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><cite>TimeWindow</cite> object with start and end times.  If the</p>
+<dd class="field-odd"><p><cite>TimeWindow</cite> object with start and end times.  If the
+ensemble has all dead member the default constructed TimeWindow
+object will be returned which has zero length.</p>
 </dd>
 </dl>
-<p>ensemble has all dead member the default constructed TimeWindow
-object will be returned which has zero length.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -1028,14 +1028,15 @@ documents (python dictionaries) retrieved directly from MongoDB.</p>
 Metadata container will be printed.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>d</strong> (any subclass of <cite>mspasspy.ccore.Metadata</cite> or a) – datum for which the Metadata is to be printed.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>d</strong> (any subclass of <cite>mspasspy.ccore.Metadata</cite> or a
+python dictionary (the container used for documents returned
+by pymongo).  If d is anything else a TypeError exception
+will be thrown.) – datum for which the Metadata is to be printed.</p></li>
+<li><p><strong>indent</strong> (<em>integer</em><em> (</em><em>default 2</em><em>)</em>) – indentation argument for json printing</p></li>
+</ul>
 </dd>
 </dl>
-<p>python dictionary (the container used for documents returned
-by pymongo).  If d is anything else a TypeError exception
-will be thrown.
-:param indent:   indentation argument for json printing
-:type indent:  integer (default 2)</p>
 </dd></dl>
 
 <dl class="py function">
@@ -1064,27 +1065,25 @@ algorithms that can’t be certain the input data will have been resampled
 and need to be robust for what might otherwise be considered a user error.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>ensemble</strong> – ensemble container of data to be scanned for irregular</p>
-</dd>
-</dl>
-<p>sampling.
-:type ensemble:  <cite>TimeSeriesEnsemble</cite> or <cite>SeismogramEnsemble</cite>.   The
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ensemble</strong> (<cite>TimeSeriesEnsemble</cite> or <cite>SeismogramEnsemble</cite>.   The
 function does not test for type and will abort with an undefined method
-error if sent anything else.
-:param dt_expected:  constant data sample interval expected.
-:type dt_expected:  float
-:param Nsamp:   Nominal number of samples expected in the ensemble members.
+error if sent anything else.) – ensemble container of data to be scanned for irregular
+sampling.</p></li>
+<li><p><strong>dt_expected</strong> (<em>float</em>) – constant data sample interval expected.</p></li>
+<li><p><strong>Nsamp</strong> (<em>integer</em>) – Nominal number of samples expected in the ensemble members.
 This number is used to compute the soft test to allow for slippery clocks
 discussed above.   (Default 10000) e = regularize_sampling(e,dt)
-assert e.live
-:type Nsamp:  integer
-:param abort_on_error:  Controls what the function does if it
+assert e.live</p></li>
+<li><p><strong>abort_on_error</strong> (<em>boolean</em>) – Controls what the function does if it
 encountered a datum with a sample interval different that dt_expected.
 When True the function aborts with a ValueError exception if ANY
 ensemble member does not have a matching sample interval.  When
 False (the default) the function uses the MsPASS error logging
-to hold a message an kills any member datum with a problem.
-:type abort_on_error:  boolean</p>
+to hold a message an kills any member datum with a problem.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
@@ -1312,16 +1311,16 @@ seismic data object a TypeError will be thrown.</p>
 saved as a document in a collection set by the constructor
 (self.aborted_data_collection) that defaults to “abortions”.
 The documents saved have up to 3 key-value pairs:</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>&quot;tombstone&quot; - contents are a subdocument (dict) of the
-  wf document that was aborted during construction.
-&quot;logdata&quot; - any error log records left by the reeader that failed.
-&quot;type&quot; -  string describing the expected type of data object
-  that a reader was attempting to construct.   In rare
-  situations it could be set to &quot;unknown&quot; if
-  Undertaker._handle_abortion is called on a raw document
-  and type is not set (see parameters below)
-</pre></div>
-</div>
+<ul class="simple">
+<li><p>“tombstone” - contents are a subdocument (dict) of the
+wf document that was aborted during construction.</p></li>
+<li><p>“logdata” - any error log records left by the reeader that failed.</p></li>
+<li><p>“type” -  string describing the expected type of data object
+that a reader was attempting to construct.   In rare
+situations it could be set to “unknown” if
+Undertaker._handle_abortion is called on a raw document
+and type is not set (see parameters below)</p></li>
+</ul>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">

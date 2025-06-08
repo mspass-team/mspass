@@ -54,7 +54,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started/mspass_desktop.html">Running MsPASS on a Desktop Computer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started/command_line_desktop.html">Command Line Docker Desktop Operation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_conda.html">Deploy MsPASS with Conda</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_conda.html#advanced-setup-considerations">Advanced Setup Considerations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/advanced_setup_considerations.html">Advanced Setup Considerations</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Cluster Operations</span></p>
 <ul>
@@ -182,24 +182,42 @@
 <span class="sd">    Applies a time invariant filter to a MsPASS data object.</span>
 
 <span class="sd">    This entry is a wrapper around the obspy filter function.  It accepts the</span>
-<span class="sd">    same arguments as the obspy function and runs the same implementation.</span>
-<span class="sd">    See their documentation for details, but note the idiosyncracy of</span>
-<span class="sd">    their API is inherited.  Because different types of filters are</span>
-<span class="sd">    enabled by the setting of the &quot;type&quot; argument, what kwarg values are</span>
-<span class="sd">    referenced depend upon the value of &quot;type&quot;.   In particular, note:</span>
+<span class="sd">    same arguments as the obspy function and runs the same implementation</span>
+<span class="sd">    with the same idiosyncracies of their implementation.   Refer to their</span>
+<span class="sd">    documentation for details, but because this function is so fundamental</span>
+<span class="sd">    for data processing we note a few key points.</span>
 
-<span class="sd">        - &quot;bandpass&quot; requires values for &quot;freqmin&quot; and &quot;freqmax as corner frequenices</span>
-<span class="sd">        - &quot;lowpass&quot; requires only a value for &quot;freq&quot; to define the one corner</span>
-<span class="sd">        - &quot;highpass&quot; also requres only the value &quot;freq&quot; for the low corner</span>
+<span class="sd">    The &quot;type&quot; argument is required by their implementation and must be one</span>
+<span class="sd">    of the following:  *bandpass*, *lowpass*, or *highpass*.  A confusing</span>
+<span class="sd">    feature is that different kwarg values are required for different values</span>
+<span class="sd">    of &quot;type&quot; that are not consistent.   Requirements for the different</span>
+<span class="sd">    acceptable values of &quot;type&quot; are:</span>
 
-<span class="sd">    There are other options described in the obspy documentation.</span>
+<span class="sd">    - If `type==&quot;bandpass&quot;` you must specify `freqmin` and `freqmax` values for</span>
+<span class="sd">      the passband with units of Hz.  You can optionally change the (integer)</span>
+<span class="sd">      value `corners` to specify the number of poles of the Butterworth</span>
+<span class="sd">      filter this option implies.   Note there is also a `zerophase` boolean</span>
+<span class="sd">      that if set True (default is false for minimum phase) causes the function</span>
+<span class="sd">      to apply a zerophase Butterworth instead of the default minimum phase</span>
+<span class="sd">      version.</span>
+<span class="sd">    - If `type==&quot;lowpass&quot;` you must specify only one corner but with a different</span>
+<span class="sd">      keyword of `freq`.   `corners` and `zerophase` are the same same as for</span>
+<span class="sd">      the &quot;bandpass&quot; option.  Again this option implies a Butterworth filter.</span>
+<span class="sd">    - If `type==&quot;highpass&quot;` the function behaves like &quot;lowpass&quot; except the</span>
+<span class="sd">      value of `freq` is the low frequency corner versus the high frequency</span>
+<span class="sd">      corner for lowpass.   `corners` and `zerophase` are the same same as for</span>
+<span class="sd">      the &quot;bandpass&quot; option.  Again this option implies a Butterworth filter.</span>
+
+<span class="sd">    There are also `bandstop`, `lowpass_fir`, `lowpass_cheby_2`, and</span>
+<span class="sd">    `remez_fir` options for the &quot;type&quot; argument.   See the obspy documentation</span>
+<span class="sd">    if you want to use these more obscure options.</span>
 
 <span class="sd">    :param data: input data, only mspasspy data objects are accepted, i.e. TimeSeries, Seismogram, Ensemble.</span>
 <span class="sd">    :param type: type of filter, &#39;bandpass&#39;, &#39;bandstop&#39;, &#39;lowpass&#39;, &#39;highpass&#39;, &#39;lowpass_cheby_2&#39;, &#39;lowpass_fir&#39;,</span>
-<span class="sd">      &#39;remez_fir&#39;. You can refer to</span>
+<span class="sd">      &#39;remez_fir&#39;. as noted above You can refer to</span>
 <span class="sd">      `Obspy &lt;https://docs.obspy.org/packages/autogen/obspy.core.trace.Trace.filter.html&gt;` for details.</span>
 <span class="sd">    :type type: str</span>
-<span class="sd">    :param args: extra arguments</span>
+<span class="sd">    :param args: extra arguments - see above as type value determines what is required here.</span>
 <span class="sd">    :param object_history: True to preserve the processing history. For details, refer to :class:`~mspasspy.util.decorators.mspass_func_wrapper`.</span>
 <span class="sd">    :param alg_name: alg_name is the name the func we are gonna save while preserving the history.</span>
 <span class="sd">    :type alg_name: :class:`str`</span>

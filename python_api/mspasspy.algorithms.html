@@ -57,7 +57,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/mspass_desktop.html">Running MsPASS on a Desktop Computer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/command_line_desktop.html">Command Line Docker Desktop Operation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda.html">Deploy MsPASS with Conda</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda.html#advanced-setup-considerations">Advanced Setup Considerations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/advanced_setup_considerations.html">Advanced Setup Considerations</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Cluster Operations</span></p>
 <ul>
@@ -316,17 +316,15 @@ That function computes and posts multiple snr metrics to a subdocument
 (dictionary) accessed with a single key.   This function requires that
 data exist and be accessible with the key defined by the argument
 “snr_doc_key”.   The data in that dictionary are used in the following
-algorithms run within this function:
-1.  The working bandwidth of the data is established by computing the median</p>
-<blockquote>
-<div><p>of the attributes “low_f_band_edge” and “high_f_band_edge” extracted from
+algorithms run within this function:</p>
+<ol class="arabic simple">
+<li><p>The working bandwidth of the data is established by computing the median
+of the attributes “low_f_band_edge” and “high_f_band_edge” extracted from
 each live member.  Those frequencies are computed using the function in this module
 called <cite>estimate_ensemble_bandwidth</cite>.  The working ensemble
 (which is what is returned on success) will be filtered in the band defined
 by the output of <cite>estimate_ensemble_bandwidth</cite> using a Butterworth,
-bandpass filter with the number of poles defined by the “npoles” argument.</p>
-</div></blockquote>
-<ol class="arabic simple" start="2">
+bandpass filter with the number of poles defined by the “npoles” argument.</p></li>
 <li><p>What I call the correlation window is estimated by a complex recipe
 best understood from the user manual page and example jupyter notebooks
 related to this module.   Briefly, the correlation window is defined by
@@ -372,69 +370,60 @@ algorithm can kill some ensemble members in the output that
 were marked live in the input.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>ensemble</strong> – input ensemble of data to use.  As noted above it</p>
-</dd>
-</dl>
-<p>must have been processed with <cite>broadband_snr_QC</cite> or this function will
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ensemble</strong> (<cite>TimeSeriesEnsemble</cite>  Note for most uses this is the
+output of ExtractComponent of a <cite>SeismogramEnsemble</cite> processed with
+<cite>broadband_snr_QC</cite> that is the longitudinal component for the P phase.) – input ensemble of data to use.  As noted above it
+must have been processed with <cite>broadband_snr_QC</cite> or this function will
 return a null result.  The function makes a tacit assumption that all
 the members of this ensemble are in relative time with 0 of each member
 being an estimate of the P wave arrival time.  It does no tests to
 validate this assumption so the assumption is wrong you will, at best,
-get junk as output.
-:type ensemble: <cite>TimeSeriesEnsemble</cite>  Note for most uses this is the
-output of ExtractComponent of a <cite>SeismogramEnsemble</cite> processed with
-<cite>broadband_snr_QC</cite> that is the longitudinal component for the P phase.
-:param noise_window:  time window defining the section of each
+get junk as output.</p></li>
+<li><p><strong>noise_window</strong> (<cite>TimeWindow</cite> tacitly expected to be time relative
+to a measure of the P wave arrival time.) – time window defining the section of each
 ensemble member that is to be treated as “noise” for estimating
-a relative noise level.
-:type noise_window:  <cite>TimeWindow</cite> tacitly expected to be time relative
-to a measure of the P wave arrival time.
-:param noise_metric:  vector norm metric to use for measuring the
+a relative noise level.</p></li>
+<li><p><strong>noise_metric</strong> (<em>string</em><em> (</em><em>Must be one of:  &quot;mad&quot;</em><em> (</em><em>default</em><em>)</em><em>, </em><em>&quot;rms&quot;</em><em>,
+or </em><em>&quot;peak&quot;</em><em>)</em><em>.  Any other string will cause the function to throw a ValueError
+exception.</em>) – vector norm metric to use for measuring the
 amplitude of the noise extracted from the data in the range defined by
-noise_window.
-:type noise_metric: string (Must be one of:  “mad” (default), “rms”,
-or “peak”).  Any other string will cause the function to throw a ValueError
-exception.
-:param initial_beam_metric:  key of attribute to extract from the
+noise_window.</p></li>
+<li><p><strong>initial_beam_metric</strong> – key of attribute to extract from the
 output of <cite>broadband_snr_QC</cite> used to select initial beam signal.
 This argument is passed to the <cite>extract_initial_beam_estimate</cite> function for
-as the “metric” argument of that function.
-:param initial_beam_metric:  string (default “bandwidth”).  For a list of
-allowed values see the docstring of <cite>extract_initial_beam_estimate</cite>.
-:param snr_doc_key:  key to use to fetch the subdocument containing the
-output of <cite>broadband_snr_QC</cite>.
-:type snr_doc_key:  string (default “Parrival” which is the default of
-<cite>broadband_snr_QC</cite>).
-:param low_f_corner: force the low frequency corner for the output data
+as the “metric” argument of that function.</p></li>
+<li><p><strong>initial_beam_metric</strong> – string (default “bandwidth”).  For a list of
+allowed values see the docstring of <cite>extract_initial_beam_estimate</cite>.</p></li>
+<li><p><strong>snr_doc_key</strong> (string (default “Parrival” which is the default of
+<cite>broadband_snr_QC</cite>).) – key to use to fetch the subdocument containing the
+output of <cite>broadband_snr_QC</cite>.</p></li>
+<li><p><strong>low_f_corner</strong> (<em>float</em><em> (</em><em>default None which is interpreted to mean
+scan ensemble to estimate the frequency range</em><em>)</em>) – force the low frequency corner for the output data
 bandwidth to this value.   When defined, the internal call to
 <cite>estimate_ensemble_bandwidth</cite> is bypassed and the output data are filtered
-between the value defined by low_f_corner and high_f_corner.
-:type low_f_corner:  float (default None which is interpreted to mean
-scan ensemble to estimate the frequency range)
-:param high_f_corner: force the high frequency corner for the output data
+between the value defined by low_f_corner and high_f_corner.</p></li>
+<li><p><strong>high_f_corner</strong> (<em>float</em><em> (</em><em>default None which is interpreted to mean
+scan ensemble to estimate the frequency range</em><em>)</em>) – force the high frequency corner for the output data
 bandwidth to this value.   When defined, the internal call to
 <cite>estimate_ensemble_bandwidth</cite> is bypassed and the output data are filtered
-between the value defined by low_f_corner and high_f_corner.
-:type high_f_corner:  float (default None which is interpreted to mean
-scan ensemble to estimate the frequency range)
-:param npoles:  number of poles to use for the Butterworth bandpass
-filter.
-:type npoles:  integer (default 4)
-:param set_phases: boolean that if set True (default) the P phase time s
+between the value defined by low_f_corner and high_f_corner.</p></li>
+<li><p><strong>npoles</strong> (<em>integer</em><em> (</em><em>default 4</em><em>)</em>) – number of poles to use for the Butterworth bandpass filter.</p></li>
+<li><p><strong>set_phases</strong> – boolean that if set True (default) the P phase time s
 P, pP (if defined), and PP (if defined) are computed and posted to the
 output of each ensemble member.  If False the algorith assumes the
 same quantities were previously calculated and can be fetched from the
 member TimeSeries Metadata container using keys defined by Ptime_key,
-pPtimme_key, and PPtime_key.
-:param Ptime_key:
-:param pPtime_key:
-:param PPtime_key:  These three arguments define alternative keys that
+pPtimme_key, and PPtime_key.</p></li>
+<li><p><strong>Ptime_key</strong> – </p></li>
+<li><p><strong>pPtime_key</strong> – </p></li>
+<li><p><strong>PPtime_key</strong> – These three arguments define alternative keys that
 will be used to fetch (if set_phases is false) or post (if set_phases is True)
 computed P, pP, and PP times to each member’s Metadata container.
 Changing any of these values not really advised when set_phases is True.
 These are most useful if the phase arrival times were previously
-computed or measured and posted with different keys.
-:param station_collection:   MonogDB collection name used to fetch
+computed or measured and posted with different keys.</p></li>
+<li><p><strong>station_collection</strong> (<em>string</em><em> (</em><em>default &quot;channel&quot;</em><em>)</em>) – MonogDB collection name used to fetch
 receiver coordinate data.   Normal practice in MsPASS is to save
 receiver Metadata in two channels called “channel” and “site” and
 to load the coordinate data through normalization when the data are
@@ -446,9 +435,8 @@ The default for this argument is “channel” which means the algorithm
 will require the attributes “channel_lat” and “channel_lon” as the
 receiver coordinates (in degrees).  The standard alternative is to
 define <cite>station_collection=”site”</cite>, in which case the function will
-use “site_lat” and “site_lon”.
-:type station_collection:  string (default “channel”)
-:param search_window_fraction:   The window for defining the
+use “site_lat” and “site_lon”.</p></li>
+<li><p><strong>search_window_fraction</strong> (<em>float</em><em> (</em><em>default 0.9</em><em>)</em>) – The window for defining the
 correlation window is determined by running the internal
 <cite>_coda_duration</cite> function on each ensemble member and computing the
 range from the median of the ranges computed from all the ensemble
@@ -457,17 +445,18 @@ pP and/or PP.   As noted above the function uses the pP time for
 events with depths greater than 100 km but PP for shallow sources.
 To allow for hypocenter errors  the duration defined by
 P to pP or P to PP is multiplied by this factor to define the
-search start for the coda estimation.
-:type search_window_fraction: float (default 0.9)
-:param minimum_coda_duration:   if the estimate of coda duration
+search start for the coda estimation.</p></li>
+<li><p><strong>minimum_coda_duration</strong> – if the estimate of coda duration
 computed internally is less than this value the correlation window
 is set to this value - relative time from P.
-:type minimum_coda_duration:  float (5.0 seconds)
-:param correlation_window_start:  the time of the correlation window
+:type minimum_coda_duration:  float (5.0 seconds)</p></li>
+<li><p><strong>correlation_window_start</strong> (<em>float</em><em> (</em><em>default -3.0</em><em>)</em>) – the time of the correlation window
 set in the output “beam” is fixed as this value.   It is normally
 a negative number defining a time before P that no signal is likely to
-have an arrival before this relative time.
-:type correlation_window_start:  float (default -3.0)</p>
+have an arrival before this relative time.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
@@ -856,23 +845,24 @@ all 0s for a datum marked live it will silently return a weight of 0
 for that datum.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>ensemble</strong> – <cite>TimeSeriesEnsemble</cite> of data from which weights are to</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ensemble</strong> (Assumed to be a <cite>TimeSeriesEnsemble</cite>.  No type checking
+is done so if input is wrong an exception will occur but what is thown
+will depend on what ensemble actually is.) – <cite>TimeSeriesEnsemble</cite> of data from which weights are to
+be computed.</p></li>
+<li><p><strong>stack</strong> (<cite>TimeSeries</cite>.) – TimeSeries containing stack to be used to compute weights.
+The method returns robust weights relative to the vector of data in
+this object.</p></li>
+<li><p><strong>residual_norm_floor</strong> (<em>float</em>) – nondimensional floor in the ratio norm2(r)/norm2(d)
+used as described above.  Default is 0.1 which is reasonable for high snr
+signals.   Data with irregular quality can profit from smaller values of this parameter.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>numpy vector of weights parallel with ensemble.member.  Dead
+members will have a negative weight in this vector.</p>
 </dd>
 </dl>
-<p>be computed.
-:type ensemble:  Assumed to be a <cite>TimeSeriesEnsemble</cite>.  No type checking
-is done so if input is wrong an exception will occur but what is thown
-will depend on what ensemble actually is.
-:param stack:  TimeSeries containing stack to be used to compute weights.
-The method returns robust weights relative to the vector of data in
-this object.
-:type stack:  <cite>TimeSeries</cite>.
-:param residual_norm_floor:  nondimensional floor in the ratio norm2(r)/norm2(d)
-used as described above.  Default is 0.1 which is reasonable for high snr
-signals.   Data with irregular quality can profit from smaller values of this parameter.
-:type residual_norm_floor:  float
-:return: numpy vector of weights parallel with ensemble.member.  Dead
-members will have a negative weight in this vector.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -976,14 +966,12 @@ running the <cite>align_and_stack</cite> function.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>ensemble</strong> (<cite>TimeSeriesEnsemble</cite>) – ensemble of data to be scanned</p></li>
-<li><p><strong>srn_doc_key</strong> – subdocument key of attributes computed by</p></li>
+<li><p><strong>srn_doc_key</strong> – subdocument key of attributes computed by
+<cite>broadband_snr_QC</cite> to fetch as estimates of low and high frequency
+edges.</p></li>
 </ul>
 </dd>
 </dl>
-<p><cite>broadband_snr_QC</cite> to fetch as estimates of low and high frequency
-edges.
-:type snr_doc_key:  string (default “Parrival” = default of
-<cite>broadband_snr_QC</cite>)</p>
 </dd></dl>
 
 <dl class="py function">
@@ -1015,25 +1003,25 @@ filtered_Linf, or filtered_perc.  See the docstring for
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>ensemble</strong> (<cite>TimeSeriesEnsemble</cite>) – ensemble to be scanned</p></li>
-<li><p><strong>metric</strong> – quality metric to use for selecting member to use</p></li>
-</ul>
-</dd>
-</dl>
-<p>as return.  Always scans for the maximum of specified value as it
+<li><p><strong>metric</strong> (<em>string</em>) – quality metric to use for selecting member to use
+as return.  Always scans for the maximum of specified value as it
 assume the value is some norm measure.   Accepted values at present
 are all those computed by <cite>broadband_snr_QC</cite>:  bandwidth,
 filtered_envelope, filtered_L2, filtered_Linf, or filtered_perc.
 Default is “bandwidth”.   A ValueError exception will be thrown
-if not one of those values.
-:type metric:  string
-:param subdoc_key:   <cite>broadband_snr_QC</cite> normally posts output to
+if not one of those values.</p></li>
+<li><p><strong>subdoc_key</strong> (<em>string</em>) – <cite>broadband_snr_QC</cite> normally posts output to
 a subdocument (dictionary).  This is the key that is used to
 extract that subdocument from each member.   Default is “Parrival”
-which is the default of <cite>broadband_snr_QC</cite>.
-:type subdoc_key:  string
-:return:  <cite>TimeSeries</cite> that is a copy of the ensemble member with
+which is the default of <cite>broadband_snr_QC</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><cite>TimeSeries</cite> that is a copy of the ensemble member with
 the largest value of the requested member.   A default constructed, dead datum
 is returned if the algorithm failed.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
@@ -1848,12 +1836,19 @@ define the key used to set that field in the data that is returned.</p></li>
 <dd><p>Rotate data using a P wave type coordinate definition.</p>
 <p>This function can apply three different types of rotation depending on the type of parameter given.
 If a <a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.utility.SphericalCoordinate" title="mspasspy.ccore.utility.SphericalCoordinate"><code class="xref py py-class docutils literal notranslate"><span class="pre">SphericalCoordinate</span></code></a> is given, it will rotate the data
-into a coordinate system defined by the direction defined by the spherical coordinate.  The data are
+into a coordinate system defined by the direction defined by the spherical coordinate.  That is, the data are
 rotated such that x1 becomes the transverse component, x2 becomes radial, and x3 becomes longitudinal.</p>
-<p>If an unite vector of three components that defines the direction of x3 direction (longitudinal) is give,
-it will turn the vector into a <a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.utility.SphericalCoordinate" title="mspasspy.ccore.utility.SphericalCoordinate"><code class="xref py py-class docutils literal notranslate"><span class="pre">SphericalCoordinate</span></code></a> object and calles the
-related rotate with it.</p>
-<p>If a <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code> number is given, it will rotate the horizontal components by this much angle in radians.</p>
+<p>A variant is that the <code class="code docutils literal notranslate"><span class="pre">rotate_parameter</span></code> can be defined as a
+three-component unit vector (i.e. assumed normalized so L2 norm is 1.0).
+In that case the unit vector is treated as the expected P ray emergence
+angle used to define the equivalent class:<cite>~mspasspy.ccore.utility.SphericalCoordinate</cite>
+object as described above.  An important limitation at the present is if
+used this way the vector must be defined as a
+<a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.DoubleVector" title="mspasspy.ccore.seismic.DoubleVector"><code class="xref py py-class docutils literal notranslate"><span class="pre">DoubleVector</span></code></a>.  Numpy or python array
+objects will not work but cause a TypeError exception to be thrown.</p>
+<p>If a <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code> number is given for <cite>rotate_parameter</cite>, this function
+will rotate the horizontal components by this angle in radians.  Note the
+polarity is geographic convention as clockwise angle from north.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -4189,27 +4184,42 @@ so the processing history and error logs can be preserved.</p>
 <span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.signals.</span></span><span class="sig-name descname"><span class="pre">filter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'filter'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dryrun</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace_return</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handles_dead_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">options</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/signals.html#filter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.signals.filter" title="Permalink to this definition"></a></dt>
 <dd><p>Applies a time invariant filter to a MsPASS data object.</p>
 <p>This entry is a wrapper around the obspy filter function.  It accepts the
-same arguments as the obspy function and runs the same implementation.
-See their documentation for details, but note the idiosyncracy of
-their API is inherited.  Because different types of filters are
-enabled by the setting of the “type” argument, what kwarg values are
-referenced depend upon the value of “type”.   In particular, note:</p>
-<blockquote>
-<div><ul class="simple">
-<li><p>“bandpass” requires values for “freqmin” and “freqmax as corner frequenices</p></li>
-<li><p>“lowpass” requires only a value for “freq” to define the one corner</p></li>
-<li><p>“highpass” also requres only the value “freq” for the low corner</p></li>
+same arguments as the obspy function and runs the same implementation
+with the same idiosyncracies of their implementation.   Refer to their
+documentation for details, but because this function is so fundamental
+for data processing we note a few key points.</p>
+<p>The “type” argument is required by their implementation and must be one
+of the following:  <em>bandpass</em>, <em>lowpass</em>, or <em>highpass</em>.  A confusing
+feature is that different kwarg values are required for different values
+of “type” that are not consistent.   Requirements for the different
+acceptable values of “type” are:</p>
+<ul class="simple">
+<li><p>If <cite>type==”bandpass”</cite> you must specify <cite>freqmin</cite> and <cite>freqmax</cite> values for
+the passband with units of Hz.  You can optionally change the (integer)
+value <cite>corners</cite> to specify the number of poles of the Butterworth
+filter this option implies.   Note there is also a <cite>zerophase</cite> boolean
+that if set True (default is false for minimum phase) causes the function
+to apply a zerophase Butterworth instead of the default minimum phase
+version.</p></li>
+<li><p>If <cite>type==”lowpass”</cite> you must specify only one corner but with a different
+keyword of <cite>freq</cite>.   <cite>corners</cite> and <cite>zerophase</cite> are the same same as for
+the “bandpass” option.  Again this option implies a Butterworth filter.</p></li>
+<li><p>If <cite>type==”highpass”</cite> the function behaves like “lowpass” except the
+value of <cite>freq</cite> is the low frequency corner versus the high frequency
+corner for lowpass.   <cite>corners</cite> and <cite>zerophase</cite> are the same same as for
+the “bandpass” option.  Again this option implies a Butterworth filter.</p></li>
 </ul>
-</div></blockquote>
-<p>There are other options described in the obspy documentation.</p>
+<p>There are also <cite>bandstop</cite>, <cite>lowpass_fir</cite>, <cite>lowpass_cheby_2</cite>, and
+<cite>remez_fir</cite> options for the “type” argument.   See the obspy documentation
+if you want to use these more obscure options.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>data</strong> – input data, only mspasspy data objects are accepted, i.e. TimeSeries, Seismogram, Ensemble.</p></li>
 <li><p><strong>type</strong> (<em>str</em>) – type of filter, ‘bandpass’, ‘bandstop’, ‘lowpass’, ‘highpass’, ‘lowpass_cheby_2’, ‘lowpass_fir’,
-‘remez_fir’. You can refer to
+‘remez_fir’. as noted above You can refer to
 <cite>Obspy &lt;https://docs.obspy.org/packages/autogen/obspy.core.trace.Trace.filter.html&gt;</cite> for details.</p></li>
-<li><p><strong>args</strong> – extra arguments</p></li>
+<li><p><strong>args</strong> – extra arguments - see above as type value determines what is required here.</p></li>
 <li><p><strong>object_history</strong> – True to preserve the processing history. For details, refer to <code class="xref py py-class docutils literal notranslate"><span class="pre">mspass_func_wrapper</span></code>.</p></li>
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
 <li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.13.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
@@ -5214,7 +5224,7 @@ a “short segment” means the requested time span for a the
 window operation form win_start to win_end is not completely
 inside (inclusive of the endpoints) the range of the data.</p>
 <p>Handling of “short segments” has these elements:</p>
-<ol class="arabic">
+<ol class="arabic simple">
 <li><p>If the window range is completely outside the range of
 the data the result is always killed and returned
 as a dead datum with no sample data. (d.npts=0)</p></li>
@@ -5233,20 +5243,11 @@ handled.  What defines possible recovery is set by
 the <cite>short_segment_handling</cite> string.  It must be
 one of only three possible values or the function
 will abort with a ValueError exception:</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>
-</pre></div>
-</div>
-<dl class="simple">
-<dt>“kill” - (default) does not recovery attempt and will</dt><dd><p>kill any data with time inconsistencies.</p>
-</dd>
-<dt>“truncate” - this truncates to the output to the</dt><dd><p>time range max(d.t0,win.starttime) to
-min(d.endtime(),win.endtime).</p>
-</dd>
-<dt>“pad” - will cause the function to have data in</dt><dd><p>the span define dby win_start to win_end but
-the sections where the data are undefined will
-be set to zeros.</p>
-</dd>
-</dl>
+<ul class="simple">
+<li><p>“kill” (default) does not recovery attempt and will kill any data with time inconsistencies.</p></li>
+<li><p>“truncate” - this truncates to the output to the time range max(d.t0,win.starttime) to min(d.endtime(),win.endtime).</p></li>
+<li><p>“pad” - will cause the function to have data in the span define dby win_start to win_end but the sections where the data are undefined will be set to zeros.</p></li>
+</ul>
 </li>
 </ol>
 <p>Users should also be aware that this function preserves subsample timing

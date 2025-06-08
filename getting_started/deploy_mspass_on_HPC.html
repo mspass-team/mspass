@@ -23,7 +23,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Deploy MsPASS with Conda and Coiled" href="deploy_mspass_with_conda_and_coiled.html" />
-    <link rel="prev" title="Deploy MsPASS with Conda" href="deploy_mspass_with_conda.html" />  
+    <link rel="prev" title="Advanced Setup Considerations" href="advanced_setup_considerations.html" />  
 
   <style>
     .wy-nav-content { max-width: 1600px; }
@@ -57,7 +57,7 @@
 <li class="toctree-l1"><a class="reference internal" href="mspass_desktop.html">Running MsPASS on a Desktop Computer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="command_line_desktop.html">Command Line Docker Desktop Operation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="deploy_mspass_with_conda.html">Deploy MsPASS with Conda</a></li>
-<li class="toctree-l1"><a class="reference internal" href="deploy_mspass_with_conda.html#advanced-setup-considerations">Advanced Setup Considerations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="advanced_setup_considerations.html">Advanced Setup Considerations</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Cluster Operations</span></p>
 <ul class="current">
@@ -385,8 +385,8 @@ since by definition an HPC job runs in “batch” mode.</p>
 <span class="n">module</span> <span class="n">load</span> <span class="n">python</span><span class="o">/</span><span class="mf">3.10.10</span>  <span class="c1"># optional - only needed if not using default python</span>
 <span class="n">cd</span> <span class="o">*</span><span class="n">working_directory</span><span class="o">*</span>
 <span class="n">python</span> <span class="o">&lt;&lt;</span> <span class="n">EOI</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">hpc</span>
-<span class="n">launcher</span> <span class="o">=</span> <span class="n">hpc</span><span class="o">.</span><span class="n">HPCClusterLauncher</span><span class="p">()</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspass_launcher.hpc</span><span class="w"> </span><span class="kn">import</span> <span class="n">HPCClusterLauncher</span>
+<span class="n">launcher</span> <span class="o">=</span> <span class="n">HPCClusterLauncher</span><span class="p">()</span>
 <span class="n">launcher</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="s2">&quot;myscript.py&quot;</span><span class="p">)</span>
 <span class="n">EOI</span>
 </pre></div>
@@ -1040,7 +1040,7 @@ port 8888 and port 8787 on the compute node once the job starts.</p></li>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="deploy_mspass_with_conda.html" class="btn btn-neutral float-left" title="Deploy MsPASS with Conda" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="advanced_setup_considerations.html" class="btn btn-neutral float-left" title="Advanced Setup Considerations" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="deploy_mspass_with_conda_and_coiled.html" class="btn btn-neutral float-right" title="Deploy MsPASS with Conda and Coiled" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

@@ -54,7 +54,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started/mspass_desktop.html">Running MsPASS on a Desktop Computer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started/command_line_desktop.html">Command Line Docker Desktop Operation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_conda.html">Deploy MsPASS with Conda</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_conda.html#advanced-setup-considerations">Advanced Setup Considerations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/advanced_setup_considerations.html">Advanced Setup Considerations</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Cluster Operations</span></p>
 <ul>
@@ -487,17 +487,9 @@
 <span class="sd">        one of only three possible values or the function</span>
 <span class="sd">        will abort with a ValueError exception:</span>
 
-<span class="sd">        .. code-block:: text</span>
-
-<span class="sd">        &quot;kill&quot; - (default) does not recovery attempt and will</span>
-<span class="sd">                 kill any data with time inconsistencies.</span>
-<span class="sd">        &quot;truncate&quot; - this truncates to the output to the</span>
-<span class="sd">                time range max(d.t0,win.starttime) to</span>
-<span class="sd">                min(d.endtime(),win.endtime).</span>
-<span class="sd">        &quot;pad&quot; - will cause the function to have data in</span>
-<span class="sd">                the span define dby win_start to win_end but</span>
-<span class="sd">                the sections where the data are undefined will</span>
-<span class="sd">                be set to zeros.</span>
+<span class="sd">        -  &quot;kill&quot; (default) does not recovery attempt and will kill any data with time inconsistencies.</span>
+<span class="sd">        -  &quot;truncate&quot; - this truncates to the output to the time range max(d.t0,win.starttime) to min(d.endtime(),win.endtime).</span>
+<span class="sd">        -  &quot;pad&quot; - will cause the function to have data in the span define dby win_start to win_end but the sections where the data are undefined will be set to zeros.</span>
 
 <span class="sd">    Users should also be aware that this function preserves subsample timing</span>
 <span class="sd">    in modern earthquake data.   All seismic reflection processing</span>

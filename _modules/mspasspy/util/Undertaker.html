@@ -54,7 +54,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started/mspass_desktop.html">Running MsPASS on a Desktop Computer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started/command_line_desktop.html">Command Line Docker Desktop Operation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_conda.html">Deploy MsPASS with Conda</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_conda.html#advanced-setup-considerations">Advanced Setup Considerations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/advanced_setup_considerations.html">Advanced Setup Considerations</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Cluster Operations</span></p>
 <ul>
@@ -670,16 +670,14 @@
 <span class="sd">        (self.aborted_data_collection) that defaults to &quot;abortions&quot;.</span>
 <span class="sd">        The documents saved have up to 3 key-value pairs:</span>
 
-<span class="sd">        .. code-block:: text</span>
-
-<span class="sd">            &quot;tombstone&quot; - contents are a subdocument (dict) of the</span>
-<span class="sd">              wf document that was aborted during construction.</span>
-<span class="sd">            &quot;logdata&quot; - any error log records left by the reeader that failed.</span>
-<span class="sd">            &quot;type&quot; -  string describing the expected type of data object</span>
-<span class="sd">              that a reader was attempting to construct.   In rare</span>
-<span class="sd">              situations it could be set to &quot;unknown&quot; if</span>
-<span class="sd">              Undertaker._handle_abortion is called on a raw document</span>
-<span class="sd">              and type is not set (see parameters below)</span>
+<span class="sd">        - &quot;tombstone&quot; - contents are a subdocument (dict) of the</span>
+<span class="sd">          wf document that was aborted during construction.</span>
+<span class="sd">        - &quot;logdata&quot; - any error log records left by the reeader that failed.</span>
+<span class="sd">        - &quot;type&quot; -  string describing the expected type of data object</span>
+<span class="sd">          that a reader was attempting to construct.   In rare</span>
+<span class="sd">          situations it could be set to &quot;unknown&quot; if</span>
+<span class="sd">          Undertaker._handle_abortion is called on a raw document</span>
+<span class="sd">          and type is not set (see parameters below)</span>
 
 <span class="sd">        :param doc_or_datum:  container defining the aborted fetus.</span>
 <span class="sd">        :type doc_or_datum:  Must be one of `TimeSeries`, `Seismogram`, `Metadata`,</span>

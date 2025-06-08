@@ -57,7 +57,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/mspass_desktop.html">Running MsPASS on a Desktop Computer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/command_line_desktop.html">Command Line Docker Desktop Operation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda.html">Deploy MsPASS with Conda</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda.html#advanced-setup-considerations">Advanced Setup Considerations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/advanced_setup_considerations.html">Advanced Setup Considerations</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Cluster Operations</span></p>
 <ul>
@@ -1278,8 +1278,9 @@ the datum before it is returned.  With ensembles the editing
 is applied to all members.   Note this same functionality
 can be accomplished within a workflow with the trace editing
 module.</p></li>
-<li><p><strong>collection</strong> – <dl class="simple">
-<dt>Specify the collection name for this read.</dt><dd><p>In MsPASS the equivalent of header attributes are stored in
+<li><p><strong>collection</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code> defining a collection that must be
+defined in the schema.  If not, the function will abort the job.) – Specify the collection name for this read.
+In MsPASS the equivalent of header attributes are stored in
 MongoDB documents contained in a “collection”.   The assumption
 is a given collection only contains documents for one of the
 two atomic types defined in MsPASS:  <cite>TimeSeries</cite> or <cite>Seismogram</cite>.
@@ -1289,16 +1290,7 @@ objects to be constructed (Note ensembles are assembled from
 atomic objects by recursive calls the this same read method.)
 The default is “wf_TimeSeries”, but we recommend always defining
 this argument for clarity and stability in the event the default
-would change.</p>
-</dd>
-</dl>
-<dl class="field-list simple">
-<dt class="field-odd">type collection<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code> defining a collection that must be
-defined in the schema.  If not, the function will abort the job.</p>
-</dd>
-</dl>
-</p></li>
+would change.</p></li>
 <li><p><strong>data_tag</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code> used for the filter.  Can be None
 in which case the cross-check test is disable.) – The definition of a dataset can become ambiguous
 when partially processed data are saved within a workflow.   A common
@@ -1725,24 +1717,16 @@ usage (i.e. arguments defined incorrectly)</p>
 <a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.Seismogram</span></code></a>,
 <a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeriesEnsemble" title="mspasspy.ccore.seismic.TimeSeriesEnsemble"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.TimeSeriesEnsemble</span></code></a>, or
 <a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.SeismogramEnsemble" title="mspasspy.ccore.seismic.SeismogramEnsemble"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.SeismogramEnsemble</span></code></a>) – the seismic object you want to save.</p></li>
-<li><p><strong>return_data</strong> – When True return a (usually edited) copy</p></li>
-</ul>
-</dd>
-</dl>
-<p>of the data received.   When False, the default, return only
+<li><p><strong>return_data</strong> – When True return a (usually edited) copy
+of the data received.   When False, the default, return only
 a requested subset of the attributes in the wf document saved
-for this datum.s
-:param return_list:  list of keys for attributes to extract</p>
-<blockquote>
-<div><p>and set for return python dictionary when return_data is False.
+for this datum.s</p></li>
+<li><p><strong>return_list</strong> – list of keys for attributes to extract
+and set for return python dictionary when return_data is False.
 Ignored if return_data is True.   Be warned for ensembles the
 attributes are expected to be in the ensemble Metadata container.
 Missing attributes will be silentely ignored so an empty dict
-will be returned if none of the attributes is this list are defined.</p>
-</div></blockquote>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
+will be returned if none of the attributes is this list are defined.</p></li>
 <li><p><strong>mode</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – This parameter defines how attributes defined with
 key-value pairs in MongoDB documents are to be handled on reading.
 By “to be handled” we mean how strongly to enforce name and type
@@ -2291,17 +2275,15 @@ it under the hood as part of calls to save_ensemble_data.</p>
 <a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.SeismogramEnsemble" title="mspasspy.ccore.seismic.SeismogramEnsemble"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.SeismogramEnsemble</span></code></a>.) – the ensemble you want to update.</p></li>
 <li><p><strong>mode</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – reading mode regarding schema checks, should be one of [‘promiscuous’,’cautious’,’pedantic’]</p></li>
 <li><p><strong>exclude_keys</strong> (a <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code> of <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the metadata attributes you want to exclude from being updated.</p></li>
-<li><p><strong>exclude_objects</strong> – a list of indexes, where each specifies a object in the ensemble you want to</p></li>
+<li><p><strong>exclude_objects</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>) – a list of indexes, where each specifies a object in the ensemble you want to
+exclude from being saved. The index starts at 0.</p></li>
+<li><p><strong>collection</strong> – the collection name you want to use. If not specified, use the defined collection in the metadata
+schema.</p></li>
+<li><p><strong>ignore_metadata_changed_test</strong> – if specify as <code class="docutils literal notranslate"><span class="pre">True</span></code>, we do not check the whether attributes we want to update are in the Metadata.modified() set. Default to be <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<li><p><strong>data_tag</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – a user specified “data_tag” key to tag the saved wf document.</p></li>
 </ul>
 </dd>
 </dl>
-<p>exclude from being saved. The index starts at 0.
-:type exclude_objects: <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>
-:param collection: the collection name you want to use. If not specified, use the defined collection in the metadata
-schema.
-:param ignore_metadata_changed_test: if specify as <code class="docutils literal notranslate"><span class="pre">True</span></code>, we do not check the whether attributes we want to update are in the Metadata.modified() set. Default to be <code class="docutils literal notranslate"><span class="pre">False</span></code>.
-:param data_tag: a user specified “data_tag” key to tag the saved wf document.
-:type data_tag: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
 </dd></dl>
 
 <dl class="py method">

@@ -54,7 +54,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started/mspass_desktop.html">Running MsPASS on a Desktop Computer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started/command_line_desktop.html">Command Line Docker Desktop Operation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_conda.html">Deploy MsPASS with Conda</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_conda.html#advanced-setup-considerations">Advanced Setup Considerations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/advanced_setup_considerations.html">Advanced Setup Considerations</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Cluster Operations</span></p>
 <ul>
@@ -357,14 +357,21 @@
 
 <span class="sd">    This function can apply three different types of rotation depending on the type of parameter given.</span>
 <span class="sd">    If a :class:`~mspasspy.ccore.utility.SphericalCoordinate` is given, it will rotate the data</span>
-<span class="sd">    into a coordinate system defined by the direction defined by the spherical coordinate.  The data are</span>
+<span class="sd">    into a coordinate system defined by the direction defined by the spherical coordinate.  That is, the data are</span>
 <span class="sd">    rotated such that x1 becomes the transverse component, x2 becomes radial, and x3 becomes longitudinal.</span>
 
-<span class="sd">    If an unite vector of three components that defines the direction of x3 direction (longitudinal) is give,</span>
-<span class="sd">    it will turn the vector into a :class:`~mspasspy.ccore.utility.SphericalCoordinate` object and calles the</span>
-<span class="sd">    related rotate with it.</span>
+<span class="sd">    A variant is that the :code:`rotate_parameter` can be defined as a</span>
+<span class="sd">    three-component unit vector (i.e. assumed normalized so L2 norm is 1.0).</span>
+<span class="sd">    In that case the unit vector is treated as the expected P ray emergence</span>
+<span class="sd">    angle used to define the equivalent class:`~mspasspy.ccore.utility.SphericalCoordinate`</span>
+<span class="sd">    object as described above.  An important limitation at the present is if</span>
+<span class="sd">    used this way the vector must be defined as a</span>
+<span class="sd">    :class:`~mspasspy.ccore.seismic.DoubleVector`.  Numpy or python array</span>
+<span class="sd">    objects will not work but cause a TypeError exception to be thrown.</span>
 
-<span class="sd">    If a :class:`float` number is given, it will rotate the horizontal components by this much angle in radians.</span>
+<span class="sd">    If a :class:`float` number is given for `rotate_parameter`, this function</span>
+<span class="sd">    will rotate the horizontal components by this angle in radians.  Note the</span>
+<span class="sd">    polarity is geographic convention as clockwise angle from north.</span>
 
 <span class="sd">    :param data: data object to be rotated.</span>
 <span class="sd">    :type data: :class:`~mspasspy.ccore.seismic.Seismogram`</span>

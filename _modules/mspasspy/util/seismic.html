@@ -54,7 +54,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started/mspass_desktop.html">Running MsPASS on a Desktop Computer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started/command_line_desktop.html">Command Line Docker Desktop Operation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_conda.html">Deploy MsPASS with Conda</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_conda.html#advanced-setup-considerations">Advanced Setup Considerations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/advanced_setup_considerations.html">Advanced Setup Considerations</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Cluster Operations</span></p>
 <ul>
@@ -172,9 +172,9 @@
 
 <span class="sd">    :param d:  datum for which the Metadata is to be printed.</span>
 <span class="sd">    :type d:  any subclass of `mspasspy.ccore.Metadata` or a</span>
-<span class="sd">    python dictionary (the container used for documents returned</span>
-<span class="sd">    by pymongo).  If d is anything else a TypeError exception</span>
-<span class="sd">    will be thrown.</span>
+<span class="sd">      python dictionary (the container used for documents returned</span>
+<span class="sd">      by pymongo).  If d is anything else a TypeError exception</span>
+<span class="sd">      will be thrown.</span>
 <span class="sd">    :param indent:   indentation argument for json printing</span>
 <span class="sd">    :type indent:  integer (default 2)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -240,23 +240,23 @@
 <span class="sd">    and need to be robust for what might otherwise be considered a user error.</span>
 
 <span class="sd">    :param ensemble:  ensemble container of data to be scanned for irregular</span>
-<span class="sd">    sampling.</span>
+<span class="sd">      sampling.</span>
 <span class="sd">    :type ensemble:  `TimeSeriesEnsemble` or `SeismogramEnsemble`.   The</span>
-<span class="sd">    function does not test for type and will abort with an undefined method</span>
-<span class="sd">    error if sent anything else.</span>
+<span class="sd">      function does not test for type and will abort with an undefined method</span>
+<span class="sd">      error if sent anything else.</span>
 <span class="sd">    :param dt_expected:  constant data sample interval expected.</span>
 <span class="sd">    :type dt_expected:  float</span>
 <span class="sd">    :param Nsamp:   Nominal number of samples expected in the ensemble members.</span>
-<span class="sd">    This number is used to compute the soft test to allow for slippery clocks</span>
-<span class="sd">    discussed above.   (Default 10000) e = regularize_sampling(e,dt)</span>
-<span class="sd">    assert e.live</span>
+<span class="sd">      This number is used to compute the soft test to allow for slippery clocks</span>
+<span class="sd">      discussed above.   (Default 10000) e = regularize_sampling(e,dt)</span>
+<span class="sd">      assert e.live</span>
 <span class="sd">    :type Nsamp:  integer</span>
 <span class="sd">    :param abort_on_error:  Controls what the function does if it</span>
-<span class="sd">    encountered a datum with a sample interval different that dt_expected.</span>
-<span class="sd">    When True the function aborts with a ValueError exception if ANY</span>
-<span class="sd">    ensemble member does not have a matching sample interval.  When</span>
-<span class="sd">    False (the default) the function uses the MsPASS error logging</span>
-<span class="sd">    to hold a message an kills any member datum with a problem.</span>
+<span class="sd">      encountered a datum with a sample interval different that dt_expected.</span>
+<span class="sd">      When True the function aborts with a ValueError exception if ANY</span>
+<span class="sd">      ensemble member does not have a matching sample interval.  When</span>
+<span class="sd">      False (the default) the function uses the MsPASS error logging</span>
+<span class="sd">      to hold a message an kills any member datum with a problem.</span>
 <span class="sd">    :type abort_on_error:  boolean</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -307,18 +307,20 @@
 <span class="sd">    time range.</span>
 <span class="sd">    :type ensemble:  `TimeSeriesEnsemble` or `SeismogramEnsemble`.</span>
 <span class="sd">    :param metric:   measure to use to define the time range.</span>
-<span class="sd">    Accepted values are:</span>
-<span class="sd">      &quot;inner&quot; - (default) return range defined by largest</span>
-<span class="sd">          start time to smallest end time.</span>
-<span class="sd">      &quot;outer&quot; - return range defined by minimum start time and</span>
-<span class="sd">          largest end time (maximum time span of data)</span>
-<span class="sd">      &quot;median&quot; - return range as the median of the extracted</span>
-<span class="sd">          vectors of start time and end time values.</span>
-<span class="sd">      &quot;mean&quot; - return range as arithmetic average of</span>
-<span class="sd">          start and end time vectors</span>
+<span class="sd">      Accepted values are:</span>
+
+<span class="sd">      - &quot;inner&quot; - (default) return range defined by largest</span>
+<span class="sd">        start time to smallest end time.</span>
+<span class="sd">      - &quot;outer&quot; - return range defined by minimum start time and</span>
+<span class="sd">        largest end time (maximum time span of data)</span>
+<span class="sd">      - &quot;median&quot; - return range as the median of the extracted</span>
+<span class="sd">        vectors of start time and end time values.</span>
+<span class="sd">      - &quot;mean&quot; - return range as arithmetic average of</span>
+<span class="sd">        start and end time vectors</span>
+
 <span class="sd">    :return:  `TimeWindow` object with start and end times.  If the</span>
-<span class="sd">    ensemble has all dead member the default constructed TimeWindow</span>
-<span class="sd">    object will be returned which has zero length.</span>
+<span class="sd">      ensemble has all dead member the default constructed TimeWindow</span>
+<span class="sd">      object will be returned which has zero length.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ensemble</span><span class="p">,</span> <span class="p">(</span><span class="n">TimeSeriesEnsemble</span><span class="p">,</span> <span class="n">SeismogramEnsemble</span><span class="p">)):</span>
         <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;ensemble_time_range:   illegal type for arg0=</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>

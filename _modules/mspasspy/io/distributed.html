@@ -54,7 +54,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started/mspass_desktop.html">Running MsPASS on a Desktop Computer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started/command_line_desktop.html">Command Line Docker Desktop Operation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_conda.html">Deploy MsPASS with Conda</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_conda.html#advanced-setup-considerations">Advanced Setup Considerations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/advanced_setup_considerations.html">Advanced Setup Considerations</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Cluster Operations</span></p>
 <ul>
@@ -356,7 +356,7 @@
 <span class="sd">           common source gathers (ensmebles) might be created</span>
 <span class="sd">           using a list something like this:</span>
 
-<span class="sd">           .. code-block:: python</span>
+<span class="sd">    .. code-block:: python</span>
 
 <span class="sd">           [{&quot;source_id&quot; : ObjectId(&#39;64b917ce9aa746564e8ecbfd&#39;)},</span>
 <span class="sd">            {&quot;source_id&quot; : ObjectId(&#39;64b917d69aa746564e8ecbfe&#39;)},</span>
@@ -1414,74 +1414,74 @@
 <span class="sd">    Saving data from a parallel container (i.e. bag/rdd) is a different</span>
 <span class="sd">    problem from a serial writer.  Bottlenecks are likely with</span>
 <span class="sd">    communication delays talking to the MonboDB server and</span>
-<span class="sd">    complexities of file based io.   Further, there are efficiency issues </span>
-<span class="sd">    in the need to reduce transactions that cause delays with the MongoDB </span>
-<span class="sd">    server.   This function tries to address these issues with two </span>
+<span class="sd">    complexities of file based io.   Further, there are efficiency issues</span>
+<span class="sd">    in the need to reduce transactions that cause delays with the MongoDB</span>
+<span class="sd">    server.   This function tries to address these issues with two</span>
 <span class="sd">    approaches:</span>
 
-<span class="sd">        1.   Since v2 it uses single function that handles writing the </span>
-<span class="sd">             sample data for a datum.   For atomic data that means a </span>
+<span class="sd">        1.   Since v2 it uses single function that handles writing the</span>
+<span class="sd">             sample data for a datum.   For atomic data that means a</span>
 <span class="sd">             single array but for ensembles it is the combination of all</span>
-<span class="sd">             arrays in the ensemble &quot;member&quot; containers.   The writing </span>
+<span class="sd">             arrays in the ensemble &quot;member&quot; containers.   The writing</span>
 <span class="sd">             functions are passed through a map operator</span>
-<span class="sd">             so writing is a parallelized per worker.  Note the function </span>
-<span class="sd">             also abstracts how the data are written with different </span>
-<span class="sd">             things done depending on the &quot;storage_mode&quot; attribute </span>
+<span class="sd">             so writing is a parallelized per worker.  Note the function</span>
+<span class="sd">             also abstracts how the data are written with different</span>
+<span class="sd">             things done depending on the &quot;storage_mode&quot; attribute</span>
 <span class="sd">             that can optionally be defined for each atomic object.</span>
-<span class="sd">        2.   After the sample data are saved we use a MongoDB </span>
-<span class="sd">             &quot;update_many&quot; operator with the &quot;many&quot; defined by the </span>
-<span class="sd">             partition size.  That reduces database transaction delays </span>
-<span class="sd">             by 1/object_per_partition.  For ensembles the partitioning </span>
-<span class="sd">             is natural with bulk writes controlled by the number of </span>
-<span class="sd">             ensemble members. </span>
+<span class="sd">        2.   After the sample data are saved we use a MongoDB</span>
+<span class="sd">             &quot;update_many&quot; operator with the &quot;many&quot; defined by the</span>
+<span class="sd">             partition size.  That reduces database transaction delays</span>
+<span class="sd">             by 1/object_per_partition.  For ensembles the partitioning</span>
+<span class="sd">             is natural with bulk writes controlled by the number of</span>
+<span class="sd">             ensemble members.</span>
 
-<span class="sd">    The function also handles data marked dead in a standardized way </span>
-<span class="sd">    though the use of the :class:`mspasspy.util.Undertaker` now </span>
-<span class="sd">    defined within the Database class handle.   The default will </span>
-<span class="sd">    call the `bury` method on all dead data which leaves a document </span>
-<span class="sd">    containing the datum&#39;s Metadata and and error log messages in </span>
-<span class="sd">    a collection called &quot;cemetery&quot;.   If the `cremate` argument is </span>
-<span class="sd">    set True dead data will be vaporized and no trace of them will </span>
-<span class="sd">    appear in output.  </span>
+<span class="sd">    The function also handles data marked dead in a standardized way</span>
+<span class="sd">    though the use of the :class:`mspasspy.util.Undertaker` now</span>
+<span class="sd">    defined within the Database class handle.   The default will</span>
+<span class="sd">    call the `bury` method on all dead data which leaves a document</span>
+<span class="sd">    containing the datum&#39;s Metadata and and error log messages in</span>
+<span class="sd">    a collection called &quot;cemetery&quot;.   If the `cremate` argument is</span>
+<span class="sd">    set True dead data will be vaporized and no trace of them will</span>
+<span class="sd">    appear in output.</span>
 
-<span class="sd">    To further reduce database traffic the function has two </span>
-<span class="sd">    (boolean) options called `post_elog` and `post_history`.  </span>
-<span class="sd">    When set True the elog and/or object-level history data will </span>
-<span class="sd">    be posted as subdocuments in the output collection instead of </span>
-<span class="sd">    the normal (at least as defined by the Database handle) way </span>
-<span class="sd">    these data are saved (In Database the error log is saved to the </span>
+<span class="sd">    To further reduce database traffic the function has two</span>
+<span class="sd">    (boolean) options called `post_elog` and `post_history`.</span>
+<span class="sd">    When set True the elog and/or object-level history data will</span>
+<span class="sd">    be posted as subdocuments in the output collection instead of</span>
+<span class="sd">    the normal (at least as defined by the Database handle) way</span>
+<span class="sd">    these data are saved (In Database the error log is saved to the</span>
 <span class="sd">    &quot;elog&quot; collection and the history data is saved to &quot;history&quot;.)</span>
 <span class="sd">    Note post_history is ignored unless the related `save_history`</span>
 <span class="sd">    argument is changed from the default False ot True.</span>
 
-<span class="sd">    A peculiarity that is a consequence of python&#39;s &quot;duck typing&quot; is that </span>
-<span class="sd">    the user must give the writer some hints about the type of data objects </span>
-<span class="sd">    it is expected to handle.  Rather than specify a type argument, </span>
+<span class="sd">    A peculiarity that is a consequence of python&#39;s &quot;duck typing&quot; is that</span>
+<span class="sd">    the user must give the writer some hints about the type of data objects</span>
+<span class="sd">    it is expected to handle.  Rather than specify a type argument,</span>
 <span class="sd">    the type is inferred from two arguments that are necessary anyway:</span>
-<span class="sd">    (1)  the `collection` argument value, and (2) the boolean </span>
-<span class="sd">    `data_are_atomic`.   The idea is that `collection` is used to </span>
-<span class="sd">    determine of the writer is handling TimeSeries or Seismogram </span>
+<span class="sd">    (1)  the `collection` argument value, and (2) the boolean</span>
+<span class="sd">    `data_are_atomic`.   The idea is that `collection` is used to</span>
+<span class="sd">    determine of the writer is handling TimeSeries or Seismogram</span>
 <span class="sd">    objects (&quot;wf_TimeSeries&quot; or &quot;wf_Seismogram&quot; values respectively)\</span>
-<span class="sd">    and the boolean is used, as the name implies, to infer if the </span>
-<span class="sd">    data are atomic or ensembles.  </span>
+<span class="sd">    and the boolean is used, as the name implies, to infer if the</span>
+<span class="sd">    data are atomic or ensembles.</span>
 
-<span class="sd">    This function should only be used as the terminal step </span>
+<span class="sd">    This function should only be used as the terminal step</span>
 <span class="sd">    of a parallel workflow (i.e. a chain of map/reduce operators).</span>
-<span class="sd">    This function will ALWAYS initiate a lazy computation on such a chain of </span>
-<span class="sd">    operators because it calls the &quot;compute&quot; method for dask and the </span>
-<span class="sd">    &quot;collect&quot; method of spark before returning.  It then always returns </span>
-<span class="sd">    a list of ObjectIds of  live, saved data.   The function is dogmatic </span>
-<span class="sd">    about that because the return can never be a bag/RDD of the the </span>
+<span class="sd">    This function will ALWAYS initiate a lazy computation on such a chain of</span>
+<span class="sd">    operators because it calls the &quot;compute&quot; method for dask and the</span>
+<span class="sd">    &quot;collect&quot; method of spark before returning.  It then always returns</span>
+<span class="sd">    a list of ObjectIds of  live, saved data.   The function is dogmatic</span>
+<span class="sd">    about that because the return can never be a bag/RDD of the the</span>
 <span class="sd">    data.</span>
 
-<span class="sd">    If your workflow requires an intermediate save (i.e. saving data </span>
+<span class="sd">    If your workflow requires an intermediate save (i.e. saving data</span>
 <span class="sd">    in an intermediate step within a chain of map/reduce opeators)</span>
-<span class="sd">    the best approach at present is to use the `save_data` method of </span>
+<span class="sd">    the best approach at present is to use the `save_data` method of</span>
 <span class="sd">    the `Database` class in a variant of the following (dask) example</span>
-<span class="sd">    that also illustrates how this function is used as the terminator </span>
+<span class="sd">    that also illustrates how this function is used as the terminator</span>
 <span class="sd">    of a chain of map-reduce operators.</span>
 
-<span class="sd">    .. code-block:: python </span>
+<span class="sd">    .. code-block:: python</span>
 
 <span class="sd">       mybag = read_distributed_data(db,collection=&#39;wf_TimeSeries&#39;)</span>
 <span class="sd">       mybag = mybag.map(detrend)   # example</span>
@@ -1492,34 +1492,34 @@
 <span class="sd">       # termination with this function</span>
 <span class="sd">       wfids = write_distributed_data(mybag,db,collection=&#39;wf_TimeSeries&#39;)</span>
 
-<span class="sd">    The `storage_mode` argument is a constant that defines how the </span>
-<span class="sd">    SAMPLE DATA are to be stored.  Currently this can be &quot;file&quot; or </span>
-<span class="sd">    &quot;gridfs&quot;, but be aware future evolution may extend the options.  </span>
-<span class="sd">    &quot;gridfs&quot; is the default as the only complexity it has is a speed </span>
-<span class="sd">    throttle by requiring the sample data to move through MongoDB and </span>
-<span class="sd">    the potential to overflow the file system where the database is stored. </span>
-<span class="sd">    (See User&#39;s Manual for more on this topic.).   Most users, however, </span>
-<span class="sd">    likely want to use the &quot;file&quot; option for that parameter.  There are, </span>
+<span class="sd">    The `storage_mode` argument is a constant that defines how the</span>
+<span class="sd">    SAMPLE DATA are to be stored.  Currently this can be &quot;file&quot; or</span>
+<span class="sd">    &quot;gridfs&quot;, but be aware future evolution may extend the options.</span>
+<span class="sd">    &quot;gridfs&quot; is the default as the only complexity it has is a speed</span>
+<span class="sd">    throttle by requiring the sample data to move through MongoDB and</span>
+<span class="sd">    the potential to overflow the file system where the database is stored.</span>
+<span class="sd">    (See User&#39;s Manual for more on this topic.).   Most users, however,</span>
+<span class="sd">    likely want to use the &quot;file&quot; option for that parameter.  There are,</span>
 <span class="sd">    however, some caveats in that use that users MUST be aware of before</span>
-<span class="sd">    using that option with large data sets.   Since V2 of MsPASS </span>
-<span class="sd">    the file save process was made more robust by allowing a chain of </span>
-<span class="sd">    options for how the actual file name where data is stored is set.  </span>
-<span class="sd">    The algorithm used here is a private method in </span>
-<span class="sd">    :class:`mspasspy.db.Database` called `_save_sample_data_to_file`. </span>
-<span class="sd">    When used here that that function is passed a None type for dir and </span>
-<span class="sd">    dfile.   The EXPECTED use is that you as a user should set the </span>
-<span class="sd">    dir and dfile attribute for EVERY datum in the bag/RDD this function is </span>
-<span class="sd">    asked to handle.  That allows each atomic datum to define what the </span>
-<span class="sd">    file destination is.  For ensembles normal behavior is to require the </span>
-<span class="sd">    entire ensemble content to be saved in one file defined by the dir </span>
-<span class="sd">    and dfile values in the ensemble&#39;s Metadata container.  </span>
-<span class="sd">    THE WARNING is that to be robust the file writer will alway default </span>
-<span class="sd">    a value for dir and dfile.  The default dir is the run directory. </span>
-<span class="sd">    The default dfile (if not set) is a unique name created by a </span>
-<span class="sd">    uuid generator.  Care must be taken in file writes to make sure </span>
-<span class="sd">    you don&#39;t create huge numbers of files that overflow directories or </span>
-<span class="sd">    similar file system errors that are all to easy to do with large </span>
-<span class="sd">    data set saves.  See the User Manual for examples of how to set </span>
+<span class="sd">    using that option with large data sets.   Since V2 of MsPASS</span>
+<span class="sd">    the file save process was made more robust by allowing a chain of</span>
+<span class="sd">    options for how the actual file name where data is stored is set.</span>
+<span class="sd">    The algorithm used here is a private method in</span>
+<span class="sd">    :class:`mspasspy.db.Database` called `_save_sample_data_to_file`.</span>
+<span class="sd">    When used here that that function is passed a None type for dir and</span>
+<span class="sd">    dfile.   The EXPECTED use is that you as a user should set the</span>
+<span class="sd">    dir and dfile attribute for EVERY datum in the bag/RDD this function is</span>
+<span class="sd">    asked to handle.  That allows each atomic datum to define what the</span>
+<span class="sd">    file destination is.  For ensembles normal behavior is to require the</span>
+<span class="sd">    entire ensemble content to be saved in one file defined by the dir</span>
+<span class="sd">    and dfile values in the ensemble&#39;s Metadata container.</span>
+<span class="sd">    THE WARNING is that to be robust the file writer will alway default</span>
+<span class="sd">    a value for dir and dfile.  The default dir is the run directory.</span>
+<span class="sd">    The default dfile (if not set) is a unique name created by a</span>
+<span class="sd">    uuid generator.  Care must be taken in file writes to make sure</span>
+<span class="sd">    you don&#39;t create huge numbers of files that overflow directories or</span>
+<span class="sd">    similar file system errors that are all to easy to do with large</span>
+<span class="sd">    data set saves.  See the User Manual for examples of how to set</span>
 <span class="sd">    output file names for a large data set.</span>
 
 <span class="sd">    :param data: parallel container of data to be written</span>
@@ -1540,21 +1540,21 @@
 <span class="sd">    :param storage_mode: Must be either &quot;gridfs&quot; or &quot;file.  When set to</span>
 <span class="sd">        &quot;gridfs&quot; the waveform data are stored internally and managed by</span>
 <span class="sd">        MongoDB.  If set to &quot;file&quot; the data will be stored in a file system.</span>
-<span class="sd">        File names are derived from attributes with the tags &quot;dir&quot; and </span>
-<span class="sd">        &quot;dfile&quot; in the standard way.   Any datum for which dir or dfile </span>
-<span class="sd">        aren&#39;t defined will default to the behaviour of the Database </span>
-<span class="sd">        class method `save_data`.  See the docstring for details but the </span>
+<span class="sd">        File names are derived from attributes with the tags &quot;dir&quot; and</span>
+<span class="sd">        &quot;dfile&quot; in the standard way.   Any datum for which dir or dfile</span>
+<span class="sd">        aren&#39;t defined will default to the behaviour of the Database</span>
+<span class="sd">        class method `save_data`.  See the docstring for details but the</span>
 <span class="sd">        concept is it will always be bombproof even if not ideal.</span>
-<span class="sd">    :type storage_mode: :class:`str` </span>
+<span class="sd">    :type storage_mode: :class:`str`</span>
 
-<span class="sd">    :param scheduler:  name of parallel scheduler being used by this writer. </span>
-<span class="sd">        MsPASS currently support pyspark and dask.  If arg0 is an RDD </span>
-<span class="sd">        scheduler must be &quot;spark&quot; and arg0 defines dask bag schduler must </span>
-<span class="sd">        be &quot;dask&quot;.   The function will raise a ValueError exception of </span>
-<span class="sd">        scheduler and the type of arg0 are not consistent or if the </span>
-<span class="sd">        value of scheduler is illegal.  Note with spark the context is </span>
+<span class="sd">    :param scheduler:  name of parallel scheduler being used by this writer.</span>
+<span class="sd">        MsPASS currently support pyspark and dask.  If arg0 is an RDD</span>
+<span class="sd">        scheduler must be &quot;spark&quot; and arg0 defines dask bag schduler must</span>
+<span class="sd">        be &quot;dask&quot;.   The function will raise a ValueError exception of</span>
+<span class="sd">        scheduler and the type of arg0 are not consistent or if the</span>
+<span class="sd">        value of scheduler is illegal.  Note with spark the context is</span>
 <span class="sd">        not required because of how this algorithm is structured.</span>
-<span class="sd">    :type scheduler:  string  Must be either &quot;dask&quot; or &quot;spark&quot;.  Default </span>
+<span class="sd">    :type scheduler:  string  Must be either &quot;dask&quot; or &quot;spark&quot;.  Default</span>
 <span class="sd">        is None which is is equivalent to the value of &quot;dask&quot;.</span>
 
 <span class="sd">    :param file_format: the format of the file. This can be one of the</span>
@@ -1577,12 +1577,12 @@
 <span class="sd">        storage_mode is set to gridfs.</span>
 <span class="sd">    :type overwrite:  boolean</span>
 
-<span class="sd">    :param collectiion:   name of wf collection where the documents </span>
-<span class="sd">        derived from the data are to be saved.  Standard values are </span>
-<span class="sd">        &quot;wf_TimeSeries&quot; and &quot;wf_Seismogram&quot; for which a schema is defined in </span>
-<span class="sd">        MsPASS.   Normal use should specify one or the other.   The default is </span>
-<span class="sd">        &quot;wf_TimeSeries&quot;  but normal usage should specify this argument </span>
-<span class="sd">        explicitly for clarity in reuse. </span>
+<span class="sd">    :param collectiion:   name of wf collection where the documents</span>
+<span class="sd">        derived from the data are to be saved.  Standard values are</span>
+<span class="sd">        &quot;wf_TimeSeries&quot; and &quot;wf_Seismogram&quot; for which a schema is defined in</span>
+<span class="sd">        MsPASS.   Normal use should specify one or the other.   The default is</span>
+<span class="sd">        &quot;wf_TimeSeries&quot;  but normal usage should specify this argument</span>
+<span class="sd">        explicitly for clarity in reuse.</span>
 <span class="sd">    :type collection:  :class:`str`</span>
 
 <span class="sd">    :param exclude_keys: Metadata can often become contaminated with</span>
@@ -1602,56 +1602,56 @@
 <span class="sd">        User&#39;s manual for guidance on how the use of this option.</span>
 <span class="sd">    :type data_tag: :class:`str`</span>
 
-<span class="sd">    :param post_elog:   boolean controlling how error log messages are </span>
-<span class="sd">        handled.  When False (default) error log messages get posted in </span>
-<span class="sd">        single transactions with MongoDB to the &quot;elog&quot; collection.   </span>
-<span class="sd">        When set True error log entries will be posted to as subdocuments to </span>
-<span class="sd">        the wf collection entry for each datum.   Setting post_elog True </span>
-<span class="sd">        is most useful if you anticipate a run will generate a large number of </span>
-<span class="sd">        error that could throttle processing with a large number of </span>
-<span class="sd">        one-at-a-time document saves.  For normal use with small number of </span>
+<span class="sd">    :param post_elog:   boolean controlling how error log messages are</span>
+<span class="sd">        handled.  When False (default) error log messages get posted in</span>
+<span class="sd">        single transactions with MongoDB to the &quot;elog&quot; collection.</span>
+<span class="sd">        When set True error log entries will be posted to as subdocuments to</span>
+<span class="sd">        the wf collection entry for each datum.   Setting post_elog True</span>
+<span class="sd">        is most useful if you anticipate a run will generate a large number of</span>
+<span class="sd">        error that could throttle processing with a large number of</span>
+<span class="sd">        one-at-a-time document saves.  For normal use with small number of</span>
 <span class="sd">        errors it is easier to review error issue by inspecting the elog</span>
 <span class="sd">        collection than having to query the larger wf collection.</span>
 
-<span class="sd">    :param save_history:  When set True (default is False) write will </span>
+<span class="sd">    :param save_history:  When set True (default is False) write will</span>
 <span class="sd">        save any object-level history data saved within the input data objects.</span>
-<span class="sd">        The related boolean (described below) called post_history controls </span>
-<span class="sd">        how such data is saved if this option is enable.  Note post_history </span>
+<span class="sd">        The related boolean (described below) called post_history controls</span>
+<span class="sd">        how such data is saved if this option is enable.  Note post_history</span>
 <span class="sd">        is ignored unless save_history is True.</span>
 
-<span class="sd">    :param post_history:  boolean similar to post_elog for handling </span>
-<span class="sd">        object-level history data.  It is, however, only handled if the </span>
-<span class="sd">        related boolean &quot;save_history&quot; is set True. When post_history is </span>
+<span class="sd">    :param post_history:  boolean similar to post_elog for handling</span>
+<span class="sd">        object-level history data.  It is, however, only handled if the</span>
+<span class="sd">        related boolean &quot;save_history&quot; is set True. When post_history is</span>
 <span class="sd">        set True the history data will be saved as a subdocument in the wf</span>
-<span class="sd">        document saved for each live, atomic datum (note for ensembles </span>
-<span class="sd">        that means all live members).   When False each atomic datum </span>
-<span class="sd">        will generate a insert_one transaction with MongoDB and save the </span>
-<span class="sd">        history data in  the &quot;history&quot; collection.  It then sets the </span>
-<span class="sd">        attribute with key &quot;history_id&quot; to the ObjectId of the saved </span>
-<span class="sd">        document.  The default for this argument is True to avoid </span>
-<span class="sd">        accidentally throttling workflows on large data sets.  The default </span>
-<span class="sd">        for save_history is False so overall default behavior is to drop </span>
-<span class="sd">        any history data. </span>
+<span class="sd">        document saved for each live, atomic datum (note for ensembles</span>
+<span class="sd">        that means all live members).   When False each atomic datum</span>
+<span class="sd">        will generate a insert_one transaction with MongoDB and save the</span>
+<span class="sd">        history data in  the &quot;history&quot; collection.  It then sets the</span>
+<span class="sd">        attribute with key &quot;history_id&quot; to the ObjectId of the saved</span>
+<span class="sd">        document.  The default for this argument is True to avoid</span>
+<span class="sd">        accidentally throttling workflows on large data sets.  The default</span>
+<span class="sd">        for save_history is False so overall default behavior is to drop</span>
+<span class="sd">        any history data.</span>
 
-<span class="sd">    :param cremate:  boolean controlling handling of dead data.  </span>
-<span class="sd">        When True dead data will be passed to the `cremate` </span>
-<span class="sd">        method of :class:`mspasspy.util.Undertaker` which leaves only </span>
-<span class="sd">        ashes to nothing in the return.   When False (default) the </span>
-<span class="sd">        `bury` method will be called instead which saves a skeleton </span>
-<span class="sd">        (error log and Metadata content) of the results in the &quot;cemetery&quot; </span>
+<span class="sd">    :param cremate:  boolean controlling handling of dead data.</span>
+<span class="sd">        When True dead data will be passed to the `cremate`</span>
+<span class="sd">        method of :class:`mspasspy.util.Undertaker` which leaves only</span>
+<span class="sd">        ashes to nothing in the return.   When False (default) the</span>
+<span class="sd">        `bury` method will be called instead which saves a skeleton</span>
+<span class="sd">        (error log and Metadata content) of the results in the &quot;cemetery&quot;</span>
 <span class="sd">        collection.</span>
 
 <span class="sd">    :param normalizing_collections:  list of collection names dogmatically treated</span>
-<span class="sd">        as normalizing collection names.  The keywords in the list are used </span>
-<span class="sd">        to always (i.e. for all modes) erase any attribute with a key name </span>
-<span class="sd">        of the form `collection_attribute where `collection` is one of the collection </span>
-<span class="sd">        names in this list and attribute is any string.  Attribute names with the &quot;_&quot; </span>
-<span class="sd">        separator are saved unless the collection field matches one one of the </span>
-<span class="sd">        strings (e.g. &quot;channel_vang&quot; will be erased before saving to the </span>
-<span class="sd">        wf collection while &quot;foo_bar&quot; will not be erased.)  This list should </span>
-<span class="sd">        ONLY be changed if a different schema than the default mspass schema </span>
-<span class="sd">        is used and different names are used for normalizing collections.  </span>
-<span class="sd">        (e.g. if one added a &quot;shot&quot; collection to the schema the list would need </span>
+<span class="sd">        as normalizing collection names.  The keywords in the list are used</span>
+<span class="sd">        to always (i.e. for all modes) erase any attribute with a key name</span>
+<span class="sd">        of the form `collection_attribute where `collection` is one of the collection</span>
+<span class="sd">        names in this list and attribute is any string.  Attribute names with the &quot;_&quot;</span>
+<span class="sd">        separator are saved unless the collection field matches one one of the</span>
+<span class="sd">        strings (e.g. &quot;channel_vang&quot; will be erased before saving to the</span>
+<span class="sd">        wf collection while &quot;foo_bar&quot; will not be erased.)  This list should</span>
+<span class="sd">        ONLY be changed if a different schema than the default mspass schema</span>
+<span class="sd">        is used and different names are used for normalizing collections.</span>
+<span class="sd">        (e.g. if one added a &quot;shot&quot; collection to the schema the list would need</span>
 <span class="sd">        to be changed to at least add &quot;shot&quot;.)</span>
 <span class="sd">     :type normalizing_collection:  list if strings defining collection names.</span>
 
