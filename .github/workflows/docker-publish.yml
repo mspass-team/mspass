@@ -28,7 +28,7 @@ jobs:
   build-latest:
 
     # Use self-hosted runner if available, otherwise fall back to GitHub-hosted
-    runs-on: [self-hosted, macOS, ARM64, ubuntu-latest]
+    runs-on: [self-hosted, macOS, ARM64]
     permissions:
       contents: read
       packages: write
@@ -145,7 +145,7 @@ jobs:
 
   build-dev:
 
-    runs-on: [self-hosted, macOS, ARM64, ubuntu-latest]
+    runs-on: [self-hosted, macOS, ARM64]
     permissions:
       contents: read
       packages: write
@@ -260,7 +260,7 @@ jobs:
 
   build-mpi:
 
-    runs-on: [self-hosted, macOS, ARM64, ubuntu-latest]
+    runs-on: [self-hosted, macOS, ARM64]
     permissions:
       contents: read
       packages: write
@@ -359,7 +359,7 @@ jobs:
 
   build-tacc:
 
-    runs-on: [self-hosted, macOS, ARM64, ubuntu-latest]
+    runs-on: [self-hosted, macOS, ARM64]
     permissions:
       contents: read
       packages: write
