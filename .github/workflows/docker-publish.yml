@@ -76,10 +76,15 @@ jobs:
             ${{ runner.os }}-buildx-
 
       # Testing the solution here: https://github.com/docker/login-action/issues/173#issuecomment-1079688020      
-      - name: Set DOCKER_CONFIG
+      - name: Isolate Docker config for concurrent jobs
         run: |
-          mkdir -p $HOME/${{ env.GITHUB_RUN_ID }}/.docker
-          echo "DOCKER_CONFIG=$HOME/${{ env.GITHUB_RUN_ID }}/.docker" >> $GITHUB_ENV
+          # Creates a unique, isolated directory for this job's Docker config.
+          # This prevents race conditions if multiple jobs run on the same self-hosted runner.
+          # We use runner.temp, the official temp directory, and github.run_id, the unique ID for this workflow run.
+          export DOCKER_CONFIG_DIR=${{ runner.temp }}/docker_config_${{ github.run_id }}
+          mkdir -p $DOCKER_CONFIG_DIR
+          echo "DOCKER_CONFIG=$DOCKER_CONFIG_DIR" >> $GITHUB_ENV
+          echo "Using isolated Docker config directory: $DOCKER_CONFIG_DIR"
           
       # Login against a Docker registry
       # https://github.com/docker/login-action
@@ -198,10 +203,15 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-buildx.dev-
             
-      - name: Set DOCKER_CONFIG
+      - name: Isolate Docker config for concurrent jobs
         run: |
-          mkdir -p $HOME/${{ env.GITHUB_RUN_ID }}/.docker
-          echo "DOCKER_CONFIG=$HOME/${{ env.GITHUB_RUN_ID }}/.docker" >> $GITHUB_ENV
+          # Creates a unique, isolated directory for this job's Docker config.
+          # This prevents race conditions if multiple jobs run on the same self-hosted runner.
+          # We use runner.temp, the official temp directory, and github.run_id, the unique ID for this workflow run.
+          export DOCKER_CONFIG_DIR=${{ runner.temp }}/docker_config_${{ github.run_id }}
+          mkdir -p $DOCKER_CONFIG_DIR
+          echo "DOCKER_CONFIG=$DOCKER_CONFIG_DIR" >> $GITHUB_ENV
+          echo "Using isolated Docker config directory: $DOCKER_CONFIG_DIR"
 
       # Login against a Docker registry
       # https://github.com/docker/login-action
@@ -318,10 +328,15 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-buildx.mpi-
             
-      - name: Set DOCKER_CONFIG
+      - name: Isolate Docker config for concurrent jobs
         run: |
-          mkdir -p $HOME/${{ env.GITHUB_RUN_ID }}/.docker
-          echo "DOCKER_CONFIG=$HOME/${{ env.GITHUB_RUN_ID }}/.docker" >> $GITHUB_ENV
+          # Creates a unique, isolated directory for this job's Docker config.
+          # This prevents race conditions if multiple jobs run on the same self-hosted runner.
+          # We use runner.temp, the official temp directory, and github.run_id, the unique ID for this workflow run.
+          export DOCKER_CONFIG_DIR=${{ runner.temp }}/docker_config_${{ github.run_id }}
+          mkdir -p $DOCKER_CONFIG_DIR
+          echo "DOCKER_CONFIG=$DOCKER_CONFIG_DIR" >> $GITHUB_ENV
+          echo "Using isolated Docker config directory: $DOCKER_CONFIG_DIR"
 
       # Login against a Docker registry
       # https://github.com/docker/login-action
@@ -422,10 +437,15 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-buildx.tacc-
             
-      - name: Set DOCKER_CONFIG
+      - name: Isolate Docker config for concurrent jobs
         run: |
-          mkdir -p $HOME/${{ env.GITHUB_RUN_ID }}/.docker
-          echo "DOCKER_CONFIG=$HOME/${{ env.GITHUB_RUN_ID }}/.docker" >> $GITHUB_ENV
+          # Creates a unique, isolated directory for this job's Docker config.
+          # This prevents race conditions if multiple jobs run on the same self-hosted runner.
+          # We use runner.temp, the official temp directory, and github.run_id, the unique ID for this workflow run.
+          export DOCKER_CONFIG_DIR=${{ runner.temp }}/docker_config_${{ github.run_id }}
+          mkdir -p $DOCKER_CONFIG_DIR
+          echo "DOCKER_CONFIG=$DOCKER_CONFIG_DIR" >> $GITHUB_ENV
+          echo "Using isolated Docker config directory: $DOCKER_CONFIG_DIR"
 
       # Login against a Docker registry
       # https://github.com/docker/login-action
