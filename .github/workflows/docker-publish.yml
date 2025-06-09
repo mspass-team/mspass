@@ -75,6 +75,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-buildx-
 
+      # Testing the solution here: https://github.com/docker/login-action/issues/173#issuecomment-1079688020      
+      - name: Set DOCKER_CONFIG
+        run: |
+          mkdir -p $HOME/${{ env.GITHUB_RUN_ID }}/.docker
+          echo "DOCKER_CONFIG=$HOME/${{ env.GITHUB_RUN_ID }}/.docker" >> $GITHUB_ENV
+          
       # Login against a Docker registry
       # https://github.com/docker/login-action
       - name: Log into registry ${{ env.REGISTRY }}
@@ -191,6 +197,11 @@ jobs:
           key: ${{ runner.os }}-buildx.dev-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-buildx.dev-
+            
+      - name: Set DOCKER_CONFIG
+        run: |
+          mkdir -p $HOME/${{ env.GITHUB_RUN_ID }}/.docker
+          echo "DOCKER_CONFIG=$HOME/${{ env.GITHUB_RUN_ID }}/.docker" >> $GITHUB_ENV
 
       # Login against a Docker registry
       # https://github.com/docker/login-action
@@ -306,6 +317,11 @@ jobs:
           key: ${{ runner.os }}-buildx.mpi-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-buildx.mpi-
+            
+      - name: Set DOCKER_CONFIG
+        run: |
+          mkdir -p $HOME/${{ env.GITHUB_RUN_ID }}/.docker
+          echo "DOCKER_CONFIG=$HOME/${{ env.GITHUB_RUN_ID }}/.docker" >> $GITHUB_ENV
 
       # Login against a Docker registry
       # https://github.com/docker/login-action
@@ -405,6 +421,11 @@ jobs:
           key: ${{ runner.os }}-buildx.tacc-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-buildx.tacc-
+            
+      - name: Set DOCKER_CONFIG
+        run: |
+          mkdir -p $HOME/${{ env.GITHUB_RUN_ID }}/.docker
+          echo "DOCKER_CONFIG=$HOME/${{ env.GITHUB_RUN_ID }}/.docker" >> $GITHUB_ENV
 
       # Login against a Docker registry
       # https://github.com/docker/login-action
