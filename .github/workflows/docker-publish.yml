@@ -27,7 +27,8 @@ env:
 jobs:
   build-latest:
 
-    runs-on: ubuntu-latest
+    # Use self-hosted runner if available, otherwise fall back to GitHub-hosted
+    runs-on: [self-hosted, macOS, ARM64, ubuntu-latest]
     permissions:
       contents: read
       packages: write
@@ -35,6 +36,7 @@ jobs:
     steps:
       # Remove software and language runtimes we're not using
       - name: Remove unnecessary files
+        if: runner.os == 'Linux'
         run: |
           sudo rm -rf \
             "$AGENT_TOOLSDIRECTORY" \
@@ -105,11 +107,12 @@ jobs:
             type=ref,event=tag
             type=ref,event=pr
 
+      # This step runs for non-schedule/release events ONLY on non-ARM runners
       # Build and push Docker image with Buildx (don't push on PR)
       # https://github.com/docker/build-push-action
       - name: Build and push Docker image (amd64 only)
         uses: docker/build-push-action@v4
-        if: ${{ github.event_name != 'schedule' || github.event_name != 'release' }}
+        if: (github.event_name != 'schedule' && github.event_name != 'release') && runner.arch != 'ARM64'
         with:
           context: .
           platforms: linux/amd64
@@ -119,9 +122,10 @@ jobs:
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new
           
+      # This step runs for schedule/release events OR on any ARM runner
       - name: Build and push Docker image (amd64 and arm64)
         uses: docker/build-push-action@v4
-        if: ${{ github.event_name == 'schedule' || github.event_name == 'release' }}
+        if: (github.event_name == 'schedule' || github.event_name == 'release') || runner.arch == 'ARM64'
         with:
           context: .
           platforms: linux/amd64,linux/arm64
@@ -141,7 +145,7 @@ jobs:
 
   build-dev:
 
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, macOS, ARM64, ubuntu-latest]
     permissions:
       contents: read
       packages: write
@@ -149,6 +153,7 @@ jobs:
     steps:
       # Remove software and language runtimes we're not using
       - name: Remove unnecessary files
+        if: runner.os == 'Linux'
         run: |
           sudo rm -rf \
             "$AGENT_TOOLSDIRECTORY" \
@@ -217,7 +222,7 @@ jobs:
       # Build and push dev image
       - name: Build and push dev image (amd64 only)
         uses: docker/build-push-action@v4
-        if: ${{ github.event_name != 'schedule' || github.event_name != 'release' }}
+        if: (github.event_name != 'schedule' && github.event_name != 'release') && runner.arch != 'ARM64'
         with:
           context: .
           file: Dockerfile_dev
@@ -232,7 +237,7 @@ jobs:
           
       - name: Build and push dev image (amd64 amd arm64)
         uses: docker/build-push-action@v4
-        if: ${{ github.event_name == 'schedule' || github.event_name == 'release' }}
+        if: (github.event_name == 'schedule' || github.event_name == 'release') || runner.arch == 'ARM64'
         with:
           context: .
           file: Dockerfile_dev
@@ -255,7 +260,7 @@ jobs:
 
   build-mpi:
 
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, macOS, ARM64, ubuntu-latest]
     permissions:
       contents: read
       packages: write
@@ -263,6 +268,7 @@ jobs:
     steps:
       # Remove software and language runtimes we're not using
       - name: Remove unnecessary files
+        if: runner.os == 'Linux'
         run: |
           sudo rm -rf \
             "$AGENT_TOOLSDIRECTORY" \
@@ -353,7 +359,7 @@ jobs:
 
   build-tacc:
 
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, macOS, ARM64, ubuntu-latest]
     permissions:
       contents: read
       packages: write
@@ -361,6 +367,7 @@ jobs:
     steps:
       # Remove software and language runtimes we're not using
       - name: Remove unnecessary files
+        if: runner.os == 'Linux'
         run: |
           sudo rm -rf \
             "$AGENT_TOOLSDIRECTORY" \
