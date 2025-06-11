@@ -27,7 +27,8 @@ env:
 jobs:
   build-latest:
 
-    runs-on: ubuntu-latest
+    # Use self-hosted runner if available, otherwise fall back to GitHub-hosted
+    runs-on: [self-hosted, macOS, ARM64]
     permissions:
       contents: read
       packages: write
@@ -35,6 +36,7 @@ jobs:
     steps:
       # Remove software and language runtimes we're not using
       - name: Remove unnecessary files
+        if: runner.os == 'Linux'
         run: |
           sudo rm -rf \
             "$AGENT_TOOLSDIRECTORY" \
@@ -57,12 +59,25 @@ jobs:
         with:
           fetch-depth: 0
 
+      # Testing the solution here: https://github.com/docker/login-action/issues/173#issuecomment-1079688020      
+      - name: Isolate Docker config for concurrent jobs
+        if: runner.arch == 'ARM64'
+        run: |
+          # Creates a unique, isolated directory for this job's Docker config.
+          # This prevents race conditions if multiple jobs run on the same self-hosted runner.
+          # We use runner.temp, the official temp directory, and github.run_id, the unique ID for this workflow run.
+          export DOCKER_CONFIG_DIR=${{ runner.temp }}/docker_config_${{ github.run_id }}
+          mkdir -p $DOCKER_CONFIG_DIR
+          echo "DOCKER_CONFIG=$DOCKER_CONFIG_DIR" >> $GITHUB_ENV
+          echo "Using isolated Docker config directory: $DOCKER_CONFIG_DIR"
+          security -v unlock-keychain -p ${{ secrets.MAC_RUNNER_PASSWORD }} ~/Library/Keychains/login.keychain-db
+          
       # Setup for Multi-platform image
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v3
 
       - name: Cache Docker layers
         uses: actions/cache@v3
@@ -72,7 +87,7 @@ jobs:
           key: ${{ runner.os }}-buildx-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-buildx-
-
+            
       # Login against a Docker registry
       # https://github.com/docker/login-action
       - name: Log into registry ${{ env.REGISTRY }}
@@ -105,11 +120,12 @@ jobs:
             type=ref,event=tag
             type=ref,event=pr
 
+      # This step runs for non-schedule/release events ONLY on non-ARM runners
       # Build and push Docker image with Buildx (don't push on PR)
       # https://github.com/docker/build-push-action
       - name: Build and push Docker image (amd64 only)
         uses: docker/build-push-action@v4
-        if: ${{ github.event_name != 'schedule' || github.event_name != 'release' }}
+        if: (github.event_name != 'schedule' && github.event_name != 'release') && runner.arch != 'ARM64'
         with:
           context: .
           platforms: linux/amd64
@@ -119,9 +135,10 @@ jobs:
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new
           
+      # This step runs for schedule/release events OR on any ARM runner
       - name: Build and push Docker image (amd64 and arm64)
         uses: docker/build-push-action@v4
-        if: ${{ github.event_name == 'schedule' || github.event_name == 'release' }}
+        if: (github.event_name == 'schedule' || github.event_name == 'release') || runner.arch == 'ARM64'
         with:
           context: .
           platforms: linux/amd64,linux/arm64
@@ -141,7 +158,7 @@ jobs:
 
   build-dev:
 
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, macOS, ARM64]
     permissions:
       contents: read
       packages: write
@@ -149,6 +166,7 @@ jobs:
     steps:
       # Remove software and language runtimes we're not using
       - name: Remove unnecessary files
+        if: runner.os == 'Linux'
         run: |
           sudo rm -rf \
             "$AGENT_TOOLSDIRECTORY" \
@@ -171,12 +189,25 @@ jobs:
         with:
           fetch-depth: 0
 
+      # Testing the solution here: https://github.com/docker/login-action/issues/173#issuecomment-1079688020      
+      - name: Isolate Docker config for concurrent jobs
+        if: runner.arch == 'ARM64'
+        run: |
+          # Creates a unique, isolated directory for this job's Docker config.
+          # This prevents race conditions if multiple jobs run on the same self-hosted runner.
+          # We use runner.temp, the official temp directory, and github.run_id, the unique ID for this workflow run.
+          export DOCKER_CONFIG_DIR=${{ runner.temp }}/docker_config_${{ github.run_id }}
+          mkdir -p $DOCKER_CONFIG_DIR
+          echo "DOCKER_CONFIG=$DOCKER_CONFIG_DIR" >> $GITHUB_ENV
+          echo "Using isolated Docker config directory: $DOCKER_CONFIG_DIR"
+          security -v unlock-keychain -p ${{ secrets.MAC_RUNNER_PASSWORD }} ~/Library/Keychains/login.keychain-db
+          
       # Setup for Multi-platform image
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v3
 
       - name: Cache Docker layers
         uses: actions/cache@v3
@@ -217,7 +248,7 @@ jobs:
       # Build and push dev image
       - name: Build and push dev image (amd64 only)
         uses: docker/build-push-action@v4
-        if: ${{ github.event_name != 'schedule' || github.event_name != 'release' }}
+        if: (github.event_name != 'schedule' && github.event_name != 'release') && runner.arch != 'ARM64'
         with:
           context: .
           file: Dockerfile_dev
@@ -232,7 +263,7 @@ jobs:
           
       - name: Build and push dev image (amd64 amd arm64)
         uses: docker/build-push-action@v4
-        if: ${{ github.event_name == 'schedule' || github.event_name == 'release' }}
+        if: (github.event_name == 'schedule' || github.event_name == 'release') || runner.arch == 'ARM64'
         with:
           context: .
           file: Dockerfile_dev
@@ -255,7 +286,7 @@ jobs:
 
   build-mpi:
 
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, macOS, ARM64]
     permissions:
       contents: read
       packages: write
@@ -263,6 +294,7 @@ jobs:
     steps:
       # Remove software and language runtimes we're not using
       - name: Remove unnecessary files
+        if: runner.os == 'Linux'
         run: |
           sudo rm -rf \
             "$AGENT_TOOLSDIRECTORY" \
@@ -285,12 +317,25 @@ jobs:
         with:
           fetch-depth: 0
 
+      # Testing the solution here: https://github.com/docker/login-action/issues/173#issuecomment-1079688020      
+      - name: Isolate Docker config for concurrent jobs
+        if: runner.arch == 'ARM64'
+        run: |
+          # Creates a unique, isolated directory for this job's Docker config.
+          # This prevents race conditions if multiple jobs run on the same self-hosted runner.
+          # We use runner.temp, the official temp directory, and github.run_id, the unique ID for this workflow run.
+          export DOCKER_CONFIG_DIR=${{ runner.temp }}/docker_config_${{ github.run_id }}
+          mkdir -p $DOCKER_CONFIG_DIR
+          echo "DOCKER_CONFIG=$DOCKER_CONFIG_DIR" >> $GITHUB_ENV
+          echo "Using isolated Docker config directory: $DOCKER_CONFIG_DIR"
+          security -v unlock-keychain -p ${{ secrets.MAC_RUNNER_PASSWORD }} ~/Library/Keychains/login.keychain-db
+          
       # Setup for Multi-platform image
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v3
 
       - name: Cache Docker layers
         uses: actions/cache@v3
@@ -353,7 +398,7 @@ jobs:
 
   build-tacc:
 
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, macOS, ARM64]
     permissions:
       contents: read
       packages: write
@@ -361,6 +406,7 @@ jobs:
     steps:
       # Remove software and language runtimes we're not using
       - name: Remove unnecessary files
+        if: runner.os == 'Linux'
         run: |
           sudo rm -rf \
             "$AGENT_TOOLSDIRECTORY" \
@@ -383,12 +429,25 @@ jobs:
         with:
           fetch-depth: 0
 
+      # Testing the solution here: https://github.com/docker/login-action/issues/173#issuecomment-1079688020      
+      - name: Isolate Docker config for concurrent jobs
+        if: runner.arch == 'ARM64'
+        run: |
+          # Creates a unique, isolated directory for this job's Docker config.
+          # This prevents race conditions if multiple jobs run on the same self-hosted runner.
+          # We use runner.temp, the official temp directory, and github.run_id, the unique ID for this workflow run.
+          export DOCKER_CONFIG_DIR=${{ runner.temp }}/docker_config_${{ github.run_id }}
+          mkdir -p $DOCKER_CONFIG_DIR
+          echo "DOCKER_CONFIG=$DOCKER_CONFIG_DIR" >> $GITHUB_ENV
+          echo "Using isolated Docker config directory: $DOCKER_CONFIG_DIR"
+          security -v unlock-keychain -p ${{ secrets.MAC_RUNNER_PASSWORD }} ~/Library/Keychains/login.keychain-db
+          
       # Setup for Multi-platform image
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v3
 
       - name: Cache Docker layers
         uses: actions/cache@v3
@@ -398,7 +457,7 @@ jobs:
           key: ${{ runner.os }}-buildx.tacc-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-buildx.tacc-
-
+            
       # Login against a Docker registry
       # https://github.com/docker/login-action
       - name: Log into registry ${{ env.REGISTRY }}
