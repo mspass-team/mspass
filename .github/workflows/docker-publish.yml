@@ -59,6 +59,19 @@ jobs:
         with:
           fetch-depth: 0
 
+      # Testing the solution here: https://github.com/docker/login-action/issues/173#issuecomment-1079688020      
+      - name: Isolate Docker config for concurrent jobs
+        if: runner.arch == 'ARM64'
+        run: |
+          # Creates a unique, isolated directory for this job's Docker config.
+          # This prevents race conditions if multiple jobs run on the same self-hosted runner.
+          # We use runner.temp, the official temp directory, and github.run_id, the unique ID for this workflow run.
+          export DOCKER_CONFIG_DIR=${{ runner.temp }}/docker_config_${{ github.run_id }}
+          mkdir -p $DOCKER_CONFIG_DIR
+          echo "DOCKER_CONFIG=$DOCKER_CONFIG_DIR" >> $GITHUB_ENV
+          echo "Using isolated Docker config directory: $DOCKER_CONFIG_DIR"
+          security -v unlock-keychain -p ${{ secrets.MAC_RUNNER_PASSWORD }} ~/Library/Keychains/login.keychain-db
+          
       # Setup for Multi-platform image
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
@@ -74,13 +87,7 @@ jobs:
           key: ${{ runner.os }}-buildx-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-buildx-
-
-      # Testing the solution here: https://github.com/docker/login-action/issues/173#issuecomment-1079688020      
-      - name: Isolate Docker config for concurrent jobs
-        if: runner.arch == 'ARM64'
-        run: |
-          security -v unlock-keychain -p ${{ secrets.MAC_RUNNER_PASSWORD }} ~/Library/Keychains/login.keychain-db
-          
+            
       # Login against a Docker registry
       # https://github.com/docker/login-action
       - name: Log into registry ${{ env.REGISTRY }}
