@@ -86,7 +86,7 @@ jobs:
           mkdir -p $DOCKER_CONFIG_DIR
           echo "DOCKER_CONFIG=$DOCKER_CONFIG_DIR" >> $GITHUB_ENV
           echo "Using isolated Docker config directory: $DOCKER_CONFIG_DIR"
-          security -v unlock-keychain ~/Library/Keychains/login.keychain-db
+          security -v unlock-keychain -p ${{ secrets.MAC_RUNNER_PASSWORD }} ~/Library/Keychains/login.keychain-db
           
       # Login against a Docker registry
       # https://github.com/docker/login-action
