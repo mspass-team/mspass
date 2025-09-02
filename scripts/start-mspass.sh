@@ -162,8 +162,8 @@ if [ $# -eq 0 ] || [ $1 = "--batch" ]; then
     MSPASS_SCHEDULER_CMD='$SPARK_HOME/sbin/start-master.sh'
     MSPASS_WORKER_CMD='$SPARK_HOME/sbin/start-slave.sh spark://$MSPASS_SCHEDULER_ADDRESS:$SPARK_MASTER_PORT'
   else # if [ "$MSPASS_SCHEDULER" = "dask" ]
-    MSPASS_SCHEDULER_CMD='dask-scheduler --port $DASK_SCHEDULER_PORT > ${MSPASS_LOG_DIR}/dask-scheduler_log_${MY_ID} 2>&1 & sleep 5'
-    MSPASS_WORKER_CMD='dask-worker ${MSPASS_WORKER_ARG} --memory-limit=${MSPASS_DASK_WORKER_MEMORY_LIMIT:-0} --local-directory $MSPASS_WORKER_DIR tcp://$MSPASS_SCHEDULER_ADDRESS:$DASK_SCHEDULER_PORT > ${MSPASS_LOG_DIR}/dask-worker_log_${MY_ID} 2>&1 &'
+    MSPASS_SCHEDULER_CMD='dask scheduler --port $DASK_SCHEDULER_PORT > ${MSPASS_LOG_DIR}/dask-scheduler_log_${MY_ID} 2>&1 & sleep 5'
+    MSPASS_WORKER_CMD='dask worker ${MSPASS_WORKER_ARG} --memory-limit=${MSPASS_DASK_WORKER_MEMORY_LIMIT:-0} --local-directory $MSPASS_WORKER_DIR tcp://$MSPASS_SCHEDULER_ADDRESS:$DASK_SCHEDULER_PORT > ${MSPASS_LOG_DIR}/dask-worker_log_${MY_ID} 2>&1 &'
   fi
 
   if [ "$MSPASS_ROLE" = "db" ]; then
