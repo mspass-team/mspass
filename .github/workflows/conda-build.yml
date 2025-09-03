@@ -92,8 +92,8 @@ jobs:
           export ANACONDA_API_TOKEN=${{ secrets.CONDA_TOKEN }}
           PACKAGE_PATH=$(conda build . --python ${{ matrix.python-version }} --output)
           conda build . --python ${{ matrix.python-version }}
-          if [ "${{ matrix.python-version }}" == "3.11" ]; then
-            anaconda -t $ANACONDA_API_TOKEN upload $PACKAGE_PATH --label main --label py3.11 --force
+          if [ "${{ matrix.python-version }}" == "3.14" ]; then
+            anaconda -t $ANACONDA_API_TOKEN upload $PACKAGE_PATH --label main --label py${{ matrix.python-version }} --force
           else
             anaconda -t $ANACONDA_API_TOKEN upload $PACKAGE_PATH --label py${{ matrix.python-version }} --force
           fi
