@@ -311,7 +311,7 @@ def read_distributed_data(
       functions behavor.  Note when set as a Database handle the cursor
       argument must be set.  Otherwise it is ignored.
     :type data: :class:`mspasspy.db.database.Database` or :class:`pandas.DataFrame`
-      or :class:`dask.dataframe.core.DataFrame` or :class:`pyspark.sql.dataframe.DataFrame`
+      or :class:`dask.dataframe.DataFrame` or :class:`pyspark.sql.dataframe.DataFrame`
       for atomic data.  List of python dicts defining queries to read a
       dataset of ensembles.
 
@@ -520,7 +520,7 @@ def read_distributed_data(
         db = data
     elif (
         isinstance(data, pd.DataFrame)
-        or (_mspasspy_has_dask and isinstance(data, dask.dataframe.core.DataFrame))
+        or (_mspasspy_has_dask and isinstance(data, dask.dataframe.DataFrame))
         or (_mspasspy_has_pyspark and isinstance(data, pyspark.sql.dataframe.DataFrame))
     ):
         ensemble_mode = False
