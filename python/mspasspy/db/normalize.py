@@ -21,7 +21,7 @@ import dask
 import numpy as np
 
 type_pdd = pd.core.frame.DataFrame
-type_ddd = dask.dataframe.core.DataFrame
+type_ddd = dask.dataframe.DataFrame
 
 
 class BasicMatcher(ABC):
