@@ -688,9 +688,10 @@ def read_distributed_data(
                 # DataFrame.   It may be better to write a small
                 # converter run with a map operator row by row
                 if isinstance(data, pd.DataFrame):
-                    data = dask.dataframe.from_pandas(data, npartitions=npartitions)
-                # format arg s essential as default is tuple
-                plist = data.to_bag(format="dict")
+                    plist = dask.bag.from_sequence(data.to_dict("records"), npartitions=npartitions)
+                else:
+                    # data is already a dask DataFrame
+                    plist = data.to_bag(format="dict")
         else:
             # logic above should guarantee data is a Database
             # object that can be queried and used to generate the bag/rdd
