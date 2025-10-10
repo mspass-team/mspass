@@ -1,4 +1,5 @@
 import pymongo
+from pymongo import uri_parser
 from typing import Any
 from mspasspy.db.database import Database
 
@@ -19,8 +20,17 @@ class DBClient(pymongo.MongoClient):
 
     def __init__(self, host=None, *args, **kwargs):
         super().__init__(host=host, *args, **kwargs)
-        self.__default_database_name = self._MongoClient__default_database_name
+        self.__default_database_name = None
+        if host and isinstance(host, str):
+            try:
+                parsed_uri = uri_parser.parse_uri(host)
+                self.__default_database_name = parsed_uri.get('database')
+            except Exception:
+                pass
         self._mspass_db_host = host
+        # Store args/kwargs for pickle reconstruction
+        self._mspass_connection_args = args
+        self._mspass_connection_kwargs = kwargs
 
     def _repr_helper(self) -> str:
         def option_repr(option: str, value: Any) -> str:
@@ -63,6 +73,37 @@ class DBClient(pymongo.MongoClient):
 
     def __repr__(self) -> str:
         return f"{type(self).__name__}({self._repr_helper()})"
+
+    def __getstate__(self):
+        """
+        Pickle only connection parameters, not the active MongoClient internals.
+        This prevents thread lock serialization issues.
+        """
+        return {
+            'host': self._mspass_db_host,
+            'args': getattr(self, '_mspass_connection_args', ()),
+            'kwargs': getattr(self, '_mspass_connection_kwargs', {}),
+            'default_database_name': self.__default_database_name,
+        }
+
+    def __setstate__(self, state):
+        """
+        Restore DBClient from pickled state by creating a new connection.
+        The new connection is created via __init__, which will have its own
+        thread management, but it's a fresh object that can be pickled again.
+        """
+        # Extract parameters
+        host = state.get('host')
+        args = state.get('args', ())
+        kwargs = state.get('kwargs', {})
+        
+        # Reinitialize (creates new connection)
+        self.__init__(host, *args, **kwargs)
+        
+        # Restore default database name if it was overridden
+        saved_db_name = state.get('default_database_name')
+        if saved_db_name is not None:
+            self.__default_database_name = saved_db_name
 
     def __getitem__(self, name):
         """

@@ -175,7 +175,7 @@ def test_dmatrix():
         for j in range(4):
             md[i][j] = i * 4 + j
     dm = dmatrix(md)
-    assert (dm == np.float_(md)).all()
+    assert (dm == np.float64(md)).all()
 
     md = np.zeros((53, 37), dtype=np.double, order="C")
     for i in range(53):

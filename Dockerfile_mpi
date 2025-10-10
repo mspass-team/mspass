@@ -157,7 +157,7 @@ RUN pip3 --no-cache-dir install numpy \
     && rm -f requirements.txt && docker-clean
 
 # Download & install pybind11
-ARG PYBIND11_VERSION=2.6.0
+ARG PYBIND11_VERSION=2.13.6
 ARG PYBIND11_URL=https://github.com/pybind/pybind11/archive/v${PYBIND11_VERSION}.tar.gz
 RUN wget -qO - ${PYBIND11_URL} | tar -xz -C /usr/local/ \
     && cd /usr/local/pybind11-${PYBIND11_VERSION} \

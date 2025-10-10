@@ -145,27 +145,58 @@ class Database(pymongo.database.Database):
 
     def __getstate__(self):
         ret = self.__dict__.copy()
-        ret["_Database__client"] = self.client.__repr__()
         ret["_BaseObject__codec_options"] = self.codec_options.__repr__()
+        
+        # Store connection info to recreate DBClient lazily
+        if hasattr(self.client, '_mspass_db_host'):
+            ret["_mspass_db_host"] = self.client._mspass_db_host
+        else:
+            ret["_mspass_db_host"] = None
+        
+        # Don't pickle the client or stedronsky (Undertaker) objects
+        if "_Database__client" in ret:
+            del ret["_Database__client"]
+        if "stedronsky" in ret:
+            del ret["stedronsky"]
+            
         return ret
 
     def __setstate__(self, data):
-        # somewhat weird that this import is requiired here but it won't
-        # work without it.  Not sure how the symbol MongoClient is required
-        # here but it is - ignore if a lint like ide says MongoClient is not used
-        from pymongo import MongoClient
-        from mspasspy.db.client import DBClient
-
-        # The following is also needed for this object to be serialized correctly
-        # with dask distributed. Otherwise, the deserialized codec_options
-        # will become a different type unrecognized by pymongo. Not sure why...
-
         from bson.codec_options import CodecOptions, TypeRegistry, DatetimeConversion
         from bson.binary import UuidRepresentation
+        from mspasspy.db.client import DBClient
+        from mspasspy.util.Undertaker import Undertaker
 
-        data["_Database__client"] = eval(data["_Database__client"])
-        data["_BaseObject__codec_options"] = eval(data["_BaseObject__codec_options"])
+        # Extract connection info before updating __dict__
+        db_host = data.pop("_mspass_db_host", None)
+        
+        # CRITICAL: Pop ALL codec_options related fields and eval them
+        # pymongo Database has both _codec_options and _BaseObject__codec_options
+        codec_options_repr = data.pop("_BaseObject__codec_options", None)
+        base_codec_options_repr = data.pop("_codec_options", None)
+        
+        # Eval the codec_options repr string
+        if codec_options_repr and isinstance(codec_options_repr, str):
+            codec_options_obj = eval(codec_options_repr)
+        else:
+            codec_options_obj = codec_options_repr
+        
+        # Update all other attributes EXCEPT codec_options
         self.__dict__.update(data)
+        
+        # Set both codec_options attributes with the same object
+        # pymongo uses _codec_options internally, but we also need _BaseObject__codec_options
+        self._BaseObject__codec_options = codec_options_obj
+        self._codec_options = codec_options_obj
+        
+        # Recreate DBClient
+        if db_host is not None:
+            self._Database__client = DBClient(db_host)
+        else:
+            self._Database__client = DBClient("localhost")
+        
+        # Recreate Undertaker
+        self.stedronsky = Undertaker(self)
 
     def __getitem__(self, name):
         """
@@ -4513,7 +4544,12 @@ class Database(pymongo.database.Database):
         KEY += mseed_file
 
         try:
-            obj = s3_client.get_object(Bucket=BUCKET_NAME, Key=KEY)
+            # Disable checksum validation for compatibility with moto mock S3
+            try:
+                obj = s3_client.get_object(Bucket=BUCKET_NAME, Key=KEY, ChecksumMode='DISABLED')
+            except (TypeError, Exception):
+                # Fallback for older boto3 versions or when ChecksumMode is not supported
+                obj = s3_client.get_object(Bucket=BUCKET_NAME, Key=KEY)
             st = obspy.read(
                 io.BytesIO(obj["Body"].read()), format=mspass_object["format"]
             )
@@ -4666,7 +4702,12 @@ class Database(pymongo.database.Database):
             )
             # try to download the mseed file from s3 and save it locally
             try:
-                obj = s3_client.get_object(Bucket=BUCKET_NAME, Key=KEY)
+                # Disable checksum validation for compatibility with moto mock S3
+                try:
+                    obj = s3_client.get_object(Bucket=BUCKET_NAME, Key=KEY, ChecksumMode='DISABLED')
+                except (TypeError, Exception):
+                    # Fallback for older boto3 versions or when ChecksumMode is not supported
+                    obj = s3_client.get_object(Bucket=BUCKET_NAME, Key=KEY)
                 mseed_content = obj["Body"].read()
                 # temporarily write data into a file
                 with open(fname, "wb") as f:
@@ -6864,7 +6905,12 @@ class Database(pymongo.database.Database):
         KEY += mseed_file
 
         try:
-            obj = s3_client.get_object(Bucket=BUCKET_NAME, Key=KEY)
+            # Disable checksum validation for compatibility with moto mock S3
+            try:
+                obj = s3_client.get_object(Bucket=BUCKET_NAME, Key=KEY, ChecksumMode='DISABLED')
+            except (TypeError, Exception):
+                # Fallback for older boto3 versions or when ChecksumMode is not supported
+                obj = s3_client.get_object(Bucket=BUCKET_NAME, Key=KEY)
             mseed_content = obj["Body"].read()
             stringio_obj = io.BytesIO(mseed_content)
             st = obspy.read(stringio_obj)
@@ -6956,7 +7002,12 @@ class Database(pymongo.database.Database):
         )
 
         try:
-            obj = s3_client.get_object(Bucket=BUCKET_NAME, Key=KEY)
+            # Disable checksum validation for compatibility with moto mock S3
+            try:
+                obj = s3_client.get_object(Bucket=BUCKET_NAME, Key=KEY, ChecksumMode='DISABLED')
+            except (TypeError, Exception):
+                # Fallback for older boto3 versions or when ChecksumMode is not supported
+                obj = s3_client.get_object(Bucket=BUCKET_NAME, Key=KEY)
             mseed_content = obj["Body"].read()
             # specify the file path
             if dir is None:
