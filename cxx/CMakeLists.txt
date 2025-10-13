@@ -154,6 +154,11 @@ if (Python_FOUND)
   message (STATUS "Python_INCLUDE_DIRS = ${Python_INCLUDE_DIRS}")
   message (STATUS "pybind11_LIBRARIES = ${pybind11_LIBRARIES}")
   message (STATUS "pybind11_INCLUDE_DIR= ${pybind11_INCLUDE_DIR}")
+  
+  # Disable pybind11's strict GIL checks to prevent segfaults in CI environments
+  # where background threads (e.g. from PyMongo) may interact with pybind11 objects
+  add_compile_definitions(PYBIND11_NO_ASSERT_GIL_HELD_INCREF_DECREF)
+  
   add_subdirectory (python)
 else ()
   message (WARNING "Python not found")
