@@ -76,8 +76,10 @@ def addnoise(d, nscale=1.0, padlength=1024, npoles=3, corners=[0.1, 1.0]):
     """
     nd = len(d)
     n = nd + padlength
-    # Add small offset to avoid zero values that can cause division issues
-    dnoise = nscale * (randn(n) + 0.01)
+    # Generate noise and add minimal offset only to values close to zero
+    dnoise_raw = nscale * randn(n)
+    # Add very small offset only to values that are very close to zero
+    dnoise = np.where(np.abs(dnoise_raw) < 1e-10, dnoise_raw + 1e-8, dnoise_raw)
     sos = signal.butter(npoles, corners, btype="bandpass", output="sos", fs=20.0)
     result = signal.sosfilt(sos, dnoise)
     for i in range(nd):
