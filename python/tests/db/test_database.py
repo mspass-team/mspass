@@ -3498,10 +3498,10 @@ class TestDatabase:
         assert np.isclose(coords[0], -90.0)
         assert coords[1] == 20.0
 
-    def test_database_serialization_basic(self):
+    def test_database_serialization_cycle(self):
         """
-        Test basic Database serialization functionality.
-        This tests the core serialization methods added for distributed computing.
+        Test complete serialization/deserialization cycle for Database objects.
+        This tests the core functionality needed for distributed computing.
         """
         # Create a database instance
         client = DBClient("localhost")
@@ -3512,6 +3512,8 @@ class TestDatabase:
         assert isinstance(state, dict)
         assert "_mspass_db_host" in state
         assert "_BaseObject__codec_options" in state
+        assert "_Database__client" not in state  # Should be excluded
+        assert "stedronsky" not in state  # Should be excluded
         
         # Test __setstate__ - should recreate the object
         new_db = Database.__new__(Database)
@@ -3521,6 +3523,96 @@ class TestDatabase:
         assert new_db.name == db.name
         assert hasattr(new_db, '_Database__client')
         assert hasattr(new_db, '_BaseObject__codec_options')
+        assert hasattr(new_db, 'stedronsky')
+        assert new_db._BaseObject__codec_options is not None
+
+    def test_database_serialization_without_client_host(self):
+        """
+        Test Database serialization when client doesn't have _mspass_db_host.
+        This covers the else branch in __getstate__ method.
+        """
+        # Create a database instance
+        client = DBClient("localhost")
+        db = Database(client, "test_serialization")
+        
+        # Remove _mspass_db_host to test else branch
+        if hasattr(client, '_mspass_db_host'):
+            delattr(client, '_mspass_db_host')
+        
+        # Test __getstate__ - should handle missing _mspass_db_host
+        state = db.__getstate__()
+        assert state["_mspass_db_host"] is None
+
+    def test_client_serialization_cycle(self):
+        """
+        Test complete serialization/deserialization cycle for DBClient objects.
+        This tests the core functionality needed for distributed computing.
+        """
+        # Create a client instance
+        client = DBClient("localhost")
+        
+        # Test __getstate__ - should return serializable state
+        state = client.__getstate__()
+        assert isinstance(state, dict)
+        assert "host" in state
+        assert "args" in state
+        assert "kwargs" in state
+        assert "default_database_name" in state
+        
+        # Test __setstate__ - should recreate the object
+        new_client = DBClient.__new__(DBClient)
+        new_client.__setstate__(state)
+        
+        # Verify the deserialized object has correct attributes
+        assert new_client._mspass_db_host == client._mspass_db_host
+        assert hasattr(new_client, '_mspass_connection_args')
+        assert hasattr(new_client, '_mspass_connection_kwargs')
+
+    def test_collection_serialization_cycle(self):
+        """
+        Test complete serialization/deserialization cycle for Collection objects.
+        This tests the core functionality needed for distributed computing.
+        """
+        # Create a collection instance
+        client = DBClient("localhost")
+        db = Database(client, "test_serialization")
+        collection = Collection(db, "test_collection")
+        
+        # Test __getstate__ - should return serializable state
+        state = collection.__getstate__()
+        assert isinstance(state, dict)
+        assert "_BaseObject__codec_options" in state
+        assert "_mspass_db_name" in state
+        assert "_mspass_db_host" in state
+        assert "_Collection__database" not in state  # Should be excluded
+        
+        # Test __setstate__ - should recreate the object
+        new_collection = Collection.__new__(Collection)
+        new_collection.__setstate__(state)
+        
+        # Verify the deserialized object has correct attributes
+        assert hasattr(new_collection, '_Collection__database')
+        assert hasattr(new_collection, '_BaseObject__codec_options')
+        assert hasattr(new_collection, '_codec_options')
+
+    def test_collection_serialization_without_database_attribute(self):
+        """
+        Test Collection serialization when database attribute doesn't exist.
+        This covers the AttributeError exception handling in __getstate__.
+        """
+        # Create a collection instance
+        client = DBClient("localhost")
+        db = Database(client, "test_serialization")
+        collection = Collection(db, "test_collection")
+        
+        # Remove database attribute to test exception handling
+        if hasattr(collection, 'database'):
+            delattr(collection, 'database')
+        
+        # Test __getstate__ - should handle missing database attribute gracefully
+        state = collection.__getstate__()
+        assert isinstance(state, dict)
+        assert "_BaseObject__codec_options" in state
 
         with pytest.raises(ValueError, match="Illegal geographic input"):
             doc = geoJSON_doc(20, 400)

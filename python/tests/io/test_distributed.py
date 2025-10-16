@@ -1708,3 +1708,48 @@ def test_write_error_handlers(atomic_time_series_generator):
         mybag = write_distributed_data(
             mybag, db, collection="wf_TimeSeries", overwrite=True, storage_mode="file"
         )
+
+
+def test_read_distributed_data_dask_dataframe_path():
+    """
+    Test read_distributed_data with dask DataFrame input to cover the else branch.
+    This tests the code path: plist = data.to_bag(format="dict")
+    """
+    import pandas as pd
+    import dask.dataframe as dd
+    
+    # Create test data
+    test_data = [
+        {"id": 1, "value": 10},
+        {"id": 2, "value": 20},
+        {"id": 3, "value": 30}
+    ]
+    df = pd.DataFrame(test_data)
+    dask_df = dd.from_pandas(df, npartitions=2)
+    
+    # Create a mock database for the test
+    client = DBClient("localhost")
+    db = Database(client, "test_serialization")
+    
+    # Test our read_distributed_data function with dask DataFrame
+    # This should trigger the else branch: plist = data.to_bag(format="dict")
+    result = read_distributed_data(
+        data=dask_df,
+        db=db,  # Provide database as required
+        collection="wf_TimeSeries",
+        scheduler="dask",
+        npartitions=2
+    )
+    
+    # Verify our function processed the dask DataFrame correctly
+    assert result is not None
+    # The result should be a dask bag that can be computed
+    result_list = result.compute()
+    assert len(result_list) == 3
+    
+    # Verify data is preserved through our processing
+    for i, result_item in enumerate(result_list):
+        assert result_item["id"] == test_data[i]["id"]
+        assert result_item["value"] == test_data[i]["value"]
+
+
