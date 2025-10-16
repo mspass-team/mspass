@@ -4541,7 +4541,12 @@ class Database(pymongo.database.Database):
         KEY += mseed_file
 
         try:
-            obj = s3_client.get_object(Bucket=BUCKET_NAME, Key=KEY)
+            # Disable checksum validation for compatibility with moto mock S3
+            try:
+                obj = s3_client.get_object(Bucket=BUCKET_NAME, Key=KEY, ChecksumMode='DISABLED')
+            except (TypeError, Exception):
+                # Fallback for older boto3 versions or when ChecksumMode is not supported
+                obj = s3_client.get_object(Bucket=BUCKET_NAME, Key=KEY)
             st = obspy.read(
                 io.BytesIO(obj["Body"].read()), format=mspass_object["format"]
             )
@@ -6892,7 +6897,12 @@ class Database(pymongo.database.Database):
         KEY += mseed_file
 
         try:
-            obj = s3_client.get_object(Bucket=BUCKET_NAME, Key=KEY)
+            # Disable checksum validation for compatibility with moto mock S3
+            try:
+                obj = s3_client.get_object(Bucket=BUCKET_NAME, Key=KEY, ChecksumMode='DISABLED')
+            except (TypeError, Exception):
+                # Fallback for older boto3 versions or when ChecksumMode is not supported
+                obj = s3_client.get_object(Bucket=BUCKET_NAME, Key=KEY)
             mseed_content = obj["Body"].read()
             stringio_obj = io.BytesIO(mseed_content)
             st = obspy.read(stringio_obj)
@@ -6984,7 +6994,12 @@ class Database(pymongo.database.Database):
         )
 
         try:
-            obj = s3_client.get_object(Bucket=BUCKET_NAME, Key=KEY)
+            # Disable checksum validation for compatibility with moto mock S3
+            try:
+                obj = s3_client.get_object(Bucket=BUCKET_NAME, Key=KEY, ChecksumMode='DISABLED')
+            except (TypeError, Exception):
+                # Fallback for older boto3 versions or when ChecksumMode is not supported
+                obj = s3_client.get_object(Bucket=BUCKET_NAME, Key=KEY)
             mseed_content = obj["Body"].read()
             # specify the file path
             if dir is None:

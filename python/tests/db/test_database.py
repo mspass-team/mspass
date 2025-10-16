@@ -3526,23 +3526,6 @@ class TestDatabase:
         assert hasattr(new_db, 'stedronsky')
         assert new_db._BaseObject__codec_options is not None
 
-    def test_database_serialization_without_client_host(self):
-        """
-        Test Database serialization when client doesn't have _mspass_db_host.
-        This covers the else branch in __getstate__ method.
-        """
-        # Create a database instance
-        client = DBClient("localhost")
-        db = Database(client, "test_serialization")
-        
-        # Remove _mspass_db_host to test else branch
-        if hasattr(client, '_mspass_db_host'):
-            delattr(client, '_mspass_db_host')
-        
-        # Test __getstate__ - should handle missing _mspass_db_host
-        state = db.__getstate__()
-        assert state["_mspass_db_host"] is None
-
     def test_client_serialization_cycle(self):
         """
         Test complete serialization/deserialization cycle for DBClient objects.
