@@ -1718,18 +1718,18 @@ def test_read_distributed_data_dask_dataframe_path():
     import pandas as pd
     import dask.dataframe as dd
     
-    # Create test data
-    test_data = [
-        {"id": 1, "value": 10},
-        {"id": 2, "value": 20},
-        {"id": 3, "value": 30}
-    ]
-    df = pd.DataFrame(test_data)
-    dask_df = dd.from_pandas(df, npartitions=2)
-    
     # Create a mock database for the test
     client = DBClient("localhost")
     db = Database(client, "test_serialization")
+    
+    # Create test data that matches MsPASS Metadata structure
+    test_data = [
+        {"source_id": 1, "receiver_id": 1, "value": 10.0},
+        {"source_id": 2, "receiver_id": 2, "value": 20.0},
+        {"source_id": 3, "receiver_id": 3, "value": 30.0}
+    ]
+    df = pd.DataFrame(test_data)
+    dask_df = dd.from_pandas(df, npartitions=2)
     
     # Test our read_distributed_data function with dask DataFrame
     # This should trigger the else branch: plist = data.to_bag(format="dict")
@@ -1749,7 +1749,8 @@ def test_read_distributed_data_dask_dataframe_path():
     
     # Verify data is preserved through our processing
     for i, result_item in enumerate(result_list):
-        assert result_item["id"] == test_data[i]["id"]
+        assert result_item["source_id"] == test_data[i]["source_id"]
+        assert result_item["receiver_id"] == test_data[i]["receiver_id"]
         assert result_item["value"] == test_data[i]["value"]
 
 
