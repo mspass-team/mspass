@@ -148,10 +148,7 @@ class Database(pymongo.database.Database):
         ret["_BaseObject__codec_options"] = self.codec_options.__repr__()
         
         # Store connection info to recreate DBClient lazily
-        if hasattr(self.client, '_mspass_db_host'):
-            ret["_mspass_db_host"] = self.client._mspass_db_host
-        else:
-            ret["_mspass_db_host"] = None
+        ret["_mspass_db_host"] = self.client._mspass_db_host
         
         # Don't pickle the client or stedronsky (Undertaker) objects
         if "_Database__client" in ret:

@@ -20,19 +20,15 @@ class Collection(pymongo.database.Collection):
         
         # Store database connection info separately to recreate Database handle
         # Use public attribute 'database' instead of private '_Collection__database'
-        try:
-            db = self.database  # pymongo 4.x uses public attribute
-            if hasattr(db, 'name'):
-                ret["_mspass_db_name"] = db.name
-            if hasattr(db, 'client') and hasattr(db.client, '_mspass_db_host'):
-                ret["_mspass_db_host"] = db.client._mspass_db_host
-            
-            # Don't pickle the Database object itself
-            if "_Collection__database" in ret:
-                del ret["_Collection__database"]
-        except AttributeError:
-            # If database attribute doesn't exist, skip
-            pass
+        db = self.database  # pymongo 4.x uses public attribute
+        if hasattr(db, 'name'):
+            ret["_mspass_db_name"] = db.name
+        if hasattr(db, 'client') and hasattr(db.client, '_mspass_db_host'):
+            ret["_mspass_db_host"] = db.client._mspass_db_host
+        
+        # Don't pickle the Database object itself
+        if "_Collection__database" in ret:
+            del ret["_Collection__database"]
         
         return ret
 

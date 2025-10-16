@@ -3595,28 +3595,5 @@ class TestDatabase:
         assert hasattr(new_collection, '_BaseObject__codec_options')
         assert hasattr(new_collection, '_codec_options')
 
-    def test_collection_serialization_without_database_attribute(self):
-        """
-        Test Collection serialization when database attribute doesn't exist.
-        This covers the AttributeError exception handling in __getstate__.
-        """
-        # Create a collection instance
-        client = DBClient("localhost")
-        db = Database(client, "test_serialization")
-        collection = Collection(db, "test_collection")
-        
-        # Mock the database property to raise AttributeError
-        # This simulates the case where database attribute doesn't exist
-        original_database = collection.database
-        collection.database = property(lambda self: (_ for _ in ()).throw(AttributeError("database not found")))
-        
-        # Test __getstate__ - should handle missing database attribute gracefully
-        state = collection.__getstate__()
-        assert isinstance(state, dict)
-        assert "_BaseObject__codec_options" in state
-        
-        # Restore original database property
-        collection.database = original_database
-
         with pytest.raises(ValueError, match="Illegal geographic input"):
             doc = geoJSON_doc(20, 400)
