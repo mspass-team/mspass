@@ -3165,6 +3165,13 @@ class TestDatabase:
             aws_access_key_id="fake_access_key",
             aws_secret_access_key="fake_secret_key",
         )
+        
+        # Monkey patch S3 client to disable checksum validation for test compatibility
+        original_get_object = s3_client.get_object
+        def patched_get_object(**kwargs):
+            kwargs.pop('ChecksumMode', None)  # Remove ChecksumMode if present
+            return original_get_object(**kwargs)
+        s3_client.get_object = patched_get_object
         src_bucket = "scedc-pds"
         s3 = boto3.resource("s3", region_name="us-east-1")
 
