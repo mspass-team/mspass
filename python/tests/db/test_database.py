@@ -51,6 +51,7 @@ from bson.objectid import ObjectId
 from datetime import datetime
 from mspasspy.db.database import Database, geoJSON_doc
 from mspasspy.db.client import DBClient
+from mspasspy.db.collection import Collection
 
 
 class TestDatabase:
@@ -3496,6 +3497,30 @@ class TestDatabase:
         # for that simple calculation would allow an == to also work
         assert np.isclose(coords[0], -90.0)
         assert coords[1] == 20.0
+
+    def test_database_serialization_basic(self):
+        """
+        Test basic Database serialization functionality.
+        This tests the core serialization methods added for distributed computing.
+        """
+        # Create a database instance
+        client = DBClient("localhost")
+        db = Database(client, "test_serialization")
+        
+        # Test __getstate__ - should return serializable state
+        state = db.__getstate__()
+        assert isinstance(state, dict)
+        assert "_mspass_db_host" in state
+        assert "_BaseObject__codec_options" in state
+        
+        # Test __setstate__ - should recreate the object
+        new_db = Database.__new__(Database)
+        new_db.__setstate__(state)
+        
+        # Verify the deserialized object has correct attributes
+        assert new_db.name == db.name
+        assert hasattr(new_db, '_Database__client')
+        assert hasattr(new_db, '_BaseObject__codec_options')
 
         with pytest.raises(ValueError, match="Illegal geographic input"):
             doc = geoJSON_doc(20, 400)
