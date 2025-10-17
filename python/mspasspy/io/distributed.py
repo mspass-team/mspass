@@ -311,7 +311,7 @@ def read_distributed_data(
       functions behavor.  Note when set as a Database handle the cursor
       argument must be set.  Otherwise it is ignored.
     :type data: :class:`mspasspy.db.database.Database` or :class:`pandas.DataFrame`
-      or :class:`dask.dataframe.core.DataFrame` or :class:`pyspark.sql.dataframe.DataFrame`
+      or :class:`dask.dataframe.DataFrame` or :class:`pyspark.sql.dataframe.DataFrame`
       for atomic data.  List of python dicts defining queries to read a
       dataset of ensembles.
 
@@ -520,7 +520,7 @@ def read_distributed_data(
         db = data
     elif (
         isinstance(data, pd.DataFrame)
-        or (_mspasspy_has_dask and isinstance(data, dask.dataframe.core.DataFrame))
+        or (_mspasspy_has_dask and isinstance(data, dask.dataframe.DataFrame))
         or (_mspasspy_has_pyspark and isinstance(data, pyspark.sql.dataframe.DataFrame))
     ):
         ensemble_mode = False
@@ -688,9 +688,12 @@ def read_distributed_data(
                 # DataFrame.   It may be better to write a small
                 # converter run with a map operator row by row
                 if isinstance(data, pd.DataFrame):
-                    data = dask.dataframe.from_pandas(data, npartitions=npartitions)
-                # format arg s essential as default is tuple
-                plist = data.to_bag(format="dict")
+                    plist = dask.bag.from_sequence(
+                        data.to_dict("records"), npartitions=npartitions
+                    )
+                else:
+                    # data is already a dask DataFrame
+                    plist = data.to_bag(format="dict")
         else:
             # logic above should guarantee data is a Database
             # object that can be queried and used to generate the bag/rdd

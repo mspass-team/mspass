@@ -157,7 +157,7 @@ RUN pip3 --no-cache-dir install numpy \
     && rm -f requirements.txt && docker-clean
 
 # Download & install pybind11
-ARG PYBIND11_VERSION=2.6.0
+ARG PYBIND11_VERSION=2.13.6
 ARG PYBIND11_URL=https://github.com/pybind/pybind11/archive/v${PYBIND11_VERSION}.tar.gz
 RUN wget -qO - ${PYBIND11_URL} | tar -xz -C /usr/local/ \
     && cd /usr/local/pybind11-${PYBIND11_VERSION} \
@@ -207,10 +207,9 @@ RUN sed -i '/set -- mongod "$@"/i [[ -d data ]] || mkdir data' /usr/local/bin/do
 # replace localhost to 127.0.0.1 in pymongo to run on HPC
 RUN python -c "import site; print(site.getsitepackages()[0])" > site_packages_path.txt && \
 	PYTHON_SITE_PACKAGES_PATH=$(cat site_packages_path.txt) && \
-	sed -i "s/localhost:27020,/127.0.0.1:27020,/g" "${PYTHON_SITE_PACKAGES_PATH}/pymongo/encryption_options.py" && \
-	sed -i 's/HOST = "localhost"/HOST = "127.0.0.1"/g' "${PYTHON_SITE_PACKAGES_PATH}/pymongo/mongo_client.py" && \
-	sed -i "s/'localhost'/'127.0.0.1'/g" "${PYTHON_SITE_PACKAGES_PATH}/pymongo/settings.py" && \
-	sed -i "s/'localhost'/'127.0.0.1'/g" "${PYTHON_SITE_PACKAGES_PATH}/pymongo/pool.py" && \
+	[ -f "${PYTHON_SITE_PACKAGES_PATH}/pymongo/encryption_options.py" ] && sed -i "s/localhost:27020,/127.0.0.1:27020,/g" "${PYTHON_SITE_PACKAGES_PATH}/pymongo/encryption_options.py" || true && \
+	[ -f "${PYTHON_SITE_PACKAGES_PATH}/pymongo/mongo_client.py" ] && sed -i 's/HOST = "localhost"/HOST = "127.0.0.1"/g' "${PYTHON_SITE_PACKAGES_PATH}/pymongo/mongo_client.py" || true && \
+	[ -f "${PYTHON_SITE_PACKAGES_PATH}/pymongo/pool.py" ] && sed -i "s/'localhost'/'127.0.0.1'/g" "${PYTHON_SITE_PACKAGES_PATH}/pymongo/pool.py" || true && \
 	rm site_packages_path.txt
 
 # install Dask JupyterLab extension
