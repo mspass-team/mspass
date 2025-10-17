@@ -1,7 +1,7 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en">
+<html class="writer-html5" lang="en" data-content_root="../">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
@@ -14,9 +14,9 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=f6245a2f"></script>
-      <script src="../_static/doctools.js?v=888ff710"></script>
-      <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+      <script src="../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="../_static/copybutton.js?v=f281be69"></script>
     <script src="../_static/js/theme.js"></script>
@@ -152,14 +152,80 @@
            <div itemprop="articleBody">
              
   <section id="c-api">
-<h1>C++ API<a class="headerlink" href="#c-api" title="Permalink to this heading"></a></h1>
+<h1>C++ API<a class="headerlink" href="#c-api" title="Link to this heading"></a></h1>
 <p>The MsPASS C++ API’s key components are the following classes.</p>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="mspass.html">MsPASS C++ API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mspass.utility.Metadata.html">mspass::utility::Metadata</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mspass.seismic.TimeSeries.html">mspass::seismic::TimeSeries</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mspass.seismic.Seismogram.html">mspass::seismic::Seismogram</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mspass.utility.Metadata.html">mspass::utility::Metadata</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="mspass.utility.Metadata.html#_CPPv4N6mspass7utility8MetadataE"><code class="docutils literal notranslate"><span class="pre">mspass::utility::Metadata</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="mspass.utility.Metadata.html#_CPPv4N6mspass7utility8Metadata8MetadataEv"><code class="docutils literal notranslate"><span class="pre">Metadata()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspass.utility.Metadata.html#_CPPv4N6mspass7utility8Metadata8MetadataERNSt8ifstreamEKNSt6stringE"><code class="docutils literal notranslate"><span class="pre">Metadata()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspass.utility.Metadata.html#_CPPv4N6mspass7utility8Metadata8MetadataERK8Metadata"><code class="docutils literal notranslate"><span class="pre">Metadata()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspass.utility.Metadata.html#_CPPv4N6mspass7utility8MetadataD0Ev"><code class="docutils literal notranslate"><span class="pre">~Metadata()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspass.utility.Metadata.html#_CPPv4N6mspass7utility8MetadataaSERK8Metadata"><code class="docutils literal notranslate"><span class="pre">operator=()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspass.utility.Metadata.html#_CPPv4N6mspass7utility8MetadatapLERK8Metadata"><code class="docutils literal notranslate"><span class="pre">operator+=()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspass.utility.Metadata.html#_CPPv4NK6mspass7utility8MetadataplERK8Metadata"><code class="docutils literal notranslate"><span class="pre">operator+()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspass.utility.Metadata.html#_CPPv4NK6mspass7utility8Metadata10get_doubleEKNSt6stringE"><code class="docutils literal notranslate"><span class="pre">get_double()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspass.utility.Metadata.html#_CPPv4NK6mspass7utility8Metadata7get_intEKNSt6stringE"><code class="docutils literal notranslate"><span class="pre">get_int()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspass.utility.Metadata.html#_CPPv4NK6mspass7utility8Metadata8get_longEKNSt6stringE"><code class="docutils literal notranslate"><span class="pre">get_long()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspass.utility.Metadata.html#_CPPv4NK6mspass7utility8Metadata10get_stringEKNSt6stringE"><code class="docutils literal notranslate"><span class="pre">get_string()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspass.utility.Metadata.html#_CPPv4NK6mspass7utility8Metadata8get_boolEKNSt6stringE"><code class="docutils literal notranslate"><span class="pre">get_bool()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspass.utility.Metadata.html#_CPPv4I0ENK6mspass7utility8Metadata3getE1TKNSt6stringE"><code class="docutils literal notranslate"><span class="pre">get()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspass.utility.Metadata.html#_CPPv4I0ENK6mspass7utility8Metadata3getE1TPKc"><code class="docutils literal notranslate"><span class="pre">get()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspass.utility.Metadata.html#_CPPv4NK6mspass7utility8Metadata7get_anyEKNSt6stringE"><code class="docutils literal notranslate"><span class="pre">get_any()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspass.utility.Metadata.html#_CPPv4N6mspass7utility8Metadata3putEPKcPKc"><code class="docutils literal notranslate"><span class="pre">put()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspass.utility.Metadata.html#_CPPv4N6mspass7utility8Metadata12append_chainEKNSt6stringEKNSt6stringEKNSt6stringE"><code class="docutils literal notranslate"><span class="pre">append_chain()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspass.utility.Metadata.html#_CPPv4NK6mspass7utility8Metadata8modifiedEv"><code class="docutils literal notranslate"><span class="pre">modified()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspass.utility.Metadata.html#_CPPv4N6mspass7utility8Metadata14clear_modifiedEv"><code class="docutils literal notranslate"><span class="pre">clear_modified()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspass.utility.Metadata.html#_CPPv4NK6mspass7utility8Metadata4keysEv"><code class="docutils literal notranslate"><span class="pre">keys()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspass.utility.Metadata.html#_CPPv4NK6mspass7utility8Metadata10is_definedEKNSt6stringE"><code class="docutils literal notranslate"><span class="pre">is_defined()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspass.utility.Metadata.html#_CPPv4N6mspass7utility8Metadata5eraseEKNSt6stringE"><code class="docutils literal notranslate"><span class="pre">erase()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspass.utility.Metadata.html#_CPPv4NK6mspass7utility8Metadata4sizeEv"><code class="docutils literal notranslate"><span class="pre">size()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspass.utility.Metadata.html#_CPPv4NK6mspass7utility8Metadata5beginEv"><code class="docutils literal notranslate"><span class="pre">begin()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspass.utility.Metadata.html#_CPPv4NK6mspass7utility8Metadata3endEv"><code class="docutils literal notranslate"><span class="pre">end()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspass.utility.Metadata.html#_CPPv4N6mspass7utility8Metadata10change_keyEKNSt6stringEKNSt6stringE"><code class="docutils literal notranslate"><span class="pre">change_key()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspass.utility.Metadata.html#_CPPv4N6mspass7utility8Metadata21serialize_metadata_pyERK8Metadata"><code class="docutils literal notranslate"><span class="pre">serialize_metadata_py</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspass.utility.Metadata.html#_CPPv4N6mspass7utility8Metadata30restore_serialized_metadata_pyERKN8pybind116objectE"><code class="docutils literal notranslate"><span class="pre">restore_serialized_metadata_py</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspass.utility.Metadata.html#_CPPv4N6mspass7utility8MetadatalsERNSt13ostringstreamERKN6mspass7utility8MetadataE"><code class="docutils literal notranslate"><span class="pre">operator&lt;&lt;</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="mspass.seismic.TimeSeries.html">mspass::seismic::TimeSeries</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="mspass.seismic.TimeSeries.html#_CPPv4N6mspass7seismic10TimeSeriesE"><code class="docutils literal notranslate"><span class="pre">mspass::seismic::TimeSeries</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="mspass.seismic.TimeSeries.html#_CPPv4N6mspass7seismic10TimeSeries10TimeSeriesEv"><code class="docutils literal notranslate"><span class="pre">TimeSeries()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspass.seismic.TimeSeries.html#_CPPv4N6mspass7seismic10TimeSeries10TimeSeriesEK6size_t"><code class="docutils literal notranslate"><span class="pre">TimeSeries()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspass.seismic.TimeSeries.html#_CPPv4N6mspass7seismic10TimeSeries10TimeSeriesERK15BasicTimeSeriesRK8Metadata"><code class="docutils literal notranslate"><span class="pre">TimeSeries()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspass.seismic.TimeSeries.html#_CPPv4N6mspass7seismic10TimeSeries10TimeSeriesERK8Metadata"><code class="docutils literal notranslate"><span class="pre">TimeSeries()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspass.seismic.TimeSeries.html#_CPPv4N6mspass7seismic10TimeSeries10TimeSeriesERKN6mspass7seismic14CoreTimeSeriesE"><code class="docutils literal notranslate"><span class="pre">TimeSeries()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspass.seismic.TimeSeries.html#_CPPv4N6mspass7seismic10TimeSeries10TimeSeriesERKN6mspass7seismic14CoreTimeSeriesEKNSt6stringE"><code class="docutils literal notranslate"><span class="pre">TimeSeries()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspass.seismic.TimeSeries.html#_CPPv4N6mspass7seismic10TimeSeries10TimeSeriesERKN6mspass7seismic15BasicTimeSeriesERKN6mspass7utility8MetadataERKN6mspass7utility17ProcessingHistoryERKNSt6vectorIdEE"><code class="docutils literal notranslate"><span class="pre">TimeSeries()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspass.seismic.TimeSeries.html#_CPPv4N6mspass7seismic10TimeSeries10TimeSeriesERK10TimeSeries"><code class="docutils literal notranslate"><span class="pre">TimeSeries()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspass.seismic.TimeSeries.html#_CPPv4N6mspass7seismic10TimeSeriesaSERK10TimeSeries"><code class="docutils literal notranslate"><span class="pre">operator=()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspass.seismic.TimeSeries.html#_CPPv4NK6mspass7seismic10TimeSeries10memory_useEv"><code class="docutils literal notranslate"><span class="pre">memory_use()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="mspass.seismic.Seismogram.html">mspass::seismic::Seismogram</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="mspass.seismic.Seismogram.html#_CPPv4N6mspass7seismic10SeismogramE"><code class="docutils literal notranslate"><span class="pre">mspass::seismic::Seismogram</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="mspass.seismic.Seismogram.html#_CPPv4N6mspass7seismic10Seismogram10SeismogramEv"><code class="docutils literal notranslate"><span class="pre">Seismogram()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspass.seismic.Seismogram.html#_CPPv4N6mspass7seismic10Seismogram10SeismogramEK6size_t"><code class="docutils literal notranslate"><span class="pre">Seismogram()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspass.seismic.Seismogram.html#_CPPv4N6mspass7seismic10Seismogram10SeismogramERKN6mspass7seismic14CoreSeismogramE"><code class="docutils literal notranslate"><span class="pre">Seismogram()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspass.seismic.Seismogram.html#_CPPv4N6mspass7seismic10Seismogram10SeismogramERKN6mspass7seismic14CoreSeismogramEKNSt6stringE"><code class="docutils literal notranslate"><span class="pre">Seismogram()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspass.seismic.Seismogram.html#_CPPv4N6mspass7seismic10Seismogram10SeismogramERKN6mspass7seismic15BasicTimeSeriesERKN6mspass7utility8MetadataE"><code class="docutils literal notranslate"><span class="pre">Seismogram()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspass.seismic.Seismogram.html#_CPPv4N6mspass7seismic10Seismogram10SeismogramERKN6mspass7seismic15BasicTimeSeriesERKN6mspass7utility8MetadataERKN6mspass7utility17ProcessingHistoryEKbKbRKN6mspass7utility7dmatrixERKN6mspass7utility7dmatrixE"><code class="docutils literal notranslate"><span class="pre">Seismogram()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspass.seismic.Seismogram.html#_CPPv4N6mspass7seismic10Seismogram10SeismogramERK8MetadataKNSt6stringEKNSt6stringEKNSt6stringEKNSt6stringE"><code class="docutils literal notranslate"><span class="pre">Seismogram()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspass.seismic.Seismogram.html#_CPPv4N6mspass7seismic10Seismogram10SeismogramERK8Metadatab"><code class="docutils literal notranslate"><span class="pre">Seismogram()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspass.seismic.Seismogram.html#_CPPv4N6mspass7seismic10Seismogram10SeismogramERK10Seismogram"><code class="docutils literal notranslate"><span class="pre">Seismogram()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspass.seismic.Seismogram.html#_CPPv4N6mspass7seismic10SeismogramaSERK10Seismogram"><code class="docutils literal notranslate"><span class="pre">operator=()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspass.seismic.Seismogram.html#_CPPv4N6mspass7seismic10Seismogram12load_historyERKN6mspass7utility17ProcessingHistoryE"><code class="docutils literal notranslate"><span class="pre">load_history()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspass.seismic.Seismogram.html#_CPPv4NK6mspass7seismic10Seismogram10memory_useEv"><code class="docutils literal notranslate"><span class="pre">memory_use()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </div>
 <p>Please refer to the <a class="reference internal" href="mspass.html#mspass-namespace"><span class="std std-ref">Doxygen documents</span></a>

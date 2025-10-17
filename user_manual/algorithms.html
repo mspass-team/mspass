@@ -1,7 +1,7 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en">
+<html class="writer-html5" lang="en" data-content_root="../">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
@@ -14,9 +14,9 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=f6245a2f"></script>
-      <script src="../_static/doctools.js?v=888ff710"></script>
-      <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+      <script src="../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="../_static/copybutton.js?v=f281be69"></script>
     <script src="../_static/js/theme.js"></script>
@@ -153,9 +153,9 @@
            <div itemprop="articleBody">
              
   <section id="algorithms">
-<span id="id1"></span><h1>Algorithms<a class="headerlink" href="#algorithms" title="Permalink to this heading"></a></h1>
+<span id="id1"></span><h1>Algorithms<a class="headerlink" href="#algorithms" title="Link to this heading"></a></h1>
 <section id="overview">
-<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this heading"></a></h2>
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
 <p>This page is a quick reference to algorithms available in MsPASS.
 The functions described here are all algorithms for handling MsPASS
 seismic data objects.   Utility functions for other objectives are described
@@ -193,7 +193,7 @@ error log.</p></li>
 for each algorithm function.</p>
 </section>
 <section id="processing-functions">
-<h2>Processing Functions<a class="headerlink" href="#processing-functions" title="Permalink to this heading"></a></h2>
+<h2>Processing Functions<a class="headerlink" href="#processing-functions" title="Link to this heading"></a></h2>
 <p>These algorithms have a function form to allow their use in parallel map
 operations.   They are functions that have one or more seismic data
 objects as inputs and return the output of the algorithm.  The output
@@ -208,7 +208,7 @@ function will also process a <code class="code docutils literal notranslate"><sp
 When input or output are listed as “any” it means any seismic data
 type is handled.</p>
 <table class="docutils align-default" id="id2">
-<caption><span class="caption-number">Table 3 </span><span class="caption-text">Processing Functions</span><a class="headerlink" href="#id2" title="Permalink to this table"></a></caption>
+<caption><span class="caption-number">Table 3 </span><span class="caption-text">Processing Functions</span><a class="headerlink" href="#id2" title="Link to this table"></a></caption>
 <colgroup>
 <col style="width: 10.0%" />
 <col style="width: 70.0%" />
@@ -367,12 +367,12 @@ type is handled.</p>
 </table>
 </section>
 <section id="nonstandard-processing-functions">
-<h2>Nonstandard Processing Functions<a class="headerlink" href="#nonstandard-processing-functions" title="Permalink to this heading"></a></h2>
+<h2>Nonstandard Processing Functions<a class="headerlink" href="#nonstandard-processing-functions" title="Link to this heading"></a></h2>
 <p>The next table is similar to above, but the inputs or outputs are not seismic
 data objects.   They are used internally by some functions and can have
 utility for writing custom functions that use them inside another algorithm.</p>
 <table class="docutils align-default" id="id3">
-<caption><span class="caption-number">Table 4 </span><span class="caption-text">Nonstandard Processing Functions</span><a class="headerlink" href="#id3" title="Permalink to this table"></a></caption>
+<caption><span class="caption-number">Table 4 </span><span class="caption-text">Nonstandard Processing Functions</span><a class="headerlink" href="#id3" title="Link to this table"></a></caption>
 <colgroup>
 <col style="width: 10.0%" />
 <col style="width: 70.0%" />
@@ -426,7 +426,7 @@ utility for writing custom functions that use them inside another algorithm.</p>
 </table>
 </section>
 <section id="processing-objects">
-<h2>Processing Objects<a class="headerlink" href="#processing-objects" title="Permalink to this heading"></a></h2>
+<h2>Processing Objects<a class="headerlink" href="#processing-objects" title="Link to this heading"></a></h2>
 <p>This collection of things are “processing objects” meaning they implement
 processing using a C++ or python class that has a method that runs
 an algorithm on seismic data.  All are effectively functions that
@@ -435,7 +435,7 @@ of a “method” compared to a simple function.  They also have the
 same API guarantees listed at the beginning of this section
 (i.e. the list of items in the first section).</p>
 <table class="docutils align-default" id="id4">
-<caption><span class="caption-number">Table 5 </span><span class="caption-text">Processing Objects</span><a class="headerlink" href="#id4" title="Permalink to this table"></a></caption>
+<caption><span class="caption-number">Table 5 </span><span class="caption-text">Processing Objects</span><a class="headerlink" href="#id4" title="Link to this table"></a></caption>
 <colgroup>
 <col style="width: 9.1%" />
 <col style="width: 63.6%" />
@@ -612,7 +612,7 @@ same API guarantees listed at the beginning of this section
 </table>
 </section>
 <section id="deconvolution-algorithms">
-<h2>Deconvolution algorithms<a class="headerlink" href="#deconvolution-algorithms" title="Permalink to this heading"></a></h2>
+<h2>Deconvolution algorithms<a class="headerlink" href="#deconvolution-algorithms" title="Link to this heading"></a></h2>
 <p>MsPASS has a specialized algorithms module on “deconvolution”.  Users
 should recognize that currently the module has algorithms for “deconvolution”
 in form of estimation of so called “receiver functions”.  Receiver functions

@@ -1,7 +1,7 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en">
+<html class="writer-html5" lang="en" data-content_root="../">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
@@ -14,9 +14,9 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=f6245a2f"></script>
-      <script src="../_static/doctools.js?v=888ff710"></script>
-      <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+      <script src="../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="../_static/copybutton.js?v=f281be69"></script>
     <script src="../_static/js/theme.js"></script>
@@ -158,9 +158,9 @@
            <div itemprop="articleBody">
              
   <section id="data-editing">
-<span id="id1"></span><h1>Data Editing<a class="headerlink" href="#data-editing" title="Permalink to this heading"></a></h1>
+<span id="id1"></span><h1>Data Editing<a class="headerlink" href="#data-editing" title="Link to this heading"></a></h1>
 <section id="concepts">
-<h2>Concepts<a class="headerlink" href="#concepts" title="Permalink to this heading"></a></h2>
+<h2>Concepts<a class="headerlink" href="#concepts" title="Link to this heading"></a></h2>
 <p>MsPASS uses an idea that was been a part of seismic reflection from the
 earliest days of digital processing of seismic signals commonly called
 trace editing.   Trace editing means removing “bad” data from subsequent
@@ -181,9 +181,9 @@ users can add custom metrics by either computing custom Metadata or
 running an inline computation on the sample data.</p>
 </section>
 <section id="mspass-trace-editing-algorithms">
-<h2>MsPASS Trace Editing Algorithms<a class="headerlink" href="#mspass-trace-editing-algorithms" title="Permalink to this heading"></a></h2>
+<h2>MsPASS Trace Editing Algorithms<a class="headerlink" href="#mspass-trace-editing-algorithms" title="Link to this heading"></a></h2>
 <section id="simple-comparison-operators-example-for-starters">
-<h3>Simple Comparison operators - example for starters<a class="headerlink" href="#simple-comparison-operators-example-for-starters" title="Permalink to this heading"></a></h3>
+<h3>Simple Comparison operators - example for starters<a class="headerlink" href="#simple-comparison-operators-example-for-starters" title="Link to this heading"></a></h3>
 <p>All the algorithms currently implemented in MsPASS use another model
 borrowed from seismic reflection processing.  That is, the editing is
 driven by tests of the values of one or more “header” (As noted
@@ -231,7 +231,7 @@ call to <code class="docutils literal notranslate"><span class="pre">seisbag.com
 most appropriate as a section inside a workflow.</p>
 </section>
 <section id="all-simple-comparison-operators">
-<h3>All Simple Comparison Operators<a class="headerlink" href="#all-simple-comparison-operators" title="Permalink to this heading"></a></h3>
+<h3>All Simple Comparison Operators<a class="headerlink" href="#all-simple-comparison-operators" title="Link to this heading"></a></h3>
 <p>All the simple comparison operators using tests against a Metadata single attribute
 Have the same, common API with the following elements:</p>
 <ol class="arabic simple">
@@ -278,7 +278,7 @@ Metadata and <code class="docutils literal notranslate"><span class="pre">a</spa
 We emphasize that in all cases the <code class="docutils literal notranslate"><span class="pre">kill_if_true</span></code> method, or the function
 form, kills the datum if the test shown resolves as True.</p>
 <table class="docutils align-default" id="id2">
-<caption><span class="caption-number">Table 6 </span><span class="caption-text">Simple Metadata-based Edit Classes</span><a class="headerlink" href="#id2" title="Permalink to this table"></a></caption>
+<caption><span class="caption-number">Table 6 </span><span class="caption-text">Simple Metadata-based Edit Classes</span><a class="headerlink" href="#id2" title="Link to this table"></a></caption>
 <colgroup>
 <col style="width: 50.0%" />
 <col style="width: 50.0%" />
@@ -322,7 +322,7 @@ When set true all kills will generate an <code class="docutils literal notransla
 a detailed message giving the details of why the datum was killed.</p>
 </section>
 <section id="existence-tests">
-<h3>Existence Tests<a class="headerlink" href="#existence-tests" title="Permalink to this heading"></a></h3>
+<h3>Existence Tests<a class="headerlink" href="#existence-tests" title="Link to this heading"></a></h3>
 <p>Unlike classical header implementations that have fixed slots that
 always have data in them, Metadata is open-ended.  That means data for a particular
 key may or may not exist.   We thus supply two existence classes.
@@ -341,7 +341,7 @@ one or more metadata attributes <code class="docutils literal notranslate"><span
 filter out all data that would cause that algorithm to fail anyway.</p>
 </section>
 <section id="interval-comparison">
-<h3>Interval Comparison<a class="headerlink" href="#interval-comparison" title="Permalink to this heading"></a></h3>
+<h3>Interval Comparison<a class="headerlink" href="#interval-comparison" title="Link to this heading"></a></h3>
 <p>Another common test for editing data is filtering data defined by
 a range of values.   A type example is P wave receiver functions that
 commonly only use data with epicentral distances between about 30 and 100 degrees.
@@ -369,7 +369,7 @@ determine how equality with the edges is handled and if the test is “inside”
 that in the table <code class="docutils literal notranslate"><span class="pre">a=lower_endpoint</span></code> and <code class="docutils literal notranslate"><span class="pre">b=upper_endpoint</span></code>.  In all cases
 True means if the test is true the datum will be marked dead.</p>
 <table class="docutils align-default" id="id3">
-<caption><span class="caption-number">Table 7 </span><span class="caption-text">MetadataInterval operators</span><a class="headerlink" href="#id3" title="Permalink to this table"></a></caption>
+<caption><span class="caption-number">Table 7 </span><span class="caption-text">MetadataInterval operators</span><a class="headerlink" href="#id3" title="Link to this table"></a></caption>
 <colgroup>
 <col style="width: 25.0%" />
 <col style="width: 25.0%" />
@@ -428,7 +428,7 @@ True means if the test is true the datum will be marked dead.</p>
 </table>
 </section>
 <section id="defining-multiple-editors">
-<h3>Defining Multiple Editors<a class="headerlink" href="#defining-multiple-editors" title="Permalink to this heading"></a></h3>
+<h3>Defining Multiple Editors<a class="headerlink" href="#defining-multiple-editors" title="Link to this heading"></a></h3>
 <p>The final Metadata-based editor in MsPASS was given the name <code class="docutils literal notranslate"><span class="pre">FiringSquad</span></code>.
 Although the name is admittedly a bit tongue-in-cheek, the imagery the name
 provokes describes the function well:  a datum facing a firing squad
@@ -475,7 +475,7 @@ tests set in the <code class="docutils literal notranslate"><span class="pre">ex
 </section>
 </section>
 <section id="how-to-implement-an-extension">
-<h2>How to Implement an Extension<a class="headerlink" href="#how-to-implement-an-extension" title="Permalink to this heading"></a></h2>
+<h2>How to Implement an Extension<a class="headerlink" href="#how-to-implement-an-extension" title="Link to this heading"></a></h2>
 <p>Before considering developing an extension editor consider seriously if
 what you need can be accomplished with one of two alternatives:</p>
 <ol class="arabic simple">

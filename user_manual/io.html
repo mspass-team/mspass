@@ -1,7 +1,7 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en">
+<html class="writer-html5" lang="en" data-content_root="../">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
@@ -14,9 +14,9 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=f6245a2f"></script>
-      <script src="../_static/doctools.js?v=888ff710"></script>
-      <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+      <script src="../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="../_static/copybutton.js?v=f281be69"></script>
     <script src="../_static/js/theme.js"></script>
@@ -163,9 +163,9 @@
            <div itemprop="articleBody">
              
   <section id="i-o-in-mspass">
-<span id="io"></span><h1>I/O in MsPASS<a class="headerlink" href="#i-o-in-mspass" title="Permalink to this heading"></a></h1>
+<span id="io"></span><h1>I/O in MsPASS<a class="headerlink" href="#i-o-in-mspass" title="Link to this heading"></a></h1>
 <section id="overview">
-<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this heading"></a></h2>
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
 <p>Input-output (IO) performance of a workflow can easily be the main throttle
 on the speed of a workflow in MsPASS.   The reason is a corollary of an
 old saying about the definition of a “supercomputer”.  The old saying is
@@ -198,7 +198,7 @@ some elements of this section.</p>
 </div>
 </section>
 <section id="io-concepts">
-<h2>IO Concepts<a class="headerlink" href="#io-concepts" title="Permalink to this heading"></a></h2>
+<h2>IO Concepts<a class="headerlink" href="#io-concepts" title="Link to this heading"></a></h2>
 <p><em>Concept 1:  IO is transfer of data to and from main memory</em>.  The
 most basic thing to recall and understand is that any time a computer
 algorithm does IO it means data has to be transferred from something to
@@ -280,7 +280,7 @@ concepts above in the final section that discusses known bottlenecks in
 IO performance to avoid.</p>
 </section>
 <section id="parallel-io-in-mspass">
-<h2>Parallel IO in MsPASS<a class="headerlink" href="#parallel-io-in-mspass" title="Permalink to this heading"></a></h2>
+<h2>Parallel IO in MsPASS<a class="headerlink" href="#parallel-io-in-mspass" title="Link to this heading"></a></h2>
 <p>We use parallel containers in MsPASS to provide a mechanism to handle
 data sets that cannot fit in cluster memory.  As stated numerous times
 in this User’s Manual we use what is called a “bag” in dask and
@@ -292,7 +292,7 @@ IO stage(s) would nearly always be the throttle controlling the
 run time.  In this section we discuss our current implementation
 to help the user understand current limitations of that processing.</p>
 <section id="read">
-<h3>Read<a class="headerlink" href="#read" title="Permalink to this heading"></a></h3>
+<h3>Read<a class="headerlink" href="#read" title="Link to this heading"></a></h3>
 <p>For both dask and pyspark the parallel read method is a function called
 <a class="reference internal" href="../python_api/mspasspy.io.html#mspasspy.io.distributed.read_distributed_data" title="mspasspy.io.distributed.read_distributed_data"><code class="xref py py-func docutils literal notranslate"><span class="pre">read_distributed_data</span></code></a>.
 The docstring and the <cite>:ref:CRUD operations&lt;CRUD_operations&gt;</cite>
@@ -357,7 +357,7 @@ connection shared by readers.</p></li>
 </ol>
 </section>
 <section id="write">
-<h3>Write<a class="headerlink" href="#write" title="Permalink to this heading"></a></h3>
+<h3>Write<a class="headerlink" href="#write" title="Link to this heading"></a></h3>
 <p>As with reading, parallel writes in MsPASS all should go through
 a common function called
 <a class="reference internal" href="../python_api/mspasspy.io.html#mspasspy.io.distributed.write_distributed_data" title="mspasspy.io.distributed.write_distributed_data"><code class="xref py py-func docutils literal notranslate"><span class="pre">write_distributed_data</span></code></a>.
@@ -423,9 +423,9 @@ transaction is completed.</p>
 </section>
 </section>
 <section id="known-io-bottlenecks-to-avoid">
-<h2>Known IO Bottlenecks to avoid<a class="headerlink" href="#known-io-bottlenecks-to-avoid" title="Permalink to this heading"></a></h2>
+<h2>Known IO Bottlenecks to avoid<a class="headerlink" href="#known-io-bottlenecks-to-avoid" title="Link to this heading"></a></h2>
 <section id="excessive-file-open-close">
-<h3>Excessive file open/close<a class="headerlink" href="#excessive-file-open-close" title="Permalink to this heading"></a></h3>
+<h3>Excessive file open/close<a class="headerlink" href="#excessive-file-open-close" title="Link to this heading"></a></h3>
 <p>At this time most workflows in MsPASS are driven by data stored on
 a sequence of files.   e.g. a common starting point is a collection of
 miniseed files downloaded from one or more FDSN data centers.
@@ -454,7 +454,7 @@ For workflows driven by atomic data there is currently no way to avoid
 an open/close for each read.</p>
 </section>
 <section id="lustre-file-systems-and-many-small-files">
-<h3>Lustre file-systems and many small files<a class="headerlink" href="#lustre-file-systems-and-many-small-files" title="Permalink to this heading"></a></h3>
+<h3>Lustre file-systems and many small files<a class="headerlink" href="#lustre-file-systems-and-many-small-files" title="Link to this heading"></a></h3>
 <p>The SAC model of one file per datum will really get you in trouble if
 you try to process a large dataset with many workers on a large HPC cluster.
 The fundamental reason is that HPC clusters are (currently at least)
@@ -523,7 +523,7 @@ are successful.</p>
 </div>
 </section>
 <section id="single-communication-channel-gridfs">
-<h3>Single Communication Channel (gridfs)<a class="headerlink" href="#single-communication-channel-gridfs" title="Permalink to this heading"></a></h3>
+<h3>Single Communication Channel (gridfs)<a class="headerlink" href="#single-communication-channel-gridfs" title="Link to this heading"></a></h3>
 <p>Recall one of the storage options in MsPASS is MongoDB’s gridfs system.
 Gridfs seems to be implemented in a manner conceptually similar to lustre.
 That is, the equivalent of a file name is handled differently
@@ -553,7 +553,7 @@ because the pipe is a single network connection as opposed to
 the faster connection typical of disk hardware.</p>
 </section>
 <section id="web-service-url-reads">
-<h3>Web-service URL reads<a class="headerlink" href="#web-service-url-reads" title="Permalink to this heading"></a></h3>
+<h3>Web-service URL reads<a class="headerlink" href="#web-service-url-reads" title="Link to this heading"></a></h3>
 <p>At the present time the most common way to assemble waveform
 data for seismology research is to download data from one or more FDSN
 data centers via a standardized protocol called
@@ -585,7 +585,7 @@ ready data set.</p>
 </div>
 </section>
 <section id="using-a-slow-disk-for-your-database">
-<h3>Using a slow disk for your database<a class="headerlink" href="#using-a-slow-disk-for-your-database" title="Permalink to this heading"></a></h3>
+<h3>Using a slow disk for your database<a class="headerlink" href="#using-a-slow-disk-for-your-database" title="Link to this heading"></a></h3>
 <p>A hardware innovation that has profoundly improved IO performance in the
 past decade+ is growth of solid-state disks (SSD).   SDDs have throughput
 rates orders of magnitude higher than standard magnetic disks.   At present,

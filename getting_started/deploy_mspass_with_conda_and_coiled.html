@@ -1,7 +1,7 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en">
+<html class="writer-html5" lang="en" data-content_root="../">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
@@ -14,9 +14,9 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=f6245a2f"></script>
-      <script src="../_static/doctools.js?v=888ff710"></script>
-      <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+      <script src="../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="../_static/copybutton.js?v=f281be69"></script>
     <script src="../_static/js/theme.js"></script>
@@ -153,16 +153,16 @@
            <div itemprop="articleBody">
              
   <section id="deploy-mspass-with-conda-and-coiled">
-<span id="id1"></span><h1>Deploy MsPASS with Conda and Coiled<a class="headerlink" href="#deploy-mspass-with-conda-and-coiled" title="Permalink to this heading"></a></h1>
+<span id="id1"></span><h1>Deploy MsPASS with Conda and Coiled<a class="headerlink" href="#deploy-mspass-with-conda-and-coiled" title="Link to this heading"></a></h1>
 <section id="overview">
-<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this heading"></a></h2>
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
 <p>This section provides a concise summary of the steps required to run
 MsPASS using Conda and Coiled. The instructions assume you are working
 in a cloud environment (AWS, GCP, Azure). You can also only use conda
 to install MsPASS locally without Coiled (step 3).</p>
 </section>
 <section id="install-coiled">
-<h2>1. Install Coiled<a class="headerlink" href="#install-coiled" title="Permalink to this heading"></a></h2>
+<h2>1. Install Coiled<a class="headerlink" href="#install-coiled" title="Link to this heading"></a></h2>
 <p>Fetch and install Coiled following instructions on the
 <a class="reference external" href="https://docs.coiled.io/user_guide/setup/index.html">Coiled web site</a>.</p>
 <p>Install the Coiled client Python library with pip or conda.</p>
@@ -173,7 +173,7 @@ to install MsPASS locally without Coiled (step 3).</p>
 <p>This will redirect you to the Coiled website to authenticate your computer.</p>
 </section>
 <section id="connect-to-your-cloud">
-<h2>2. Connect to your cloud<a class="headerlink" href="#connect-to-your-cloud" title="Permalink to this heading"></a></h2>
+<h2>2. Connect to your cloud<a class="headerlink" href="#connect-to-your-cloud" title="Link to this heading"></a></h2>
 <p>Next grant Coiled permission to run in your cloud account(AWS, GCP, Azure).
 Coiled creates the IAM policies and network configuration for your account,
 asking you for permission at each step.</p>
@@ -185,7 +185,7 @@ asking you for permission at each step.</p>
 <a class="reference external" href="https://cloud.coiled.io/settings/setup/infrastructure">user portal</a>.</p>
 </section>
 <section id="get-mspass-conda-package">
-<h2>3. Get MsPASS Conda package<a class="headerlink" href="#get-mspass-conda-package" title="Permalink to this heading"></a></h2>
+<h2>3. Get MsPASS Conda package<a class="headerlink" href="#get-mspass-conda-package" title="Link to this heading"></a></h2>
 <p>If you have not run MsPASS before you will need to get the
 <a class="reference external" href="https://anaconda.org/mspass/mspasspy">conda package</a>.
 from our standard repository.  Alternatively if you want to get the most
@@ -214,7 +214,7 @@ environment current with the standand conda command:</p>
 </div>
 </section>
 <section id="run-mspass">
-<h2>4. Run MsPASS<a class="headerlink" href="#run-mspass" title="Permalink to this heading"></a></h2>
+<h2>4. Run MsPASS<a class="headerlink" href="#run-mspass" title="Link to this heading"></a></h2>
 <p>After installing, Coiled will then pick up all those things installed locally,
 and install them on your cluster. For running things on Coiled, you could
 try <cite>coiled run your_code.py</cite> (or follow one of the examples in

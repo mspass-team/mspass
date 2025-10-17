@@ -1,7 +1,7 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en">
+<html class="writer-html5" lang="en" data-content_root="../../../">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -13,9 +13,9 @@
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=f6245a2f"></script>
-      <script src="../../../_static/doctools.js?v=888ff710"></script>
-      <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
+      <script src="../../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="../../../_static/copybutton.js?v=f281be69"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -204,7 +204,9 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.util.converter</span><span class="w"> </span><span class="kn">import</span> <span class="n">Textfile2Dataframe</span>
 
 
-<div class="viewcode-block" id="Database"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">Database</span><span class="p">(</span><span class="n">pymongo</span><span class="o">.</span><span class="n">database</span><span class="o">.</span><span class="n">Database</span><span class="p">):</span>
+<div class="viewcode-block" id="Database">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Database</span><span class="p">(</span><span class="n">pymongo</span><span class="o">.</span><span class="n">database</span><span class="o">.</span><span class="n">Database</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    MsPASS core database handle.  All MongoDB database operation in MsPASS</span>
 <span class="sd">    should normally utilize this object.  This object is a subclass of the</span>
@@ -290,27 +292,55 @@
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__getstate__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-        <span class="n">ret</span><span class="p">[</span><span class="s2">&quot;_Database__client&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">()</span>
         <span class="n">ret</span><span class="p">[</span><span class="s2">&quot;_BaseObject__codec_options&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">codec_options</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">()</span>
+
+        <span class="c1"># Store connection info to recreate DBClient lazily</span>
+        <span class="n">ret</span><span class="p">[</span><span class="s2">&quot;_mspass_db_host&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">_mspass_db_host</span>
+
+        <span class="c1"># Don&#39;t pickle the client or stedronsky (Undertaker) objects</span>
+        <span class="k">if</span> <span class="s2">&quot;_Database__client&quot;</span> <span class="ow">in</span> <span class="n">ret</span><span class="p">:</span>
+            <span class="k">del</span> <span class="n">ret</span><span class="p">[</span><span class="s2">&quot;_Database__client&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s2">&quot;stedronsky&quot;</span> <span class="ow">in</span> <span class="n">ret</span><span class="p">:</span>
+            <span class="k">del</span> <span class="n">ret</span><span class="p">[</span><span class="s2">&quot;stedronsky&quot;</span><span class="p">]</span>
+
         <span class="k">return</span> <span class="n">ret</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__setstate__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
-        <span class="c1"># somewhat weird that this import is requiired here but it won&#39;t</span>
-        <span class="c1"># work without it.  Not sure how the symbol MongoClient is required</span>
-        <span class="c1"># here but it is - ignore if a lint like ide says MongoClient is not used</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">pymongo</span><span class="w"> </span><span class="kn">import</span> <span class="n">MongoClient</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.db.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">DBClient</span>
-
-        <span class="c1"># The following is also needed for this object to be serialized correctly</span>
-        <span class="c1"># with dask distributed. Otherwise, the deserialized codec_options</span>
-        <span class="c1"># will become a different type unrecognized by pymongo. Not sure why...</span>
-
         <span class="kn">from</span><span class="w"> </span><span class="nn">bson.codec_options</span><span class="w"> </span><span class="kn">import</span> <span class="n">CodecOptions</span><span class="p">,</span> <span class="n">TypeRegistry</span><span class="p">,</span> <span class="n">DatetimeConversion</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">bson.binary</span><span class="w"> </span><span class="kn">import</span> <span class="n">UuidRepresentation</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.db.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">DBClient</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.util.Undertaker</span><span class="w"> </span><span class="kn">import</span> <span class="n">Undertaker</span>
 
-        <span class="n">data</span><span class="p">[</span><span class="s2">&quot;_Database__client&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;_Database__client&quot;</span><span class="p">])</span>
-        <span class="n">data</span><span class="p">[</span><span class="s2">&quot;_BaseObject__codec_options&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;_BaseObject__codec_options&quot;</span><span class="p">])</span>
+        <span class="c1"># Extract connection info before updating __dict__</span>
+        <span class="n">db_host</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;_mspass_db_host&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="c1"># CRITICAL: Pop ALL codec_options related fields and eval them</span>
+        <span class="c1"># pymongo Database has both _codec_options and _BaseObject__codec_options</span>
+        <span class="n">codec_options_repr</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;_BaseObject__codec_options&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">base_codec_options_repr</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;_codec_options&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="c1"># Eval the codec_options repr string</span>
+        <span class="k">if</span> <span class="n">codec_options_repr</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">codec_options_repr</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">codec_options_obj</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">codec_options_repr</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">codec_options_obj</span> <span class="o">=</span> <span class="n">codec_options_repr</span>
+
+        <span class="c1"># Update all other attributes EXCEPT codec_options</span>
         <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+        <span class="c1"># Set both codec_options attributes with the same object</span>
+        <span class="c1"># pymongo uses _codec_options internally, but we also need _BaseObject__codec_options</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_BaseObject__codec_options</span> <span class="o">=</span> <span class="n">codec_options_obj</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_codec_options</span> <span class="o">=</span> <span class="n">codec_options_obj</span>
+
+        <span class="c1"># Recreate DBClient</span>
+        <span class="k">if</span> <span class="n">db_host</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_Database__client</span> <span class="o">=</span> <span class="n">DBClient</span><span class="p">(</span><span class="n">db_host</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_Database__client</span> <span class="o">=</span> <span class="n">DBClient</span><span class="p">(</span><span class="s2">&quot;localhost&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Recreate Undertaker</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stedronsky</span> <span class="o">=</span> <span class="n">Undertaker</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -321,7 +351,9 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">Collection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Database.get_collection"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.get_collection">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_collection</span><span class="p">(</span>
+<div class="viewcode-block" id="Database.get_collection">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.get_collection">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_collection</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">name</span><span class="p">,</span>
         <span class="n">codec_options</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -368,7 +400,10 @@
             <span class="n">read_concern</span><span class="p">,</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="Database.create_collection"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.create_collection">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">create_collection</span><span class="p">(</span>
+
+<div class="viewcode-block" id="Database.create_collection">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.create_collection">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_collection</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">name</span><span class="p">,</span>
         <span class="n">codec_options</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -447,7 +482,10 @@
                 <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
             <span class="p">)</span></div>
 
-<div class="viewcode-block" id="Database.set_metadata_schema"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.set_metadata_schema">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">set_metadata_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Database.set_metadata_schema">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.set_metadata_schema">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_metadata_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Change the metadata schema defined for this handle.</span>
 
@@ -478,7 +516,10 @@
                 <span class="s2">&quot;Fatal&quot;</span><span class="p">,</span>
             <span class="p">)</span></div>
 
-<div class="viewcode-block" id="Database.set_database_schema"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.set_database_schema">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">set_database_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Database.set_database_schema">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.set_database_schema">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_database_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Change the database schema defined for this handle.</span>
 
@@ -508,7 +549,10 @@
                 <span class="s2">&quot;Fatal&quot;</span><span class="p">,</span>
             <span class="p">)</span></div>
 
-<div class="viewcode-block" id="Database.set_schema"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.set_schema">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">set_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Database.set_schema">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.set_schema">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Use this method to change both the database and metadata schema defined for this</span>
 <span class="sd">        instance of a database handle.  This method sets the database</span>
@@ -520,7 +564,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span> <span class="o">=</span> <span class="n">DatabaseSchema</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">metadata_schema</span> <span class="o">=</span> <span class="n">MetadataSchema</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Database.read_data"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.read_data">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">read_data</span><span class="p">(</span>
+
+<div class="viewcode-block" id="Database.read_data">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.read_data">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read_data</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">id_doc_or_cursor</span><span class="p">,</span>
         <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;promiscuous&quot;</span><span class="p">,</span>
@@ -1190,7 +1237,10 @@
 
         <span class="k">return</span> <span class="n">mspass_object</span></div>
 
-<div class="viewcode-block" id="Database.save_data"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.save_data">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">save_data</span><span class="p">(</span>
+
+<div class="viewcode-block" id="Database.save_data">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.save_data">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">save_data</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">mspass_object</span><span class="p">,</span>
         <span class="n">return_data</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -1723,7 +1773,10 @@
             <span class="c1"># note this returns an empty dict for dead data</span>
             <span class="k">return</span> <span class="n">retdict</span></div>
 
-<div class="viewcode-block" id="Database.clean_collection"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.clean_collection">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">clean_collection</span><span class="p">(</span>
+
+<div class="viewcode-block" id="Database.clean_collection">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.clean_collection">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">clean_collection</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;wf&quot;</span><span class="p">,</span>
         <span class="n">query</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -1825,8 +1878,11 @@
 
         <span class="k">return</span> <span class="n">fixed_cnt</span></div>
 
+
     <span class="c1"># clean a single document in the given collection atomically</span>
-<div class="viewcode-block" id="Database.clean"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.clean">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">clean</span><span class="p">(</span>
+<div class="viewcode-block" id="Database.clean">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.clean">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">clean</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">document_id</span><span class="p">,</span>
         <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;wf&quot;</span><span class="p">,</span>
@@ -2048,7 +2104,10 @@
 
         <span class="k">return</span> <span class="n">fixed_cnt</span></div>
 
-<div class="viewcode-block" id="Database.verify"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.verify">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">verify</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">document_id</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;wf&quot;</span><span class="p">,</span> <span class="n">tests</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;xref&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">,</span> <span class="s2">&quot;undefined&quot;</span><span class="p">]):</span>
+
+<div class="viewcode-block" id="Database.verify">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.verify">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">verify</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">document_id</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;wf&quot;</span><span class="p">,</span> <span class="n">tests</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;xref&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">,</span> <span class="s2">&quot;undefined&quot;</span><span class="p">]):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is an atomic-level operation to search for known issues in</span>
 <span class="sd">        Metadata stored in a database and needed to construct a valid</span>
@@ -2134,6 +2193,7 @@
                         <span class="n">problematic_keys</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">test</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">problematic_keys</span></div>
+
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_check_xref_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">doc</span><span class="p">,</span> <span class="n">collection</span><span class="p">,</span> <span class="n">xref_key</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -2794,7 +2854,9 @@
                 <span class="k">break</span>
         <span class="k">return</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">wrong_types</span><span class="p">,</span> <span class="n">undef</span><span class="p">])</span>
 
-<div class="viewcode-block" id="Database.update_metadata"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.update_metadata">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">update_metadata</span><span class="p">(</span>
+<div class="viewcode-block" id="Database.update_metadata">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.update_metadata">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_metadata</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">mspass_object</span><span class="p">,</span>
         <span class="n">collection</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -3091,7 +3153,10 @@
             <span class="p">)</span>
         <span class="k">return</span> <span class="n">mspass_object</span></div>
 
-<div class="viewcode-block" id="Database.update_data"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.update_data">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">update_data</span><span class="p">(</span>
+
+<div class="viewcode-block" id="Database.update_data">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.update_data">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_data</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">mspass_object</span><span class="p">,</span>
         <span class="n">collection</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -3318,7 +3383,10 @@
 
         <span class="k">return</span> <span class="n">mspass_object</span></div>
 
-<div class="viewcode-block" id="Database.read_ensemble_data"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.read_ensemble_data">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">read_ensemble_data</span><span class="p">(</span>
+
+<div class="viewcode-block" id="Database.read_ensemble_data">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.read_ensemble_data">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read_ensemble_data</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">cursor</span><span class="p">,</span>
         <span class="n">ensemble_metadata</span><span class="o">=</span><span class="p">{},</span>
@@ -3364,7 +3432,10 @@
 
         <span class="k">return</span> <span class="n">ensemble</span></div>
 
-<div class="viewcode-block" id="Database.read_ensemble_data_group"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.read_ensemble_data_group">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">read_ensemble_data_group</span><span class="p">(</span>
+
+<div class="viewcode-block" id="Database.read_ensemble_data_group">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.read_ensemble_data_group">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read_ensemble_data_group</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">cursor</span><span class="p">,</span>
         <span class="n">ensemble_metadata</span><span class="o">=</span><span class="p">{},</span>
@@ -3413,7 +3484,10 @@
 
         <span class="k">return</span> <span class="n">ensemble</span></div>
 
-<div class="viewcode-block" id="Database.save_ensemble_data"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.save_ensemble_data">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">save_ensemble_data</span><span class="p">(</span>
+
+<div class="viewcode-block" id="Database.save_ensemble_data">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.save_ensemble_data">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">save_ensemble_data</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">ensemble_object</span><span class="p">,</span>
         <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;promiscuous&quot;</span><span class="p">,</span>
@@ -3551,7 +3625,10 @@
         <span class="c1"># a copy of the data</span>
         <span class="k">return</span> <span class="n">ensemble_object</span></div>
 
-<div class="viewcode-block" id="Database.save_ensemble_data_binary_file"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.save_ensemble_data_binary_file">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">save_ensemble_data_binary_file</span><span class="p">(</span>
+
+<div class="viewcode-block" id="Database.save_ensemble_data_binary_file">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.save_ensemble_data_binary_file">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">save_ensemble_data_binary_file</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">ensemble_object</span><span class="p">,</span>
         <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;promiscuous&quot;</span><span class="p">,</span>
@@ -3642,7 +3719,10 @@
         <span class="c1"># a copy of the data</span>
         <span class="k">return</span> <span class="n">ensemble_object</span></div>
 
-<div class="viewcode-block" id="Database.update_ensemble_metadata"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.update_ensemble_metadata">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">update_ensemble_metadata</span><span class="p">(</span>
+
+<div class="viewcode-block" id="Database.update_ensemble_metadata">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.update_ensemble_metadata">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_ensemble_metadata</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">ensemble_object</span><span class="p">,</span>
         <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;promiscuous&quot;</span><span class="p">,</span>
@@ -3700,7 +3780,10 @@
                     <span class="n">alg_name</span><span class="o">=</span><span class="n">alg_name</span><span class="p">,</span>
                 <span class="p">)</span></div>
 
-<div class="viewcode-block" id="Database.delete_data"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.delete_data">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">delete_data</span><span class="p">(</span>
+
+<div class="viewcode-block" id="Database.delete_data">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.delete_data">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">delete_data</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">object_id</span><span class="p">,</span>
         <span class="n">object_type</span><span class="p">,</span>
@@ -3807,6 +3890,7 @@
             <span class="c1"># delete the documents with the wf_id equals to obejct[&#39;_id&#39;]</span>
             <span class="bp">self</span><span class="p">[</span><span class="n">elog_collection</span><span class="p">]</span><span class="o">.</span><span class="n">delete_many</span><span class="p">({</span><span class="n">wf_id_name</span><span class="p">:</span> <span class="n">oid</span><span class="p">})</span></div>
 
+
     <span class="k">def</span><span class="w"> </span><span class="nf">_load_collection_metadata</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">,</span> <span class="n">exclude_keys</span><span class="p">,</span> <span class="n">include_undefined</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="kc">None</span>
     <span class="p">):</span>
@@ -3899,7 +3983,9 @@
                 <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">key_dict</span><span class="p">:</span>
                     <span class="n">mspass_object</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">object_doc</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
 
-<div class="viewcode-block" id="Database.load_source_metadata"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.load_source_metadata">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">load_source_metadata</span><span class="p">(</span>
+<div class="viewcode-block" id="Database.load_source_metadata">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.load_source_metadata">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load_source_metadata</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">mspass_object</span><span class="p">,</span>
         <span class="n">exclude_keys</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;serialized_event&quot;</span><span class="p">,</span> <span class="s2">&quot;magnitude_type&quot;</span><span class="p">],</span>
@@ -3941,7 +4027,10 @@
                     <span class="n">member_object</span><span class="p">,</span> <span class="n">exclude_keys</span><span class="p">,</span> <span class="n">include_undefined</span><span class="p">,</span> <span class="s2">&quot;source&quot;</span>
                 <span class="p">)</span></div>
 
-<div class="viewcode-block" id="Database.load_site_metadata"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.load_site_metadata">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">load_site_metadata</span><span class="p">(</span>
+
+<div class="viewcode-block" id="Database.load_site_metadata">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.load_site_metadata">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load_site_metadata</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">,</span> <span class="n">exclude_keys</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">include_undefined</span><span class="o">=</span><span class="kc">False</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -3982,7 +4071,10 @@
                     <span class="n">member_object</span><span class="p">,</span> <span class="n">exclude_keys</span><span class="p">,</span> <span class="n">include_undefined</span><span class="p">,</span> <span class="s2">&quot;site&quot;</span>
                 <span class="p">)</span></div>
 
-<div class="viewcode-block" id="Database.load_channel_metadata"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.load_channel_metadata">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">load_channel_metadata</span><span class="p">(</span>
+
+<div class="viewcode-block" id="Database.load_channel_metadata">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.load_channel_metadata">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load_channel_metadata</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">mspass_object</span><span class="p">,</span>
         <span class="n">exclude_keys</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;serialized_channel_data&quot;</span><span class="p">],</span>
@@ -4022,6 +4114,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">_load_collection_metadata</span><span class="p">(</span>
                     <span class="n">member_object</span><span class="p">,</span> <span class="n">exclude_keys</span><span class="p">,</span> <span class="n">include_undefined</span><span class="p">,</span> <span class="s2">&quot;channel&quot;</span>
                 <span class="p">)</span></div>
+
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_sync_metadata_before_update</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">):</span>
@@ -5065,7 +5158,9 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">t</span>
 
-<div class="viewcode-block" id="Database.save_inventory"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.save_inventory">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">save_inventory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inv</span><span class="p">,</span> <span class="n">networks_to_exclude</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;SY&quot;</span><span class="p">],</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="Database.save_inventory">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.save_inventory">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">save_inventory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inv</span><span class="p">,</span> <span class="n">networks_to_exclude</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;SY&quot;</span><span class="p">],</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Saves contents of all components of an obspy inventory</span>
 <span class="sd">        object to documents in the site and channel collections.</span>
@@ -5367,7 +5462,10 @@
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;number of channel records saved=&quot;</span><span class="p">,</span> <span class="n">n_chan_saved</span><span class="p">)</span>
         <span class="k">return</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">n_site_saved</span><span class="p">,</span> <span class="n">n_chan_saved</span><span class="p">,</span> <span class="n">n_site_processed</span><span class="p">,</span> <span class="n">n_chan_processed</span><span class="p">])</span></div>
 
-<div class="viewcode-block" id="Database.read_inventory"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.read_inventory">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">read_inventory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">net</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sta</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Database.read_inventory">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.read_inventory">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read_inventory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">net</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sta</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Loads an obspy inventory object limited by one or more</span>
 <span class="sd">        keys.   Default is to load the entire contents of the</span>
@@ -5417,7 +5515,10 @@
                 <span class="n">result</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">netw</span><span class="p">])</span>
         <span class="k">return</span> <span class="n">result</span></div>
 
-<div class="viewcode-block" id="Database.get_seed_site"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.get_seed_site">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_seed_site</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">net</span><span class="p">,</span> <span class="n">sta</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="s2">&quot;NONE&quot;</span><span class="p">,</span> <span class="n">time</span><span class="o">=-</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Database.get_seed_site">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.get_seed_site">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_seed_site</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">net</span><span class="p">,</span> <span class="n">sta</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="s2">&quot;NONE&quot;</span><span class="p">,</span> <span class="n">time</span><span class="o">=-</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The site collection is assumed to have a one to one</span>
 <span class="sd">        mapping of net:sta:loc:starttime - endtime.</span>
@@ -5485,7 +5586,10 @@
             <span class="n">stadoc</span> <span class="o">=</span> <span class="n">dbsite</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">stadoc</span></div>
 
-<div class="viewcode-block" id="Database.get_seed_channel"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.get_seed_channel">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_seed_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">net</span><span class="p">,</span> <span class="n">sta</span><span class="p">,</span> <span class="n">chan</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">time</span><span class="o">=-</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Database.get_seed_channel">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.get_seed_channel">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_seed_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">net</span><span class="p">,</span> <span class="n">sta</span><span class="p">,</span> <span class="n">chan</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">time</span><span class="o">=-</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The channel collection is assumed to have a one to one</span>
 <span class="sd">        mapping of net:sta:loc:chan:starttime - endtime.</span>
@@ -5628,7 +5732,10 @@
                                 <span class="s2">&quot;Fatal&quot;</span><span class="p">,</span>
                             <span class="p">)</span></div>
 
-<div class="viewcode-block" id="Database.get_response"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.get_response">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">net</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sta</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">chan</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Database.get_response">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.get_response">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">net</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sta</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">chan</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns an obspy Response object for seed channel defined by</span>
 <span class="sd">        the standard keys net, sta, chan, and loc and a time stamp.</span>
@@ -5705,7 +5812,10 @@
         <span class="n">chan</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">chan</span><span class="o">.</span><span class="n">response</span></div>
 
-<div class="viewcode-block" id="Database.save_catalog"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.save_catalog">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">save_catalog</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cat</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Database.save_catalog">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.save_catalog">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">save_catalog</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cat</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Save the contents of an obspy Catalog object to MongoDB</span>
 <span class="sd">        source collection.  All contents are saved even with</span>
@@ -5768,7 +5878,10 @@
             <span class="n">nevents</span> <span class="o">+=</span> <span class="mi">1</span>
         <span class="k">return</span> <span class="n">nevents</span></div>
 
-<div class="viewcode-block" id="Database.load_event"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.load_event">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">load_event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source_id</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Database.load_event">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.load_event">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load_event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source_id</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a bson record of source data matching the unique id</span>
 <span class="sd">        defined by source_id.   The idea is that magic string would</span>
@@ -5782,6 +5895,7 @@
         <span class="n">dbsource</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">source</span>
         <span class="n">x</span> <span class="o">=</span> <span class="n">dbsource</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;source_id&quot;</span><span class="p">:</span> <span class="n">source_id</span><span class="p">})</span>
         <span class="k">return</span> <span class="n">x</span></div>
+
 
     <span class="c1">#  Methods for handling miniseed data</span>
     <span class="nd">@staticmethod</span>
@@ -5811,7 +5925,9 @@
         <span class="n">o</span><span class="p">[</span><span class="s2">&quot;endtime&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">index_record</span><span class="o">.</span><span class="n">endtime</span>
         <span class="k">return</span> <span class="n">o</span>
 
-<div class="viewcode-block" id="Database.index_mseed_file"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.index_mseed_file">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">index_mseed_file</span><span class="p">(</span>
+<div class="viewcode-block" id="Database.index_mseed_file">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.index_mseed_file">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">index_mseed_file</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">dfile</span><span class="p">,</span>
         <span class="nb">dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -6012,7 +6128,10 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span></div>
 
-<div class="viewcode-block" id="Database.save_dataframe"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.save_dataframe">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">save_dataframe</span><span class="p">(</span>
+
+<div class="viewcode-block" id="Database.save_dataframe">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.save_dataframe">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">save_dataframe</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">collection</span><span class="p">,</span> <span class="n">null_values</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">one_to_one</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">parallel</span><span class="o">=</span><span class="kc">False</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -6083,7 +6202,10 @@
             <span class="n">dbcol</span><span class="o">.</span><span class="n">insert_many</span><span class="p">(</span><span class="n">doc_list</span><span class="p">)</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">doc_list</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Database.save_textfile"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.save_textfile">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">save_textfile</span><span class="p">(</span>
+
+<div class="viewcode-block" id="Database.save_textfile">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.save_textfile">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">save_textfile</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">filename</span><span class="p">,</span>
         <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;textfile&quot;</span><span class="p">,</span>
@@ -6186,6 +6308,7 @@
             <span class="n">one_to_one</span><span class="o">=</span><span class="n">one_to_one</span><span class="p">,</span>
             <span class="n">parallel</span><span class="o">=</span><span class="n">parallel</span><span class="p">,</span>
         <span class="p">)</span></div>
+
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_kill_zero_length_live</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">):</span>
@@ -6953,7 +7076,9 @@
 
         <span class="k">return</span> <span class="n">st</span>
 
-<div class="viewcode-block" id="Database.index_mseed_s3_continuous"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.index_mseed_s3_continuous">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">index_mseed_s3_continuous</span><span class="p">(</span>
+<div class="viewcode-block" id="Database.index_mseed_s3_continuous">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.index_mseed_s3_continuous">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">index_mseed_s3_continuous</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">s3_client</span><span class="p">,</span>
         <span class="n">year</span><span class="p">,</span>
@@ -7052,7 +7177,10 @@
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="s2">&quot;Error while index mseed file from s3.&quot;</span><span class="p">,</span> <span class="s2">&quot;Fatal&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span></div>
 
-<div class="viewcode-block" id="Database.index_mseed_s3_event"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.index_mseed_s3_event">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">index_mseed_s3_event</span><span class="p">(</span>
+
+<div class="viewcode-block" id="Database.index_mseed_s3_event">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.index_mseed_s3_event">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">index_mseed_s3_event</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">s3_client</span><span class="p">,</span>
         <span class="n">year</span><span class="p">,</span>
@@ -7145,7 +7273,10 @@
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="s2">&quot;Error while index mseed file from s3.&quot;</span><span class="p">,</span> <span class="s2">&quot;Fatal&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span></div>
 
-<div class="viewcode-block" id="Database.index_mseed_FDSN"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.index_mseed_FDSN">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">index_mseed_FDSN</span><span class="p">(</span>
+
+<div class="viewcode-block" id="Database.index_mseed_FDSN">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.index_mseed_FDSN">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">index_mseed_FDSN</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">provider</span><span class="p">,</span>
         <span class="n">year</span><span class="p">,</span>
@@ -7188,6 +7319,7 @@
         <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;storage_mode&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;fdsn&quot;</span>
         <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;format&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;mseed&quot;</span>
         <span class="n">dbh</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span></div>
+
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_dfile_uuid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -7731,7 +7863,10 @@
         <span class="k">return</span> <span class="n">ensemble</span></div>
 
 
-<div class="viewcode-block" id="index_mseed_file_parallel"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.index_mseed_file_parallel">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">index_mseed_file_parallel</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="o">*</span><span class="n">arg</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+<div class="viewcode-block" id="index_mseed_file_parallel">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.index_mseed_file_parallel">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">index_mseed_file_parallel</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="o">*</span><span class="n">arg</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A parallel wrapper for the index_mseed_file method in the Database class.</span>
 <span class="sd">    We use this wrapper to handle the possible error in the original method,</span>
@@ -7753,7 +7888,10 @@
     <span class="k">return</span> <span class="n">ret</span></div>
 
 
-<div class="viewcode-block" id="md2doc"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.md2doc">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">md2doc</span><span class="p">(</span>
+
+<div class="viewcode-block" id="md2doc">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.md2doc">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">md2doc</span><span class="p">(</span>
     <span class="n">md</span><span class="p">,</span>
     <span class="n">save_schema</span><span class="p">,</span>
     <span class="n">exclude_keys</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -7976,7 +8114,10 @@
     <span class="k">return</span> <span class="p">[</span><span class="n">insertion_doc</span><span class="p">,</span> <span class="n">aok</span><span class="p">,</span> <span class="n">elog</span><span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="elog2doc"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.elog2doc">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">elog2doc</span><span class="p">(</span><span class="n">elog</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+
+<div class="viewcode-block" id="elog2doc">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.elog2doc">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">elog2doc</span><span class="p">(</span><span class="n">elog</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Extract error log messages for storage in MongoDB</span>
 
@@ -8019,7 +8160,10 @@
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="history2doc"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.history2doc">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">history2doc</span><span class="p">(</span>
+
+<div class="viewcode-block" id="history2doc">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.history2doc">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">history2doc</span><span class="p">(</span>
     <span class="n">proc_history</span><span class="p">,</span>
     <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">alg_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -8095,7 +8239,10 @@
     <span class="k">return</span> <span class="n">doc</span></div>
 
 
-<div class="viewcode-block" id="doc2md"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.doc2md">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">doc2md</span><span class="p">(</span>
+
+<div class="viewcode-block" id="doc2md">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.doc2md">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">doc2md</span><span class="p">(</span>
     <span class="n">doc</span><span class="p">,</span> <span class="n">database_schema</span><span class="p">,</span> <span class="n">metadata_schema</span><span class="p">,</span> <span class="n">wfcol</span><span class="p">,</span> <span class="n">exclude_keys</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;promiscuous&quot;</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -8256,7 +8403,10 @@
     <span class="k">return</span> <span class="p">[</span><span class="n">md</span><span class="p">,</span> <span class="n">aok</span><span class="p">,</span> <span class="n">elog</span><span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="doclist2mdlist"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.doclist2mdlist">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">doclist2mdlist</span><span class="p">(</span>
+
+<div class="viewcode-block" id="doclist2mdlist">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.doclist2mdlist">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">doclist2mdlist</span><span class="p">(</span>
     <span class="n">doclist</span><span class="p">,</span>
     <span class="n">database_schema</span><span class="p">,</span>
     <span class="n">metadata_schema</span><span class="p">,</span>
@@ -8321,7 +8471,10 @@
     <span class="k">return</span> <span class="p">[</span><span class="n">mdlist</span><span class="p">,</span> <span class="n">live</span><span class="p">,</span> <span class="n">ensemble_elog</span><span class="p">,</span> <span class="n">bodies</span><span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="parse_normlist"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.parse_normlist">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">parse_normlist</span><span class="p">(</span><span class="n">input_nlist</span><span class="p">,</span> <span class="n">db</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+
+<div class="viewcode-block" id="parse_normlist">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.parse_normlist">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">parse_normlist</span><span class="p">(</span><span class="n">input_nlist</span><span class="p">,</span> <span class="n">db</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Parses a list of multiple accepted types to return a list of Matchers.</span>
 
@@ -8422,6 +8575,7 @@
     <span class="k">return</span> <span class="n">normalizer_list</span></div>
 
 
+
 <span class="k">def</span><span class="w"> </span><span class="nf">_erase_normalized</span><span class="p">(</span>
     <span class="n">md</span><span class="p">,</span> <span class="n">normalizing_collections</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;channel&quot;</span><span class="p">,</span> <span class="s2">&quot;site&quot;</span><span class="p">,</span> <span class="s2">&quot;source&quot;</span><span class="p">]</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Metadata</span><span class="p">:</span>
@@ -8464,7 +8618,9 @@
     <span class="k">return</span> <span class="n">mdout</span>
 
 
-<div class="viewcode-block" id="geoJSON_doc"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.geoJSON_doc">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">geoJSON_doc</span><span class="p">(</span><span class="n">lat</span><span class="p">,</span> <span class="n">lon</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;epicenter&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<div class="viewcode-block" id="geoJSON_doc">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.geoJSON_doc">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">geoJSON_doc</span><span class="p">(</span><span class="n">lat</span><span class="p">,</span> <span class="n">lon</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;epicenter&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convenience function to create a geoJSON format point object document</span>
 <span class="sd">    from a points specified by latitude and longitude. The format</span>
@@ -8517,6 +8673,7 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">retdoc</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">outval</span><span class="p">}</span>
     <span class="k">return</span> <span class="n">retdoc</span></div>
+
 </pre></div>
 
            </div>

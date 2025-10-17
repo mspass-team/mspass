@@ -1,7 +1,7 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en">
+<html class="writer-html5" lang="en" data-content_root="../">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
@@ -14,9 +14,9 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=f6245a2f"></script>
-      <script src="../_static/doctools.js?v=888ff710"></script>
-      <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+      <script src="../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="../_static/copybutton.js?v=f281be69"></script>
       <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -173,12 +173,12 @@
            <div itemprop="articleBody">
              
   <section id="arrival-time-measurement-techniques-in-mspass">
-<span id="arrival-time-measurement"></span><h1>Arrival Time Measurement Techniques in MsPASS<a class="headerlink" href="#arrival-time-measurement-techniques-in-mspass" title="Permalink to this heading"></a></h1>
+<span id="arrival-time-measurement"></span><h1>Arrival Time Measurement Techniques in MsPASS<a class="headerlink" href="#arrival-time-measurement-techniques-in-mspass" title="Link to this heading"></a></h1>
 <section id="gary-l-pavlis">
-<h2><em>Gary L. Pavlis</em><a class="headerlink" href="#gary-l-pavlis" title="Permalink to this heading"></a></h2>
+<h2><em>Gary L. Pavlis</em><a class="headerlink" href="#gary-l-pavlis" title="Link to this heading"></a></h2>
 </section>
 <section id="overview">
-<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this heading"></a></h2>
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
 <p>Arrival time measurements are the oldest and most fundamental data of
 seismology.  They are the fundamental data used to produce all
 current generation earthquake catalogs and were used in one
@@ -234,9 +234,9 @@ Below we discuss how they can be used with data managed by MsPASS.</p></li>
 <p>The rest of this section has subsections on each of the items above.</p>
 </section>
 <section id="teleseismic-arrival-time-measurement">
-<h2>Teleseismic Arrival Time Measurement<a class="headerlink" href="#teleseismic-arrival-time-measurement" title="Permalink to this heading"></a></h2>
+<h2>Teleseismic Arrival Time Measurement<a class="headerlink" href="#teleseismic-arrival-time-measurement" title="Link to this heading"></a></h2>
 <section id="fundamentals">
-<h3>Fundamentals<a class="headerlink" href="#fundamentals" title="Permalink to this heading"></a></h3>
+<h3>Fundamentals<a class="headerlink" href="#fundamentals" title="Link to this heading"></a></h3>
 <p>There are some fundamental properties of teleseismic body-wave data
 that any algorithm for working with such signals has be aware:</p>
 <ol class="arabic simple">
@@ -301,9 +301,9 @@ data is an obvious and likely valuable way to accomplish auto-editing.</p>
 </section>
 </section>
 <section id="mspass-multichannel-correlation-method">
-<h2>MsPASS Multichannel Correlation Method<a class="headerlink" href="#mspass-multichannel-correlation-method" title="Permalink to this heading"></a></h2>
+<h2>MsPASS Multichannel Correlation Method<a class="headerlink" href="#mspass-multichannel-correlation-method" title="Link to this heading"></a></h2>
 <section id="data-preparation">
-<h3>Data Preparation<a class="headerlink" href="#data-preparation" title="Permalink to this heading"></a></h3>
+<h3>Data Preparation<a class="headerlink" href="#data-preparation" title="Link to this heading"></a></h3>
 <p>An assumption of the multichannel correlation algorithm in MsPASS is that the
 data have been preprocessed through some variation of the following
 steps:</p>
@@ -371,7 +371,7 @@ attributes in the <cite>MCXcorStacking</cite> module.</p></li>
 </ol>
 </section>
 <section id="algorithm-background">
-<h3>Algorithm Background<a class="headerlink" href="#algorithm-background" title="Permalink to this heading"></a></h3>
+<h3>Algorithm Background<a class="headerlink" href="#algorithm-background" title="Link to this heading"></a></h3>
 <p>The top-level function for processing teleseismic body waves is
 <a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.MCXcorStacking.align_and_stack" title="mspasspy.algorithms.MCXcorStacking.align_and_stack"><code class="xref py py-func docutils literal notranslate"><span class="pre">align_and_stack</span></code></a>.
 As the name suggests, it does two distinctly different tasks:</p>
@@ -411,7 +411,7 @@ is a research area that could be improved with alternative algorithms.
 For example, it is an obvious candidate for machine learning.</p>
 </section>
 <section id="mspass-automation">
-<h3>MsPASS Automation<a class="headerlink" href="#mspass-automation" title="Permalink to this heading"></a></h3>
+<h3>MsPASS Automation<a class="headerlink" href="#mspass-automation" title="Link to this heading"></a></h3>
 <p>Adapting the algorithm of <em>dbxcor</em> to work as an automated tool required
 developing algorithms to define three key parameters <em>dbxcor</em> required
 the user to set via the graphical user interface:</p>
@@ -491,7 +491,7 @@ data with different robust window lengths for different magnitude ranges.</p></l
 </section>
 </section>
 <section id="teleseismic-p-wave-automatation">
-<h2>Teleseismic P-wave automatation<a class="headerlink" href="#teleseismic-p-wave-automatation" title="Permalink to this heading"></a></h2>
+<h2>Teleseismic P-wave automatation<a class="headerlink" href="#teleseismic-p-wave-automatation" title="Link to this heading"></a></h2>
 <p>For teleseismic P wave data the above automated algorithms are encapsulated in a single
 function called
 <code class="xref py py-func docutils literal notranslate"><span class="pre">MCXcorPrepP</span></code>.
@@ -504,7 +504,7 @@ See the docstring for the function for guidance on use and examples
 below and in the mspass tutorial repository.</p>
 </section>
 <section id="robust-stacking">
-<h2>Robust stacking<a class="headerlink" href="#robust-stacking" title="Permalink to this heading"></a></h2>
+<h2>Robust stacking<a class="headerlink" href="#robust-stacking" title="Link to this heading"></a></h2>
 <p><code class="xref py py-func docutils literal notranslate"><span class="pre">align_and_stack</span></code>
 has several tuneable parameters that were a fixed constants in the original
 <em>dbxcor</em> program.   To understand the context it might be helpful
@@ -583,7 +583,7 @@ is small the stack will tend to converge to the signal the datum used as
 the initial beam (normally that selected by
 <code class="xref py py-func docutils literal notranslate"><span class="pre">MCXcorPrepP</span></code>).</p>
 <section id="examples">
-<h3>Examples<a class="headerlink" href="#examples" title="Permalink to this heading"></a></h3>
+<h3>Examples<a class="headerlink" href="#examples" title="Link to this heading"></a></h3>
 <p>This example shows the skeleton of a
 serial job reading from data that were previously
 preprocessed to bundle data into <cite>Seismogram</cite> objects.
@@ -649,12 +649,12 @@ starting point to work with your data set:</p>
 </pre></div>
 </div>
 <section id="local-earthquake-arrival-time-measurement">
-<h4>Local Earthquake Arrival Time Measurement<a class="headerlink" href="#local-earthquake-arrival-time-measurement" title="Permalink to this heading"></a></h4>
+<h4>Local Earthquake Arrival Time Measurement<a class="headerlink" href="#local-earthquake-arrival-time-measurement" title="Link to this heading"></a></h4>
 </section>
 </section>
 </section>
 <section id="id4">
-<h2>Fundamentals<a class="headerlink" href="#id4" title="Permalink to this heading"></a></h2>
+<h2>Fundamentals<a class="headerlink" href="#id4" title="Link to this heading"></a></h2>
 <p>Processing local earthquake data has similarities to processing
 teleseismic data, but there are some fundamental ones that
 require very different handling:</p>
@@ -716,7 +716,7 @@ remainder of this section addresses how MsPASS can be used in combination
 with some other packages for addressing that issue.</p>
 </section>
 <section id="obspy-picking">
-<h2>Obspy Picking<a class="headerlink" href="#obspy-picking" title="Permalink to this heading"></a></h2>
+<h2>Obspy Picking<a class="headerlink" href="#obspy-picking" title="Link to this heading"></a></h2>
 <p>Obspy has no graphical analyst workstation for manual picks.
 They do support a fairly extensive set of <em>detector</em> functions and a
 crude <em>associator</em>.  Those are best understood by reading their
@@ -727,7 +727,7 @@ lot of manual intervention to handle the deficiency of their
 associator.</p>
 </section>
 <section id="monitoring-network-software">
-<h2>Monitoring Network Software<a class="headerlink" href="#monitoring-network-software" title="Permalink to this heading"></a></h2>
+<h2>Monitoring Network Software<a class="headerlink" href="#monitoring-network-software" title="Link to this heading"></a></h2>
 <p>A large fraction of research problems in seismology may need to
 use one of the specialized packages used for seismic network operations.
 At present the ones I know of are:</p>
@@ -777,7 +777,7 @@ producing import/export functions from that system.</p></li>
 </ol>
 </section>
 <section id="mspass-phasenet-picking">
-<h2>MsPASS Phasenet Picking<a class="headerlink" href="#mspass-phasenet-picking" title="Permalink to this heading"></a></h2>
+<h2>MsPASS Phasenet Picking<a class="headerlink" href="#mspass-phasenet-picking" title="Link to this heading"></a></h2>
 <p>THIS PACKAGE IS UNDER DEVELOPMENT.   LOOK FOR FUTURE UPDATES IN THIS SECTION
 WHEN THAT CODE IS RELEASED.</p>
 </section>

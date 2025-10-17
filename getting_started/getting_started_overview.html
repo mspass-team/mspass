@@ -1,7 +1,7 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en">
+<html class="writer-html5" lang="en" data-content_root="../">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
@@ -14,9 +14,9 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=f6245a2f"></script>
-      <script src="../_static/doctools.js?v=888ff710"></script>
-      <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+      <script src="../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="../_static/copybutton.js?v=f281be69"></script>
     <script src="../_static/js/theme.js"></script>
@@ -167,9 +167,9 @@
            <div itemprop="articleBody">
              
   <section id="mspass-virtual-cluster-concepts">
-<span id="getting-started-overview"></span><h1>MsPASS Virtual Cluster Concepts<a class="headerlink" href="#mspass-virtual-cluster-concepts" title="Permalink to this heading"></a></h1>
+<span id="getting-started-overview"></span><h1>MsPASS Virtual Cluster Concepts<a class="headerlink" href="#mspass-virtual-cluster-concepts" title="Link to this heading"></a></h1>
 <section id="audience">
-<h2>Audience<a class="headerlink" href="#audience" title="Permalink to this heading"></a></h2>
+<h2>Audience<a class="headerlink" href="#audience" title="Link to this heading"></a></h2>
 <p>This section is mainly for user’s new to MsPASS needing to run
 the system on an HPC system.  Those readers
 may find the general issue about HPC concepts helpful, but
@@ -197,9 +197,9 @@ of the fundamentals that shaped the design of MsPASS.
 That background may help you understand material in this document.</p>
 </section>
 <section id="fundamental-concepts">
-<h2>Fundamental Concepts<a class="headerlink" href="#fundamental-concepts" title="Permalink to this heading"></a></h2>
+<h2>Fundamental Concepts<a class="headerlink" href="#fundamental-concepts" title="Link to this heading"></a></h2>
 <section id="range-of-hardware-to-run-mspass">
-<h3>Range of Hardware to run MsPASS<a class="headerlink" href="#range-of-hardware-to-run-mspass" title="Permalink to this heading"></a></h3>
+<h3>Range of Hardware to run MsPASS<a class="headerlink" href="#range-of-hardware-to-run-mspass" title="Link to this heading"></a></h3>
 <p>The most basic issue that created a need for a framework like MsPASS
 is a fundamental change in computing that began more than 20 years ago.
 That is, prior to that time a computer was synonymous with a single cpu
@@ -251,7 +251,7 @@ is that MsPASS can fill all these roles, but there is a configuration
 step to run each component in your local computing environment.</p>
 </section>
 <section id="containers">
-<h3>Containers<a class="headerlink" href="#containers" title="Permalink to this heading"></a></h3>
+<h3>Containers<a class="headerlink" href="#containers" title="Link to this heading"></a></h3>
 <p>The enabling technology that allows MsPASS to be readily run on a wide variety
 of platforms is the concept of <code class="code docutils literal notranslate"><span class="pre">virtual</span> <span class="pre">machine</span></code> or
 <code class="code docutils literal notranslate"><span class="pre">virtualization</span></code>.   If you are unfamiliar with this topic,
@@ -289,7 +289,7 @@ the Apple ARM chip used on newer Apple products.
 Additional hardware support is possible provided docker support it.</p>
 </section>
 <section id="foreman-worker-model">
-<h3>Foreman-worker Model<a class="headerlink" href="#foreman-worker-model" title="Permalink to this heading"></a></h3>
+<h3>Foreman-worker Model<a class="headerlink" href="#foreman-worker-model" title="Link to this heading"></a></h3>
 <p>A foundational concept of MsPASS is the foreman-worker model of
 parallel processing.  (Some sources will use the less politically correct
 term master-slave to describe the came concept.)
@@ -317,7 +317,7 @@ foreman-worker model possible.</p></li>
 </ol>
 </section>
 <section id="schedulers">
-<h3>Schedulers<a class="headerlink" href="#schedulers" title="Permalink to this heading"></a></h3>
+<h3>Schedulers<a class="headerlink" href="#schedulers" title="Link to this heading"></a></h3>
 <p>As noted a number of other places in this user’s manual MsPASS
 achieves parallelization in a cluster through one of two
 schedulers called <a class="reference external" href="https://dask.org/">dask</a>
@@ -369,7 +369,7 @@ manually.</p></li>
 </ol>
 </section>
 <section id="mongodb">
-<h3>MongoDB<a class="headerlink" href="#mongodb" title="Permalink to this heading"></a></h3>
+<h3>MongoDB<a class="headerlink" href="#mongodb" title="Link to this heading"></a></h3>
 <p>What MongoDB is, why is chosen for MsPASS, and how it is used in MsPASS are
 topics discussed throughout this User’s Manual.   Two key sections on this
 topic are <a class="reference internal" href="../user_manual/database_concepts.html#database-concepts"><span class="std std-ref">Database Concepts</span></a> and <a class="reference internal" href="../user_manual/CRUD_operations.html#crud-operations"><span class="std std-ref">CRUD Operations in MsPASS</span></a>.
@@ -408,7 +408,7 @@ sharding is a configuration option.</p></li>
 </ol>
 </section>
 <section id="frontend">
-<h3>Frontend<a class="headerlink" href="#frontend" title="Permalink to this heading"></a></h3>
+<h3>Frontend<a class="headerlink" href="#frontend" title="Link to this heading"></a></h3>
 <p>The standard MsPASS container assumes the use of a
 <a class="reference external" href="https://jupyter.org/">jupyter notebook</a>
 to assemble and test your workflow.  As noted elsewhere
@@ -441,9 +441,9 @@ as a near turnkey operation.</p>
 </section>
 </section>
 <section id="mspass-configuration">
-<h2>MsPASS Configuration<a class="headerlink" href="#mspass-configuration" title="Permalink to this heading"></a></h2>
+<h2>MsPASS Configuration<a class="headerlink" href="#mspass-configuration" title="Link to this heading"></a></h2>
 <section id="overview">
-<h3>Overview<a class="headerlink" href="#overview" title="Permalink to this heading"></a></h3>
+<h3>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h3>
 <p>To understand how to configure MsPASS it is important to first
 understand some fundamental concepts that are treated as abstractions.
 You can think of the configuration as making the abstractions concrete.</p>
@@ -495,7 +495,7 @@ the examples we turn to the implementation detail of how we
 make an abstract model concrete.</p>
 </section>
 <section id="example-1-simple-four-node-virtual-cluster">
-<h3>Example 1:  Simple four node virtual cluster<a class="headerlink" href="#example-1-simple-four-node-virtual-cluster" title="Permalink to this heading"></a></h3>
+<h3>Example 1:  Simple four node virtual cluster<a class="headerlink" href="#example-1-simple-four-node-virtual-cluster" title="Link to this heading"></a></h3>
 <p><a class="reference internal" href="#configuration-figure1"><span class="std std-numref">Fig. 7</span></a> is
 a block diagram of a virtual cluster that is largely useful
 only for it’s pedagogic value.   i.e. we show it
@@ -504,7 +504,8 @@ concepts and how they fit together.  The actual configuration here would
 not be very prudent because it would not make efficient use of resources for
 reasons we discuss at the end of this section.</p>
 <figure class="align-center" id="id1">
-<span id="configuration-figure1"></span><a class="reference internal image-reference" href="../_images/OneRolePerVM.jpg"><img alt="../_images/OneRolePerVM.jpg" src="../_images/OneRolePerVM.jpg" style="width: 600px;" /></a>
+<span id="configuration-figure1"></span><a class="reference internal image-reference" href="../_images/OneRolePerVM.jpg"><img alt="../_images/OneRolePerVM.jpg" src="../_images/OneRolePerVM.jpg" style="width: 600px;" />
+</a>
 <figcaption>
 <p><span class="caption-number">Fig. 7 </span><span class="caption-text">Block diagram showing abstract components of the virtual cluster
 configuration of example 1.  This example assumes four physical
@@ -512,7 +513,7 @@ nodes illustrated by the four larger boxes with solid lines.
 The dashed line boxes define containers running within
 each physical node.   Each physical node is illustrated as
 connected to a high speed LAN used for node-to-node communication
-in the cluster.</span><a class="headerlink" href="#id1" title="Permalink to this image"></a></p>
+in the cluster.</span><a class="headerlink" href="#id1" title="Link to this image"></a></p>
 </figcaption>
 </figure>
 <p>This simple example is helpful to clarify some important implementation
@@ -591,7 +592,7 @@ a waste of your time.  If you face a task with months of compute time, however,
 some fine-tuning may be justified.</p>
 </section>
 <section id="example-2-multiple-nodes-with-multiple-roles">
-<h3>Example 2:  Multiple nodes with multiple roles`<a class="headerlink" href="#example-2-multiple-nodes-with-multiple-roles" title="Permalink to this heading"></a></h3>
+<h3>Example 2:  Multiple nodes with multiple roles`<a class="headerlink" href="#example-2-multiple-nodes-with-multiple-roles" title="Link to this heading"></a></h3>
 <p><a class="reference internal" href="#configuration-figure2"><span class="std std-numref">Fig. 8</span></a> is
 a block diagram of a virtual cluster that is a minor variant of
 that in <a class="reference internal" href="#configuration-figure1"><span class="std std-numref">Fig. 7</span></a>.   This configuration
@@ -619,18 +620,19 @@ worker with only 2 processes while the node dedicated to workers (node 3)
 is assigned 4 worker processes.</p></li>
 </ol>
 <figure class="align-center" id="id2">
-<span id="configuration-figure2"></span><a class="reference internal image-reference" href="../_images/MultipleRolesPerNode.jpg"><img alt="../_images/MultipleRolesPerNode.jpg" src="../_images/MultipleRolesPerNode.jpg" style="width: 600px;" /></a>
+<span id="configuration-figure2"></span><a class="reference internal image-reference" href="../_images/MultipleRolesPerNode.jpg"><img alt="../_images/MultipleRolesPerNode.jpg" src="../_images/MultipleRolesPerNode.jpg" style="width: 600px;" />
+</a>
 <figcaption>
 <p><span class="caption-number">Fig. 8 </span><span class="caption-text">Block diagram showing abstract components of the virtual cluster
 configuration of example 2.  This example shows a cluster with
 three physical nodes running containers with multiple roles on two of the three
 nodes.  See the caption of <a class="reference internal" href="#configuration-figure1"><span class="std std-numref">Fig. 7</span></a>
-for details on the meaning of different lines in the diagram.</span><a class="headerlink" href="#id2" title="Permalink to this image"></a></p>
+for details on the meaning of different lines in the diagram.</span><a class="headerlink" href="#id2" title="Link to this image"></a></p>
 </figcaption>
 </figure>
 </section>
 <section id="example-3-multiple-nodes-with-optional-sharding">
-<h3>Example 3: Multiple nodes with optional Sharding<a class="headerlink" href="#example-3-multiple-nodes-with-optional-sharding" title="Permalink to this heading"></a></h3>
+<h3>Example 3: Multiple nodes with optional Sharding<a class="headerlink" href="#example-3-multiple-nodes-with-optional-sharding" title="Link to this heading"></a></h3>
 <p><a class="reference internal" href="#configuration-figure3"><span class="std std-numref">Fig. 9</span></a> is the first example
 that is known to give reasonable load balancing on an HPC system.
 It is, in fact, a schematic diagram of our example generic
@@ -640,7 +642,8 @@ directory “scripts/template”.   How those scripts are used to define the
 virtual cluster are described below and in the section
 of the user manual titled <span class="xref std std-ref">deploy_mspass_on_HPC</span></p>
 <figure class="align-center" id="id3">
-<span id="configuration-figure3"></span><a class="reference internal image-reference" href="../_images/FiveNodeExampleComposite.jpg"><img alt="../_images/FiveNodeExampleComposite.jpg" src="../_images/FiveNodeExampleComposite.jpg" style="width: 600px;" /></a>
+<span id="configuration-figure3"></span><a class="reference internal image-reference" href="../_images/FiveNodeExampleComposite.jpg"><img alt="../_images/FiveNodeExampleComposite.jpg" src="../_images/FiveNodeExampleComposite.jpg" style="width: 600px;" />
+</a>
 <figcaption>
 <p><span class="caption-number">Fig. 9 </span><span class="caption-text">Block diagram showing abstract components of the virtual cluster
 configuration of generic templates.  This example shows a cluster with
@@ -655,7 +658,7 @@ situation the <code class="code docutils literal notranslate"><span class="pre">
 The <code class="code docutils literal notranslate"><span class="pre">dbmanager</span></code> coordinates database transitions with the
 shards defined in the other nodes.  In this example each node running
 a worker container also runs a container with a role defined as
-<code class="code docutils literal notranslate"><span class="pre">shard</span></code>.</span><a class="headerlink" href="#id3" title="Permalink to this image"></a></p>
+<code class="code docutils literal notranslate"><span class="pre">shard</span></code>.</span><a class="headerlink" href="#id3" title="Link to this image"></a></p>
 </figcaption>
 </figure>
 <p>This figure actually illustrates two different configurations.   We consider
@@ -703,7 +706,7 @@ database transactions.</p></li>
 </ul>
 </section>
 <section id="example-4-all-in-one-desktop-setup">
-<h3>Example 4:  All-in-one desktop setup<a class="headerlink" href="#example-4-all-in-one-desktop-setup" title="Permalink to this heading"></a></h3>
+<h3>Example 4:  All-in-one desktop setup<a class="headerlink" href="#example-4-all-in-one-desktop-setup" title="Link to this heading"></a></h3>
 <p>We left the special case we call “all-in-one” until now even
 though virtually all MsPASS users will likely first use it in that mode.
 The reason is that although
@@ -714,11 +717,12 @@ a cluster running on a desktop has to simulate elements of a cluster.
 That said, the following figure illustrates an abstraction of the
 all-in-one mode with symbols the same as the examples above:</p>
 <figure class="align-center" id="id4">
-<span id="configuration-figure4"></span><a class="reference internal image-reference" href="../_images/AllInOne.jpg"><img alt="../_images/AllInOne.jpg" src="../_images/AllInOne.jpg" style="width: 600px;" /></a>
+<span id="configuration-figure4"></span><a class="reference internal image-reference" href="../_images/AllInOne.jpg"><img alt="../_images/AllInOne.jpg" src="../_images/AllInOne.jpg" style="width: 600px;" />
+</a>
 <figcaption>
 <p><span class="caption-number">Fig. 10 </span><span class="caption-text">Block diagram showing abstract components of what we
 call the all-in-one mode used for running on a single node.
-Symbols and line styles are as with all the related figures above.</span><a class="headerlink" href="#id4" title="Permalink to this image"></a></p>
+Symbols and line styles are as with all the related figures above.</span><a class="headerlink" href="#id4" title="Link to this image"></a></p>
 </figcaption>
 </figure>
 <p>The fundamental difference to note in this run mode is that all four
@@ -740,18 +744,19 @@ to not use all the cores on the system.   That process is described
 </section>
 </section>
 <section id="hpc-job-submission">
-<h2>HPC Job Submission<a class="headerlink" href="#hpc-job-submission" title="Permalink to this heading"></a></h2>
+<h2>HPC Job Submission<a class="headerlink" href="#hpc-job-submission" title="Link to this heading"></a></h2>
 <p>A final point anyone running MsPASS on an HPC cluster needs to understand
 is how a “job” (aka your workflow) is run on such a cluster.
 We first consider how a batch job is run since most HPC compute jobs
 should be run that way.  <a class="reference internal" href="#hpc-batch-run-figure"><span class="std std-numref">Fig. 11</span></a>
 is a graphic that we use as an aid to explaining the process.</p>
 <figure class="align-center" id="id5">
-<span id="hpc-batch-run-figure"></span><a class="reference internal image-reference" href="../_images/BatchRunSchematic.jpg"><img alt="../_images/BatchRunSchematic.jpg" src="../_images/BatchRunSchematic.jpg" style="width: 600px;" /></a>
+<span id="hpc-batch-run-figure"></span><a class="reference internal image-reference" href="../_images/BatchRunSchematic.jpg"><img alt="../_images/BatchRunSchematic.jpg" src="../_images/BatchRunSchematic.jpg" style="width: 600px;" />
+</a>
 <figcaption>
 <p><span class="caption-number">Fig. 11 </span><span class="caption-text">Block diagram illustrating how jobs are run on an HPC system
 with MsPASS.  Main text uses this figure for a detailed description
-of the process.</span><a class="headerlink" href="#id5" title="Permalink to this image"></a></p>
+of the process.</span><a class="headerlink" href="#id5" title="Link to this image"></a></p>
 </figcaption>
 </figure>
 <p>There are two large boxes in that figure.  The box defined by
@@ -806,11 +811,12 @@ software (slurm or the equivalent) then kills all the running containers.
 <a class="reference internal" href="#hpc-batch-run-figure"><span class="std std-numref">Fig. 11</span></a> but illustrates how a “job” is
 run on an HPC virtual cluster if you need to run a notebook interactively.</p>
 <figure class="align-center" id="id6">
-<span id="hpc-interactive-run-figure"></span><a class="reference internal image-reference" href="../_images/InteractiveRunSchematic.jpg"><img alt="../_images/InteractiveRunSchematic.jpg" src="../_images/InteractiveRunSchematic.jpg" style="width: 600px;" /></a>
+<span id="hpc-interactive-run-figure"></span><a class="reference internal image-reference" href="../_images/InteractiveRunSchematic.jpg"><img alt="../_images/InteractiveRunSchematic.jpg" src="../_images/InteractiveRunSchematic.jpg" style="width: 600px;" />
+</a>
 <figcaption>
 <p><span class="caption-number">Fig. 12 </span><span class="caption-text">Block diagram illustrating how jobs are run on an HPC system
 with MsPASS when human interaction with the jupyter notebook
-server is required.</span><a class="headerlink" href="#id6" title="Permalink to this image"></a></p>
+server is required.</span><a class="headerlink" href="#id6" title="Link to this image"></a></p>
 </figcaption>
 </figure>
 <p>A comparison of the two figures may be helpful.   The only difference is

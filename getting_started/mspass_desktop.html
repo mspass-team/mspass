@@ -1,7 +1,7 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en">
+<html class="writer-html5" lang="en" data-content_root="../">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
@@ -14,9 +14,9 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=f6245a2f"></script>
-      <script src="../_static/doctools.js?v=888ff710"></script>
-      <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+      <script src="../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="../_static/copybutton.js?v=f281be69"></script>
     <script src="../_static/js/theme.js"></script>
@@ -162,11 +162,11 @@
            <div itemprop="articleBody">
              
   <section id="running-mspass-on-a-desktop-computer">
-<span id="mspass-desktop"></span><h1>Running MsPASS on a Desktop Computer<a class="headerlink" href="#running-mspass-on-a-desktop-computer" title="Permalink to this heading"></a></h1>
+<span id="mspass-desktop"></span><h1>Running MsPASS on a Desktop Computer<a class="headerlink" href="#running-mspass-on-a-desktop-computer" title="Link to this heading"></a></h1>
 <section id="install-mspass-desktop-application">
-<h2>Install MsPASS Desktop Application<a class="headerlink" href="#install-mspass-desktop-application" title="Permalink to this heading"></a></h2>
+<h2>Install MsPASS Desktop Application<a class="headerlink" href="#install-mspass-desktop-application" title="Link to this heading"></a></h2>
 <section id="install-docker">
-<h3>Install docker<a class="headerlink" href="#install-docker" title="Permalink to this heading"></a></h3>
+<h3>Install docker<a class="headerlink" href="#install-docker" title="Link to this heading"></a></h3>
 <p>The desktop application to launch MsPASS requires <code class="code docutils literal notranslate"><span class="pre">docker</span> <span class="pre">desktop</span></code>.  If
 docker is not already installed on your desktop machine you will need to do so.
 Docker is free for non-commercial users.
@@ -174,7 +174,7 @@ Installers for all standard desktop operating systems can be found on the
 <a class="reference external" href="https://docs.docker.com/get-docker/">docker web site</a>.</p>
 </section>
 <section id="launch-docker">
-<h3>Launch docker<a class="headerlink" href="#launch-docker" title="Permalink to this heading"></a></h3>
+<h3>Launch docker<a class="headerlink" href="#launch-docker" title="Link to this heading"></a></h3>
 <p>Documentation for operating docker for each platform can be found
 on hyperlinks from the download page.   Note on linux docker
 implementation is normally set up as a daemon and managed with command line tools.
@@ -185,7 +185,7 @@ launch manually by the usual double-click or start procedure for
 applications.  See the docker documentation for guidance on your platform.</p>
 </section>
 <section id="get-the-mspass-container">
-<h3>Get the MsPASS container<a class="headerlink" href="#get-the-mspass-container" title="Permalink to this heading"></a></h3>
+<h3>Get the MsPASS container<a class="headerlink" href="#get-the-mspass-container" title="Link to this heading"></a></h3>
 <p>Use the command line interface to “pull” the MsPASS container using
 the following incantation:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">pull</span> <span class="n">mspass</span><span class="o">/</span><span class="n">mspass</span>
@@ -193,7 +193,7 @@ the following incantation:</p>
 </div>
 </section>
 <section id="verify-python-version">
-<h3>Verify python version<a class="headerlink" href="#verify-python-version" title="Permalink to this heading"></a></h3>
+<h3>Verify python version<a class="headerlink" href="#verify-python-version" title="Link to this heading"></a></h3>
 <p>The MsPASS desktop application requires a version of python of
 3.10 or above.  Verify what you have running as follow:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="o">--</span><span class="n">version</span>
@@ -205,7 +205,7 @@ advise, you may want to create a <code class="code docutils literal notranslate"
 of python and runs the rest of this procedure from that environment.</p>
 </section>
 <section id="install-mspass-desktop">
-<h3>Install mspass-desktop<a class="headerlink" href="#install-mspass-desktop" title="Permalink to this heading"></a></h3>
+<h3>Install mspass-desktop<a class="headerlink" href="#install-mspass-desktop" title="Link to this heading"></a></h3>
 <p>If you are using an pyenv or conda make sure the appropriate environment is
 active.  You can then install the mspass desktop application with pip
 as follows:</p>
@@ -220,7 +220,7 @@ as follows:</p>
 </section>
 </section>
 <section id="running-mspass-desktop">
-<h2>Running mspass-desktop<a class="headerlink" href="#running-mspass-desktop" title="Permalink to this heading"></a></h2>
+<h2>Running mspass-desktop<a class="headerlink" href="#running-mspass-desktop" title="Link to this heading"></a></h2>
 <p>Use the terminal application on your platform and navigate
 (i.e. use the cd command) to the working directory for your data set.</p>
 <blockquote>
@@ -244,21 +244,23 @@ MsPASS framework.</p>
 </div></blockquote>
 <p>That should bring up the following window:</p>
 <figure class="align-center" id="id1">
-<span id="desktop-startup-window"></span><a class="reference internal image-reference" href="../_images/desktop_startup_window.png"><img alt="../_images/desktop_startup_window.png" src="../_images/desktop_startup_window.png" style="width: 600px;" /></a>
+<span id="desktop-startup-window"></span><a class="reference internal image-reference" href="../_images/desktop_startup_window.png"><img alt="../_images/desktop_startup_window.png" src="../_images/desktop_startup_window.png" style="width: 600px;" />
+</a>
 <figcaption>
 <p><span class="caption-number">Fig. 1 </span><span class="caption-text">Initial window created by running mspass-desktop.   Note only the
 launch button is active and all the status widgets are red to
-indicate that service is down.</span><a class="headerlink" href="#id1" title="Permalink to this image"></a></p>
+indicate that service is down.</span><a class="headerlink" href="#id1" title="Link to this image"></a></p>
 </figcaption>
 </figure>
 <p>Push the “Launch” button and the display should change to something similar
 to the following:</p>
 <figure class="align-center" id="id2">
-<span id="desktop-operating-window"></span><a class="reference internal image-reference" href="../_images/desktop_operating_window.png"><img alt="../_images/desktop_operating_window.png" src="../_images/desktop_operating_window.png" style="width: 600px;" /></a>
+<span id="desktop-operating-window"></span><a class="reference internal image-reference" href="../_images/desktop_operating_window.png"><img alt="../_images/desktop_operating_window.png" src="../_images/desktop_operating_window.png" style="width: 600px;" />
+</a>
 <figcaption>
 <p><span class="caption-number">Fig. 2 </span><span class="caption-text">MsPASS desktop window with all services running.   Note the status
 widgets show green when that service is running.  If any turn red
-during operation the system will be be functional.</span><a class="headerlink" href="#id2" title="Permalink to this image"></a></p>
+during operation the system will be be functional.</span><a class="headerlink" href="#id2" title="Link to this image"></a></p>
 </figcaption>
 </figure>
 <p>For interactive use with jupyter lab, push the “Jupyter” button.   It
@@ -274,7 +276,7 @@ that should look like the following:</p>
 <figure class="align-default" id="id3">
 <span id="desktop-run-window"></span><img alt="../_images/desktop_run_window.png" src="../_images/desktop_run_window.png" />
 <figcaption>
-<p><span class="caption-number">Fig. 3 </span><span class="caption-text">Window launched by run button.</span><a class="headerlink" href="#id3" title="Permalink to this image"></a></p>
+<p><span class="caption-number">Fig. 3 </span><span class="caption-text">Window launched by run button.</span><a class="headerlink" href="#id3" title="Link to this image"></a></p>
 </figcaption>
 </figure>
 <p>Enter the name of your script in the box with the label
@@ -284,9 +286,9 @@ you launched mspass-desktop.   If you need to capture the output
 consider using a tool like the unix “script” command.</p>
 </section>
 <section id="potential-issues">
-<h2>Potential Issues<a class="headerlink" href="#potential-issues" title="Permalink to this heading"></a></h2>
+<h2>Potential Issues<a class="headerlink" href="#potential-issues" title="Link to this heading"></a></h2>
 <section id="gui-launches-but-is-incomplete">
-<h3>GUI launches but is incomplete<a class="headerlink" href="#gui-launches-but-is-incomplete" title="Permalink to this heading"></a></h3>
+<h3>GUI launches but is incomplete<a class="headerlink" href="#gui-launches-but-is-incomplete" title="Link to this heading"></a></h3>
 <p>There is a known problem with <code class="code docutils literal notranslate"><span class="pre">mspass-desktop</span></code> running on MacOS
 created by a classic python package collision with the
 <code class="code docutils literal notranslate"><span class="pre">tkinter</span></code> module used to drive the <code class="code docutils literal notranslate"><span class="pre">mspass-desktop</span></code> GUI.
@@ -295,7 +297,7 @@ If you are using an Apple computer and have an issue consult
 on GitHub for possible solutions.</p>
 </section>
 <section id="need-to-edit-configuration-files">
-<h3>Need to Edit Configuration Files<a class="headerlink" href="#need-to-edit-configuration-files" title="Permalink to this heading"></a></h3>
+<h3>Need to Edit Configuration Files<a class="headerlink" href="#need-to-edit-configuration-files" title="Link to this heading"></a></h3>
 <p>In most cases the default configuration files will not need to be changed.
 If you encounter problems with the launching or running <code class="code docutils literal notranslate"><span class="pre">mspass-desktop</span></code>,
 you may want to look through the configuration files and see if

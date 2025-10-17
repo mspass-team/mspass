@@ -1,7 +1,7 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en">
+<html class="writer-html5" lang="en" data-content_root="../../../">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -13,9 +13,9 @@
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=f6245a2f"></script>
-      <script src="../../../_static/doctools.js?v=888ff710"></script>
-      <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
+      <script src="../../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="../../../_static/copybutton.js?v=f281be69"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -151,7 +151,9 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.ccore.seismic</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span><span class="p">,</span> <span class="n">DoubleVector</span><span class="p">,</span> <span class="n">PowerSpectrum</span>
 
 
-<div class="viewcode-block" id="MTPowerSpectrumEngine"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.MTPowerSpectrumEngine.MTPowerSpectrumEngine">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">MTPowerSpectrumEngine</span><span class="p">:</span>
+<div class="viewcode-block" id="MTPowerSpectrumEngine">
+<a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.MTPowerSpectrumEngine.MTPowerSpectrumEngine">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">MTPowerSpectrumEngine</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Wrapper class to use German Prieto&#39;s multitaper package as a plug</span>
 <span class="sd">    in replacement for the MsPASS class of the same name.   The MsPASS</span>
@@ -205,7 +207,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">lamb</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># constructor for MTSpec set this</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">MTSpec_instance</span> <span class="o">=</span> <span class="kc">None</span>
 
-<div class="viewcode-block" id="MTPowerSpectrumEngine.apply"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.MTPowerSpectrumEngine.MTPowerSpectrumEngine.apply">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
+<div class="viewcode-block" id="MTPowerSpectrumEngine.apply">
+<a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.MTPowerSpectrumEngine.MTPowerSpectrumEngine.apply">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        needs to support vector input or a TimeSeries - returns a PowerSpectrum</span>
 <span class="sd">        Cannot use mspass decorator because it supports raw data vectors</span>
@@ -284,7 +288,10 @@
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">result</span></div>
 
-<div class="viewcode-block" id="MTPowerSpectrumEngine.frequencies"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.MTPowerSpectrumEngine.MTPowerSpectrumEngine.frequencies">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">frequencies</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="MTPowerSpectrumEngine.frequencies">
+<a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.MTPowerSpectrumEngine.MTPowerSpectrumEngine.frequencies">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">frequencies</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a numpy array of the frequencies</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -296,7 +303,10 @@
                 <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Fatal</span><span class="p">,</span>
             <span class="p">)</span></div>
 
-<div class="viewcode-block" id="MTPowerSpectrumEngine.time_bandwidth_product"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.MTPowerSpectrumEngine.MTPowerSpectrumEngine.time_bandwidth_product">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">time_bandwidth_product</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+
+<div class="viewcode-block" id="MTPowerSpectrumEngine.time_bandwidth_product">
+<a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.MTPowerSpectrumEngine.MTPowerSpectrumEngine.time_bandwidth_product">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">time_bandwidth_product</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return time bandwidth product for this operator.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -308,7 +318,10 @@
                 <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Fatal</span><span class="p">,</span>
             <span class="p">)</span></div>
 
-<div class="viewcode-block" id="MTPowerSpectrumEngine.number_tapers"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.MTPowerSpectrumEngine.MTPowerSpectrumEngine.number_tapers">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">number_tapers</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+
+<div class="viewcode-block" id="MTPowerSpectrumEngine.number_tapers">
+<a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.MTPowerSpectrumEngine.MTPowerSpectrumEngine.number_tapers">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">number_tapers</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the number of tapers defined for this operator.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -320,7 +333,10 @@
                 <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Fatal</span><span class="p">,</span>
             <span class="p">)</span></div>
 
-<div class="viewcode-block" id="MTPowerSpectrumEngine.set_df"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.MTPowerSpectrumEngine.MTPowerSpectrumEngine.set_df">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">set_df</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">):</span>
+
+<div class="viewcode-block" id="MTPowerSpectrumEngine.set_df">
+<a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.MTPowerSpectrumEngine.MTPowerSpectrumEngine.set_df">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_df</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Explicit setter for frequency bin interval.  Needed when</span>
 <span class="sd">        changing sample interval for input data. Rarely of use but</span>
@@ -329,7 +345,9 @@
 
 <span class="sd">        This maybe should just be pass or throw an error.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">MTSpec_instance</span><span class="o">.</span><span class="n">df</span> <span class="o">=</span> <span class="n">df</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">MTSpec_instance</span><span class="o">.</span><span class="n">df</span> <span class="o">=</span> <span class="n">df</span></div>
+</div>
+
 </pre></div>
 
            </div>

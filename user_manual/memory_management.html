@@ -1,7 +1,7 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en">
+<html class="writer-html5" lang="en" data-content_root="../">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
@@ -14,9 +14,9 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=f6245a2f"></script>
-      <script src="../_static/doctools.js?v=888ff710"></script>
-      <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+      <script src="../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="../_static/copybutton.js?v=f281be69"></script>
       <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -156,10 +156,10 @@
            <div itemprop="articleBody">
              
   <section id="memory-management">
-<span id="id1"></span><h1>Memory Management<a class="headerlink" href="#memory-management" title="Permalink to this heading"></a></h1>
+<span id="id1"></span><h1>Memory Management<a class="headerlink" href="#memory-management" title="Link to this heading"></a></h1>
 <p><em>Gary L. Pavlis and Ian (Yinzhi) Wang</em></p>
 <section id="overview">
-<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this heading"></a></h2>
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
 <p>Dask and Spark, which are used in MsPASS to exploit parallel processing,
 are generic packages to implement the map-reduce paradigm of parallel processing.
 As generic frameworks Dask and Spark are flexible but not as efficient and
@@ -186,7 +186,7 @@ concepts common to both.</p>
 to evaluate.   Treat any conclusions in this document with skepticism.</p>
 </section>
 <section id="dags-tasks-and-the-map-reduce-model-of-processing">
-<h2>DAGs, tasks, and the map-reduce model of processing<a class="headerlink" href="#dags-tasks-and-the-map-reduce-model-of-processing" title="Permalink to this heading"></a></h2>
+<h2>DAGs, tasks, and the map-reduce model of processing<a class="headerlink" href="#dags-tasks-and-the-map-reduce-model-of-processing" title="Link to this heading"></a></h2>
 <p>To understand the challenge a scheduler faces in processing a workflow,
 and memory management we need to digress a bit and review the way a scheduler
 operates.
@@ -239,7 +239,8 @@ imports and initializations:</p>
 a save followed by a compute to initiate the (lazy) computation of the bag.
 The DAG for this workflow is illustrated below</p>
 <figure class="align-center" id="id2">
-<span id="dag-figure"></span><a class="reference internal image-reference" href="../_images/MapDAGFigure.png"><img alt="../_images/MapDAGFigure.png" src="../_images/MapDAGFigure.png" style="width: 600px;" /></a>
+<span id="dag-figure"></span><a class="reference internal image-reference" href="../_images/MapDAGFigure.png"><img alt="../_images/MapDAGFigure.png" src="../_images/MapDAGFigure.png" style="width: 600px;" />
+</a>
 <figcaption>
 <p><span class="caption-number">Fig. 18 </span><span class="caption-text">Block diagram illustration of DAG defined by example workflow.
 The example shows how work would be partitions with five processors
@@ -253,7 +254,7 @@ number of processors match the number of partitions each processor would
 be assigned 1/5th of the data.  Termination of the workflow with a database
 save (<cite>save_data</cite>) makes each pipeline largely independent of the others and
 can improve performance as not processor has to wait for another except in
-competition for attention from the database server.</span><a class="headerlink" href="#id2" title="Permalink to this image"></a></p>
+competition for attention from the database server.</span><a class="headerlink" href="#id2" title="Link to this image"></a></p>
 </figcaption>
 </figure>
 <p>Now remember that a bag (RDD in spark) can be conceptualized as a
@@ -299,7 +300,8 @@ the output of the <cite>save_data</cite> method of <cite>Database</cite>, is ret
 the scheduler node running the master python script (the one shown above
 for this example).</p>
 <figure class="align-center" id="id3">
-<span id="twoprocessoranimation-figure"></span><a class="reference internal image-reference" href="../_images/MapProcessing.gif"><img alt="../_images/MapProcessing.gif" src="../_images/MapProcessing.gif" style="width: 600px;" /></a>
+<span id="twoprocessoranimation-figure"></span><a class="reference internal image-reference" href="../_images/MapProcessing.gif"><img alt="../_images/MapProcessing.gif" src="../_images/MapProcessing.gif" style="width: 600px;" />
+</a>
 <figcaption>
 <p><span class="caption-number">Fig. 19 </span><span class="caption-text">Animated gif illustrating data flow for the same five partition
 data set as illustrated above with only two processors.  The animation
@@ -310,7 +312,7 @@ scheduler assigns it another until the data set is exhausted.  This
 example illustrates an inevitable discretization issue that can degrade
 throughput.  Because 5 is not a multiple of 2 this example requires
 three passes to process and the last pass will only use one of the
-workers.</span><a class="headerlink" href="#id3" title="Permalink to this image"></a></p>
+workers.</span><a class="headerlink" href="#id3" title="Link to this image"></a></p>
 </figcaption>
 </figure>
 <p>There are some important complexities the figure above glosses over
@@ -374,7 +376,7 @@ processing chain.</p></li>
 </ul>
 </section>
 <section id="memory-complexities">
-<h2>Memory Complexities<a class="headerlink" href="#memory-complexities" title="Permalink to this heading"></a></h2>
+<h2>Memory Complexities<a class="headerlink" href="#memory-complexities" title="Link to this heading"></a></h2>
 <p>In the modern world of computing the concept of what “computer memory”
 means is muddy.   The reason is that all computers for decades have
 extended the idea of memory hierarchy from the now ancient concepts of
@@ -497,7 +499,7 @@ residual problems may exist.   If you experience memory bloat problems
 please report this to us wo we will try to fix the issue as quickly as possible.</p>
 </section>
 <section id="bag-rdd-partitions-and-pure-map-workflows">
-<h2>bag/RDD Partitions and Pure Map Workflows<a class="headerlink" href="#bag-rdd-partitions-and-pure-map-workflows" title="Permalink to this heading"></a></h2>
+<h2>bag/RDD Partitions and Pure Map Workflows<a class="headerlink" href="#bag-rdd-partitions-and-pure-map-workflows" title="Link to this heading"></a></h2>
 <p>It has been our experience that most seismic data processing
 workflows can be reduced to a series of map only operators.
 The example above is a case in point.   For this class of workflow
@@ -613,7 +615,7 @@ function.   Any other approach requires advanced configuration options
 described in documentation for dask and spark.</p>
 </section>
 <section id="reduce-operations">
-<h2>Reduce Operations<a class="headerlink" href="#reduce-operations" title="Permalink to this heading"></a></h2>
+<h2>Reduce Operations<a class="headerlink" href="#reduce-operations" title="Link to this heading"></a></h2>
 <p>The schedulers used in MsPASS are commonly described as ways to
 implement the “map-reduce paradigm”.   As noted above, our experience is
 that most seismic processing workflows are most effectively expressed
@@ -661,7 +663,8 @@ reduce(fold) operation by the Metadata key <cite>source_id</cite>:</p>
 </div>
 <p>The DAG for this workflow with 2 sources and 5 partitions looks like this:</p>
 <figure class="align-center" id="id4">
-<span id="reduce-figure"></span><a class="reference internal image-reference" href="../_images/ReduceFigure.png"><img alt="../_images/ReduceFigure.png" src="../_images/ReduceFigure.png" style="width: 600px;" /></a>
+<span id="reduce-figure"></span><a class="reference internal image-reference" href="../_images/ReduceFigure.png"><img alt="../_images/ReduceFigure.png" src="../_images/ReduceFigure.png" style="width: 600px;" />
+</a>
 <figcaption>
 <p><span class="caption-number">Fig. 20 </span><span class="caption-text">Data flow diagram for example reduce operation to stack two
 sources with a bag/rdd made up of atomic TimeSeries data with
@@ -676,7 +679,7 @@ to other tasks that illustrate the DAG for this workflow.
 Note that in this case each partition has to be linked to each
 instance of the stack task.   This illustrates why the scheduler has
 to keep all data in memory before running the stack process as the
-foldby function has no way of knowing what data is in what partition.</span><a class="headerlink" href="#id4" title="Permalink to this image"></a></p>
+foldby function has no way of knowing what data is in what partition.</span><a class="headerlink" href="#id4" title="Link to this image"></a></p>
 </figcaption>
 </figure>
 <p>We emphasize the following that are the lessons you should learn from
@@ -751,7 +754,7 @@ on a memory fault.   We recommend an ensemble approach utilizing
 the database to run bundle as described in the next section.</p>
 </section>
 <section id="utilizing-ensembles-effectively">
-<h2>Utilizing Ensembles Effectively<a class="headerlink" href="#utilizing-ensembles-effectively" title="Permalink to this heading"></a></h2>
+<h2>Utilizing Ensembles Effectively<a class="headerlink" href="#utilizing-ensembles-effectively" title="Link to this heading"></a></h2>
 <p>A large fraction of seismic workflows are properly cast into a framework
 of processing data grouped into ensembles.   Ensemble-based processing,
 however, is prone to producing exceptional memory use pressure.  The reason
@@ -859,7 +862,7 @@ approach using MongoDB discussed in the next section is superior
 because it is more readily scaled to arbitrarily large data sets.</p>
 </section>
 <section id="using-mongodb-to-manage-memory">
-<h2>Using MongoDB to Manage Memory<a class="headerlink" href="#using-mongodb-to-manage-memory" title="Permalink to this heading"></a></h2>
+<h2>Using MongoDB to Manage Memory<a class="headerlink" href="#using-mongodb-to-manage-memory" title="Link to this heading"></a></h2>
 <p>Users should always keep in mind that the ultimate, scalable solution for
 memory management is the MongoDB database.   If an algorithm applied to
 a dataset is memory intensive one question to consider is if there is a

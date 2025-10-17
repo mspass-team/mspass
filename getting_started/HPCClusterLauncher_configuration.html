@@ -1,7 +1,7 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en">
+<html class="writer-html5" lang="en" data-content_root="../">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
@@ -14,9 +14,9 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=f6245a2f"></script>
-      <script src="../_static/doctools.js?v=888ff710"></script>
-      <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+      <script src="../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="../_static/copybutton.js?v=f281be69"></script>
     <script src="../_static/js/theme.js"></script>
@@ -144,9 +144,9 @@
            <div itemprop="articleBody">
              
   <section id="hpcclusterlauncher-configuration">
-<span id="hpc-cluster-configuration"></span><h1>HPCClusterLauncher Configuration<a class="headerlink" href="#hpcclusterlauncher-configuration" title="Permalink to this heading"></a></h1>
+<span id="hpc-cluster-configuration"></span><h1>HPCClusterLauncher Configuration<a class="headerlink" href="#hpcclusterlauncher-configuration" title="Link to this heading"></a></h1>
 <section id="overview">
-<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this heading"></a></h2>
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
 <p>This document gives details of configurations parameters
 needed to launch a valid instance of the
 <code class="code docutils literal notranslate"><span class="pre">HPCClusterLauncher</span></code> object.  This document has
@@ -161,9 +161,9 @@ under the key <code class="code docutils literal notranslate"><span class="pre">
 </ol>
 </section>
 <section id="general-attributes">
-<h2>General attributes<a class="headerlink" href="#general-attributes" title="Permalink to this heading"></a></h2>
+<h2>General attributes<a class="headerlink" href="#general-attributes" title="Link to this heading"></a></h2>
 <section id="file-parameters">
-<h3>File parameters<a class="headerlink" href="#file-parameters" title="Permalink to this heading"></a></h3>
+<h3>File parameters<a class="headerlink" href="#file-parameters" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p><em>container</em>  path to the file created by running <code class="code docutils literal notranslate"><span class="pre">apptainer</span> <span class="pre">build</span></code>.</p></li>
 <li><p><em>working_directory</em>  should be the path to the working directory for this
@@ -181,7 +181,7 @@ contexts when memory use is tight.  This directory should be unique to make it
 easy to clear this debris after a given run.</p></li>
 </ul>
 <section id="general-system-parameters">
-<h4>General system parameters<a class="headerlink" href="#general-system-parameters" title="Permalink to this heading"></a></h4>
+<h4>General system parameters<a class="headerlink" href="#general-system-parameters" title="Link to this heading"></a></h4>
 <ul class="simple">
 <li><p><em>workers_per_node</em> is the number of worker processes that should be launched
 on each dedicated, worker node.   In most cases this should be the number of
@@ -205,7 +205,7 @@ run for hours is relatively unimportant.</p></li>
 </section>
 </section>
 <section id="hpc-cluster-parameters">
-<h2>HPC_cluster parameters<a class="headerlink" href="#hpc-cluster-parameters" title="Permalink to this heading"></a></h2>
+<h2>HPC_cluster parameters<a class="headerlink" href="#hpc-cluster-parameters" title="Link to this heading"></a></h2>
 <p>This set of parameters must be found in the yaml file hierarchy under
 the key <em>HPC_cluster</em> as can be seen in the template file.</p>
 <ul class="simple">

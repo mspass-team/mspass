@@ -1,7 +1,7 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en">
+<html class="writer-html5" lang="en" data-content_root="../">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
@@ -14,9 +14,9 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=f6245a2f"></script>
-      <script src="../_static/doctools.js?v=888ff710"></script>
-      <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+      <script src="../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="../_static/copybutton.js?v=f281be69"></script>
     <script src="../_static/js/theme.js"></script>
@@ -157,9 +157,9 @@
            <div itemprop="articleBody">
              
   <section id="handling-errors">
-<span id="id1"></span><h1>Handling Errors<a class="headerlink" href="#handling-errors" title="Permalink to this heading"></a></h1>
+<span id="id1"></span><h1>Handling Errors<a class="headerlink" href="#handling-errors" title="Link to this heading"></a></h1>
 <section id="overview">
-<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this heading"></a></h2>
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
 <p>Errors are a universal issue in large scale data processing.
 In single threaded applications it was common to follow the classic unix
 model of writing error messages to stderr.  Anyone processing large
@@ -197,7 +197,7 @@ a special class we tag with the descriptive, albeit perhaps overly cute,
 name of <code class="code docutils literal notranslate"><span class="pre">Undertaker</span></code>.</p>
 </section>
 <section id="exceptions-and-error-handlers">
-<h2>Exceptions and Error Handlers<a class="headerlink" href="#exceptions-and-error-handlers" title="Permalink to this heading"></a></h2>
+<h2>Exceptions and Error Handlers<a class="headerlink" href="#exceptions-and-error-handlers" title="Link to this heading"></a></h2>
 <p>Any book on programming in any language will address the issue of error handling.
 The reason, of course, is that most algorithms have limitations on
 what they receive as inputs or can evolve to a state that is untenable.
@@ -233,7 +233,7 @@ kill method described below.</p></li>
 </ol>
 </section>
 <section id="error-logger">
-<h2>Error Logger<a class="headerlink" href="#error-logger" title="Permalink to this heading"></a></h2>
+<h2>Error Logger<a class="headerlink" href="#error-logger" title="Link to this heading"></a></h2>
 <p>As discussed in the overview section above, handling errors in a parallel
 environment presents special problems.  A key issue is that the schedulers
 MsPASS supports (Spark and Dask) both will abort a job if any function
@@ -304,9 +304,9 @@ all save operators automatically write any error log entries to
 a special collection in MongoDB we call the <code class="code docutils literal notranslate"><span class="pre">elog</span></code> collection.</p>
 </section>
 <section id="kills">
-<h2>Kills<a class="headerlink" href="#kills" title="Permalink to this heading"></a></h2>
+<h2>Kills<a class="headerlink" href="#kills" title="Link to this heading"></a></h2>
 <section id="concepts">
-<h3>Concepts<a class="headerlink" href="#concepts" title="Permalink to this heading"></a></h3>
+<h3>Concepts<a class="headerlink" href="#concepts" title="Link to this heading"></a></h3>
 <p>The approach of marking a piece of seismic data bad/dead is familiar to
 anyone who has ever done seismic reflection processing.  All seismic
 processing systems have a set of trace editing functions to mark
@@ -366,7 +366,7 @@ class, which described in the next section was designed
 to handle such issues.</p>
 </section>
 <section id="database-handling-of-dead-data">
-<h3>Database handling of dead data<a class="headerlink" href="#database-handling-of-dead-data" title="Permalink to this heading"></a></h3>
+<h3>Database handling of dead data<a class="headerlink" href="#database-handling-of-dead-data" title="Link to this heading"></a></h3>
 <p>The standard way in MsPASS to preserve a record of killed data is
 implicit when the data are saved via the Database method
 <a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database.save_data" title="mspasspy.db.database.Database.save_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">save_data</span></code></a>.
@@ -434,7 +434,7 @@ handling dead data described in the next section immediately before
 the reduce operator is called.</p>
 </section>
 <section id="handling-dead-data-as-an-intermediate-step">
-<h3>Handling Dead Data as an Intermediate Step<a class="headerlink" href="#handling-dead-data-as-an-intermediate-step" title="Permalink to this heading"></a></h3>
+<h3>Handling Dead Data as an Intermediate Step<a class="headerlink" href="#handling-dead-data-as-an-intermediate-step" title="Link to this heading"></a></h3>
 <p>If your workflow has edit procedures that kill a significant fraction
 of your dataset, you should consider using the MsPASS
 facility for handling dead data within a processing sequence.

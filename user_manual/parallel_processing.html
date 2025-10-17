@@ -1,7 +1,7 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en">
+<html class="writer-html5" lang="en" data-content_root="../">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
@@ -14,9 +14,9 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=f6245a2f"></script>
-      <script src="../_static/doctools.js?v=888ff710"></script>
-      <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+      <script src="../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="../_static/copybutton.js?v=f281be69"></script>
     <script src="../_static/js/theme.js"></script>
@@ -171,9 +171,9 @@
            <div itemprop="articleBody">
              
   <section id="parallel-processing">
-<span id="id1"></span><h1>Parallel Processing<a class="headerlink" href="#parallel-processing" title="Permalink to this heading"></a></h1>
+<span id="id1"></span><h1>Parallel Processing<a class="headerlink" href="#parallel-processing" title="Link to this heading"></a></h1>
 <section id="introduction">
-<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this heading"></a></h2>
+<h2>Introduction<a class="headerlink" href="#introduction" title="Link to this heading"></a></h2>
 <p>One of the primary goals of MsPASS was a framework to make
 parallel processing of seismic data no more difficult than running
 a typical python script on a desktop machine.   In modern IT lingo
@@ -210,7 +210,7 @@ for functionality needed to add parallelism inside an individual python
 function.</p>
 </section>
 <section id="data-model">
-<h2>Data Model<a class="headerlink" href="#data-model" title="Permalink to this heading"></a></h2>
+<h2>Data Model<a class="headerlink" href="#data-model" title="Link to this heading"></a></h2>
 <p>A key concept to understand about both Spark and Dask is the data model.
 A simple way to view the concept is that we aim to break “our data”
 into a finite set of <em>N</em> things (objects) that are each to be handled
@@ -270,9 +270,9 @@ external storage and the processing framework (Dask or Spark) that use
 a common concept of a buffered list.</p>
 </section>
 <section id="functional-programming-concepts">
-<h2>Functional Programming Concepts<a class="headerlink" href="#functional-programming-concepts" title="Permalink to this heading"></a></h2>
+<h2>Functional Programming Concepts<a class="headerlink" href="#functional-programming-concepts" title="Link to this heading"></a></h2>
 <section id="overview">
-<h3>Overview<a class="headerlink" href="#overview" title="Permalink to this heading"></a></h3>
+<h3>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h3>
 <p>A second key concept we utilize for processing algorithms in MsPASS is the
 abstraction of
 <a class="reference external" href="https://en.wikipedia.org/wiki/Functional_programming">functional programming</a>,
@@ -302,7 +302,7 @@ as illustrated below:</p>
 <p>We expand on each of these constructs below.</p>
 </section>
 <section id="the-map-operator">
-<h3>The map operator<a class="headerlink" href="#the-map-operator" title="Permalink to this heading"></a></h3>
+<h3>The map operator<a class="headerlink" href="#the-map-operator" title="Link to this heading"></a></h3>
 <p>A <em>map</em> operator takes one input and emits a modified version of
 the input as output.  The inputs and outputs of a map are often the same type (e.g. a time-invariant filter),
 but not always (e.g the <em>bundle</em> algorithm takes a TimeSeriesEnsemble as
@@ -358,7 +358,7 @@ for disaggregating the container, but most MsPASS workflows would normally
 terminate with a database save operation.</p>
 </section>
 <section id="reduce-fold-operators">
-<h3>Reduce/fold operators<a class="headerlink" href="#reduce-fold-operators" title="Permalink to this heading"></a></h3>
+<h3>Reduce/fold operators<a class="headerlink" href="#reduce-fold-operators" title="Link to this heading"></a></h3>
 <p>A second parallel construct we use is the the <cite>Reduce</cite> clause of the <cite>MapReduce</cite>
 paradigm that was a core idea in Hadoop
 (see for example the document in <a class="reference external" href="https://www.talend.com/resources/what-is-mapreduce/">this link</a> )
@@ -428,7 +428,7 @@ summation loop into a reduce operator can parallelize the loop.  Users
 should consider that approach in writing pure python algorithms.</p>
 </section>
 <section id="schedulers">
-<h3>Schedulers<a class="headerlink" href="#schedulers" title="Permalink to this heading"></a></h3>
+<h3>Schedulers<a class="headerlink" href="#schedulers" title="Link to this heading"></a></h3>
 <p>As noted previously MsPASS currently supports two different schedulers:
 Dask (the default) and Spark.   Both do very similar things but are known
 to perform differently in different cluster environments.  Users needing to
@@ -472,9 +472,9 @@ starting point.</p>
 </section>
 </section>
 <section id="examples">
-<h2>Examples:<a class="headerlink" href="#examples" title="Permalink to this heading"></a></h2>
+<h2>Examples:<a class="headerlink" href="#examples" title="Link to this heading"></a></h2>
 <section id="atomic-data-example">
-<h3>Atomic Data Example<a class="headerlink" href="#atomic-data-example" title="Permalink to this heading"></a></h3>
+<h3>Atomic Data Example<a class="headerlink" href="#atomic-data-example" title="Link to this heading"></a></h3>
 <p>The simplest workflow is one that works only with atomic
 data (i.e. TimeSeries or Seismogram objects).  The example
 example in the Data Model section above is of this type.
@@ -497,7 +497,7 @@ using the data start time, and then saves the results.</p>
 </div>
 </section>
 <section id="ensemble-example">
-<h3>Ensemble Example<a class="headerlink" href="#ensemble-example" title="Permalink to this heading"></a></h3>
+<h3>Ensemble Example<a class="headerlink" href="#ensemble-example" title="Link to this heading"></a></h3>
 <p>This example needs to use function to build a query, put the query
 in a map call, and then run an ensemble process.
 Here is an untested prototype for this manual</p>
@@ -524,10 +524,10 @@ Here is an untested prototype for this manual</p>
 </section>
 </section>
 <section id="new-organization-for-discussion">
-<h2>New Organization for discussion<a class="headerlink" href="#new-organization-for-discussion" title="Permalink to this heading"></a></h2>
+<h2>New Organization for discussion<a class="headerlink" href="#new-organization-for-discussion" title="Link to this heading"></a></h2>
 </section>
 <section id="cluster-fundamentals">
-<h2>Cluster fundamentals<a class="headerlink" href="#cluster-fundamentals" title="Permalink to this heading"></a></h2>
+<h2>Cluster fundamentals<a class="headerlink" href="#cluster-fundamentals" title="Link to this heading"></a></h2>
 <p>Overview of what one has to deal with to configure a parallel system
 in a distributed cluster versus a multicore workstation.   Here are things
 I can think of we need to discuss:</p>
@@ -540,7 +540,7 @@ I can think of we need to discuss:</p>
 </ul>
 </section>
 <section id="configuration">
-<h2>Configuration<a class="headerlink" href="#configuration" title="Permalink to this heading"></a></h2>
+<h2>Configuration<a class="headerlink" href="#configuration" title="Link to this heading"></a></h2>
 <p>subsections for each of the above topics centered on example.</p>
 <p>I think we should reorganize the script to have related
 setups grouped by the categories we choose for this
@@ -548,12 +548,12 @@ user manual section (as much as possible - there may
 be some order dependence)</p>
 </section>
 <section id="start-of-old-section">
-<h2>Start of old section<a class="headerlink" href="#start-of-old-section" title="Permalink to this heading"></a></h2>
+<h2>Start of old section<a class="headerlink" href="#start-of-old-section" title="Link to this heading"></a></h2>
 </section>
 <section id="id2">
-<h2>Configuration<a class="headerlink" href="#id2" title="Permalink to this heading"></a></h2>
+<h2>Configuration<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
 <section id="id3">
-<h3>Overview<a class="headerlink" href="#id3" title="Permalink to this heading"></a></h3>
+<h3>Overview<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
 <p>Some configuration will be needed to run MsPASS in a HPC system or
 a departmental cluster.   The reason is that the
 environment of an HPC cluster has numerous complications not found on a
@@ -579,7 +579,7 @@ MsPASS is processing data in a large HPC cluster like TACC.</p>
 are grouped by functional issues then list them (singularity, mongodb, and ?)</p>
 </section>
 <section id="workload-manager-setup">
-<h3>Workload Manager Setup<a class="headerlink" href="#workload-manager-setup" title="Permalink to this heading"></a></h3>
+<h3>Workload Manager Setup<a class="headerlink" href="#workload-manager-setup" title="Link to this heading"></a></h3>
 <p>It uses a workload manager software installed there called <code class="code docutils literal notranslate"><span class="pre">Slurm</span></code>
 and the associated command keyword <code class="code docutils literal notranslate"><span class="pre">SBATCH</span></code>.   If your
 system does not have Slurm there will be something similar

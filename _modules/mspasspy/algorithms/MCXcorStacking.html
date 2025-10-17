@@ -1,7 +1,7 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en">
+<html class="writer-html5" lang="en" data-content_root="../../../">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -13,9 +13,9 @@
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=f6245a2f"></script>
-      <script src="../../../_static/doctools.js?v=888ff710"></script>
-      <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
+      <script src="../../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="../../../_static/copybutton.js?v=f281be69"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -179,7 +179,9 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.algorithms.window</span><span class="w"> </span><span class="kn">import</span> <span class="n">WindowData</span><span class="p">,</span> <span class="n">WindowData_autopad</span>
 
 
-<div class="viewcode-block" id="extract_initial_beam_estimate"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.MCXcorStacking.extract_initial_beam_estimate">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">extract_initial_beam_estimate</span><span class="p">(</span>
+<div class="viewcode-block" id="extract_initial_beam_estimate">
+<a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.MCXcorStacking.extract_initial_beam_estimate">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">extract_initial_beam_estimate</span><span class="p">(</span>
     <span class="n">ensemble</span><span class="p">,</span>
     <span class="n">metric</span><span class="o">=</span><span class="s2">&quot;bandwidth&quot;</span><span class="p">,</span>
     <span class="n">subdoc_key</span><span class="o">=</span><span class="s2">&quot;Parrival&quot;</span><span class="p">,</span>
@@ -261,7 +263,10 @@
         <span class="k">return</span> <span class="n">TimeSeries</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="estimate_ensemble_bandwidth"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.MCXcorStacking.estimate_ensemble_bandwidth">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">estimate_ensemble_bandwidth</span><span class="p">(</span>
+
+<div class="viewcode-block" id="estimate_ensemble_bandwidth">
+<a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.MCXcorStacking.estimate_ensemble_bandwidth">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">estimate_ensemble_bandwidth</span><span class="p">(</span>
     <span class="n">ensemble</span><span class="p">,</span>
     <span class="n">snr_doc_key</span><span class="o">=</span><span class="s2">&quot;Parrival&quot;</span><span class="p">,</span>
 <span class="p">):</span>
@@ -315,6 +320,7 @@
         <span class="k">return</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span></div>
 
 
+
 <span class="k">def</span><span class="w"> </span><span class="nf">_compute_default_robust_window</span><span class="p">(</span>
     <span class="n">f_low</span><span class="p">,</span>
     <span class="n">ncycles</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
@@ -339,7 +345,9 @@
     <span class="k">return</span> <span class="n">TimeWindow</span><span class="p">(</span><span class="n">starttime</span><span class="p">,</span> <span class="n">endtime</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="MCXcorPrepP"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.MCXcorStacking.MCXcorPrepP">[docs]</a><span class="nd">@mspass_func_wrapper</span>
+<div class="viewcode-block" id="MCXcorPrepP">
+<a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.MCXcorStacking.MCXcorPrepP">[docs]</a>
+<span class="nd">@mspass_func_wrapper</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">MCXcorPrepP</span><span class="p">(</span>
     <span class="n">ensemble</span><span class="p">,</span>
     <span class="n">noise_window</span><span class="p">,</span>
@@ -714,7 +722,10 @@
     <span class="k">return</span> <span class="p">[</span><span class="n">enswork</span><span class="p">,</span> <span class="n">beam0</span><span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="dbxcor_weights"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.MCXcorStacking.dbxcor_weights">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">dbxcor_weights</span><span class="p">(</span><span class="n">ensemble</span><span class="p">,</span> <span class="n">stack</span><span class="p">,</span> <span class="n">residual_norm_floor</span><span class="o">=</span><span class="mf">0.1</span><span class="p">):</span>
+
+<div class="viewcode-block" id="dbxcor_weights">
+<a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.MCXcorStacking.dbxcor_weights">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">dbxcor_weights</span><span class="p">(</span><span class="n">ensemble</span><span class="p">,</span> <span class="n">stack</span><span class="p">,</span> <span class="n">residual_norm_floor</span><span class="o">=</span><span class="mf">0.1</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Computes the robust weights used originally in dbxcor for each</span>
 <span class="sd">    member of ensemble.   Result is returned in a parallel numpy</span>
@@ -810,7 +821,10 @@
     <span class="k">return</span> <span class="n">wts</span></div>
 
 
-<div class="viewcode-block" id="regularize_ensemble"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.MCXcorStacking.regularize_ensemble">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">regularize_ensemble</span><span class="p">(</span>
+
+<div class="viewcode-block" id="regularize_ensemble">
+<a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.MCXcorStacking.regularize_ensemble">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">regularize_ensemble</span><span class="p">(</span>
     <span class="n">ensemble</span><span class="p">,</span> <span class="n">starttime</span><span class="p">,</span> <span class="n">endtime</span><span class="p">,</span> <span class="n">pad_fraction_cutoff</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeSeriesEnsemble</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -852,7 +866,10 @@
     <span class="k">return</span> <span class="n">ensout</span></div>
 
 
-<div class="viewcode-block" id="robust_stack"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.MCXcorStacking.robust_stack">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">robust_stack</span><span class="p">(</span>
+
+<div class="viewcode-block" id="robust_stack">
+<a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.MCXcorStacking.robust_stack">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">robust_stack</span><span class="p">(</span>
     <span class="n">ensemble</span><span class="p">,</span>
     <span class="n">method</span><span class="o">=</span><span class="s2">&quot;dbxcor&quot;</span><span class="p">,</span>
     <span class="n">stack0</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -1083,6 +1100,7 @@
         <span class="p">)</span></div>
 
 
+
 <span class="k">def</span><span class="w"> </span><span class="nf">_dbxcor_stacker</span><span class="p">(</span>
     <span class="n">ensemble</span><span class="p">,</span>
     <span class="n">stack0</span><span class="p">,</span>
@@ -1152,7 +1170,9 @@
     <span class="k">return</span> <span class="p">[</span><span class="n">stack</span><span class="p">,</span> <span class="n">wts</span><span class="p">]</span>
 
 
-<div class="viewcode-block" id="beam_align"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.MCXcorStacking.beam_align">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">beam_align</span><span class="p">(</span><span class="n">ensemble</span><span class="p">,</span> <span class="n">beam</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">time_shift_limit</span><span class="o">=</span><span class="mf">10.0</span><span class="p">):</span>
+<div class="viewcode-block" id="beam_align">
+<a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.MCXcorStacking.beam_align">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">beam_align</span><span class="p">(</span><span class="n">ensemble</span><span class="p">,</span> <span class="n">beam</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">time_shift_limit</span><span class="o">=</span><span class="mf">10.0</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Aligns ensemble members using signal defined by beam (arg1) argument.</span>
 
@@ -1237,7 +1257,10 @@
     <span class="k">return</span> <span class="n">ensemble</span></div>
 
 
-<div class="viewcode-block" id="align_and_stack"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.MCXcorStacking.align_and_stack">[docs]</a><span class="nd">@mspass_func_wrapper</span>
+
+<div class="viewcode-block" id="align_and_stack">
+<a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.MCXcorStacking.align_and_stack">[docs]</a>
+<span class="nd">@mspass_func_wrapper</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">align_and_stack</span><span class="p">(</span>
     <span class="n">ensemble</span><span class="p">,</span>
     <span class="n">beam</span><span class="p">,</span>
@@ -1825,8 +1848,11 @@
     <span class="k">return</span> <span class="p">[</span><span class="n">ensemble</span><span class="p">,</span> <span class="n">output_stack</span><span class="p">]</span></div>
 
 
+
 <span class="c1"># these are intended to use only on the output from align_and stack</span>
-<div class="viewcode-block" id="beam_correlation"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.MCXcorStacking.beam_correlation">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">beam_correlation</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">beam</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">aligned</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<div class="viewcode-block" id="beam_correlation">
+<a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.MCXcorStacking.beam_correlation">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">beam_correlation</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">beam</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">aligned</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Computes normalized peak cross-correlation value a datum with an array stack.</span>
 
@@ -1874,7 +1900,10 @@
     <span class="k">return</span> <span class="nb">abs</span><span class="p">(</span><span class="n">xcor_0</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="beam_coherence"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.MCXcorStacking.beam_coherence">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">beam_coherence</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">beam</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+
+<div class="viewcode-block" id="beam_coherence">
+<a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.MCXcorStacking.beam_coherence">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">beam_coherence</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">beam</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute time-domain coherence of a datum relative to the stack.</span>
 
@@ -1928,7 +1957,10 @@
     <span class="k">return</span> <span class="n">coh</span></div>
 
 
-<div class="viewcode-block" id="amplitude_relative_to_beam"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.MCXcorStacking.amplitude_relative_to_beam">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">amplitude_relative_to_beam</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">beam</span><span class="p">,</span> <span class="n">normalize_beam</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="amplitude_relative_to_beam">
+<a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.MCXcorStacking.amplitude_relative_to_beam">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">amplitude_relative_to_beam</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">beam</span><span class="p">,</span> <span class="n">normalize_beam</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute and return amplitude relative to the stack (beam).</span>
 
@@ -1974,7 +2006,10 @@
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">d1</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">N</span><span class="p">],</span> <span class="n">d2</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">N</span><span class="p">])</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">N</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="phase_time"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.MCXcorStacking.phase_time">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">phase_time</span><span class="p">(</span>
+
+<div class="viewcode-block" id="phase_time">
+<a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.MCXcorStacking.phase_time">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">phase_time</span><span class="p">(</span>
     <span class="n">d</span><span class="p">,</span> <span class="n">phase_time_key</span><span class="o">=</span><span class="s2">&quot;Ptime&quot;</span><span class="p">,</span> <span class="n">time_shift_key</span><span class="o">=</span><span class="s2">&quot;arrival_time_correction&quot;</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1998,7 +2033,10 @@
         <span class="k">return</span> <span class="o">-</span><span class="mf">1.0</span></div>
 
 
-<div class="viewcode-block" id="post_MCXcor_metrics"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.MCXcorStacking.post_MCXcor_metrics">[docs]</a><span class="nd">@mspass_func_wrapper</span>
+
+<div class="viewcode-block" id="post_MCXcor_metrics">
+<a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.MCXcorStacking.post_MCXcor_metrics">[docs]</a>
+<span class="nd">@mspass_func_wrapper</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">post_MCXcor_metrics</span><span class="p">(</span>
     <span class="n">d</span><span class="p">,</span>
     <span class="n">beam</span><span class="p">,</span>
@@ -2091,7 +2129,10 @@
     <span class="k">return</span> <span class="n">d</span></div>
 
 
-<div class="viewcode-block" id="demean_residuals"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.MCXcorStacking.demean_residuals">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">demean_residuals</span><span class="p">(</span>
+
+<div class="viewcode-block" id="demean_residuals">
+<a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.MCXcorStacking.demean_residuals">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">demean_residuals</span><span class="p">(</span>
     <span class="n">ensemble</span><span class="p">,</span>
     <span class="n">measured_time_key</span><span class="o">=</span><span class="s2">&quot;Ptime_xcor&quot;</span><span class="p">,</span>
     <span class="n">model_time_key</span><span class="o">=</span><span class="s2">&quot;Ptime&quot;</span><span class="p">,</span>
@@ -2245,7 +2286,10 @@
     <span class="k">return</span> <span class="n">ensemble</span></div>
 
 
-<div class="viewcode-block" id="remove_incident_wavefield"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.MCXcorStacking.remove_incident_wavefield">[docs]</a><span class="nd">@mspass_func_wrapper</span>
+
+<div class="viewcode-block" id="remove_incident_wavefield">
+<a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.MCXcorStacking.remove_incident_wavefield">[docs]</a>
+<span class="nd">@mspass_func_wrapper</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">remove_incident_wavefield</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">beam</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">handles_ensembles</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Remove incident wavefield for teleseismic P wave data using a beam estimate.</span>
@@ -2309,6 +2353,7 @@
     <span class="n">x</span> <span class="o">*=</span> <span class="n">amp</span>
     <span class="n">d</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">ied</span><span class="p">:</span><span class="n">ieb</span><span class="p">]</span> <span class="o">-=</span> <span class="n">x</span>
     <span class="k">return</span> <span class="n">d</span></div>
+
 
 
 <span class="c1"># private functions - should be used only internally.  Use with care if imported</span>

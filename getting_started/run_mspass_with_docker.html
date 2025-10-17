@@ -1,7 +1,7 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en">
+<html class="writer-html5" lang="en" data-content_root="../">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
@@ -14,9 +14,9 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=f6245a2f"></script>
-      <script src="../_static/doctools.js?v=888ff710"></script>
-      <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+      <script src="../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="../_static/copybutton.js?v=f281be69"></script>
     <script src="../_static/js/theme.js"></script>
@@ -144,9 +144,9 @@
            <div itemprop="articleBody">
              
   <section id="run-mspass-with-docker">
-<span id="id1"></span><h1>Run MsPASS with Docker<a class="headerlink" href="#run-mspass-with-docker" title="Permalink to this heading"></a></h1>
+<span id="id1"></span><h1>Run MsPASS with Docker<a class="headerlink" href="#run-mspass-with-docker" title="Link to this heading"></a></h1>
 <section id="prerequisites">
-<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this heading"></a></h2>
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Link to this heading"></a></h2>
 <p>Docker is required in normal use to run MsPASS on desktop systems.
 The alternative is a more complicated installation of the components
 built from source as described on
@@ -163,7 +163,7 @@ docker.  For Windows or Apple user’s it may be convenient to launch the
 “docker desktop” as an alternative to command line tools.</p>
 </section>
 <section id="download-mspass-container">
-<h2>Download MsPASS Container<a class="headerlink" href="#download-mspass-container" title="Permalink to this heading"></a></h2>
+<h2>Download MsPASS Container<a class="headerlink" href="#download-mspass-container" title="Link to this heading"></a></h2>
 <p>The MsPASS container image is built and hosted on <a class="reference external" href="https://hub.docker.com/r/mspass/mspass">Docker Hub</a>.
 It is also available in the <a class="reference external" href="https://github.com/mspass-team/mspass/pkgs/container/mspass">GitHub Container Registry</a>.
 Once you have docker setup properly, use the following command in a terminal
@@ -190,7 +190,7 @@ In the discussion below files names we reference that reside inside a container 
 File names on the physical system will be referred to with a normal font text.</p>
 </section>
 <section id="run-mspass-container-in-all-in-one-mode">
-<h2>Run MsPASS Container in All-in-one Mode<a class="headerlink" href="#run-mspass-container-in-all-in-one-mode" title="Permalink to this heading"></a></h2>
+<h2>Run MsPASS Container in All-in-one Mode<a class="headerlink" href="#run-mspass-container-in-all-in-one-mode" title="Link to this heading"></a></h2>
 <p>Most MsPASS processing on a desktop begins by running a variant of the
 following on the command line:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">run</span> <span class="o">-</span><span class="n">p</span> <span class="mi">8888</span><span class="p">:</span><span class="mi">8888</span> <span class="o">--</span><span class="n">mount</span> <span class="n">src</span><span class="o">=/</span><span class="n">Users</span><span class="o">/</span><span class="n">myusername</span><span class="o">/</span><span class="n">myproject</span><span class="p">,</span><span class="n">target</span><span class="o">=/</span><span class="n">home</span><span class="p">,</span><span class="nb">type</span><span class="o">=</span><span class="n">bind</span> <span class="n">mspass</span><span class="o">/</span><span class="n">mspass</span>

@@ -1,7 +1,7 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en">
+<html class="writer-html5" lang="en" data-content_root="../">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
@@ -14,9 +14,9 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=f6245a2f"></script>
-      <script src="../_static/doctools.js?v=888ff710"></script>
-      <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+      <script src="../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="../_static/copybutton.js?v=f281be69"></script>
       <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -171,12 +171,12 @@
            <div itemprop="articleBody">
              
   <section id="parallel-io-in-mspass">
-<span id="parallel-io"></span><h1>Parallel IO in MsPASS<a class="headerlink" href="#parallel-io-in-mspass" title="Permalink to this heading"></a></h1>
+<span id="parallel-io"></span><h1>Parallel IO in MsPASS<a class="headerlink" href="#parallel-io-in-mspass" title="Link to this heading"></a></h1>
 <section id="gary-l-pavlis">
-<h2><em>Gary L. Pavlis</em><a class="headerlink" href="#gary-l-pavlis" title="Permalink to this heading"></a></h2>
+<h2><em>Gary L. Pavlis</em><a class="headerlink" href="#gary-l-pavlis" title="Link to this heading"></a></h2>
 </section>
 <section id="what-is-parallel-io-and-why-is-it-needed">
-<h2>What is parallel IO and why is it needed?<a class="headerlink" href="#what-is-parallel-io-and-why-is-it-needed" title="Permalink to this heading"></a></h2>
+<h2>What is parallel IO and why is it needed?<a class="headerlink" href="#what-is-parallel-io-and-why-is-it-needed" title="Link to this heading"></a></h2>
 <p>There is an old adage in higher performance computing that a supercomputer
 is a machine that turns CPU-bound jobs into IO-bound jobs.   Any user of
 MsPASS who runs the framework on a sufficiently large number of nodes will
@@ -306,9 +306,9 @@ the reader and writer descriptions below for atomic (TimeSeries
 and Seismogram data) and ensemble (TimeSeriesEnsemble and SeismogramEnsemble data).</p>
 </section>
 <section id="read-distributed-data-mspass-parallel-reader">
-<h2>read_distributed_data - MsPASS parallel reader<a class="headerlink" href="#read-distributed-data-mspass-parallel-reader" title="Permalink to this heading"></a></h2>
+<h2>read_distributed_data - MsPASS parallel reader<a class="headerlink" href="#read-distributed-data-mspass-parallel-reader" title="Link to this heading"></a></h2>
 <section id="overview">
-<h3>Overview<a class="headerlink" href="#overview" title="Permalink to this heading"></a></h3>
+<h3>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h3>
 <p>The <a class="reference external" href="https://www.mspass.org/python_api/mspasspy.io.html#mspasspy.io.distributed.read_distributed_data">docstring</a>
 for this function is an important sidebar to this section.   As usual it gives
 details about usage, but also discusses a bit of an oddity of this function
@@ -331,7 +331,7 @@ ensembles.  I describe how that works in the two sections below on atomic and
 ensemble data.</p>
 </section>
 <section id="atomic-data">
-<h3>Atomic data<a class="headerlink" href="#atomic-data" title="Permalink to this heading"></a></h3>
+<h3>Atomic data<a class="headerlink" href="#atomic-data" title="Link to this heading"></a></h3>
 <p>A bag/RDD of atomic data can be constructed by <cite>read_distributed_data</cite>
 from one of two possible inputs:  (1) MongoDB documents retrieved through
 a <a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.database.Database</span></code></a> handle driven by an optional
@@ -399,7 +399,7 @@ attribute with the key <cite>is_abortion</cite> set True.  The name is
 appropriate since objects that fail on constructor a “unborn”.</p>
 </section>
 <section id="ensemble-data">
-<h3>Ensemble data<a class="headerlink" href="#ensemble-data" title="Permalink to this heading"></a></h3>
+<h3>Ensemble data<a class="headerlink" href="#ensemble-data" title="Link to this heading"></a></h3>
 <p>Building a bag/RDD of ensembles is a very different problem than building
 a bag/RDD of atomic objects.   The reason is that ensembles are more-or-less
 grouped bundles of atomic data.   In earlier versions of MsPASS we
@@ -464,9 +464,9 @@ See the docstring of <a class="reference internal" href="../python_api/mspasspy.
 </section>
 </section>
 <section id="write-distributed-data-mspass-parallel-writer">
-<h2>write_distributed_data - MsPASS parallel writer<a class="headerlink" href="#write-distributed-data-mspass-parallel-writer" title="Permalink to this heading"></a></h2>
+<h2>write_distributed_data - MsPASS parallel writer<a class="headerlink" href="#write-distributed-data-mspass-parallel-writer" title="Link to this heading"></a></h2>
 <section id="id1">
-<h3>Overview<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h3>
+<h3>Overview<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
 <p>Parallel writes present a different problem from reading.
 The simplest, but not fastest, approach to writing data is to use the
 <cite>save_data</cite> method of <a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.database.Database</span></code></a> in a loop.
@@ -550,7 +550,7 @@ sample data will be written.   Below I describe how to set these two
 attributes in each datum of a parallel dataset.</p>
 </section>
 <section id="id2">
-<h3>Atomic data<a class="headerlink" href="#id2" title="Permalink to this heading"></a></h3>
+<h3>Atomic data<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
 <p>Atomic data are handled in three stages by <cite>write_distributed_data</cite>.
 These three stages are a pipeline with a bag/RDD entering the top of the
 pipeline and a list of ObjectIds flowing out the bottom.</p>
@@ -586,7 +586,7 @@ in the above that can produce large variances in the performance of a write oper
 with <cite>write_distributed_data</cite>.</p>
 </section>
 <section id="ensembles">
-<h3>Ensembles<a class="headerlink" href="#ensembles" title="Permalink to this heading"></a></h3>
+<h3>Ensembles<a class="headerlink" href="#ensembles" title="Link to this heading"></a></h3>
 <p>Ensembles, in many respects, are simpler to deal with than atomic data.
 The grouping that is implicit in the concept of what defines
 an ensemble may, if properly exploited, add a level of
@@ -643,7 +643,7 @@ in the data set.</p></li>
 </ol>
 </section>
 <section id="handling-storage-mode-file">
-<h3>Handling storage_mode==”file”<a class="headerlink" href="#handling-storage-mode-file" title="Permalink to this heading"></a></h3>
+<h3>Handling storage_mode==”file”<a class="headerlink" href="#handling-storage-mode-file" title="Link to this heading"></a></h3>
 <p>There are major complication in handling any data where the output is
 to be stored as a set of files. There are two technical issues
 users may need to consider if tuning performance is essential:</p>
@@ -758,9 +758,9 @@ one file name per datum.</p>
 </section>
 </section>
 <section id="examples">
-<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading"></a></h2>
+<h2>Examples<a class="headerlink" href="#examples" title="Link to this heading"></a></h2>
 <section id="example-1-default-read-write">
-<h3>Example 1:  Default read/write<a class="headerlink" href="#example-1-default-read-write" title="Permalink to this heading"></a></h3>
+<h3>Example 1:  Default read/write<a class="headerlink" href="#example-1-default-read-write" title="Link to this heading"></a></h3>
 <p>This example illustrates the simplest example for initiating a workflow
 with <cite>read_distributed_data</cite> and terminating it with <cite>write_distributed_data</cite>.
 It also illustrates a couple of useful generic tests to verify
@@ -792,7 +792,7 @@ but with a <cite>data_tag</cite> used to separate data being written from the
 input indexed in the same collection.</p>
 </section>
 <section id="example-2-atomic-writes-to-file-storage">
-<h3>Example 2:  atomic writes to file storage<a class="headerlink" href="#example-2-atomic-writes-to-file-storage" title="Permalink to this heading"></a></h3>
+<h3>Example 2:  atomic writes to file storage<a class="headerlink" href="#example-2-atomic-writes-to-file-storage" title="Link to this heading"></a></h3>
 <p>This example is a minor variant of the example in the section discussing
 how <cite>dir</cite> and <cite>dfile</cite> are used with file IO above.  There are three differences:</p>
 <ol class="arabic simple">
@@ -877,7 +877,7 @@ see in this example.</p></li>
 </div>
 </section>
 <section id="example-3-parallel-read-write-of-ensembles">
-<h3>Example 3:   Parallel read/write of ensembles<a class="headerlink" href="#example-3-parallel-read-write-of-ensembles" title="Permalink to this heading"></a></h3>
+<h3>Example 3:   Parallel read/write of ensembles<a class="headerlink" href="#example-3-parallel-read-write-of-ensembles" title="Link to this heading"></a></h3>
 <p>This example illustrates some special considerations needed to handle
 ensembles.  Features this illustrate are:</p>
 <ol class="arabic simple">
@@ -992,7 +992,7 @@ the same file defined by the ensemble <cite>dir</cite> and <cite>dfile</cite>.</
 </div>
 </section>
 <section id="example-4-intermediate-processing-result-save">
-<h3>Example 4: Intermediate processing result save<a class="headerlink" href="#example-4-intermediate-processing-result-save" title="Permalink to this heading"></a></h3>
+<h3>Example 4: Intermediate processing result save<a class="headerlink" href="#example-4-intermediate-processing-result-save" title="Link to this heading"></a></h3>
 <p>It is sometimes necessary, particularly in a research context,
 to have a workflow save an intermediate result.   In the context of
 a parallel workflow, that means one needs to do a save

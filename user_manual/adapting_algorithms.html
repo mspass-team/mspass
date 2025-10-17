@@ -1,7 +1,7 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en">
+<html class="writer-html5" lang="en" data-content_root="../">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
@@ -14,9 +14,9 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=f6245a2f"></script>
-      <script src="../_static/doctools.js?v=888ff710"></script>
-      <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+      <script src="../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="../_static/copybutton.js?v=f281be69"></script>
     <script src="../_static/js/theme.js"></script>
@@ -157,9 +157,9 @@
            <div itemprop="articleBody">
              
   <section id="adapting-an-existing-algorithm-to-mspass">
-<span id="adapting-algorithms"></span><h1>Adapting an Existing Algorithm to MsPASS<a class="headerlink" href="#adapting-an-existing-algorithm-to-mspass" title="Permalink to this heading"></a></h1>
+<span id="adapting-algorithms"></span><h1>Adapting an Existing Algorithm to MsPASS<a class="headerlink" href="#adapting-an-existing-algorithm-to-mspass" title="Link to this heading"></a></h1>
 <section id="purpose">
-<h2>Purpose<a class="headerlink" href="#purpose" title="Permalink to this heading"></a></h2>
+<h2>Purpose<a class="headerlink" href="#purpose" title="Link to this heading"></a></h2>
 <p>The purpose of this document is to describe how an existing algorithm written
 in C/C++ or python can be adapted to the MsPASS framework.  The ideas should
 also readily be adapted to Fortran algorithms as well, but the authors have
@@ -176,9 +176,9 @@ with the framework.  The remainder of the document centers on a set of examples
 of increasing complexity.</p>
 </section>
 <section id="what-you-will-need-to-implement">
-<h2>What you will need to implement<a class="headerlink" href="#what-you-will-need-to-implement" title="Permalink to this heading"></a></h2>
+<h2>What you will need to implement<a class="headerlink" href="#what-you-will-need-to-implement" title="Link to this heading"></a></h2>
 <section id="required">
-<h3>Required<a class="headerlink" href="#required" title="Permalink to this heading"></a></h3>
+<h3>Required<a class="headerlink" href="#required" title="Link to this heading"></a></h3>
 <p>The following must be satisfied by an implementation to mesh with the MsPASS
 framework.</p>
 <ul class="simple">
@@ -207,7 +207,7 @@ satisfied.</p></li>
 </ul>
 </section>
 <section id="optional-but-recommended">
-<h3>Optional but recommended<a class="headerlink" href="#optional-but-recommended" title="Permalink to this heading"></a></h3>
+<h3>Optional but recommended<a class="headerlink" href="#optional-but-recommended" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p>MsPASS has a global level and object level history mechanism an algorithm
 should implement to be fully integrated in the framework.  The history mechanisms were
@@ -239,7 +239,7 @@ otherwise.</p></li>
 </section>
 </section>
 <section id="example-1-simple-function-time-windowing-function">
-<h2>Example 1:  Simple function - Time Windowing Function<a class="headerlink" href="#example-1-simple-function-time-windowing-function" title="Permalink to this heading"></a></h2>
+<h2>Example 1:  Simple function - Time Windowing Function<a class="headerlink" href="#example-1-simple-function-time-windowing-function" title="Link to this heading"></a></h2>
 <p>This example illustrates how we adapted an existing C++ algorithm to the
 MsPASS framework.   The objective was to produce a standard processing
 function to cut smaller time windows of data from a longer (in time)
@@ -345,10 +345,10 @@ wrapped the functions with a name containing a leading underscore.)</p></li>
 </ol>
 </section>
 <section id="example-2-pure-python-function">
-<h2>Example 2:  Pure Python Function<a class="headerlink" href="#example-2-pure-python-function" title="Permalink to this heading"></a></h2>
+<h2>Example 2:  Pure Python Function<a class="headerlink" href="#example-2-pure-python-function" title="Link to this heading"></a></h2>
 </section>
 <section id="example-3-more-complicated-mixed-c-and-python-example-scale-function">
-<h2>Example 3:  More complicated mixed C++ and python example - scale function<a class="headerlink" href="#example-3-more-complicated-mixed-c-and-python-example-scale-function" title="Permalink to this heading"></a></h2>
+<h2>Example 3:  More complicated mixed C++ and python example - scale function<a class="headerlink" href="#example-3-more-complicated-mixed-c-and-python-example-scale-function" title="Link to this heading"></a></h2>
 </section>
 </section>
 

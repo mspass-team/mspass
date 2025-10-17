@@ -1,7 +1,7 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en">
+<html class="writer-html5" lang="en" data-content_root="../../../../">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -13,9 +13,9 @@
   
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js?v=f6245a2f"></script>
-      <script src="../../../../_static/doctools.js?v=888ff710"></script>
-      <script src="../../../../_static/sphinx_highlight.js?v=4825356b"></script>
+      <script src="../../../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="../../../../_static/copybutton.js?v=f281be69"></script>
     <script src="../../../../_static/js/theme.js"></script>
@@ -159,7 +159,9 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.util.converter</span><span class="w"> </span><span class="kn">import</span> <span class="n">Trace2TimeSeries</span>
 
 
-<div class="viewcode-block" id="obspy_mseed_file_indexer"><a class="viewcode-back" href="../../../../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.seed.ensembles.obspy_mseed_file_indexer">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">obspy_mseed_file_indexer</span><span class="p">(</span><span class="n">file</span><span class="p">):</span>
+<div class="viewcode-block" id="obspy_mseed_file_indexer">
+<a class="viewcode-back" href="../../../../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.seed.ensembles.obspy_mseed_file_indexer">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">obspy_mseed_file_indexer</span><span class="p">(</span><span class="n">file</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Use obspy&#39;s miniseed reader to eat up a (potentially large) file and</span>
 <span class="sd">    build an index as a table (returned) of data that can be written to</span>
@@ -240,7 +242,10 @@
         <span class="nb">print</span><span class="p">(</span><span class="n">err</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="dbsave_raw_index"><a class="viewcode-back" href="../../../../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.seed.ensembles.dbsave_raw_index">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">dbsave_raw_index</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">pdframe</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;import_miniseed_ensemble&quot;</span><span class="p">):</span>
+
+<div class="viewcode-block" id="dbsave_raw_index">
+<a class="viewcode-back" href="../../../../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.seed.ensembles.dbsave_raw_index">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">dbsave_raw_index</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">pdframe</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;import_miniseed_ensemble&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Database save to db for a panda data frame pdframe.</span>
 <span class="sd">    This crude version collection name is frozen as import_miniseed_ensemble.  db is</span>
@@ -258,7 +263,10 @@
     <span class="n">col</span><span class="o">.</span><span class="n">insert_many</span><span class="p">(</span><span class="n">dtmp</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="dbsave_seed_ensemble_file"><a class="viewcode-back" href="../../../../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.seed.ensembles.dbsave_seed_ensemble_file">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">dbsave_seed_ensemble_file</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">file</span><span class="p">,</span> <span class="n">gather_type</span><span class="o">=</span><span class="s2">&quot;event&quot;</span><span class="p">,</span> <span class="n">keys</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="dbsave_seed_ensemble_file">
+<a class="viewcode-back" href="../../../../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.seed.ensembles.dbsave_seed_ensemble_file">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">dbsave_seed_ensemble_file</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">file</span><span class="p">,</span> <span class="n">gather_type</span><span class="o">=</span><span class="s2">&quot;event&quot;</span><span class="p">,</span> <span class="n">keys</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Indexer for SEED files that are already assembled in a</span>
 <span class="sd">    &quot;gather&quot; meaning the data have some relation through one or more</span>
@@ -376,6 +384,7 @@
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;something threw an exception - this needs detailed handlers&quot;</span><span class="p">)</span></div>
 
 
+
 <span class="k">def</span><span class="w"> </span><span class="nf">_load_md</span><span class="p">(</span><span class="n">rec</span><span class="p">,</span> <span class="n">keys</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Helper for load ensemble.   Extracts metadata defined by keys list and</span>
@@ -389,7 +398,9 @@
     <span class="k">return</span> <span class="n">md</span>
 
 
-<div class="viewcode-block" id="load_one_ensemble"><a class="viewcode-back" href="../../../../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.seed.ensembles.load_one_ensemble">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">load_one_ensemble</span><span class="p">(</span>
+<div class="viewcode-block" id="load_one_ensemble">
+<a class="viewcode-back" href="../../../../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.seed.ensembles.load_one_ensemble">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">load_one_ensemble</span><span class="p">(</span>
     <span class="n">doc</span><span class="p">,</span>
     <span class="n">create_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">jobname</span><span class="o">=</span><span class="s2">&quot;Default job&quot;</span><span class="p">,</span>
@@ -479,7 +490,10 @@
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;something threw an exception - needs more complete error handlers&quot;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="link_source_collection"><a class="viewcode-back" href="../../../../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.seed.ensembles.link_source_collection">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">link_source_collection</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span> <span class="n">prefer_evid</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+<div class="viewcode-block" id="link_source_collection">
+<a class="viewcode-back" href="../../../../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.seed.ensembles.link_source_collection">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">link_source_collection</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span> <span class="n">prefer_evid</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This prototype function uses a not at all generic method to link data</span>
 <span class="sd">    indexed in a import_miniseed_ensemble collection to source data assumed stored</span>
@@ -596,7 +610,10 @@
         <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">err</span></div>
 
 
-<div class="viewcode-block" id="load_source_data_by_id"><a class="viewcode-back" href="../../../../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.seed.ensembles.load_source_data_by_id">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">load_source_data_by_id</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">):</span>
+
+<div class="viewcode-block" id="load_source_data_by_id">
+<a class="viewcode-back" href="../../../../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.seed.ensembles.load_source_data_by_id">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">load_source_data_by_id</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Prototype function to load source data to any MsPASS data object</span>
 <span class="sd">    based on the normalization key.  That keys is frozen in this version</span>
@@ -644,7 +661,10 @@
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;something threw an unexpected exception&quot;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="load_hypocenter_data_by_time"><a class="viewcode-back" href="../../../../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.seed.ensembles.load_hypocenter_data_by_time">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">load_hypocenter_data_by_time</span><span class="p">(</span>
+
+<div class="viewcode-block" id="load_hypocenter_data_by_time">
+<a class="viewcode-back" href="../../../../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.seed.ensembles.load_hypocenter_data_by_time">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">load_hypocenter_data_by_time</span><span class="p">(</span>
     <span class="n">db</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">ens</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">dbtime_key</span><span class="o">=</span><span class="s2">&quot;time&quot;</span><span class="p">,</span>
@@ -764,7 +784,10 @@
         <span class="k">raise</span> <span class="n">err</span></div>
 
 
-<div class="viewcode-block" id="load_site_data"><a class="viewcode-back" href="../../../../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.seed.ensembles.load_site_data">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">load_site_data</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">ens</span><span class="p">):</span>
+
+<div class="viewcode-block" id="load_site_data">
+<a class="viewcode-back" href="../../../../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.seed.ensembles.load_site_data">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">load_site_data</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">ens</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Loads site data into ens.  Similar to load_source_data but uses a diffrent</span>
 <span class="sd">    match:  net,sta, time matching startdate-&gt;enddate.   Mark members dead and</span>
@@ -814,7 +837,10 @@
         <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">err</span></div>
 
 
-<div class="viewcode-block" id="load_channel_data"><a class="viewcode-back" href="../../../../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.seed.ensembles.load_channel_data">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">load_channel_data</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">ens</span><span class="p">):</span>
+
+<div class="viewcode-block" id="load_channel_data">
+<a class="viewcode-back" href="../../../../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.seed.ensembles.load_channel_data">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">load_channel_data</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">ens</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Loads channel data into ens.  Similar to load_source_data but uses a diffrent</span>
 <span class="sd">    match:  net,sta,loc,time matching startdate-&gt;enddate.   Mark members dead and</span>
@@ -887,7 +913,10 @@
         <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">err</span></div>
 
 
-<div class="viewcode-block" id="load_arrivals_by_id"><a class="viewcode-back" href="../../../../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.seed.ensembles.load_arrivals_by_id">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">load_arrivals_by_id</span><span class="p">(</span>
+
+<div class="viewcode-block" id="load_arrivals_by_id">
+<a class="viewcode-back" href="../../../../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.seed.ensembles.load_arrivals_by_id">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">load_arrivals_by_id</span><span class="p">(</span>
     <span class="n">db</span><span class="p">,</span>
     <span class="n">tsens</span><span class="p">,</span>
     <span class="n">phase</span><span class="o">=</span><span class="s2">&quot;P&quot;</span><span class="p">,</span>
@@ -1036,7 +1065,10 @@
     <span class="k">return</span> <span class="n">nlive</span></div>
 
 
-<div class="viewcode-block" id="erase_seed_metadata"><a class="viewcode-back" href="../../../../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.seed.ensembles.erase_seed_metadata">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">erase_seed_metadata</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">keys</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;mseed&quot;</span><span class="p">,</span> <span class="s2">&quot;_format&quot;</span><span class="p">]):</span>
+
+<div class="viewcode-block" id="erase_seed_metadata">
+<a class="viewcode-back" href="../../../../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.seed.ensembles.erase_seed_metadata">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">erase_seed_metadata</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">keys</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;mseed&quot;</span><span class="p">,</span> <span class="s2">&quot;_format&quot;</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Erase a set of debris obspy&#39;s reader adds to stats array that get copied to data.  We</span>
 <span class="sd">    don&#39;t need that debris once data are converted to MsPASS data objects and stored in</span>
@@ -1051,6 +1083,7 @@
     <span class="k">for</span> <span class="n">mem</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">member</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
             <span class="n">mem</span><span class="o">.</span><span class="n">erase</span><span class="p">(</span><span class="n">k</span><span class="p">)</span></div>
+
 </pre></div>
 
            </div>

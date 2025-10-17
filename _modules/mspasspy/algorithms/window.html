@@ -1,7 +1,7 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en">
+<html class="writer-html5" lang="en" data-content_root="../../../">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -13,9 +13,9 @@
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=f6245a2f"></script>
-      <script src="../../../_static/doctools.js?v=888ff710"></script>
-      <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
+      <script src="../../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="../../../_static/copybutton.js?v=f281be69"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -174,7 +174,9 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.util.decorators</span><span class="w"> </span><span class="kn">import</span> <span class="n">mspass_func_wrapper</span><span class="p">,</span> <span class="n">mspass_method_wrapper</span>
 
 
-<div class="viewcode-block" id="ensemble_error_post"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.window.ensemble_error_post">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">ensemble_error_post</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">alg</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">severity</span><span class="p">):</span>
+<div class="viewcode-block" id="ensemble_error_post">
+<a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.window.ensemble_error_post">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">ensemble_error_post</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">alg</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">severity</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is a small helper function useful for error handlers in except</span>
 <span class="sd">    blocks for ensemble objects.  If a function is called on an ensemble</span>
@@ -203,6 +205,7 @@
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Not treated as fatal but a bug fix is needed&quot;</span><span class="p">)</span></div>
 
 
+
 <span class="k">def</span><span class="w"> </span><span class="nf">_post_amplitude</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">amp</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Internal small helper function for repeated tests of method - posts the</span>
@@ -219,7 +222,9 @@
         <span class="n">d</span><span class="p">[</span><span class="s2">&quot;amplitude&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">amp</span>
 
 
-<div class="viewcode-block" id="scale"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.window.scale">[docs]</a><span class="nd">@mspass_func_wrapper</span>
+<div class="viewcode-block" id="scale">
+<a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.window.scale">[docs]</a>
+<span class="nd">@mspass_func_wrapper</span>
 <span class="c1"># inplace_return was intentionally ommitted from thie arg list here because</span>
 <span class="c1"># False should always be enforced.  If the default changed that would</span>
 <span class="c1"># break this function.</span>
@@ -440,8 +445,11 @@
             <span class="n">ensemble_error_post</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span></div>
 
 
+
 <span class="c1"># not decorated for reasons given in docstring below</span>
-<div class="viewcode-block" id="WindowDataAtomic"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.window.WindowDataAtomic">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">WindowDataAtomic</span><span class="p">(</span>
+<div class="viewcode-block" id="WindowDataAtomic">
+<a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.window.WindowDataAtomic">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">WindowDataAtomic</span><span class="p">(</span>
     <span class="n">d</span><span class="p">,</span>
     <span class="n">win_start</span><span class="p">,</span>
     <span class="n">win_end</span><span class="p">,</span>
@@ -714,7 +722,10 @@
         <span class="k">return</span> <span class="n">d</span></div>
 
 
-<div class="viewcode-block" id="WindowData"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.window.WindowData">[docs]</a><span class="nd">@mspass_func_wrapper</span>
+
+<div class="viewcode-block" id="WindowData">
+<a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.window.WindowData">[docs]</a>
+<span class="nd">@mspass_func_wrapper</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">WindowData</span><span class="p">(</span>
     <span class="n">mspass_object</span><span class="p">,</span>
     <span class="n">win_start</span><span class="p">,</span>
@@ -981,7 +992,10 @@
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="WindowData_autopad"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.window.WindowData_autopad">[docs]</a><span class="nd">@mspass_func_wrapper</span>
+
+<div class="viewcode-block" id="WindowData_autopad">
+<a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.window.WindowData_autopad">[docs]</a>
+<span class="nd">@mspass_func_wrapper</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">WindowData_autopad</span><span class="p">(</span>
     <span class="n">d</span><span class="p">,</span>
     <span class="n">stime</span><span class="p">,</span>
@@ -1060,10 +1074,13 @@
     <span class="k">return</span> <span class="n">dw</span></div>
 
 
+
 <span class="c1"># TODO:   this function does not support history mechanism because the</span>
 <span class="c1"># standard decorator is does not support a bound std::vector&lt;TimeSeries&gt;</span>
 <span class="c1"># container.  I requires one of the four MsPASS data objects.</span>
-<div class="viewcode-block" id="merge"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.window.merge">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">merge</span><span class="p">(</span>
+<div class="viewcode-block" id="merge">
+<a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.window.merge">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">merge</span><span class="p">(</span>
     <span class="n">tsvector</span><span class="p">,</span>
     <span class="n">starttime</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">endtime</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -1295,6 +1312,7 @@
         <span class="k">return</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">spliced_data</span><span class="p">)</span></div>
 
 
+
 <span class="k">def</span><span class="w"> </span><span class="nf">_post_gap_data</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Private function used by merge immediately above.   Takes an input</span>
@@ -1316,7 +1334,9 @@
     <span class="k">return</span> <span class="n">d</span>
 
 
-<div class="viewcode-block" id="TopMute"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.window.TopMute">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">TopMute</span><span class="p">:</span>
+<div class="viewcode-block" id="TopMute">
+<a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.window.TopMute">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">TopMute</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A top mute is a form of taper applied to the &quot;front&quot; of a signal.</span>
 <span class="sd">    Front in standard jargon means that with the time axis running from</span>
@@ -1359,7 +1379,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">processor</span> <span class="o">=</span> <span class="n">_TopMute</span><span class="p">(</span><span class="n">t0</span><span class="p">,</span> <span class="n">t1</span><span class="p">,</span> <span class="nb">type</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">t0</span> <span class="o">=</span> <span class="n">t0</span>
 
-<div class="viewcode-block" id="TopMute.apply"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.window.TopMute.apply">[docs]</a>    <span class="nd">@mspass_method_wrapper</span>
+<div class="viewcode-block" id="TopMute.apply">
+<a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.window.TopMute.apply">[docs]</a>
+    <span class="nd">@mspass_method_wrapper</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">d</span><span class="p">,</span>
@@ -1401,7 +1423,9 @@
             <span class="n">d</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">processor</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">d</span></div></div>
+        <span class="k">return</span> <span class="n">d</span></div>
+</div>
+
 </pre></div>
 
            </div>

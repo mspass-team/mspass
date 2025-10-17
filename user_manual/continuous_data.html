@@ -1,7 +1,7 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en">
+<html class="writer-html5" lang="en" data-content_root="../">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
@@ -14,9 +14,9 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=f6245a2f"></script>
-      <script src="../_static/doctools.js?v=888ff710"></script>
-      <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+      <script src="../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="../_static/copybutton.js?v=f281be69"></script>
     <script src="../_static/js/theme.js"></script>
@@ -157,9 +157,9 @@
            <div itemprop="articleBody">
              
   <section id="continuous-data-handling-with-mspass">
-<span id="continuous-data"></span><h1>Continuous Data Handling with MsPASS<a class="headerlink" href="#continuous-data-handling-with-mspass" title="Permalink to this heading"></a></h1>
+<span id="continuous-data"></span><h1>Continuous Data Handling with MsPASS<a class="headerlink" href="#continuous-data-handling-with-mspass" title="Link to this heading"></a></h1>
 <section id="concepts">
-<h2>Concepts<a class="headerlink" href="#concepts" title="Permalink to this heading"></a></h2>
+<h2>Concepts<a class="headerlink" href="#concepts" title="Link to this heading"></a></h2>
 <p>Seismologists universally use the term “continuous data” to mean
 long time series records with no significant gaps.   The term is
 actually potentially confusing because the data are not really continuous
@@ -215,7 +215,7 @@ experimental data may need to utilize Earthscope tools to fix problems not
 covered by MsPASS.</p>
 </section>
 <section id="gap-processing">
-<h2>Gap Processing<a class="headerlink" href="#gap-processing" title="Permalink to this heading"></a></h2>
+<h2>Gap Processing<a class="headerlink" href="#gap-processing" title="Link to this heading"></a></h2>
 <p>Internally MsPASS handles data gaps with a subclass of the
 <a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeries</span></code></a> called <code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeriesWGaps&lt;mspasspy.ccore.seismic.TimeSeriesWGaps&gt;`</span></code>.   That extension of
 <a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeries</span></code></a> is written in C++ and is documented
@@ -230,7 +230,7 @@ strategy for handling his problem best described in the context
 of those functions.</p>
 </section>
 <section id="merging-data-segments">
-<h2>Merging Data Segments<a class="headerlink" href="#merging-data-segments" title="Permalink to this heading"></a></h2>
+<h2>Merging Data Segments<a class="headerlink" href="#merging-data-segments" title="Link to this heading"></a></h2>
 <p>There are currently two different methods in MsPASS to handle merging
 continuous data segments:  (1) a special, implicit option of the
 <a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database.read_data" title="mspasspy.db.database.Database.read_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">read_data</span></code></a> method of the
@@ -242,7 +242,7 @@ to read fixed time windows of data.  That function uses
 <a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.window.merge" title="mspasspy.algorithms.window.merge"><code class="xref py py-func docutils literal notranslate"><span class="pre">merge</span></code></a>
 to do gap and overlap repair.</p>
 <section id="read-data-merge-algorithm">
-<h3>read_data merge algorithm<a class="headerlink" href="#read-data-merge-algorithm" title="Permalink to this heading"></a></h3>
+<h3>read_data merge algorithm<a class="headerlink" href="#read-data-merge-algorithm" title="Link to this heading"></a></h3>
 <p>This approach is only relevant if you have raw miniseed files you
 plan to read to initiate your processing sequence.  The miniseed format
 uses a packet structure with each packet normally defining a single
@@ -277,7 +277,7 @@ may want to consider is to write a custom function that utilizes obspy’s merge
 directly rather than the implied used in read_data.</p>
 </section>
 <section id="mspass-merge-function">
-<h3>MsPASS merge function<a class="headerlink" href="#mspass-merge-function" title="Permalink to this heading"></a></h3>
+<h3>MsPASS merge function<a class="headerlink" href="#mspass-merge-function" title="Link to this heading"></a></h3>
 <p>MsPASS has a native version of a function with a capability similar to
 the obspy merge function noted above.  The MsPASS function add some additional
 features and, although not verified by formal testing,
@@ -325,7 +325,7 @@ the MsPASS internal data structures</p></li>
 </ul>
 </section>
 <section id="timeintervalreader">
-<h3>TimeIntervalReader<a class="headerlink" href="#timeintervalreader" title="Permalink to this heading"></a></h3>
+<h3>TimeIntervalReader<a class="headerlink" href="#timeintervalreader" title="Link to this heading"></a></h3>
 <p>A second MsPASS tool for working with continuous data is a function
 with the descriptive name
 <code class="xref py py-func docutils literal notranslate"><span class="pre">TimeIntervalReader</span></code>.
@@ -339,7 +339,7 @@ time interval of data to be extracted from the archive.  Gap and overlap
 handling is handled by <a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.window.merge" title="mspasspy.algorithms.window.merge"><code class="xref py py-func docutils literal notranslate"><span class="pre">merge</span></code></a>.</p>
 </section>
 <section id="examples">
-<h3>Examples<a class="headerlink" href="#examples" title="Permalink to this heading"></a></h3>
+<h3>Examples<a class="headerlink" href="#examples" title="Link to this heading"></a></h3>
 <p><em>Example 1:  Create a single waveform in a defined time window
 from continuous data archive.</em>
 This script will create a longer <a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeries</span></code></a> object from a set day files

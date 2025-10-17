@@ -1,7 +1,7 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en">
+<html class="writer-html5" lang="en" data-content_root="../">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
@@ -14,9 +14,9 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=f6245a2f"></script>
-      <script src="../_static/doctools.js?v=888ff710"></script>
-      <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+      <script src="../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="../_static/copybutton.js?v=f281be69"></script>
     <script src="../_static/js/theme.js"></script>
@@ -159,12 +159,12 @@
            <div itemprop="articleBody">
              
   <section id="cleaning-inconsistent-metadata">
-<span id="cleaning-metadata"></span><h1>Cleaning Inconsistent Metadata<a class="headerlink" href="#cleaning-inconsistent-metadata" title="Permalink to this heading"></a></h1>
+<span id="cleaning-metadata"></span><h1>Cleaning Inconsistent Metadata<a class="headerlink" href="#cleaning-inconsistent-metadata" title="Link to this heading"></a></h1>
 <section id="gary-l-pavlis">
-<h2><em>Gary L. Pavlis</em><a class="headerlink" href="#gary-l-pavlis" title="Permalink to this heading"></a></h2>
+<h2><em>Gary L. Pavlis</em><a class="headerlink" href="#gary-l-pavlis" title="Link to this heading"></a></h2>
 </section>
 <section id="concepts">
-<h2>Concepts<a class="headerlink" href="#concepts" title="Permalink to this heading"></a></h2>
+<h2>Concepts<a class="headerlink" href="#concepts" title="Link to this heading"></a></h2>
 <p>One of the strengths of MsPASS as a framework for research computing is the
 <cite>Metadata</cite> container that is conceptually nearly identical to a python dictionary.
 That is, a <cite>Metadata</cite> container stores attributes accessible via a string-valued
@@ -196,7 +196,7 @@ the database.   The remainder of this section uses examples to illustrate
 the use of an instance of a <a class="reference internal" href="../python_api/mspasspy.util.html#mspasspy.util.Janitor.Janitor" title="mspasspy.util.Janitor.Janitor"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.util.Janitor.Janitor</span></code></a>.</p>
 </section>
 <section id="janitor-class">
-<h2>Janitor class<a class="headerlink" href="#janitor-class" title="Permalink to this heading"></a></h2>
+<h2>Janitor class<a class="headerlink" href="#janitor-class" title="Link to this heading"></a></h2>
 <p>An instance of a <code class="code docutils literal notranslate"><span class="pre">Janitor</span></code> can be thought of as a robotic cleaner that
 keeps only attributes it is told to keep.  An analogy for a physical janitor
 is a person with instructions to clean out an office and retain only papers,
@@ -235,9 +235,9 @@ class constructor via the <code class="code docutils literal notranslate"><span 
 <a class="reference internal" href="../python_api/mspasspy.util.html#mspasspy.util.Janitor.Janitor" title="mspasspy.util.Janitor.Janitor"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.util.Janitor.Janitor</span></code></a> for details.</p>
 </section>
 <section id="examples">
-<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading"></a></h2>
+<h2>Examples<a class="headerlink" href="#examples" title="Link to this heading"></a></h2>
 <section id="usage">
-<h3>Usage<a class="headerlink" href="#usage" title="Permalink to this heading"></a></h3>
+<h3>Usage<a class="headerlink" href="#usage" title="Link to this heading"></a></h3>
 <p>The examples below illustrate a range of applications of the
 <code class="code docutils literal notranslate"><span class="pre">Janitor</span></code> class.   None of them are complete python scripts
 that can be run as all have incomplete initializations.   The examples
@@ -245,7 +245,7 @@ are intended to starting points to aid development of workflows using
 this class.</p>
 </section>
 <section id="basic-usage">
-<h3>Basic usage<a class="headerlink" href="#basic-usage" title="Permalink to this heading"></a></h3>
+<h3>Basic usage<a class="headerlink" href="#basic-usage" title="Link to this heading"></a></h3>
 <p>This is a trivial example that is a variant of
 part of the pytest module used for this
 class.  It uses a test function to generate an <code class="code docutils literal notranslate"><span class="pre">TimeSeries</span></code>
@@ -268,7 +268,7 @@ verify that the <code class="code docutils literal notranslate"><span class="pre
 </div>
 </section>
 <section id="application-to-ensembles">
-<h3>Application to ensembles<a class="headerlink" href="#application-to-ensembles" title="Permalink to this heading"></a></h3>
+<h3>Application to ensembles<a class="headerlink" href="#application-to-ensembles" title="Link to this heading"></a></h3>
 <p>The second example below demonstrates an ambiguity the <code class="code docutils literal notranslate"><span class="pre">Janitor</span></code>
 has to handle.   That is, with ensemble object there are two things
 the cleaner may have to take care of:  (1) the <code class="code docutils literal notranslate"><span class="pre">Metadata</span></code> for
@@ -311,7 +311,7 @@ and the difference in the usage is displayed in this example:</p>
 </div>
 </section>
 <section id="miniseed-data">
-<h3>Miniseed Data<a class="headerlink" href="#miniseed-data" title="Permalink to this heading"></a></h3>
+<h3>Miniseed Data<a class="headerlink" href="#miniseed-data" title="Link to this heading"></a></h3>
 <p>The MsPASS indexing function for miniseed data loads the common content of
 miniseed packet headers and several computed quantities like
 start time and end time.   Some of those like the “format” attribute,
@@ -340,7 +340,7 @@ is a sketch of a typical algorithm:</p>
 </div>
 </section>
 <section id="parallel-workflow">
-<h3>Parallel workflow<a class="headerlink" href="#parallel-workflow" title="Permalink to this heading"></a></h3>
+<h3>Parallel workflow<a class="headerlink" href="#parallel-workflow" title="Link to this heading"></a></h3>
 <p>This is a sketch of a code segment illustrating the use of a
 <code class="code docutils literal notranslate"><span class="pre">Janitor</span></code> in a parallel workflow.  The example reads
 a collection of <code class="code docutils literal notranslate"><span class="pre">TimeSeriesEnsembles</span></code>, runs the

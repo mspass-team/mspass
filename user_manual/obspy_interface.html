@@ -1,7 +1,7 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en">
+<html class="writer-html5" lang="en" data-content_root="../">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
@@ -14,9 +14,9 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=f6245a2f"></script>
-      <script src="../_static/doctools.js?v=888ff710"></script>
-      <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+      <script src="../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="../_static/copybutton.js?v=f281be69"></script>
     <script src="../_static/js/theme.js"></script>
@@ -152,9 +152,9 @@
            <div itemprop="articleBody">
              
   <section id="using-obspy-with-mspass">
-<span id="obspy-interface"></span><h1>Using ObsPy with MsPASS<a class="headerlink" href="#using-obspy-with-mspass" title="Permalink to this heading"></a></h1>
+<span id="obspy-interface"></span><h1>Using ObsPy with MsPASS<a class="headerlink" href="#using-obspy-with-mspass" title="Link to this heading"></a></h1>
 <section id="role-of-obspy-in-mspass">
-<h2>Role of ObsPy in MsPASS<a class="headerlink" href="#role-of-obspy-in-mspass" title="Permalink to this heading"></a></h2>
+<h2>Role of ObsPy in MsPASS<a class="headerlink" href="#role-of-obspy-in-mspass" title="Link to this heading"></a></h2>
 <p>The home page for <a class="reference external" href="https://docs.obspy.org/">Obspy</a> defines the package as follows:</p>
 <blockquote>
 <div><p>ObsPy is an open-source project dedicated to provide a Python framework for processing seismological data.
@@ -169,7 +169,7 @@ We have implemented fast algorithms to do those operation, but the performance c
 We describe more details on converters below and how ObsPy processing algorithms can be used in parallel workflows.</p>
 </section>
 <section id="converters">
-<h2>Converters<a class="headerlink" href="#converters" title="Permalink to this heading"></a></h2>
+<h2>Converters<a class="headerlink" href="#converters" title="Link to this heading"></a></h2>
 <p>To understand converters and their limitations it is helpful to describe details of ObsPy and MsPASS data objects.
 They have similarities but some major differences that a software engineer might call “a collision in concept”.
 ObsPy defines two core data objects:</p>
@@ -265,7 +265,7 @@ If the converters are used in isolation (e.g. one could easily run several ObsPy
 For this reason we recommend only running ObsPy algorithms through the decorators described in the next section.</p>
 </section>
 <section id="decorated-obspy-functions">
-<h2>Decorated ObsPy Functions<a class="headerlink" href="#decorated-obspy-functions" title="Permalink to this heading"></a></h2>
+<h2>Decorated ObsPy Functions<a class="headerlink" href="#decorated-obspy-functions" title="Link to this heading"></a></h2>
 <p>The decorated ObsPy functions can be thought of as a way to run ObsPy’s functions on mspass data objects.
 That means both atomic data and Ensembles.
 This should be clearer from an example.</p>
@@ -305,7 +305,7 @@ For example, the <code class="code docutils literal notranslate"><span class="pr
 See the <a class="reference internal" href="../python_api/mspasspy.algorithms.html#module-mspasspy.algorithms.signals" title="mspasspy.algorithms.signals"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mspasspy.algorithms.signals</span></code></a> documentation for details.</p>
 </section>
 <section id="obspy-processing-in-parallel">
-<h2>ObsPy Processing in Parallel<a class="headerlink" href="#obspy-processing-in-parallel" title="Permalink to this heading"></a></h2>
+<h2>ObsPy Processing in Parallel<a class="headerlink" href="#obspy-processing-in-parallel" title="Link to this heading"></a></h2>
 <p>The ObsPy decorator allow ObsPy operators to be applied in parallel.
 For example, the following is a variant of filter algorithm but this example uses the Dask scheduler to process the entire data set:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Assume db is created as above</span>

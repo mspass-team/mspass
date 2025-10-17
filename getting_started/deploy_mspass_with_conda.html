@@ -1,7 +1,7 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en">
+<html class="writer-html5" lang="en" data-content_root="../">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
@@ -14,9 +14,9 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=f6245a2f"></script>
-      <script src="../_static/doctools.js?v=888ff710"></script>
-      <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+      <script src="../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="../_static/copybutton.js?v=f281be69"></script>
     <script src="../_static/js/theme.js"></script>
@@ -157,14 +157,14 @@
            <div itemprop="articleBody">
              
   <section id="deploy-mspass-with-conda">
-<span id="id1"></span><h1>Deploy MsPASS with Conda<a class="headerlink" href="#deploy-mspass-with-conda" title="Permalink to this heading"></a></h1>
+<span id="id1"></span><h1>Deploy MsPASS with Conda<a class="headerlink" href="#deploy-mspass-with-conda" title="Link to this heading"></a></h1>
 <section id="installing-the-mspass-conda-package">
-<h2>Installing the MsPASS Conda package<a class="headerlink" href="#installing-the-mspass-conda-package" title="Permalink to this heading"></a></h2>
+<h2>Installing the MsPASS Conda package<a class="headerlink" href="#installing-the-mspass-conda-package" title="Link to this heading"></a></h2>
 <p>MsPASS is available as a Conda package, offering a convenient method for installing a local copy suitable for desktop environments.
 This installation method is ideal for users primarily focused on development, although it may also be beneficial in other scenarios.
 This guide focuses on setting up MsPASS for desktop usage.</p>
 <section id="first-steps-installing-conda">
-<h3>First Steps: Installing Conda<a class="headerlink" href="#first-steps-installing-conda" title="Permalink to this heading"></a></h3>
+<h3>First Steps: Installing Conda<a class="headerlink" href="#first-steps-installing-conda" title="Link to this heading"></a></h3>
 <p>Before installing MsPASS, ensure you have a Conda distribution installed. If not, follow the system-specific instructions provided by Anaconda:</p>
 <ul class="simple">
 <li><p>For a comprehensive setup on personal devices, a full installation of Anaconda is recommended. Visit the <a class="reference external" href="https://docs.anaconda.com/free/anaconda/install/">Anaconda installation guide</a> for detailed instructions.</p></li>
@@ -172,7 +172,7 @@ This guide focuses on setting up MsPASS for desktop usage.</p>
 </ul>
 </section>
 <section id="creating-an-isolated-environment">
-<h3>Creating an Isolated Environment<a class="headerlink" href="#creating-an-isolated-environment" title="Permalink to this heading"></a></h3>
+<h3>Creating an Isolated Environment<a class="headerlink" href="#creating-an-isolated-environment" title="Link to this heading"></a></h3>
 <p>To prevent conflicts with pre-existing Python packages, it is strongly advised to create a separate Conda environment for MsPASS:</p>
 <ol class="arabic">
 <li><p>Ensure you are in the base environment, then create a new environment named <code class="docutils literal notranslate"><span class="pre">mspass_env</span></code> (you can choose a different name if preferred):</p>
@@ -188,7 +188,7 @@ This guide focuses on setting up MsPASS for desktop usage.</p>
 </ol>
 </section>
 <section id="adding-necessary-channels">
-<h3>Adding Necessary Channels<a class="headerlink" href="#adding-necessary-channels" title="Permalink to this heading"></a></h3>
+<h3>Adding Necessary Channels<a class="headerlink" href="#adding-necessary-channels" title="Link to this heading"></a></h3>
 <p>To install MsPASS successfully, add the required channels to your Conda configuration:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>config<span class="w"> </span>--add<span class="w"> </span>channels<span class="w"> </span>mspass
 conda<span class="w"> </span>config<span class="w"> </span>--add<span class="w"> </span>channels<span class="w"> </span>conda-forge
@@ -196,7 +196,7 @@ conda<span class="w"> </span>config<span class="w"> </span>--add<span class="w">
 </div>
 </section>
 <section id="installing-mspass">
-<h3>Installing MsPASS<a class="headerlink" href="#installing-mspass" title="Permalink to this heading"></a></h3>
+<h3>Installing MsPASS<a class="headerlink" href="#installing-mspass" title="Link to this heading"></a></h3>
 <p>With the environment set and channels added, you can now install MsPASS:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>install<span class="w"> </span>-y<span class="w"> </span>mspasspy
 </pre></div>
@@ -205,13 +205,13 @@ conda<span class="w"> </span>config<span class="w"> </span>--add<span class="w">
 </section>
 </section>
 <section id="define-mspass-home">
-<h2>Define MSPASS_HOME<a class="headerlink" href="#define-mspass-home" title="Permalink to this heading"></a></h2>
+<h2>Define MSPASS_HOME<a class="headerlink" href="#define-mspass-home" title="Link to this heading"></a></h2>
 <p>MsPASS requires specific data from the <code class="docutils literal notranslate"><span class="pre">data/yaml</span></code> directory found in the MsPASS code repository.
 Download a local copy of the repository and set the <code class="docutils literal notranslate"><span class="pre">MSPASS_HOME</span></code> environment variable to this directory or to a custom location if you prefer.
 Ensure the variable is correctly set in your shell’s initialization file.</p>
 </section>
 <section id="setting-up-mongodb">
-<h2>Setting up MongoDB<a class="headerlink" href="#setting-up-mongodb" title="Permalink to this heading"></a></h2>
+<h2>Setting up MongoDB<a class="headerlink" href="#setting-up-mongodb" title="Link to this heading"></a></h2>
 <p>MsPASS workflows typically utilize MongoDB.
 Setting up a MongoDB instance on your desktop is easier using the standard MsPASS Docker container:</p>
 <ol class="arabic">

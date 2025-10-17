@@ -1,7 +1,7 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en">
+<html class="writer-html5" lang="en" data-content_root="../">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
@@ -14,9 +14,9 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=f6245a2f"></script>
-      <script src="../_static/doctools.js?v=888ff710"></script>
-      <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+      <script src="../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="../_static/copybutton.js?v=f281be69"></script>
       <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -153,9 +153,9 @@
            <div itemprop="articleBody">
              
   <section id="signal-to-noise-ratio-estimation">
-<span id="signal-to-noise"></span><h1>Signal to Noise Ratio Estimation<a class="headerlink" href="#signal-to-noise-ratio-estimation" title="Permalink to this heading"></a></h1>
+<span id="signal-to-noise"></span><h1>Signal to Noise Ratio Estimation<a class="headerlink" href="#signal-to-noise-ratio-estimation" title="Link to this heading"></a></h1>
 <section id="concepts">
-<h2>Concepts<a class="headerlink" href="#concepts" title="Permalink to this heading"></a></h2>
+<h2>Concepts<a class="headerlink" href="#concepts" title="Link to this heading"></a></h2>
 <p>When analyzing passive array data most seismology analysis focuses
 on “transient signals” that are the wiggly lines that are the core
 data of seismology.   One of the most basic quantitative measures of
@@ -200,7 +200,7 @@ compute the ratio.  The metric applied to each window may or may not always
 be the same.</p>
 </section>
 <section id="time-window-amplitude-metrics">
-<h2>Time Window Amplitude Metrics<a class="headerlink" href="#time-window-amplitude-metrics" title="Permalink to this heading"></a></h2>
+<h2>Time Window Amplitude Metrics<a class="headerlink" href="#time-window-amplitude-metrics" title="Link to this heading"></a></h2>
 <p>The most common measure of amplitude is the root mean square error
 that is a scaled version of the L2 vector norm:</p>
 <div class="math notranslate nohighlight">
@@ -237,7 +237,7 @@ be the same as the peak amplitude.</p></li>
 </ol>
 </section>
 <section id="low-level-snr-estimation">
-<h2>Low-level SNR Estimation<a class="headerlink" href="#low-level-snr-estimation" title="Permalink to this heading"></a></h2>
+<h2>Low-level SNR Estimation<a class="headerlink" href="#low-level-snr-estimation" title="Link to this heading"></a></h2>
 <p>The basic function to compute signal-to-noise ratios has the
 simple name <a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.snr.snr" title="mspasspy.algorithms.snr.snr"><code class="xref py py-func docutils literal notranslate"><span class="pre">snr</span></code></a>.  The docstring
 describes the detailed use, but you will normally need to specify or
@@ -259,7 +259,7 @@ in the symbol <cite>dsnr</cite>.</p>
 </div>
 </section>
 <section id="broadband-snr-estimation">
-<h2>Broadband SNR Estimation<a class="headerlink" href="#broadband-snr-estimation" title="Permalink to this heading"></a></h2>
+<h2>Broadband SNR Estimation<a class="headerlink" href="#broadband-snr-estimation" title="Link to this heading"></a></h2>
 <p>MsPASS implements a set of more elaborate signal-to-noise metrics
 designed for quality control editing of modern broadband data.
 An issue not universally appreciated about all, modern, passive array

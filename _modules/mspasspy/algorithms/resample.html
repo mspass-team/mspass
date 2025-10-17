@@ -1,7 +1,7 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en">
+<html class="writer-html5" lang="en" data-content_root="../../../">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -13,9 +13,9 @@
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=f6245a2f"></script>
-      <script src="../../../_static/doctools.js?v=888ff710"></script>
-      <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
+      <script src="../../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="../../../_static/copybutton.js?v=f281be69"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -166,7 +166,9 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="kn">import</span> <span class="n">signal</span>
 
 
-<div class="viewcode-block" id="BasicResampler"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.resample.BasicResampler">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">BasicResampler</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<div class="viewcode-block" id="BasicResampler">
+<a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.resample.BasicResampler">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">BasicResampler</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Base class for family of resampling operators.   All this class really does is</span>
 <span class="sd">    define the interface and standardize the target of the operator.</span>
@@ -222,13 +224,21 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">dt</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">sampling_rate</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">samprate</span> <span class="o">=</span> <span class="n">sampling_rate</span>
 
-<div class="viewcode-block" id="BasicResampler.target_samprate"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.resample.BasicResampler.target_samprate">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">target_samprate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="BasicResampler.target_samprate">
+<a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.resample.BasicResampler.target_samprate">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">target_samprate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">samprate</span></div>
 
-<div class="viewcode-block" id="BasicResampler.target_dt"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.resample.BasicResampler.target_dt">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">target_dt</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="BasicResampler.target_dt">
+<a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.resample.BasicResampler.target_dt">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">target_dt</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span></div>
 
-<div class="viewcode-block" id="BasicResampler.dec_factor"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.resample.BasicResampler.dec_factor">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">dec_factor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
+
+<div class="viewcode-block" id="BasicResampler.dec_factor">
+<a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.resample.BasicResampler.dec_factor">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">dec_factor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        All implementations of decimation algorithms should use this</span>
 <span class="sd">        method to test if resampling by decimation is feasible.</span>
@@ -271,7 +281,10 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="o">-</span><span class="mi">1</span></div>
 
-<div class="viewcode-block" id="BasicResampler.resample"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.resample.BasicResampler.resample">[docs]</a>    <span class="nd">@abstractmethod</span>
+
+<div class="viewcode-block" id="BasicResampler.resample">
+<a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.resample.BasicResampler.resample">[docs]</a>
+    <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">resample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">,</span> <span class="n">handles_ensembles</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Main operator a concrete class must implement.  It should accept</span>
@@ -279,10 +292,14 @@
 <span class="sd">        to the sample interface defined by this base class.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">pass</span></div></div>
+        <span class="k">pass</span></div>
+</div>
 
 
-<div class="viewcode-block" id="ScipyResampler"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.resample.ScipyResampler">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">ScipyResampler</span><span class="p">(</span><span class="n">BasicResampler</span><span class="p">):</span>
+
+<div class="viewcode-block" id="ScipyResampler">
+<a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.resample.ScipyResampler">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ScipyResampler</span><span class="p">(</span><span class="n">BasicResampler</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This class is a wrapper for the scipy resample algorithm.  Obspy users</span>
 <span class="sd">    should note that the Trace and Stream method called &quot;resample&quot;</span>
@@ -331,7 +348,9 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">sampling_rate</span><span class="o">=</span><span class="n">sampling_rate</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">window</span> <span class="o">=</span> <span class="n">window</span>
 
-<div class="viewcode-block" id="ScipyResampler.resample"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.resample.ScipyResampler.resample">[docs]</a>    <span class="nd">@mspass_method_wrapper</span>
+<div class="viewcode-block" id="ScipyResampler.resample">
+<a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.resample.ScipyResampler.resample">[docs]</a>
+    <span class="nd">@mspass_method_wrapper</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">resample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">checks_arg0_type</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Applies the scipy.signal.resample function to all data held in</span>
@@ -402,10 +421,14 @@
             <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">member</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">mspass_object</span></div></div>
+        <span class="k">return</span> <span class="n">mspass_object</span></div>
+</div>
 
 
-<div class="viewcode-block" id="ScipyDecimator"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.resample.ScipyDecimator">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">ScipyDecimator</span><span class="p">(</span><span class="n">BasicResampler</span><span class="p">):</span>
+
+<div class="viewcode-block" id="ScipyDecimator">
+<a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.resample.ScipyDecimator">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ScipyDecimator</span><span class="p">(</span><span class="n">BasicResampler</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This class defines a generic operator where a decimator can be used</span>
 <span class="sd">    to downsample any input data to a common sample rate.  A decimator</span>
@@ -471,7 +494,9 @@
             <span class="p">)</span>
         <span class="k">return</span> <span class="n">message</span>
 
-<div class="viewcode-block" id="ScipyDecimator.resample"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.resample.ScipyDecimator.resample">[docs]</a>    <span class="nd">@mspass_method_wrapper</span>
+<div class="viewcode-block" id="ScipyDecimator.resample">
+<a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.resample.ScipyDecimator.resample">[docs]</a>
+    <span class="nd">@mspass_method_wrapper</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">resample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">checks_arg0_type</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Implementation of required abstract method for this operator.</span>
@@ -568,10 +593,14 @@
             <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">member</span><span class="p">:</span>
                 <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">mspass_object</span></div></div>
+        <span class="k">return</span> <span class="n">mspass_object</span></div>
+</div>
 
 
-<div class="viewcode-block" id="resample"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.resample.resample">[docs]</a><span class="nd">@mspass_func_wrapper</span>
+
+<div class="viewcode-block" id="resample">
+<a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.resample.resample">[docs]</a>
+<span class="nd">@mspass_func_wrapper</span>
 <span class="c1"># note handles_dead_data could be left at default True only because</span>
 <span class="c1"># resampling operators in this module all handle dead data cleanly.</span>
 <span class="c1"># set False for efficiency and to be more robust with other implementations</span>
@@ -690,6 +719,7 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="c1">#  It should be an exception if we get anything else</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;resample:   arg0 must be a MsPASS data object&quot;</span><span class="p">)</span></div>
+
 </pre></div>
 
            </div>

@@ -1,7 +1,7 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en">
+<html class="writer-html5" lang="en" data-content_root="../">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
@@ -14,9 +14,9 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=f6245a2f"></script>
-      <script src="../_static/doctools.js?v=888ff710"></script>
-      <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+      <script src="../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="../_static/copybutton.js?v=f281be69"></script>
     <script src="../_static/js/theme.js"></script>
@@ -165,10 +165,10 @@
            <div itemprop="articleBody">
              
   <section id="module-mspasspy.reduce">
-<span id="mspasspy-reduce"></span><h1>mspasspy.reduce<a class="headerlink" href="#module-mspasspy.reduce" title="Permalink to this heading"></a></h1>
+<span id="mspasspy-reduce"></span><h1>mspasspy.reduce<a class="headerlink" href="#module-mspasspy.reduce" title="Link to this heading"></a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="mspasspy.reduce.mspass_dask_foldby">
-<span class="sig-prename descclassname"><span class="pre">mspasspy.reduce.</span></span><span class="sig-name descname"><span class="pre">mspass_dask_foldby</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'site_id'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/reduce.html#mspass_dask_foldby"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.reduce.mspass_dask_foldby" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">mspasspy.reduce.</span></span><span class="sig-name descname"><span class="pre">mspass_dask_foldby</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'site_id'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/reduce.html#mspass_dask_foldby"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.reduce.mspass_dask_foldby" title="Link to this definition"></a></dt>
 <dd><p>This function implements a convenient foldby method for a dask bag to generate ensembles from atomic data.
 The concept is to assemble ensembles of <a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.TimeSeries</span></code></a> or
 <a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.Seismogram</span></code></a> objects with a common Metadata attribute using
@@ -197,7 +197,7 @@ the map and reduce methods.  arg0 is “self” which means it must be defined b
 
 <dl class="py function">
 <dt class="sig sig-object py" id="mspasspy.reduce.mspass_spark_foldby">
-<span class="sig-prename descclassname"><span class="pre">mspasspy.reduce.</span></span><span class="sig-name descname"><span class="pre">mspass_spark_foldby</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'site_id'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/reduce.html#mspass_spark_foldby"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.reduce.mspass_spark_foldby" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">mspasspy.reduce.</span></span><span class="sig-name descname"><span class="pre">mspass_spark_foldby</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'site_id'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/reduce.html#mspass_spark_foldby"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.reduce.mspass_spark_foldby" title="Link to this definition"></a></dt>
 <dd><p>This function implements a convenient foldby method for a spark RDD to generate ensembles from atomic data.
 The concept is to assemble ensembles of <a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.TimeSeries</span></code></a> or
 <a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.Seismogram</span></code></a> objects with a common Metadata attribute using
@@ -226,7 +226,7 @@ the map and reduce methods.  arg0 is “self” which means it must be defined b
 
 <dl class="py function">
 <dt class="sig sig-object py" id="mspasspy.reduce.stack">
-<span class="sig-prename descclassname"><span class="pre">mspasspy.reduce.</span></span><span class="sig-name descname"><span class="pre">stack</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dryrun</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/reduce.html#stack"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.reduce.stack" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">mspasspy.reduce.</span></span><span class="sig-name descname"><span class="pre">stack</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dryrun</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/reduce.html#stack"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.reduce.stack" title="Link to this definition"></a></dt>
 <dd><p>This function sums the data field of two mspasspy objects, the result will be stored in data1.
 Note it is wrapped by mspass_reduce_func_wrapper, so the history and error logs can be preserved.</p>
 <dl class="field-list simple">

@@ -1,7 +1,7 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en">
+<html class="writer-html5" lang="en" data-content_root="../../../">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -13,9 +13,9 @@
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=f6245a2f"></script>
-      <script src="../../../_static/doctools.js?v=888ff710"></script>
-      <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
+      <script src="../../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="../../../_static/copybutton.js?v=f281be69"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -242,7 +242,9 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 
-<div class="viewcode-block" id="Undertaker"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.Undertaker.Undertaker">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">Undertaker</span><span class="p">:</span>
+<div class="viewcode-block" id="Undertaker">
+<a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.Undertaker.Undertaker">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Undertaker</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class to handle dead data. Results are stored to two spcial</span>
 <span class="sd">    collections defined by default as &quot;cemetery&quot;, for regular dead bodies,</span>
@@ -318,7 +320,9 @@
             <span class="c1"># allow None type to be carried through - data tag not set in this situation</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">data_tag</span> <span class="o">=</span> <span class="kc">None</span>
 
-<div class="viewcode-block" id="Undertaker.bury"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.Undertaker.Undertaker.bury">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">bury</span><span class="p">(</span>
+<div class="viewcode-block" id="Undertaker.bury">
+<a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.Undertaker.Undertaker.bury">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">bury</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">mspass_object</span><span class="p">,</span>
         <span class="n">save_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -448,7 +452,10 @@
             <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Type of arg0 received =</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">)))</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Undertaker.bury_the_dead"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.Undertaker.Undertaker.bury_the_dead">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">bury_the_dead</span><span class="p">(</span>
+
+<div class="viewcode-block" id="Undertaker.bury_the_dead">
+<a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.Undertaker.Undertaker.bury_the_dead">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">bury_the_dead</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">mspass_object</span><span class="p">,</span>
         <span class="n">save_history</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -466,7 +473,10 @@
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;WARNING:  may disappear in future releases&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bury</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">save_history</span><span class="p">,</span> <span class="n">mummify_atomic_data</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Undertaker.cremate"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.Undertaker.Undertaker.cremate">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">cremate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Undertaker.cremate">
+<a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.Undertaker.Undertaker.cremate">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">cremate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Like bury but nothing is preserved of the dead.</span>
 
@@ -535,7 +545,10 @@
             <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Type of arg0 received =</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">)))</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Undertaker.bring_out_your_dead"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.Undertaker.Undertaker.bring_out_your_dead">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">bring_out_your_dead</span><span class="p">(</span>
+
+<div class="viewcode-block" id="Undertaker.bring_out_your_dead">
+<a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.Undertaker.Undertaker.bring_out_your_dead">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">bring_out_your_dead</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">d</span><span class="p">,</span>
         <span class="n">bury</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -605,7 +618,10 @@
             <span class="n">newens</span><span class="o">.</span><span class="n">set_live</span><span class="p">()</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">newens</span><span class="p">,</span> <span class="n">bodies</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="Undertaker.mummify"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.Undertaker.Undertaker.mummify">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">mummify</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">,</span> <span class="n">post_elog</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">post_history</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Undertaker.mummify">
+<a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.Undertaker.Undertaker.mummify">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">mummify</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">,</span> <span class="n">post_elog</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">post_history</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Reduce memory use associated with dead data.</span>
 
@@ -661,7 +677,10 @@
                         <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mummify</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">post_elog</span><span class="p">,</span> <span class="n">post_history</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">mspass_object</span></div>
 
-<div class="viewcode-block" id="Undertaker.handle_abortion"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.Undertaker.Undertaker.handle_abortion">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">handle_abortion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">doc_or_datum</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Undertaker.handle_abortion">
+<a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.Undertaker.Undertaker.handle_abortion">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">handle_abortion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">doc_or_datum</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Standardized method to handle what we call abortions (see class overview).</span>
 
@@ -731,6 +750,7 @@
 
         <span class="k">return</span> <span class="n">doc_or_datum</span></div>
 
+
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_is_abortion</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -765,6 +785,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;Undertaker._is_abortion:  received an input that is an invalid type - must be either a TimeSeries or Seismogram object&quot;</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span></div>
+
 </pre></div>
 
            </div>

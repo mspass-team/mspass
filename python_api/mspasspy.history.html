@@ -1,7 +1,7 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en">
+<html class="writer-html5" lang="en" data-content_root="../">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
@@ -14,9 +14,9 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=f6245a2f"></script>
-      <script src="../_static/doctools.js?v=888ff710"></script>
-      <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+      <script src="../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="../_static/copybutton.js?v=f281be69"></script>
     <script src="../_static/js/theme.js"></script>
@@ -174,10 +174,10 @@
            <div itemprop="articleBody">
              
   <section id="module-mspasspy.history">
-<span id="mspasspy-history"></span><h1>mspasspy.history<a class="headerlink" href="#module-mspasspy.history" title="Permalink to this heading"></a></h1>
+<span id="mspasspy-history"></span><h1>mspasspy.history<a class="headerlink" href="#module-mspasspy.history" title="Link to this heading"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.history.HistoryLogger">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.history.</span></span><span class="sig-name descname"><span class="pre">HistoryLogger</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">job</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/history.html#HistoryLogger"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.history.HistoryLogger" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.history.</span></span><span class="sig-name descname"><span class="pre">HistoryLogger</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">job</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/history.html#HistoryLogger"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.history.HistoryLogger" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Base class for generic, global history/provenance preservation in MsPASS.
 The main concept of this object that a pymongo script to run a processing
@@ -189,7 +189,7 @@ preserved in a special collection in MongoDB we give the (fixed) name
 of “history”.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.history.HistoryLogger.register">
-<span class="sig-name descname"><span class="pre">register</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">partype</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/history.html#HistoryLogger.register"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.history.HistoryLogger.register" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">register</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">partype</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/history.html#HistoryLogger.register"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.history.HistoryLogger.register" title="Link to this definition"></a></dt>
 <dd><p>Register an algorithm’s signature to preserve processing history.
 Each algorithm in a processing chains should be registered by this
 mechanism before starting a mspass processing chain.  The
@@ -217,7 +217,7 @@ list of supported parameter types</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.history.HistoryLogger.save">
-<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/history.html#HistoryLogger.save"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.history.HistoryLogger.save" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/history.html#HistoryLogger.save"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.history.HistoryLogger.save" title="Link to this definition"></a></dt>
 <dd><p>Save the contents to the history collection.</p>
 <p>The doc created in a save is more or less an image of the
 structure of this object translated to a python dict</p>
@@ -227,14 +227,14 @@ structure of this object translated to a python dict</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.history.basic_history_data">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.history.</span></span><span class="sig-name descname"><span class="pre">basic_history_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">job</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/history.html#basic_history_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.history.basic_history_data" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.history.</span></span><span class="sig-name descname"><span class="pre">basic_history_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">job</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/history.html#basic_history_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.history.basic_history_data" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>This is a pure data object that if it were written in C could be
 defined as a struct.   It holds the data used to define the
 parameters for a given algorithm.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.history.basic_history_data.load_algorithm_args">
-<span class="sig-name descname"><span class="pre">load_algorithm_args</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">argdict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/history.html#basic_history_data.load_algorithm_args"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.history.basic_history_data.load_algorithm_args" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">load_algorithm_args</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">argdict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/history.html#basic_history_data.load_algorithm_args"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.history.basic_history_data.load_algorithm_args" title="Link to this definition"></a></dt>
 <dd><p>Loads parameters defined to a set of function arguments.</p>
 <p>Simple algorithms without a lot of parameters often simply need a
 set of argument values.   Here we require this to be defined by
@@ -260,7 +260,7 @@ key:value pair in BSON written to MongoDB.</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="mspasspy.history.get_jobid">
-<span class="sig-prename descclassname"><span class="pre">mspasspy.history.</span></span><span class="sig-name descname"><span class="pre">get_jobid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/history.html#get_jobid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.history.get_jobid" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">mspasspy.history.</span></span><span class="sig-name descname"><span class="pre">get_jobid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/history.html#get_jobid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.history.get_jobid" title="Link to this definition"></a></dt>
 <dd><p>Ask MongoDB for the a valid jobid.</p>
 <p>All processing jobs should have a call to this function at the beginning
 of the job script.  It simply queries MongoDB for the largest current
@@ -276,7 +276,7 @@ illogical.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.history.pf_history_data">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.history.</span></span><span class="sig-name descname"><span class="pre">pf_history_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">job</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pf</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/history.html#pf_history_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.history.pf_history_data" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.history.</span></span><span class="sig-name descname"><span class="pre">pf_history_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">job</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pf</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/history.html#pf_history_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.history.pf_history_data" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#mspasspy.history.basic_history_data" title="mspasspy.history.basic_history_data"><code class="xref py py-class docutils literal notranslate"><span class="pre">basic_history_data</span></code></a></p>
 <p>Loads history data container with data from an AntelopePf object.</p>
 <p>mspasspy.ccore.utility defines the AntelopePf object that is an option for parameter
@@ -293,7 +293,7 @@ created if this approach sees extensive use.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="mspasspy.history.pfbranch_to_dict">
-<span class="sig-prename descclassname"><span class="pre">mspasspy.history.</span></span><span class="sig-name descname"><span class="pre">pfbranch_to_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/history.html#pfbranch_to_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.history.pfbranch_to_dict" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">mspasspy.history.</span></span><span class="sig-name descname"><span class="pre">pfbranch_to_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/history.html#pfbranch_to_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.history.pfbranch_to_dict" title="Link to this definition"></a></dt>
 <dd><p>Recursive function to convert a single branch in an AntelopePf to a python dict.</p>
 <p>This function utilizes recursion to follow a chain of arbitrary length of
 branches defined in an AntelopePf object.   Result is a dict with a chain of

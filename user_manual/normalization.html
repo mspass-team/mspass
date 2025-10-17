@@ -1,7 +1,7 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en">
+<html class="writer-html5" lang="en" data-content_root="../">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
@@ -14,9 +14,9 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=f6245a2f"></script>
-      <script src="../_static/doctools.js?v=888ff710"></script>
-      <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+      <script src="../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="../_static/copybutton.js?v=f281be69"></script>
     <script src="../_static/js/theme.js"></script>
@@ -170,9 +170,9 @@
            <div itemprop="articleBody">
              
   <section id="normalization">
-<span id="id1"></span><h1>Normalization<a class="headerlink" href="#normalization" title="Permalink to this heading"></a></h1>
+<span id="id1"></span><h1>Normalization<a class="headerlink" href="#normalization" title="Link to this heading"></a></h1>
 <section id="concepts">
-<h2>Concepts<a class="headerlink" href="#concepts" title="Permalink to this heading"></a></h2>
+<h2>Concepts<a class="headerlink" href="#concepts" title="Link to this heading"></a></h2>
 <p>A universal property of any data amenable to storage in a database
 is that some attributes are highly redundant.  For instance,
 consider a typical seismic example.
@@ -228,9 +228,9 @@ or, in the case of in-line normalization functions, the Metadata container of
 one of the MsPaSS data objects.</p>
 </section>
 <section id="normalization-with-readers">
-<h2>Normalization with readers<a class="headerlink" href="#normalization-with-readers" title="Permalink to this heading"></a></h2>
+<h2>Normalization with readers<a class="headerlink" href="#normalization-with-readers" title="Link to this heading"></a></h2>
 <section id="overview">
-<h3>Overview<a class="headerlink" href="#overview" title="Permalink to this heading"></a></h3>
+<h3>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h3>
 <p>Almost all workflows begin with a set of initializations.   In a
 production workflow using MsPASS initialization
 is normally followed immediately by one of
@@ -270,7 +270,7 @@ a workflow, but we include it here because it is more central to
 normalization during reading.</p>
 </section>
 <section id="defining-cross-referencing-ids">
-<h3>Defining Cross-referencing IDs<a class="headerlink" href="#defining-cross-referencing-ids" title="Permalink to this heading"></a></h3>
+<h3>Defining Cross-referencing IDs<a class="headerlink" href="#defining-cross-referencing-ids" title="Link to this heading"></a></h3>
 <p>An “id” is a common concept in all database implementations.
 Relational datadata schemas like CSS3.0 have numerous integer ids
 used for join keys between tables.   Integers were traditionally used as
@@ -353,7 +353,7 @@ reading and normalizing miniseed data:</p>
 </div>
 </section>
 <section id="examples-of-normalization-while-reading">
-<h3>Examples of normalization while reading<a class="headerlink" href="#examples-of-normalization-while-reading" title="Permalink to this heading"></a></h3>
+<h3>Examples of normalization while reading<a class="headerlink" href="#examples-of-normalization-while-reading" title="Link to this heading"></a></h3>
 <p>This is an example serial job that would use the result
 from running <code class="code docutils literal notranslate"><span class="pre">normalize_mseed</span></code> in the example above:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">Client</span>
@@ -436,7 +436,7 @@ Older versions did not implement that extension.</p>
 </section>
 </section>
 <section id="normalization-with-a-workflow">
-<h2>Normalization with a workflow<a class="headerlink" href="#normalization-with-a-workflow" title="Permalink to this heading"></a></h2>
+<h2>Normalization with a workflow<a class="headerlink" href="#normalization-with-a-workflow" title="Link to this heading"></a></h2>
 <p>Normalization within a workflow uses the same “Matcher” operators but
 is best done through a function call in a serial job or with a map
 operator in a parallel job.   It is perhaps easiest to demonstrate how
@@ -510,9 +510,9 @@ produce identical result by different paths.</p>
 </div>
 </section>
 <section id="normalization-operators">
-<h2>Normalization Operators<a class="headerlink" href="#normalization-operators" title="Permalink to this heading"></a></h2>
+<h2>Normalization Operators<a class="headerlink" href="#normalization-operators" title="Link to this heading"></a></h2>
 <section id="id2">
-<h3>Overview<a class="headerlink" href="#id2" title="Permalink to this heading"></a></h3>
+<h3>Overview<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
 <p>This section covers the available normalization operators in MsPASS.
 It focuses on design concepts and listing the available features.
 See the examples above and near the end of this section for more nuts and bolts
@@ -520,7 +520,7 @@ details.  The examples below all use the normalization within a workflow
 approach.</p>
 </section>
 <section id="id3">
-<h3>Concepts<a class="headerlink" href="#id3" title="Permalink to this heading"></a></h3>
+<h3>Concepts<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
 <p>Normalization can be abstracted as two concepts
 that need to be implemented to make a concrete normalization procedure:</p>
 <ol class="arabic simple">
@@ -536,7 +536,7 @@ standard normalization operation requires the match be one-to-one.</p></li>
 through a standardized API we call a “matcher”.</p>
 </section>
 <section id="matchers">
-<h3>Matchers<a class="headerlink" href="#matchers" title="Permalink to this heading"></a></h3>
+<h3>Matchers<a class="headerlink" href="#matchers" title="Link to this heading"></a></h3>
 <p>Normalization requires a rule that defines how documents in
 the normalizing collection match documents in the target.
 A match can be defined by
@@ -584,7 +584,7 @@ of <code class="code docutils literal notranslate"><span class="pre">query_gener
 matcher classes that are subclasses of <code class="code docutils literal notranslate"><span class="pre">DatabaseMatcher</span></code> with links
 to the docstring for each class:</p>
 <table class="docutils align-default" id="id4">
-<caption><span class="caption-number">Table 1 </span><span class="caption-text">Database Query-based Matchers</span><a class="headerlink" href="#id4" title="Permalink to this table"></a></caption>
+<caption><span class="caption-number">Table 1 </span><span class="caption-text">Database Query-based Matchers</span><a class="headerlink" href="#id4" title="Link to this table"></a></caption>
 <colgroup>
 <col style="width: 33.3%" />
 <col style="width: 66.7%" />
@@ -698,7 +698,7 @@ issues further in the subsection on writing a custom matcher below.</p>
 matcher classes that utilize a cacheing method.  As above each name
 is a hyperlink to the docstring for the class:</p>
 <table class="docutils align-default" id="id5">
-<caption><span class="caption-number">Table 2 </span><span class="caption-text">Cache-based Matchers</span><a class="headerlink" href="#id5" title="Permalink to this table"></a></caption>
+<caption><span class="caption-number">Table 2 </span><span class="caption-text">Cache-based Matchers</span><a class="headerlink" href="#id5" title="Link to this table"></a></caption>
 <colgroup>
 <col style="width: 33.3%" />
 <col style="width: 66.7%" />
@@ -728,9 +728,9 @@ by have “DB” embedded in the class name
 (e.g. the MongoDB version of <code class="code docutils literal notranslate"><span class="pre">EqualityMatcher</span></code> is <code class="code docutils literal notranslate"><span class="pre">EqualityDBMatcher</span></code>.)</p>
 </section>
 <section id="examples">
-<h3>Examples<a class="headerlink" href="#examples" title="Permalink to this heading"></a></h3>
+<h3>Examples<a class="headerlink" href="#examples" title="Link to this heading"></a></h3>
 <section id="example-1-objectid-matching">
-<h4>Example 1:  ObjectId matching<a class="headerlink" href="#example-1-objectid-matching" title="Permalink to this heading"></a></h4>
+<h4>Example 1:  ObjectId matching<a class="headerlink" href="#example-1-objectid-matching" title="Link to this heading"></a></h4>
 <p>The abstraction of defining matching through a python class allows the
 process of loading normalizing data into a dataset through a single,
 generic function called <a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.normalize.normalize" title="mspasspy.db.normalize.normalize"><code class="xref py py-func docutils literal notranslate"><span class="pre">normalize</span></code></a>.
@@ -780,7 +780,7 @@ to the result.</p></li>
 </ul>
 </section>
 <section id="example-2-miniseed-matching">
-<h4>Example 2:  miniseed matching<a class="headerlink" href="#example-2-miniseed-matching" title="Permalink to this heading"></a></h4>
+<h4>Example 2:  miniseed matching<a class="headerlink" href="#example-2-miniseed-matching" title="Link to this heading"></a></h4>
 <p>This example illustrates the in-line equivalent of running the
 normalization function for miniseed data noted above called
 <a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.normalize.normalize_mseed" title="mspasspy.db.normalize.normalize_mseed"><code class="xref py py-func docutils literal notranslate"><span class="pre">normalize_mseed</span></code></a>.
@@ -819,7 +819,7 @@ function in a map operator.</p>
 </div>
 </section>
 <section id="example-3-source-normalization">
-<h4>Example 3:  source normalization<a class="headerlink" href="#example-3-source-normalization" title="Permalink to this heading"></a></h4>
+<h4>Example 3:  source normalization<a class="headerlink" href="#example-3-source-normalization" title="Link to this heading"></a></h4>
 <p>This example shows an example of how to insert source data into
 a parallel workflow.  As above we use the dask syntax for a map operator.
 This example uses the matcher called <code class="code docutils literal notranslate"><span class="pre">OriginTimeMatcher</span></code>
@@ -854,7 +854,7 @@ missing a datum will, by default, be killed.</p>
 </div>
 </section>
 <section id="example-4-ensemble-processing">
-<h4>Example 4: ensemble processing<a class="headerlink" href="#example-4-ensemble-processing" title="Permalink to this heading"></a></h4>
+<h4>Example 4: ensemble processing<a class="headerlink" href="#example-4-ensemble-processing" title="Link to this heading"></a></h4>
 <p>This example is a variant of example 3 immediately above but
 implemented on ensembles.  That is, here the normalizing data
 attributes are loaded in the SeismogramEnsemble’s Metadata container
@@ -911,7 +911,7 @@ id for the source collection <code class="code docutils literal notranslate"><sp
 </section>
 </section>
 <section id="custom-normalization-functions">
-<h2>Custom Normalization Functions<a class="headerlink" href="#custom-normalization-functions" title="Permalink to this heading"></a></h2>
+<h2>Custom Normalization Functions<a class="headerlink" href="#custom-normalization-functions" title="Link to this heading"></a></h2>
 <p>If the current set of normalization algorithms are not sufficient for
 your data, you may need to develop a custom normalization algorithm.
 We know of three solutions to that problem:</p>

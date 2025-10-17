@@ -1,7 +1,7 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en">
+<html class="writer-html5" lang="en" data-content_root="../../../">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -13,9 +13,9 @@
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=f6245a2f"></script>
-      <script src="../../../_static/doctools.js?v=888ff710"></script>
-      <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
+      <script src="../../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="../../../_static/copybutton.js?v=f281be69"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -158,7 +158,9 @@
 <span class="p">)</span>
 
 
-<div class="viewcode-block" id="info"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.logging_helper.info">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">info</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">alg_id</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="info">
+<a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.logging_helper.info">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">info</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">alg_id</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This helper function is used to log operations in processing history of mspass object.</span>
 <span class="sd">    Per best practice, every operations happen on the mspass object should be logged.</span>
@@ -222,7 +224,10 @@
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Not treated as fatal but a bug fix is needed&quot;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="ensemble_error"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.logging_helper.ensemble_error">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">ensemble_error</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">alg</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">err_severity</span><span class="o">=</span><span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">):</span>
+
+<div class="viewcode-block" id="ensemble_error">
+<a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.logging_helper.ensemble_error">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">ensemble_error</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">alg</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">err_severity</span><span class="o">=</span><span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is a small helper function useful for error handlers in except</span>
 <span class="sd">    blocks for ensemble objects.  If a function is called on an ensemble</span>
@@ -253,7 +258,10 @@
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Not treated as fatal but a bug fix is needed&quot;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="reduce"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.logging_helper.reduce">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">reduce</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="n">data2</span><span class="p">,</span> <span class="n">alg_id</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">):</span>
+
+<div class="viewcode-block" id="reduce">
+<a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.logging_helper.reduce">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">reduce</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="n">data2</span><span class="p">,</span> <span class="n">alg_id</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function replicates the processing history of data2 onto data1, which is a common use case</span>
 <span class="sd">    in reduce stage. If data1 is dead, it will keep silent, i.e. no history will be replicated. If data2 is dead,</span>
@@ -309,6 +317,7 @@
             <span class="nb">type</span><span class="p">(</span><span class="n">data1</span><span class="p">),</span>
         <span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Not treated as fatal but a bug fix is needed&quot;</span><span class="p">)</span></div>
+
 </pre></div>
 
            </div>

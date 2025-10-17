@@ -1,7 +1,7 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en">
+<html class="writer-html5" lang="en" data-content_root="../">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
@@ -14,9 +14,9 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=f6245a2f"></script>
-      <script src="../_static/doctools.js?v=888ff710"></script>
-      <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+      <script src="../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="../_static/copybutton.js?v=f281be69"></script>
     <script src="../_static/js/theme.js"></script>
@@ -153,9 +153,9 @@
            <div itemprop="articleBody">
              
   <section id="graphics-in-mspass">
-<span id="graphics"></span><h1>Graphics in MsPASS<a class="headerlink" href="#graphics-in-mspass" title="Permalink to this heading"></a></h1>
+<span id="graphics"></span><h1>Graphics in MsPASS<a class="headerlink" href="#graphics-in-mspass" title="Link to this heading"></a></h1>
 <section id="overview">
-<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this heading"></a></h2>
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
 <p>Data visualization, in general, and graphics to visualize seismic data,
 in particular, are critical elements to understand data and the
 result of a processing workflow.   On the other hand, because of the
@@ -186,7 +186,7 @@ matplotlib plots from primitives - item 1.</p></li>
 </ol>
 </section>
 <section id="matplotlib-graphics">
-<h2>Matplotlib graphics<a class="headerlink" href="#matplotlib-graphics" title="Permalink to this heading"></a></h2>
+<h2>Matplotlib graphics<a class="headerlink" href="#matplotlib-graphics" title="Link to this heading"></a></h2>
 <p>Because data vectors of
 <a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeries</span></code></a> and
 <a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">Seismogram</span></code></a> objects
@@ -240,7 +240,7 @@ itself uses matplotlib.</p></li>
 </ol>
 </section>
 <section id="native-graphics">
-<h2>Native Graphics<a class="headerlink" href="#native-graphics" title="Permalink to this heading"></a></h2>
+<h2>Native Graphics<a class="headerlink" href="#native-graphics" title="Link to this heading"></a></h2>
 <p>The goal of the graphics module in MsPASS was to
 provide simple tools to plot native data types.  We thousands first remind
 the user what is considered “native data” in MsPASS.  They are:
@@ -294,42 +294,46 @@ For details of the API and how to use our plotting capabilities is
 to run that tutorial and review the sphynx documentation on the
 <a class="reference internal" href="../python_api/mspasspy.graphics.html#module-mspasspy.graphics" title="mspasspy.graphics"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mspasspy.graphics</span></code></a> module.</p>
 <figure class="align-center" id="id1">
-<span id="wt-figure"></span><a class="reference internal image-reference" href="../_images/wt_example.png"><img alt="../_images/wt_example.png" src="../_images/wt_example.png" style="width: 600px;" /></a>
+<span id="wt-figure"></span><a class="reference internal image-reference" href="../_images/wt_example.png"><img alt="../_images/wt_example.png" src="../_images/wt_example.png" style="width: 600px;" />
+</a>
 <figcaption>
 <p><span class="caption-number">Fig. 14 </span><span class="caption-text">Figure 1. Example of wiggle trace plot created by
 <a class="reference internal" href="../python_api/mspasspy.graphics.html#mspasspy.graphics.SeismicPlotter" title="mspasspy.graphics.SeismicPlotter"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.graphics.SeismicPlotter</span></code></a>.  This type of plot
 is created with the “style” set to “wt”.
-(Set with <a class="reference internal" href="../python_api/mspasspy.graphics.html#mspasspy.graphics.SeismicPlotter.change_style" title="mspasspy.graphics.SeismicPlotter.change_style"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mspasspy.graphics.SeismicPlotter.change_style()</span></code></a> method)</span><a class="headerlink" href="#id1" title="Permalink to this image"></a></p>
+(Set with <a class="reference internal" href="../python_api/mspasspy.graphics.html#mspasspy.graphics.SeismicPlotter.change_style" title="mspasspy.graphics.SeismicPlotter.change_style"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mspasspy.graphics.SeismicPlotter.change_style()</span></code></a> method)</span><a class="headerlink" href="#id1" title="Link to this image"></a></p>
 </figcaption>
 </figure>
 <figure class="align-center" id="id2">
-<span id="wtva-figure"></span><a class="reference internal image-reference" href="../_images/wtva_example.png"><img alt="../_images/wtva_example.png" src="../_images/wtva_example.png" style="width: 600px;" /></a>
+<span id="wtva-figure"></span><a class="reference internal image-reference" href="../_images/wtva_example.png"><img alt="../_images/wtva_example.png" src="../_images/wtva_example.png" style="width: 600px;" />
+</a>
 <figcaption>
 <p><span class="caption-number">Fig. 15 </span><span class="caption-text">Figure 2.  Example of wiggle variable area trace plot created by
 <a class="reference internal" href="../python_api/mspasspy.graphics.html#mspasspy.graphics.SeismicPlotter" title="mspasspy.graphics.SeismicPlotter"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.graphics.SeismicPlotter</span></code></a>.  The data plotted
 are the same as Figure 1.  This type of plot
 is created with the “style” set to “wtva”
-(Set with <a class="reference internal" href="../python_api/mspasspy.graphics.html#mspasspy.graphics.SeismicPlotter.change_style" title="mspasspy.graphics.SeismicPlotter.change_style"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mspasspy.graphics.SeismicPlotter.change_style()</span></code></a> method)</span><a class="headerlink" href="#id2" title="Permalink to this image"></a></p>
+(Set with <a class="reference internal" href="../python_api/mspasspy.graphics.html#mspasspy.graphics.SeismicPlotter.change_style" title="mspasspy.graphics.SeismicPlotter.change_style"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mspasspy.graphics.SeismicPlotter.change_style()</span></code></a> method)</span><a class="headerlink" href="#id2" title="Link to this image"></a></p>
 </figcaption>
 </figure>
 <figure class="align-center" id="id3">
-<span id="wtvaimg-figure"></span><a class="reference internal image-reference" href="../_images/wtvaimg_example.png"><img alt="../_images/wtvaimg_example.png" src="../_images/wtvaimg_example.png" style="width: 600px;" /></a>
+<span id="wtvaimg-figure"></span><a class="reference internal image-reference" href="../_images/wtvaimg_example.png"><img alt="../_images/wtvaimg_example.png" src="../_images/wtvaimg_example.png" style="width: 600px;" />
+</a>
 <figcaption>
 <p><span class="caption-number">Fig. 16 </span><span class="caption-text">Figure 3.  Example of wiggle trace variable area with an image overlay created by
 <a class="reference internal" href="../python_api/mspasspy.graphics.html#mspasspy.graphics.SeismicPlotter" title="mspasspy.graphics.SeismicPlotter"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.graphics.SeismicPlotter</span></code></a>.  The data plotted
 are the same as Figure 1.  This type of plot
 is created with the “style” set to “wtvaimg”.
-(Set with <a class="reference internal" href="../python_api/mspasspy.graphics.html#mspasspy.graphics.SeismicPlotter.change_style" title="mspasspy.graphics.SeismicPlotter.change_style"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mspasspy.graphics.SeismicPlotter.change_style()</span></code></a> method)</span><a class="headerlink" href="#id3" title="Permalink to this image"></a></p>
+(Set with <a class="reference internal" href="../python_api/mspasspy.graphics.html#mspasspy.graphics.SeismicPlotter.change_style" title="mspasspy.graphics.SeismicPlotter.change_style"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mspasspy.graphics.SeismicPlotter.change_style()</span></code></a> method)</span><a class="headerlink" href="#id3" title="Link to this image"></a></p>
 </figcaption>
 </figure>
 <figure class="align-center" id="id4">
-<span id="img-figure"></span><a class="reference internal image-reference" href="../_images/img_example.png"><img alt="../_images/img_example.png" src="../_images/img_example.png" style="width: 600px;" /></a>
+<span id="img-figure"></span><a class="reference internal image-reference" href="../_images/img_example.png"><img alt="../_images/img_example.png" src="../_images/img_example.png" style="width: 600px;" />
+</a>
 <figcaption>
 <p><span class="caption-number">Fig. 17 </span><span class="caption-text">Figure 4.  Example of image plot created by
 <a class="reference internal" href="../python_api/mspasspy.graphics.html#mspasspy.graphics.SeismicPlotter" title="mspasspy.graphics.SeismicPlotter"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.graphics.SeismicPlotter</span></code></a>.  The data plotted
 are the same as Figure 1.  This type of plot
 is created with the “style” set to “img”.
-(Set with <a class="reference internal" href="../python_api/mspasspy.graphics.html#mspasspy.graphics.SeismicPlotter.change_style" title="mspasspy.graphics.SeismicPlotter.change_style"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mspasspy.graphics.SeismicPlotter.change_style()</span></code></a> method)</span><a class="headerlink" href="#id4" title="Permalink to this image"></a></p>
+(Set with <a class="reference internal" href="../python_api/mspasspy.graphics.html#mspasspy.graphics.SeismicPlotter.change_style" title="mspasspy.graphics.SeismicPlotter.change_style"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mspasspy.graphics.SeismicPlotter.change_style()</span></code></a> method)</span><a class="headerlink" href="#id4" title="Link to this image"></a></p>
 </figcaption>
 </figure>
 <p>Finally, we would note that the plotters automatically handle switching to
@@ -369,7 +373,7 @@ use one of the functions for data scaling in
 <a class="reference internal" href="../python_api/mspasspy.ccore.html#module-mspasspy.ccore.algorithms.amplitudes" title="mspasspy.ccore.algorithms.amplitudes"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mspasspy.ccore.algorithms.amplitudes</span></code></a>.</p>
 </section>
 <section id="obspy-graphics">
-<h2>Obspy Graphics<a class="headerlink" href="#obspy-graphics" title="Permalink to this heading"></a></h2>
+<h2>Obspy Graphics<a class="headerlink" href="#obspy-graphics" title="Link to this heading"></a></h2>
 <p>User’s familiar with obspy may, in come cases, prefer to utilize obspy’s
 built in graphics.   Obspy’s data objects
 (<a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.trace.Trace.html#obspy.core.trace.Trace" title="(in ObsPy v1.4.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Trace</span></code></a>
@@ -385,7 +389,7 @@ These converters can be used in plotting scrips like the following:</p>
 </div>
 </section>
 <section id="extending-mspass-graphics">
-<h2>Extending MsPASS Graphics<a class="headerlink" href="#extending-mspass-graphics" title="Permalink to this heading"></a></h2>
+<h2>Extending MsPASS Graphics<a class="headerlink" href="#extending-mspass-graphics" title="Link to this heading"></a></h2>
 <p>As noted at the beginning of this section the graphics available in
 MsPASS are simple by design.   If you need different graphics capabilities
 you have three different options we are aware of:</p>

@@ -1,7 +1,7 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en">
+<html class="writer-html5" lang="en" data-content_root="../../../">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -13,9 +13,9 @@
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=f6245a2f"></script>
-      <script src="../../../_static/doctools.js?v=888ff710"></script>
-      <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
+      <script src="../../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="../../../_static/copybutton.js?v=f281be69"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -187,7 +187,9 @@
     <span class="k">raise</span> <span class="ne">ModuleNotFoundError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="read_ensemble_parallel"><a class="viewcode-back" href="../../../python_api/mspasspy.io.html#mspasspy.io.distributed.read_ensemble_parallel">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">read_ensemble_parallel</span><span class="p">(</span>
+<div class="viewcode-block" id="read_ensemble_parallel">
+<a class="viewcode-back" href="../../../python_api/mspasspy.io.html#mspasspy.io.distributed.read_ensemble_parallel">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">read_ensemble_parallel</span><span class="p">(</span>
     <span class="n">query</span><span class="p">,</span>
     <span class="n">db</span><span class="p">,</span>
     <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;wf_TimeSeries&quot;</span><span class="p">,</span>
@@ -238,7 +240,10 @@
     <span class="k">return</span> <span class="n">ensemble</span></div>
 
 
-<div class="viewcode-block" id="post2metadata"><a class="viewcode-back" href="../../../python_api/mspasspy.io.html#mspasspy.io.distributed.post2metadata">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">post2metadata</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">doc</span><span class="p">):</span>
+
+<div class="viewcode-block" id="post2metadata">
+<a class="viewcode-back" href="../../../python_api/mspasspy.io.html#mspasspy.io.distributed.post2metadata">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">post2metadata</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">doc</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Posts content of key-value pair container doc to Metadata container</span>
 <span class="sd">    of mspass_object.  Operation only requires that doc be iterable</span>
@@ -264,7 +269,10 @@
     <span class="k">return</span> <span class="n">mspass_object</span></div>
 
 
-<div class="viewcode-block" id="read_distributed_data"><a class="viewcode-back" href="../../../python_api/mspasspy.io.html#mspasspy.io.distributed.read_distributed_data">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">read_distributed_data</span><span class="p">(</span>
+
+<div class="viewcode-block" id="read_distributed_data">
+<a class="viewcode-back" href="../../../python_api/mspasspy.io.html#mspasspy.io.distributed.read_distributed_data">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">read_distributed_data</span><span class="p">(</span>
     <span class="n">data</span><span class="p">,</span>
     <span class="n">db</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">query</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -456,7 +464,7 @@
 <span class="sd">      functions behavor.  Note when set as a Database handle the cursor</span>
 <span class="sd">      argument must be set.  Otherwise it is ignored.</span>
 <span class="sd">    :type data: :class:`mspasspy.db.database.Database` or :class:`pandas.DataFrame`</span>
-<span class="sd">      or :class:`dask.dataframe.core.DataFrame` or :class:`pyspark.sql.dataframe.DataFrame`</span>
+<span class="sd">      or :class:`dask.dataframe.DataFrame` or :class:`pyspark.sql.dataframe.DataFrame`</span>
 <span class="sd">      for atomic data.  List of python dicts defining queries to read a</span>
 <span class="sd">      dataset of ensembles.</span>
 
@@ -665,7 +673,7 @@
         <span class="n">db</span> <span class="o">=</span> <span class="n">data</span>
     <span class="k">elif</span> <span class="p">(</span>
         <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span>
-        <span class="ow">or</span> <span class="p">(</span><span class="n">_mspasspy_has_dask</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">dask</span><span class="o">.</span><span class="n">dataframe</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">))</span>
+        <span class="ow">or</span> <span class="p">(</span><span class="n">_mspasspy_has_dask</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">dask</span><span class="o">.</span><span class="n">dataframe</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">))</span>
         <span class="ow">or</span> <span class="p">(</span><span class="n">_mspasspy_has_pyspark</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">pyspark</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">dataframe</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">))</span>
     <span class="p">):</span>
         <span class="n">ensemble_mode</span> <span class="o">=</span> <span class="kc">False</span>
@@ -833,9 +841,12 @@
                 <span class="c1"># DataFrame.   It may be better to write a small</span>
                 <span class="c1"># converter run with a map operator row by row</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span>
-                    <span class="n">data</span> <span class="o">=</span> <span class="n">dask</span><span class="o">.</span><span class="n">dataframe</span><span class="o">.</span><span class="n">from_pandas</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">npartitions</span><span class="o">=</span><span class="n">npartitions</span><span class="p">)</span>
-                <span class="c1"># format arg s essential as default is tuple</span>
-                <span class="n">plist</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">to_bag</span><span class="p">(</span><span class="nb">format</span><span class="o">=</span><span class="s2">&quot;dict&quot;</span><span class="p">)</span>
+                    <span class="n">plist</span> <span class="o">=</span> <span class="n">dask</span><span class="o">.</span><span class="n">bag</span><span class="o">.</span><span class="n">from_sequence</span><span class="p">(</span>
+                        <span class="n">data</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="s2">&quot;records&quot;</span><span class="p">),</span> <span class="n">npartitions</span><span class="o">=</span><span class="n">npartitions</span>
+                    <span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># data is already a dask DataFrame</span>
+                    <span class="n">plist</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">to_bag</span><span class="p">(</span><span class="nb">format</span><span class="o">=</span><span class="s2">&quot;dict&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># logic above should guarantee data is a Database</span>
             <span class="c1"># object that can be queried and used to generate the bag/rdd</span>
@@ -922,6 +933,7 @@
                 <span class="n">plist</span> <span class="o">=</span> <span class="n">plist</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">normalize_function</span><span class="p">,</span> <span class="n">nrm</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">plist</span></div>
+
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_partitioned_save_wfdoc</span><span class="p">(</span>
@@ -1048,7 +1060,9 @@
     <span class="k">return</span> <span class="n">wfids</span>
 
 
-<div class="viewcode-block" id="pyspark_mappartition_interface"><a class="viewcode-back" href="../../../python_api/mspasspy.io.html#mspasspy.io.distributed.pyspark_mappartition_interface">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">pyspark_mappartition_interface</span><span class="p">:</span>
+<div class="viewcode-block" id="pyspark_mappartition_interface">
+<a class="viewcode-back" href="../../../python_api/mspasspy.io.html#mspasspy.io.distributed.pyspark_mappartition_interface">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">pyspark_mappartition_interface</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Interface class required for pyspark mapPartition.</span>
 
@@ -1099,7 +1113,9 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">db</span> <span class="o">=</span> <span class="n">db</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">collection</span> <span class="o">=</span> <span class="n">collection</span>
 
-<div class="viewcode-block" id="pyspark_mappartition_interface.partitioned_save_wfdoc"><a class="viewcode-back" href="../../../python_api/mspasspy.io.html#mspasspy.io.distributed.pyspark_mappartition_interface.partitioned_save_wfdoc">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">partitioned_save_wfdoc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iterator</span><span class="p">):</span>
+<div class="viewcode-block" id="pyspark_mappartition_interface.partitioned_save_wfdoc">
+<a class="viewcode-back" href="../../../python_api/mspasspy.io.html#mspasspy.io.distributed.pyspark_mappartition_interface.partitioned_save_wfdoc">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">partitioned_save_wfdoc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iterator</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Method used as a wrapper to pass on to pyspark&#39;s mapPartitions</span>
 <span class="sd">        operator.  iterator is assumed to be the iterator passed to</span>
@@ -1108,10 +1124,14 @@
         <span class="n">wfidlist</span> <span class="o">=</span> <span class="n">_partitioned_save_wfdoc</span><span class="p">(</span>
             <span class="n">iterator</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">collection</span>
         <span class="p">)</span>
-        <span class="k">return</span> <span class="n">wfidlist</span></div></div>
+        <span class="k">return</span> <span class="n">wfidlist</span></div>
+</div>
 
 
-<div class="viewcode-block" id="post_error_log"><a class="viewcode-back" href="../../../python_api/mspasspy.io.html#mspasspy.io.distributed.post_error_log">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">post_error_log</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">doc</span><span class="p">,</span> <span class="n">other_elog</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">elog_key</span><span class="o">=</span><span class="s2">&quot;error_log&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+
+<div class="viewcode-block" id="post_error_log">
+<a class="viewcode-back" href="../../../python_api/mspasspy.io.html#mspasspy.io.distributed.post_error_log">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">post_error_log</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">doc</span><span class="p">,</span> <span class="n">other_elog</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">elog_key</span><span class="o">=</span><span class="s2">&quot;error_log&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Posts error log data as a subdocument to arg0 datum (symbol d).</span>
 
@@ -1137,6 +1157,7 @@
         <span class="n">elogdoc</span> <span class="o">=</span> <span class="n">elog2doc</span><span class="p">(</span><span class="n">elog</span><span class="p">)</span>
         <span class="n">doc</span><span class="p">[</span><span class="n">elog_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">elogdoc</span>
     <span class="k">return</span> <span class="n">doc</span></div>
+
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_save_ensemble_wfdocs</span><span class="p">(</span>
@@ -1388,7 +1409,9 @@
     <span class="k">return</span> <span class="n">doc</span>
 
 
-<div class="viewcode-block" id="write_distributed_data"><a class="viewcode-back" href="../../../python_api/mspasspy.io.html#mspasspy.io.distributed.write_distributed_data">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">write_distributed_data</span><span class="p">(</span>
+<div class="viewcode-block" id="write_distributed_data">
+<a class="viewcode-back" href="../../../python_api/mspasspy.io.html#mspasspy.io.distributed.write_distributed_data">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">write_distributed_data</span><span class="p">(</span>
     <span class="n">data</span><span class="p">,</span>
     <span class="n">db</span><span class="p">,</span>
     <span class="n">data_are_atomic</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -1870,7 +1893,10 @@
     <span class="k">return</span> <span class="n">data</span></div>
 
 
-<div class="viewcode-block" id="read_to_dataframe"><a class="viewcode-back" href="../../../python_api/mspasspy.io.html#mspasspy.io.distributed.read_to_dataframe">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">read_to_dataframe</span><span class="p">(</span>
+
+<div class="viewcode-block" id="read_to_dataframe">
+<a class="viewcode-back" href="../../../python_api/mspasspy.io.html#mspasspy.io.distributed.read_to_dataframe">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">read_to_dataframe</span><span class="p">(</span>
     <span class="n">db</span><span class="p">,</span>
     <span class="n">cursor</span><span class="p">,</span>
     <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;promiscuous&quot;</span><span class="p">,</span>
@@ -1986,6 +2012,7 @@
             <span class="nb">print</span><span class="p">(</span><span class="n">entry</span><span class="o">.</span><span class="n">algorithm</span><span class="p">,</span> <span class="n">entry</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="n">entry</span><span class="o">.</span><span class="n">badness</span><span class="p">)</span>
     <span class="c1"># convert the metadata list to a dataframe</span>
     <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">json_normalize</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">cur</span><span class="p">:</span> <span class="n">cur</span><span class="o">.</span><span class="n">todict</span><span class="p">(),</span> <span class="n">md_list</span><span class="p">))</span></div>
+
 </pre></div>
 
            </div>

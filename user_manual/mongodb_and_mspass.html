@@ -1,7 +1,7 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en">
+<html class="writer-html5" lang="en" data-content_root="../">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
@@ -14,9 +14,9 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=f6245a2f"></script>
-      <script src="../_static/doctools.js?v=888ff710"></script>
-      <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+      <script src="../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="../_static/copybutton.js?v=f281be69"></script>
     <script src="../_static/js/theme.js"></script>
@@ -171,12 +171,12 @@
            <div itemprop="articleBody">
              
   <section id="using-mongodb-with-mspass">
-<span id="mongodb-and-mspass"></span><h1>Using MongoDB with MsPASS<a class="headerlink" href="#using-mongodb-with-mspass" title="Permalink to this heading"></a></h1>
+<span id="mongodb-and-mspass"></span><h1>Using MongoDB with MsPASS<a class="headerlink" href="#using-mongodb-with-mspass" title="Link to this heading"></a></h1>
 <section id="prof-gary-l-pavlis">
-<h2><em>Prof. Gary L. Pavlis</em><a class="headerlink" href="#prof-gary-l-pavlis" title="Permalink to this heading"></a></h2>
+<h2><em>Prof. Gary L. Pavlis</em><a class="headerlink" href="#prof-gary-l-pavlis" title="Link to this heading"></a></h2>
 </section>
 <section id="overview-and-roadmap">
-<h2>Overview and Roadmap<a class="headerlink" href="#overview-and-roadmap" title="Permalink to this heading"></a></h2>
+<h2>Overview and Roadmap<a class="headerlink" href="#overview-and-roadmap" title="Link to this heading"></a></h2>
 <p>There are a huge number of internet and printed resources on the
 Database Management system used in MsPASS called <cite>MongoDB</cite>.
 The reason is that MongoDB is one of the most heavily used open source
@@ -197,9 +197,9 @@ The final section covers an auxiliary issue of MongoDB: indexes.
 Indexes are critical for query performance, but are not required.</p>
 </section>
 <section id="concepts">
-<h2>Concepts<a class="headerlink" href="#concepts" title="Permalink to this heading"></a></h2>
+<h2>Concepts<a class="headerlink" href="#concepts" title="Link to this heading"></a></h2>
 <section id="mongodb-for-rdbms-users">
-<h3>MongoDB for RDBMS Users<a class="headerlink" href="#mongodb-for-rdbms-users" title="Permalink to this heading"></a></h3>
+<h3>MongoDB for RDBMS Users<a class="headerlink" href="#mongodb-for-rdbms-users" title="Link to this heading"></a></h3>
 <p>Users who are familiar with Relational DataBase Management Systems (RDBMS)
 will find MongoDB has many similar concepts, but also is fundamentally
 different from any RDBMS.  In an RDBMS the conceptual model of the data
@@ -297,7 +297,7 @@ of using cursors in the MsPASS User’s manual and any source discussing
 MongoDB.</p>
 </section>
 <section id="mongodb-for-python-programmers">
-<h3>MongoDB for Python programmers<a class="headerlink" href="#mongodb-for-python-programmers" title="Permalink to this heading"></a></h3>
+<h3>MongoDB for Python programmers<a class="headerlink" href="#mongodb-for-python-programmers" title="Link to this heading"></a></h3>
 <p>All python programmers will be familiar with the container
 commonly called a “dictionary” (dict).   Other sources call the same concept
 an “associative array” (Antelope) or “map container” (C++ and Java).
@@ -349,7 +349,7 @@ illustrate this.</p>
 </div>
 </section>
 <section id="mongodb-for-pandas-users">
-<h3>MongoDB for Pandas Users<a class="headerlink" href="#mongodb-for-pandas-users" title="Permalink to this heading"></a></h3>
+<h3>MongoDB for Pandas Users<a class="headerlink" href="#mongodb-for-pandas-users" title="Link to this heading"></a></h3>
 <p>Most users who have had any significant experience with python will
 likely have encountered pandas.   The name “pandas” is
 one of those strained acronyms.   Multiple online sources indicate the
@@ -448,9 +448,9 @@ can be parallelized.</p>
 </section>
 </section>
 <section id="queries-read-of-crud">
-<h2>Queries (Read of CRUD)<a class="headerlink" href="#queries-read-of-crud" title="Permalink to this heading"></a></h2>
+<h2>Queries (Read of CRUD)<a class="headerlink" href="#queries-read-of-crud" title="Link to this heading"></a></h2>
 <section id="query-language">
-<h3>Query language<a class="headerlink" href="#query-language" title="Permalink to this heading"></a></h3>
+<h3>Query language<a class="headerlink" href="#query-language" title="Link to this heading"></a></h3>
 <p>In my experience the single most important usage of a database like
 MongoDB in MsPASS research data processing is defining queries to
 select a subset of data holdings or to define groupings (ensembles)
@@ -495,7 +495,7 @@ between multiple key operations.  An OR must be specified differently
 these fundamentals.</p>
 </section>
 <section id="query-methods">
-<h3>Query methods<a class="headerlink" href="#query-methods" title="Permalink to this heading"></a></h3>
+<h3>Query methods<a class="headerlink" href="#query-methods" title="Link to this heading"></a></h3>
 <p>Querying (read) is again a “collection operation”.   That is, if we set
 the symbol <cite>db</cite> to a MsPASS or MongoDB <cite>Database</cite> object, the query
 functions are “methods” of a collection object.   (see longer discussion
@@ -550,7 +550,7 @@ but it is of use largely for interactive debugging.</p>
 <p>We will next consider a series of increasingly complicated examples.</p>
 </section>
 <section id="simple-single-key-queries">
-<h3>Simple (single key) queries<a class="headerlink" href="#simple-single-key-queries" title="Permalink to this heading"></a></h3>
+<h3>Simple (single key) queries<a class="headerlink" href="#simple-single-key-queries" title="Link to this heading"></a></h3>
 <p>Single key queries are always of the form:
 <cite>{key : expression}</cite> where <cite>key</cite> is the attribute that is to be tested
 by the query and <cite>expression</cite> is either: (1) another dictionary or
@@ -592,7 +592,7 @@ language for text-based filtering.  See the link above or do a web
 search for more examples.</p>
 </section>
 <section id="multiple-key-queries">
-<h3>Multiple key queries<a class="headerlink" href="#multiple-key-queries" title="Permalink to this heading"></a></h3>
+<h3>Multiple key queries<a class="headerlink" href="#multiple-key-queries" title="Link to this heading"></a></h3>
 <p>A query to test the value of more than one attribute uses a dictionary
 with multiple keys.  In most cases each key
 defines an attribute to be each tested for matches by the query operation.
@@ -628,7 +628,7 @@ For example, the example query above could be stated in works as:
 query equivalent requires a compound query (next section).</p>
 </section>
 <section id="compound-queries">
-<h3>Compound queries<a class="headerlink" href="#compound-queries" title="Permalink to this heading"></a></h3>
+<h3>Compound queries<a class="headerlink" href="#compound-queries" title="Link to this heading"></a></h3>
 <p>Compound queries mean multiple conditions applied to one or more attributes.
 A type example is a very common one in seismology.  That is, waveform
 data are always stored as segments with each segment having a start time
@@ -736,7 +736,7 @@ The above could thus be express equivalently with this one:</p>
 </div>
 </section>
 <section id="geospatial-queries">
-<h3>Geospatial queries<a class="headerlink" href="#geospatial-queries" title="Permalink to this heading"></a></h3>
+<h3>Geospatial queries<a class="headerlink" href="#geospatial-queries" title="Link to this heading"></a></h3>
 <p>MongoDB has a fairly sophisticated geospatial querying feature.
 A first order thing you must realize about geospatial indexing is that
 to be useful two things are required:</p>
@@ -877,7 +877,7 @@ any kind of geospatial grouping, it is worth investing the effort to
 understand MongoDB’s geospatial operators and how we use them in MsPASS.</p>
 </section>
 <section id="sorting">
-<h3>Sorting<a class="headerlink" href="#sorting" title="Permalink to this heading"></a></h3>
+<h3>Sorting<a class="headerlink" href="#sorting" title="Link to this heading"></a></h3>
 <p>There are many situations where an algorithm using input from
 a MongoDB query requires a list sorted by one or more keys.
 Defining a sort is straightforward but a little bit weird
@@ -967,7 +967,7 @@ the pymongo API has to use a list to preserve order.</p></li>
 </ol>
 </section>
 <section id="report-generators">
-<h3>Report generators<a class="headerlink" href="#report-generators" title="Permalink to this heading"></a></h3>
+<h3>Report generators<a class="headerlink" href="#report-generators" title="Link to this heading"></a></h3>
 <p>One of the important applications of queries in MsPASS is to generate
 a human readable report on the content of a database that is to be used
 as input for processing.  An option for experienced programmers familiar with the
@@ -1015,7 +1015,7 @@ range of recording.  It is a variant of a code block in our
 </section>
 </section>
 <section id="saves-create-of-crud">
-<h2>Saves (Create of CRUD)<a class="headerlink" href="#saves-create-of-crud" title="Permalink to this heading"></a></h2>
+<h2>Saves (Create of CRUD)<a class="headerlink" href="#saves-create-of-crud" title="Link to this heading"></a></h2>
 <p>The first letter of CRUD is the save operation.   A save of some kind
 is usually the first thing one does in building a seismic dataset
 as there needs to be some what to populate the database collections.
@@ -1065,7 +1065,7 @@ than the same number of one-at-a-time transactions.</p>
 </div>
 </section>
 <section id="updates-u-of-crud">
-<h2>Updates (U of CRUD)<a class="headerlink" href="#updates-u-of-crud" title="Permalink to this heading"></a></h2>
+<h2>Updates (U of CRUD)<a class="headerlink" href="#updates-u-of-crud" title="Link to this heading"></a></h2>
 <p>Updates have a similar API to the insert/create API.  That is, there
 are again two different collection methods:</p>
 <ol class="arabic simple">
@@ -1142,7 +1142,7 @@ sense in that context because it assumes the matching was done externally
 with one of the MsPASS matchers.</p>
 </section>
 <section id="delete-d-of-crud">
-<h2>Delete (D of CRUD)<a class="headerlink" href="#delete-d-of-crud" title="Permalink to this heading"></a></h2>
+<h2>Delete (D of CRUD)<a class="headerlink" href="#delete-d-of-crud" title="Link to this heading"></a></h2>
 <p>As noted elsewhere, we take the position that for most design uses
 of MsPASS delete operations should be rare.  To reiterate, the reason
 is that MsPASS was designed with the idea that the database is used
@@ -1174,7 +1174,7 @@ occur for the same station due to time-dependent metadata:</p>
 </div>
 </section>
 <section id="indexes">
-<h2>Indexes<a class="headerlink" href="#indexes" title="Permalink to this heading"></a></h2>
+<h2>Indexes<a class="headerlink" href="#indexes" title="Link to this heading"></a></h2>
 <p>An index is desirable in any database system to improve read performance.
 Without an index a query requires a linear search through the entire
 database to find matching records.  As a result read and update performance on

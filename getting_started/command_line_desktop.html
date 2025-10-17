@@ -1,7 +1,7 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en">
+<html class="writer-html5" lang="en" data-content_root="../">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
@@ -14,9 +14,9 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=f6245a2f"></script>
-      <script src="../_static/doctools.js?v=888ff710"></script>
-      <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+      <script src="../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="../_static/copybutton.js?v=f281be69"></script>
     <script src="../_static/js/theme.js"></script>
@@ -157,9 +157,9 @@
            <div itemprop="articleBody">
              
   <section id="command-line-docker-desktop-operation">
-<span id="id1"></span><h1>Command Line Docker Desktop Operation<a class="headerlink" href="#command-line-docker-desktop-operation" title="Permalink to this heading"></a></h1>
+<span id="id1"></span><h1>Command Line Docker Desktop Operation<a class="headerlink" href="#command-line-docker-desktop-operation" title="Link to this heading"></a></h1>
 <section id="overview">
-<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this heading"></a></h2>
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
 <p>Most desktop users will likely want to use the
 <code class="code docutils literal notranslate"><span class="pre">mspass_desktop</span></code> application described
 in <a class="reference internal" href="mspass_desktop.html#mspass-desktop"><span class="std std-ref">this section of the MsPASS documentation</span></a>.
@@ -175,7 +175,7 @@ do that described in separate subsections below:
 application.</p>
 </section>
 <section id="installing-and-launching-docker-desktop">
-<h2>Installing and Launching Docker Desktop<a class="headerlink" href="#installing-and-launching-docker-desktop" title="Permalink to this heading"></a></h2>
+<h2>Installing and Launching Docker Desktop<a class="headerlink" href="#installing-and-launching-docker-desktop" title="Link to this heading"></a></h2>
 <p>Docker is required in normal use to run MsPASS on desktop systems.
 The alternative is a more complicated installation of the components
 built from source as described on
@@ -197,7 +197,7 @@ when the system boots.   On linux systems only the command line interface
 is available to manage containers.</p>
 </section>
 <section id="download-mspass-container">
-<h2>Download MsPASS Container<a class="headerlink" href="#download-mspass-container" title="Permalink to this heading"></a></h2>
+<h2>Download MsPASS Container<a class="headerlink" href="#download-mspass-container" title="Link to this heading"></a></h2>
 <p>The MsPASS container image is built and hosted on <a class="reference external" href="https://hub.docker.com/r/mspass/mspass">Docker Hub</a>.
 It is also available in the <a class="reference external" href="https://github.com/mspass-team/mspass/pkgs/container/mspass">GitHub Container Registry</a>.
 Once you have docker setup properly, use the following command in a terminal
@@ -224,7 +224,7 @@ In the discussion below files names we reference that reside inside a container 
 File names on the physical system will be referred to with a normal font text.</p>
 </section>
 <section id="option-1-launching-with-docker-run-command">
-<h2>Option 1:  launching with docker run command<a class="headerlink" href="#option-1-launching-with-docker-run-command" title="Permalink to this heading"></a></h2>
+<h2>Option 1:  launching with docker run command<a class="headerlink" href="#option-1-launching-with-docker-run-command" title="Link to this heading"></a></h2>
 <p>To run MsPASS from the command line cd to a writable directory at the
 top of a directory tree where you the data for your project are located.
 Most MsPASS processing is then initiated with a variant of the
@@ -338,9 +338,9 @@ home page.   You will usually need to type a <cite>ctrl-C</cite> twice in the te
 window you used to launch mpass via docker to force the container to exit.</p>
 </section>
 <section id="option-2-the-docker-compose-command">
-<h2>Option 2:  The docker compose command<a class="headerlink" href="#option-2-the-docker-compose-command" title="Permalink to this heading"></a></h2>
+<h2>Option 2:  The docker compose command<a class="headerlink" href="#option-2-the-docker-compose-command" title="Link to this heading"></a></h2>
 <section id="using-the-standard-configuration">
-<h3>Using the standard configuration<a class="headerlink" href="#using-the-standard-configuration" title="Permalink to this heading"></a></h3>
+<h3>Using the standard configuration<a class="headerlink" href="#using-the-standard-configuration" title="Link to this heading"></a></h3>
 <p>The <code class="code docutils literal notranslate"><span class="pre">docker</span> <span class="pre">run</span></code> command is good for a quick start or for testing, but
 the complex incantation makes it less desirable for repeated use.
 For those who want to run MsPASS repeatedly and not use the <code class="code docutils literal notranslate"><span class="pre">mspass-desktop</span></code>
@@ -350,7 +350,7 @@ be of interest.</p>
 in the “yaml” (Yet Another Markup Language) format.   The following
 example should work for most desktop/laptop systems.</p>
 <div class="literal-block-wrapper docutils container" id="id2">
-<div class="code-block-caption"><span class="caption-number">Listing 1 </span><span class="caption-text">Standard compose.yaml file to run dask as four services on a destkop.</span><a class="headerlink" href="#id2" title="Permalink to this code"></a></div>
+<div class="code-block-caption"><span class="caption-number">Listing 1 </span><span class="caption-text">Standard compose.yaml file to run dask as four services on a destkop.</span><a class="headerlink" href="#id2" title="Link to this code"></a></div>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="nt">services</span><span class="p">:</span>
 <span class="linenos"> 2</span>
 <span class="linenos"> 3</span><span class="w">  </span><span class="nt">mspass-db</span><span class="p">:</span>
@@ -469,7 +469,7 @@ command issued from the same project directory:</p>
 </div>
 </section>
 <section id="configuration-file-content">
-<h3>Configuration File Content<a class="headerlink" href="#configuration-file-content" title="Permalink to this heading"></a></h3>
+<h3>Configuration File Content<a class="headerlink" href="#configuration-file-content" title="Link to this heading"></a></h3>
 <p>An important benefit of <code class="code docutils literal notranslate"><span class="pre">docker</span> <span class="pre">compose</span></code> is that it emphasizes
 that MsPASS can be abstracted as four distince “services”.
 The yaml file explicitly defines that with the <em>services</em> key at the top

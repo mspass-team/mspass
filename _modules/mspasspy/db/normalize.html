@@ -1,7 +1,7 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en">
+<html class="writer-html5" lang="en" data-content_root="../../../">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -13,9 +13,9 @@
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=f6245a2f"></script>
-      <script src="../../../_static/doctools.js?v=888ff710"></script>
-      <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
+      <script src="../../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="../../../_static/copybutton.js?v=f281be69"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -166,10 +166,12 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
 <span class="n">type_pdd</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">DataFrame</span>
-<span class="n">type_ddd</span> <span class="o">=</span> <span class="n">dask</span><span class="o">.</span><span class="n">dataframe</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">DataFrame</span>
+<span class="n">type_ddd</span> <span class="o">=</span> <span class="n">dask</span><span class="o">.</span><span class="n">dataframe</span><span class="o">.</span><span class="n">DataFrame</span>
 
 
-<div class="viewcode-block" id="BasicMatcher"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.BasicMatcher">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">BasicMatcher</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<div class="viewcode-block" id="BasicMatcher">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.BasicMatcher">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">BasicMatcher</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This base class defines the api for a generic matching capability for</span>
 <span class="sd">    MongoDB normalization.   The base class is a mostly a skeleton that</span>
@@ -275,7 +277,9 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
-<div class="viewcode-block" id="BasicMatcher.find"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.BasicMatcher.find">[docs]</a>    <span class="nd">@abstractmethod</span>
+<div class="viewcode-block" id="BasicMatcher.find">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.BasicMatcher.find">[docs]</a>
+    <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">find</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Abstraction of the MongoDB database find method with the</span>
@@ -323,7 +327,10 @@
 
 <span class="sd">        &quot;&quot;&quot;</span></div>
 
-<div class="viewcode-block" id="BasicMatcher.find_one"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.BasicMatcher.find_one">[docs]</a>    <span class="nd">@abstractmethod</span>
+
+<div class="viewcode-block" id="BasicMatcher.find_one">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.BasicMatcher.find_one">[docs]</a>
+    <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">find_one</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Abstraction of the MongoDB database find_one method with the</span>
@@ -367,7 +374,10 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="BasicMatcher.find_doc"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.BasicMatcher.find_doc">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">find_doc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">doc</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Metadata</span><span class="p">:</span>
+
+<div class="viewcode-block" id="BasicMatcher.find_doc">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.BasicMatcher.find_doc">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">find_doc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">doc</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Metadata</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        find a unique match using a python dictionary as input.</span>
 
@@ -413,10 +423,14 @@
                     <span class="n">message</span> <span class="o">+=</span> <span class="n">e</span><span class="o">.</span><span class="n">message</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
                 <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Fatal</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">md</span><span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">md</span><span class="p">)</span></div>
+</div>
 
 
-<div class="viewcode-block" id="DatabaseMatcher"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.DatabaseMatcher">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">DatabaseMatcher</span><span class="p">(</span><span class="n">BasicMatcher</span><span class="p">):</span>
+
+<div class="viewcode-block" id="DatabaseMatcher">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.DatabaseMatcher">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DatabaseMatcher</span><span class="p">(</span><span class="n">BasicMatcher</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Matcher using direct database queries to MongoDB.   Each call to</span>
 <span class="sd">    the find method of this class constructs a query, calls the MongoDB</span>
@@ -464,7 +478,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">require_unique_match</span> <span class="o">=</span> <span class="n">require_unique_match</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">prepend_collection_name</span> <span class="o">=</span> <span class="n">prepend_collection_name</span>
 
-<div class="viewcode-block" id="DatabaseMatcher.query_generator"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.DatabaseMatcher.query_generator">[docs]</a>    <span class="nd">@abstractmethod</span>
+<div class="viewcode-block" id="DatabaseMatcher.query_generator">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.DatabaseMatcher.query_generator">[docs]</a>
+    <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">query_generator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Subclasses of this intermediate class MUST implement this</span>
@@ -480,7 +496,10 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="DatabaseMatcher.find"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.DatabaseMatcher.find">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">find</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">):</span>
+
+<div class="viewcode-block" id="DatabaseMatcher.find">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.DatabaseMatcher.find">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">find</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generic database implementation of the find method for this</span>
 <span class="sd">        abstraction.   It returns what the base class api specifies.</span>
@@ -551,7 +570,10 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">[</span><span class="n">metadata_list</span><span class="p">,</span> <span class="n">elog</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="DatabaseMatcher.find_one"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.DatabaseMatcher.find_one">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">find_one</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">):</span>
+
+<div class="viewcode-block" id="DatabaseMatcher.find_one">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.DatabaseMatcher.find_one">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">find_one</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generic database implementation of the find_one method.  The tacit</span>
 <span class="sd">        assumption is that if you call find_one you are expecting a unique</span>
@@ -595,10 +617,14 @@
                 <span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
                     <span class="s2">&quot;DatabaseMatcher.find_one&quot;</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span>
                 <span class="p">)</span>
-                <span class="k">return</span> <span class="p">[</span><span class="n">find_output</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">elog</span><span class="p">]</span></div></div>
+                <span class="k">return</span> <span class="p">[</span><span class="n">find_output</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">elog</span><span class="p">]</span></div>
+</div>
 
 
-<div class="viewcode-block" id="DictionaryCacheMatcher"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.DictionaryCacheMatcher">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">DictionaryCacheMatcher</span><span class="p">(</span><span class="n">BasicMatcher</span><span class="p">):</span>
+
+<div class="viewcode-block" id="DictionaryCacheMatcher">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.DictionaryCacheMatcher">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DictionaryCacheMatcher</span><span class="p">(</span><span class="n">BasicMatcher</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Matcher implementing a caching method based on a python dictionary.</span>
 
@@ -700,7 +726,9 @@
             <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Actual type = </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">db_or_df</span><span class="p">)))</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
 
-<div class="viewcode-block" id="DictionaryCacheMatcher.cache_id"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.DictionaryCacheMatcher.cache_id">[docs]</a>    <span class="nd">@abstractmethod</span>
+<div class="viewcode-block" id="DictionaryCacheMatcher.cache_id">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.DictionaryCacheMatcher.cache_id">[docs]</a>
+    <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">cache_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Concrete implementations must implement this method to define</span>
@@ -721,7 +749,10 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="DictionaryCacheMatcher.db_make_cache_id"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.DictionaryCacheMatcher.db_make_cache_id">[docs]</a>    <span class="nd">@abstractmethod</span>
+
+<div class="viewcode-block" id="DictionaryCacheMatcher.db_make_cache_id">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.DictionaryCacheMatcher.db_make_cache_id">[docs]</a>
+    <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">db_make_cache_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">doc</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Concrete implementation must implement this method to define how</span>
@@ -740,7 +771,10 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="DictionaryCacheMatcher.find_one"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.DictionaryCacheMatcher.find_one">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">find_one</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+
+<div class="viewcode-block" id="DictionaryCacheMatcher.find_one">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.DictionaryCacheMatcher.find_one">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">find_one</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Implementation of find for generic cached method.   It uses the cache_id</span>
 <span class="sd">        method to create the indexing string from mspass_object and then returns</span>
@@ -793,7 +827,10 @@
                 <span class="p">)</span>
                 <span class="k">return</span> <span class="p">[</span><span class="n">find_output</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">elog</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="DictionaryCacheMatcher.find"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.DictionaryCacheMatcher.find">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">find</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+
+<div class="viewcode-block" id="DictionaryCacheMatcher.find">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.DictionaryCacheMatcher.find">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">find</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generic implementation of find method for cached tables/collections.</span>
 
@@ -848,6 +885,7 @@
             <span class="k">return</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="n">elog</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">normcache</span><span class="p">[</span><span class="n">thisid</span><span class="p">],</span> <span class="kc">None</span><span class="p">]</span></div>
+
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_db_load_normalization_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db</span><span class="p">,</span> <span class="n">collection</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -998,7 +1036,10 @@
                 <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="DataFrameCacheMatcher"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.DataFrameCacheMatcher">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">DataFrameCacheMatcher</span><span class="p">(</span><span class="n">BasicMatcher</span><span class="p">):</span>
+
+<div class="viewcode-block" id="DataFrameCacheMatcher">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.DataFrameCacheMatcher">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DataFrameCacheMatcher</span><span class="p">(</span><span class="n">BasicMatcher</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Matcher implementing a caching method based on a Pandas DataFrame</span>
 
@@ -1095,7 +1136,9 @@
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_load_dataframe_cache</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
 
-<div class="viewcode-block" id="DataFrameCacheMatcher.find"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.DataFrameCacheMatcher.find">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">find</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+<div class="viewcode-block" id="DataFrameCacheMatcher.find">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.DataFrameCacheMatcher.find">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">find</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        DataFrame generic implementation of find method.</span>
 
@@ -1174,7 +1217,10 @@
                 <span class="n">mdlist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">md</span><span class="p">)</span>
             <span class="k">return</span> <span class="p">[</span><span class="n">mdlist</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="DataFrameCacheMatcher.find_one"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.DataFrameCacheMatcher.find_one">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">find_one</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+
+<div class="viewcode-block" id="DataFrameCacheMatcher.find_one">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.DataFrameCacheMatcher.find_one">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">find_one</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        DataFrame implementation of the find_one method.</span>
 
@@ -1224,7 +1270,10 @@
                 <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Fatal</span><span class="p">,</span>
             <span class="p">)</span></div>
 
-<div class="viewcode-block" id="DataFrameCacheMatcher.subset"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.DataFrameCacheMatcher.subset">[docs]</a>    <span class="nd">@abstractmethod</span>
+
+<div class="viewcode-block" id="DataFrameCacheMatcher.subset">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.DataFrameCacheMatcher.subset">[docs]</a>
+    <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">subset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Required method defining how the internal DataFrame cache is</span>
@@ -1245,6 +1294,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
+
     <span class="k">def</span><span class="w"> </span><span class="nf">_load_dataframe_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">):</span>
         <span class="c1"># This is a bit error prone.  It assumes the BasicMatcher</span>
         <span class="c1"># constructor initializes a None default to an empty list</span>
@@ -1255,7 +1305,10 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">nul_val</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="ObjectIdDBMatcher"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.ObjectIdDBMatcher">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">ObjectIdDBMatcher</span><span class="p">(</span><span class="n">DatabaseMatcher</span><span class="p">):</span>
+
+<div class="viewcode-block" id="ObjectIdDBMatcher">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.ObjectIdDBMatcher">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ObjectIdDBMatcher</span><span class="p">(</span><span class="n">DatabaseMatcher</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Implementation of DatabaseMatcher for ObjectIds.  In this class the virtual</span>
 <span class="sd">    method query_generator uses the mspass convention of using the</span>
@@ -1330,7 +1383,9 @@
             <span class="n">prepend_collection_name</span><span class="o">=</span><span class="n">prepend_collection_name</span><span class="p">,</span>
         <span class="p">)</span>
 
-<div class="viewcode-block" id="ObjectIdDBMatcher.query_generator"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.ObjectIdDBMatcher.query_generator">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">query_generator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<div class="viewcode-block" id="ObjectIdDBMatcher.query_generator">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.ObjectIdDBMatcher.query_generator">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">query_generator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
         <span class="n">data_object_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span> <span class="o">+</span> <span class="s2">&quot;_id&quot;</span>
         <span class="k">if</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="n">data_object_key</span><span class="p">):</span>
             <span class="n">query_id</span> <span class="o">=</span> <span class="n">mspass_object</span><span class="p">[</span><span class="n">data_object_key</span><span class="p">]</span>
@@ -1341,10 +1396,14 @@
             <span class="n">testid</span> <span class="o">=</span> <span class="n">ObjectId</span><span class="p">(</span><span class="n">query_id</span><span class="p">)</span>
             <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">testid</span><span class="p">}</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">None</span></div></div>
+            <span class="k">return</span> <span class="kc">None</span></div>
+</div>
 
 
-<div class="viewcode-block" id="ObjectIdMatcher"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.ObjectIdMatcher">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">ObjectIdMatcher</span><span class="p">(</span><span class="n">DictionaryCacheMatcher</span><span class="p">):</span>
+
+<div class="viewcode-block" id="ObjectIdMatcher">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.ObjectIdMatcher">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ObjectIdMatcher</span><span class="p">(</span><span class="n">DictionaryCacheMatcher</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Implement an ObjectId match with caching.  Most of the code for</span>
 <span class="sd">    this class is derived from the superclass DictionaryCacheMatcher.</span>
@@ -1442,7 +1501,9 @@
                 <span class="s2">&quot;ObjectIdMatcher constructor:  optional query argument must be either None or a python dict&quot;</span>
             <span class="p">)</span>
 
-<div class="viewcode-block" id="ObjectIdMatcher.cache_id"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.ObjectIdMatcher.cache_id">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">cache_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="viewcode-block" id="ObjectIdMatcher.cache_id">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.ObjectIdMatcher.cache_id">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">cache_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Implementation of virtual method with this name for this matcher.</span>
 <span class="sd">        It implements the MsPASS approach of defining the key for a</span>
@@ -1480,7 +1541,10 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span></div>
 
-<div class="viewcode-block" id="ObjectIdMatcher.db_make_cache_id"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.ObjectIdMatcher.db_make_cache_id">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">db_make_cache_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">doc</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+
+<div class="viewcode-block" id="ObjectIdMatcher.db_make_cache_id">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.ObjectIdMatcher.db_make_cache_id">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">db_make_cache_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">doc</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Implementation of virtual methods with this name for this matcher.</span>
 <span class="sd">        It does nothing more than extract the magic &quot;_id&quot; value from doc</span>
@@ -1496,10 +1560,14 @@
         <span class="k">if</span> <span class="s2">&quot;_id&quot;</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
             <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">])</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">None</span></div></div>
+            <span class="k">return</span> <span class="kc">None</span></div>
+</div>
 
 
-<div class="viewcode-block" id="MiniseedDBMatcher"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.MiniseedDBMatcher">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">MiniseedDBMatcher</span><span class="p">(</span><span class="n">DatabaseMatcher</span><span class="p">):</span>
+
+<div class="viewcode-block" id="MiniseedDBMatcher">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.MiniseedDBMatcher">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">MiniseedDBMatcher</span><span class="p">(</span><span class="n">DatabaseMatcher</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Database implementation of matcher for miniseed data using</span>
 <span class="sd">    SEED keys net:sta:chan(channel only):loc and a time interval test.</span>
@@ -1626,7 +1694,9 @@
             <span class="n">prepend_collection_name</span><span class="o">=</span><span class="n">prepend_collection_name</span><span class="p">,</span>
         <span class="p">)</span>
 
-<div class="viewcode-block" id="MiniseedDBMatcher.query_generator"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.MiniseedDBMatcher.query_generator">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">query_generator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">):</span>
+<div class="viewcode-block" id="MiniseedDBMatcher.query_generator">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.MiniseedDBMatcher.query_generator">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">query_generator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Concrete implementation of (required) abstract method defined</span>
 <span class="sd">        in superclass DatabaseMatcher.  It generates the complex query</span>
@@ -1687,7 +1757,10 @@
         <span class="n">query</span><span class="p">[</span><span class="s2">&quot;endtime&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;$gte&quot;</span><span class="p">:</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">endtime</span><span class="p">()}</span>
         <span class="k">return</span> <span class="n">query</span></div>
 
-<div class="viewcode-block" id="MiniseedDBMatcher.find_one"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.MiniseedDBMatcher.find_one">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">find_one</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">):</span>
+
+<div class="viewcode-block" id="MiniseedDBMatcher.find_one">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.MiniseedDBMatcher.find_one">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">find_one</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        We overload find_one to provide the unique match needed.</span>
 <span class="sd">        Most of the work is done by the query_generator method in</span>
@@ -1747,10 +1820,14 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
                 <span class="s2">&quot;MiniseedDBMatcher.find_one:  this class method can only be applied to TimeSeries or Seismogram objects&quot;</span>
-            <span class="p">)</span></div></div>
+            <span class="p">)</span></div>
+</div>
 
 
-<div class="viewcode-block" id="MiniseedMatcher"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.MiniseedMatcher">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">MiniseedMatcher</span><span class="p">(</span><span class="n">DictionaryCacheMatcher</span><span class="p">):</span>
+
+<div class="viewcode-block" id="MiniseedMatcher">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.MiniseedMatcher">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">MiniseedMatcher</span><span class="p">(</span><span class="n">DictionaryCacheMatcher</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Cached version of matcher for miniseed station/channel Metadata.</span>
 
@@ -1903,7 +1980,9 @@
             <span class="n">prepend_collection_name</span><span class="o">=</span><span class="n">prepend_collection_name</span><span class="p">,</span>
         <span class="p">)</span>
 
-<div class="viewcode-block" id="MiniseedMatcher.cache_id"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.MiniseedMatcher.cache_id">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">cache_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="viewcode-block" id="MiniseedMatcher.cache_id">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.MiniseedMatcher.cache_id">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">cache_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Concrete implementations of this required method.  The cache_id</span>
 <span class="sd">        in this algorithm is a composite key made from net, sta, chan, and</span>
@@ -1950,7 +2029,10 @@
             <span class="n">idstring</span> <span class="o">+=</span> <span class="n">chan</span> <span class="o">+</span> <span class="n">SEPARATOR</span>
         <span class="k">return</span> <span class="n">idstring</span></div>
 
-<div class="viewcode-block" id="MiniseedMatcher.db_make_cache_id"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.MiniseedMatcher.db_make_cache_id">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">db_make_cache_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">doc</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+
+<div class="viewcode-block" id="MiniseedMatcher.db_make_cache_id">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.MiniseedMatcher.db_make_cache_id">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">db_make_cache_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">doc</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Concrete implementations of this required method.  The cache_id</span>
 <span class="sd">        in this algorithm is a composite key made from net, sta, chan, and</span>
@@ -1998,7 +2080,10 @@
             <span class="n">idstring</span> <span class="o">+=</span> <span class="n">chan</span> <span class="o">+</span> <span class="n">SEPARATOR</span>
         <span class="k">return</span> <span class="n">idstring</span></div>
 
-<div class="viewcode-block" id="MiniseedMatcher.find_one"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.MiniseedMatcher.find_one">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">find_one</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">):</span>
+
+<div class="viewcode-block" id="MiniseedMatcher.find_one">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.MiniseedMatcher.find_one">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">find_one</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        We overload find_one to provide the unique match needed.</span>
 <span class="sd">        The algorithm does a linear search for the first time interval</span>
@@ -2090,7 +2175,10 @@
                 <span class="s2">&quot;MiniseedMatcher.find_one:  this class method can only be applied to TimeSeries or Seismogram objects&quot;</span>
             <span class="p">)</span></div>
 
-<div class="viewcode-block" id="MiniseedMatcher.find_doc"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.MiniseedMatcher.find_doc">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">find_doc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">doc</span><span class="p">,</span> <span class="n">wfdoc_starttime_key</span><span class="o">=</span><span class="s2">&quot;starttime&quot;</span><span class="p">):</span>
+
+<div class="viewcode-block" id="MiniseedMatcher.find_doc">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.MiniseedMatcher.find_doc">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">find_doc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">doc</span><span class="p">,</span> <span class="n">wfdoc_starttime_key</span><span class="o">=</span><span class="s2">&quot;starttime&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Function to support application to bulk_normalize to</span>
 <span class="sd">        set channel_id or site_id.  Acts like find_one but without support</span>
@@ -2155,10 +2243,14 @@
             <span class="k">if</span> <span class="n">dt0</span> <span class="o">&gt;=</span> <span class="n">stime</span> <span class="ow">and</span> <span class="n">dt0</span> <span class="o">&lt;=</span> <span class="n">etime</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">md</span>
 
-        <span class="k">return</span> <span class="kc">None</span></div></div>
+        <span class="k">return</span> <span class="kc">None</span></div>
+</div>
 
 
-<div class="viewcode-block" id="EqualityMatcher"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.EqualityMatcher">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">EqualityMatcher</span><span class="p">(</span><span class="n">DataFrameCacheMatcher</span><span class="p">):</span>
+
+<div class="viewcode-block" id="EqualityMatcher">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.EqualityMatcher">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">EqualityMatcher</span><span class="p">(</span><span class="n">DataFrameCacheMatcher</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Match with an equality test for the values of one or more keys</span>
 <span class="sd">    with possible aliasing between data keys and database keys.</span>
@@ -2316,7 +2408,9 @@
                 <span class="s2">&quot;EqualityMatcher Constructor:  required argument 2 (matchkeys) must be a python dictionary&quot;</span>
             <span class="p">)</span>
 
-<div class="viewcode-block" id="EqualityMatcher.subset"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.EqualityMatcher.subset">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">subset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<div class="viewcode-block" id="EqualityMatcher.subset">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.EqualityMatcher.subset">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">subset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Concrete implementation of this virtual method of DataFrameMatcher</span>
 <span class="sd">        for this class.</span>
@@ -2359,10 +2453,14 @@
                 <span class="n">dfret</span> <span class="o">=</span> <span class="n">dfret</span><span class="p">[</span><span class="n">dfret</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">match_keys</span><span class="p">[</span><span class="n">key</span><span class="p">]]</span> <span class="o">==</span> <span class="n">testval</span><span class="p">]</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">dfret</span></div></div>
+        <span class="k">return</span> <span class="n">dfret</span></div>
+</div>
 
 
-<div class="viewcode-block" id="EqualityDBMatcher"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.EqualityDBMatcher">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">EqualityDBMatcher</span><span class="p">(</span><span class="n">DatabaseMatcher</span><span class="p">):</span>
+
+<div class="viewcode-block" id="EqualityDBMatcher">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.EqualityDBMatcher">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">EqualityDBMatcher</span><span class="p">(</span><span class="n">DatabaseMatcher</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Database equivalent of EqualityMatcher.</span>
 
@@ -2452,7 +2550,9 @@
                 <span class="p">)</span>
             <span class="p">)</span>
 
-<div class="viewcode-block" id="EqualityDBMatcher.query_generator"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.EqualityDBMatcher.query_generator">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">query_generator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<div class="viewcode-block" id="EqualityDBMatcher.query_generator">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.EqualityDBMatcher.query_generator">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">query_generator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Implementation of required method for this class.  It simply</span>
 <span class="sd">        applies an equality test for all the keys defined by the values</span>
@@ -2466,10 +2566,14 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># API says return none if generator fails</span>
                 <span class="k">return</span> <span class="kc">None</span>
-        <span class="k">return</span> <span class="n">query</span></div></div>
+        <span class="k">return</span> <span class="n">query</span></div>
+</div>
 
 
-<div class="viewcode-block" id="OriginTimeDBMatcher"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.OriginTimeDBMatcher">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">OriginTimeDBMatcher</span><span class="p">(</span><span class="n">DatabaseMatcher</span><span class="p">):</span>
+
+<div class="viewcode-block" id="OriginTimeDBMatcher">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.OriginTimeDBMatcher">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">OriginTimeDBMatcher</span><span class="p">(</span><span class="n">DatabaseMatcher</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generic class to match data by comparing a time defined in data to an</span>
 <span class="sd">    origin time using a database query algorithm.</span>
@@ -2600,7 +2704,9 @@
                 <span class="p">)</span>
             <span class="p">)</span>
 
-<div class="viewcode-block" id="OriginTimeDBMatcher.query_generator"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.OriginTimeDBMatcher.query_generator">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">query_generator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<div class="viewcode-block" id="OriginTimeDBMatcher.query_generator">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.OriginTimeDBMatcher.query_generator">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">query_generator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Concrete implementation of this required method for a subclass of</span>
 <span class="sd">        DatabaseMatcher.</span>
@@ -2653,10 +2759,14 @@
             <span class="s2">&quot;$lte&quot;</span><span class="p">:</span> <span class="n">test_time</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">tolerance</span><span class="p">,</span>
         <span class="p">}</span>
 
-        <span class="k">return</span> <span class="n">query</span></div></div>
+        <span class="k">return</span> <span class="n">query</span></div>
+</div>
 
 
-<div class="viewcode-block" id="OriginTimeMatcher"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.OriginTimeMatcher">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">OriginTimeMatcher</span><span class="p">(</span><span class="n">DataFrameCacheMatcher</span><span class="p">):</span>
+
+<div class="viewcode-block" id="OriginTimeMatcher">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.OriginTimeMatcher">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">OriginTimeMatcher</span><span class="p">(</span><span class="n">DataFrameCacheMatcher</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generic class to match data by comparing a time defined in data to</span>
 <span class="sd">    an origin time using a cached DataFrame.</span>
@@ -2816,7 +2926,9 @@
             <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Required for matching with waveform start times&quot;</span>
             <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Fatal</span><span class="p">)</span>
 
-<div class="viewcode-block" id="OriginTimeMatcher.subset"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.OriginTimeMatcher.subset">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">subset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<div class="viewcode-block" id="OriginTimeMatcher.subset">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.OriginTimeMatcher.subset">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">subset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Implementation of subset method requried by inheritance from</span>
 <span class="sd">        DataframeCacheMatcher.   Returns a subset of the cache</span>
@@ -2859,7 +2971,10 @@
 
         <span class="k">return</span> <span class="n">dfret</span></div>
 
-<div class="viewcode-block" id="OriginTimeMatcher.find_one"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.OriginTimeMatcher.find_one">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">find_one</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+
+<div class="viewcode-block" id="OriginTimeMatcher.find_one">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.OriginTimeMatcher.find_one">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">find_one</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Override of find_one method of DataframeMatcher.  The override is</span>
 <span class="sd">        necessary to handle the ambiguity of a timer interval match for</span>
@@ -2916,6 +3031,7 @@
             <span class="n">md2use</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nearest_time_source</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">mdlist</span><span class="p">)</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">md2use</span><span class="p">,</span> <span class="n">findreturn</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span></div>
 
+
     <span class="k">def</span><span class="w"> </span><span class="nf">_nearest_time_source</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">,</span> <span class="n">mdlist</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Private method to define the algorithm used to resolve</span>
@@ -2955,7 +3071,9 @@
         <span class="n">component_to_use</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">mdlist</span><span class="p">[</span><span class="n">component_to_use</span><span class="p">]</span>
 
-<div class="viewcode-block" id="OriginTimeMatcher.find_doc"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.OriginTimeMatcher.find_doc">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">find_doc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">doc</span><span class="p">,</span> <span class="n">starttime_key</span><span class="o">=</span><span class="s2">&quot;starttime&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<div class="viewcode-block" id="OriginTimeMatcher.find_doc">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.OriginTimeMatcher.find_doc">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">find_doc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">doc</span><span class="p">,</span> <span class="n">starttime_key</span><span class="o">=</span><span class="s2">&quot;starttime&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Override of the find_doc method of BasicMatcher.   This method</span>
 <span class="sd">        acts lke find_one but the inputs and outputs are different.</span>
@@ -3076,10 +3194,14 @@
                     <span class="n">doc_out</span><span class="p">[</span><span class="n">mdkey</span><span class="p">]</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
             <span class="k">return</span> <span class="n">doc_out</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">None</span></div></div>
+            <span class="k">return</span> <span class="kc">None</span></div>
+</div>
 
 
-<div class="viewcode-block" id="ArrivalDBMatcher"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.ArrivalDBMatcher">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">ArrivalDBMatcher</span><span class="p">(</span><span class="n">DatabaseMatcher</span><span class="p">):</span>
+
+<div class="viewcode-block" id="ArrivalDBMatcher">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.ArrivalDBMatcher">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ArrivalDBMatcher</span><span class="p">(</span><span class="n">DatabaseMatcher</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is a class for matching a table of arrival times to input</span>
 <span class="sd">    waveform data objects.  Use this version if the table of arrivals</span>
@@ -3197,7 +3319,9 @@
                 <span class="s2">&quot;ArrivalDBMatcher constructor:  query arg must define a python dictionary&quot;</span>
             <span class="p">)</span>
 
-<div class="viewcode-block" id="ArrivalDBMatcher.query_generator"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.ArrivalDBMatcher.query_generator">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">query_generator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<div class="viewcode-block" id="ArrivalDBMatcher.query_generator">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.ArrivalDBMatcher.query_generator">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">query_generator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Concrete implementation of method required by superclass</span>
 <span class="sd">        DatabaseMatcher.</span>
@@ -3229,10 +3353,14 @@
                 <span class="c1"># intentionally ignore loc as option</span>
                 <span class="k">return</span> <span class="n">query</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">None</span></div></div>
+            <span class="k">return</span> <span class="kc">None</span></div>
+</div>
 
 
-<div class="viewcode-block" id="ArrivalMatcher"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.ArrivalMatcher">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">ArrivalMatcher</span><span class="p">(</span><span class="n">DataFrameCacheMatcher</span><span class="p">):</span>
+
+<div class="viewcode-block" id="ArrivalMatcher">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.ArrivalMatcher">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ArrivalMatcher</span><span class="p">(</span><span class="n">DataFrameCacheMatcher</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is a class for matching a table of arrival times to input</span>
 <span class="sd">    waveform data objects.  Use this version if the table of arrivals</span>
@@ -3373,7 +3501,9 @@
                 <span class="s2">&quot;ArrivalDBMatcher constructor: arrival_time_key argument must define a string&quot;</span>
             <span class="p">)</span>
 
-<div class="viewcode-block" id="ArrivalMatcher.subset"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.ArrivalMatcher.subset">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">subset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<div class="viewcode-block" id="ArrivalMatcher.subset">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.ArrivalMatcher.subset">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">subset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Concrete implementation of method required by superclass</span>
 <span class="sd">        DataFramematcher</span>
@@ -3407,10 +3537,14 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span></div></div>
+            <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span></div>
+</div>
 
 
-<div class="viewcode-block" id="normalize"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.normalize">[docs]</a><span class="nd">@mspass_func_wrapper</span>
+
+<div class="viewcode-block" id="normalize">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.normalize">[docs]</a>
+<span class="nd">@mspass_func_wrapper</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">normalize</span><span class="p">(</span>
     <span class="n">mspass_object</span><span class="p">,</span>
     <span class="n">matcher</span><span class="p">,</span>
@@ -3493,7 +3627,10 @@
     <span class="k">return</span> <span class="n">mspass_object</span></div>
 
 
-<div class="viewcode-block" id="bulk_normalize"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.bulk_normalize">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">bulk_normalize</span><span class="p">(</span>
+
+<div class="viewcode-block" id="bulk_normalize">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.bulk_normalize">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">bulk_normalize</span><span class="p">(</span>
     <span class="n">db</span><span class="p">,</span>
     <span class="n">wfquery</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">wf_col</span><span class="o">=</span><span class="s2">&quot;wf_miniseed&quot;</span><span class="p">,</span>
@@ -3639,7 +3776,10 @@
     <span class="k">return</span> <span class="p">[</span><span class="n">ndocs</span><span class="p">]</span> <span class="o">+</span> <span class="n">cnt_list</span></div>
 
 
-<div class="viewcode-block" id="normalize_mseed"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.normalize_mseed">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">normalize_mseed</span><span class="p">(</span>
+
+<div class="viewcode-block" id="normalize_mseed">
+<a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.normalize_mseed">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">normalize_mseed</span><span class="p">(</span>
     <span class="n">db</span><span class="p">,</span>
     <span class="n">wfquery</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">blocksize</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
@@ -3749,6 +3889,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">ret</span></div>
+
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_get_test_time</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">time</span><span class="p">):</span>
