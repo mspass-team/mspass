@@ -17,19 +17,19 @@ class Collection(pymongo.database.Collection):
     def __getstate__(self):
         ret = self.__dict__.copy()
         ret["_BaseObject__codec_options"] = self.codec_options.__repr__()
-        
+
         # Store database connection info separately to recreate Database handle
         # Use public attribute 'database' instead of private '_Collection__database'
         db = self.database  # pymongo 4.x uses public attribute
-        if hasattr(db, 'name'):
+        if hasattr(db, "name"):
             ret["_mspass_db_name"] = db.name
-        if hasattr(db, 'client') and hasattr(db.client, '_mspass_db_host'):
+        if hasattr(db, "client") and hasattr(db.client, "_mspass_db_host"):
             ret["_mspass_db_host"] = db.client._mspass_db_host
-        
+
         # Don't pickle the Database object itself
         if "_Collection__database" in ret:
             del ret["_Collection__database"]
-        
+
         return ret
 
     def __setstate__(self, data):
@@ -39,29 +39,29 @@ class Collection(pymongo.database.Collection):
         # Extract connection info before updating __dict__
         db_host = data.pop("_mspass_db_host", None)
         db_name = data.pop("_mspass_db_name", None)
-        
+
         # Pop ALL codec_options fields (Collection also has _codec_options and _BaseObject__codec_options)
         codec_options_repr = data.pop("_BaseObject__codec_options", None)
         base_codec_options = data.pop("_codec_options", None)
-        
+
         # Eval the codec_options repr string
         if codec_options_repr and isinstance(codec_options_repr, str):
             codec_options_obj = eval(codec_options_repr)
         else:
             codec_options_obj = codec_options_repr
-        
+
         # Update attributes (now data has NO codec_options fields)
         self.__dict__.update(data)
-        
+
         # Set BOTH codec_options attributes with the same object
         self._BaseObject__codec_options = codec_options_obj
         self._codec_options = codec_options_obj
-        
+
         # Recreate Database handle if we have connection info
         if db_host is not None and db_name is not None:
             from mspasspy.db.client import DBClient
             from mspasspy.db.database import Database
-            
+
             client = DBClient(db_host)
             self._Collection__database = Database(client, db_name)
 

@@ -1708,5 +1708,3 @@ def test_write_error_handlers(atomic_time_series_generator):
         mybag = write_distributed_data(
             mybag, db, collection="wf_TimeSeries", overwrite=True, storage_mode="file"
         )
-
-
