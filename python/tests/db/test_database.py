@@ -3169,7 +3169,8 @@ class TestDatabase:
         # Monkey patch S3 client to disable checksum validation for test compatibility
         original_get_object = s3_client.get_object
         def patched_get_object(**kwargs):
-            kwargs.pop('ChecksumMode', None)  # Remove ChecksumMode if present
+            # Force disable checksum validation for moto compatibility
+            kwargs['ChecksumMode'] = 'DISABLED'
             return original_get_object(**kwargs)
         s3_client.get_object = patched_get_object
         src_bucket = "scedc-pds"
