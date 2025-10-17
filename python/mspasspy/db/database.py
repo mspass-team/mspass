@@ -146,16 +146,16 @@ class Database(pymongo.database.Database):
     def __getstate__(self):
         ret = self.__dict__.copy()
         ret["_BaseObject__codec_options"] = self.codec_options.__repr__()
-        
+
         # Store connection info to recreate DBClient lazily
         ret["_mspass_db_host"] = self.client._mspass_db_host
-        
+
         # Don't pickle the client or stedronsky (Undertaker) objects
         if "_Database__client" in ret:
             del ret["_Database__client"]
         if "stedronsky" in ret:
             del ret["stedronsky"]
-            
+
         return ret
 
     def __setstate__(self, data):
@@ -166,32 +166,32 @@ class Database(pymongo.database.Database):
 
         # Extract connection info before updating __dict__
         db_host = data.pop("_mspass_db_host", None)
-        
+
         # CRITICAL: Pop ALL codec_options related fields and eval them
         # pymongo Database has both _codec_options and _BaseObject__codec_options
         codec_options_repr = data.pop("_BaseObject__codec_options", None)
         base_codec_options_repr = data.pop("_codec_options", None)
-        
+
         # Eval the codec_options repr string
         if codec_options_repr and isinstance(codec_options_repr, str):
             codec_options_obj = eval(codec_options_repr)
         else:
             codec_options_obj = codec_options_repr
-        
+
         # Update all other attributes EXCEPT codec_options
         self.__dict__.update(data)
-        
+
         # Set both codec_options attributes with the same object
         # pymongo uses _codec_options internally, but we also need _BaseObject__codec_options
         self._BaseObject__codec_options = codec_options_obj
         self._codec_options = codec_options_obj
-        
+
         # Recreate DBClient
         if db_host is not None:
             self._Database__client = DBClient(db_host)
         else:
             self._Database__client = DBClient("localhost")
-        
+
         # Recreate Undertaker
         self.stedronsky = Undertaker(self)
 

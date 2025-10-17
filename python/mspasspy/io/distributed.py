@@ -688,7 +688,9 @@ def read_distributed_data(
                 # DataFrame.   It may be better to write a small
                 # converter run with a map operator row by row
                 if isinstance(data, pd.DataFrame):
-                    plist = dask.bag.from_sequence(data.to_dict("records"), npartitions=npartitions)
+                    plist = dask.bag.from_sequence(
+                        data.to_dict("records"), npartitions=npartitions
+                    )
                 else:
                     # data is already a dask DataFrame
                     plist = data.to_bag(format="dict")

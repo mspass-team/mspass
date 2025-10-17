@@ -24,7 +24,7 @@ class DBClient(pymongo.MongoClient):
         if host and isinstance(host, str):
             try:
                 parsed_uri = uri_parser.parse_uri(host)
-                self.__default_database_name = parsed_uri.get('database')
+                self.__default_database_name = parsed_uri.get("database")
             except Exception:
                 pass
         self._mspass_db_host = host
@@ -80,10 +80,10 @@ class DBClient(pymongo.MongoClient):
         This prevents thread lock serialization issues.
         """
         return {
-            'host': self._mspass_db_host,
-            'args': getattr(self, '_mspass_connection_args', ()),
-            'kwargs': getattr(self, '_mspass_connection_kwargs', {}),
-            'default_database_name': self.__default_database_name,
+            "host": self._mspass_db_host,
+            "args": getattr(self, "_mspass_connection_args", ()),
+            "kwargs": getattr(self, "_mspass_connection_kwargs", {}),
+            "default_database_name": self.__default_database_name,
         }
 
     def __setstate__(self, state):
@@ -93,15 +93,15 @@ class DBClient(pymongo.MongoClient):
         thread management, but it's a fresh object that can be pickled again.
         """
         # Extract parameters
-        host = state.get('host')
-        args = state.get('args', ())
-        kwargs = state.get('kwargs', {})
-        
+        host = state.get("host")
+        args = state.get("args", ())
+        kwargs = state.get("kwargs", {})
+
         # Reinitialize (creates new connection)
         self.__init__(host, *args, **kwargs)
-        
+
         # Restore default database name if it was overridden
-        saved_db_name = state.get('default_database_name')
+        saved_db_name = state.get("default_database_name")
         if saved_db_name is not None:
             self.__default_database_name = saved_db_name
 

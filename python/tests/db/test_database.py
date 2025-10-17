@@ -3159,24 +3159,27 @@ class TestDatabase:
     def test_index_and_read_s3_continuous(self):
         #   Test _read_data_from_s3_continuous
         #   First upload a miniseed object to the mock server.
-        
+
         # Monkey patch boto3.client to ensure all S3 clients disable checksum validation
         original_client = boto3.client
+
         def patched_client(*args, **kwargs):
             client = original_client(*args, **kwargs)
             if args and args[0] == "s3":
                 # Patch the get_object method for this S3 client
                 original_get_object = client.get_object
+
                 def patched_get_object(**get_kwargs):
                     # Force disable checksum validation for moto compatibility
-                    get_kwargs['ChecksumMode'] = 'DISABLED'
+                    get_kwargs["ChecksumMode"] = "DISABLED"
                     return original_get_object(**get_kwargs)
+
                 client.get_object = patched_get_object
             return client
-        
+
         # Apply the monkey patch
         boto3.client = patched_client
-        
+
         try:
             s3_client = boto3.client(
                 "s3",
@@ -3209,7 +3212,9 @@ class TestDatabase:
             src_mseed_doc["storage_mode"] = "s3_continuous"
             src_mseed_doc["format"] = "mseed"
 
-            mseed_upload_key = "continuous_waveforms/2017/2017_005/CICAC__HNZ___2017005.ms"
+            mseed_upload_key = (
+                "continuous_waveforms/2017/2017_005/CICAC__HNZ___2017005.ms"
+            )
             s3_client.upload_file(
                 Filename=mseed_path, Bucket=src_bucket, Key=mseed_upload_key
             )
@@ -3528,7 +3533,7 @@ class TestDatabase:
         # Create a database instance
         client = DBClient("localhost")
         db = Database(client, "test_serialization")
-        
+
         # Test __getstate__ - should return serializable state
         state = db.__getstate__()
         assert isinstance(state, dict)
@@ -3536,16 +3541,16 @@ class TestDatabase:
         assert "_BaseObject__codec_options" in state
         assert "_Database__client" not in state  # Should be excluded
         assert "stedronsky" not in state  # Should be excluded
-        
+
         # Test __setstate__ - should recreate the object
         new_db = Database.__new__(Database)
         new_db.__setstate__(state)
-        
+
         # Verify the deserialized object has correct attributes
         assert new_db.name == db.name
-        assert hasattr(new_db, '_Database__client')
-        assert hasattr(new_db, '_BaseObject__codec_options')
-        assert hasattr(new_db, 'stedronsky')
+        assert hasattr(new_db, "_Database__client")
+        assert hasattr(new_db, "_BaseObject__codec_options")
+        assert hasattr(new_db, "stedronsky")
         assert new_db._BaseObject__codec_options is not None
 
     def test_client_serialization_cycle(self):
@@ -3555,7 +3560,7 @@ class TestDatabase:
         """
         # Create a client instance
         client = DBClient("localhost")
-        
+
         # Test __getstate__ - should return serializable state
         state = client.__getstate__()
         assert isinstance(state, dict)
@@ -3563,15 +3568,15 @@ class TestDatabase:
         assert "args" in state
         assert "kwargs" in state
         assert "default_database_name" in state
-        
+
         # Test __setstate__ - should recreate the object
         new_client = DBClient.__new__(DBClient)
         new_client.__setstate__(state)
-        
+
         # Verify the deserialized object has correct attributes
         assert new_client._mspass_db_host == client._mspass_db_host
-        assert hasattr(new_client, '_mspass_connection_args')
-        assert hasattr(new_client, '_mspass_connection_kwargs')
+        assert hasattr(new_client, "_mspass_connection_args")
+        assert hasattr(new_client, "_mspass_connection_kwargs")
 
     def test_collection_serialization_cycle(self):
         """
@@ -3582,7 +3587,7 @@ class TestDatabase:
         client = DBClient("localhost")
         db = Database(client, "test_serialization")
         collection = Collection(db, "test_collection")
-        
+
         # Test __getstate__ - should return serializable state
         state = collection.__getstate__()
         assert isinstance(state, dict)
@@ -3590,15 +3595,15 @@ class TestDatabase:
         assert "_mspass_db_name" in state
         assert "_mspass_db_host" in state
         assert "_Collection__database" not in state  # Should be excluded
-        
+
         # Test __setstate__ - should recreate the object
         new_collection = Collection.__new__(Collection)
         new_collection.__setstate__(state)
-        
+
         # Verify the deserialized object has correct attributes
-        assert hasattr(new_collection, '_Collection__database')
-        assert hasattr(new_collection, '_BaseObject__codec_options')
-        assert hasattr(new_collection, '_codec_options')
+        assert hasattr(new_collection, "_Collection__database")
+        assert hasattr(new_collection, "_BaseObject__codec_options")
+        assert hasattr(new_collection, "_codec_options")
 
         with pytest.raises(ValueError, match="Illegal geographic input"):
             doc = geoJSON_doc(20, 400)
