@@ -41,13 +41,13 @@ requirements:
     - python {{ PYTHON_VERSION }}
     - libzlib
     - pyyaml
-    - pymongo<4.9.0
-    - numpy<2.0.0
+    - pymongo>=4.15.3
+    - numpy>=2.2.6
     - obspy
     - dill
     - click
     - cartopy
-    - dask
+    - dask[complete]>=2025.9.1
     - distributed
     - cloudpickle
     - schema
@@ -57,9 +57,9 @@ requirements:
     - moto
     - requests 
     - setuptools
-    - xarray<=2024.3.0
+    - xarray>=2025.6.1
     - zarr
-    - pandas==1.5.3
+    - pandas>=2.3.3
     - numba
     - multitaper
     - ipympl
