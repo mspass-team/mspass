@@ -29,11 +29,11 @@ requirements:
   host:
     - python {{ PYTHON_VERSION }}
     - pip
-    - setuptools>=64
-    - setuptools_scm>=8.0
+    - setuptools
+    - setuptools_scm
     - wheel
     - gsl
-    - boost-cpp=1.85.0
+    - boost-cpp
     - liblapack
     - yaml-cpp
 
@@ -41,8 +41,8 @@ requirements:
     - python {{ PYTHON_VERSION }}
     - libzlib
     - pyyaml
-    - pymongo>=4.15.3
-    - numpy>=2.2.6
+    - pymongo>=4.14.1
+    - numpy>=2.2.6  
     - obspy
     - dill
     - click
@@ -57,14 +57,14 @@ requirements:
     - moto
     - requests 
     - setuptools
-    - xarray>=2025.6.1
+    - xarray
     - zarr
-    - pandas>=2.3.3
+    - pandas>=2.2.3
     - numba
     - multitaper
     - ipympl
     - gsl
-    - libboost=1.85.0
+    - libboost
     - liblapack
     - yaml-cpp
 
