@@ -140,8 +140,8 @@ def mspass_func_wrapper(
        returned object is the (usually modified) data object.  NOTE:  this
        options is NOT supported for ensembles.   If you set this value for
        ensemble input this decorator will throw a ValueError exception.
-    :param handles_ensembes:  set True if the function this is applied to
-      can hangle ensemble objects directly.   When False, which is the default
+    :param handles_ensembles:  set True (default) if the function this is applied to
+      can hangle ensemble objects directly.   When False
       this decorator applies the atomic function to each ensemble member in
       a loop over membes.
     :param kwargs: extra kv arguments
@@ -229,16 +229,30 @@ def mspass_func_wrapper(
             # boolean handles_ensembles is false
             N = len(data.member)
             for i in range(N):
-                # alias to make logic clearer
-                d = data.member[i]
-                d = func(d, *args, **kwargs)
-                data.member[i] = d
+                # We need to operate on the member directly or its reference
+                d_member = data.member[i]
+
+                # Call the function for its side effects (in-place)
+                # or for its return value
+                return_value = func(d_member, *args, **kwargs)
+
+                if not inplace_return:
+                    # If not in-place, we assume the return value
+                    # is the new/modified object and we must reassign it.
+                    data.member[i] = return_value
+
+                # If inplace_return IS true, we assume d_member was
+                # modified in-place and the return_value is None.
+                # We DO NOT reassign data.member[i], as the reference
+                # d_member already points to the modified object.
+
                 if object_history:
+                    # Log history on the (potentially modified) member
                     logging_helper.info(data.member[i], alg_id, alg_name)
 
             # mark ensmeble killed by all applications of func as dead
             N_live = number_live(data)
-            if N_live <= len(data.member):
+            if N_live == 0 and len(data.member) > 0:
                 message = "function killed all ensemble members.  Marking ensemble dead"
                 data.elog.log_error(alg_name, message, ErrorSeverity.Invalid)
                 data.kill()
@@ -426,7 +440,7 @@ def mspass_method_wrapper(
        is taken to mean any return of the wrapped function will be ignored.  Note
        that when function_return_key is anything but None, it is assumed the
        returned object is the (usually modified) data object.
-     :param handles_ensembes:  set True (default) if the function this is applied to
+     :param handles_ensembles:  set True (default) if the function this is applied to
        can hangle ensemble objects directly.   When False this decorator
        applies the atomic function to each ensemble member in
        a loop over members.
@@ -521,19 +535,20 @@ def mspass_method_wrapper(
             for i in range(N):
                 # alias to make logic clearer
                 d = data.member[i]
-                d = func(selfarg, d, *args, **kwargs)
-                data.member[i] = d
+                res = func(selfarg, d, *args, **kwargs)
+                if not inplace_return:
+                    data.member[i] = res
                 if object_history:
                     logging_helper.info(data.member[i], alg_id, alg_name)
 
             # mark ensmeble killed by all applications of func as dead
             N_live = number_live(data)
-            if N_live <= len(data.member):
+            if N_live == 0 and N > 0:
                 message = "function killed all ensemble members.  Marking ensemble dead"
                 data.elog.log_error(alg_name, message, ErrorSeverity.Invalid)
                 data.kill()
             # Note the in place return concept does not apply to
-            # ensemles - all are in place by defintion if passed through
+            # ensembles - all are in place by defintion if passed through
             # this wrapper
             return data
     except RuntimeError as err:
@@ -574,30 +589,53 @@ def is_input_dead(*args, **kwargs):
         if isinstance(arg, Seismogram) and arg.dead():
             return True
         if isinstance(arg, TimeSeriesEnsemble):
+            # Check the ensemble's own flag first
+            if arg.dead():
+                return True
+            # This logic is: if all members are dead, return True.
+            # If any live member is found, return False.
+            all_dead = True
             for ts in arg.member:
                 if not ts.dead():
-                    return False
-            return True
+                    all_dead = False
+                    break
+            if all_dead:
+                return True
         if isinstance(arg, SeismogramEnsemble):
-            for ts in arg.member:
-                if not ts.dead():
-                    return False
-            return True
+            if arg.dead():
+                return True
+            all_dead = True
+            for seis in arg.member:
+                if not seis.dead():
+                    all_dead = False
+                    break
+            if all_dead:
+                return True
     for k in kwargs:
         if isinstance(kwargs[k], TimeSeries) and kwargs[k].dead():
             return True
         if isinstance(kwargs[k], Seismogram) and kwargs[k].dead():
             return True
         if isinstance(kwargs[k], TimeSeriesEnsemble):
+            if kwargs[k].dead():
+                return True
+            all_dead = True
             for ts in kwargs[k].member:
                 if not ts.dead():
-                    return False
-            return True
+                    all_dead = False
+                    break
+            if all_dead:
+                return True
         if isinstance(kwargs[k], SeismogramEnsemble):
-            for ts in kwargs[k].member:
-                if not ts.dead():
-                    return False
-            return True
+            if kwargs[k].dead():
+                return True
+            all_dead = True
+            for seis in kwargs[k].member:
+                if not seis.dead():
+                    all_dead = False
+                    break
+            if all_dead:
+                return True
     return False
 
 

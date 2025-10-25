@@ -187,6 +187,62 @@ def test_transform():
     assert all(np.isclose(seis2.data[:, 3], [0, 0, 1]))
 
 
+def test_rotate_to_standard_ensemble():
+    """
+    This test specifically targets the case that triggered the bug
+    in the mspass_func_wrapper. It calls rotate_to_standard
+    (which is inplace_return=True and handles_ensembles=False)
+    with a SeismogramEnsemble.
+
+    It verifies that the wrapper correctly handles this case and
+    does not assign None to the ensemble members.
+    """
+    # 1. Create a base seismogram with known data
+    seis = Seismogram(10)
+    seis.set_live()
+    # Set one sample to [0, 0, 1] (standard)
+    seis.data[2, 3] = 1.0
+
+    # 2. Rotate it *away* from standard
+    sc = SphericalCoordinate()
+    sc.phi = 0.0
+    sc.theta = np.pi / 4  # 45 degrees
+    seis_rotated = rotate(seis, sc)
+
+    # Verify it's no longer standard
+    assert not all(np.isclose(seis_rotated.data[:, 3], [0, 0, 1]))
+    assert all(np.isclose(seis_rotated.data[:, 3], [0, -0.707107, 0.707107]))
+
+    # 3. Create an ensemble with this rotated data
+    ensemble = SeismogramEnsemble()
+    ensemble.member.append(Seismogram(seis_rotated))
+    ensemble.member.append(Seismogram(seis_rotated))
+    ensemble.set_live()
+
+    # 4. Call the function under test
+    result_ensemble = rotate_to_standard(ensemble)
+
+    # 5. Verify the results
+    assert result_ensemble is not None
+    assert result_ensemble.live
+    assert len(result_ensemble.member) == 2
+
+    # CRITICAL: Check that members were not replaced with None
+    # This is what would fail with the original bug
+    assert result_ensemble.member[0] is not None
+    assert result_ensemble.member[1] is not None
+    assert isinstance(result_ensemble.member[0], Seismogram)
+    assert isinstance(result_ensemble.member[1], Seismogram)
+
+    # Verify the function actually worked in-place on each member
+    for mem in result_ensemble.member:
+        assert mem.live
+        # Check that data was rotated back to [0, 0, 1]
+        assert all(np.isclose(mem.data[:, 3], [0, 0, 1.0]))
+        # Check that the object state was updated
+        assert is_identity(mem.tmatrix)
+
+
 def test_free_surface_transform():
     """
     Tests the free_surface_transform method and wrapper in basic.py.
@@ -605,3 +661,4 @@ def test_transform_to_LQT():
     x.set_live()
     with pytest.raises(TypeError, match="received invalid type"):
         sout = transform_to_LQT(x)
+
