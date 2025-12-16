@@ -49,8 +49,14 @@ jobs:
         echo "/opt/spark-3.5.4-bin-hadoop3/bin" >> $GITHUB_PATH
         PYSPARK_HADOOP_VERSION=3 python -m pip install --upgrade --upgrade-strategy eager pyspark pytest-spark
         sudo apt-get update && sudo apt-get install openjdk-8-jdk
+    - name: Free up disk space
+      run: |
+        sudo apt-get clean
+        sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc
+        pip cache purge
+        df -h
     - name: Install
-      run: python -m pip install -C--global-option=build -C--global-option=--debug -v '.[seisbench]'
+      run: python -m pip install --no-cache-dir -C--global-option=build -C--global-option=--debug -v '.[seisbench]'
     - name: Test with pytest
       run: |
         export MSPASS_HOME=$(pwd)
