@@ -2149,22 +2149,25 @@ class Database(pymongo.database.Database):
         # are made
         for k in keylist:
             counts[k] = 0
-        for doc in cursor:
-            id = doc.pop("_id")
-            n = 0
-            todel = dict()
-            for k in keylist:
-                if k in doc:
-                    todel[k] = doc[k]
-                    val = doc.pop(k)
-                    if verbose:
-                        print(
-                            "Deleted ", val, " with key=", k, " from doc with id=", id
-                        )
-                    counts[k] += 1
-                    n += 1
-            if n > 0:
-                dbcol.update_one({"_id": id}, {"$unset": todel})
+        try:
+            for doc in cursor:
+                id = doc.pop("_id")
+                n = 0
+                todel = dict()
+                for k in keylist:
+                    if k in doc:
+                        todel[k] = doc[k]
+                        val = doc.pop(k)
+                        if verbose:
+                            print(
+                                "Deleted ", val, " with key=", k, " from doc with id=", id
+                            )
+                        counts[k] += 1
+                        n += 1
+                if n > 0:
+                    dbcol.update_one({"_id": id}, {"$unset": todel})
+        finally:
+            cursor.close()
         return counts
 
     def _rename_attributes(self, collection, rename_map, query=None, verbose=False):
@@ -2198,27 +2201,30 @@ class Database(pymongo.database.Database):
         # are made
         for k in rename_map:
             counts[k] = 0
-        for doc in cursor:
-            id = doc.pop("_id")
-            n = 0
-            for k in rename_map:
+        try:
+            for doc in cursor:
+                id = doc.pop("_id")
                 n = 0
-                if k in doc:
-                    val = doc.pop(k)
-                    newkey = rename_map[k]
-                    if verbose:
-                        print("Document id=", id)
-                        print(
-                            "Changed attribute with key=",
-                            k,
-                            " to have new key=",
-                            newkey,
-                        )
-                        print("Attribute value=", val)
-                    doc[newkey] = val
-                    counts[k] += 1
-                    n += 1
-            dbcol.replace_one({"_id": id}, doc)
+                for k in rename_map:
+                    n = 0
+                    if k in doc:
+                        val = doc.pop(k)
+                        newkey = rename_map[k]
+                        if verbose:
+                            print("Document id=", id)
+                            print(
+                                "Changed attribute with key=",
+                                k,
+                                " to have new key=",
+                                newkey,
+                            )
+                            print("Attribute value=", val)
+                        doc[newkey] = val
+                        counts[k] += 1
+                        n += 1
+                dbcol.replace_one({"_id": id}, doc)
+        finally:
+            cursor.close()
         return counts
 
     def _fix_attribute_types(self, collection, query=None, verbose=False):
@@ -2253,59 +2259,62 @@ class Database(pymongo.database.Database):
         col_schema = schema[collection]
         counts = dict()
         cursor = dbcol.find(query)
-        for doc in cursor:
-            n = 0
-            id = doc.pop("_id")
-            if verbose:
-                print("////////Document id=", id, "/////////")
-            up_d = dict()
-            for k in doc:
-                val = doc[k]
-                if not col_schema.is_defined(k):
-                    if verbose:
-                        print(
-                            "Warning:  in doc with id=",
-                            id,
-                            "found key=",
-                            k,
-                            " that is not defined in the schema",
-                        )
-                        print("Value of key-value pair=", val)
-                        print("Cannot check type for an unknown attribute name")
-                    continue
-                if not isinstance(val, col_schema.type(k)):
-                    try:
-                        newval = col_schema.type(k)(val)
-                        up_d[k] = newval
+        try:
+            for doc in cursor:
+                n = 0
+                id = doc.pop("_id")
+                if verbose:
+                    print("////////Document id=", id, "/////////")
+                up_d = dict()
+                for k in doc:
+                    val = doc[k]
+                    if not col_schema.is_defined(k):
                         if verbose:
                             print(
-                                "Changed data for key=",
+                                "Warning:  in doc with id=",
+                                id,
+                                "found key=",
                                 k,
-                                " from ",
-                                val,
-                                " to ",
-                                newval,
+                                " that is not defined in the schema",
                             )
-                        if k in counts:
-                            counts[k] += 1
-                        else:
-                            counts[k] = 1
-                        n += 1
-                    except Exception as err:
-                        print("////////Document id=", id, "/////////")
-                        print(
-                            "WARNING:  could not convert attribute with key=",
-                            k,
-                            " and value=",
-                            val,
-                            " to required type=",
-                            col_schema.type(k),
-                        )
-                        print("This error was thrown and handled:  ")
-                        print(err)
+                            print("Value of key-value pair=", val)
+                            print("Cannot check type for an unknown attribute name")
+                        continue
+                    if not isinstance(val, col_schema.type(k)):
+                        try:
+                            newval = col_schema.type(k)(val)
+                            up_d[k] = newval
+                            if verbose:
+                                print(
+                                    "Changed data for key=",
+                                    k,
+                                    " from ",
+                                    val,
+                                    " to ",
+                                    newval,
+                                )
+                            if k in counts:
+                                counts[k] += 1
+                            else:
+                                counts[k] = 1
+                            n += 1
+                        except Exception as err:
+                            print("////////Document id=", id, "/////////")
+                            print(
+                                "WARNING:  could not convert attribute with key=",
+                                k,
+                                " and value=",
+                                val,
+                                " to required type=",
+                                col_schema.type(k),
+                            )
+                            print("This error was thrown and handled:  ")
+                            print(err)
 
-            if n > 0:
-                dbcol.update_one({"_id": id}, {"$set": up_d})
+                if n > 0:
+                    dbcol.update_one({"_id": id}, {"$set": up_d})
+        finally:
+            cursor.close()
 
         return counts
 
@@ -2432,36 +2441,39 @@ class Database(pymongo.database.Database):
                 print("This should resolve links to ", normalize, " collection")
 
             cursor = dbwf.find(wfquery)
-            for doc in cursor:
-                wfid = doc["_id"]
-                is_bad_xref_key, is_bad_wf = self._check_xref_key(
-                    doc, wf_collection, xref_key
-                )
-                if is_bad_xref_key:
-                    if wfid not in bad_id_list:
-                        bad_id_list.append(wfid)
-                    if verbose:
-                        print(str(wfid), " link with ", str(xref_key), " failed")
-                    if len(bad_id_list) > error_limit:
-                        raise MsPASSError(
-                            "checklinks:  number of bad id errors exceeds internal limit",
-                            "Fatal",
-                        )
-                if is_bad_wf:
-                    if wfid not in missing_id_list:
-                        missing_id_list.append(wfid)
-                    if verbose:
-                        print(str(wfid), " is missing required key=", xref_key)
-                    if len(missing_id_list) > error_limit:
-                        raise MsPASSError(
-                            "checklinks:  number of missing id errors exceeds internal limit",
-                            "Fatal",
-                        )
-                if (
-                    len(bad_id_list) >= error_limit
-                    or len(missing_id_list) >= error_limit
-                ):
-                    break
+            try:
+                for doc in cursor:
+                    wfid = doc["_id"]
+                    is_bad_xref_key, is_bad_wf = self._check_xref_key(
+                        doc, wf_collection, xref_key
+                    )
+                    if is_bad_xref_key:
+                        if wfid not in bad_id_list:
+                            bad_id_list.append(wfid)
+                        if verbose:
+                            print(str(wfid), " link with ", str(xref_key), " failed")
+                        if len(bad_id_list) > error_limit:
+                            raise MsPASSError(
+                                "checklinks:  number of bad id errors exceeds internal limit",
+                                "Fatal",
+                            )
+                    if is_bad_wf:
+                        if wfid not in missing_id_list:
+                            missing_id_list.append(wfid)
+                        if verbose:
+                            print(str(wfid), " is missing required key=", xref_key)
+                        if len(missing_id_list) > error_limit:
+                            raise MsPASSError(
+                                "checklinks:  number of missing id errors exceeds internal limit",
+                                "Fatal",
+                            )
+                    if (
+                        len(bad_id_list) >= error_limit
+                        or len(missing_id_list) >= error_limit
+                    ):
+                        break
+            finally:
+                cursor.close()
 
         return tuple([bad_id_list, missing_id_list])
 
@@ -2531,43 +2543,46 @@ class Database(pymongo.database.Database):
         cursor = dbcol.find(query)
         bad_type_docs = dict()
         undefined_key_docs = dict()
-        for doc in cursor:
-            bad_types = dict()
-            undefined_keys = dict()
-            id = doc["_id"]
-            for k in doc:
-                if col_schema.is_defined(k):
-                    val = doc[k]
-                    if type(val) != col_schema.type(k):
-                        bad_types[k] = doc[k]
+        try:
+            for doc in cursor:
+                bad_types = dict()
+                undefined_keys = dict()
+                id = doc["_id"]
+                for k in doc:
+                    if col_schema.is_defined(k):
+                        val = doc[k]
+                        if type(val) != col_schema.type(k):
+                            bad_types[k] = doc[k]
+                            if verbose:
+                                print("doc with id=", id, " type mismatch for key=", k)
+                                print(
+                                    "value=",
+                                    doc[k],
+                                    " does not match expected type=",
+                                    col_schema.type(k),
+                                )
+                    else:
+                        undefined_keys[k] = doc[k]
                         if verbose:
-                            print("doc with id=", id, " type mismatch for key=", k)
                             print(
-                                "value=",
+                                "doc with id=",
+                                id,
+                                " has undefined key=",
+                                k,
+                                " with value=",
                                 doc[k],
-                                " does not match expected type=",
-                                col_schema.type(k),
                             )
-                else:
-                    undefined_keys[k] = doc[k]
-                    if verbose:
-                        print(
-                            "doc with id=",
-                            id,
-                            " has undefined key=",
-                            k,
-                            " with value=",
-                            doc[k],
-                        )
-            if len(bad_types) > 0:
-                bad_type_docs[id] = bad_types
-            if len(undefined_keys) > 0:
-                undefined_key_docs[id] = undefined_keys
-            if (
-                len(undefined_key_docs) >= error_limit
-                or len(bad_type_docs) >= error_limit
-            ):
-                break
+                if len(bad_types) > 0:
+                    bad_type_docs[id] = bad_types
+                if len(undefined_keys) > 0:
+                    undefined_key_docs[id] = undefined_keys
+                if (
+                    len(undefined_key_docs) >= error_limit
+                    or len(bad_type_docs) >= error_limit
+                ):
+                    break
+        finally:
+            cursor.close()
 
         return tuple([bad_type_docs, undefined_key_docs])
 
@@ -2658,23 +2673,26 @@ class Database(pymongo.database.Database):
         undef = dict()
         wrong_types = dict()
         cursor = dbcol.find(query)
-        for doc in cursor:
-            id = doc["_id"]
-            undef_this = list()
-            wrong_this = dict()
-            for k in keys:
-                if not k in doc:
-                    undef_this.append(k)
-                else:
-                    val = doc[k]
-                    if type(val) != col_schema.type(k):
-                        wrong_this[k] = val
-            if len(undef_this) > 0:
-                undef[id] = undef_this
-            if len(wrong_this) > 0:
-                wrong_types[id] = wrong_this
-            if len(wrong_types) >= error_limit or len(undef) >= error_limit:
-                break
+        try:
+            for doc in cursor:
+                id = doc["_id"]
+                undef_this = list()
+                wrong_this = dict()
+                for k in keys:
+                    if not k in doc:
+                        undef_this.append(k)
+                    else:
+                        val = doc[k]
+                        if type(val) != col_schema.type(k):
+                            wrong_this[k] = val
+                if len(undef_this) > 0:
+                    undef[id] = undef_this
+                if len(wrong_this) > 0:
+                    wrong_types[id] = wrong_this
+                if len(wrong_types) >= error_limit or len(undef) >= error_limit:
+                    break
+        finally:
+            cursor.close()
         return tuple([wrong_types, undef])
 
     def update_metadata(

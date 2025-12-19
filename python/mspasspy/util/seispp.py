@@ -6,9 +6,10 @@ import numpy as np
 from mspasspy.ccore.utility import MetadataDefinitions
 from mspasspy.ccore.utility import MDtype
 from mspasspy.ccore.utility import MsPASSError
+from mspasspy.util.db_utils import fetch_dbhandle
 
 
-def index_data(filebase, db, ext="d3C", verbose=False):
+def index_data(filebase, dbname_or_handle, ext="d3C", verbose=False):
     """
     Import function for data from antelope export_to_mspass.
 
@@ -27,9 +28,13 @@ def index_data(filebase, db, ext="d3C", verbose=False):
     :param filebase: is the base name of the dataset to be read and indexed.
         The function will look for filebase.yaml for the header data and
         filebase.ext (Arg 3 defaulting to d3C).
-    :param db: is the MongoDB database handler
+    :param dbname_or_handle: Either a string (database name) or a Database instance.
+        In parallel mode, pass the database name (string) to avoid serializing Database objects.
     :param ext: is the file extension for the sample data (default is 'd3C').
     """
+
+    db = fetch_dbhandle(dbname_or_handle)
+    
     # This loads default mspass schema
     mdef = MetadataDefinitions()
     yamlfile = filebase + ".yaml"

@@ -387,19 +387,22 @@ class DatabaseMatcher(BasicMatcher):
         cursor = self.dbhandle.find(query)
         elog = PyErrorLogger()
         metadata_list = []
-        for doc in cursor:
-            try:
-                md = _extractData2Metadata(
-                    doc,
-                    self.attributes_to_load,
-                    self.aliases,
-                    self.prepend_collection_name,
-                    self.collection,
-                    self.load_if_defined,
-                )
-                metadata_list.append(md)
-            except MsPASSError as e:
-                raise MsPASSError("DatabaseMatcher.find: " + e.message, e.severity)
+        try:
+            for doc in cursor:
+                try:
+                    md = _extractData2Metadata(
+                        doc,
+                        self.attributes_to_load,
+                        self.aliases,
+                        self.prepend_collection_name,
+                        self.collection,
+                        self.load_if_defined,
+                    )
+                    metadata_list.append(md)
+                except MsPASSError as e:
+                    raise MsPASSError("DatabaseMatcher.find: " + e.message, e.severity)
+        finally:
+            cursor.close()
 
         if elog.size() <= 0:
             return [metadata_list, None]
@@ -751,39 +754,42 @@ class DictionaryCacheMatcher(BasicMatcher):
         cursor = dbhandle.find(self.query)
         self.normcache = dict()
         count = 0
-        for doc in cursor:
-            cache_key = self.db_make_cache_id(doc)
-            # This error trap may not be necessary but the api requires us
-            # to handle a None return
-            if cache_key == None:
-                raise MsPASSError(
-                    "DictionaryCacheMatcher._load_normalization_cache:  "
-                    + "db_make_cache_id failed - coding problem or major problem with collection="
-                    + collection,
-                    ErrorSeverity.Fatal,
-                )
-            try:
-                md = _extractData2Metadata(
-                    doc,
-                    self.attributes_to_load,
-                    self.aliases,
-                    self.prepend_collection_name,
-                    collection,
-                    self.load_if_defined,
-                )
-                if cache_key in self.normcache:
-                    self.normcache[cache_key].append(md)
-                else:
-                    self.normcache[cache_key] = [md]
-                count += 1
-            except MsPASSError as e:
-                raise MsPASSError(
-                    e.message
-                    + " in document number {n} of collection {col}".format(
-                        n=count, col=collection
-                    ),
-                    e.severity,
-                )
+        try:
+            for doc in cursor:
+                cache_key = self.db_make_cache_id(doc)
+                # This error trap may not be necessary but the api requires us
+                # to handle a None return
+                if cache_key == None:
+                    raise MsPASSError(
+                        "DictionaryCacheMatcher._load_normalization_cache:  "
+                        + "db_make_cache_id failed - coding problem or major problem with collection="
+                        + collection,
+                        ErrorSeverity.Fatal,
+                    )
+                try:
+                    md = _extractData2Metadata(
+                        doc,
+                        self.attributes_to_load,
+                        self.aliases,
+                        self.prepend_collection_name,
+                        collection,
+                        self.load_if_defined,
+                    )
+                    if cache_key in self.normcache:
+                        self.normcache[cache_key].append(md)
+                    else:
+                        self.normcache[cache_key] = [md]
+                    count += 1
+                except MsPASSError as e:
+                    raise MsPASSError(
+                        e.message
+                        + " in document number {n} of collection {col}".format(
+                            n=count, col=collection
+                        ),
+                        e.severity,
+                    )
+        finally:
+            cursor.close()
 
     def _df_load_normalization_cache(self, df, collection):
         """
@@ -3453,40 +3459,43 @@ def bulk_normalize(
 
     cursor = db[wf_col].find(wfquery)
     bulk = []
-    for doc in cursor:
-        wf_id = doc["_id"]
-        need_update = False
-        update_doc = {}
-        for ind, matcher in enumerate(matcher_list):
-            norm_doc = matcher.find_doc(doc)
-            if norm_doc is None:
-                # not this silently ignores failures
-                # may want this to count failures for each matcher
-                continue
-            for key in matcher.attributes_to_load:
-                new_key = key
-                if matcher.prepend_collection_name:
-                    if key == "_id":
-                        new_key = matcher.collection + key
-                    else:
-                        new_key = matcher.collection + "_" + key
-                update_doc[new_key] = norm_doc[new_key]
+    try:
+        for doc in cursor:
+            wf_id = doc["_id"]
+            need_update = False
+            update_doc = {}
+            for ind, matcher in enumerate(matcher_list):
+                norm_doc = matcher.find_doc(doc)
+                if norm_doc is None:
+                    # not this silently ignores failures
+                    # may want this to count failures for each matcher
+                    continue
+                for key in matcher.attributes_to_load:
+                    new_key = key
+                    if matcher.prepend_collection_name:
+                        if key == "_id":
+                            new_key = matcher.collection + key
+                        else:
+                            new_key = matcher.collection + "_" + key
+                    update_doc[new_key] = norm_doc[new_key]
 
-            cnt_list[ind] += 1
-            need_update = True
+                cnt_list[ind] += 1
+                need_update = True
 
-        if need_update:
-            bulk.append(pymongo.UpdateOne({"_id": wf_id}, {"$set": update_doc}))
-            counter += 1
-        # Tests for counter and len(bulk) are needed because the logic here
-        # allows this block to be entered the first pass and if the pass
-        # after the previous call to bulk_write did not yield a match
-        # either will cause bulk_write to throw an error when it gets an
-        # an empty list.   Should consider a logic  change here
-        # to make this less obscure
-        if counter % blocksize == 0 and counter != 0 and len(bulk) > 0:
-            db[wf_col].bulk_write(bulk)
-            bulk = []
+            if need_update:
+                bulk.append(pymongo.UpdateOne({"_id": wf_id}, {"$set": update_doc}))
+                counter += 1
+            # Tests for counter and len(bulk) are needed because the logic here
+            # allows this block to be entered the first pass and if the pass
+            # after the previous call to bulk_write did not yield a match
+            # either will cause bulk_write to throw an error when it gets an
+            # an empty list.   Should consider a logic  change here
+            # to make this less obscure
+            if counter % blocksize == 0 and counter != 0 and len(bulk) > 0:
+                db[wf_col].bulk_write(bulk)
+                bulk = []
+    finally:
+        cursor.close()
 
     if counter % blocksize != 0:
         db[wf_col].bulk_write(bulk)
@@ -3692,16 +3701,19 @@ def _load_as_df(db, collection, query, attributes_to_load, load_if_defined):
     for k in load_if_defined:
         dict_tmp[k] = []
     cursor = db[collection].find(query)
-    for doc in cursor:
-        # attributes_to_load list are required.  For now let this
-        # thow an exception if that is not true - may need a handler
-        for k in attributes_to_load:
-            dict_tmp[k].append(doc[k])
-        for k in load_if_defined:
-            if k in doc:
+    try:
+        for doc in cursor:
+            # attributes_to_load list are required.  For now let this
+            # thow an exception if that is not true - may need a handler
+            for k in attributes_to_load:
                 dict_tmp[k].append(doc[k])
-            else:
-                dict_tmp[k].append(None)
+            for k in load_if_defined:
+                if k in doc:
+                    dict_tmp[k].append(doc[k])
+                else:
+                    dict_tmp[k].append(None)
+    finally:
+        cursor.close()
     return pd.DataFrame.from_dict(dict_tmp)
 
 

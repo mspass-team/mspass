@@ -16,6 +16,7 @@ from mspasspy.db.normalize import BasicMatcher
 from mspasspy.db.normalize import normalize as normalize_function
 from mspasspy.util.Undertaker import Undertaker
 from mspasspy.db.client import DBClient
+from mspasspy.util.db_utils import fetch_dbhandle
 
 
 from mspasspy.ccore.utility import (
@@ -44,7 +45,7 @@ if not _mspasspy_has_dask and not _mspasspy_has_pyspark:
 
 def read_ensemble_parallel(
     query,
-    db,
+    dbname_or_handle,
     collection="wf_TimeSeries",
     mode="promiscuous",
     normalize=None,
@@ -67,7 +68,8 @@ def read_ensemble_parallel(
     Arguments are all passed directly from values set within
     read_distributed_data.  See that function for parameter descriptions.
     """
-
+    db = fetch_dbhandle(dbname_or_handle)
+    
     if sort_clause:
         cursor = db[collection].find(query).sort(sort_clause)
     else:
@@ -653,11 +655,14 @@ def read_distributed_data(
             )
 
         else:
+            # Dask path: extract dbname to avoid serializing Database object
+            # fetch_dbhandle in read_ensemble_parallel will get DBClient from worker plugin
+            dbname = db.name if isinstance(db, Database) else db
             # note same maintenance issue as with parallelize above
             plist = dask.bag.from_sequence(data, npartitions=npartitions)
             plist = plist.map(
                 read_ensemble_parallel,
-                db,
+                dbname,  # Pass dbname string for Dask
                 collection=collection,
                 mode=mode,
                 normalize=normalize,
@@ -855,9 +860,8 @@ def _partitioned_save_wfdoc(
     # This makes the function more bombproof in the event a database
     # handle can't be serialized - db should normally be defined
     if db is None:
-        dbclient = DBClient()
-        # needs to throw an exception of both db and dbname are none
-        db = dbclient.get_database(dbname)
+        # Use fetch_dbhandle which handles both Dask (worker plugin) and Spark/serial (direct creation)
+        db = fetch_dbhandle(dbname)
     dbcol = db[collection]
     # test for the existence of any dead data.  Handle that case specially
     # Very important to realize the algorithm is complicated by the fact that

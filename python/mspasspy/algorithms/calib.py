@@ -3,6 +3,7 @@ import numpy as np
 from mspasspy.ccore.seismic import TimeSeries, TimeSeriesEnsemble
 from mspasspy.ccore.utility import MsPASSError, ErrorSeverity
 from mspasspy.util.decorators import mspass_method_wrapper
+from mspasspy.util.db_utils import fetch_dbhandle
 from obspy import UTCDateTime
 
 
@@ -44,7 +45,7 @@ class ApplyCalibEngine:
 
     def __init__(
         self,
-        db,
+        dbname_or_handle,
         query=None,
         collection="channel",
         ounits=["counts", "COUNTS", "count", "COUNT"],
@@ -57,8 +58,9 @@ class ApplyCalibEngine:
         and builds an internal cache to cross-reference channel_id with
         calib values.
 
-        :param db:  MongoDB Database handle assumed to contained a
-           channell collection created from an Inventory object with
+        :param dbname_or_handle: Either a string (database name) or a Database instance.
+           In parallel mode, pass the database name (string) to avoid serializing Database objects.
+           MongoDB Database handle assumed to contained a channel collection created from an Inventory object with
            the MsPASS database method `save_inventory`.
         :param query:  optional MongoDB query operator to apply to
            collection before using.  Size, for exampe, might be reduced
@@ -97,59 +99,64 @@ class ApplyCalibEngine:
           velocity data is true response correction not a simple calib
           correction.
         """
+        db = fetch_dbhandle(dbname_or_handle)
+        
         if query:
             cursor = db[collection].find(query)
         else:
             cursor = db[collection].find({})
         self.calib = dict()
-        for doc in cursor:
-            if response_data_key in doc:
-                chandata = pickle.loads(doc[response_data_key])
-                resp = chandata.response
-                sens = resp.instrument_sensitivity
-                if sens is None and verbose:
-                    stastr = self._parse_stadata(doc)
-                    print(stastr, " invalid instrument response")
-                    print("pickle.loads returned this:  ", str(resp))
-                elif sens:
-                    if verbose:
-                        message = self._parse_stadata(doc) + ":  "
-                    if sens.input_units and sens.output_units:
-                        if sens.input_units in iunits:
-                            if sens.output_units in ounits:
-                                if sens.value is None:
-                                    if verbose:
-                                        message += "units ok but sensitivity value is undefined"
-                                        print(message)
-                                elif sens.value <= 0.0:
-                                    if verbose:
-                                        message += "sensitivity value is 0 or negative - treating as undefined"
-                                        print(message)
-                                else:
-                                    id = doc["_id"]
-                                    # inventory saves a "sensitivity" value
-                                    # which is he reciprocal of calib
-                                    self.calib[str(id)] = 1e9 / sens.value
+        try:
+            for doc in cursor:
+                if response_data_key in doc:
+                    chandata = pickle.loads(doc[response_data_key])
+                    resp = chandata.response
+                    sens = resp.instrument_sensitivity
+                    if sens is None and verbose:
+                        stastr = self._parse_stadata(doc)
+                        print(stastr, " invalid instrument response")
+                        print("pickle.loads returned this:  ", str(resp))
+                    elif sens:
+                        if verbose:
+                            message = self._parse_stadata(doc) + ":  "
+                        if sens.input_units and sens.output_units:
+                            if sens.input_units in iunits:
+                                if sens.output_units in ounits:
+                                    if sens.value is None:
+                                        if verbose:
+                                            message += "units ok but sensitivity value is undefined"
+                                            print(message)
+                                    elif sens.value <= 0.0:
+                                        if verbose:
+                                            message += "sensitivity value is 0 or negative - treating as undefined"
+                                            print(message)
+                                    else:
+                                        id = doc["_id"]
+                                        # inventory saves a "sensitivity" value
+                                        # which is he reciprocal of calib
+                                        self.calib[str(id)] = 1e9 / sens.value
+                                elif verbose:
+                                    message += "Illegal output_unit value="
+                                    message += sens.output_units + "\n"
+                                    print(message)
                             elif verbose:
-                                message += "Illegal output_unit value="
-                                message += sens.output_units + "\n"
+                                message += "Illegal input_units value="
+                                message += sens.input_units + "\n"
                                 print(message)
                         elif verbose:
-                            message += "Illegal input_units value="
-                            message += sens.input_units + "\n"
+                            message += (
+                                "sensitivity data is undefined in this response object"
+                            )
                             print(message)
-                    elif verbose:
-                        message += (
-                            "sensitivity data is undefined in this response object"
-                        )
-                        print(message)
-            elif verbose:
-                stastr = self._parse_stadata(doc)
-                print(
-                    stastr,
-                    " does not contain pickled response data - keey=",
-                    response_data_key,
-                )
+                elif verbose:
+                    stastr = self._parse_stadata(doc)
+                    print(
+                        stastr,
+                        " does not contain pickled response data - keey=",
+                        response_data_key,
+                    )
+        finally:
+            cursor.close()
         if len(self.calib) == 0:
             message = (
                 "ApplyCalibEngine construtor:  Database has no valid response data"
