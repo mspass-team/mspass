@@ -1269,6 +1269,7 @@ def write_distributed_data(
     normalizing_collections=["channel", "site", "source"],
     alg_name="write_distributed_data",
     alg_id="0",
+    dask_client=None,
 ) -> list:
     """
     Parallel save function for termination of a processing script.
@@ -1521,6 +1522,13 @@ def write_distributed_data(
      :param alg_id:  algorithm id for object-level history.  Normally
          assigned by global history manager.
 
+     :param dask_client: Optional Dask distributed Client instance. When provided,
+         this client will be used for compute() operations instead of the default
+         multiprocessing scheduler. This is required when using Dask distributed
+         scheduler with worker plugins (e.g., MongoDBWorker). If None (default),
+         uses the default Dask scheduler.
+     :type dask_client: :class:`dask.distributed.Client` or None
+
     """
     # We don't do type check on the data argument assuming dask or
     # spark will throw errors that make the mistake clear.
@@ -1691,7 +1699,10 @@ def write_distributed_data(
             )
             # necessary here or the map_partition function will fail
             # because it will receive a DAG structure instead of a list
-            data = data.compute()
+            if dask_client is not None:
+                data = data.compute(scheduler=dask_client)
+            else:
+                data = data.compute()
         else:
             # This step adds some minor overhead, but it can reduce
             # memory use at a small cost.  Ensembles are particularly
@@ -1728,7 +1739,10 @@ def write_distributed_data(
                 post_history=post_history,
                 data_tag=data_tag,
             )
-            data = data.compute()
+            if dask_client is not None:
+                data = data.compute(scheduler=dask_client)
+            else:
+                data = data.compute()
     return data
 
 
