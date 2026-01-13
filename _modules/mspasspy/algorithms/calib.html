@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>mspasspy.algorithms.calib &mdash; MsPASS 0.0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
 
   
@@ -148,6 +148,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.ccore.seismic</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span><span class="p">,</span> <span class="n">TimeSeriesEnsemble</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.ccore.utility</span><span class="w"> </span><span class="kn">import</span> <span class="n">MsPASSError</span><span class="p">,</span> <span class="n">ErrorSeverity</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.util.decorators</span><span class="w"> </span><span class="kn">import</span> <span class="n">mspass_method_wrapper</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.util.db_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">fetch_dbhandle</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">obspy</span><span class="w"> </span><span class="kn">import</span> <span class="n">UTCDateTime</span>
 
 
@@ -191,7 +192,7 @@
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">db</span><span class="p">,</span>
+        <span class="n">dbname_or_handle</span><span class="p">,</span>
         <span class="n">query</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;channel&quot;</span><span class="p">,</span>
         <span class="n">ounits</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;counts&quot;</span><span class="p">,</span> <span class="s2">&quot;COUNTS&quot;</span><span class="p">,</span> <span class="s2">&quot;count&quot;</span><span class="p">,</span> <span class="s2">&quot;COUNT&quot;</span><span class="p">],</span>
@@ -204,8 +205,9 @@
 <span class="sd">        and builds an internal cache to cross-reference channel_id with</span>
 <span class="sd">        calib values.</span>
 
-<span class="sd">        :param db:  MongoDB Database handle assumed to contained a</span>
-<span class="sd">           channell collection created from an Inventory object with</span>
+<span class="sd">        :param dbname_or_handle: Either a string (database name) or a Database instance.</span>
+<span class="sd">           In parallel mode, pass the database name (string) to avoid serializing Database objects.</span>
+<span class="sd">           MongoDB Database handle assumed to contained a channel collection created from an Inventory object with</span>
 <span class="sd">           the MsPASS database method `save_inventory`.</span>
 <span class="sd">        :param query:  optional MongoDB query operator to apply to</span>
 <span class="sd">           collection before using.  Size, for exampe, might be reduced</span>
@@ -244,62 +246,67 @@
 <span class="sd">          velocity data is true response correction not a simple calib</span>
 <span class="sd">          correction.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">db</span> <span class="o">=</span> <span class="n">fetch_dbhandle</span><span class="p">(</span><span class="n">dbname_or_handle</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="n">query</span><span class="p">:</span>
             <span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="p">[</span><span class="n">collection</span><span class="p">]</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="p">[</span><span class="n">collection</span><span class="p">]</span><span class="o">.</span><span class="n">find</span><span class="p">({})</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">calib</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">cursor</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">response_data_key</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
-                <span class="n">chandata</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="n">response_data_key</span><span class="p">])</span>
-                <span class="n">resp</span> <span class="o">=</span> <span class="n">chandata</span><span class="o">.</span><span class="n">response</span>
-                <span class="n">sens</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">instrument_sensitivity</span>
-                <span class="k">if</span> <span class="n">sens</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">verbose</span><span class="p">:</span>
-                    <span class="n">stastr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_stadata</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="n">stastr</span><span class="p">,</span> <span class="s2">&quot; invalid instrument response&quot;</span><span class="p">)</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;pickle.loads returned this:  &quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">resp</span><span class="p">))</span>
-                <span class="k">elif</span> <span class="n">sens</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
-                        <span class="n">message</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_stadata</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;:  &quot;</span>
-                    <span class="k">if</span> <span class="n">sens</span><span class="o">.</span><span class="n">input_units</span> <span class="ow">and</span> <span class="n">sens</span><span class="o">.</span><span class="n">output_units</span><span class="p">:</span>
-                        <span class="k">if</span> <span class="n">sens</span><span class="o">.</span><span class="n">input_units</span> <span class="ow">in</span> <span class="n">iunits</span><span class="p">:</span>
-                            <span class="k">if</span> <span class="n">sens</span><span class="o">.</span><span class="n">output_units</span> <span class="ow">in</span> <span class="n">ounits</span><span class="p">:</span>
-                                <span class="k">if</span> <span class="n">sens</span><span class="o">.</span><span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                                    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
-                                        <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;units ok but sensitivity value is undefined&quot;</span>
-                                        <span class="nb">print</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
-                                <span class="k">elif</span> <span class="n">sens</span><span class="o">.</span><span class="n">value</span> <span class="o">&lt;=</span> <span class="mf">0.0</span><span class="p">:</span>
-                                    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
-                                        <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;sensitivity value is 0 or negative - treating as undefined&quot;</span>
-                                        <span class="nb">print</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
-                                <span class="k">else</span><span class="p">:</span>
-                                    <span class="nb">id</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]</span>
-                                    <span class="c1"># inventory saves a &quot;sensitivity&quot; value</span>
-                                    <span class="c1"># which is he reciprocal of calib</span>
-                                    <span class="bp">self</span><span class="o">.</span><span class="n">calib</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="nb">id</span><span class="p">)]</span> <span class="o">=</span> <span class="mf">1e9</span> <span class="o">/</span> <span class="n">sens</span><span class="o">.</span><span class="n">value</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">cursor</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">response_data_key</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
+                    <span class="n">chandata</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="n">response_data_key</span><span class="p">])</span>
+                    <span class="n">resp</span> <span class="o">=</span> <span class="n">chandata</span><span class="o">.</span><span class="n">response</span>
+                    <span class="n">sens</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">instrument_sensitivity</span>
+                    <span class="k">if</span> <span class="n">sens</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">verbose</span><span class="p">:</span>
+                        <span class="n">stastr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_stadata</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="n">stastr</span><span class="p">,</span> <span class="s2">&quot; invalid instrument response&quot;</span><span class="p">)</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;pickle.loads returned this:  &quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">resp</span><span class="p">))</span>
+                    <span class="k">elif</span> <span class="n">sens</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+                            <span class="n">message</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_stadata</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;:  &quot;</span>
+                        <span class="k">if</span> <span class="n">sens</span><span class="o">.</span><span class="n">input_units</span> <span class="ow">and</span> <span class="n">sens</span><span class="o">.</span><span class="n">output_units</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="n">sens</span><span class="o">.</span><span class="n">input_units</span> <span class="ow">in</span> <span class="n">iunits</span><span class="p">:</span>
+                                <span class="k">if</span> <span class="n">sens</span><span class="o">.</span><span class="n">output_units</span> <span class="ow">in</span> <span class="n">ounits</span><span class="p">:</span>
+                                    <span class="k">if</span> <span class="n">sens</span><span class="o">.</span><span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                                        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+                                            <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;units ok but sensitivity value is undefined&quot;</span>
+                                            <span class="nb">print</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+                                    <span class="k">elif</span> <span class="n">sens</span><span class="o">.</span><span class="n">value</span> <span class="o">&lt;=</span> <span class="mf">0.0</span><span class="p">:</span>
+                                        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+                                            <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;sensitivity value is 0 or negative - treating as undefined&quot;</span>
+                                            <span class="nb">print</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+                                    <span class="k">else</span><span class="p">:</span>
+                                        <span class="nb">id</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]</span>
+                                        <span class="c1"># inventory saves a &quot;sensitivity&quot; value</span>
+                                        <span class="c1"># which is the reciprocal of calib</span>
+                                        <span class="bp">self</span><span class="o">.</span><span class="n">calib</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="nb">id</span><span class="p">)]</span> <span class="o">=</span> <span class="mf">1e9</span> <span class="o">/</span> <span class="n">sens</span><span class="o">.</span><span class="n">value</span>
+                                <span class="k">elif</span> <span class="n">verbose</span><span class="p">:</span>
+                                    <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Illegal output_unit value=&quot;</span>
+                                    <span class="n">message</span> <span class="o">+=</span> <span class="n">sens</span><span class="o">.</span><span class="n">output_units</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+                                    <span class="nb">print</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
                             <span class="k">elif</span> <span class="n">verbose</span><span class="p">:</span>
-                                <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Illegal output_unit value=&quot;</span>
-                                <span class="n">message</span> <span class="o">+=</span> <span class="n">sens</span><span class="o">.</span><span class="n">output_units</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+                                <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Illegal input_units value=&quot;</span>
+                                <span class="n">message</span> <span class="o">+=</span> <span class="n">sens</span><span class="o">.</span><span class="n">input_units</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
                                 <span class="nb">print</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
                         <span class="k">elif</span> <span class="n">verbose</span><span class="p">:</span>
-                            <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Illegal input_units value=&quot;</span>
-                            <span class="n">message</span> <span class="o">+=</span> <span class="n">sens</span><span class="o">.</span><span class="n">input_units</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+                            <span class="n">message</span> <span class="o">+=</span> <span class="p">(</span>
+                                <span class="s2">&quot;sensitivity data is undefined in this response object&quot;</span>
+                            <span class="p">)</span>
                             <span class="nb">print</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
-                    <span class="k">elif</span> <span class="n">verbose</span><span class="p">:</span>
-                        <span class="n">message</span> <span class="o">+=</span> <span class="p">(</span>
-                            <span class="s2">&quot;sensitivity data is undefined in this response object&quot;</span>
-                        <span class="p">)</span>
-                        <span class="nb">print</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="n">verbose</span><span class="p">:</span>
-                <span class="n">stastr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_stadata</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
-                <span class="nb">print</span><span class="p">(</span>
-                    <span class="n">stastr</span><span class="p">,</span>
-                    <span class="s2">&quot; does not contain pickled response data - keey=&quot;</span><span class="p">,</span>
-                    <span class="n">response_data_key</span><span class="p">,</span>
-                <span class="p">)</span>
+                <span class="k">elif</span> <span class="n">verbose</span><span class="p">:</span>
+                    <span class="n">stastr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_stadata</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span>
+                        <span class="n">stastr</span><span class="p">,</span>
+                        <span class="s2">&quot; does not contain pickled response data - key=&quot;</span><span class="p">,</span>
+                        <span class="n">response_data_key</span><span class="p">,</span>
+                    <span class="p">)</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">cursor</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">calib</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="s2">&quot;ApplyCalibEngine construtor:  Database has no valid response data&quot;</span>
+                <span class="s2">&quot;ApplyCalibEngine constructor:  Database has no valid response data&quot;</span>
             <span class="p">)</span>
             <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
 

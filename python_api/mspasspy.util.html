@@ -8,7 +8,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>mspasspy.util &mdash; MsPASS 0.0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
 
   
@@ -1117,7 +1117,7 @@ what that value is relative to the valid values.</p></li>
 <span id="seispp"></span><h2>seispp<a class="headerlink" href="#module-mspasspy.util.seispp" title="Link to this heading"></a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="mspasspy.util.seispp.index_data">
-<span class="sig-prename descclassname"><span class="pre">mspasspy.util.seispp.</span></span><span class="sig-name descname"><span class="pre">index_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filebase</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ext</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'d3C'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/seispp.html#index_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.seispp.index_data" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">mspasspy.util.seispp.</span></span><span class="sig-name descname"><span class="pre">index_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filebase</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dbname_or_handle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ext</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'d3C'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/seispp.html#index_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.seispp.index_data" title="Link to this definition"></a></dt>
 <dd><p>Import function for data from antelope export_to_mspass.</p>
 <p>This function is an import function for Seismogram objects created
 by the antelope program export_to_mspass.  That program writes
@@ -1136,7 +1136,8 @@ need to use dir, dfile, and foff to find the right file and read point.</p>
 <li><p><strong>filebase</strong> – is the base name of the dataset to be read and indexed.
 The function will look for filebase.yaml for the header data and
 filebase.ext (Arg 3 defaulting to d3C).</p></li>
-<li><p><strong>db</strong> – is the MongoDB database handler</p></li>
+<li><p><strong>dbname_or_handle</strong> – Either a string (database name) or a Database instance.
+In parallel mode, pass the database name (string) to avoid serializing Database objects.</p></li>
 <li><p><strong>ext</strong> – is the file extension for the sample data (default is ‘d3C’).</p></li>
 </ul>
 </dd>

@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>mspasspy.db.normalize &mdash; MsPASS 0.0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
 
   
@@ -551,19 +551,22 @@
         <span class="n">cursor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dbhandle</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
         <span class="n">elog</span> <span class="o">=</span> <span class="n">PyErrorLogger</span><span class="p">()</span>
         <span class="n">metadata_list</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">cursor</span><span class="p">:</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">md</span> <span class="o">=</span> <span class="n">_extractData2Metadata</span><span class="p">(</span>
-                    <span class="n">doc</span><span class="p">,</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">attributes_to_load</span><span class="p">,</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">aliases</span><span class="p">,</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">prepend_collection_name</span><span class="p">,</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="p">,</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">load_if_defined</span><span class="p">,</span>
-                <span class="p">)</span>
-                <span class="n">metadata_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">md</span><span class="p">)</span>
-            <span class="k">except</span> <span class="n">MsPASSError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="s2">&quot;DatabaseMatcher.find: &quot;</span> <span class="o">+</span> <span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">severity</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">cursor</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">md</span> <span class="o">=</span> <span class="n">_extractData2Metadata</span><span class="p">(</span>
+                        <span class="n">doc</span><span class="p">,</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">attributes_to_load</span><span class="p">,</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">aliases</span><span class="p">,</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">prepend_collection_name</span><span class="p">,</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="p">,</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">load_if_defined</span><span class="p">,</span>
+                    <span class="p">)</span>
+                    <span class="n">metadata_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">md</span><span class="p">)</span>
+                <span class="k">except</span> <span class="n">MsPASSError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="s2">&quot;DatabaseMatcher.find: &quot;</span> <span class="o">+</span> <span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">severity</span><span class="p">)</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">cursor</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="n">elog</span><span class="o">.</span><span class="n">size</span><span class="p">()</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">[</span><span class="n">metadata_list</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span>
@@ -934,39 +937,42 @@
         <span class="n">cursor</span> <span class="o">=</span> <span class="n">dbhandle</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">query</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">normcache</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
         <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">cursor</span><span class="p">:</span>
-            <span class="n">cache_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_make_cache_id</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
-            <span class="c1"># This error trap may not be necessary but the api requires us</span>
-            <span class="c1"># to handle a None return</span>
-            <span class="k">if</span> <span class="n">cache_key</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
-                    <span class="s2">&quot;DictionaryCacheMatcher._load_normalization_cache:  &quot;</span>
-                    <span class="o">+</span> <span class="s2">&quot;db_make_cache_id failed - coding problem or major problem with collection=&quot;</span>
-                    <span class="o">+</span> <span class="n">collection</span><span class="p">,</span>
-                    <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Fatal</span><span class="p">,</span>
-                <span class="p">)</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">md</span> <span class="o">=</span> <span class="n">_extractData2Metadata</span><span class="p">(</span>
-                    <span class="n">doc</span><span class="p">,</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">attributes_to_load</span><span class="p">,</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">aliases</span><span class="p">,</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">prepend_collection_name</span><span class="p">,</span>
-                    <span class="n">collection</span><span class="p">,</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">load_if_defined</span><span class="p">,</span>
-                <span class="p">)</span>
-                <span class="k">if</span> <span class="n">cache_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">normcache</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">normcache</span><span class="p">[</span><span class="n">cache_key</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">md</span><span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">normcache</span><span class="p">[</span><span class="n">cache_key</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">md</span><span class="p">]</span>
-                <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
-            <span class="k">except</span> <span class="n">MsPASSError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
-                    <span class="n">e</span><span class="o">.</span><span class="n">message</span>
-                    <span class="o">+</span> <span class="s2">&quot; in document number </span><span class="si">{n}</span><span class="s2"> of collection </span><span class="si">{col}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                        <span class="n">n</span><span class="o">=</span><span class="n">count</span><span class="p">,</span> <span class="n">col</span><span class="o">=</span><span class="n">collection</span>
-                    <span class="p">),</span>
-                    <span class="n">e</span><span class="o">.</span><span class="n">severity</span><span class="p">,</span>
-                <span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">cursor</span><span class="p">:</span>
+                <span class="n">cache_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_make_cache_id</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
+                <span class="c1"># This error trap may not be necessary but the api requires us</span>
+                <span class="c1"># to handle a None return</span>
+                <span class="k">if</span> <span class="n">cache_key</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
+                        <span class="s2">&quot;DictionaryCacheMatcher._load_normalization_cache:  &quot;</span>
+                        <span class="o">+</span> <span class="s2">&quot;db_make_cache_id failed - coding problem or major problem with collection=&quot;</span>
+                        <span class="o">+</span> <span class="n">collection</span><span class="p">,</span>
+                        <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Fatal</span><span class="p">,</span>
+                    <span class="p">)</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">md</span> <span class="o">=</span> <span class="n">_extractData2Metadata</span><span class="p">(</span>
+                        <span class="n">doc</span><span class="p">,</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">attributes_to_load</span><span class="p">,</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">aliases</span><span class="p">,</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">prepend_collection_name</span><span class="p">,</span>
+                        <span class="n">collection</span><span class="p">,</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">load_if_defined</span><span class="p">,</span>
+                    <span class="p">)</span>
+                    <span class="k">if</span> <span class="n">cache_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">normcache</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">normcache</span><span class="p">[</span><span class="n">cache_key</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">md</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">normcache</span><span class="p">[</span><span class="n">cache_key</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">md</span><span class="p">]</span>
+                    <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">except</span> <span class="n">MsPASSError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
+                        <span class="n">e</span><span class="o">.</span><span class="n">message</span>
+                        <span class="o">+</span> <span class="s2">&quot; in document number </span><span class="si">{n}</span><span class="s2"> of collection </span><span class="si">{col}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                            <span class="n">n</span><span class="o">=</span><span class="n">count</span><span class="p">,</span> <span class="n">col</span><span class="o">=</span><span class="n">collection</span>
+                        <span class="p">),</span>
+                        <span class="n">e</span><span class="o">.</span><span class="n">severity</span><span class="p">,</span>
+                    <span class="p">)</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">cursor</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_df_load_normalization_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">collection</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -3735,40 +3741,43 @@
 
     <span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="p">[</span><span class="n">wf_col</span><span class="p">]</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">wfquery</span><span class="p">)</span>
     <span class="n">bulk</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">cursor</span><span class="p">:</span>
-        <span class="n">wf_id</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]</span>
-        <span class="n">need_update</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="n">update_doc</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">for</span> <span class="n">ind</span><span class="p">,</span> <span class="n">matcher</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">matcher_list</span><span class="p">):</span>
-            <span class="n">norm_doc</span> <span class="o">=</span> <span class="n">matcher</span><span class="o">.</span><span class="n">find_doc</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">norm_doc</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="c1"># not this silently ignores failures</span>
-                <span class="c1"># may want this to count failures for each matcher</span>
-                <span class="k">continue</span>
-            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">matcher</span><span class="o">.</span><span class="n">attributes_to_load</span><span class="p">:</span>
-                <span class="n">new_key</span> <span class="o">=</span> <span class="n">key</span>
-                <span class="k">if</span> <span class="n">matcher</span><span class="o">.</span><span class="n">prepend_collection_name</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;_id&quot;</span><span class="p">:</span>
-                        <span class="n">new_key</span> <span class="o">=</span> <span class="n">matcher</span><span class="o">.</span><span class="n">collection</span> <span class="o">+</span> <span class="n">key</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="n">new_key</span> <span class="o">=</span> <span class="n">matcher</span><span class="o">.</span><span class="n">collection</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">key</span>
-                <span class="n">update_doc</span><span class="p">[</span><span class="n">new_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">norm_doc</span><span class="p">[</span><span class="n">new_key</span><span class="p">]</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">cursor</span><span class="p">:</span>
+            <span class="n">wf_id</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]</span>
+            <span class="n">need_update</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">update_doc</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">ind</span><span class="p">,</span> <span class="n">matcher</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">matcher_list</span><span class="p">):</span>
+                <span class="n">norm_doc</span> <span class="o">=</span> <span class="n">matcher</span><span class="o">.</span><span class="n">find_doc</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">norm_doc</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="c1"># not this silently ignores failures</span>
+                    <span class="c1"># may want this to count failures for each matcher</span>
+                    <span class="k">continue</span>
+                <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">matcher</span><span class="o">.</span><span class="n">attributes_to_load</span><span class="p">:</span>
+                    <span class="n">new_key</span> <span class="o">=</span> <span class="n">key</span>
+                    <span class="k">if</span> <span class="n">matcher</span><span class="o">.</span><span class="n">prepend_collection_name</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;_id&quot;</span><span class="p">:</span>
+                            <span class="n">new_key</span> <span class="o">=</span> <span class="n">matcher</span><span class="o">.</span><span class="n">collection</span> <span class="o">+</span> <span class="n">key</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">new_key</span> <span class="o">=</span> <span class="n">matcher</span><span class="o">.</span><span class="n">collection</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">key</span>
+                    <span class="n">update_doc</span><span class="p">[</span><span class="n">new_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">norm_doc</span><span class="p">[</span><span class="n">new_key</span><span class="p">]</span>
 
-            <span class="n">cnt_list</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
-            <span class="n">need_update</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="n">cnt_list</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">need_update</span> <span class="o">=</span> <span class="kc">True</span>
 
-        <span class="k">if</span> <span class="n">need_update</span><span class="p">:</span>
-            <span class="n">bulk</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pymongo</span><span class="o">.</span><span class="n">UpdateOne</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">wf_id</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="n">update_doc</span><span class="p">}))</span>
-            <span class="n">counter</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="c1"># Tests for counter and len(bulk) are needed because the logic here</span>
-        <span class="c1"># allows this block to be entered the first pass and if the pass</span>
-        <span class="c1"># after the previous call to bulk_write did not yield a match</span>
-        <span class="c1"># either will cause bulk_write to throw an error when it gets an</span>
-        <span class="c1"># an empty list.   Should consider a logic  change here</span>
-        <span class="c1"># to make this less obscure</span>
-        <span class="k">if</span> <span class="n">counter</span> <span class="o">%</span> <span class="n">blocksize</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">counter</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">bulk</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">db</span><span class="p">[</span><span class="n">wf_col</span><span class="p">]</span><span class="o">.</span><span class="n">bulk_write</span><span class="p">(</span><span class="n">bulk</span><span class="p">)</span>
-            <span class="n">bulk</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">if</span> <span class="n">need_update</span><span class="p">:</span>
+                <span class="n">bulk</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pymongo</span><span class="o">.</span><span class="n">UpdateOne</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">wf_id</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="n">update_doc</span><span class="p">}))</span>
+                <span class="n">counter</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="c1"># Tests for counter and len(bulk) are needed because the logic here</span>
+            <span class="c1"># allows this block to be entered the first pass and if the pass</span>
+            <span class="c1"># after the previous call to bulk_write did not yield a match</span>
+            <span class="c1"># either will cause bulk_write to throw an error when it gets an</span>
+            <span class="c1"># an empty list.   Should consider a logic  change here</span>
+            <span class="c1"># to make this less obscure</span>
+            <span class="k">if</span> <span class="n">counter</span> <span class="o">%</span> <span class="n">blocksize</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">counter</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">bulk</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">db</span><span class="p">[</span><span class="n">wf_col</span><span class="p">]</span><span class="o">.</span><span class="n">bulk_write</span><span class="p">(</span><span class="n">bulk</span><span class="p">)</span>
+                <span class="n">bulk</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="n">cursor</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
     <span class="k">if</span> <span class="n">counter</span> <span class="o">%</span> <span class="n">blocksize</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">db</span><span class="p">[</span><span class="n">wf_col</span><span class="p">]</span><span class="o">.</span><span class="n">bulk_write</span><span class="p">(</span><span class="n">bulk</span><span class="p">)</span>
@@ -3978,16 +3987,19 @@
     <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">load_if_defined</span><span class="p">:</span>
         <span class="n">dict_tmp</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="p">[</span><span class="n">collection</span><span class="p">]</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">cursor</span><span class="p">:</span>
-        <span class="c1"># attributes_to_load list are required.  For now let this</span>
-        <span class="c1"># thow an exception if that is not true - may need a handler</span>
-        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">attributes_to_load</span><span class="p">:</span>
-            <span class="n">dict_tmp</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
-        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">load_if_defined</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">cursor</span><span class="p">:</span>
+            <span class="c1"># attributes_to_load list are required.  For now let this</span>
+            <span class="c1"># thow an exception if that is not true - may need a handler</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">attributes_to_load</span><span class="p">:</span>
                 <span class="n">dict_tmp</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">dict_tmp</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">load_if_defined</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
+                    <span class="n">dict_tmp</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">dict_tmp</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="n">cursor</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">dict_tmp</span><span class="p">)</span>
 
 

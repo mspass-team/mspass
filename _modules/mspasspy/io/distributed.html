@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>mspasspy.io.distributed &mdash; MsPASS 0.0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
 
   
@@ -161,6 +161,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.db.normalize</span><span class="w"> </span><span class="kn">import</span> <span class="n">normalize</span> <span class="k">as</span> <span class="n">normalize_function</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.util.Undertaker</span><span class="w"> </span><span class="kn">import</span> <span class="n">Undertaker</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.db.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">DBClient</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.util.db_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">fetch_dbhandle</span>
 
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.ccore.utility</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
@@ -191,7 +192,7 @@
 <a class="viewcode-back" href="../../../python_api/mspasspy.io.html#mspasspy.io.distributed.read_ensemble_parallel">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">read_ensemble_parallel</span><span class="p">(</span>
     <span class="n">query</span><span class="p">,</span>
-    <span class="n">db</span><span class="p">,</span>
+    <span class="n">dbname_or_handle</span><span class="p">,</span>
     <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;wf_TimeSeries&quot;</span><span class="p">,</span>
     <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;promiscuous&quot;</span><span class="p">,</span>
     <span class="n">normalize</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -214,6 +215,7 @@
 <span class="sd">    Arguments are all passed directly from values set within</span>
 <span class="sd">    read_distributed_data.  See that function for parameter descriptions.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">db</span> <span class="o">=</span> <span class="n">fetch_dbhandle</span><span class="p">(</span><span class="n">dbname_or_handle</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">sort_clause</span><span class="p">:</span>
         <span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="p">[</span><span class="n">collection</span><span class="p">]</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">)</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">sort_clause</span><span class="p">)</span>
@@ -806,11 +808,14 @@
             <span class="p">)</span>
 
         <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Dask path: extract dbname to avoid serializing Database object</span>
+            <span class="c1"># fetch_dbhandle in read_ensemble_parallel will get DBClient from worker plugin</span>
+            <span class="n">dbname</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">name</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">Database</span><span class="p">)</span> <span class="k">else</span> <span class="n">db</span>
             <span class="c1"># note same maintenance issue as with parallelize above</span>
             <span class="n">plist</span> <span class="o">=</span> <span class="n">dask</span><span class="o">.</span><span class="n">bag</span><span class="o">.</span><span class="n">from_sequence</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">npartitions</span><span class="o">=</span><span class="n">npartitions</span><span class="p">)</span>
             <span class="n">plist</span> <span class="o">=</span> <span class="n">plist</span><span class="o">.</span><span class="n">map</span><span class="p">(</span>
                 <span class="n">read_ensemble_parallel</span><span class="p">,</span>
-                <span class="n">db</span><span class="p">,</span>
+                <span class="n">dbname</span><span class="p">,</span>  <span class="c1"># Pass dbname string for Dask</span>
                 <span class="n">collection</span><span class="o">=</span><span class="n">collection</span><span class="p">,</span>
                 <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span>
                 <span class="n">normalize</span><span class="o">=</span><span class="n">normalize</span><span class="p">,</span>
@@ -1009,9 +1014,9 @@
     <span class="c1"># This makes the function more bombproof in the event a database</span>
     <span class="c1"># handle can&#39;t be serialized - db should normally be defined</span>
     <span class="k">if</span> <span class="n">db</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">dbclient</span> <span class="o">=</span> <span class="n">DBClient</span><span class="p">()</span>
-        <span class="c1"># needs to throw an exception of both db and dbname are none</span>
-        <span class="n">db</span> <span class="o">=</span> <span class="n">dbclient</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="n">dbname</span><span class="p">)</span>
+        <span class="c1"># Use fetch_dbhandle to obtain a db handle in Dask worker contexts;</span>
+        <span class="c1"># in Spark/serial workflows, the db handle should be created externally</span>
+        <span class="n">db</span> <span class="o">=</span> <span class="n">fetch_dbhandle</span><span class="p">(</span><span class="n">dbname</span><span class="p">)</span>
     <span class="n">dbcol</span> <span class="o">=</span> <span class="n">db</span><span class="p">[</span><span class="n">collection</span><span class="p">]</span>
     <span class="c1"># test for the existence of any dead data.  Handle that case specially</span>
     <span class="c1"># Very important to realize the algorithm is complicated by the fact that</span>
@@ -1430,6 +1435,7 @@
     <span class="n">normalizing_collections</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;channel&quot;</span><span class="p">,</span> <span class="s2">&quot;site&quot;</span><span class="p">,</span> <span class="s2">&quot;source&quot;</span><span class="p">],</span>
     <span class="n">alg_name</span><span class="o">=</span><span class="s2">&quot;write_distributed_data&quot;</span><span class="p">,</span>
     <span class="n">alg_id</span><span class="o">=</span><span class="s2">&quot;0&quot;</span><span class="p">,</span>
+    <span class="n">dask_client</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Parallel save function for termination of a processing script.</span>
@@ -1682,6 +1688,13 @@
 <span class="sd">     :param alg_id:  algorithm id for object-level history.  Normally</span>
 <span class="sd">         assigned by global history manager.</span>
 
+<span class="sd">     :param dask_client: Optional Dask distributed Client instance. When provided,</span>
+<span class="sd">         this client will be used for compute() operations instead of the default</span>
+<span class="sd">         multiprocessing scheduler. This is required when using Dask distributed</span>
+<span class="sd">         scheduler with worker plugins (e.g., MongoDBWorker). If None (default),</span>
+<span class="sd">         uses the default Dask scheduler.</span>
+<span class="sd">     :type dask_client: :class:`dask.distributed.Client` or None</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># We don&#39;t do type check on the data argument assuming dask or</span>
     <span class="c1"># spark will throw errors that make the mistake clear.</span>
@@ -1852,7 +1865,10 @@
             <span class="p">)</span>
             <span class="c1"># necessary here or the map_partition function will fail</span>
             <span class="c1"># because it will receive a DAG structure instead of a list</span>
-            <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">dask_client</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">scheduler</span><span class="o">=</span><span class="n">dask_client</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># This step adds some minor overhead, but it can reduce</span>
             <span class="c1"># memory use at a small cost.  Ensembles are particularly</span>
@@ -1889,7 +1905,10 @@
                 <span class="n">post_history</span><span class="o">=</span><span class="n">post_history</span><span class="p">,</span>
                 <span class="n">data_tag</span><span class="o">=</span><span class="n">data_tag</span><span class="p">,</span>
             <span class="p">)</span>
-            <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">dask_client</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">scheduler</span><span class="o">=</span><span class="n">dask_client</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">data</span></div>
 
 

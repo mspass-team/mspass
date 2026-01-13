@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>mspasspy.util.seispp &mdash; MsPASS 0.0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
 
   
@@ -151,11 +151,12 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.ccore.utility</span><span class="w"> </span><span class="kn">import</span> <span class="n">MetadataDefinitions</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.ccore.utility</span><span class="w"> </span><span class="kn">import</span> <span class="n">MDtype</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.ccore.utility</span><span class="w"> </span><span class="kn">import</span> <span class="n">MsPASSError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.util.db_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">fetch_dbhandle</span>
 
 
 <div class="viewcode-block" id="index_data">
 <a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.seispp.index_data">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">index_data</span><span class="p">(</span><span class="n">filebase</span><span class="p">,</span> <span class="n">db</span><span class="p">,</span> <span class="n">ext</span><span class="o">=</span><span class="s2">&quot;d3C&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">index_data</span><span class="p">(</span><span class="n">filebase</span><span class="p">,</span> <span class="n">dbname_or_handle</span><span class="p">,</span> <span class="n">ext</span><span class="o">=</span><span class="s2">&quot;d3C&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Import function for data from antelope export_to_mspass.</span>
 
@@ -174,9 +175,13 @@
 <span class="sd">    :param filebase: is the base name of the dataset to be read and indexed.</span>
 <span class="sd">        The function will look for filebase.yaml for the header data and</span>
 <span class="sd">        filebase.ext (Arg 3 defaulting to d3C).</span>
-<span class="sd">    :param db: is the MongoDB database handler</span>
+<span class="sd">    :param dbname_or_handle: Either a string (database name) or a Database instance.</span>
+<span class="sd">        In parallel mode, pass the database name (string) to avoid serializing Database objects.</span>
 <span class="sd">    :param ext: is the file extension for the sample data (default is &#39;d3C&#39;).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">db</span> <span class="o">=</span> <span class="n">fetch_dbhandle</span><span class="p">(</span><span class="n">dbname_or_handle</span><span class="p">)</span>
+
     <span class="c1"># This loads default mspass schema</span>
     <span class="n">mdef</span> <span class="o">=</span> <span class="n">MetadataDefinitions</span><span class="p">()</span>
     <span class="n">yamlfile</span> <span class="o">=</span> <span class="n">filebase</span> <span class="o">+</span> <span class="s2">&quot;.yaml&quot;</span>
