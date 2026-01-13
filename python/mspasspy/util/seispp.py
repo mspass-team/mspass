@@ -34,7 +34,7 @@ def index_data(filebase, dbname_or_handle, ext="d3C", verbose=False):
     """
 
     db = fetch_dbhandle(dbname_or_handle)
-    
+
     # This loads default mspass schema
     mdef = MetadataDefinitions()
     yamlfile = filebase + ".yaml"

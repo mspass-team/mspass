@@ -100,7 +100,7 @@ class ApplyCalibEngine:
           correction.
         """
         db = fetch_dbhandle(dbname_or_handle)
-        
+
         if query:
             cursor = db[collection].find(query)
         else:

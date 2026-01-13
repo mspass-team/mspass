@@ -1195,7 +1195,7 @@ def test_read_distributed_ensemble(
                 if wfid in wfl:
                     number_hits += 1
             assert number_hits == 1
-    
+
     # Clean up: close dask client
     if scheduler == "dask":
         dask_client.close()
@@ -1614,7 +1614,7 @@ def test_write_distributed_ensemble(
             assert d.is_defined("dir")
             assert d.is_defined("dfile")
             assert d["storage_mode"] == "file"
-    
+
     # Clean up: close dask client
     if scheduler == "dask":
         dask_client.close()

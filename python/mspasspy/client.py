@@ -246,7 +246,9 @@ class Client:
             elif isinstance(url, str) and not url.startswith("mongodb://"):
                 url = f"mongodb://{url}"
 
-            mongo_plugin = MongoDBWorker(dbname=dbname, url=url, dbclient_key="dbclient")
+            mongo_plugin = MongoDBWorker(
+                dbname=dbname, url=url, dbclient_key="dbclient"
+            )
             self._dask_client.register_plugin(mongo_plugin, name="mongodb_worker")
 
     def get_database_client(self):

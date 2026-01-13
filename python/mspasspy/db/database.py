@@ -2160,7 +2160,12 @@ class Database(pymongo.database.Database):
                         val = doc.pop(k)
                         if verbose:
                             print(
-                                "Deleted ", val, " with key=", k, " from doc with id=", id
+                                "Deleted ",
+                                val,
+                                " with key=",
+                                k,
+                                " from doc with id=",
+                                id,
                             )
                         counts[k] += 1
                         n += 1

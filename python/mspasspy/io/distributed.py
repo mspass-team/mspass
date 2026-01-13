@@ -69,7 +69,7 @@ def read_ensemble_parallel(
     read_distributed_data.  See that function for parameter descriptions.
     """
     db = fetch_dbhandle(dbname_or_handle)
-    
+
     if sort_clause:
         cursor = db[collection].find(query).sort(sort_clause)
     else:
