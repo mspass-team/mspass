@@ -29,8 +29,22 @@ def fetch_dbhandle(dbname_or_handle):
     """
     
     if isinstance(dbname_or_handle, str):
-        worker = get_worker()
-        dbclient = worker.data["dbclient"]
+        try:
+            worker = get_worker()
+        except Exception as e:
+            raise ValueError(
+                "fetch_dbhandle: when called with a string argument, this function must be "
+                "executed within a Dask worker context so that get_worker() succeeds and a "
+                "DBClient is available via a worker plugin."
+            ) from e
+        try:
+            dbclient = worker.data["dbclient"]
+        except KeyError as e:
+            raise ValueError(
+                "fetch_dbhandle: Dask worker does not contain a 'dbclient' entry in "
+                "worker.data. Make sure the MongoDBWorker (or an equivalent WorkerPlugin) "
+                "is registered so that a DBClient is created per worker."
+            ) from e
         db = dbclient.get_database(dbname_or_handle)
     elif isinstance(dbname_or_handle, Database):
         db = dbname_or_handle
