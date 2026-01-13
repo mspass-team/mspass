@@ -152,7 +152,7 @@ class ApplyCalibEngine:
                     stastr = self._parse_stadata(doc)
                     print(
                         stastr,
-                        " does not contain pickled response data - keey=",
+                        " does not contain pickled response data - key=",
                         response_data_key,
                     )
         finally:
