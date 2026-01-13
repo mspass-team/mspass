@@ -860,7 +860,8 @@ def _partitioned_save_wfdoc(
     # This makes the function more bombproof in the event a database
     # handle can't be serialized - db should normally be defined
     if db is None:
-        # Use fetch_dbhandle which handles both Dask (worker plugin) and Spark/serial (direct creation)
+        # Use fetch_dbhandle to obtain a db handle in Dask worker contexts;
+        # in Spark/serial workflows, the db handle should be created externally
         db = fetch_dbhandle(dbname)
     dbcol = db[collection]
     # test for the existence of any dead data.  Handle that case specially
