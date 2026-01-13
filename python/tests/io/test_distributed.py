@@ -1239,7 +1239,6 @@ def test_write_distributed_ensemble(
         context = None
         # Create Dask distributed client with MongoDB worker plugin for ensemble tests
         dask_client = DaskClient(processes=False, n_workers=2, threads_per_worker=1)
-        dbclient = DBClient("localhost")
         plugin = MongoDBWorker(dbname=testdbname, url="mongodb://localhost:27017/")
         dask_client.register_worker_plugin(plugin)
     if collection == "wf_TimeSeries":
