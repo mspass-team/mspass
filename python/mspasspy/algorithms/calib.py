@@ -133,7 +133,7 @@ class ApplyCalibEngine:
                                     else:
                                         id = doc["_id"]
                                         # inventory saves a "sensitivity" value
-                                        # which is he reciprocal of calib
+                                        # which is the reciprocal of calib
                                         self.calib[str(id)] = 1e9 / sens.value
                                 elif verbose:
                                     message += "Illegal output_unit value="
