@@ -159,7 +159,7 @@ class ApplyCalibEngine:
             cursor.close()
         if len(self.calib) == 0:
             message = (
-                "ApplyCalibEngine construtor:  Database has no valid response data"
+                "ApplyCalibEngine constructor:  Database has no valid response data"
             )
             raise MsPASSError(message, ErrorSeverity.Invalid)
 
