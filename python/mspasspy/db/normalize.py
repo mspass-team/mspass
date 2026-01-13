@@ -759,7 +759,7 @@ class DictionaryCacheMatcher(BasicMatcher):
                 cache_key = self.db_make_cache_id(doc)
                 # This error trap may not be necessary but the api requires us
                 # to handle a None return
-                if cache_key == None:
+                if cache_key is None:
                     raise MsPASSError(
                         "DictionaryCacheMatcher._load_normalization_cache:  "
                         + "db_make_cache_id failed - coding problem or major problem with collection="
