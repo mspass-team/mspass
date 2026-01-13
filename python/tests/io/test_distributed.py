@@ -17,8 +17,8 @@ from bson.objectid import ObjectId
 from datetime import datetime
 import copy
 import dask
+from dask.distributed import Client as DaskClient
 from pyspark import SparkContext
-
 
 from mspasspy.io.distributed import (
     read_distributed_data,
@@ -27,6 +27,7 @@ from mspasspy.io.distributed import (
 )
 from mspasspy.db.normalize import ObjectIdMatcher
 from mspasspy.ccore.utility import ErrorSeverity
+from mspasspy.util.db_utils import MongoDBWorker
 
 # globals for this test module
 number_atomic_wf = 5  # with 3 partitions this intentionally gives uneven sizes
@@ -1050,8 +1051,13 @@ def test_read_distributed_ensemble(
     print("Starting test with scheduler=", scheduler, " and collection=", collection)
     if scheduler == "spark":
         context = spark_context
+        dask_client = None
     else:
         context = None
+        # Create Dask distributed client with MongoDB worker plugin for ensemble tests
+        dask_client = DaskClient(processes=False, n_workers=2, threads_per_worker=1)
+        plugin = MongoDBWorker(dbname=testdbname, url="mongodb://localhost:27017/")
+        dask_client.register_worker_plugin(plugin)
 
     # warning src_data_list values must match string set in generators
     if collection == "wf_TimeSeries":
@@ -1079,7 +1085,7 @@ def test_read_distributed_ensemble(
         spark_context=context,
     )
     if scheduler == "dask":
-        wfdata_list = bag_or_rdd.compute()
+        wfdata_list = bag_or_rdd.compute(scheduler=dask_client)
     elif scheduler == "spark":
         wfdata_list = bag_or_rdd.collect()
 
@@ -1125,7 +1131,7 @@ def test_read_distributed_ensemble(
         normalize_ensemble=[source_matcher],
     )
     if scheduler == "dask":
-        wfdata_list = bag_or_rdd.compute()
+        wfdata_list = bag_or_rdd.compute(scheduler=dask_client)
     elif scheduler == "spark":
         wfdata_list = bag_or_rdd.collect()
 
@@ -1159,6 +1165,7 @@ def test_read_distributed_ensemble(
         collection=collection,
         data_tag=data_tag,
         scheduler=scheduler,
+        dask_client=dask_client,
     )
 
     assert len(wfidlists) == number_ensembles
@@ -1188,6 +1195,10 @@ def test_read_distributed_ensemble(
                 if wfid in wfl:
                     number_hits += 1
             assert number_hits == 1
+
+    # Clean up: close dask client
+    if scheduler == "dask":
+        dask_client.close()
 
 
 # TODO  test sort_clause feature
@@ -1222,8 +1233,13 @@ def test_write_distributed_ensemble(
     print("Starting test with scheduler=", scheduler, " and collection=", collection)
     if scheduler == "spark":
         context = spark_context
+        dask_client = None
     else:
         context = None
+        # Create Dask distributed client with MongoDB worker plugin for ensemble tests
+        dask_client = DaskClient(processes=False, n_workers=2, threads_per_worker=1)
+        plugin = MongoDBWorker(dbname=testdbname, url="mongodb://localhost:27017/")
+        dask_client.register_worker_plugin(plugin)
     if collection == "wf_TimeSeries":
         wfid_list = TimeSeriesEnsemble_generator
         src_data_tag = "timeseries"
@@ -1280,6 +1296,7 @@ def test_write_distributed_ensemble(
         collection=collection,
         data_tag=data_tag,
         scheduler=scheduler,
+        dask_client=dask_client,
     )
     assert len(wfidlists) == number_ensembles
     # kills should leave one tombstone per ensemble in this test
@@ -1343,6 +1360,7 @@ def test_write_distributed_ensemble(
         data_tag=data_tag,
         scheduler=scheduler,
         cremate=True,
+        dask_client=dask_client,
     )
 
     assert len(wfidlists) == number_ensembles
@@ -1401,6 +1419,7 @@ def test_write_distributed_ensemble(
         collection=collection,
         data_tag=data_tag,
         scheduler=scheduler,
+        dask_client=dask_client,
     )
     assert len(wfidlists) == number_ensembles
     # kills should leave one tombstone per ensemble in this test
@@ -1440,6 +1459,7 @@ def test_write_distributed_ensemble(
         collection=collection,
         data_tag=data_tag,
         scheduler=scheduler,
+        dask_client=dask_client,
     )
 
     assert len(wfidlists) == number_ensembles
@@ -1536,6 +1556,7 @@ def test_write_distributed_ensemble(
         collection=collection,
         data_tag=data_tag,
         scheduler=scheduler,
+        dask_client=dask_client,
     )
     assert len(newwfidslist) == number_ensembles
     number_wf_expected = number_ensembles * number_ensemble_wf
@@ -1578,7 +1599,7 @@ def test_write_distributed_ensemble(
         normalize_ensemble=[source_matcher],
     )
     if scheduler == "dask":
-        enslist = bag_or_rdd.compute()
+        enslist = bag_or_rdd.compute(scheduler=dask_client)
     else:
         enslist = bag_or_rdd.collect()
     assert len(enslist) == number_ensembles
@@ -1593,6 +1614,10 @@ def test_write_distributed_ensemble(
             assert d.is_defined("dir")
             assert d.is_defined("dfile")
             assert d["storage_mode"] == "file"
+
+    # Clean up: close dask client
+    if scheduler == "dask":
+        dask_client.close()
 
 
 def test_read_error_handlers(atomic_time_series_generator):
