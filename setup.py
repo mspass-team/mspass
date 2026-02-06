@@ -89,7 +89,7 @@ ENTRY_POINTS = {
 complete_deps = ["numpy", "pandas", "scipy", "matplotlib"]
 seisbench_deps = [
     "seisbench==0.4.1; python_version < '3.9'",
-    "seisbench>0.4.1; python_version >= '3.9'",
+    "seisbench<=0.10.2; python_version >= '3.9'",
 ]
 
 setup(
