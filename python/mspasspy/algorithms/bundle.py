@@ -28,6 +28,7 @@ Created on Mon Jan 11 05:34:10 2021
 
 @author: pavlis
 """
+
 from mspasspy.ccore.algorithms.basic import _bundle_seed_data, _BundleSEEDGroup
 from mspasspy.ccore.seismic import TimeSeriesEnsemble
 from mspasspy.ccore.utility import MsPASSError, ErrorSeverity
