@@ -57,6 +57,14 @@ edit
     :undoc-members:
     :show-inheritance:
 
+ml
+--
+
+.. automodule:: mspasspy.algorithms.ml.arrival
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 resample
 --------
 
@@ -64,7 +72,6 @@ resample
     :members:
     :undoc-members:
     :show-inheritance:
-
 
 signals
 -------

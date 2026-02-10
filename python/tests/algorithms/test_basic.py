@@ -661,4 +661,3 @@ def test_transform_to_LQT():
     x.set_live()
     with pytest.raises(TypeError, match="received invalid type"):
         sout = transform_to_LQT(x)
-

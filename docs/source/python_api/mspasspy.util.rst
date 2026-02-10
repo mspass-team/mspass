@@ -9,6 +9,14 @@ converter
     :undoc-members:
     :show-inheritance:
 
+db_utils
+----------
+
+.. automodule:: mspasspy.util.decorators
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 decorators
 ----------
 
