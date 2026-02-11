@@ -12,6 +12,16 @@ using namespace mspass::seismic;
 using namespace mspass::algorithms::amplitudes;
 using mspass::algorithms::TimeWindow;
 
+
+struct MADAmplitudeFunctor {
+  double operator()(const CoreTimeSeries& d) const {
+    return MADAmplitude(d);
+  }
+  double operator()(const CoreSeismogram& d) const {
+    return MADAmplitude(d);
+  }
+};
+
 PYBIND11_MODULE(amplitudes, m) {
   m.attr("__name__") = "mspasspy.ccore.algorithms.amplitudes";
   m.doc() = "A submodule for amplitudes namespace of ccore.algorithms";
@@ -33,14 +43,27 @@ PYBIND11_MODULE(amplitudes, m) {
     "Compute amplitude as rms on all 3 components",
     py::return_value_policy::copy,py::arg("d") )
   ;
-  m.def("MADAmplitude",py::overload_cast<const CoreTimeSeries&>(&MADAmplitude),
-    "Compute amplitude from median absolute deviation (MAD) of signal",
-    py::return_value_policy::copy,py::arg("d") )
-  ;
-  m.def("MADAmplitude",py::overload_cast<const CoreSeismogram&>(&MADAmplitude),
-    "Compute amplitude as median of vector amplitudes",
-    py::return_value_policy::copy,py::arg("d") )
-  ;
+  py::class_<MADAmplitudeFunctor>(m, "MADAmplitudeFunctor",
+      "Callable wrapper for MAD amplitude; picklable for Dask.")
+    .def(py::init<>())
+    .def("__call__",
+         static_cast<double (MADAmplitudeFunctor::*)(const CoreTimeSeries&) const>(
+             &MADAmplitudeFunctor::operator()),
+         "Compute amplitude from median absolute deviation (MAD) of signal",
+         py::return_value_policy::copy, py::arg("d"))
+    .def("__call__",
+         static_cast<double (MADAmplitudeFunctor::*)(const CoreSeismogram&) const>(
+             &MADAmplitudeFunctor::operator()),
+         "Compute amplitude as median of vector amplitudes",
+         py::return_value_policy::copy, py::arg("d"))
+    .def(py::pickle(
+        [](const MADAmplitudeFunctor&) {
+          return py::make_tuple();  
+        },
+        [](py::tuple) {
+          return MADAmplitudeFunctor();
+        }));
+  m.attr("MADAmplitude") = MADAmplitudeFunctor();
   m.def("PercAmplitude",py::overload_cast<const CoreTimeSeries&,const double>(&PercAmplitude),
     "Compute amplitude of signal using clip percentage metric",
     py::return_value_policy::copy,py::arg("d"),py::arg("perf") )
