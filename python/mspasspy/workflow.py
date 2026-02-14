@@ -24,23 +24,24 @@ def sliding_window_pipeline(
     interable input using the sliding window of Futures algorithm.
 
     Embarrassingly parallel workflows can often be reduced to a single
-    function that chains a sequence of algorithms together (the pipeline).
+    function that chains a sequence of algorithms together.  
+    In dask terminology that workflow defines a pipeline.  
     Such a workflow can also be done with a sequence of dask/spark map
     operators chained together.  Experience has show, however, that a large
     fraction of workflows using MsPASS fail with memory faults in dask
     when implemented with the dask bag map method. The reason seems
-    to be that most of these reduce to a sequence of three fundamentally
+    to be that the problematic workflows reduce to a sequence of three fundamentally
     different operations that originate with a database query, list of
-    documents, or a DataFrame:  (1) read seismic data the inputs define into
-    the bag, (2) run a sequence of proclessing functions on that data, and
+    documents, or a DataFrame:  (1) read seismic data defined by the (small) inputs
+    into the bag, (2) run a sequence of processing functions on that data, and
     (3) save results (usually involving a combination of file writes and
     database adds).  That causes the workflow to bloat by orders of magnitude
     inside the chain of map opeators.   The default configuration of dask
     does not handle this well and tends to queue too many tasks for
     workers leading to worker memory faults that are often mysterious
-    leaving only indirect forensic evidence. This funtion as developed
+    leaving only indirect forensic evidence. This funtion was developed
     to handle pipeline processing (equivalent to a string of map operators)
-    subjct to memory faults. We know of two common situations where this
+    subject to memory faults. We know of two common situations where this
     function should be used instead of the standard map operators of the
     map-reduce paradigm:  (1) atomic processing of very large (10^5 or more)
     data sets, or (2) handling large ensembles that push worker memory
@@ -57,7 +58,7 @@ def sliding_window_pipeline(
     "approximate" because the scheduler algorithm often queues up more
     instances on startup and the load is unbalanced until all workers are
     assigned data to process.   That means for the default with
-    tasks_per_worker=2, a rough measure of the minium memory size per worker is
+    tasks_per_worker=2, a rough measure of the minimum memory size per worker is
     c + a*D where c is an estimate of the base memory use by each worker
     process, D is the nominal maximum data size of data objects created and
     used in the processing function, and a is some multiplier larger than 2.
@@ -107,8 +108,8 @@ def sliding_window_pipeline(
     with the way "*args" and "**kwargs" are used in python.
 
     :param dlist:  any iterable with components matching the requirements
-      f arg0 of processing_function.  Commonly a list of queries or
-      MongoDB documents.  Note although it can work we do no recommend
+      of arg0 of processing_function.  Commonly a list of queries or
+      MongoDB documents.  Note although it should theoretically work we do not recommend
       using a MongoDB CommandCursor for this argument as it is subject to
       timeout errors if the processing function runs for a significant time.
     :param processing_function:   symbol defining the function object
@@ -131,7 +132,7 @@ def sliding_window_pipeline(
         function that is to be applied to each component of dlist.  This function will
        be used with dask distributed submit using *args and **kwargs with this equivalent call:
        `processing_function(d,*args,**kwargs)
-    :param dask_client:  instance of a dask.distriburted.Client that defines
+    :param dask_client:  instance of a dask.distributed.Client that defines
        the cluster to which the processing_function is to run upon.  In
        MsPASS normal use is to fetch this with the MsPASS client
        `get_scheduler` method.
@@ -152,7 +153,7 @@ def sliding_window_pipeline(
     :param accumulator: optional accumulator function applied to the
        output of the completion function.   In most cases the large list
        returned by this function with or without a completion function is
-       awkward to troublesome to deal with.  Further there are algorithms
+       awkward to catastrophic to deal with.  Further there are algorithms
        where the completion function needs to act as a Reduce operator
        (an efficient way to do that for large data sets).  You can use
        this optional function to allow an accumulation operation.
@@ -180,7 +181,7 @@ def sliding_window_pipeline(
        require kwargs.
     :param verbose:  boolean controlling output.  When False (default)
        the function itself is totally silent.  When set True it
-       prints for each submit and each return.  Not recommended for workflows
+       prints a message for each submit and each return.  Not recommended for workflows
        that use a large number of submits as the output can easily get huge.
 
     :return:   When the completion_function is not defined (default)
