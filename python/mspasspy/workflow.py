@@ -24,8 +24,8 @@ def sliding_window_pipeline(
     interable input using the sliding window of Futures algorithm.
 
     Embarrassingly parallel workflows can often be reduced to a single
-    function that chains a sequence of algorithms together.  
-    In dask terminology that workflow defines a pipeline.  
+    function that chains a sequence of algorithms together.
+    In dask terminology that workflow defines a pipeline.
     Such a workflow can also be done with a sequence of dask/spark map
     operators chained together.  Experience has show, however, that a large
     fraction of workflows using MsPASS fail with memory faults in dask
