@@ -19,7 +19,6 @@ import json
 import base64
 from unittest import mock
 
-
 sys.path.append("python/tests")
 
 from helper import (
@@ -2343,7 +2342,7 @@ class TestDatabase:
             self.db._check_links(collection="wf", wfquery=wfquery)
 
         # check with default, all xref keys
-        (bad_id_list, missing_id_list) = self.db._check_links(collection="wf")
+        bad_id_list, missing_id_list = self.db._check_links(collection="wf")
         assert len(bad_id_list) == 3
         assert set(bad_id_list) == set(
             [
@@ -2356,7 +2355,7 @@ class TestDatabase:
         assert missing_id_list == [missing_site_id_ts["_id"]]
 
         # check with a single xref key
-        (bad_id_list, missing_id_list) = self.db._check_links(
+        bad_id_list, missing_id_list = self.db._check_links(
             xref_key="site_id", collection="wf"
         )
         assert len(bad_id_list) == 1
@@ -2365,7 +2364,7 @@ class TestDatabase:
         assert missing_id_list == [missing_site_id_ts["_id"]]
 
         # check with a user specified xref keys
-        (bad_id_list, missing_id_list) = self.db._check_links(
+        bad_id_list, missing_id_list = self.db._check_links(
             xref_key=["site_id", "source_id"], collection="wf"
         )
         assert len(bad_id_list) == 2
@@ -2409,12 +2408,12 @@ class TestDatabase:
                 )
             ),
         ):
-            (bad_type_docs, undefined_key_docs) = self.db._check_attribute_types(
+            bad_type_docs, undefined_key_docs = self.db._check_attribute_types(
                 collection="wf_TimeSeries", query=query_dict
             )
 
         # test bad_type_docs and undefined_key_docs
-        (bad_type_docs, undefined_key_docs) = self.db._check_attribute_types(
+        bad_type_docs, undefined_key_docs = self.db._check_attribute_types(
             collection="wf_TimeSeries"
         )
         assert len(bad_type_docs) == 1
@@ -2461,7 +2460,7 @@ class TestDatabase:
                 )
             ),
         ):
-            (wrong_types, undef) = self.db._check_required(
+            wrong_types, undef = self.db._check_required(
                 collection="wf_TimeSeries",
                 keys=["npts", "delta", "starttime"],
                 query=query_dict,
@@ -2472,12 +2471,12 @@ class TestDatabase:
             MsPASSError,
             match="check_required:  schema has no definition for key=undefined_key",
         ):
-            (wrong_types, undef) = self.db._check_required(
+            wrong_types, undef = self.db._check_required(
                 collection="wf_TimeSeries", keys=["undefined_key"]
             )
 
         # test bad_type_docs and undefined_key_docs
-        (wrong_types, undef) = self.db._check_required(
+        wrong_types, undef = self.db._check_required(
             collection="wf_TimeSeries", keys=["npts", "delta", "starttime_shift"]
         )
         assert len(wrong_types) == 1

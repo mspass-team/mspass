@@ -8,6 +8,7 @@ of this tool largely map into errors or potential errors detected by
 dbverify.
 
 """
+
 import argparse
 import sys
 from bson import json_util

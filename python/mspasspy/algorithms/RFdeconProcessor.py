@@ -14,6 +14,7 @@ Created on Fri Jul 31 06:24:10 2020
 
 @author: Gary Pavlis
 """
+
 import numpy as np
 
 from mspasspy.ccore.seismic import DoubleVector, Seismogram
