@@ -22,27 +22,73 @@ struct MADAmplitudeFunctor {
   }
 };
 
+struct PeakAmplitudeFunctor {
+  double operator()(const CoreTimeSeries& d) const {
+    return PeakAmplitude(d);
+  }
+  double operator()(const CoreSeismogram& d) const {
+    return PeakAmplitude(d);
+  }
+};
+
+struct RMSAmplitudeFunctor {
+  double operator()(const CoreTimeSeries& d) const {
+    return RMSAmplitude(d);
+  }
+  double operator()(const CoreSeismogram& d) const {
+    return RMSAmplitude(d);
+  }
+};
+
+struct PercAmplitudeFunctor {
+  double operator()(const CoreTimeSeries& d, double perf) const {
+    return PercAmplitude(d, perf);
+  }
+  double operator()(const CoreSeismogram& d, double perf) const {
+    return PercAmplitude(d, perf);
+  }
+};
+
 PYBIND11_MODULE(amplitudes, m) {
   m.attr("__name__") = "mspasspy.ccore.algorithms.amplitudes";
   m.doc() = "A submodule for amplitudes namespace of ccore.algorithms";
 
-  /* Amplitude functions - overloads */
-  m.def("PeakAmplitude",py::overload_cast<const CoreTimeSeries&>(&PeakAmplitude),
-    "Compute amplitude as largest absolute amplitude",
-    py::return_value_policy::copy,py::arg("d") )
-  ;
-  m.def("PeakAmplitude",py::overload_cast<const CoreSeismogram&>(&PeakAmplitude),
-    "Compute amplitude as largest vector amplitude",
-    py::return_value_policy::copy,py::arg("d") )
-  ;
-  m.def("RMSAmplitude",py::overload_cast<const CoreTimeSeries&>(&RMSAmplitude),
-    "Compute amplitude from rms of signal",
-    py::return_value_policy::copy,py::arg("d") )
-  ;
-  m.def("RMSAmplitude",py::overload_cast<const CoreSeismogram&>(&RMSAmplitude),
-    "Compute amplitude as rms on all 3 components",
-    py::return_value_policy::copy,py::arg("d") )
-  ;
+  /* Amplitude functions - functors for pickle support (issue #680) */
+  py::class_<PeakAmplitudeFunctor>(m, "PeakAmplitudeFunctor",
+      "Callable wrapper for peak amplitude; picklable for Dask.")
+    .def(py::init<>())
+    .def("__call__",
+         static_cast<double (PeakAmplitudeFunctor::*)(const CoreTimeSeries&) const>(
+             &PeakAmplitudeFunctor::operator()),
+         "Compute amplitude as largest absolute amplitude",
+         py::return_value_policy::copy, py::arg("d"))
+    .def("__call__",
+         static_cast<double (PeakAmplitudeFunctor::*)(const CoreSeismogram&) const>(
+             &PeakAmplitudeFunctor::operator()),
+         "Compute amplitude as largest vector amplitude",
+         py::return_value_policy::copy, py::arg("d"))
+    .def(py::pickle(
+        [](const PeakAmplitudeFunctor&) { return py::make_tuple(); },
+        [](py::tuple) { return PeakAmplitudeFunctor(); }));
+  m.attr("PeakAmplitude") = PeakAmplitudeFunctor();
+
+  py::class_<RMSAmplitudeFunctor>(m, "RMSAmplitudeFunctor",
+      "Callable wrapper for RMS amplitude; picklable for Dask.")
+    .def(py::init<>())
+    .def("__call__",
+         static_cast<double (RMSAmplitudeFunctor::*)(const CoreTimeSeries&) const>(
+             &RMSAmplitudeFunctor::operator()),
+         "Compute amplitude from rms of signal",
+         py::return_value_policy::copy, py::arg("d"))
+    .def("__call__",
+         static_cast<double (RMSAmplitudeFunctor::*)(const CoreSeismogram&) const>(
+             &RMSAmplitudeFunctor::operator()),
+         "Compute amplitude as rms on all 3 components",
+         py::return_value_policy::copy, py::arg("d"))
+    .def(py::pickle(
+        [](const RMSAmplitudeFunctor&) { return py::make_tuple(); },
+        [](py::tuple) { return RMSAmplitudeFunctor(); }));
+  m.attr("RMSAmplitude") = RMSAmplitudeFunctor();
   py::class_<MADAmplitudeFunctor>(m, "MADAmplitudeFunctor",
       "Callable wrapper for MAD amplitude; picklable for Dask.")
     .def(py::init<>())
@@ -64,14 +110,24 @@ PYBIND11_MODULE(amplitudes, m) {
           return MADAmplitudeFunctor();
         }));
   m.attr("MADAmplitude") = MADAmplitudeFunctor();
-  m.def("PercAmplitude",py::overload_cast<const CoreTimeSeries&,const double>(&PercAmplitude),
-    "Compute amplitude of signal using clip percentage metric",
-    py::return_value_policy::copy,py::arg("d"),py::arg("perf") )
-  ;
-  m.def("PercAmplitude",py::overload_cast<const CoreSeismogram&,const double>(&PercAmplitude),
-    "Compute amplitude of signal using clip percentage metric",
-    py::return_value_policy::copy,py::arg("d"),py::arg("perf") )
-  ;
+
+  py::class_<PercAmplitudeFunctor>(m, "PercAmplitudeFunctor",
+      "Callable wrapper for percentile amplitude; picklable for Dask.")
+    .def(py::init<>())
+    .def("__call__",
+         static_cast<double (PercAmplitudeFunctor::*)(const CoreTimeSeries&, double) const>(
+             &PercAmplitudeFunctor::operator()),
+         "Compute amplitude of signal using clip percentage metric",
+         py::return_value_policy::copy, py::arg("d"), py::arg("perf"))
+    .def("__call__",
+         static_cast<double (PercAmplitudeFunctor::*)(const CoreSeismogram&, double) const>(
+             &PercAmplitudeFunctor::operator()),
+         "Compute amplitude of signal using clip percentage metric",
+         py::return_value_policy::copy, py::arg("d"), py::arg("perf"))
+    .def(py::pickle(
+        [](const PercAmplitudeFunctor&) { return py::make_tuple(); },
+        [](py::tuple) { return PercAmplitudeFunctor(); }));
+  m.attr("PercAmplitude") = PercAmplitudeFunctor();
   py::enum_<ScalingMethod>(m,"ScalingMethod")
     .value("Peak",ScalingMethod::Peak)
     .value("RMS",ScalingMethod::RMS)
