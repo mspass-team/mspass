@@ -7,6 +7,7 @@ Created on Tue Jul  9 05:37:40 2024
 
 @author: pavlis
 """
+
 import numpy as np
 from scipy import signal
 from mspasspy.util.decorators import mspass_func_wrapper

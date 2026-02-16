@@ -29,7 +29,7 @@ requirements:
   host:
     - python {{ PYTHON_VERSION }}
     - pip
-    - setuptools
+    - setuptools>=58,<70
     - setuptools_scm
     - wheel
     - gsl
@@ -56,7 +56,7 @@ requirements:
     - botocore
     - moto
     - requests 
-    - setuptools
+    - setuptools>=58,<70
     - xarray
     - zarr
     - pandas>=2.2.3

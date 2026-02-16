@@ -3,7 +3,6 @@ from pyspark import SparkContext
 
 import sys
 
-
 sys.path.append("python/tests")
 
 

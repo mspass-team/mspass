@@ -983,7 +983,7 @@ class SeismicPlotter(BasicSeismicPlotter):
         return (ndata, tmin, tmax)
 
     def _wtva_TimeSeriesEnsemble(self, d, fill):
-        (ndata, tmin, tmax) = self._get_ensemble_size(d)
+        ndata, tmin, tmax = self._get_ensemble_size(d)
         plt.xlim(tmin, tmax)
         # This plotting engine always equally spaces traces horizontally so
         # unlike SectionPlotter we just compute the range as the number of
@@ -1034,7 +1034,7 @@ class SeismicPlotter(BasicSeismicPlotter):
         return figure_handles
 
     def _imageplot_TimeSeriesEnsemble(self, d):
-        (ndata, tmin, tmax) = self._get_ensemble_size(d)
+        ndata, tmin, tmax = self._get_ensemble_size(d)
         extent = (tmin, tmax, -0.5, float(ndata) - 0.5)
         # left off here - below is copy from SectionPlotter
         # need a different algorithm to support mixed sample

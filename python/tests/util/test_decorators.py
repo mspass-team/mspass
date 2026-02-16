@@ -12,7 +12,6 @@ from mspasspy.ccore.seismic import (
 from mspasspy.ccore.utility import MsPASSError, ErrorSeverity
 from mspasspy.global_history.manager import GlobalHistoryManager
 
-
 # pytest in mspass is always run from the top level director of the
 # source tree so we need to add this to path to see the helper module
 # used only for testing

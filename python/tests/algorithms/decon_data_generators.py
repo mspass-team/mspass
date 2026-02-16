@@ -14,6 +14,7 @@ Created on Wed Dec 23 10:29:26 2020
 
 @author: Gary L Pavlis
 """
+
 import numpy as np
 from scipy import signal
 from numpy.random import randn

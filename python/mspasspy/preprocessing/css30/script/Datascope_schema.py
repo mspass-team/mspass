@@ -35,6 +35,7 @@ Datascope_schema - builds pf file for MsPASS import/export
 
 @author: Gary Pavlis
 """
+
 import sys, os, getopt
 import argparse
 
