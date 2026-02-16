@@ -864,7 +864,7 @@ in seismic reflection processing.
 It uses a common
 trick for ensemble processing building a dask bag from distinct source_id
 values, constructing a ensemble-based query from the id, and then
-calling the <a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database.read_ensemble_data" title="mspasspy.db.database.Database.read_ensemble_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">read_ensemble_data</span></code></a>
+calling the <a class="reference internal" href="../python_api/mspasspy.db.html#id67" title="mspasspy.db.database.Database.read_ensemble_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">read_ensemble_data</span></code></a>
 method within a parallel map call
 to create the ensembles.  The bag of ensembles are then normalized.
 Finally note that this example is a hybrid of database normalization and

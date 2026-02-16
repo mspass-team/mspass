@@ -278,7 +278,7 @@ required to be one of three things to work well within these constraints:</p>
 <blockquote>
 <div><ol class="arabic simple">
 <li><p>An instance of a mspass <cite>Database</cite> handle
-(<a class="reference internal" href="mspasspy.db.html#mspasspy.db.database.Database" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.database.Database</span></code></a>).  Default
+(<a class="reference internal" href="mspasspy.db.html#id47" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.database.Database</span></code></a>).  Default
 with this input is to read an entire collection.  Use the
 query parameter to limit input.  This mode also implicitly
 implies the result will be a bag/RDD of atomic data.  Note
@@ -412,7 +412,7 @@ to be marked dead.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>data</strong> (<a class="reference internal" href="mspasspy.db.html#mspasspy.db.database.Database" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.database.Database</span></code></a> or <code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code>
+<li><p><strong>data</strong> (<a class="reference internal" href="mspasspy.db.html#id47" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.database.Database</span></code></a> or <code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code>
 or <code class="xref py py-class docutils literal notranslate"><span class="pre">dask.dataframe.DataFrame</span></code> or <code class="xref py py-class docutils literal notranslate"><span class="pre">pyspark.sql.dataframe.DataFrame</span></code>
 for atomic data.  List of python dicts defining queries to read a
 dataset of ensembles.) – variable type arguement used to drive construction as
@@ -560,7 +560,7 @@ function is not mainstream and may be prone to issues.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>db</strong> (<a class="reference internal" href="mspasspy.db.html#mspasspy.db.database.Database" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.database.Database</span></code></a>.) – the database from which the data are to be read.</p></li>
+<li><p><strong>db</strong> (<a class="reference internal" href="mspasspy.db.html#id47" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.database.Database</span></code></a>.) – the database from which the data are to be read.</p></li>
 <li><p><strong>object_id</strong> – MongoDB object id of the wf document to be constructed from
 data defined in the database.  The object id is guaranteed unique and provides
 a unique link to a unique document or nothing.   In the later case the
@@ -721,7 +721,7 @@ output file names for a large data set.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>data</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">dask.bag.Bag</span></code> or <code class="xref py py-class docutils literal notranslate"><span class="pre">pyspark.RDD</span></code>.) – parallel container of data to be written</p></li>
-<li><p><strong>db</strong> (<a class="reference internal" href="mspasspy.db.html#mspasspy.db.database.Database" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.database.Database</span></code></a>.) – database handle to manage data saved by this function.</p></li>
+<li><p><strong>db</strong> (<a class="reference internal" href="mspasspy.db.html#id47" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.database.Database</span></code></a>.) – database handle to manage data saved by this function.</p></li>
 <li><p><strong>mode</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – This parameter defines how attributes defined with
 key-value pairs in MongoDB documents are to be handled for writes.
 By “to be handled” we mean how strongly to enforce name and type

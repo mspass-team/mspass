@@ -233,8 +233,8 @@ of those functions.</p>
 <h2>Merging Data Segments<a class="headerlink" href="#merging-data-segments" title="Link to this heading"></a></h2>
 <p>There are currently two different methods in MsPASS to handle merging
 continuous data segments:  (1) a special, implicit option of the
-<a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database.read_data" title="mspasspy.db.database.Database.read_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">read_data</span></code></a> method of the
-<a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">Database</span></code></a> class, and (2) the
+<a class="reference internal" href="../python_api/mspasspy.db.html#id66" title="mspasspy.db.database.Database.read_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">read_data</span></code></a> method of the
+<a class="reference internal" href="../python_api/mspasspy.db.html#id47" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">Database</span></code></a> class, and (2) the
 processing function <a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.window.merge" title="mspasspy.algorithms.window.merge"><code class="xref py py-func docutils literal notranslate"><span class="pre">merge</span></code></a>.
 In addition, there is a special reader function called
 <code class="xref py py-func docutils literal notranslate"><span class="pre">TimeIntervalReader</span></code> that can be used
@@ -264,7 +264,7 @@ handles this problem with their <code class="xref py py-class docutils literal n
 <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.merge.html">here</a>.
 That particular algorithm is invoked when reading miniseed data
 if and only if a block of data defined running the mspass
-function <a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database.index_mseed_file" title="mspasspy.db.database.Database.index_mseed_file"><code class="xref py py-meth docutils literal notranslate"><span class="pre">index_mseed_file</span></code></a> is
+function <a class="reference internal" href="../python_api/mspasspy.db.html#id59" title="mspasspy.db.database.Database.index_mseed_file"><code class="xref py py-meth docutils literal notranslate"><span class="pre">index_mseed_file</span></code></a> is
 run with the optional argument <cite>segment_time_tears</cite> is set False.
 (Note the default is True.).   If you need to use this approach, you will
 need to also take care in defining the value of the following arguments

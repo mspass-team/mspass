@@ -2329,60 +2329,32 @@ those safeties the code would throw an error if net or loc were null.</p>
 <dd><p>Estimate signal bandwidth estimate of power spectra of signal and noise</p>
 </dd></dl>
 
-<dl class="py function">
-<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.amplitudes.MADAmplitude">
-<span class="sig-prename descclassname"><span class="pre">mspasspy.ccore.algorithms.amplitudes.</span></span><span class="sig-name descname"><span class="pre">MADAmplitude</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mspasspy.ccore.algorithms.amplitudes.MADAmplitude" title="Link to this definition"></a></dt>
-<dd><p>Overloaded function.</p>
-<ol class="arabic simple">
-<li><p>MADAmplitude(d: mspasspy.ccore.seismic._CoreTimeSeries) -&gt; float</p></li>
-</ol>
-<p>Compute amplitude from median absolute deviation (MAD) of signal</p>
-<ol class="arabic simple" start="2">
-<li><p>MADAmplitude(d: mspasspy.ccore.seismic._CoreSeismogram) -&gt; float</p></li>
-</ol>
-<p>Compute amplitude as median of vector amplitudes</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.amplitudes.MADAmplitudeFunctor">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.ccore.algorithms.amplitudes.</span></span><span class="sig-name descname"><span class="pre">MADAmplitudeFunctor</span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.amplitudes.MADAmplitudeFunctor" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_object</span></code></p>
+<p>Callable wrapper for MAD amplitude; picklable for Dask.</p>
 </dd></dl>
 
-<dl class="py function">
-<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.amplitudes.PeakAmplitude">
-<span class="sig-prename descclassname"><span class="pre">mspasspy.ccore.algorithms.amplitudes.</span></span><span class="sig-name descname"><span class="pre">PeakAmplitude</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mspasspy.ccore.algorithms.amplitudes.PeakAmplitude" title="Link to this definition"></a></dt>
-<dd><p>Overloaded function.</p>
-<ol class="arabic simple">
-<li><p>PeakAmplitude(d: mspasspy.ccore.seismic._CoreTimeSeries) -&gt; float</p></li>
-</ol>
-<p>Compute amplitude as largest absolute amplitude</p>
-<ol class="arabic simple" start="2">
-<li><p>PeakAmplitude(d: mspasspy.ccore.seismic._CoreSeismogram) -&gt; float</p></li>
-</ol>
-<p>Compute amplitude as largest vector amplitude</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.amplitudes.PeakAmplitudeFunctor">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.ccore.algorithms.amplitudes.</span></span><span class="sig-name descname"><span class="pre">PeakAmplitudeFunctor</span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.amplitudes.PeakAmplitudeFunctor" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_object</span></code></p>
+<p>Callable wrapper for peak amplitude; picklable for Dask.</p>
 </dd></dl>
 
-<dl class="py function">
-<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.amplitudes.PercAmplitude">
-<span class="sig-prename descclassname"><span class="pre">mspasspy.ccore.algorithms.amplitudes.</span></span><span class="sig-name descname"><span class="pre">PercAmplitude</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mspasspy.ccore.algorithms.amplitudes.PercAmplitude" title="Link to this definition"></a></dt>
-<dd><p>Overloaded function.</p>
-<ol class="arabic simple">
-<li><p>PercAmplitude(d: mspasspy.ccore.seismic._CoreTimeSeries, perf: float) -&gt; float</p></li>
-</ol>
-<p>Compute amplitude of signal using clip percentage metric</p>
-<ol class="arabic simple" start="2">
-<li><p>PercAmplitude(d: mspasspy.ccore.seismic._CoreSeismogram, perf: float) -&gt; float</p></li>
-</ol>
-<p>Compute amplitude of signal using clip percentage metric</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.amplitudes.PercAmplitudeFunctor">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.ccore.algorithms.amplitudes.</span></span><span class="sig-name descname"><span class="pre">PercAmplitudeFunctor</span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.amplitudes.PercAmplitudeFunctor" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_object</span></code></p>
+<p>Callable wrapper for percentile amplitude; picklable for Dask.</p>
 </dd></dl>
 
-<dl class="py function">
-<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.amplitudes.RMSAmplitude">
-<span class="sig-prename descclassname"><span class="pre">mspasspy.ccore.algorithms.amplitudes.</span></span><span class="sig-name descname"><span class="pre">RMSAmplitude</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mspasspy.ccore.algorithms.amplitudes.RMSAmplitude" title="Link to this definition"></a></dt>
-<dd><p>Overloaded function.</p>
-<ol class="arabic simple">
-<li><p>RMSAmplitude(d: mspasspy.ccore.seismic._CoreTimeSeries) -&gt; float</p></li>
-</ol>
-<p>Compute amplitude from rms of signal</p>
-<ol class="arabic simple" start="2">
-<li><p>RMSAmplitude(d: mspasspy.ccore.seismic._CoreSeismogram) -&gt; float</p></li>
-</ol>
-<p>Compute amplitude as rms on all 3 components</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.amplitudes.RMSAmplitudeFunctor">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.ccore.algorithms.amplitudes.</span></span><span class="sig-name descname"><span class="pre">RMSAmplitudeFunctor</span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.amplitudes.RMSAmplitudeFunctor" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_object</span></code></p>
+<p>Callable wrapper for RMS amplitude; picklable for Dask.</p>
 </dd></dl>
 
 <dl class="py class">

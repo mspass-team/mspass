@@ -1187,7 +1187,7 @@
         <span class="k">return</span> <span class="p">(</span><span class="n">ndata</span><span class="p">,</span> <span class="n">tmin</span><span class="p">,</span> <span class="n">tmax</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_wtva_TimeSeriesEnsemble</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">fill</span><span class="p">):</span>
-        <span class="p">(</span><span class="n">ndata</span><span class="p">,</span> <span class="n">tmin</span><span class="p">,</span> <span class="n">tmax</span><span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_ensemble_size</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+        <span class="n">ndata</span><span class="p">,</span> <span class="n">tmin</span><span class="p">,</span> <span class="n">tmax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_ensemble_size</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="n">tmin</span><span class="p">,</span> <span class="n">tmax</span><span class="p">)</span>
         <span class="c1"># This plotting engine always equally spaces traces horizontally so</span>
         <span class="c1"># unlike SectionPlotter we just compute the range as the number of</span>
@@ -1238,7 +1238,7 @@
         <span class="k">return</span> <span class="n">figure_handles</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_imageplot_TimeSeriesEnsemble</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
-        <span class="p">(</span><span class="n">ndata</span><span class="p">,</span> <span class="n">tmin</span><span class="p">,</span> <span class="n">tmax</span><span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_ensemble_size</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+        <span class="n">ndata</span><span class="p">,</span> <span class="n">tmin</span><span class="p">,</span> <span class="n">tmax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_ensemble_size</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
         <span class="n">extent</span> <span class="o">=</span> <span class="p">(</span><span class="n">tmin</span><span class="p">,</span> <span class="n">tmax</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="n">ndata</span><span class="p">)</span> <span class="o">-</span> <span class="mf">0.5</span><span class="p">)</span>
         <span class="c1"># left off here - below is copy from SectionPlotter</span>
         <span class="c1"># need a different algorithm to support mixed sample</span>

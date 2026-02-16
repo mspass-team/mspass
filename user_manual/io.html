@@ -345,7 +345,7 @@ queries for each partition as each partition is completed.
 For each bag component the algorithm first issues
 a query to MongoDB using that dict content.
 The query is then used to drive the
-<a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database.read_data" title="mspasspy.db.database.Database.read_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mspasspy.db.database.Database.read_data()</span></code></a> method with
+<a class="reference internal" href="../python_api/mspasspy.db.html#id66" title="mspasspy.db.database.Database.read_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mspasspy.db.database.Database.read_data()</span></code></a> method with
 a cursor input.   That creates a new ensemble object that is passed
 into the processing pipeline.  This algorithm has no serial
 steps, but can be bottlenecked if a large number of workers are
@@ -370,7 +370,7 @@ up the task into two distinctly different operations:  (1)  saving
 the sample data and (2) saving the Metadata as set of MongoDB documents.
 Each instance of the writer handles these two operations in that order.
 The first calls a generic, private method in
-<a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">Database</span></code></a> called
+<a class="reference internal" href="../python_api/mspasspy.db.html#id47" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">Database</span></code></a> called
 <code class="xref py py-meth docutils literal notranslate"><span class="pre">_save_sample_data</span></code>.
 The speed of that operation is completely controlled by the “storage_mode”
 chosen and the communication path the choice implies.</p>

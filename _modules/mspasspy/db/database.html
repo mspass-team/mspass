@@ -6083,7 +6083,7 @@
         <span class="n">fname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">odir</span><span class="p">,</span> <span class="n">dfile</span><span class="p">)</span>
         <span class="c1"># TODO:  should have a way to pass verbose to this function</span>
         <span class="c1"># present verbose is not appropriate.</span>
-        <span class="p">(</span><span class="n">ind</span><span class="p">,</span> <span class="n">elog</span><span class="p">)</span> <span class="o">=</span> <span class="n">_mseed_file_indexer</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">segment_time_tears</span><span class="p">)</span>
+        <span class="n">ind</span><span class="p">,</span> <span class="n">elog</span> <span class="o">=</span> <span class="n">_mseed_file_indexer</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">segment_time_tears</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">elog</span><span class="o">.</span><span class="n">get_error_log</span><span class="p">())</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="s2">&quot;No such file or directory&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span>
             <span class="n">elog</span><span class="o">.</span><span class="n">get_error_log</span><span class="p">()</span>
         <span class="p">):</span>
@@ -7266,7 +7266,7 @@
             <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
                 <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">mseed_content</span><span class="p">)</span>
             <span class="c1"># immediately read data from the file</span>
-            <span class="p">(</span><span class="n">ind</span><span class="p">,</span> <span class="n">elog</span><span class="p">)</span> <span class="o">=</span> <span class="n">_mseed_file_indexer</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+            <span class="n">ind</span><span class="p">,</span> <span class="n">elog</span> <span class="o">=</span> <span class="n">_mseed_file_indexer</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">ind</span><span class="p">:</span>
                 <span class="n">doc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_convert_mseed_index</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
                 <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;storage_mode&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;s3_event&quot;</span>

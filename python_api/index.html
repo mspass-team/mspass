@@ -388,6 +388,10 @@
 <li class="toctree-l3"><a class="reference internal" href="mspasspy.algorithms.html#mspasspy.algorithms.edit.erase_metadata"><code class="docutils literal notranslate"><span class="pre">erase_metadata()</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="mspasspy.algorithms.html#module-mspasspy.algorithms.ml.arrival">ml</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="mspasspy.algorithms.html#mspasspy.algorithms.ml.arrival.annotate_arrival_time"><code class="docutils literal notranslate"><span class="pre">annotate_arrival_time()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="mspasspy.algorithms.html#module-mspasspy.algorithms.resample">resample</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="mspasspy.algorithms.html#mspasspy.algorithms.resample.BasicResampler"><code class="docutils literal notranslate"><span class="pre">BasicResampler</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="mspasspy.algorithms.html#mspasspy.algorithms.resample.BasicResampler.dec_factor"><code class="docutils literal notranslate"><span class="pre">BasicResampler.dec_factor()</span></code></a></li>
@@ -836,10 +840,10 @@
 </li>
 <li class="toctree-l4"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.amplitudes.BandwidthStatistics"><code class="docutils literal notranslate"><span class="pre">BandwidthStatistics()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.amplitudes.EstimateBandwidth"><code class="docutils literal notranslate"><span class="pre">EstimateBandwidth()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.amplitudes.MADAmplitude"><code class="docutils literal notranslate"><span class="pre">MADAmplitude()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.amplitudes.PeakAmplitude"><code class="docutils literal notranslate"><span class="pre">PeakAmplitude()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.amplitudes.PercAmplitude"><code class="docutils literal notranslate"><span class="pre">PercAmplitude()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.amplitudes.RMSAmplitude"><code class="docutils literal notranslate"><span class="pre">RMSAmplitude()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.amplitudes.MADAmplitudeFunctor"><code class="docutils literal notranslate"><span class="pre">MADAmplitudeFunctor</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.amplitudes.PeakAmplitudeFunctor"><code class="docutils literal notranslate"><span class="pre">PeakAmplitudeFunctor</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.amplitudes.PercAmplitudeFunctor"><code class="docutils literal notranslate"><span class="pre">PercAmplitudeFunctor</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.amplitudes.RMSAmplitudeFunctor"><code class="docutils literal notranslate"><span class="pre">RMSAmplitudeFunctor</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.amplitudes.ScalingMethod"><code class="docutils literal notranslate"><span class="pre">ScalingMethod</span></code></a><ul>
 <li class="toctree-l5"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.amplitudes.ScalingMethod.ClipPerc"><code class="docutils literal notranslate"><span class="pre">ScalingMethod.ClipPerc</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.algorithms.amplitudes.ScalingMethod.MAD"><code class="docutils literal notranslate"><span class="pre">ScalingMethod.MAD</span></code></a></li>
@@ -1045,6 +1049,102 @@
 <li class="toctree-l3"><a class="reference internal" href="mspasspy.db.html#mspasspy.db.database.parse_normlist"><code class="docutils literal notranslate"><span class="pre">parse_normlist()</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="mspasspy.db.html#module-0">ensembles</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="mspasspy.db.html#id0"><code class="docutils literal notranslate"><span class="pre">Database</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id3"><code class="docutils literal notranslate"><span class="pre">Database.clean()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id4"><code class="docutils literal notranslate"><span class="pre">Database.clean_collection()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id5"><code class="docutils literal notranslate"><span class="pre">Database.create_collection()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id8"><code class="docutils literal notranslate"><span class="pre">Database.delete_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id9"><code class="docutils literal notranslate"><span class="pre">Database.get_collection()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id10"><code class="docutils literal notranslate"><span class="pre">Database.get_response()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id11"><code class="docutils literal notranslate"><span class="pre">Database.get_seed_channel()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id12"><code class="docutils literal notranslate"><span class="pre">Database.get_seed_site()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id13"><code class="docutils literal notranslate"><span class="pre">Database.index_mseed_FDSN()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id14"><code class="docutils literal notranslate"><span class="pre">Database.index_mseed_file()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id15"><code class="docutils literal notranslate"><span class="pre">Database.index_mseed_s3_continuous()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id16"><code class="docutils literal notranslate"><span class="pre">Database.index_mseed_s3_event()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id17"><code class="docutils literal notranslate"><span class="pre">Database.load_channel_metadata()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id18"><code class="docutils literal notranslate"><span class="pre">Database.load_event()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id19"><code class="docutils literal notranslate"><span class="pre">Database.load_site_metadata()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id20"><code class="docutils literal notranslate"><span class="pre">Database.load_source_metadata()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id21"><code class="docutils literal notranslate"><span class="pre">Database.read_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id22"><code class="docutils literal notranslate"><span class="pre">Database.read_ensemble_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id23"><code class="docutils literal notranslate"><span class="pre">Database.read_ensemble_data_group()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id24"><code class="docutils literal notranslate"><span class="pre">Database.read_inventory()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id25"><code class="docutils literal notranslate"><span class="pre">Database.save_catalog()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id26"><code class="docutils literal notranslate"><span class="pre">Database.save_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id27"><code class="docutils literal notranslate"><span class="pre">Database.save_dataframe()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id28"><code class="docutils literal notranslate"><span class="pre">Database.save_ensemble_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id29"><code class="docutils literal notranslate"><span class="pre">Database.save_ensemble_data_binary_file()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id30"><code class="docutils literal notranslate"><span class="pre">Database.save_inventory()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id31"><code class="docutils literal notranslate"><span class="pre">Database.save_textfile()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id32"><code class="docutils literal notranslate"><span class="pre">Database.set_database_schema()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id33"><code class="docutils literal notranslate"><span class="pre">Database.set_metadata_schema()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id34"><code class="docutils literal notranslate"><span class="pre">Database.set_schema()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id35"><code class="docutils literal notranslate"><span class="pre">Database.update_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id36"><code class="docutils literal notranslate"><span class="pre">Database.update_ensemble_metadata()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id37"><code class="docutils literal notranslate"><span class="pre">Database.update_metadata()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id38"><code class="docutils literal notranslate"><span class="pre">Database.verify()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="mspasspy.db.html#id39"><code class="docutils literal notranslate"><span class="pre">doc2md()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspasspy.db.html#id40"><code class="docutils literal notranslate"><span class="pre">doclist2mdlist()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspasspy.db.html#id41"><code class="docutils literal notranslate"><span class="pre">elog2doc()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspasspy.db.html#id42"><code class="docutils literal notranslate"><span class="pre">geoJSON_doc()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspasspy.db.html#id43"><code class="docutils literal notranslate"><span class="pre">history2doc()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspasspy.db.html#id44"><code class="docutils literal notranslate"><span class="pre">index_mseed_file_parallel()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspasspy.db.html#id45"><code class="docutils literal notranslate"><span class="pre">md2doc()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspasspy.db.html#id46"><code class="docutils literal notranslate"><span class="pre">parse_normlist()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="mspasspy.db.html#module-1">matcher</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="mspasspy.db.html#id47"><code class="docutils literal notranslate"><span class="pre">Database</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id48"><code class="docutils literal notranslate"><span class="pre">Database.clean()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id49"><code class="docutils literal notranslate"><span class="pre">Database.clean_collection()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id50"><code class="docutils literal notranslate"><span class="pre">Database.create_collection()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id53"><code class="docutils literal notranslate"><span class="pre">Database.delete_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id54"><code class="docutils literal notranslate"><span class="pre">Database.get_collection()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id55"><code class="docutils literal notranslate"><span class="pre">Database.get_response()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id56"><code class="docutils literal notranslate"><span class="pre">Database.get_seed_channel()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id57"><code class="docutils literal notranslate"><span class="pre">Database.get_seed_site()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id58"><code class="docutils literal notranslate"><span class="pre">Database.index_mseed_FDSN()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id59"><code class="docutils literal notranslate"><span class="pre">Database.index_mseed_file()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id60"><code class="docutils literal notranslate"><span class="pre">Database.index_mseed_s3_continuous()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id61"><code class="docutils literal notranslate"><span class="pre">Database.index_mseed_s3_event()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id62"><code class="docutils literal notranslate"><span class="pre">Database.load_channel_metadata()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id63"><code class="docutils literal notranslate"><span class="pre">Database.load_event()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id64"><code class="docutils literal notranslate"><span class="pre">Database.load_site_metadata()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id65"><code class="docutils literal notranslate"><span class="pre">Database.load_source_metadata()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id66"><code class="docutils literal notranslate"><span class="pre">Database.read_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id67"><code class="docutils literal notranslate"><span class="pre">Database.read_ensemble_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id68"><code class="docutils literal notranslate"><span class="pre">Database.read_ensemble_data_group()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id69"><code class="docutils literal notranslate"><span class="pre">Database.read_inventory()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id70"><code class="docutils literal notranslate"><span class="pre">Database.save_catalog()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id71"><code class="docutils literal notranslate"><span class="pre">Database.save_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id72"><code class="docutils literal notranslate"><span class="pre">Database.save_dataframe()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id73"><code class="docutils literal notranslate"><span class="pre">Database.save_ensemble_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id74"><code class="docutils literal notranslate"><span class="pre">Database.save_ensemble_data_binary_file()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id75"><code class="docutils literal notranslate"><span class="pre">Database.save_inventory()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id76"><code class="docutils literal notranslate"><span class="pre">Database.save_textfile()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id77"><code class="docutils literal notranslate"><span class="pre">Database.set_database_schema()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id78"><code class="docutils literal notranslate"><span class="pre">Database.set_metadata_schema()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id79"><code class="docutils literal notranslate"><span class="pre">Database.set_schema()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id80"><code class="docutils literal notranslate"><span class="pre">Database.update_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id81"><code class="docutils literal notranslate"><span class="pre">Database.update_ensemble_metadata()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id82"><code class="docutils literal notranslate"><span class="pre">Database.update_metadata()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id83"><code class="docutils literal notranslate"><span class="pre">Database.verify()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="mspasspy.db.html#id84"><code class="docutils literal notranslate"><span class="pre">doc2md()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspasspy.db.html#id85"><code class="docutils literal notranslate"><span class="pre">doclist2mdlist()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspasspy.db.html#id86"><code class="docutils literal notranslate"><span class="pre">elog2doc()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspasspy.db.html#id87"><code class="docutils literal notranslate"><span class="pre">geoJSON_doc()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspasspy.db.html#id88"><code class="docutils literal notranslate"><span class="pre">history2doc()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspasspy.db.html#id89"><code class="docutils literal notranslate"><span class="pre">index_mseed_file_parallel()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspasspy.db.html#id90"><code class="docutils literal notranslate"><span class="pre">md2doc()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspasspy.db.html#id91"><code class="docutils literal notranslate"><span class="pre">parse_normlist()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="mspasspy.db.html#module-mspasspy.db.normalize">normalize</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="mspasspy.db.html#mspasspy.db.normalize.ArrivalDBMatcher"><code class="docutils literal notranslate"><span class="pre">ArrivalDBMatcher</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#mspasspy.db.normalize.ArrivalDBMatcher.query_generator"><code class="docutils literal notranslate"><span class="pre">ArrivalDBMatcher.query_generator()</span></code></a></li>
@@ -1171,6 +1271,58 @@
 <li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#mspasspy.db.schema.SchemaDefinitionBase.type"><code class="docutils literal notranslate"><span class="pre">SchemaDefinitionBase.type()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#mspasspy.db.schema.SchemaDefinitionBase.unique_name"><code class="docutils literal notranslate"><span class="pre">SchemaDefinitionBase.unique_name()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#mspasspy.db.schema.SchemaDefinitionBase.xref_keys"><code class="docutils literal notranslate"><span class="pre">SchemaDefinitionBase.xref_keys()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="mspasspy.db.html#module-2">spectrumdb</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="mspasspy.db.html#id92"><code class="docutils literal notranslate"><span class="pre">DBSchemaDefinition</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id93"><code class="docutils literal notranslate"><span class="pre">DBSchemaDefinition.add()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id94"><code class="docutils literal notranslate"><span class="pre">DBSchemaDefinition.data_type()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id95"><code class="docutils literal notranslate"><span class="pre">DBSchemaDefinition.reference()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="mspasspy.db.html#id96"><code class="docutils literal notranslate"><span class="pre">DatabaseSchema</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id97"><code class="docutils literal notranslate"><span class="pre">DatabaseSchema.default()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id98"><code class="docutils literal notranslate"><span class="pre">DatabaseSchema.default_name()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id99"><code class="docutils literal notranslate"><span class="pre">DatabaseSchema.set_default()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id100"><code class="docutils literal notranslate"><span class="pre">DatabaseSchema.unset_default()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="mspasspy.db.html#id101"><code class="docutils literal notranslate"><span class="pre">MDSchemaDefinition</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id102"><code class="docutils literal notranslate"><span class="pre">MDSchemaDefinition.add()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id103"><code class="docutils literal notranslate"><span class="pre">MDSchemaDefinition.collection()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id104"><code class="docutils literal notranslate"><span class="pre">MDSchemaDefinition.readonly()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id105"><code class="docutils literal notranslate"><span class="pre">MDSchemaDefinition.set_collection()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id106"><code class="docutils literal notranslate"><span class="pre">MDSchemaDefinition.set_readonly()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id107"><code class="docutils literal notranslate"><span class="pre">MDSchemaDefinition.set_writeable()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id108"><code class="docutils literal notranslate"><span class="pre">MDSchemaDefinition.swap_collection()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id109"><code class="docutils literal notranslate"><span class="pre">MDSchemaDefinition.writeable()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="mspasspy.db.html#id110"><code class="docutils literal notranslate"><span class="pre">MetadataSchema</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspasspy.db.html#id111"><code class="docutils literal notranslate"><span class="pre">SchemaBase</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspasspy.db.html#id112"><code class="docutils literal notranslate"><span class="pre">SchemaDefinitionBase</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id113"><code class="docutils literal notranslate"><span class="pre">SchemaDefinitionBase.add()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id114"><code class="docutils literal notranslate"><span class="pre">SchemaDefinitionBase.add_alias()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id115"><code class="docutils literal notranslate"><span class="pre">SchemaDefinitionBase.aliases()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id116"><code class="docutils literal notranslate"><span class="pre">SchemaDefinitionBase.apply_aliases()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id117"><code class="docutils literal notranslate"><span class="pre">SchemaDefinitionBase.clear_aliases()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id118"><code class="docutils literal notranslate"><span class="pre">SchemaDefinitionBase.concept()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id119"><code class="docutils literal notranslate"><span class="pre">SchemaDefinitionBase.constraint()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id120"><code class="docutils literal notranslate"><span class="pre">SchemaDefinitionBase.has_alias()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id121"><code class="docutils literal notranslate"><span class="pre">SchemaDefinitionBase.is_alias()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id122"><code class="docutils literal notranslate"><span class="pre">SchemaDefinitionBase.is_defined()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id123"><code class="docutils literal notranslate"><span class="pre">SchemaDefinitionBase.is_normal()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id124"><code class="docutils literal notranslate"><span class="pre">SchemaDefinitionBase.is_optional()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id125"><code class="docutils literal notranslate"><span class="pre">SchemaDefinitionBase.is_required()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id126"><code class="docutils literal notranslate"><span class="pre">SchemaDefinitionBase.is_xref_key()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id127"><code class="docutils literal notranslate"><span class="pre">SchemaDefinitionBase.keys()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id128"><code class="docutils literal notranslate"><span class="pre">SchemaDefinitionBase.remove_alias()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id129"><code class="docutils literal notranslate"><span class="pre">SchemaDefinitionBase.required_keys()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id130"><code class="docutils literal notranslate"><span class="pre">SchemaDefinitionBase.type()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id131"><code class="docutils literal notranslate"><span class="pre">SchemaDefinitionBase.unique_name()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mspasspy.db.html#id132"><code class="docutils literal notranslate"><span class="pre">SchemaDefinitionBase.xref_keys()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -1349,12 +1501,20 @@
 <li class="toctree-l3"><a class="reference internal" href="mspasspy.util.html#mspasspy.util.converter.post_ensemble_metadata"><code class="docutils literal notranslate"><span class="pre">post_ensemble_metadata()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="mspasspy.util.html#module-mspasspy.util.decorators">decorators</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="mspasspy.util.html#module-mspasspy.util.decorators">db_utils</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="mspasspy.util.html#mspasspy.util.decorators.is_input_dead"><code class="docutils literal notranslate"><span class="pre">is_input_dead()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="mspasspy.util.html#mspasspy.util.decorators.seismogram_copy_helper"><code class="docutils literal notranslate"><span class="pre">seismogram_copy_helper()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="mspasspy.util.html#mspasspy.util.decorators.seismogram_ensemble_copy_helper"><code class="docutils literal notranslate"><span class="pre">seismogram_ensemble_copy_helper()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="mspasspy.util.html#mspasspy.util.decorators.timeseries_copy_helper"><code class="docutils literal notranslate"><span class="pre">timeseries_copy_helper()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="mspasspy.util.html#mspasspy.util.decorators.timeseries_ensemble_copy_helper"><code class="docutils literal notranslate"><span class="pre">timeseries_ensemble_copy_helper()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="mspasspy.util.html#module-0">decorators</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="mspasspy.util.html#id0"><code class="docutils literal notranslate"><span class="pre">is_input_dead()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspasspy.util.html#id1"><code class="docutils literal notranslate"><span class="pre">seismogram_copy_helper()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspasspy.util.html#id2"><code class="docutils literal notranslate"><span class="pre">seismogram_ensemble_copy_helper()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspasspy.util.html#id3"><code class="docutils literal notranslate"><span class="pre">timeseries_copy_helper()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspasspy.util.html#id4"><code class="docutils literal notranslate"><span class="pre">timeseries_ensemble_copy_helper()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="mspasspy.util.html#module-mspasspy.util.Janitor">Janitor</a><ul>

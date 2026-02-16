@@ -1,0 +1,287 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>mspasspy.algorithms.ml.arrival &mdash; MsPASS 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />  
+
+  <style>
+    .wy-nav-content { max-width: 1600px; }
+  </style>
+
+  
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            MsPASS
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Desktop Operation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../getting_started/mspass_desktop.html">Running MsPASS on a Desktop Computer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../getting_started/command_line_desktop.html">Command Line Docker Desktop Operation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../getting_started/deploy_mspass_with_conda.html">Deploy MsPASS with Conda</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../getting_started/advanced_setup_considerations.html">Advanced Setup Considerations</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Cluster Operations</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../getting_started/deploy_mspass_on_HPC.html">Deploying MsPASS on an HPC cluster</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../getting_started/deploy_mspass_with_conda_and_coiled.html">Deploy MsPASS with Conda and Coiled</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../getting_started/getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/introduction.html">Introduction</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Data Management</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/database_concepts.html">Database Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/normalization.html">Normalization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/importing_tabular_data.html">Importing Tabular Data</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Seismic Data Objects</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/data_object_design_concepts.html">Data Object Design Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/numpy_scipy_interface.html">Using numpy/scipy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/obspy_interface.html">Using ObsPy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/time_standard_constraints.html">Time Standard Constraints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/processing_history_concepts.html">Processing History Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/continuous_data.html">Continuous Data Handling with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/schema_choices.html">What database schema should I use?</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Data Processing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/algorithms.html">Algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/importing_data.html">Importing Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/handling_errors.html">Handling Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/data_editing.html">Data Editing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/cleaning_metadata.html">Cleaning Inconsistent Metadata</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/header_math.html">Header (Metadata) Math</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/graphics.html">Graphics in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/signal_to_noise.html">Signal to Noise Ratio Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/arrival_time_measurement.html">Arrival Time Measurement Techniques in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/parallel_processing.html">Parallel Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/memory_management.html">Memory Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/io.html">I/O in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/parallel_io.html">Parallel IO in MsPASS</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">FAQ</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/FAQ.html">Frequency Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_manual/development_strategies.html">How do I develop a new workflow from scratch?</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../python_api/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../cxx_api/index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../mspass_schema/mspass_schema.html">MsPASS Schema</a></li>
+</ul>
+
+    <a href= "../../../../genindex.html">Index</a>
+  
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">MsPASS</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">mspasspy.algorithms.ml.arrival</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for mspasspy.algorithms.ml.arrival</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">seisbench.models</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sbm</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">seisbench.models.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">WaveformModel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.ccore.seismic</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span><span class="p">,</span> <span class="n">TimeSeriesEnsemble</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.ccore.algorithms.basic</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeWindow</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.algorithms.window</span><span class="w"> </span><span class="kn">import</span> <span class="n">WindowData</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">obspy</span><span class="w"> </span><span class="kn">import</span> <span class="n">UTCDateTime</span>
+
+
+<div class="viewcode-block" id="annotate_arrival_time">
+<a class="viewcode-back" href="../../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.ml.arrival.annotate_arrival_time">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">annotate_arrival_time</span><span class="p">(</span>
+    <span class="n">timeseries</span><span class="p">:</span> <span class="n">TimeSeries</span><span class="p">,</span>
+    <span class="n">threshold</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span>
+    <span class="n">time_window</span><span class="p">:</span> <span class="n">TimeWindow</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">model</span><span class="p">:</span> <span class="n">WaveformModel</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">model_args</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Predict the arrival time of the P wave using the provided seisbench WaveformModel.</span>
+<span class="sd">    The arrival time will be saved as a dictionary in the input TimeSeries object and can be accessed using \</span>
+<span class="sd">        the key &#39;p_wave_picks&#39;. In the dictionay, the key is the arrival time in the utc timestamp format, \ </span>
+<span class="sd">        and the value is the probability of the pick.</span>
+
+<span class="sd">    :param timeseries: The time series data to predict the arrival time.</span>
+<span class="sd">    :param threshold: The probability threshold (0-1) to filter p-wave picks. \ </span>
+<span class="sd">        Any picks with probability less than the threshold will be removed. Default value is 0.2. </span>
+<span class="sd">    :param time_window: The time window (in utc timestamp) to filter the predicted arrival time. \ </span>
+<span class="sd">        If not provided, the whole time series will be used.</span>
+<span class="sd">    :param model: The model used to predict the arrival time.</span>
+<span class="sd">    :param model_args: arguments to initialize a new model if not provided</span>
+<span class="sd">    :type timeseries: mspasspy.ccore.seismic.TimeSeries</span>
+<span class="sd">    :type threshold: float</span>
+<span class="sd">    :type time_window: mspasspy.ccore.algorithms.basic.TimeWindow defined as absolute time in UTC</span>
+<span class="sd">    :type model: seisbench.models.base.WaveformModel</span>
+<span class="sd">    :type model_args: dict</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">default_threshold</span> <span class="o">=</span> <span class="mf">0.2</span>
+
+    <span class="c1"># Check the input arguments</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">threshold</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+            <span class="s2">&quot;Threshold should be in the range of [0, 1]. Using default threshold </span><span class="si">{}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">default_threshold</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">threshold</span> <span class="o">=</span> <span class="n">default_threshold</span>
+
+    <span class="c1"># convert timeseries to absolute time</span>
+    <span class="n">timeseries</span><span class="o">.</span><span class="n">rtoa</span><span class="p">()</span>
+
+    <span class="c1"># load pretrained model based on the args if not provided</span>
+    <span class="k">if</span> <span class="n">model</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># &#39;stead&#39; model was trained on STEAD for 100 epochs with a learning rate of 0.01.</span>
+        <span class="c1"># use sbm.PhaseNet.list_pretrained(details=True) to list out other supported models</span>
+        <span class="c1"># when using this model, please reference the SeisBench publications listed at https://github.com/seisbench/seisbench</span>
+        <span class="n">pretrained_model</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;stead&quot;</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">model_args</span> <span class="o">==</span> <span class="kc">None</span> <span class="ow">or</span> <span class="s2">&quot;name&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">model_args</span><span class="p">)</span>
+            <span class="k">else</span> <span class="n">model_args</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">sbm</span><span class="o">.</span><span class="n">PhaseNet</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="n">pretrained_model</span><span class="p">)</span>
+
+    <span class="n">ts_ensemble</span> <span class="o">=</span> <span class="n">TimeSeriesEnsemble</span><span class="p">()</span>
+    <span class="n">ts_ensemble</span><span class="o">.</span><span class="n">member</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">timeseries</span><span class="p">)</span>
+    <span class="n">stream</span> <span class="o">=</span> <span class="n">ts_ensemble</span><span class="o">.</span><span class="n">toStream</span><span class="p">()</span>
+
+    <span class="c1"># apply the window if provided and convert time series to stream</span>
+    <span class="n">start_time_utc</span> <span class="o">=</span> <span class="n">stream</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">starttime</span><span class="o">.</span><span class="n">timestamp</span>  <span class="c1"># UTC timestamp</span>
+    <span class="n">end_time_utc</span> <span class="o">=</span> <span class="n">stream</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">endtime</span><span class="o">.</span><span class="n">timestamp</span>  <span class="c1"># UTC timestamp</span>
+
+    <span class="c1"># adjust the time window if it is out of the time range of the time series</span>
+    <span class="k">if</span> <span class="n">time_window</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">time_window</span><span class="o">.</span><span class="n">end</span> <span class="o">&lt;</span> <span class="n">start_time_utc</span> <span class="ow">or</span> <span class="n">time_window</span><span class="o">.</span><span class="n">start</span> <span class="o">&gt;</span> <span class="n">end_time_utc</span><span class="p">:</span>
+            <span class="n">time_window</span><span class="o">.</span><span class="n">start</span> <span class="o">=</span> <span class="n">start_time_utc</span>
+            <span class="n">time_window</span><span class="o">.</span><span class="n">end</span> <span class="o">=</span> <span class="n">end_time_utc</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s2">&quot;Time window is out of the time range of the time series. Adjusting the time window to the time range of the time series.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">time_window</span><span class="o">.</span><span class="n">end</span> <span class="o">&gt;</span> <span class="n">end_time_utc</span><span class="p">:</span>
+            <span class="n">time_window</span><span class="o">.</span><span class="n">end</span> <span class="o">=</span> <span class="n">end_time_utc</span>
+        <span class="k">if</span> <span class="n">time_window</span><span class="o">.</span><span class="n">start</span> <span class="o">&lt;</span> <span class="n">start_time_utc</span><span class="p">:</span>
+            <span class="n">time_window</span><span class="o">.</span><span class="n">start</span> <span class="o">=</span> <span class="n">start_time_utc</span>
+
+    <span class="n">windowed_stream</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">stream</span><span class="o">.</span><span class="n">trim</span><span class="p">(</span><span class="n">UTCDateTime</span><span class="p">(</span><span class="n">time_window</span><span class="o">.</span><span class="n">start</span><span class="p">),</span> <span class="n">UTCDateTime</span><span class="p">(</span><span class="n">time_window</span><span class="o">.</span><span class="n">end</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">time_window</span>
+        <span class="k">else</span> <span class="n">stream</span>
+    <span class="p">)</span>
+
+    <span class="c1"># prediction result is the probability for picks over time</span>
+    <span class="n">pred_st</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="n">windowed_stream</span><span class="p">)</span>
+
+    <span class="c1"># Step 1: Access the probability data</span>
+    <span class="k">for</span> <span class="n">tr</span> <span class="ow">in</span> <span class="n">pred_st</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">tr</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">channel</span> <span class="o">==</span> <span class="s2">&quot;PhaseNet_P&quot;</span><span class="p">:</span>
+            <span class="n">trace</span> <span class="o">=</span> <span class="n">tr</span>
+            <span class="k">break</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">data</span>
+
+    <span class="c1"># Step 2: Find all the index with probability value greater than the threshold</span>
+    <span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">data</span> <span class="o">&gt;=</span> <span class="n">threshold</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="c1"># Step 3: Calculate the corresponding time in utc timestamp</span>
+    <span class="n">timestamps</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">times</span><span class="p">(</span><span class="s2">&quot;timestamp&quot;</span><span class="p">)[</span><span class="n">indices</span><span class="p">]</span>
+
+    <span class="c1"># Step 4: Create a dictionary with timestamps as keys and probability values as values</span>
+    <span class="n">p_wave_picks</span> <span class="o">=</span> <span class="p">{</span><span class="n">ts</span><span class="p">:</span> <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">ts</span><span class="p">,</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">timestamps</span><span class="p">,</span> <span class="n">indices</span><span class="p">)}</span>
+
+    <span class="c1"># Step 5: Save the arrival time dictionary in absolute time</span>
+    <span class="n">timeseries</span><span class="p">[</span><span class="s2">&quot;p_wave_picks&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">p_wave_picks</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020-2021, Ian Wang.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -17,6 +17,22 @@ database
     :undoc-members:
     :show-inheritance:
 
+ensembles
+---------
+
+.. automodule:: mspasspy.db.database
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+matcher
+-------
+
+.. automodule:: mspasspy.db.database
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 normalize
 ---------
 
@@ -27,6 +43,14 @@ normalize
 
 schema
 ------
+
+.. automodule:: mspasspy.db.schema
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+spectrumdb
+----------
 
 .. automodule:: mspasspy.db.schema
     :members:

@@ -322,7 +322,7 @@ when the lazy(spark)/delayed(dask) operations are initiated
 The docstring for the <cite>read_distibuted_data</cite> function gives more details,
 but a key point is that
 arg0 (<cite>data</cite> in the function definition) can be one of three things:
-(1) a <a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.database.Database</span></code></a> object, (2) an implementation of
+(1) a <a class="reference internal" href="../python_api/mspasspy.db.html#id47" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.database.Database</span></code></a> object, (2) an implementation of
 a <cite>Dataframe</cite> (dask, pyspark, or pandas), or (3) a list of python
 dictionaries that define valid MongoDB queries.  The first two options
 can be used to create a parallel dataset of atomic seismic objects.
@@ -334,7 +334,7 @@ ensemble data.</p>
 <h3>Atomic data<a class="headerlink" href="#atomic-data" title="Link to this heading"></a></h3>
 <p>A bag/RDD of atomic data can be constructed by <cite>read_distributed_data</cite>
 from one of two possible inputs:  (1) MongoDB documents retrieved through
-a <a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.database.Database</span></code></a> handle driven by an optional
+a <a class="reference internal" href="../python_api/mspasspy.db.html#id47" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.database.Database</span></code></a> handle driven by an optional
 query, or (2) an implementation of a Dataframe.   It is
 important to realize that both cases set the initial
 content the bag/RDD as the same thing:  a sequence of python dictionaries
@@ -447,7 +447,7 @@ down the processing chain.</p>
 <p>There is one other important bit of magic in the <cite>read_distributed_data</cite>
 that is important to recognize if you need to maximize input speed.
 <cite>read_distributed_data</cite> can exploit a feature of
-<a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.database.Database</span></code></a> that can dramatically reduce
+<a class="reference internal" href="../python_api/mspasspy.db.html#id47" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.database.Database</span></code></a> that can dramatically reduce
 reading time for large ensembles.   When reading ensembles if the
 <cite>storage_mode</cite> argument is set to “file”, the data were originally
 written with the (default) format of “binary”, and the file grouping
@@ -460,7 +460,7 @@ C function <cite>fread</cite>.   That algorithm can be very fast as buffering
 creates minimal delays in successive reads and, more importantly,
 reduces the number of file open/close pairs compared to
 a simpler iterative loop with atomic readers.
-See the docstring of <a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.database.Database</span></code></a> for details.</p>
+See the docstring of <a class="reference internal" href="../python_api/mspasspy.db.html#id47" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.database.Database</span></code></a> for details.</p>
 </section>
 </section>
 <section id="write-distributed-data-mspass-parallel-writer">
@@ -469,7 +469,7 @@ See the docstring of <a class="reference internal" href="../python_api/mspasspy.
 <h3>Overview<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
 <p>Parallel writes present a different problem from reading.
 The simplest, but not fastest, approach to writing data is to use the
-<cite>save_data</cite> method of <a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.database.Database</span></code></a> in a loop.
+<cite>save_data</cite> method of <a class="reference internal" href="../python_api/mspasspy.db.html#id47" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.database.Database</span></code></a> in a loop.
 Here is a (not recommended) way to terminate a workflow in that way
 for a container of <cite>TimeSeries</cite> objects:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="o">...</span>  <span class="n">Processing</span> <span class="n">workflow</span> <span class="n">above</span> <span class="k">with</span> <span class="nb">map</span><span class="o">/</span><span class="n">reduce</span> <span class="n">operations</span> <span class="o">...</span>

@@ -352,8 +352,8 @@ consumes memory.</p></li>
 </ol>
 <p>How we address these two constraints is described in two sections
 below.  The first is handled automatically by the
-<a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database.save_data" title="mspasspy.db.database.Database.save_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">save_data</span></code></a> method of
-<a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">Database</span></code></a>.  The second has
+<a class="reference internal" href="../python_api/mspasspy.db.html#id71" title="mspasspy.db.database.Database.save_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">save_data</span></code></a> method of
+<a class="reference internal" href="../python_api/mspasspy.db.html#id47" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">Database</span></code></a>.  The second has
 options that are implemented as methods of the class
 <code class="xref py py-class docutils literal notranslate"><span class="pre">Undertaker</span></code> that is the
 topic of the second subsection below.</p>
@@ -369,18 +369,18 @@ to handle such issues.</p>
 <h3>Database handling of dead data<a class="headerlink" href="#database-handling-of-dead-data" title="Link to this heading"></a></h3>
 <p>The standard way in MsPASS to preserve a record of killed data is
 implicit when the data are saved via the Database method
-<a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database.save_data" title="mspasspy.db.database.Database.save_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">save_data</span></code></a>.
-The <a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">Database</span></code></a> class internally
+<a class="reference internal" href="../python_api/mspasspy.db.html#id71" title="mspasspy.db.database.Database.save_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">save_data</span></code></a>.
+The <a class="reference internal" href="../python_api/mspasspy.db.html#id47" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">Database</span></code></a> class internally
 creates an instance of
 <a class="reference internal" href="../python_api/mspasspy.util.html#mspasspy.util.Undertaker.Undertaker" title="mspasspy.util.Undertaker.Undertaker"><code class="xref py py-class docutils literal notranslate"><span class="pre">Undertaker</span></code></a>
 (Described in more detail the next section and the docstring
 viewable via the above link.) that handles the dead data during the save
 operation.  The
-<a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database.save_data" title="mspasspy.db.database.Database.save_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">save_data</span></code></a>
+<a class="reference internal" href="../python_api/mspasspy.db.html#id71" title="mspasspy.db.database.Database.save_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">save_data</span></code></a>
 method has these features:</p>
 <ol class="arabic simple">
 <li><p>If an atomic datum is marked dead,
-<a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database.save_data" title="mspasspy.db.database.Database.save_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">save_data</span></code></a>
+<a class="reference internal" href="../python_api/mspasspy.db.html#id71" title="mspasspy.db.database.Database.save_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">save_data</span></code></a>
 calls the <a class="reference internal" href="../python_api/mspasspy.util.html#mspasspy.util.Undertaker.Undertaker.bury" title="mspasspy.util.Undertaker.Undertaker.bury"><code class="xref py py-meth docutils literal notranslate"><span class="pre">bury</span></code></a>
 method of <a class="reference internal" href="../python_api/mspasspy.util.html#mspasspy.util.Undertaker.Undertaker" title="mspasspy.util.Undertaker.Undertaker"><code class="xref py py-class docutils literal notranslate"><span class="pre">Undertaker</span></code></a> on the
 contents.  The default behavior of
@@ -411,7 +411,7 @@ all members and the <a class="reference internal" href="../python_api/mspasspy.u
 method is called on all members.   If <code class="code docutils literal notranslate"><span class="pre">return_data</span></code> is
 set True, the member data vector is cleared.  In the more common
 situation where only some of the ensemble members are marked dead,
-<a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database.save_data" title="mspasspy.db.database.Database.save_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">save_data</span></code></a>
+<a class="reference internal" href="../python_api/mspasspy.db.html#id71" title="mspasspy.db.database.Database.save_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">save_data</span></code></a>
 calls a special member of <a class="reference internal" href="../python_api/mspasspy.util.html#mspasspy.util.Undertaker.Undertaker" title="mspasspy.util.Undertaker.Undertaker"><code class="xref py py-class docutils literal notranslate"><span class="pre">Undertaker</span></code></a>
 with a name that is the best python joke ever:
 <a class="reference internal" href="../python_api/mspasspy.util.html#mspasspy.util.Undertaker.Undertaker.bring_out_your_dead" title="mspasspy.util.Undertaker.Undertaker.bring_out_your_dead"><code class="xref py py-meth docutils literal notranslate"><span class="pre">bring_out_your_dead</span></code></a>.
@@ -426,7 +426,7 @@ When set True dead data will be cleared without a trace.</p></li>
 processing sequence is to use the mspass
 <a class="reference internal" href="../python_api/mspasspy.io.html#mspasspy.io.distributed.write_distributed_data" title="mspasspy.io.distributed.write_distributed_data"><code class="xref py py-func docutils literal notranslate"><span class="pre">write_distributed_data</span></code></a> function.
 It handles dead data the same way as
-<a class="reference internal" href="../python_api/mspasspy.db.html#mspasspy.db.database.Database.save_data" title="mspasspy.db.database.Database.save_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">save_data</span></code></a> described above.</p>
+<a class="reference internal" href="../python_api/mspasspy.db.html#id71" title="mspasspy.db.database.Database.save_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">save_data</span></code></a> described above.</p>
 <p>Finally, users are warned that data that are passed through a reduce operator
 will normally discard dead data with no trace.  If your workflow has a
 reduce operator, it is recommended that you use the inline methods for
