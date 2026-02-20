@@ -47,7 +47,7 @@ from mspasspy.ccore.utility import (
 from mspasspy.db.schema import DatabaseSchema, MetadataSchema
 from mspasspy.util import logging_helper
 from bson.objectid import ObjectId
-from datetime import datetime
+import datetime
 from mspasspy.db.database import Database, geoJSON_doc
 from mspasspy.db.client import DBClient
 from mspasspy.db.collection import Collection
@@ -76,7 +76,7 @@ class TestDatabase:
         self.test_ts.elog.log_error("alg", str("message"), ErrorSeverity.Informational)
         # this is used to test aliases
         self.test_ts.erase("starttime")
-        self.test_ts["t0"] = datetime.utcnow().timestamp()
+        self.test_ts["t0"] = datetime.datetime.now(datetime.UTC).timestamp()
 
         self.test_seis = get_live_seismogram()
         self.test_seis["tmatrix"] = [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
@@ -96,7 +96,7 @@ class TestDatabase:
         )
 
         self.test_seis.erase("starttime")
-        self.test_seis["t0"] = datetime.utcnow().timestamp()
+        self.test_seis["t0"] = datetime.datetime.now(datetime.UTC).timestamp()
 
         site_id = ObjectId()
         channel_id = ObjectId()
@@ -110,8 +110,8 @@ class TestDatabase:
                 "lat": 1.0,
                 "lon": 1.0,
                 "elev": 2.0,
-                "starttime": datetime.utcnow().timestamp(),
-                "endtime": datetime.utcnow().timestamp(),
+                "starttime": datetime.datetime.now(datetime.UTC).timestamp(),
+                "endtime": datetime.datetime.now(datetime.UTC).timestamp(),
             }
         )
         self.db["channel"].insert_one(
@@ -124,8 +124,8 @@ class TestDatabase:
                 "lat": 1.1,
                 "lon": 1.1,
                 "elev": 2.1,
-                "starttime": datetime.utcnow().timestamp(),
-                "endtime": datetime.utcnow().timestamp(),
+                "starttime": datetime.datetime.now(datetime.UTC).timestamp(),
+                "endtime": datetime.datetime.now(datetime.UTC).timestamp(),
                 "edepth": 3.0,
                 "vang": 1.0,
                 "hang": 1.0,
@@ -136,7 +136,7 @@ class TestDatabase:
                 "_id": source_id,
                 "lat": 1.2,
                 "lon": 1.2,
-                "time": datetime.utcnow().timestamp(),
+                "time": datetime.datetime.now(datetime.UTC).timestamp(),
                 "depth": 3.1,
                 "magnitude": 1.0,
             }
@@ -1931,7 +1931,7 @@ class TestDatabase:
                 "_id": test_source_id,
                 "EVLA": 1.2,
                 "lon": 1.2,
-                "time": datetime.utcnow().timestamp(),
+                "time": datetime.datetime.now(datetime.UTC).timestamp(),
                 "depth": 3.1,
                 "MAG": 1.0,
             }
@@ -2498,7 +2498,7 @@ class TestDatabase:
         self.db.save_data(ts2, storage_mode="gridfs", return_data=True)
         self.db.save_data(ts3, storage_mode="gridfs", return_data=True)
 
-        time = datetime.utcnow().timestamp()
+        time = datetime.datetime.now(datetime.UTC).timestamp()
         ts1.t0 = time
         ts1["tst"] = time
         ts2.t0 = time
@@ -2527,7 +2527,7 @@ class TestDatabase:
         doc = self.db["wf_TimeSeries"].find_one({"_id": res.member[2]["_id"]})
         assert doc["starttime"] != time
 
-        time_new = datetime.utcnow().timestamp()
+        time_new = datetime.datetime.now(datetime.UTC).timestamp()
         ts_ensemble.member[0]["tst"] = time + 1
         ts_ensemble.member[0].t0 = time_new
 
@@ -2561,7 +2561,7 @@ class TestDatabase:
         self.db.save_data(seis1, storage_mode="gridfs", return_data=True)
         self.db.save_data(seis2, storage_mode="gridfs", return_data=True)
         self.db.save_data(seis3, storage_mode="gridfs", return_data=True)
-        time = datetime.utcnow().timestamp()
+        time = datetime.datetime.now(datetime.UTC).timestamp()
         seis1.t0 = time
         seis1["tst"] = time
         seis2.t0 = time
@@ -2583,7 +2583,7 @@ class TestDatabase:
         res = self.db["wf_Seismogram"].find_one({"_id": seis3["_id"]})
         # assert res['starttime'] != time
 
-        time_new = datetime.utcnow().timestamp()
+        time_new = datetime.datetime.now(datetime.UTC).timestamp()
         seis_ensemble.member[0]["tst"] = time + 1
         seis_ensemble.member[0].t0 = time_new
         logging_helper.info(seis_ensemble.member[0], "2", "update_data")

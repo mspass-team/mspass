@@ -2,6 +2,7 @@ import pytest
 
 import os, shutil
 import sys
+import datetime
 
 from mspasspy.db.database import Database
 from mspasspy.db.client import DBClient
@@ -14,7 +15,7 @@ from helper import (
     get_live_seismogram_ensemble,
 )
 from bson.objectid import ObjectId
-from datetime import datetime
+
 import copy
 import dask
 from dask.distributed import Client as DaskClient
@@ -79,7 +80,7 @@ def make_channel_record(val, net="00", sta="sta", chan="chan", loc="00", data_ta
     doc["lon"] = val
     doc["elev"] = val
     doc["starttime"] = 0.0  # 0 epoch time for universal match
-    doc["endtime"] = datetime.utcnow().timestamp()
+    doc["endtime"] = datetime.datetime.now(datetime.UTC).timestamp()
     if data_tag:
         doc["data_tag"] = data_tag
     return doc
@@ -107,7 +108,7 @@ def make_site_record(val, net="00", sta="sta", loc="00", data_tag=None):
     doc["lon"] = val
     doc["elev"] = val
     doc["starttime"] = 0.0  # 0 epoch time for universal match
-    doc["endtime"] = datetime.utcnow().timestamp()
+    doc["endtime"] = datetime.datetime.now(datetime.UTC).timestamp()
     if data_tag:
         doc["data_tag"] = data_tag
     return doc
