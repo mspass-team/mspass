@@ -2,7 +2,7 @@ import numpy as np
 import obspy
 import bson.objectid
 import time
-from datetime import datetime
+import datetime
 
 from mspasspy.ccore.utility import AtomicType, dmatrix
 from mspasspy.ccore.seismic import (
@@ -46,7 +46,7 @@ def get_live_timeseries(ts_size=255, sampling_rate=20.0):
     ts.put("npts", ts_size)
     ts.put("sampling_rate", sampling_rate)
     ts.tref = TimeReferenceType.UTC
-    ts.t0 = datetime.utcnow().timestamp()
+    ts.t0 = datetime.datetime.new(datetime.UTC).timestamp()
     ts["delta"] = 0.1
     ts["calib"] = 0.1
     ts["site_id"] = bson.objectid.ObjectId()
@@ -68,7 +68,7 @@ def get_sin_timeseries(ts_size=255, sampling_rate=20.0):
     ts.put("npts", ts_size)
     ts.put("sampling_rate", sampling_rate)
     ts.tref = TimeReferenceType.UTC
-    ts.t0 = datetime.utcnow().timestamp()
+    ts.t0 = datetime.datetime.new(datetime.UTC).timestamp()
     ts["delta"] = 0.1
     ts["calib"] = 0.1
     ts["site_id"] = bson.objectid.ObjectId()
