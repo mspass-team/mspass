@@ -31,17 +31,26 @@ def sliding_window_pipeline(
     fraction of workflows using MsPASS fail with memory faults in dask
     when implemented with the dask bag map method. The reason seems
     to be that the problematic workflows reduce to a sequence of three fundamentally
-    different operations that originate with a database query, list of
-    documents, or a DataFrame:  (1) read seismic data defined by the (small) inputs
-    into the bag, (2) run a sequence of processing functions on that data, and
-    (3) save results (usually involving a combination of file writes and
-    database adds).  That causes the workflow to bloat by orders of magnitude
-    inside the chain of map opeators.   The default configuration of dask
-    does not handle this well and tends to queue too many tasks for
-    workers leading to worker memory faults that are often mysterious
-    leaving only indirect forensic evidence. This funtion was developed
-    to handle pipeline processing (equivalent to a string of map operators)
-    subject to memory faults. We know of two common situations where this
+    different operations:  (1) read seismic data defined by the tiny inputs 
+    of a single document or a python dictionary defining a query, 
+    (2) run a sequence of processing function on the data created by 
+    each document or query, and (3) save the result using the MongoDB 
+    API of MsPASS.   The problem this seems to cause is that steps 
+    (1) and (3) are tiny compared to what step 2 handles.  Dask then 
+    has to handle the situation where a tiny input bloats by many orders 
+    of magnitude. The default configuration for dask is now know to 
+    handle that situation very badly.  With map operators we have 
+    observed it consistently try to handle too many items at once 
+    because it treads each map step as a task.  We have seen 
+    many examples where that will bloat memory use and abort the 
+    job from a memory fault. Worse, is that memory faults often 
+    produce mysterious errors because it isn't necessarily one 
+    a worker task being run that fails.  e.g. a common problem is 
+    a mysterous crash of the MongoDB server when workers are run 
+    on the same node as the server.   
+
+    This function was developed to handle the memory problem with 
+    the map-reduce operators.  We know of two common situations where this
     function should be used instead of the standard map operators of the
     map-reduce paradigm:  (1) atomic processing of very large (10^5 or more)
     data sets, or (2) handling large ensembles that push worker memory
