@@ -1423,7 +1423,7 @@ def align_and_stack(
             xcor_window_is_defined = True
             windows_extracted_from_metadata = False
         else:
-            message = "Illegal type for correlation_window={}\m".format(
+            message = "Illegal type for correlation_window={}\n".format(
                 str(type(correlation_window))
             )
             message += "For this option must be a TimeWindow object"
@@ -1487,7 +1487,7 @@ def align_and_stack(
             windows_extracted_from_metadata = False
 
         else:
-            message = "Illegal type for robust_stack_window={}\m".format(
+            message = "Illegal type for robust_stack_window={}\n".format(
                 str(type(robust_stack_window))
             )
             message += "when using robust_stack_window option value passed must be a TimeWindow object"

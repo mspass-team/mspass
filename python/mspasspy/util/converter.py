@@ -615,7 +615,7 @@ def Pf2AttributeNameTbl(pf, tag="attributes"):
 
 def Textfile2Dataframe(
     filename,
-    separator="\s+",
+    separator=r"\s+",
     type_dict=None,
     header_line=0,
     attribute_names=None,
@@ -635,7 +635,7 @@ def Textfile2Dataframe(
       table object that is to be processed (internally we use pandas or
       dask dataframes)
     :param separator: The delimiter used for seperating fields,
-      the default is "\s+", which is the regular expression of "one or more
+      the default is r"\s+", which is the regular expression of "one or more
       spaces".
       For csv file, its value should be set to ','.
       This parameter will be passed into pandas.read_csv or dask.dataframe.read_csv.
