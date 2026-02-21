@@ -47,8 +47,8 @@ class TestDBVerify:
                 "lat": 1.0,
                 "lon": 1.0,
                 "elev": 2.0,
-                "starttime": datetime.datetime.now(datetime.UTC).timestamp(),
-                "endtime": datetime.datetime.now(datetime.UTC).timestamp(),
+                "starttime": datetime.datetime.now().timestamp(),
+                "endtime": datetime.datetime.now().timestamp(),
             }
         )
         self.db["channel"].insert_one(
@@ -61,8 +61,8 @@ class TestDBVerify:
                 "lat": 1.1,
                 "lon": 1.1,
                 "elev": 2.1,
-                "starttime": datetime.datetime.now(datetime.UTC).timestamp(),
-                "endtime": datetime.datetime.now(datetime.UTC).timestamp(),
+                "starttime": datetime.datetime.now().timestamp(),
+                "endtime": datetime.datetime.now().timestamp(),
                 "edepth": 3.0,
                 "vang": 1.0,
                 "hang": 1.0,
@@ -73,7 +73,7 @@ class TestDBVerify:
                 "_id": source_id,
                 "lat": 1.2,
                 "lon": 1.2,
-                "time": datetime.datetime.now(datetime.UTC).timestamp(),
+                "time": datetime.datetime.now().timestamp(),
                 "depth": 3.1,
                 "magnitude": 1.0,
             }
