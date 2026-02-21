@@ -124,9 +124,7 @@ class MTPowerSpectrumEngine:
         f, spec = self.MTSpec_instance.rspec()
         # this is an obnoxious collision with the C++ api DoubleVector
         npts = self.MTSpec_instance.npts
-        work = DoubleVector()
-        for i in range(len(spec)):
-            work.append(spec[i])
+        work = DoubleVector(spec)
 
         result = PowerSpectrum(
             md,
