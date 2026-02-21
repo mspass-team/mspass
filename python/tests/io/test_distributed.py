@@ -80,7 +80,7 @@ def make_channel_record(val, net="00", sta="sta", chan="chan", loc="00", data_ta
     doc["lon"] = val
     doc["elev"] = val
     doc["starttime"] = 0.0  # 0 epoch time for universal match
-    doc["endtime"] = datetime.datetime.now(datetime.UTC).timestamp()
+    doc["endtime"] = datetime.datetime.now().timestamp()
     if data_tag:
         doc["data_tag"] = data_tag
     return doc
@@ -108,7 +108,7 @@ def make_site_record(val, net="00", sta="sta", loc="00", data_tag=None):
     doc["lon"] = val
     doc["elev"] = val
     doc["starttime"] = 0.0  # 0 epoch time for universal match
-    doc["endtime"] = datetime.datetime.now(datetime.UTC).timestamp()
+    doc["endtime"] = datetime.datetime.now().timestamp()
     if data_tag:
         doc["data_tag"] = data_tag
     return doc
