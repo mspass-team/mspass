@@ -273,9 +273,10 @@
         <span class="n">f</span><span class="p">,</span> <span class="n">spec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">MTSpec_instance</span><span class="o">.</span><span class="n">rspec</span><span class="p">()</span>
         <span class="c1"># this is an obnoxious collision with the C++ api DoubleVector</span>
         <span class="n">npts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">MTSpec_instance</span><span class="o">.</span><span class="n">npts</span>
-        <span class="n">work</span> <span class="o">=</span> <span class="n">DoubleVector</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">spec</span><span class="p">)):</span>
-            <span class="n">work</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">spec</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="c1"># flatten seems to be necessary as pybind11 is confused </span>
+        <span class="c1"># when numpy arrays are created with an explicity shape</span>
+        <span class="c1"># Prieto&#39;s code does that and this broke going to python 3.13</span>
+        <span class="n">work</span> <span class="o">=</span> <span class="n">DoubleVector</span><span class="p">(</span><span class="n">spec</span><span class="o">.</span><span class="n">flatten</span><span class="p">())</span>
 
         <span class="n">result</span> <span class="o">=</span> <span class="n">PowerSpectrum</span><span class="p">(</span>
             <span class="n">md</span><span class="p">,</span>

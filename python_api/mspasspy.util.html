@@ -414,7 +414,7 @@ transfered back to a pandas dataframe for the consistency.</p>
 table object that is to be processed (internally we use pandas or
 dask dataframes)</p></li>
 <li><p><strong>separator</strong> – The delimiter used for seperating fields,
-the default is “s+”, which is the regular expression of “one or more
+the default is r”s+”, which is the regular expression of “one or more
 spaces”.
 For csv file, its value should be set to ‘,’.
 This parameter will be passed into pandas.read_csv or dask.dataframe.read_csv.

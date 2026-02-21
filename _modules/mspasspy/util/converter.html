@@ -792,7 +792,7 @@
 <a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.converter.Textfile2Dataframe">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">Textfile2Dataframe</span><span class="p">(</span>
     <span class="n">filename</span><span class="p">,</span>
-    <span class="n">separator</span><span class="o">=</span><span class="s2">&quot;\s+&quot;</span><span class="p">,</span>
+    <span class="n">separator</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;\s+&quot;</span><span class="p">,</span>
     <span class="n">type_dict</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">header_line</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
     <span class="n">attribute_names</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -812,7 +812,7 @@
 <span class="sd">      table object that is to be processed (internally we use pandas or</span>
 <span class="sd">      dask dataframes)</span>
 <span class="sd">    :param separator: The delimiter used for seperating fields,</span>
-<span class="sd">      the default is &quot;\s+&quot;, which is the regular expression of &quot;one or more</span>
+<span class="sd">      the default is r&quot;\s+&quot;, which is the regular expression of &quot;one or more</span>
 <span class="sd">      spaces&quot;.</span>
 <span class="sd">      For csv file, its value should be set to &#39;,&#39;.</span>
 <span class="sd">      This parameter will be passed into pandas.read_csv or dask.dataframe.read_csv.</span>
