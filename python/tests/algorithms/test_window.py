@@ -351,6 +351,37 @@ def test_windowdata():
     assert np.isclose(d.t0, UTC_offset + 2.0)
     assert np.isclose(d.endtime(), UTC_offset + 3.0)
 
+    # verify t0 and the shift are handled correctly when the data
+    # start out UTC but are shifted to Relative
+    ts = TimeSeries(ts0)
+    UTC_offset = 10000.0
+    ts.set_t0(UTC_offset)
+    # this is method normal users should never use except for simulations
+    ts.force_t0_shift(UTC_offset)
+    ts.tref = TimeReferenceType.UTC
+    ts.ator(UTC_offset)
+    d = WindowData(ts, 2.0, 3.0)
+    d.rtoa()
+    assert d.live
+    assert np.isclose(d.t0, UTC_offset + 2.0)
+    assert np.isclose(d.endtime(), UTC_offset + 3.0)
+
+    # repeat this same test for Seismogram - they are implemented separately
+    # verify t0 and the shift are handled correctly when the data
+    # start out UTC but are shifted to Relative
+    se = Seismogram(se0)
+    UTC_offset = 10000.0
+    se.set_t0(UTC_offset)
+    # this is method normal users should never use except for simulations
+    se.force_t0_shift(UTC_offset)
+    se.tref = TimeReferenceType.UTC
+    se.ator(UTC_offset)
+    d = WindowData(se, 2.0, 3.0)
+    d.rtoa()
+    assert d.live
+    assert np.isclose(d.t0, UTC_offset + 2.0)
+    assert np.isclose(d.endtime(), UTC_offset + 3.0)
+
     # Data collected with a UTC timing system often have
     # timing precision better than the sample interval.
     # This tests that WindowData preserves subsample timing.
@@ -802,4 +833,4 @@ def test_TopMute():
         failmute.apply([1, 2, 3])
 
 
-test_TopMute()
+test_windowdata()

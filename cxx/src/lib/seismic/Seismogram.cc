@@ -35,18 +35,15 @@ Seismogram::Seismogram(const BasicTimeSeries &bts, const Metadata &md)
   this->set_npts(bts.npts());
   /* The handling of these is kind of awkward in the current api.  Good to
   hide it here.   Note in current implementation force_t0_shift sets the
-  shift as valid (what shifted tests).  I am slightly worried there are
-  cases where the else block could create an inconsistency with active
-  source data if this method were used to convert raw data.  Careful if
-  this is used in that context where the time reference is defined
-  implicitly as shot time with no tie to an absolute time reference */
+  shift as valid (what shifted tests).  This constructor should be 
+  used with caution on active source data where the 
+  shifted method will yield false.   
+  */
   if (bts.shifted()) {
     double t0shift;
     t0shift = bts.time_reference();
     this->force_t0_shift(t0shift);
-  } else {
-    this->force_t0_shift(0.0);
-  }
+  } 
 }
 /* Note that the : notation listing base classes only works if
 CoreSeismogram has public virtual.  Without that declaration in the .h

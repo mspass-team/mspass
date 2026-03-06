@@ -9,6 +9,7 @@ using namespace std;
 using namespace mspass::seismic;
 using namespace mspass::utility;
 
+
 /*! \brief Extracts a requested time window of data from a parent coreSeismogram
 object.
 
@@ -57,8 +58,8 @@ CoreSeismogram WindowData(const CoreSeismogram &parent, const TimeWindow &tw) {
   CoreSeismogram result(parent);
   result.u = dmatrix(3, outns);
   result.set_npts(outns);
-  /* Using the time method here preserves subsample timing.*/
-  result.set_t0(parent.time(is));
+  /* shift the start time appropriately*/
+  result.set_t0(result.t0() + parent.dt()*static_cast<float>(is));
   // Perhaps should do this with blas or memcpy for efficiency
   //  but this makes the algorithm much clearer
   int i, ii, k;
@@ -117,8 +118,8 @@ CoreTimeSeries WindowData(const CoreTimeSeries &parent, const TimeWindow &tw) {
   CoreTimeSeries result(parent);
   result.s.reserve(outns);
   result.set_npts(outns);
-  /* Using the time method here preserves subsample timing.*/
-  result.set_t0(parent.time(is));
+  /* shift the start time appropriately*/
+  result.set_t0(result.t0() + parent.dt()*static_cast<float>(is));
   // Necessary to use the push_back method below or we get leading zeros
   // result.s.clear();
   // for(int i=is;i<=ie && i<parent.npts();++i) result.s.push_back(parent.s[i]);
@@ -197,8 +198,6 @@ Seismogram WindowData(const Seismogram &parent, const TimeWindow &tw) {
   would be lost.  Reason is the constructor uses CoreTimeSeries. */
   BasicTimeSeries btstmp(dynamic_cast<const BasicTimeSeries &>(parent));
   btstmp.set_npts(outns);
-  /* Using the time method here preserves subsample timing.*/
-  btstmp.set_t0(parent.time(is));
   /* WARNING MAINTENANCE ISSUE:  this is less than ideal fix for a problem
   found when debugging the revision of this algorithm to improve its
   performance May 2022.  the constuctor called here assumes the
@@ -211,6 +210,8 @@ Seismogram WindowData(const Seismogram &parent, const TimeWindow &tw) {
   Metadata mdtmp(dynamic_cast<const Metadata &>(parent));
   mdtmp.put_long(SEISMICMD_npts, outns);
   Seismogram result(btstmp, mdtmp);
+  /* shift the start time appropriately*/
+  result.set_t0(result.t0() + parent.dt()*static_cast<float>(is));
 
   // Perhaps should do this with blas or memcpy for efficiency
   //  but this makes the algorithm much clearer
@@ -295,9 +296,9 @@ TimeSeries WindowData(const TimeSeries &parent, const TimeWindow &tw) {
 
   BasicTimeSeries btstmp(dynamic_cast<const BasicTimeSeries &>(parent));
   btstmp.set_npts(outns);
-  /* Using the time method here preserves subsample timing.*/
-  btstmp.set_t0(parent.time(is));
   TimeSeries result(btstmp, dynamic_cast<const Metadata &>(parent));
+  /* shift the start time appropriately*/
+  result.set_t0(result.t0() + parent.dt()*static_cast<float>(is));
   /* That constuctor initalizes s to zeroes so we can copy directly
   to the container without push_back.  memcpy might buy a small performance
   gain but would make this more fragile that it already is. */
