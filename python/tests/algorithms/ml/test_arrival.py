@@ -2,6 +2,7 @@ import numpy as np
 import sys
 
 import os
+import seisbench
 import seisbench.models as sbm
 from mspasspy.algorithms.ml.arrival import annotate_arrival_time
 from mspasspy.ccore.algorithms.basic import TimeWindow
