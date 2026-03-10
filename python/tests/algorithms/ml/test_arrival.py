@@ -13,6 +13,8 @@ sys.path.append("python/tests")
 
 from helper import get_live_timeseries
 
+seisbench.use_backup_repository()
+
 pn_model = sbm.PhaseNet.from_pretrained("stead")
 
 
