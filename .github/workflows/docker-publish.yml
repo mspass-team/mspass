@@ -153,7 +153,6 @@ jobs:
   build-latest-arm64:
 
     runs-on: ubuntu-24.04-arm
-    if: ${{ github.event_name != 'pull_request' }}
     permissions:
       contents: read
       packages: write
@@ -381,7 +380,6 @@ jobs:
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
       - name: Prepare amd64 dev manifest tags
-        if: ${{ github.event_name != 'pull_request' }}
         id: amd64-dev-tags
         shell: bash
         run: |
@@ -396,24 +394,8 @@ jobs:
           } >> "$GITHUB_OUTPUT"
 
       # Build and push dev image
-      - name: Build and push dev image (amd64 only)
-        uses: docker/build-push-action@v7
-        if: ${{ github.event_name == 'pull_request' }}
-        with:
-          context: .
-          file: Dockerfile_dev
-          platforms: linux/amd64
-          push: false
-          tags: |
-            mspass/mspass:dev
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:dev
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=local,src=/tmp/.buildx-cache-dev
-          cache-to: type=local,dest=/tmp/.buildx-cache-dev-new
-          
       - name: Build and push dev image (amd64)
         uses: docker/build-push-action@v7
-        if: ${{ github.event_name != 'pull_request' }}
         with:
           context: .
           file: Dockerfile_dev
@@ -437,7 +419,6 @@ jobs:
   build-dev-arm64:
 
     runs-on: ubuntu-24.04-arm
-    if: ${{ github.event_name != 'pull_request' }}
     permissions:
       contents: read
       packages: write
@@ -538,7 +519,6 @@ jobs:
   publish-dev-manifest:
 
     runs-on: ubuntu-latest
-    if: ${{ github.event_name != 'pull_request' }}
     needs:
       - build-dev
       - build-dev-arm64
