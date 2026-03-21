@@ -54,7 +54,7 @@ complete = [
 seisbench = [
     "scipy",
     "matplotlib",
-    "setuptools<81",
+    "setuptools<82",
     "seisbench==0.4.1; python_version < '3.9'",
     "seisbench<=0.10.2; python_version >= '3.9'",
 ]
@@ -65,7 +65,7 @@ mspass-dbverify = "mspasspy.db.script.dbverify:main"
 mspass-normalize_mseed = "mspasspy.db.script.normalize_mseed:main"
 
 [build-system]
-requires = ["setuptools>=69", "setuptools_scm>=8", "wheel", "numpy", "cmake>=3.18"]
+requires = ["setuptools>=64", "setuptools_scm>=8", "wheel", "numpy"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools-extensions]
