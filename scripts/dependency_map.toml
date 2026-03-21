@@ -8,7 +8,7 @@
 #   - A C library or conda-only runtime dep needs to ship with the conda package
 
 # Packages not available on conda-forge.
-# Excluded from meta.yaml run: and installed via pip in conda_build.sh instead.
+# Excluded from the meta.yaml run: section and installed via pip in conda_build.sh instead.
 [pip_only]
 packages = ["earthscope-sdk"]
 

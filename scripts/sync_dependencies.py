@@ -4,7 +4,7 @@
 pyproject.toml is the single source of truth for all Python runtime
 dependencies.  dependency_map.toml defines:
   - pip→conda name/expansion mappings
-  - packages available only via pip (excluded from conda run:)
+    - packages available only via pip (excluded from the conda run: section)
   - conda-only runtime extras (C libraries, etc.)
 
 Usage:
@@ -20,7 +20,7 @@ import sys
 from pathlib import Path
 
 try:
-    import tomllib  # Python 3.11+
+    import tomllib  # type: ignore[import-not-found]  # Python 3.11+
 except ModuleNotFoundError:
     try:
         import tomli as tomllib  # type: ignore[no-redef]
@@ -117,7 +117,13 @@ def _update_meta_run(meta_text: str, conda_deps: list[str], conda_extras: list[s
 
 
 def _update_conda_build_sh(text: str, pip_only_deps: list[str]) -> str:
-    """Insert or replace the auto-generated pip-only block in conda_build.sh."""
+    """Insert generated pip-only installs and enforce --no-deps for the package."""
+    text = re.sub(
+        r"(\$\{PYTHON\}\s+-m\s+pip\s+install\s+\.)(?!\s+--no-deps)(\s+-vv)",
+        r"\1 --no-deps\2",
+        text,
+    )
+
     if pip_only_deps:
         dep_lines = "\n".join(
             f'${{PYTHON}} -m pip install "{d}"' for d in pip_only_deps
