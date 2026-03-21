@@ -165,14 +165,14 @@
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Predict the arrival time of the P wave using the provided seisbench WaveformModel.</span>
-<span class="sd">    The arrival time will be saved as a dictionary in the input TimeSeries object and can be accessed using </span>
-<span class="sd">        the key &#39;p_wave_picks&#39;. In the dictionay, the key is the arrival time in the utc timestamp format,  </span>
+<span class="sd">    The arrival time will be saved as a dictionary in the input TimeSeries object and can be accessed using</span>
+<span class="sd">        the key &#39;p_wave_picks&#39;. In the dictionary, the key is the arrival time in the UTC timestamp format,</span>
 <span class="sd">        and the value is the probability of the pick.</span>
 
 <span class="sd">    :param timeseries: The time series data to predict the arrival time.</span>
-<span class="sd">    :param threshold: The probability threshold (0-1) to filter p-wave picks.  </span>
-<span class="sd">        Any picks with probability less than the threshold will be removed. Default value is 0.2. </span>
-<span class="sd">    :param time_window: The time window (in utc timestamp) to filter the predicted arrival time.  </span>
+<span class="sd">    :param threshold: The probability threshold (0-1) to filter p-wave picks.</span>
+<span class="sd">        Any picks with probability less than the threshold will be removed. Default value is 0.2.</span>
+<span class="sd">    :param time_window: The time window (in utc timestamp) to filter the predicted arrival time.</span>
 <span class="sd">        If not provided, the whole time series will be used.</span>
 <span class="sd">    :param model: The model used to predict the arrival time.</span>
 <span class="sd">    :param model_args: arguments to initialize a new model if not provided</span>
