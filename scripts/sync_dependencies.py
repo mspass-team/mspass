@@ -126,7 +126,7 @@ def _update_conda_build_sh(text: str, pip_only_deps: list[str]) -> str:
 
     if pip_only_deps:
         dep_lines = "\n".join(
-            f'PIP_NO_INDEX=False PIP_NO_DEPENDENCIES=False ${{PYTHON}} -m pip install "{d}"'
+            f'PIP_NO_INDEX=False PIP_NO_DEPENDENCIES=True ${{PYTHON}} -m pip install --no-deps "{d}"'
             for d in pip_only_deps
         )
         new_section = f"{_BEGIN_MARKER}\n{dep_lines}\n{_END_MARKER}"
