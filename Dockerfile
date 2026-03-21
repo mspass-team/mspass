@@ -148,15 +148,12 @@ RUN unzip /usr/local/spark/python/lib/pyspark.zip \
     && rm -r ./pyspark \
 	&& docker-clean
 
-# Install Python dependencies through pip
-ADD requirements.txt requirements.txt
+# Install Python tooling
 RUN pip3 --no-cache-dir install --upgrade pip \
 	&& docker-clean
 RUN if [ "$TARGETARCH" == "arm64" ]; then export CFLAGS="-O3" \
 	&& export DISABLE_NUMCODECS_SSE2=true && export DISABLE_NUMCODECS_AVX2=true; fi\
 	&& pip3 --no-cache-dir install numpy \
-    && pip3 --no-cache-dir install -r requirements.txt \
-    && rm -f requirements.txt \
 	&& docker-clean
 
 # Download & install pybind11
@@ -188,7 +185,6 @@ ENV MSPASS_HOME /mspass
 # Add setup.py to install python components
 ADD setup.py /mspass/setup.py
 ADD pyproject.toml /mspass/pyproject.toml
-ADD requirements.txt /mspass/requirements.txt
 ADD python /mspass/python
 ADD .git /mspass/.git
 RUN pip3 install /mspass -v \

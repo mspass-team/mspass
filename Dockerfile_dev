@@ -148,15 +148,12 @@ RUN unzip /usr/local/spark/python/lib/pyspark.zip \
     && rm -r ./pyspark \
 	&& docker-clean
 
-# Install Python dependencies through pip
-ADD requirements.txt requirements.txt
+# Install Python tooling
 RUN pip3 --no-cache-dir install --upgrade pip \
 	&& docker-clean
 RUN if [ "$TARGETARCH" == "arm64" ]; then export CFLAGS="-O3" \
 	&& export DISABLE_NUMCODECS_SSE2=true && export DISABLE_NUMCODECS_AVX2=true; fi\
 	&& pip3 --no-cache-dir install numpy \
-    && pip3 --no-cache-dir install -r requirements.txt \
-    && rm -f requirements.txt \
 	&& docker-clean
 
 # Download & install pybind11
@@ -189,10 +186,9 @@ ENV MSPASS_HOME /mspass
 ADD setup.py /mspass/setup.py
 ADD python /mspass/python
 ADD pyproject.toml /mspass/pyproject.toml
-ADD requirements.txt /mspass/requirements.txt
 ADD .git /mspass/.git
 # Add seisbench dependency in the dev container for development purpose
-RUN pip3 install -C--global-option=build -C--global-option=--debug '/mspass[seisbench]' -v \
+RUN MSPASS_CMAKE_BUILD_TYPE=Debug pip3 install '/mspass[seisbench]' -v \
 	&& rm -rf /mspass/build /mspass/.git && docker-clean
 
 # Add docs and dependencies to build docs

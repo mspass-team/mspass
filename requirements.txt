@@ -1,20 +1,4 @@
-pyyaml
-pymongo>=4.14.1
-numpy>=2.2.6
-obspy
-dill
-click
-dask[complete]>=2025.9.1
-schema
-decorator
-boto3
-botocore
-moto
-requests
-setuptools>=58,<70
-xarray
-zarr
-pandas>=2.3.3
-numba
-multitaper
-ipympl
+# Runtime dependencies are declared in pyproject.toml.
+# Keep this for compatibility with workflows that still run:
+#   pip install -r requirements.txt
+.[seisbench]

@@ -49,7 +49,13 @@ class CMakeBuild(build_ext):
             "-DPYTHON_EXECUTABLE=" + sys.executable,
         ]
 
-        cfg = "Debug" if self.debug else "Release"
+        requested_cfg = os.environ.get("MSPASS_CMAKE_BUILD_TYPE") or os.environ.get(
+            "CMAKE_BUILD_TYPE"
+        )
+        if requested_cfg:
+            cfg = requested_cfg
+        else:
+            cfg = "Debug" if self.debug else "Release"
         build_args = ["--config", cfg]
 
         if platform.system() == "Windows":
@@ -78,25 +84,10 @@ class CMakeBuild(build_ext):
         )
 
 
-ENTRY_POINTS = {
-    "console_scripts": [
-        "mspass-dbclean = mspasspy.db.script.dbclean:main",
-        "mspass-dbverify = mspasspy.db.script.dbverify:main",
-        "mspass-normalize_mseed = mspasspy.db.script.normalize_mseed:main",
-    ],
-}
-
-complete_deps = ["numpy", "pandas", "scipy", "matplotlib"]
-seisbench_deps = [
-    "seisbench==0.4.1; python_version < '3.9'",
-    "seisbench<=0.10.2; python_version >= '3.9'",
-]
-
 setup(
     name="mspasspy",
     ext_modules=[CMakeExtension("mspasspy.ccore")],
     cmdclass=dict(build_ext=CMakeBuild),
-    entry_points=ENTRY_POINTS,
     zip_safe=False,
     package_dir={"": "python"},
     packages=find_namespace_packages(
@@ -104,10 +95,4 @@ setup(
     ),
     package_data={"": ["*.yaml", "*.pf"]},
     include_package_data=True,
-    install_requires=[],
-    python_requires=">=3.8",
-    extras_require={
-        "complete": complete_deps,
-        "seisbench": complete_deps + seisbench_deps,
-    },
 )

@@ -32,6 +32,8 @@ requirements:
     - setuptools>=58,<70
     - setuptools_scm
     - wheel
+    - numpy>=2.2.6
+    - cmake>=3.18
     - gsl
     - boost-cpp
     - liblapack
@@ -42,12 +44,12 @@ requirements:
     - libzlib
     - pyyaml
     - pymongo>=4.14.1
-    - numpy>=2.2.6  
+    - numpy>=2.2.6
     - obspy
     - dill
     - click
     - cartopy
-    - dask[complete]>=2025.9.1
+    - dask>=2025.9.1
     - distributed
     - cloudpickle
     - schema
@@ -55,11 +57,10 @@ requirements:
     - boto3
     - botocore
     - moto
-    - requests 
-    - setuptools>=58,<70
+    - requests
     - xarray
     - zarr
-    - pandas>=2.2.3
+    - pandas>=2.3.3
     - numba
     - multitaper
     - ipympl
