@@ -54,6 +54,7 @@ complete = [
 seisbench = [
     "scipy",
     "matplotlib",
+    "setuptools<81",
     "seisbench==0.4.1; python_version < '3.9'",
     "seisbench<=0.10.2; python_version >= '3.9'",
 ]
