@@ -46,7 +46,7 @@ def sliding_window_pipeline(
     job from a memory fault. Worse, is that memory faults often
     produce mysterious errors because it isn't necessarily one
     a worker task being run that fails.  e.g. a common problem is
-    a mysterous crash of the MongoDB server when workers are run
+    a mysterious crash of the MongoDB server when workers are run
     on the same node as the server.
 
     This function was developed to handle the memory problem with
