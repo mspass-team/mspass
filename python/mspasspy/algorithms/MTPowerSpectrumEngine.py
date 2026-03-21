@@ -125,7 +125,7 @@ class MTPowerSpectrumEngine:
         # this is an obnoxious collision with the C++ api DoubleVector
         npts = self.MTSpec_instance.npts
         # flatten seems to be necessary as pybind11 is confused
-        # when numpy arrays are created with an explicity shape
+        # when numpy arrays are created with an explicitly shape
         # Prieto's code does that and this broke going to python 3.13
         work = DoubleVector(spec.flatten())
 
