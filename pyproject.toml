@@ -1,19 +1,73 @@
 [project]
 name = "mspasspy"
 description = "Massive Parallel Analysis System for Seismologists"
+readme = "README.md"
+license = {file = "LICENSE"}
 authors = [
     {name = "Ian Wang", email = "yinzhi.wang.cug@gmail.com"},
     {name = "Gary Pavlis", email = "pavlis@indiana.edu"},
 ]
-dynamic = ["dependencies", "scripts", "version", "optional-dependencies"]
+classifiers = [
+    "License :: OSI Approved :: BSD License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: C++",
+]
+dependencies = [
+    "pyyaml",
+    "pymongo>=4.14.1",
+    "numpy>=2.2.6",
+    "obspy",
+    "dill",
+    "click",
+    "dask[complete]>=2025.9.1",
+    "schema",
+    "decorator",
+    "boto3",
+    "botocore",
+    "moto",
+    "requests",
+    "earthscope-sdk",
+    "xarray",
+    "zarr",
+    "pandas>=2.3.3",
+    "numba",
+    "multitaper",
+    "ipympl",
+]
+dynamic = ["version"]
 requires-python = ">=3.8"
+
+[project.urls]
+Homepage = "https://github.com/mspass-team/mspass"
+Documentation = "https://www.mspass.org"
+Repository = "https://github.com/mspass-team/mspass"
+
+[project.optional-dependencies]
+complete = [
+    "scipy",
+    "matplotlib",
+]
+seisbench = [
+    "scipy",
+    "matplotlib",
+    "setuptools<82",
+    "seisbench==0.4.1; python_version < '3.9'",
+    "seisbench<=0.10.2; python_version >= '3.9'",
+]
+
+[project.scripts]
+mspass-dbclean = "mspasspy.db.script.dbclean:main"
+mspass-dbverify = "mspasspy.db.script.dbverify:main"
+mspass-normalize_mseed = "mspasspy.db.script.normalize_mseed:main"
 
 [build-system]
 requires = ["setuptools>=64", "setuptools_scm>=8", "wheel", "numpy"]
 build-backend = "setuptools.build_meta"
-
-[tool.setuptools.dynamic]
-dependencies = {file = ["requirements.txt"]}
 
 [tool.setuptools-extensions]
 cmake-extension = "setup:CMakeExtension"

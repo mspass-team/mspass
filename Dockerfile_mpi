@@ -148,13 +148,11 @@ RUN unzip /usr/local/spark/python/lib/pyspark.zip \
     && rm -r ./pyspark \
 	&& docker-clean
 
-# Install Python dependencies through pip
-ADD requirements.txt requirements.txt
+# Install Python tooling
 RUN pip3 --no-cache-dir install --upgrade pip \
 	&& docker-clean
 RUN pip3 --no-cache-dir install numpy \
-    && pip3 --no-cache-dir install -r requirements.txt \
-    && rm -f requirements.txt && docker-clean
+	&& docker-clean
 
 # Download & install pybind11
 ARG PYBIND11_VERSION=2.13.6
@@ -185,7 +183,6 @@ ENV MSPASS_HOME /mspass
 ADD setup.py /mspass/setup.py
 ADD python /mspass/python
 ADD pyproject.toml /mspass/pyproject.toml
-ADD requirements.txt /mspass/requirements.txt
 ADD .git /mspass/.git
 RUN pip3 install /mspass -v \
 	&& rm -rf /mspass/build /mspass/.git && docker-clean

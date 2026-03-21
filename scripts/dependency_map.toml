@@ -1,0 +1,33 @@
+# Dependency mapping configuration for sync_dependencies.py
+#
+# This file is the companion to pyproject.toml for conda packaging.
+# Edit here when:
+#   - A pip package has a different name on conda-forge
+#   - A pip package expands to multiple conda packages (e.g. dask[complete])
+#   - A package is only available via pip, not conda-forge
+#   - A C library or conda-only runtime dep needs to ship with the conda package
+
+# Packages not available on conda-forge.
+# Excluded from the meta.yaml run: section and installed via pip in conda_build.sh instead.
+[pip_only]
+packages = ["earthscope-sdk"]
+
+# Pip package name → conda package name(s).
+# Keys are the full pip requirement name (with extras if relevant, no version spec).
+# Values are lists of conda package names.
+# The FIRST conda name in the list inherits the version constraint from the pip dep.
+# Only list packages where conda names differ from pip, or that expand to multiple packages.
+[conda_name_map]
+"dask[complete]" = ["dask", "distributed", "cloudpickle"]
+
+# Conda-only runtime dependencies (C libraries, etc.) with no pip equivalent.
+# These are appended to the generated meta.yaml run: section.
+[conda_runtime_extras]
+packages = [
+    "libzlib",
+    "cartopy",
+    "gsl",
+    "libboost",
+    "liblapack",
+    "yaml-cpp",
+]
