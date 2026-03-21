@@ -33,6 +33,33 @@ jobs:
           python -m build --sdist
           python -m twine check dist/*
 
+      - name: Check distribution size
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          limit_mib = 95
+          limit_bytes = limit_mib * 1024 * 1024
+          artifacts = sorted(Path("dist").glob("*"))
+
+          if not artifacts:
+              raise SystemExit("No distribution artifacts found in dist/")
+
+          oversized = []
+          for artifact in artifacts:
+              size_bytes = artifact.stat().st_size
+              size_mib = size_bytes / (1024 * 1024)
+              print(f"{artifact.name}: {size_mib:.2f} MiB")
+              if size_bytes > limit_bytes:
+                  oversized.append(f"{artifact.name} ({size_mib:.2f} MiB)")
+
+          if oversized:
+              joined = ", ".join(oversized)
+              raise SystemExit(
+                  f"Distribution size check failed. Limit is {limit_mib} MiB: {joined}"
+              )
+          PY
+
       - name: Upload distribution artifact
         uses: actions/upload-artifact@v4
         with:

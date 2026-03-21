@@ -1,0 +1,34 @@
+include LICENSE
+include README.md
+include pyproject.toml
+include setup.py
+
+graft cxx/cmake
+graft cxx/include
+graft cxx/python
+graft cxx/src
+graft data
+graft python/mspasspy
+
+exclude .gitignore
+exclude Dockerfile
+exclude Dockerfile_dev
+exclude Dockerfile_mpi
+exclude Dockerfile_tacc
+exclude docker-entrypoint.sh
+exclude meta.yaml
+exclude requirements.txt
+
+prune .github
+prune build
+prune cxx/test
+prune dist
+prune docs
+prune python/mspasspy.egg-info
+prune python/tests
+prune scripts
+prune temp.linux-x86_64-cpython-313
+
+global-exclude __pycache__
+global-exclude *.py[cod]
+global-exclude *.so
