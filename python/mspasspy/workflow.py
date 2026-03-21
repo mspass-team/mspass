@@ -38,10 +38,10 @@ def sliding_window_pipeline(
     API of MsPASS.   The problem this seems to cause is that steps
     (1) and (3) are tiny compared to what step 2 handles.  Dask then
     has to handle the situation where a tiny input bloats by many orders
-    of magnitude. The default configuration for dask is now know to
+    of magnitude. The default configuration for dask is now known to
     handle that situation very badly.  With map operators we have
     observed it consistently try to handle too many items at once
-    because it treads each map step as a task.  We have seen
+    because it treats each map step as a task.  We have seen
     many examples where that will bloat memory use and abort the
     job from a memory fault. Worse, is that memory faults often
     produce mysterious errors because it isn't necessarily one
