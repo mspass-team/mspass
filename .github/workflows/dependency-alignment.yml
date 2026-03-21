@@ -20,4 +20,4 @@ jobs:
           python-version: "3.13"
 
       - name: Check pip and conda dependency alignment
-        run: python scripts/check_dependency_alignment.py
+        run: python scripts/sync_dependencies.py --check

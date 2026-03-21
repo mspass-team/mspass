@@ -41,14 +41,12 @@ requirements:
 
   run:
     - python {{ PYTHON_VERSION }}
-    - libzlib
     - pyyaml
     - pymongo>=4.14.1
     - numpy>=2.2.6
     - obspy
     - dill
     - click
-    - cartopy
     - dask>=2025.9.1
     - distributed
     - cloudpickle
@@ -64,6 +62,8 @@ requirements:
     - numba
     - multitaper
     - ipympl
+    - libzlib
+    - cartopy
     - gsl
     - libboost
     - liblapack
