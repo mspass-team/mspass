@@ -12,7 +12,7 @@ converter
 db_utils
 ----------
 
-.. automodule:: mspasspy.util.decorators
+.. automodule:: mspasspy.util.db_utils
     :members:
     :undoc-members:
     :show-inheritance:
