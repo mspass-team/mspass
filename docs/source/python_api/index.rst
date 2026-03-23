@@ -16,5 +16,6 @@ The MsPASS Python API is organized into the following modules.
    ../python_api/mspasspy.preprocessing
    ../python_api/mspasspy.reduce
    ../python_api/mspasspy.util
+   ../python_api/mspasspy.workflow
 
 Please refer to :ref:`modindex` for a complete list.
