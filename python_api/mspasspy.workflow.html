@@ -1,0 +1,379 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>mspasspy.workflow &mdash; MsPASS 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="C++ API" href="../cxx_api/index.html" />
+    <link rel="prev" title="mspasspy.util" href="mspasspy.util.html" />  
+
+  <style>
+    .wy-nav-content { max-width: 1600px; }
+  </style>
+
+  
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            MsPASS
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Desktop Operation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/mspass_desktop.html">Running MsPASS on a Desktop Computer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/command_line_desktop.html">Command Line Docker Desktop Operation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda.html">Deploy MsPASS with Conda</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/advanced_setup_considerations.html">Advanced Setup Considerations</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Cluster Operations</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_HPC.html">Deploying MsPASS on an HPC cluster</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda_and_coiled.html">Deploy MsPASS with Conda and Coiled</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/introduction.html">Introduction</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Data Management</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/database_concepts.html">Database Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/normalization.html">Normalization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/importing_tabular_data.html">Importing Tabular Data</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Seismic Data Objects</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/data_object_design_concepts.html">Data Object Design Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/numpy_scipy_interface.html">Using numpy/scipy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/obspy_interface.html">Using ObsPy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/time_standard_constraints.html">Time Standard Constraints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/processing_history_concepts.html">Processing History Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/continuous_data.html">Continuous Data Handling with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/schema_choices.html">What database schema should I use?</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Data Processing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/algorithms.html">Algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/importing_data.html">Importing Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/handling_errors.html">Handling Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/data_editing.html">Data Editing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/cleaning_metadata.html">Cleaning Inconsistent Metadata</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/header_math.html">Header (Metadata) Math</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/graphics.html">Graphics in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/signal_to_noise.html">Signal to Noise Ratio Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/arrival_time_measurement.html">Arrival Time Measurement Techniques in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/parallel_processing.html">Parallel Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/memory_management.html">Memory Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/io.html">I/O in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/parallel_io.html">Parallel IO in MsPASS</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">FAQ</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/FAQ.html">Frequency Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/development_strategies.html">How do I develop a new workflow from scratch?</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Python API</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="mspasspy.algorithms.html">mspasspy.algorithms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mspasspy.ccore.html">mspasspy.ccore</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mspasspy.client.html">mspasspy.client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mspasspy.db.html">mspasspy.db</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mspasspy.global_history.html">mspasspy.global_history</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mspasspy.graphics.html">mspasspy.graphics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mspasspy.history.html">mspasspy.history</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mspasspy.io.html">mspasspy.io</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mspasspy.preprocessing.html">mspasspy.preprocessing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mspasspy.reduce.html">mspasspy.reduce</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mspasspy.util.html">mspasspy.util</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">mspasspy.workflow</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#mspasspy.workflow.sliding_window_pipeline"><code class="docutils literal notranslate"><span class="pre">sliding_window_pipeline()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../cxx_api/index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mspass_schema/mspass_schema.html">MsPASS Schema</a></li>
+</ul>
+
+    <a href= "../genindex.html">Index</a>
+  
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">MsPASS</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Python API</a></li>
+      <li class="breadcrumb-item active">mspasspy.workflow</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/mspass-team/mspass/blob/master/docs/source/python_api/mspasspy.workflow.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-mspasspy.workflow">
+<span id="mspasspy-workflow"></span><h1>mspasspy.workflow<a class="headerlink" href="#module-mspasspy.workflow" title="Link to this heading"></a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.workflow.sliding_window_pipeline">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.workflow.</span></span><span class="sig-name descname"><span class="pre">sliding_window_pipeline</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dlist</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">processing_function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dask_client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sliding_window_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_per_worker</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">completion_function</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accumulator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pfunc_args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pfunc_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cfunc_args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cfunc_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a_args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/workflow.html#sliding_window_pipeline"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.workflow.sliding_window_pipeline" title="Link to this definition"></a></dt>
+<dd><p>Run a processing function and optional completion function on an
+interable input using the sliding window of Futures algorithm.</p>
+<p>Embarrassingly parallel workflows can often be reduced to a single
+function that chains a sequence of algorithms together.
+In dask terminology that workflow defines a pipeline.
+Such a workflow can also be done with a sequence of dask/spark map
+operators chained together.  Experience has show, however, that a large
+fraction of workflows using MsPASS fail with memory faults in dask
+when implemented with the dask bag map method. The reason seems
+to be that the problematic workflows reduce to a sequence of three fundamentally
+different operations:  (1) read seismic data defined by the tiny inputs
+of a single document or a python dictionary defining a query,
+(2) run a sequence of processing function on the data created by
+each document or query, and (3) save the result using the MongoDB
+API of MsPASS.   The problem this seems to cause is that steps
+(1) and (3) are tiny compared to what step 2 handles.  Dask then
+has to handle the situation where a tiny input bloats by many orders
+of magnitude. The default configuration for dask is now known to
+handle that situation very badly.  With map operators we have
+observed it consistently try to handle too many items at once
+because it treats each map step as a task.  We have seen
+many examples where that will bloat memory use and abort the
+job from a memory fault. Worse, is that memory faults often
+produce mysterious errors because it isn’t necessarily one
+a worker task being run that fails.  e.g. a common problem is
+a mysterious crash of the MongoDB server when workers are run
+on the same node as the server.</p>
+<p>This function was developed to handle the memory problem with
+the map-reduce operators.  We know of two common situations where this
+function should be used instead of the standard map operators of the
+map-reduce paradigm:  (1) atomic processing of very large (10^5 or more)
+data sets, or (2) handling large ensembles that push worker memory
+limits.  Guidelines on how to estimate memory use can be found in the
+MsPASS User Manual.</p>
+<p>The way this algorithm controls memory use is by limiting the scheduler
+to only process data defined by the “sliding_window_size” argument.
+The function uses dask Futures (note Futures are supported only in dask
+so this function cannot be used with a pyspark workflow) and submits
+and runs only sliding_window_size instances of the task defined by
+the “completion_function” argument.  The default behavior runs
+approximately 2 instances of the function per worker.  The number is
+“approximate” because the scheduler algorithm often queues up more
+instances on startup and the load is unbalanced until all workers are
+assigned data to process.   That means for the default with
+tasks_per_worker=2, a rough measure of the minimum memory size per worker is
+c + a*D where c is an estimate of the base memory use by each worker
+process, D is the nominal maximum data size of data objects created and
+used in the processing function, and a is some multiplier larger than 2.
+In my (glp) experience a safe guess for a is about 2 or 3.   If running on
+a single node a=1 can still work provided (D+c)*N_workers is less than the
+memory size on the worker node available to workers.  That is, memory
+not needed by the operating system and other MsPASS systems that may or
+may not be running on the same node.  See the MsPASS User Manual for
+more guidance on this issue.</p>
+<p>The other element of this function is the optional “completion_function”
+argument.  That function is run on the output of every instance of
+the function returned by workers.  By default the output of the
+completion function replaces that of the processing function yielding
+a list of the same size as the input <cite>dlist</cite>.   For large numbers of
+inputs such a giant list can be problematic for a variety of reasons.
+For that reason this function has an optional <cite>accumulator</cite>
+argument.  As the name implies it should be an accumulation function
+that creates a summary of the output or some useful combination of
+the outputs (e.g. a stack of data).   That function must have
+at least two required arguments and they must match this
+somewhat rigid expectation:</p>
+<blockquote>
+<div><dl class="simple">
+<dt>arg0 - must be the current value being accumulated.  ALSO the</dt><dd><p>function must define arg0==None as a signal that the
+accumulated result is to be initialized.  That is required
+for the first time the function is entered.</p>
+</dd>
+<dt>arg1 - is the current value to be merged (accumulated into)</dt><dd><p>the value of arg0.</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>Each call to accumulator should return a value that is the
+same type as arg0.   That and the None initialization allows the
+accumulator to be stateless.   Optional <a href="#id1"><span class="problematic" id="id2">*</span></a>args and <a href="#id3"><span class="problematic" id="id4">**</span></a>kwargs
+values can be passed by the optional a_args and
+a_kwargs parameters.</p>
+<p>The function supports two types of completion functions controlled
+by the boolean argument “completion_is_accumulator”.  When True
+the completion function is expected to be an accumulator. In that
+mode the completion function should still return it’s current
+result but the result will overwritten as each Future completes.
+The function then returns the final value.</p>
+<p>The function is made generic at the cost of having a rather complicated
+API.   That is summarized here, but the reader is advised to consult
+the MsPASS User Manual and online sources if you aren’t intimately familiar
+with the way “<a href="#id5"><span class="problematic" id="id6">*</span></a>args” and “<a href="#id7"><span class="problematic" id="id8">**</span></a>kwargs” are used in python.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dlist</strong> – any iterable with components matching the requirements
+of arg0 of processing_function.  Commonly a list of queries or
+MongoDB documents.  Note although it should theoretically work we do not recommend
+using a MongoDB CommandCursor for this argument as it is subject to
+timeout errors if the processing function runs for a significant time.</p></li>
+<li><p><strong>processing_function</strong> – symbol defining the function object
+(usually just the function name) to run on each component of dlist.
+If the function has required arguments you must define the related
+argument pfunc_args.  If it requires kwarg parameters you must
+also define pfunc_kwargs.</p></li>
+<li><p><strong>pfunc_args</strong> – iterable container defining the list of values for
+required arguments to the function defined as processing_function.</p></li>
+<li><p><strong>dask_client</strong> – instance of a dask.distributed.Client that defines
+the cluster to which the processing_function is to run upon.  In
+MsPASS normal use is to fetch this with the MsPASS client
+<cite>get_scheduler</cite> method.</p></li>
+<li><p><strong>sliding_window_size</strong> (must be either the unique string “auto” or
+an integer.  If set to “auto” (default) the sliding window size is set to
+the value of <cite>tasks_per_worker</cite> times the number of workers
+dask_client responds are running when this function is first called.
+Note that works perfectly on HPC systems but can fail in cloud
+environment if dask is runnign with dynamic scheduling.  This can
+also be a integer value that manually sets the sliding window size.) – size of the sliding window submit buffer.</p></li>
+<li><p><strong>task_per_worker</strong> – determines the size of the sliding window
+when <cite>sliding_window_size=”auto”</cite>.  Ignored if the sliding window
+size is set manually with an integer value.</p></li>
+<li><p><strong>completion_function</strong> (<em>a function object</em><em> or </em><em>None.  If None</em><em> (</em><em>default</em><em>)
+</em><em>the outputs from each future are simply appended to a list.
+When defined each return will be passed to this function.</em>) – if defined the result returned by each submit
+will be processed with this function.   When defined the function
+output will be the single output of this function.</p></li>
+<li><p><strong>accumulator</strong> – optional accumulator function applied to the
+output of the completion function.   In most cases the large list
+returned by this function with or without a completion function is
+awkward to catastrophic to deal with.  Further there are algorithms
+where the completion function needs to act as a Reduce operator
+(an efficient way to do that for large data sets).  You can use
+this optional function to allow an accumulation operation.
+The function requires to arguments:  arg0 must be the previous
+value handle, and arg1 the current value being handled.  It must
+also emit the same type as arg0 it receives.   You should think of
+the operation as a generalization of <cite>return arg0+=arg1</cite>.
+It is ESSENTIAL this function handle the case with arg0 set to None
+and handle that as an initializer and return a valid initial
+value for the return.</p></li>
+<li><p><strong>cfunc_args</strong> – comparable to <cite>pfunc_args</cite> but for the completion
+function.  Set to None (default) if the completion function does not
+have any required arguments.</p></li>
+<li><p><strong>cfunc_kwargs</strong> – comparable to pfunc_kwargs but for the completion
+funcion.  Set to None (default) if the completion_function does not
+require kwargs.</p></li>
+<li><p><strong>a_args</strong> – comparable to <cite>pfunc_args</cite> but for the accumulator
+function.  Set to None (default) if the accumulatgor function does not
+have any required arguments.</p></li>
+<li><p><strong>a_kwargs</strong> – comparable to pfunc_kwargs but for the accumulator
+function.  Set to None (default) if the accumulator does not
+require kwargs.</p></li>
+<li><p><strong>verbose</strong> – boolean controlling output.  When False (default)
+the function itself is totally silent.  When set True it
+prints a message for each submit and each return.  Not recommended for workflows
+that use a large number of submits as the output can easily get huge.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>When the completion_function is not defined (default)
+this function will return a list of return values from each
+component of dlist passed through the processing function.
+Be warned this list can get huge if the data set is large
+and anything but a tiny datum is returned by processing_function.
+The definitive use of this function in MsPASS is a function
+that runs <cite>Database.save_data</cite> returning the default output of that
+method.   That is easily handled as the default is the a list of
+boolean values.  If, however, the same function is run with
+<cite>return_data=True</cite> a memory overflow in the caller is likely
+unless the entire output of the processing fits in the memory
+space of the caller.  When a completion function is used the
+return is the return of the completion function.
+A complexity is that if the <cite>accumulator</cite> function is defined
+the return is NOT a list but the accumulated output of
+that function.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="mspasspy.util.html" class="btn btn-neutral float-left" title="mspasspy.util" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../cxx_api/index.html" class="btn btn-neutral float-right" title="C++ API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020-2021, Ian Wang.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,540 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>mspasspy.workflow &mdash; MsPASS 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />  
+
+  <style>
+    .wy-nav-content { max-width: 1600px; }
+  </style>
+
+  
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            MsPASS
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Desktop Operation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/mspass_desktop.html">Running MsPASS on a Desktop Computer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/command_line_desktop.html">Command Line Docker Desktop Operation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/deploy_mspass_with_conda.html">Deploy MsPASS with Conda</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/advanced_setup_considerations.html">Advanced Setup Considerations</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Cluster Operations</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/deploy_mspass_on_HPC.html">Deploying MsPASS on an HPC cluster</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/deploy_mspass_with_conda_and_coiled.html">Deploy MsPASS with Conda and Coiled</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../user_manual/introduction.html">Introduction</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Data Management</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../user_manual/database_concepts.html">Database Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_manual/CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_manual/mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_manual/normalization.html">Normalization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_manual/importing_tabular_data.html">Importing Tabular Data</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Seismic Data Objects</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../user_manual/data_object_design_concepts.html">Data Object Design Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_manual/numpy_scipy_interface.html">Using numpy/scipy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_manual/obspy_interface.html">Using ObsPy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_manual/time_standard_constraints.html">Time Standard Constraints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_manual/processing_history_concepts.html">Processing History Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_manual/continuous_data.html">Continuous Data Handling with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_manual/schema_choices.html">What database schema should I use?</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Data Processing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../user_manual/algorithms.html">Algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_manual/importing_data.html">Importing Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_manual/handling_errors.html">Handling Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_manual/data_editing.html">Data Editing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_manual/cleaning_metadata.html">Cleaning Inconsistent Metadata</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_manual/header_math.html">Header (Metadata) Math</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_manual/graphics.html">Graphics in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_manual/signal_to_noise.html">Signal to Noise Ratio Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_manual/arrival_time_measurement.html">Arrival Time Measurement Techniques in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_manual/adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../user_manual/parallel_processing.html">Parallel Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_manual/memory_management.html">Memory Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_manual/io.html">I/O in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_manual/parallel_io.html">Parallel IO in MsPASS</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">FAQ</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../user_manual/FAQ.html">Frequency Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_manual/development_strategies.html">How do I develop a new workflow from scratch?</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../python_api/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cxx_api/index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../mspass_schema/mspass_schema.html">MsPASS Schema</a></li>
+</ul>
+
+    <a href= "../../genindex.html">Index</a>
+  
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">MsPASS</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">mspasspy.workflow</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for mspasspy.workflow</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">dask.distributed</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ddist</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">Iterable</span>
+
+
+<div class="viewcode-block" id="sliding_window_pipeline">
+<a class="viewcode-back" href="../../python_api/mspasspy.workflow.html#mspasspy.workflow.sliding_window_pipeline">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">sliding_window_pipeline</span><span class="p">(</span>
+    <span class="n">dlist</span><span class="p">,</span>
+    <span class="n">processing_function</span><span class="p">,</span>
+    <span class="n">dask_client</span><span class="p">,</span>
+    <span class="n">sliding_window_size</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+    <span class="n">task_per_worker</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">completion_function</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">accumulator</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">pfunc_args</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">pfunc_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">cfunc_args</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">cfunc_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">a_args</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">a_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Run a processing function and optional completion function on an</span>
+<span class="sd">    interable input using the sliding window of Futures algorithm.</span>
+
+<span class="sd">    Embarrassingly parallel workflows can often be reduced to a single</span>
+<span class="sd">    function that chains a sequence of algorithms together.</span>
+<span class="sd">    In dask terminology that workflow defines a pipeline.</span>
+<span class="sd">    Such a workflow can also be done with a sequence of dask/spark map</span>
+<span class="sd">    operators chained together.  Experience has show, however, that a large</span>
+<span class="sd">    fraction of workflows using MsPASS fail with memory faults in dask</span>
+<span class="sd">    when implemented with the dask bag map method. The reason seems</span>
+<span class="sd">    to be that the problematic workflows reduce to a sequence of three fundamentally</span>
+<span class="sd">    different operations:  (1) read seismic data defined by the tiny inputs</span>
+<span class="sd">    of a single document or a python dictionary defining a query,</span>
+<span class="sd">    (2) run a sequence of processing function on the data created by</span>
+<span class="sd">    each document or query, and (3) save the result using the MongoDB</span>
+<span class="sd">    API of MsPASS.   The problem this seems to cause is that steps</span>
+<span class="sd">    (1) and (3) are tiny compared to what step 2 handles.  Dask then</span>
+<span class="sd">    has to handle the situation where a tiny input bloats by many orders</span>
+<span class="sd">    of magnitude. The default configuration for dask is now known to</span>
+<span class="sd">    handle that situation very badly.  With map operators we have</span>
+<span class="sd">    observed it consistently try to handle too many items at once</span>
+<span class="sd">    because it treats each map step as a task.  We have seen</span>
+<span class="sd">    many examples where that will bloat memory use and abort the</span>
+<span class="sd">    job from a memory fault. Worse, is that memory faults often</span>
+<span class="sd">    produce mysterious errors because it isn&#39;t necessarily one</span>
+<span class="sd">    a worker task being run that fails.  e.g. a common problem is</span>
+<span class="sd">    a mysterious crash of the MongoDB server when workers are run</span>
+<span class="sd">    on the same node as the server.</span>
+
+<span class="sd">    This function was developed to handle the memory problem with</span>
+<span class="sd">    the map-reduce operators.  We know of two common situations where this</span>
+<span class="sd">    function should be used instead of the standard map operators of the</span>
+<span class="sd">    map-reduce paradigm:  (1) atomic processing of very large (10^5 or more)</span>
+<span class="sd">    data sets, or (2) handling large ensembles that push worker memory</span>
+<span class="sd">    limits.  Guidelines on how to estimate memory use can be found in the</span>
+<span class="sd">    MsPASS User Manual.</span>
+
+<span class="sd">    The way this algorithm controls memory use is by limiting the scheduler</span>
+<span class="sd">    to only process data defined by the &quot;sliding_window_size&quot; argument.</span>
+<span class="sd">    The function uses dask Futures (note Futures are supported only in dask</span>
+<span class="sd">    so this function cannot be used with a pyspark workflow) and submits</span>
+<span class="sd">    and runs only sliding_window_size instances of the task defined by</span>
+<span class="sd">    the &quot;completion_function&quot; argument.  The default behavior runs</span>
+<span class="sd">    approximately 2 instances of the function per worker.  The number is</span>
+<span class="sd">    &quot;approximate&quot; because the scheduler algorithm often queues up more</span>
+<span class="sd">    instances on startup and the load is unbalanced until all workers are</span>
+<span class="sd">    assigned data to process.   That means for the default with</span>
+<span class="sd">    tasks_per_worker=2, a rough measure of the minimum memory size per worker is</span>
+<span class="sd">    c + a*D where c is an estimate of the base memory use by each worker</span>
+<span class="sd">    process, D is the nominal maximum data size of data objects created and</span>
+<span class="sd">    used in the processing function, and a is some multiplier larger than 2.</span>
+<span class="sd">    In my (glp) experience a safe guess for a is about 2 or 3.   If running on</span>
+<span class="sd">    a single node a=1 can still work provided (D+c)*N_workers is less than the</span>
+<span class="sd">    memory size on the worker node available to workers.  That is, memory</span>
+<span class="sd">    not needed by the operating system and other MsPASS systems that may or</span>
+<span class="sd">    may not be running on the same node.  See the MsPASS User Manual for</span>
+<span class="sd">    more guidance on this issue.</span>
+
+<span class="sd">    The other element of this function is the optional &quot;completion_function&quot;</span>
+<span class="sd">    argument.  That function is run on the output of every instance of</span>
+<span class="sd">    the function returned by workers.  By default the output of the</span>
+<span class="sd">    completion function replaces that of the processing function yielding</span>
+<span class="sd">    a list of the same size as the input `dlist`.   For large numbers of</span>
+<span class="sd">    inputs such a giant list can be problematic for a variety of reasons.</span>
+<span class="sd">    For that reason this function has an optional `accumulator`</span>
+<span class="sd">    argument.  As the name implies it should be an accumulation function</span>
+<span class="sd">    that creates a summary of the output or some useful combination of</span>
+<span class="sd">    the outputs (e.g. a stack of data).   That function must have</span>
+<span class="sd">    at least two required arguments and they must match this</span>
+<span class="sd">    somewhat rigid expectation:</span>
+
+<span class="sd">      arg0 - must be the current value being accumulated.  ALSO the</span>
+<span class="sd">        function must define arg0==None as a signal that the</span>
+<span class="sd">        accumulated result is to be initialized.  That is required</span>
+<span class="sd">        for the first time the function is entered.</span>
+<span class="sd">      arg1 - is the current value to be merged (accumulated into)</span>
+<span class="sd">        the value of arg0.</span>
+<span class="sd">    Each call to accumulator should return a value that is the</span>
+<span class="sd">    same type as arg0.   That and the None initialization allows the</span>
+<span class="sd">    accumulator to be stateless.   Optional *args and **kwargs</span>
+<span class="sd">    values can be passed by the optional a_args and</span>
+<span class="sd">    a_kwargs parameters.</span>
+
+<span class="sd">    The function supports two types of completion functions controlled</span>
+<span class="sd">    by the boolean argument &quot;completion_is_accumulator&quot;.  When True</span>
+<span class="sd">    the completion function is expected to be an accumulator. In that</span>
+<span class="sd">    mode the completion function should still return it&#39;s current</span>
+<span class="sd">    result but the result will overwritten as each Future completes.</span>
+<span class="sd">    The function then returns the final value.</span>
+
+
+<span class="sd">    The function is made generic at the cost of having a rather complicated</span>
+<span class="sd">    API.   That is summarized here, but the reader is advised to consult</span>
+<span class="sd">    the MsPASS User Manual and online sources if you aren&#39;t intimately familiar</span>
+<span class="sd">    with the way &quot;*args&quot; and &quot;**kwargs&quot; are used in python.</span>
+
+<span class="sd">    :param dlist:  any iterable with components matching the requirements</span>
+<span class="sd">      of arg0 of processing_function.  Commonly a list of queries or</span>
+<span class="sd">      MongoDB documents.  Note although it should theoretically work we do not recommend</span>
+<span class="sd">      using a MongoDB CommandCursor for this argument as it is subject to</span>
+<span class="sd">      timeout errors if the processing function runs for a significant time.</span>
+<span class="sd">    :param processing_function:   symbol defining the function object</span>
+<span class="sd">      (usually just the function name) to run on each component of dlist.</span>
+<span class="sd">      If the function has required arguments you must define the related</span>
+<span class="sd">      argument pfunc_args.  If it requires kwarg parameters you must</span>
+<span class="sd">      also define pfunc_kwargs.</span>
+<span class="sd">    :param pfunc_args:  iterable container defining the list of values for</span>
+<span class="sd">      required arguments to the function defined as processing_function.</span>
+<span class="sd">    :type pfunc_args:   technically any iterable with a length at least as</span>
+<span class="sd">      long as the required arg list by processing_function.   Usually a simple</span>
+<span class="sd">      python list.  e.g. if signature signature for the processing function</span>
+<span class="sd">      is</span>
+<span class="sd">      ```</span>
+<span class="sd">      def myprocessor(a,b,c):</span>
+<span class="sd">      ```</span>
+<span class="sd">      and you have b=2.0 and c=5 you should set `pfunc_args=[2.0,3]`.</span>
+
+
+<span class="sd">        function that is to be applied to each component of dlist.  This function will</span>
+<span class="sd">       be used with dask distributed submit using *args and **kwargs with this equivalent call:</span>
+<span class="sd">       `processing_function(d,*args,**kwargs)</span>
+<span class="sd">    :param dask_client:  instance of a dask.distributed.Client that defines</span>
+<span class="sd">       the cluster to which the processing_function is to run upon.  In</span>
+<span class="sd">       MsPASS normal use is to fetch this with the MsPASS client</span>
+<span class="sd">       `get_scheduler` method.</span>
+<span class="sd">    :param sliding_window_size:   size of the sliding window submit buffer.</span>
+<span class="sd">    :type sliding_window_size:  must be either the unique string &quot;auto&quot; or</span>
+<span class="sd">      an integer.  If set to &quot;auto&quot; (default) the sliding window size is set to</span>
+<span class="sd">      the value of `tasks_per_worker` times the number of workers</span>
+<span class="sd">      dask_client responds are running when this function is first called.</span>
+<span class="sd">      Note that works perfectly on HPC systems but can fail in cloud</span>
+<span class="sd">      environment if dask is runnign with dynamic scheduling.  This can</span>
+<span class="sd">      also be a integer value that manually sets the sliding window size.</span>
+<span class="sd">    :param task_per_worker: determines the size of the sliding window</span>
+<span class="sd">      when `sliding_window_size=&quot;auto&quot;`.  Ignored if the sliding window</span>
+<span class="sd">      size is set manually with an integer value.</span>
+<span class="sd">    :param completion_function:   if defined the result returned by each submit</span>
+<span class="sd">       will be processed with this function.   When defined the function</span>
+<span class="sd">       output will be the single output of this function.</span>
+<span class="sd">    :param accumulator: optional accumulator function applied to the</span>
+<span class="sd">       output of the completion function.   In most cases the large list</span>
+<span class="sd">       returned by this function with or without a completion function is</span>
+<span class="sd">       awkward to catastrophic to deal with.  Further there are algorithms</span>
+<span class="sd">       where the completion function needs to act as a Reduce operator</span>
+<span class="sd">       (an efficient way to do that for large data sets).  You can use</span>
+<span class="sd">       this optional function to allow an accumulation operation.</span>
+<span class="sd">       The function requires to arguments:  arg0 must be the previous</span>
+<span class="sd">       value handle, and arg1 the current value being handled.  It must</span>
+<span class="sd">       also emit the same type as arg0 it receives.   You should think of</span>
+<span class="sd">       the operation as a generalization of `return arg0+=arg1`.</span>
+<span class="sd">       It is ESSENTIAL this function handle the case with arg0 set to None</span>
+<span class="sd">       and handle that as an initializer and return a valid initial</span>
+<span class="sd">       value for the return.</span>
+<span class="sd">    :type completion_function:  a function object or None.  If None (default)</span>
+<span class="sd">       the outputs from each future are simply appended to a list.</span>
+<span class="sd">       When defined each return will be passed to this function.</span>
+<span class="sd">    :param cfunc_args: comparable to `pfunc_args` but for the completion</span>
+<span class="sd">       function.  Set to None (default) if the completion function does not</span>
+<span class="sd">       have any required arguments.</span>
+<span class="sd">    :param cfunc_kwargs:  comparable to pfunc_kwargs but for the completion</span>
+<span class="sd">       funcion.  Set to None (default) if the completion_function does not</span>
+<span class="sd">       require kwargs.</span>
+<span class="sd">    :param a_args: comparable to `pfunc_args` but for the accumulator</span>
+<span class="sd">       function.  Set to None (default) if the accumulatgor function does not</span>
+<span class="sd">       have any required arguments.</span>
+<span class="sd">    :param a_kwargs:  comparable to pfunc_kwargs but for the accumulator</span>
+<span class="sd">       function.  Set to None (default) if the accumulator does not</span>
+<span class="sd">       require kwargs.</span>
+<span class="sd">    :param verbose:  boolean controlling output.  When False (default)</span>
+<span class="sd">       the function itself is totally silent.  When set True it</span>
+<span class="sd">       prints a message for each submit and each return.  Not recommended for workflows</span>
+<span class="sd">       that use a large number of submits as the output can easily get huge.</span>
+
+<span class="sd">    :return:   When the completion_function is not defined (default)</span>
+<span class="sd">       this function will return a list of return values from each</span>
+<span class="sd">       component of dlist passed through the processing function.</span>
+<span class="sd">       Be warned this list can get huge if the data set is large</span>
+<span class="sd">       and anything but a tiny datum is returned by processing_function.</span>
+<span class="sd">       The definitive use of this function in MsPASS is a function</span>
+<span class="sd">       that runs `Database.save_data` returning the default output of that</span>
+<span class="sd">       method.   That is easily handled as the default is the a list of</span>
+<span class="sd">       boolean values.  If, however, the same function is run with</span>
+<span class="sd">       `return_data=True` a memory overflow in the caller is likely</span>
+<span class="sd">       unless the entire output of the processing fits in the memory</span>
+<span class="sd">       space of the caller.  When a completion function is used the</span>
+<span class="sd">       return is the return of the completion function.</span>
+<span class="sd">       A complexity is that if the `accumulator` function is defined</span>
+<span class="sd">       the return is NOT a list but the accumulated output of</span>
+<span class="sd">       that function.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># check args for validity and set integer run_mode for combinations of</span>
+    <span class="c1"># logic for processing_function and completion_function arguments</span>
+    <span class="n">alg</span> <span class="o">=</span> <span class="s2">&quot;sliding_window_pipeline&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dlist</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">):</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">:  Illegal value for arg0 - must be an interable container (usually a list)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">alg</span>
+        <span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">processing_function</span><span class="p">):</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">:  Illegal value for arg1 - must be the name of a processing function to be submitted&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">alg</span>
+        <span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">pfunc_args</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># this and the comparable logic with kwargs is needed or a type error will be thrown when we use it</span>
+        <span class="c1"># this is how python accepts a null args</span>
+        <span class="n">pfunc_args</span> <span class="o">=</span> <span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pfunc_args</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">):</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">:  Illegal input for pfunc_args.   Must be an iterable (usually a list)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">alg</span>
+            <span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">pfunc_kwargs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">pfunc_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pfunc_kwargs</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">):</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">:  Illegal input for pfunc_kwargs.   Must be an dict like container (isinstance(x,Mapping) == True)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">alg</span>
+            <span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+    <span class="c1"># handle cfunc slightly differently because it may be used at all</span>
+    <span class="c1"># this conditional couod be used directly below but to me this</span>
+    <span class="c1"># makes logic clearer</span>
+    <span class="k">if</span> <span class="n">completion_function</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">run_completion_function</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">run_completion_function</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">completion_function</span><span class="p">):</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">:  Illegal value for completion_function argument</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">alg</span>
+            <span class="p">)</span>
+            <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Must be a variable defining a function to apply to outputs of completion_function (arg1)&quot;</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">cfunc_args</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">cfunc_args</span> <span class="o">=</span> <span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cfunc_args</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">):</span>
+                <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">:  Illegal input for cfunc_args.   Must be an iterable (usually a list)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">alg</span>
+                <span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">cfunc_kwargs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">cfunc_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cfunc_kwargs</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">):</span>
+                <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">:  Illegal input for cfunc_kwargs.   Must be an dict like container (isinstance(x,Mapping) == True)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">alg</span>
+                <span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">accumulator</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">accumulator</span><span class="p">):</span>
+                <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">:  Illegal value for accumulator argument</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">alg</span><span class="p">)</span>
+                <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Must be a variable defining a function to apply to outputs of completion_function&quot;</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">a_args</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">a_args</span> <span class="o">=</span> <span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a_args</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">):</span>
+                    <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">:  Illegal input for a_args.   Must be an iterable (usually a list)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">alg</span>
+                    <span class="p">)</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">a_kwargs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">a_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a_kwargs</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">):</span>
+                    <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">:  Illegal input for a_kwargs.   Must be an dict like container (isinstance(x,Mapping) == True)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">alg</span>
+                    <span class="p">)</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+
+    <span class="n">swsize</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># initialization - set in block below</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dask_client</span><span class="p">,</span> <span class="n">ddist</span><span class="o">.</span><span class="n">Client</span><span class="p">):</span>
+        <span class="n">active_workers</span> <span class="o">=</span> <span class="n">dask_client</span><span class="o">.</span><span class="n">nthreads</span><span class="p">()</span>
+        <span class="n">num_workers</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">active_workers</span><span class="p">)</span>
+        <span class="k">del</span> <span class="n">active_workers</span>
+        <span class="k">if</span> <span class="n">sliding_window_size</span> <span class="o">==</span> <span class="s2">&quot;auto&quot;</span><span class="p">:</span>
+            <span class="n">swsize</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">num_workers</span> <span class="o">*</span> <span class="n">task_per_worker</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">swsize</span> <span class="o">&lt;</span> <span class="n">num_workers</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">alg</span><span class="si">}</span><span class="s2">:  WARNING set sliding window size to </span><span class="si">{</span><span class="n">swsize</span><span class="si">}</span><span class="s2"> which smaller than the number of workers=</span><span class="si">{</span><span class="n">num_workers</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span>
+                    <span class="s2">&quot;This will not use the dask cluster if you are running this job on HPC&quot;</span>
+                <span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span>
+                    <span class="s2">&quot;This setting makes sense only if you are running on a cluster service being used by multiple applications&quot;</span>
+                <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+
+        <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">: Illegal value for arg2.  Must be an instance of dask.distributed.Client&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">alg</span>
+        <span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+    <span class="n">futures_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+    <span class="n">N</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">dlist</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Processing </span><span class="si">{</span><span class="n">N</span><span class="si">}</span><span class="s2"> items&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">N</span> <span class="o">&lt;</span> <span class="n">swsize</span><span class="p">:</span>
+        <span class="n">swsize</span> <span class="o">=</span> <span class="n">N</span>
+    <span class="n">i_d</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">dlist</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Submitting item number &quot;</span><span class="p">,</span> <span class="n">i_d</span><span class="p">)</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="n">dask_client</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="n">processing_function</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="o">*</span><span class="n">pfunc_args</span><span class="p">,</span> <span class="o">**</span><span class="n">pfunc_kwargs</span><span class="p">)</span>
+        <span class="n">futures_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="n">i_d</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">i_d</span> <span class="o">&gt;=</span> <span class="n">swsize</span><span class="p">:</span>
+            <span class="k">break</span>
+    <span class="c1"># initialize both of these although one or the other is returned</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+    <span class="n">accumulated_output</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">number_handled</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">seq</span> <span class="o">=</span> <span class="n">ddist</span><span class="o">.</span><span class="n">as_completed</span><span class="p">(</span><span class="n">futures_list</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">seq</span><span class="p">:</span>
+        <span class="n">f_result</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Handling result number &quot;</span><span class="p">,</span> <span class="n">number_handled</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">run_completion_function</span><span class="p">:</span>
+            <span class="n">f_result</span> <span class="o">=</span> <span class="n">completion_function</span><span class="p">(</span><span class="n">f_result</span><span class="p">,</span> <span class="o">*</span><span class="n">cfunc_args</span><span class="p">,</span> <span class="o">**</span><span class="n">cfunc_kwargs</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">accumulator</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f_result</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># accumulator MUST handle None for arg0 - see docstring</span>
+                <span class="n">accumulated_output</span> <span class="o">=</span> <span class="n">accumulator</span><span class="p">(</span>
+                    <span class="n">accumulated_output</span><span class="p">,</span> <span class="n">f_result</span><span class="p">,</span> <span class="o">*</span><span class="n">a_args</span><span class="p">,</span> <span class="o">**</span><span class="n">a_kwargs</span>
+                <span class="p">)</span>
+        <span class="c1"># found to be necessary to assure dask doesn&#39;t hog memory held by f</span>
+        <span class="n">dask_client</span><span class="o">.</span><span class="n">cancel</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="k">del</span> <span class="n">f</span>
+        <span class="k">if</span> <span class="n">i_d</span> <span class="o">&lt;</span> <span class="n">N</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Submitting item number &quot;</span><span class="p">,</span> <span class="n">i_d</span><span class="p">)</span>
+            <span class="n">f</span> <span class="o">=</span> <span class="n">dask_client</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span>
+                <span class="n">processing_function</span><span class="p">,</span> <span class="n">dlist</span><span class="p">[</span><span class="n">i_d</span><span class="p">],</span> <span class="o">*</span><span class="n">pfunc_args</span><span class="p">,</span> <span class="o">**</span><span class="n">pfunc_kwargs</span>
+            <span class="p">)</span>
+            <span class="n">seq</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+            <span class="n">i_d</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="n">accumulator</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">results</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">accumulated_output</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020-2021, Ian Wang.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

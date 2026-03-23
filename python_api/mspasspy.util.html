@@ -22,7 +22,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="C++ API" href="../cxx_api/index.html" />
+    <link rel="next" title="mspasspy.workflow" href="mspasspy.workflow.html" />
     <link rel="prev" title="mspasspy.reduce" href="mspasspy.reduce.html" />  
 
   <style>
@@ -144,20 +144,17 @@
 <li class="toctree-l4"><a class="reference internal" href="#mspasspy.util.converter.post_ensemble_metadata"><code class="docutils literal notranslate"><span class="pre">post_ensemble_metadata()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#module-mspasspy.util.decorators">db_utils</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#module-mspasspy.util.db_utils">db_utils</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.util.db_utils.MongoDBWorker"><code class="docutils literal notranslate"><span class="pre">MongoDBWorker</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.util.db_utils.fetch_dbhandle"><code class="docutils literal notranslate"><span class="pre">fetch_dbhandle()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-mspasspy.util.decorators">decorators</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#mspasspy.util.decorators.is_input_dead"><code class="docutils literal notranslate"><span class="pre">is_input_dead()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mspasspy.util.decorators.seismogram_copy_helper"><code class="docutils literal notranslate"><span class="pre">seismogram_copy_helper()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mspasspy.util.decorators.seismogram_ensemble_copy_helper"><code class="docutils literal notranslate"><span class="pre">seismogram_ensemble_copy_helper()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mspasspy.util.decorators.timeseries_copy_helper"><code class="docutils literal notranslate"><span class="pre">timeseries_copy_helper()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mspasspy.util.decorators.timeseries_ensemble_copy_helper"><code class="docutils literal notranslate"><span class="pre">timeseries_ensemble_copy_helper()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#module-0">decorators</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#id0"><code class="docutils literal notranslate"><span class="pre">is_input_dead()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id1"><code class="docutils literal notranslate"><span class="pre">seismogram_copy_helper()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id2"><code class="docutils literal notranslate"><span class="pre">seismogram_ensemble_copy_helper()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id3"><code class="docutils literal notranslate"><span class="pre">timeseries_copy_helper()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id4"><code class="docutils literal notranslate"><span class="pre">timeseries_ensemble_copy_helper()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#module-mspasspy.util.Janitor">Janitor</a><ul>
@@ -189,6 +186,7 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="mspasspy.workflow.html">mspasspy.workflow</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../cxx_api/index.html">C++ API</a></li>
@@ -657,8 +655,59 @@ check_all_members is False.</p></li>
 </dd></dl>
 
 </section>
+<section id="module-mspasspy.util.db_utils">
+<span id="db-utils"></span><h2>db_utils<a class="headerlink" href="#module-mspasspy.util.db_utils" title="Link to this heading"></a></h2>
+<p>Database utility functions for parallel processing support.</p>
+<p>This module provides utilities for handling database connections in both
+serial and parallel (Dask worker) contexts.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="mspasspy.util.db_utils.MongoDBWorker">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.util.db_utils.</span></span><span class="sig-name descname"><span class="pre">MongoDBWorker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dbname</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mongodb://localhost:27017/'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dbclient_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'dbclient'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/db_utils.html#MongoDBWorker"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.db_utils.MongoDBWorker" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">WorkerPlugin</span></code></p>
+<p>Dask worker plugin to manage MongoDB client per worker.</p>
+<p>Creates a DBClient instance for each worker and stores it in worker.data.
+This ensures each worker has its own database connection to prevent
+connection leaks when Database objects are serialized to workers.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.util.db_utils.MongoDBWorker.setup">
+<span class="sig-name descname"><span class="pre">setup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">worker</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/db_utils.html#MongoDBWorker.setup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.db_utils.MongoDBWorker.setup" title="Link to this definition"></a></dt>
+<dd><p>Called when worker starts - create DBClient for this worker.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.util.db_utils.MongoDBWorker.teardown">
+<span class="sig-name descname"><span class="pre">teardown</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">worker</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/db_utils.html#MongoDBWorker.teardown"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.db_utils.MongoDBWorker.teardown" title="Link to this definition"></a></dt>
+<dd><p>Called when worker shuts down - cleanup if needed.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.util.db_utils.fetch_dbhandle">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.util.db_utils.</span></span><span class="sig-name descname"><span class="pre">fetch_dbhandle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dbname_or_handle</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/db_utils.html#fetch_dbhandle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.db_utils.fetch_dbhandle" title="Link to this definition"></a></dt>
+<dd><p>Fetch a Database handle from dbname_or_handle.</p>
+<p>This function provides a unified way to get a Database instance.  In parallel mode
+(Dask worker), it fetches the DBClient from the worker plugin to avoid serializing
+Database/DBClient objects.  In serial mode, it returns the provided Database instance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>dbname_or_handle</strong> (str or <a class="reference internal" href="mspasspy.db.html#id47" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.database.Database</span></code></a>) – Either a string (database name) or a Database instance.
+If a string is provided, the function assumes it’s being called in a Dask worker
+context and will get the DBClient from worker.data[“dbclient”].</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="mspasspy.db.html#id47" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.database.Database</span></code></a> instance</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ValueError if dbname_or_handle is neither a string nor a Database instance,
+or if called with a string outside of a Dask worker context.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
 <section id="module-mspasspy.util.decorators">
-<span id="db-utils"></span><h2>db_utils<a class="headerlink" href="#module-mspasspy.util.decorators" title="Link to this heading"></a></h2>
+<span id="decorators"></span><h2>decorators<a class="headerlink" href="#module-mspasspy.util.decorators" title="Link to this heading"></a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="mspasspy.util.decorators.is_input_dead">
 <span class="sig-prename descclassname"><span class="pre">mspasspy.util.decorators.</span></span><span class="sig-name descname"><span class="pre">is_input_dead</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/decorators.html#is_input_dead"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.decorators.is_input_dead" title="Link to this definition"></a></dt>
@@ -698,50 +747,6 @@ or all of them are still alive.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="mspasspy.util.decorators.timeseries_ensemble_copy_helper">
 <span class="sig-prename descclassname"><span class="pre">mspasspy.util.decorators.</span></span><span class="sig-name descname"><span class="pre">timeseries_ensemble_copy_helper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">es1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">es2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/decorators.html#timeseries_ensemble_copy_helper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.decorators.timeseries_ensemble_copy_helper" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-</section>
-<section id="module-0">
-<span id="decorators"></span><h2>decorators<a class="headerlink" href="#module-0" title="Link to this heading"></a></h2>
-<dl class="py function">
-<dt class="sig sig-object py" id="id0">
-<span class="sig-prename descclassname"><span class="pre">mspasspy.util.decorators.</span></span><span class="sig-name descname"><span class="pre">is_input_dead</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/decorators.html#is_input_dead"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id0" title="Link to this definition"></a></dt>
-<dd><p>A helper method to see if any mspass objects in the input parameters are dead. If one is dead,
-we should keep silent, i.e. no longer perform any further operations on this dead mspass object.
-Note for an ensemble object, only if all the objects of it are dead, we mark them as dead,
-otherwise they are still alive.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>args</strong> – any parameters.</p></li>
-<li><p><strong>kwargs</strong> – any key-word parameters.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>True if there is a dead mspass object in the parameters, False if no mspass objects in the input parameters
-or all of them are still alive.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="id1">
-<span class="sig-prename descclassname"><span class="pre">mspasspy.util.decorators.</span></span><span class="sig-name descname"><span class="pre">seismogram_copy_helper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seis1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seis2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/decorators.html#seismogram_copy_helper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id1" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="id2">
-<span class="sig-prename descclassname"><span class="pre">mspasspy.util.decorators.</span></span><span class="sig-name descname"><span class="pre">seismogram_ensemble_copy_helper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">es1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">es2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/decorators.html#seismogram_ensemble_copy_helper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id2" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="id3">
-<span class="sig-prename descclassname"><span class="pre">mspasspy.util.decorators.</span></span><span class="sig-name descname"><span class="pre">timeseries_copy_helper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ts1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ts2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/decorators.html#timeseries_copy_helper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id3" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="id4">
-<span class="sig-prename descclassname"><span class="pre">mspasspy.util.decorators.</span></span><span class="sig-name descname"><span class="pre">timeseries_ensemble_copy_helper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">es1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">es2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/decorators.html#timeseries_ensemble_copy_helper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id4" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </section>
@@ -1428,7 +1433,7 @@ only the data marked dead are muffified.</p>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="mspasspy.reduce.html" class="btn btn-neutral float-left" title="mspasspy.reduce" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="../cxx_api/index.html" class="btn btn-neutral float-right" title="C++ API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="mspasspy.workflow.html" class="btn btn-neutral float-right" title="mspasspy.workflow" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
