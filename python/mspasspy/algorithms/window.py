@@ -564,7 +564,7 @@ def WindowDataAtomic(
         # This handler is needed in case the C++ functions WindowData or WindowData3C
         # throw an exception.  With the current logic that should not happen but
         # this makes the code base more robust in the event changes occur
-        d.log_error(alg, str(err), ErrorSeverity.Invalid)
+        d.elog.log_error(alg, str(err), ErrorSeverity.Invalid)
         d.kill()
         return d
 
