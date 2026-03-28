@@ -221,7 +221,7 @@ def MCXcorPrepP(
     checks_arg0_type=True,
     handles_dead_data=True,
     **kwargs,
-) -> TimeSeriesEnsemble:
+) -> tuple:
     """
     Function used to preprocess an ensemble  to prepare input for
     running multichannel cross-correlation and stacking method
@@ -235,8 +235,7 @@ def MCXcorPrepP(
     attempt to set all the required parameters automatically using signal processing.
     It will attempt to produce two inputs required by the `align_and_stack`:
     1.  What I call a "correlation window".
-    2.  The ensemble member that is to be used as the initial estimate of the
-        beam (stack of the data aligned by cross correlation).
+    2.  The ensemble member that is to be used as the initial estimate of the beam (stack of the data aligned by cross correlation).
 
     A CRITICAL assumption of this function is that the input ensemble's data
     have been processed with the snr module function `broadband_snr_QC`.
@@ -288,12 +287,13 @@ def MCXcorPrepP(
         can parse them to set the correlation time window.
 
     The function returns a copy of the input ensemble filtered to the
-    average bandwidth and the initial beam estimate.  They are return
-    as a tuple with 0 the ensemble and 1 the initial beam estimate.
+    average bandwidth as component 0 of a tuple.  Component 1 of that 
+    tuple contains an the initial beam estimate that should be used 
+    as the input to align_and_stack.  
     Callers should verify the beam signal is marked live.  A dead
     beam signal indicates the algorithm failed in one way or another.
-    Errors at the level will result in errors being posted to the
-    `ErrorLogger` container of the beam output.  Note also this
+    Errors at that level will result in messages being posted to the
+    `ErrorLogger` container of the beam output (elog attribute).  Note also this
     algorithm can kill some ensemble members in the output that
     were marked live in the input.
 
@@ -1165,9 +1165,9 @@ def align_and_stack(
             that can be used as keys to fetch start (component 0)
             and end times (component 1) from the Metadata container of
             the TimeSeries objct passed via beam. For example,
-            ```
+            
                correlation_window_keys = ['correlation_start','correlation_end']
-            ```
+            
             would cause the function to attempt to fetch the
             start time with "correlation_start" and end time with
             "correlation_end".  In the default both `correlation_window`
@@ -1369,8 +1369,11 @@ def align_and_stack(
 
     :return: tuple with 0 containing the original ensemble but time
         shifted by cross-correlation.   Failed/discarded signals for the
-        stack are not killed but should be detected by not having the
-        time shift Metadata value set.   component 1 is the computed
+        stack are not killed but can be detected by testing the 
+        key defined by the "time_shift_key" argument 
+        (default is 'arrival_time_correction') being set.  
+        i.e. that value will not be set for components dropped from 
+        the stack.   Component 1 of return tuple is the computed
         stack windowed to the range defined by `stack_time_window`.
     """
     alg = "align_and_stack"
