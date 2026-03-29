@@ -717,7 +717,7 @@
         <span class="c1"># This handler is needed in case the C++ functions WindowData or WindowData3C</span>
         <span class="c1"># throw an exception.  With the current logic that should not happen but</span>
         <span class="c1"># this makes the code base more robust in the event changes occur</span>
-        <span class="n">d</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">err</span><span class="p">),</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+        <span class="n">d</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">err</span><span class="p">),</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
         <span class="n">d</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">d</span></div>
 
