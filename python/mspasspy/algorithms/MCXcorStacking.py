@@ -268,7 +268,7 @@ def MCXcorPrepP(
         valued passed via the function argument with that key.
         Because this function is designed strictly for P phases it has to
         handle the complexity of interference by secondary P phases.   For
-        that reason it compute arrival times for pP and PP and will always
+        that reason it computes arrival times for pP and PP and will always
         start the coda search before time of the smaller of pP or PP.
         Note, however, that pP is not used a constraint if the source depth is
         less than 100 km.   The justification for that number can be found in
@@ -353,7 +353,7 @@ def MCXcorPrepP(
     :param PPtime_key:  These three arguments define alternative keys that
       will be used to fetch (if set_phases is false) or post (if set_phases is True)
       computed P, pP, and PP times to each member's Metadata container.
-      Changing any of these values not really advised when set_phases is True.
+      Changing any of these values is not really advised when set_phases is True.
       These are most useful if the phase arrival times were previously
       computed or measured and posted with different keys.
     :param station_collection:   MonogDB collection name used to fetch
@@ -390,6 +390,11 @@ def MCXcorPrepP(
       a negative number defining a time before P that no signal is likely to
       have an arrival before this relative time.
     :type correlation_window_start:  float (default -3.0)
+    :return:  tuple with two components.  Component 0 holds a copy of the 
+      input ensembled filtered with bandwidth range estimated by the 
+      algorithm but NOT time shifted. Component 1 is an best guess of 
+      a suitable initial beam estimate for running the robust stacking 
+      algorithm of dbxcor (it requires an initial bean estiamte).
     """
     alg = "MCXcorPrepP"
     if not isinstance(ensemble, TimeSeriesEnsemble):
