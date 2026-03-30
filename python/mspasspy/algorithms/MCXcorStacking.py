@@ -287,9 +287,9 @@ def MCXcorPrepP(
         can parse them to set the correlation time window.
 
     The function returns a copy of the input ensemble filtered to the
-    average bandwidth as component 0 of a tuple.  Component 1 of that 
-    tuple contains an the initial beam estimate that should be used 
-    as the input to align_and_stack.  
+    average bandwidth as component 0 of a tuple.  Component 1 of that
+    tuple contains an the initial beam estimate that should be used
+    as the input to align_and_stack.
     Callers should verify the beam signal is marked live.  A dead
     beam signal indicates the algorithm failed in one way or another.
     Errors at that level will result in messages being posted to the
@@ -390,10 +390,10 @@ def MCXcorPrepP(
       a negative number defining a time before P that no signal is likely to
       have an arrival before this relative time.
     :type correlation_window_start:  float (default -3.0)
-    :return:  tuple with two components.  Component 0 holds a copy of the 
-      input ensembled filtered with bandwidth range estimated by the 
-      algorithm but NOT time shifted. Component 1 is an best guess of 
-      a suitable initial beam estimate for running the robust stacking 
+    :return:  tuple with two components.  Component 0 holds a copy of the
+      input ensembled filtered with bandwidth range estimated by the
+      algorithm but NOT time shifted. Component 1 is an best guess of
+      a suitable initial beam estimate for running the robust stacking
       algorithm of dbxcor (it requires an initial bean estiamte).
     """
     alg = "MCXcorPrepP"
@@ -1170,9 +1170,9 @@ def align_and_stack(
             that can be used as keys to fetch start (component 0)
             and end times (component 1) from the Metadata container of
             the TimeSeries objct passed via beam. For example,
-            
+
                correlation_window_keys = ['correlation_start','correlation_end']
-            
+
             would cause the function to attempt to fetch the
             start time with "correlation_start" and end time with
             "correlation_end".  In the default both `correlation_window`
@@ -1374,10 +1374,10 @@ def align_and_stack(
 
     :return: tuple with 0 containing the original ensemble but time
         shifted by cross-correlation.   Failed/discarded signals for the
-        stack are not killed but can be detected by testing the 
-        key defined by the "time_shift_key" argument 
-        (default is 'arrival_time_correction') being set.  
-        i.e. that value will not be set for components dropped from 
+        stack are not killed but can be detected by testing the
+        key defined by the "time_shift_key" argument
+        (default is 'arrival_time_correction') being set.
+        i.e. that value will not be set for components dropped from
         the stack.   Component 1 of return tuple is the computed
         stack windowed to the range defined by `stack_time_window`.
     """
