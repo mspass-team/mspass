@@ -64,14 +64,22 @@ class MongoDBWorker(WorkerPlugin):
     Creates a DBClient instance for each worker and stores it in worker.data.
     This ensures each worker has its own database connection to prevent
     connection leaks when Database objects are serialized to workers.
+
+    :param mspass_client: MSPASS :class:`~mspasspy.client.Client` (or any object
+        with ``get_database_client()`` returning a :class:`~mspasspy.db.client.DBClient`).
+        The worker uses that client's ``_mspass_db_host`` for per-worker connections.
+    :param dbclient_key: Key under ``worker.data`` for the created :class:`~mspasspy.db.client.DBClient`.
     """
 
-    def __init__(
-        self, dbname, url="mongodb://localhost:27017/", dbclient_key="dbclient"
-    ):
-        self.dbname = dbname
-        self.connection_url = url
+    def __init__(self, mspass_client, dbclient_key="dbclient"):
         self.dbclient_key = dbclient_key
+        db_client = mspass_client.get_database_client()
+        url = getattr(db_client, "_mspass_db_host", None)
+        if url is None:
+            url = "mongodb://localhost:27017/"
+        elif isinstance(url, str) and not url.startswith("mongodb://"):
+            url = "mongodb://{}".format(url)
+        self.connection_url = url
 
     def setup(self, worker):
         """Called when worker starts - create DBClient for this worker."""

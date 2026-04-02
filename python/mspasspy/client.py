@@ -239,16 +239,7 @@ class Client:
 
         # Auto-register MongoDB worker plugin for dask to avoid DB serialization leaks
         if self._scheduler == "dask":
-            dbname = self._default_database_name
-            url = getattr(self._db_client, "_mspass_db_host", None)
-            if url is None:
-                url = "mongodb://localhost:27017/"
-            elif isinstance(url, str) and not url.startswith("mongodb://"):
-                url = f"mongodb://{url}"
-
-            mongo_plugin = MongoDBWorker(
-                dbname=dbname, url=url, dbclient_key="dbclient"
-            )
+            mongo_plugin = MongoDBWorker(self, dbclient_key="dbclient")
             self._dask_client.register_plugin(mongo_plugin, name="mongodb_worker")
 
     def get_database_client(self):
