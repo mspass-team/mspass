@@ -374,7 +374,7 @@
     <span class="n">checks_arg0_type</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">handles_dead_data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeSeriesEnsemble</span><span class="p">:</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Function used to preprocess an ensemble  to prepare input for</span>
 <span class="sd">    running multichannel cross-correlation and stacking method</span>
@@ -388,8 +388,7 @@
 <span class="sd">    attempt to set all the required parameters automatically using signal processing.</span>
 <span class="sd">    It will attempt to produce two inputs required by the `align_and_stack`:</span>
 <span class="sd">    1.  What I call a &quot;correlation window&quot;.</span>
-<span class="sd">    2.  The ensemble member that is to be used as the initial estimate of the</span>
-<span class="sd">        beam (stack of the data aligned by cross correlation).</span>
+<span class="sd">    2.  The ensemble member that is to be used as the initial estimate of the beam (stack of the data aligned by cross correlation).</span>
 
 <span class="sd">    A CRITICAL assumption of this function is that the input ensemble&#39;s data</span>
 <span class="sd">    have been processed with the snr module function `broadband_snr_QC`.</span>
@@ -422,7 +421,7 @@
 <span class="sd">        valued passed via the function argument with that key.</span>
 <span class="sd">        Because this function is designed strictly for P phases it has to</span>
 <span class="sd">        handle the complexity of interference by secondary P phases.   For</span>
-<span class="sd">        that reason it compute arrival times for pP and PP and will always</span>
+<span class="sd">        that reason it computes arrival times for pP and PP and will always</span>
 <span class="sd">        start the coda search before time of the smaller of pP or PP.</span>
 <span class="sd">        Note, however, that pP is not used a constraint if the source depth is</span>
 <span class="sd">        less than 100 km.   The justification for that number can be found in</span>
@@ -441,12 +440,13 @@
 <span class="sd">        can parse them to set the correlation time window.</span>
 
 <span class="sd">    The function returns a copy of the input ensemble filtered to the</span>
-<span class="sd">    average bandwidth and the initial beam estimate.  They are return</span>
-<span class="sd">    as a tuple with 0 the ensemble and 1 the initial beam estimate.</span>
+<span class="sd">    average bandwidth as component 0 of a tuple.  Component 1 of that</span>
+<span class="sd">    tuple contains an the initial beam estimate that should be used</span>
+<span class="sd">    as the input to align_and_stack.</span>
 <span class="sd">    Callers should verify the beam signal is marked live.  A dead</span>
 <span class="sd">    beam signal indicates the algorithm failed in one way or another.</span>
-<span class="sd">    Errors at the level will result in errors being posted to the</span>
-<span class="sd">    `ErrorLogger` container of the beam output.  Note also this</span>
+<span class="sd">    Errors at that level will result in messages being posted to the</span>
+<span class="sd">    `ErrorLogger` container of the beam output (elog attribute).  Note also this</span>
 <span class="sd">    algorithm can kill some ensemble members in the output that</span>
 <span class="sd">    were marked live in the input.</span>
 
@@ -506,7 +506,7 @@
 <span class="sd">    :param PPtime_key:  These three arguments define alternative keys that</span>
 <span class="sd">      will be used to fetch (if set_phases is false) or post (if set_phases is True)</span>
 <span class="sd">      computed P, pP, and PP times to each member&#39;s Metadata container.</span>
-<span class="sd">      Changing any of these values not really advised when set_phases is True.</span>
+<span class="sd">      Changing any of these values is not really advised when set_phases is True.</span>
 <span class="sd">      These are most useful if the phase arrival times were previously</span>
 <span class="sd">      computed or measured and posted with different keys.</span>
 <span class="sd">    :param station_collection:   MonogDB collection name used to fetch</span>
@@ -543,6 +543,11 @@
 <span class="sd">      a negative number defining a time before P that no signal is likely to</span>
 <span class="sd">      have an arrival before this relative time.</span>
 <span class="sd">    :type correlation_window_start:  float (default -3.0)</span>
+<span class="sd">    :return:  tuple with two components.  Component 0 holds a copy of the</span>
+<span class="sd">      input ensembled filtered with bandwidth range estimated by the</span>
+<span class="sd">      algorithm but NOT time shifted. Component 1 is an best guess of</span>
+<span class="sd">      a suitable initial beam estimate for running the robust stacking</span>
+<span class="sd">      algorithm of dbxcor (it requires an initial bean estiamte).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">alg</span> <span class="o">=</span> <span class="s2">&quot;MCXcorPrepP&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ensemble</span><span class="p">,</span> <span class="n">TimeSeriesEnsemble</span><span class="p">):</span>
@@ -1333,9 +1338,9 @@
 <span class="sd">            that can be used as keys to fetch start (component 0)</span>
 <span class="sd">            and end times (component 1) from the Metadata container of</span>
 <span class="sd">            the TimeSeries objct passed via beam. For example,</span>
-<span class="sd">            ```</span>
+
 <span class="sd">               correlation_window_keys = [&#39;correlation_start&#39;,&#39;correlation_end&#39;]</span>
-<span class="sd">            ```</span>
+
 <span class="sd">            would cause the function to attempt to fetch the</span>
 <span class="sd">            start time with &quot;correlation_start&quot; and end time with</span>
 <span class="sd">            &quot;correlation_end&quot;.  In the default both `correlation_window`</span>
@@ -1537,8 +1542,11 @@
 
 <span class="sd">    :return: tuple with 0 containing the original ensemble but time</span>
 <span class="sd">        shifted by cross-correlation.   Failed/discarded signals for the</span>
-<span class="sd">        stack are not killed but should be detected by not having the</span>
-<span class="sd">        time shift Metadata value set.   component 1 is the computed</span>
+<span class="sd">        stack are not killed but can be detected by testing the</span>
+<span class="sd">        key defined by the &quot;time_shift_key&quot; argument</span>
+<span class="sd">        (default is &#39;arrival_time_correction&#39;) being set.</span>
+<span class="sd">        i.e. that value will not be set for components dropped from</span>
+<span class="sd">        the stack.   Component 1 of return tuple is the computed</span>
 <span class="sd">        stack windowed to the range defined by `stack_time_window`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">alg</span> <span class="o">=</span> <span class="s2">&quot;align_and_stack&quot;</span>

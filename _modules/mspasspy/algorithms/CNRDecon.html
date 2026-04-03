@@ -1,0 +1,1000 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>mspasspy.algorithms.CNRDecon &mdash; MsPASS 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />  
+
+  <style>
+    .wy-nav-content { max-width: 1600px; }
+  </style>
+
+  
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            MsPASS
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Desktop Operation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/mspass_desktop.html">Running MsPASS on a Desktop Computer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/command_line_desktop.html">Command Line Docker Desktop Operation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_conda.html">Deploy MsPASS with Conda</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/advanced_setup_considerations.html">Advanced Setup Considerations</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Cluster Operations</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_on_HPC.html">Deploying MsPASS on an HPC cluster</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/deploy_mspass_with_conda_and_coiled.html">Deploy MsPASS with Conda and Coiled</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/introduction.html">Introduction</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Data Management</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/database_concepts.html">Database Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/normalization.html">Normalization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/importing_tabular_data.html">Importing Tabular Data</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Seismic Data Objects</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/data_object_design_concepts.html">Data Object Design Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/numpy_scipy_interface.html">Using numpy/scipy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/obspy_interface.html">Using ObsPy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/time_standard_constraints.html">Time Standard Constraints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/processing_history_concepts.html">Processing History Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/continuous_data.html">Continuous Data Handling with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/schema_choices.html">What database schema should I use?</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Data Processing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/algorithms.html">Algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/importing_data.html">Importing Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/handling_errors.html">Handling Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/data_editing.html">Data Editing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/cleaning_metadata.html">Cleaning Inconsistent Metadata</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/header_math.html">Header (Metadata) Math</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/graphics.html">Graphics in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/signal_to_noise.html">Signal to Noise Ratio Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/arrival_time_measurement.html">Arrival Time Measurement Techniques in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/parallel_processing.html">Parallel Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/memory_management.html">Memory Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/io.html">I/O in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/parallel_io.html">Parallel IO in MsPASS</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">FAQ</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/FAQ.html">Frequency Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/development_strategies.html">How do I develop a new workflow from scratch?</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../python_api/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../cxx_api/index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../mspass_schema/mspass_schema.html">MsPASS Schema</a></li>
+</ul>
+
+    <a href= "../../../genindex.html">Index</a>
+  
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">MsPASS</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">mspasspy.algorithms.CNRDecon</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for mspasspy.algorithms.CNRDecon</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This file contains a set of wrappers for the revised version of the</span>
+<span class="sd">colored noise greulagrization (CNR) algorithms.  The prototype was</span>
+<span class="sd">called CNR3CDecon.   It will be deprecated.  This one uses a set of</span>
+<span class="sd">revised C++ classes for the engine that allow the functions used here</span>
+<span class="sd">to satify the dask definition of &quot;pure&quot;.</span>
+
+
+<span class="sd">Created on Tue May 28 19:22:10 2024</span>
+
+<span class="sd">@author: pavlis</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.util.decorators</span><span class="w"> </span><span class="kn">import</span> <span class="n">mspass_func_wrapper</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.ccore.seismic</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">,</span> <span class="n">SeismogramEnsemble</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.ccore.algorithms.basic</span><span class="w"> </span><span class="kn">import</span> <span class="n">_WindowData3C</span><span class="p">,</span> <span class="n">TimeWindow</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.ccore.utility</span><span class="w"> </span><span class="kn">import</span> <span class="n">ErrorSeverity</span><span class="p">,</span> <span class="n">MsPASSError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.ccore.algorithms.deconvolution</span><span class="w"> </span><span class="kn">import</span> <span class="n">CNRDeconEngine</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.algorithms.window</span><span class="w"> </span><span class="kn">import</span> <span class="n">WindowData</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.algorithms.basic</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExtractComponent</span>
+
+
+<div class="viewcode-block" id="fetch_bandwidth_data">
+<a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.CNRDecon.fetch_bandwidth_data">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">fetch_bandwidth_data</span><span class="p">(</span><span class="n">md</span><span class="p">,</span> <span class="n">keys</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Small convenience function extracts high and low frequency</span>
+<span class="sd">    bandwidth data from dictionary like container md.   Assumes keys is</span>
+<span class="sd">    assumed a pair of strings passed as the content of the bandwidth_keys</span>
+<span class="sd">    argument of CNRRFDecon or CNRArrayDecon.   It is one of those</span>
+<span class="sd">    small functions used to avoid repetitions code.</span>
+<span class="sd">    :param md:  dictionary like container from which values are to be fetched.</span>
+<span class="sd">    :type md:  dictionary like container - needs string subscripting and</span>
+<span class="sd">    in test (&quot;x&quot; in md).</span>
+<span class="sd">    :param keys:  pair of strings that will be used to extract values from md.</span>
+<span class="sd">    :type keys:  list/array/tuple of two strings</span>
+<span class="sd">    :return tuple:  returns a tuple with two values.  With success two floating</span>
+<span class="sd">    point numbers that are the values returned by each of the keys passed via</span>
+<span class="sd">    the keys argument.   The decon operator assume that 0 is the low frequency</span>
+<span class="sd">    edge of the working band and 1 is the high frequency band edge.</span>
+<span class="sd">    Returns a -1.0 value in any field that was not defined.   Note that makes</span>
+<span class="sd">    sense since although a negative frequency is meaningful it is not in  this</span>
+<span class="sd">    context.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">k</span> <span class="o">=</span> <span class="n">keys</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">md</span><span class="p">:</span>
+        <span class="n">flow</span> <span class="o">=</span> <span class="n">md</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">flow</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span>
+    <span class="n">k</span> <span class="o">=</span> <span class="n">keys</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">md</span><span class="p">:</span>
+        <span class="n">fhigh</span> <span class="o">=</span> <span class="n">md</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">fhigh</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span>
+    <span class="k">return</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">flow</span><span class="p">,</span> <span class="n">fhigh</span><span class="p">])</span></div>
+
+
+
+<div class="viewcode-block" id="validate_bandwidth_data">
+<a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.CNRDecon.validate_bandwidth_data">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">validate_bandwidth_data</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">bd</span><span class="p">,</span> <span class="n">bdkeys</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Companion to fetch_bandwidth_data above to regularize handing of</span>
+<span class="sd">    errors from fetching bandwidth data.  A negative frequency is used as a</span>
+<span class="sd">    signal b fetch_bnadwidth_data of a metadata error in fetching a particular</span>
+<span class="sd">    bandwidth value.   This function posts a standard message to d, kills it,</span>
+<span class="sd">    and returns the body with the appended error message.  Another helper</span>
+<span class="sd">    done to reduce duplicate code.</span>
+
+<span class="sd">    :param d:  seismic data object being processed</span>
+<span class="sd">    :type d:  normally a `Seismogram` object but there is no type checking.</span>
+<span class="sd">    Uses kill and error log concepts.</span>
+<span class="sd">    :param bd:  pair of floats returned by fetch_bandwidth_data.  -1.0 is</span>
+<span class="sd">    used by that function to flag undefined.</span>
+<span class="sd">    :type bd:  tuple/array/list with 2 floats</span>
+<span class="sd">    :param bdkeys:   parallel list/array/tuple of keys that were used by</span>
+<span class="sd">    fetch_bandwidth_data to fetch bandwidth data.  Required to post an</span>
+<span class="sd">    error message when necessary that will be helpful.</span>
+<span class="sd">    :return:  copy of the data if there are not problems.  If the bandwidth</span>
+<span class="sd">    data is not defined or is invalide (flow&gt;figh) the return will be marked</span>
+<span class="sd">    dead and contain error messages describing the problem.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">live</span><span class="p">:</span>
+        <span class="n">alg</span> <span class="o">=</span> <span class="s2">&quot;validate_bandwidth_data&quot;</span>
+        <span class="k">if</span> <span class="n">bd</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mf">0.0</span> <span class="ow">or</span> <span class="n">bd</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;Error parsing require bandwidth data</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="k">if</span> <span class="n">bd</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">:</span>
+                <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Could not fetch data for low frequency corner using key </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">bdkeys</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="n">bd</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">:</span>
+                <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Could not fetch data for high frequency corner using key </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">bdkeys</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="p">)</span>
+            <span class="n">d</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+            <span class="n">d</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">bd</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">bd</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s2">&quot;Invalid bandwidth data retrieved:  flow=</span><span class="si">{}</span><span class="s2"> and fhigh=</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">bd</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">bd</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Require flow&lt;fhigh&quot;</span>
+            <span class="n">d</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+            <span class="n">d</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">d</span></div>
+
+
+
+<div class="viewcode-block" id="fetch_and_validate_bandwidth_data">
+<a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.CNRDecon.fetch_and_validate_bandwidth_data">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">fetch_and_validate_bandwidth_data</span><span class="p">(</span>
+    <span class="n">d</span><span class="p">,</span>
+    <span class="n">bdkeys</span><span class="p">,</span>
+    <span class="n">bandwidth_subdocument_key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Top-level function to validate bandwidth data passed via a Metadata</span>
+<span class="sd">    container in a seismic data object.   This uses both the fetch_bandwidth_data</span>
+<span class="sd">    and the validate_bandwidth_data functions to standardize getting a valid</span>
+<span class="sd">    range of frequencies to use for the inverse operator estimated by</span>
+<span class="sd">    the CNRDeconEngine operator.  It will never raise an exception but</span>
+<span class="sd">    can kill the datum it receives for testing if the keys are invalid</span>
+<span class="sd">    or the values are not reasonble (i.e. high edge of the band is less than</span>
+<span class="sd">    the low frequency edge).  This function is used in both the single</span>
+<span class="sd">    station and array (ensemble) versions of the CNR Deconvolution</span>
+<span class="sd">    method.   It like the things it uses avoids a bunch of otherwise</span>
+<span class="sd">    redundant code.</span>
+
+<span class="sd">    :param d:  input datum</span>
+<span class="sd">    :type d:  atomic  mnpass seismic data object</span>
+<span class="sd">    :param bdkeys:   required tuple/array of keys that define the</span>
+<span class="sd">    keys that should be used top fetch the low (component 0) and</span>
+<span class="sd">    high (component 1) band edges for the operator.</span>
+<span class="sd">    :type:  subscriptable container with two strings - python array or tuple.</span>
+<span class="sd">    :param bandwidth_subdocument_key:   When not None (the default) the</span>
+<span class="sd">    function will first attempt to extract a subdocument (dictionary) from</span>
+<span class="sd">    the input data using this key.   If successful it will attempt to</span>
+<span class="sd">    extract data from that dictionary using the keys defined in bdkeys.</span>
+<span class="sd">    If the key is not found the datum will be marked data, and returned</span>
+<span class="sd">    with a descriptive error message.</span>
+<span class="sd">    :type bandwith_subdocument_key:  None or string</span>
+<span class="sd">    :return: type with 3 components</span>
+<span class="sd">      0 = copy of data which may be marked dead if the process failed</span>
+<span class="sd">      1 - flow</span>
+<span class="sd">      2 - fhigh</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">alg</span> <span class="o">=</span> <span class="s2">&quot;fetch_and_validate_bandwidth_data&quot;</span>
+    <span class="k">if</span> <span class="n">bandwidth_subdocument_key</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="n">bandwidth_subdocument_key</span><span class="p">):</span>
+            <span class="n">bd</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="n">bandwidth_subdocument_key</span><span class="p">]</span>
+            <span class="n">bdvals</span> <span class="o">=</span> <span class="n">fetch_bandwidth_data</span><span class="p">(</span><span class="n">bd</span><span class="p">,</span> <span class="n">bdkeys</span><span class="p">)</span>
+            <span class="c1"># this function may kill</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="n">validate_bandwidth_data</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">bdvals</span><span class="p">,</span> <span class="n">bdkeys</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;Required bandwidth_subdocument_key=</span><span class="si">{}</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">bandwidth_subdocument_key</span>
+            <span class="p">)</span>
+            <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;is not defined for this datum&quot;</span>
+            <span class="n">d</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+            <span class="n">d</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">bdvals</span> <span class="o">=</span> <span class="n">fetch_bandwidth_data</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">bdkeys</span><span class="p">)</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">validate_bandwidth_data</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">bdvals</span><span class="p">,</span> <span class="n">bdkeys</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">d</span><span class="p">,</span> <span class="n">bdvals</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">bdvals</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span></div>
+
+
+
+<div class="viewcode-block" id="prediction_error">
+<a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.CNRDecon.prediction_error">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">prediction_error</span><span class="p">(</span><span class="n">engine</span><span class="p">,</span> <span class="n">wavelet</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes prediction error of deconvolution operator defined as</span>
+<span class="sd">    norm(ao-io)/norm(io) where ao is the return from the</span>
+<span class="sd">    actual_output method of engine and io is the return from</span>
+<span class="sd">    the ideal_output of engine.  The computed norm is L2</span>
+<span class="sd">    :param engine:   assumed valid instance of a CNRDeconEngine</span>
+<span class="sd">       class</span>
+<span class="sd">    :param wavelet:   wavelet TimeSeries object used in deconvolution.</span>
+<span class="sd">       For this operator it is not necessarily constant this</span>
+<span class="sd">       required for actual_output method.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># with internal use can assume ao and io are the same length</span>
+    <span class="c1"># and time aligned - caution</span>
+    <span class="n">ao</span> <span class="o">=</span> <span class="n">engine</span><span class="o">.</span><span class="n">actual_output</span><span class="p">(</span><span class="n">wavelet</span><span class="p">)</span>
+    <span class="n">io</span> <span class="o">=</span> <span class="n">engine</span><span class="o">.</span><span class="n">ideal_output</span><span class="p">()</span>
+    <span class="n">err</span> <span class="o">=</span> <span class="n">ao</span> <span class="o">-</span> <span class="n">io</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">err</span><span class="o">.</span><span class="n">data</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">io</span><span class="o">.</span><span class="n">data</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="CNRRFDecon">
+<a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.CNRDecon.CNRRFDecon">[docs]</a>
+<span class="nd">@mspass_func_wrapper</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">CNRRFDecon</span><span class="p">(</span>
+    <span class="n">seis</span><span class="p">,</span>
+    <span class="n">engine</span><span class="p">,</span>
+    <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+    <span class="n">component</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">noise_spectrum</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">signal_window</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">noise_window</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">use_3C_noise</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">bandwidth_subdocument_key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">bandwidth_keys</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;low_f_band_edge&quot;</span><span class="p">,</span> <span class="s2">&quot;high_f_band_edge&quot;</span><span class="p">],</span>
+    <span class="n">QCdata_key</span><span class="o">=</span><span class="s2">&quot;CNRFDecon_properties&quot;</span><span class="p">,</span>
+    <span class="n">return_wavelet</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">window_output</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">alg_name</span><span class="o">=</span><span class="s2">&quot;CNRRFDecon&quot;</span><span class="p">,</span>
+    <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">inplace_return</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">handles_ensembles</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">function_return_key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">checks_arg0_type</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">handles_dead_data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Uses the CNRRFDeconEngine instance passed as `engine` to</span>
+<span class="sd">    produce a &quot;receiver function&quot; type of deconvolution from an</span>
+<span class="sd">    input `Seismogram` object passed through arg0.   I define a</span>
+<span class="sd">    &quot;receiver function&quot; as the output of a deconvolution</span>
+<span class="sd">    from a single seismogram input.   That differs from an array</span>
+<span class="sd">    deconvolution where multiple seismograms are used to compute</span>
+<span class="sd">    the convolution operator.   The `CNRDeconEngine` C++ class</span>
+<span class="sd">    used by this function has a sibling called `CNRArrayDecon` that</span>
+<span class="sd">    uses the same engine but is an array method.</span>
+
+<span class="sd">    As a &quot;receiver function&quot; algorithm this function demands some</span>
+<span class="sd">    restrictions on the input that are checked before it will run.</span>
+<span class="sd">    1.   The input through arg0 must be a `Seismgram`.</span>
+<span class="sd">    2.   An instance of a `CNRDeconEngine` is required and must</span>
+<span class="sd">         be entered via arg1.</span>
+<span class="sd">    3.   The algorithm requires a segment of the input Seismogram</span>
+<span class="sd">         data it should treat as signal and a power spectrum</span>
+<span class="sd">         estimate of the noise to use for regularization.</span>
+
+<span class="sd">    For flexibility the way you can satisify item 3 has some</span>
+<span class="sd">    complexity.   There are two combinations of arguments that</span>
+<span class="sd">    can be used to satisfy requirement 3</span>
+<span class="sd">    1.  Define BOTH signal_window and noise_window (both args are None</span>
+<span class="sd">        by default).   When that constraint is true the input</span>
+<span class="sd">        Seismogram (seis == arg0) is cut into two segments defined</span>
+<span class="sd">        by the noise_window and signal_window `TimeWindow` objects.</span>
+<span class="sd">        The segment defined by &quot;signal_window&quot; will be deconvolved in</span>
+<span class="sd">        the frequency domain using the component defined by the</span>
+<span class="sd">        `component` argument as the wavelet estimate.   Since this</span>
+<span class="sd">        algorithm is designed for P wave data that is expected to</span>
+<span class="sd">        be some estimate of the longitudinal component (Z of RTZ, L of LQT,</span>
+<span class="sd">        of P of the free surface transformation).  This algorithm</span>
+<span class="sd">        then computes a noise spectrum estimate internally from the</span>
+<span class="sd">        waveform segment extracted with using the noise_window time range.</span>
+<span class="sd">        If use_3C_noise is set True the average of all three components is</span>
+<span class="sd">        used for the spectrum estimate.   When False the spectrum is</span>
+<span class="sd">        computed form the longitudinal component defined with the</span>
+<span class="sd">        &quot;component&quot; argument.  NOTE:   this approach should be viewed</span>
+<span class="sd">        as the standard usage of this function.</span>
+<span class="sd">    2.  An alternative approach is triggered by passing a valid</span>
+<span class="sd">        `PowerSpectrum` object via the &quot;noise_data&quot; argument.   When</span>
+<span class="sd">        that is the case the spectrum estimate in the object received is</span>
+<span class="sd">        used for the inverse operator regularization.   In this</span>
+<span class="sd">        case the data are assumed already windowed if signal_window is</span>
+<span class="sd">        None and noise_window is ignored.  When signal_window is defined</span>
+<span class="sd">        the data for deconvolution is windowed to that time range</span>
+<span class="sd">        before running the deconvolution operator.</span>
+
+<span class="sd">    An alternative way to look at this is the function uses the following</span>
+<span class="sd">    logic to sort out valid inputs.  It is written in python pseudocode</span>
+
+<span class="sd">       if noise_data:</span>
+<span class="sd">           if signal_window:</span>
+<span class="sd">               seis = WindowData(seis,signal_window.start, signal_window.end)</span>
+<span class="sd">           deconvolve seis</span>
+<span class="sd">       elif signal_window and noise_window:</span>
+<span class="sd">           seis = WindowData(seis,signal_window.start, signal_window.end)</span>
+<span class="sd">           noise = WindowData(seis,noise_window.start,noise_window.end)</span>
+<span class="sd">           noise_spectrum = engine.compute_spectrum(noise)</span>
+<span class="sd">           deconvolve seis using noise_spectrum</span>
+<span class="sd">       else:</span>
+<span class="sd">           raise exception</span>
+
+<span class="sd">    The algorithm applied by this function has two novel features:</span>
+<span class="sd">    1.  The bandwidth of the deconvolution operator is adjusted based on</span>
+<span class="sd">        estimated bandwith from the spectrum of the signal and noise.</span>
+<span class="sd">        The bandwwidth properties are extracted from Metadata</span>
+<span class="sd">        using keys with defaults defined by values stored in a</span>
+<span class="sd">        subdocument (python dict) accessed by the key defined by</span>
+<span class="sd">        the &quot;bandwidth_keys&quot; argument.  The defaults are those</span>
+<span class="sd">        set by the mspass function broadband_snr_QC.</span>
+<span class="sd">    2.  The inverse is regularized by by a frequency dependent damping</span>
+<span class="sd">        using the noise spectrum.</span>
+
+<span class="sd">    Examples found in tutorials demonstrate how this algorithm</span>
+<span class="sd">    produce usable output in marginal snr conditions that would cause</span>
+<span class="sd">    other common RF decon operators to produce junk.</span>
+
+
+<span class="sd">    The main work of this function is done inside a C++ function</span>
+<span class="sd">    bound to python of type `CNRDeconEngine` passed as the arg1</span>
+<span class="sd">    (symbol `engine`).   The engine is passed as an argument because</span>
+<span class="sd">    it has a fairly high instantiation cost.   Note that object</span>
+<span class="sd">    is always instantiated an AntelopePf file that defines its</span>
+<span class="sd">    properties.  See the comments in the default file and the</span>
+<span class="sd">    documentation of the C++ class for guidance on setting the</span>
+<span class="sd">    engine parameters.</span>
+
+
+
+<span class="sd">    Function arguments:</span>
+
+<span class="sd">    :param seis:   `Seismogram` object containing data to be deconvolved.</span>
+<span class="sd">      As noted above it should normally be the section of data that is to be</span>
+<span class="sd">      deconvolved or a larger window that will contain data spanning the time</span>
+<span class="sd">      range defined by the signal_window and noise_window arguments.</span>
+<span class="sd">    :type seis:  Must be a `Seismogram` object.</span>
+<span class="sd">    :param engine:   Instance of the CNRDeconEngine object noted above.</span>
+<span class="sd">        Most of the behavior of the operator is defined by this engine object.</span>
+<span class="sd">    :type engine:  `CNRDeconEngine`</span>
+<span class="sd">    :param component:   component of seis to use as the wavelet estimate.</span>
+<span class="sd">        As noted above this function is designed for P wave data so ths</span>
+<span class="sd">        should defined the component number of seis to assume is an</span>
+<span class="sd">        estimate of the source wavelet.</span>
+<span class="sd">    :type component: integer (default 2)</span>
+<span class="sd">    :param wavelet:   Alternative way to specify wavelet to use for deconvolution, f</span>
+<span class="sd">    :param noise_spectrum:   Alternative way to define data to be used</span>
+<span class="sd">        to regularize the deconvolution operator.  See above for</span>
+<span class="sd">        usage restrictions.</span>
+<span class="sd">    :type noise_spectrum:  `PowerSpectrum` object or None.   If None (default)</span>
+<span class="sd">        both the `signal_window` and `noise_window` must be defines</span>
+<span class="sd">        (see above for the full logic).</span>
+<span class="sd">    :param signal_window:   time span to extract as the signal to be</span>
+<span class="sd">        deconvolved.  If defined it is always used.   Only allowed to</span>
+<span class="sd">        be None if `noise_spectrum` is defined.</span>
+<span class="sd">    :type signal_window:  mspasspy `TimeWindow` object.</span>
+<span class="sd">    :param noise_window:  similar to signal_window but for data section that</span>
+<span class="sd">        is to be defined as noise.  Ignored if `noise_spectrum` is defined.</span>
+<span class="sd">        Otherwise it is required and data in the specified time range is</span>
+<span class="sd">        used to regularize the inverse operator in the frequency domain.</span>
+<span class="sd">    :type noise_window:  `TimeSeries` object or None (default)  Note</span>
+<span class="sd">        can be None only if `noise_spectum` is defined.</span>
+<span class="sd">    :param use_3C_noise:  When True the power spectrum used for regularizing</span>
+<span class="sd">        the inverse for deconvolution will be computed from the average power</span>
+<span class="sd">        spectrum on all three components.   When False (default) the spectrum</span>
+<span class="sd">        is derived by extracting a TimeSeries from that defined by the</span>
+<span class="sd">        component argument.  Ignored if `noise_spectrum` is defined</span>
+<span class="sd">    :param bandwidth_subdocument_key:  When set (default is None)</span>
+<span class="sd">        bandwidth data will be extracted from a subdocument retrieved with</span>
+<span class="sd">        this key.   e.g. the broadband_snr_QC function, which would be the normal</span>
+<span class="sd">        input, has a default of `Parrival` into which snr data are posted including</span>
+<span class="sd">        bandwidth estimates.  When set the function first retrieves the</span>
+<span class="sd">        subdocument dict and then the keys defined by `bandwidth_keys` are</span>
+<span class="sd">        extracted from that dict container.   When this arg is None (default)</span>
+<span class="sd">        the `bandwidth_keys` are assumed to be defined directly in the Metadata</span>
+<span class="sd">        container of seis.</span>
+<span class="sd">    :type bandwidth_subdocument_key:  string</span>
+<span class="sd">    :param bandwidth_keys:  must define a tuple with two strings that are</span>
+<span class="sd">        keys defining the bandwidth defined for the inverse operator.   Those</span>
+<span class="sd">        values should normally be computed by using the MsPASS function</span>
+<span class="sd">        `broadband_srr_QC`.  The 0 component of the tuple is assumed to be</span>
+<span class="sd">        a key to use to extract the low frequency corner estimate for the data</span>
+<span class="sd">        bandwidth.   Component 1 is the key used to extract the high frequency</span>
+<span class="sd">        corner.  Note the relationship of this parameter to</span>
+<span class="sd">        `bandwidth_subdocument_key` described immediately above.</span>
+<span class="sd">    :type bandwidth_keys:  tuple with two strings defining value keys.</span>
+<span class="sd">        Defaults are keys used by `broadband_snr_QC` so this parameter</span>
+<span class="sd">        will not need to be changed unless a different algorithm is used</span>
+<span class="sd">        to estimate te bandwidth parameters.</span>
+<span class="sd">    :param QCdata_key:   The engine has a QCMetrics method that</span>
+<span class="sd">        posts some useful data for evaluating results.  This function</span>
+<span class="sd">        adds others.  The combination is posted to a python dict</span>
+<span class="sd">        that is then pushed to the return datum&#39;s Metadata container</span>
+<span class="sd">        with this key.  The result when stored in MongoDB is a</span>
+<span class="sd">        &quot;subdocument&quot; with this key.</span>
+<span class="sd">    :type QCdata_key:  string (default &quot;CNRFDecon_properties&quot; )</span>
+<span class="sd">    :param return_wavelet:  When False (default) only the estimated</span>
+<span class="sd">        receiver function is returned.  When True the return is a tuple</span>
+<span class="sd">        with 0 containing the RF estimate, 1 containing the actual_output</span>
+<span class="sd">        of the operator and 1 containing the ideal outpu wavelet.</span>
+<span class="sd">    :param window_output:  boolean that when True (default) causes the</span>
+<span class="sd">        output to be windowed in the range defined by signal_window.</span>
+<span class="sd">        When False the output will normally be longer with the number of</span>
+<span class="sd">        points being the fft size used internally.   That is, the fft</span>
+<span class="sd">        is normally zero padded so some signal bleeds to samples between</span>
+<span class="sd">        npts an the fft size.   False is largely reserved for debugging.</span>
+<span class="sd">    :return:  `Seismogram` when return_wavelet is False and a tuple as</span>
+<span class="sd">        described above if True.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># required arg type checks</span>
+    <span class="n">alg</span> <span class="o">=</span> <span class="s2">&quot;CNRRFDecon&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">seis</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">):</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="n">alg</span>
+        <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;:  illegal type=</span><span class="si">{}</span><span class="s2"> for arg0</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">seis</span><span class="p">)))</span>
+        <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;arg0 must be a Seismogram object&quot;</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">seis</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">return_wavelet</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">seis</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">seis</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">engine</span><span class="p">,</span> <span class="n">CNRDeconEngine</span><span class="p">):</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="n">alg</span>
+        <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;:  required arg1 (engine) is invalid type=</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">engine</span><span class="p">))</span>
+        <span class="p">)</span>
+        <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Must be an instance of a CNRDeconEngine&quot;</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">component</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]:</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;Illegal value received with component=</span><span class="si">{}</span><span class="s2">.  must be 0, 1, or 2&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">component</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">signal_window</span><span class="p">:</span>
+        <span class="c1"># using the C++ bound function for efficiency here</span>
+        <span class="c1"># the pybind11 code will throw a bit of an obscure but decipherable</span>
+        <span class="c1"># message if signal_window is an invalid type</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">_WindowData3C</span><span class="p">(</span><span class="n">seis</span><span class="p">,</span> <span class="n">signal_window</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># important to make  copy here as error conditions could clobber</span>
+        <span class="c1"># origial</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">Seismogram</span><span class="p">(</span><span class="n">seis</span><span class="p">)</span>
+        <span class="c1"># need to define this for window_output</span>
+        <span class="k">if</span> <span class="n">window_output</span><span class="p">:</span>
+            <span class="n">signal_window</span> <span class="o">=</span> <span class="n">TimeWindow</span><span class="p">(</span><span class="n">seis</span><span class="o">.</span><span class="n">t0</span><span class="p">,</span> <span class="n">seis</span><span class="o">.</span><span class="n">endtime</span><span class="p">())</span>
+
+    <span class="k">if</span> <span class="n">noise_spectrum</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">noise_spectrum</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;Received noise_spectrum PowerSpectrum object marked dead - cannot process this datum&quot;</span>
+            <span class="n">d</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+            <span class="n">d</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">return_wavelet</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">[</span><span class="n">d</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">d</span>
+        <span class="n">psnoise</span> <span class="o">=</span> <span class="n">noise_spectrum</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">noise_window</span><span class="p">:</span>
+            <span class="n">n</span> <span class="o">=</span> <span class="n">_WindowData3C</span><span class="p">(</span><span class="n">seis</span><span class="p">,</span> <span class="n">noise_window</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">use_3C_noise</span><span class="p">:</span>
+                <span class="n">psnoise</span> <span class="o">=</span> <span class="n">engine</span><span class="o">.</span><span class="n">compute_noise_spectrum_3C</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">n</span> <span class="o">=</span> <span class="n">ExtractComponent</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">component</span><span class="p">)</span>
+                <span class="n">psnoise</span> <span class="o">=</span> <span class="n">engine</span><span class="o">.</span><span class="n">compute_noise_spectrum</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">psnoise</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
+                <span class="c1"># this appends elog contents to data elog before returning it dead</span>
+                <span class="n">d</span><span class="o">.</span><span class="n">elog</span> <span class="o">+=</span> <span class="n">psnoise</span><span class="o">.</span><span class="n">elog</span>
+                <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;Failure in engine.compute_noise_spectrum;  see previous elog message for reason&quot;</span>
+                <span class="n">d</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="s2">&quot;CNRDecon&quot;</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+                <span class="n">d</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+                <span class="c1"># default constructed Seismogram is already marked dead so no need for kill call</span>
+                <span class="k">if</span> <span class="n">return_wavelet</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="p">[</span><span class="n">d</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">d</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="n">alg</span>
+            <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;:  illegal argument combination</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;When noise_spectrum is not defined BOTH signal_window and noise_window arguments must be defined&quot;</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+
+    <span class="n">odt</span> <span class="o">=</span> <span class="n">engine</span><span class="o">.</span><span class="n">get_operator_dt</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">dt</span> <span class="o">!=</span> <span class="n">odt</span><span class="p">:</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;datum dt = </span><span class="si">{}</span><span class="s2"> does not match fixed operator dt=</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">d</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span> <span class="n">odt</span>
+        <span class="p">)</span>
+        <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Cannot deconvolve this datum; killing output&quot;</span>
+        <span class="n">d</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+        <span class="n">d</span><span class="o">.</span><span class="n">set_npts</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">d</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">return_wavelet</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">d</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">d</span>
+
+    <span class="p">[</span><span class="n">d</span><span class="p">,</span> <span class="n">flow</span><span class="p">,</span> <span class="n">fhigh</span><span class="p">]</span> <span class="o">=</span> <span class="n">fetch_and_validate_bandwidth_data</span><span class="p">(</span>
+        <span class="n">d</span><span class="p">,</span>
+        <span class="n">bandwidth_keys</span><span class="p">,</span>
+        <span class="n">bandwidth_subdocument_key</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c1"># A datume can be killed in the above test so return immediately if</span>
+    <span class="c1"># that happened</span>
+    <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">return_wavelet</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">d</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">d</span>
+    <span class="c1"># for an RF a data component is used as a wavelet</span>
+    <span class="n">w</span> <span class="o">=</span> <span class="n">ExtractComponent</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">component</span><span class="p">)</span>
+    <span class="c1"># the engine can throw an exception we need to handle</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">engine</span><span class="o">.</span><span class="n">initialize_inverse_operator</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">psnoise</span><span class="p">)</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">engine</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">psnoise</span><span class="p">,</span> <span class="n">flow</span><span class="p">,</span> <span class="n">fhigh</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">MsPASSError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+        <span class="n">d</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+        <span class="n">d</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">generr</span><span class="p">:</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;Unexpected exception:</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">message</span> <span class="o">+=</span> <span class="nb">str</span><span class="p">(</span><span class="n">generr</span><span class="p">)</span>
+        <span class="n">d</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+        <span class="n">d</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+
+    <span class="c1"># note d can be killed and returned or marked dead by the error handlers</span>
+    <span class="c1"># in both cases we can&#39;t continue</span>
+    <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">return_wavelet</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">d</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">d</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># some data problems cause NaN outputs for reasons not quite clear</span>
+        <span class="c1"># Hypothesis is caused by large data spikes from a mass recenter but</span>
+        <span class="c1"># may not be the only cause.  This is a safety valve since NaN output</span>
+        <span class="c1"># is always invalid</span>
+        <span class="n">bad_values_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">data</span><span class="p">)</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">isinf</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span><span class="n">bad_values_mask</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;numeric problems - decon output vector has NaN or Inf values</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Known problem for certain types of bad data</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;If this occurs a lot check decon parameters&quot;</span>
+            <span class="n">d</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+            <span class="n">d</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">d</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span>
+
+        <span class="n">QCmd</span> <span class="o">=</span> <span class="n">engine</span><span class="o">.</span><span class="n">QCMetrics</span><span class="p">()</span>
+        <span class="c1"># convert to a dict for posting</span>
+        <span class="n">QCmd</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">QCmd</span><span class="p">)</span>
+        <span class="n">QCmd</span><span class="p">[</span><span class="s2">&quot;algorithm&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">alg</span>
+        <span class="c1"># this is not currently computed in the C++ operator</span>
+        <span class="c1"># but is a critical metric that is easily computed with numpy</span>
+        <span class="c1"># note RFdeconProcessor has this same algorithm which is</span>
+        <span class="c1"># a maintenance issue to assure they are consistent</span>
+        <span class="n">pe</span> <span class="o">=</span> <span class="n">prediction_error</span><span class="p">(</span><span class="n">engine</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+        <span class="n">QCmd</span><span class="p">[</span><span class="s2">&quot;prediction_error&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pe</span>
+        <span class="n">d</span><span class="p">[</span><span class="n">QCdata_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">QCmd</span>
+    <span class="k">if</span> <span class="n">window_output</span><span class="p">:</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">_WindowData3C</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">signal_window</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">return_wavelet</span><span class="p">:</span>
+        <span class="n">retval</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">retval</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+        <span class="n">ao</span> <span class="o">=</span> <span class="n">engine</span><span class="o">.</span><span class="n">actual_output</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
+        <span class="n">retval</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ao</span><span class="p">)</span>
+        <span class="n">ideal_out</span> <span class="o">=</span> <span class="n">engine</span><span class="o">.</span><span class="n">ideal_output</span><span class="p">()</span>
+        <span class="n">retval</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ideal_out</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">retval</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">d</span></div>
+
+
+
+<div class="viewcode-block" id="CNRArrayDecon">
+<a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.CNRDecon.CNRArrayDecon">[docs]</a>
+<span class="nd">@mspass_func_wrapper</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">CNRArrayDecon</span><span class="p">(</span>
+    <span class="n">ensemble</span><span class="p">,</span>
+    <span class="n">beam</span><span class="p">,</span>
+    <span class="n">engine</span><span class="p">,</span>
+    <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+    <span class="n">noise_window</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">signal_window</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">noise_spectrum</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">use_3C_noise</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">beam_component</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>  <span class="c1"># used only if beam is Seismogram</span>
+    <span class="n">use_wavelet_bandwidth</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">bandwidth_subdocument_key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">bandwidth_keys</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;low_f_band_edge&quot;</span><span class="p">,</span> <span class="s2">&quot;high_f_band_edge&quot;</span><span class="p">],</span>
+    <span class="n">return_wavelet</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">handles_ensembles</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Notes:  delete when writing final docstring</span>
+<span class="sd">    - assume ensemble members are aligned</span>
+<span class="sd">    - allow beam to be scalar or 3c, use component only if 3c</span>
+<span class="sd">    - get noise either by windowing beam or via noise_spectrum arg.  cross checks required to be one or the other</span>
+
+<span class="sd">    This function applies the Colored Noise Regularization (CNR)</span>
+<span class="sd">    deconvolution algorithm to data from an array held in a</span>
+<span class="sd">    `SeismogramEnsemble` object passed as the `ensemble` argument.</span>
+<span class="sd">    It is important to understand that the algorithm assumes the ensemble</span>
+<span class="sd">    data all have a common source wavelet that is to be deconvolved with</span>
+<span class="sd">    the signal defined by the `wavelet` argument.  The only case where that is</span>
+<span class="sd">    known to be true is for P or S phases at teleseismic distances</span>
+<span class="sd">    where high frequencies are automatically removed by attentuation.</span>
+<span class="sd">    The approach may also work for smaller aperture arrays with regional phases</span>
+<span class="sd">    but the spatial scale of aperture limits is more ambiguous.   It is known</span>
+<span class="sd">    that teleseismic body waves produce coherent stacks with arrays having</span>
+<span class="sd">    an aperture of thousands of kiloments (e.g. the Earthscope TA).</span>
+
+<span class="sd">    The deconvolution is driven by the single signal stored in the</span>
+<span class="sd">    TimeSeries object passed via the `wavelet` argument.   The inverse of that</span>
+<span class="sd">    wavelet is computed by the CNR algorithm using the spectrum of the noise</span>
+<span class="sd">    computed or passed to the funtion via the `noise_spectrum` argument. That is, we</span>
+<span class="sd">    use the same method as the multitaper method where damping*noise(f) is</span>
+<span class="sd">    added to the wavelet spectrum w(f) at each frequency in computing the</span>
+<span class="sd">    inverse operator in the frequency domain.</span>
+
+<span class="sd">    To allow some flexibility in the input, at the cost of a small amount of</span>
+<span class="sd">    complexity in argument checking, the function is expected to be run in</span>
+<span class="sd">    one of two ways.  The two modes are driven by the content of</span>
+<span class="sd">    three arguments:   noise_window, signal_window, and noise_spectrum.</span>
+<span class="sd">    Your inputs should match the assumptions for one of these two modes:</span>
+<span class="sd">        1.  If `noise_spectrum` is set (default is a None type),</span>
+<span class="sd">            the function assumes beam and the ensemble members have all</span>
+<span class="sd">            been previously windowed down to contain only the signal that</span>
+<span class="sd">            is to be deconvolved.   In this case, the noise_spectrum is</span>
+<span class="sd">            used to regularized the inverse to be computed from</span>
+<span class="sd">            the wavelet TimeSeries input.</span>
+<span class="sd">        2.  If `noise_spectrum` is undefined (i.e. None type default)</span>
+<span class="sd">            the two arguments `signal_window` and `noise_window` must both</span>
+<span class="sd">            be defined as valid mspass `TimeWindow` objects.  In this mode</span>
+<span class="sd">            beam and all the members of the ensemble are assumed to be in</span>
+<span class="sd">            relative time and of sufficient duration that we can use</span>
+<span class="sd">            `WindowData` to extract required data.  Note the time range</span>
+<span class="sd">            of the `noise_window` is only relevant to the beam</span>
+<span class="sd">            `TimeSeries` input.   i.e. what happens in this mode is that</span>
+<span class="sd">            `WindowData` is applied to the `beam` signal and the spectrum of</span>
+<span class="sd">            the noise is computed from that windowed segment.   If the</span>
+<span class="sd">            `beam` data does not contain that time range the entire</span>
+<span class="sd">            ensemble will be marked dead and the function will return</span>
+<span class="sd">            immediately.   Hence, if running in this mode be sure the</span>
+<span class="sd">            computed stack (beam) has data in the time range defined by</span>
+<span class="sd">            noise_window.   In this mode the `signal_window` is applied to</span>
+<span class="sd">            both the beam and all ensemble members and the time span</span>
+<span class="sd">            will be the same as `signal_window` for all data.  The</span>
+<span class="sd">            cleanest model to assure the function works in this mode is</span>
+<span class="sd">            to create the input with these restrictions:  (a) all enemble</span>
+<span class="sd">            members are in relative time, (b) the beam is in the same</span>
+<span class="sd">            relative time base based on a phase arrival time,</span>
+<span class="sd">            and (c) the beam is a stack of the ensemble members with</span>
+<span class="sd">            a range large enough to span the input `noise_window` range.</span>
+<span class="sd">    These two modes exist because at the time of this writing I could see</span>
+<span class="sd">    two very different ways to estimate the spectrum used to regularize</span>
+<span class="sd">    the inversion:  (a) the method of mode 2 derived from stack, and</span>
+<span class="sd">    (b) some average of the noise spectra of the ensemble members.</span>
+<span class="sd">    It is not at all clear which are preferred or even if it matters.</span>
+
+<span class="sd">    The other key issue in a solution produced by the algorithm used in</span>
+<span class="sd">    CNRDeconEngine is the bandwidth used to shape the output.   The engine&#39;s&#39;</span>
+<span class="sd">    deconvolution algorithm has arguments for the low and high frequency corners</span>
+<span class="sd">    that should be used to set the shaping wavelet for the output.</span>
+<span class="sd">    With an ensemble the choice of what that bandwidth should be is</span>
+<span class="sd">    not clear.   The default extracts the required data form the</span>
+<span class="sd">    `beam` TimeSeries object using the keys defined by the recipe</span>
+<span class="sd">    described in the next paragraph.  That is enabled by setting the</span>
+<span class="sd">    boolan arg `use_wavelet_bandwidth` True (the default).  If that</span>
+<span class="sd">    arg is set False, every member of the output ensemble that is</span>
+<span class="sd">    successfully deconvolved will have a different shaping wavelet</span>
+<span class="sd">    set by the bandwidth attributes defined for that datum.   It is</span>
+<span class="sd">    unknown at this writing which of these modes will be more useful</span>
+<span class="sd">    in what settings.</span>
+
+<span class="sd">    The bandwidth of the output for either of the approaches described in the</span>
+<span class="sd">    previous paragraph are controlled by two arguments:  `bandwidth_subdocument_key`</span>
+<span class="sd">    and `bandwidth_keys`.   If `bandwidth_subdocument_key` is set</span>
+<span class="sd">    (default is a None type) the function will attempt to extract a dictionary</span>
+<span class="sd">    with the key that is defined.  It will treat that as a &quot;subdocument&quot; and</span>
+<span class="sd">    attempt to low and high frequency band edges from that sudocument.  If</span>
+<span class="sd">    that arg is not set (None type defaullt) the function fetches the</span>
+<span class="sd">    low and high frequency band edges directly from the relevant data</span>
+<span class="sd">    object&#39;s Metadata container. The keys used to fetch the low and</span>
+<span class="sd">    high frequency band edges always come from a 2-element tuple that</span>
+<span class="sd">    is assumed to be the content of the `bandwidth_keys` argument.</span>
+<span class="sd">    (the 0 component is the low frequency edge and 1 the high edge)</span>
+<span class="sd">    Where that data is extracted depends on the `use_wavelet_bandwidth` boolean.</span>
+<span class="sd">    When True the function tries to extract the required attributes from</span>
+<span class="sd">    the `beam` TimeSeries object.  If that fails the entire ensemble</span>
+<span class="sd">    will be returned marked dead.  If False, the required values will</span>
+<span class="sd">    be extracted from each member and only members lacking the required</span>
+<span class="sd">    attributes would be killed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">prog</span> <span class="o">=</span> <span class="s2">&quot;CNRArrayDecon&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ensemble</span><span class="p">,</span> <span class="n">SeismogramEnsemble</span><span class="p">):</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;Illegal type for arg0 = &quot;</span>
+        <span class="n">message</span> <span class="o">+=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">ensemble</span><span class="p">))</span>
+        <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Must be a SeismogramEnsemble&quot;</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">beam</span><span class="p">,</span> <span class="p">(</span><span class="n">TimeSeries</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">)):</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;Illegal type for required arg1 = &quot;</span>
+        <span class="n">message</span> <span class="o">+=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">beam</span><span class="p">))</span>
+        <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Must be a TimeSeries or Seismogram&quot;</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">ensemble</span><span class="o">.</span><span class="n">dead</span><span class="p">()</span> <span class="ow">or</span> <span class="n">beam</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">beam</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;Received beam input marked dead - cannot proceed&quot;</span>
+            <span class="n">ensemble</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">prog</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+            <span class="n">ensemble</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">return_wavelet</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">ensemble</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">ensemble</span>
+
+    <span class="c1"># if noise_spectrum is defined noise_windowing is ignored</span>
+    <span class="k">if</span> <span class="n">noise_spectrum</span><span class="p">:</span>
+        <span class="n">psnoise</span> <span class="o">=</span> <span class="n">noise_spectrum</span>
+    <span class="k">elif</span> <span class="n">signal_window</span> <span class="ow">and</span> <span class="n">noise_window</span><span class="p">:</span>
+        <span class="c1"># logic means both have to be defined</span>
+        <span class="c1"># will not check type as TimeWindow objects as the following</span>
+        <span class="c1"># will abort with reasonable error messages if they aren&#39;t</span>
+        <span class="c1"># could use C++ raw function but this will give a more informative</span>
+        <span class="c1"># error message if the type of noise_window is wrong</span>
+        <span class="n">n2use</span> <span class="o">=</span> <span class="n">WindowData</span><span class="p">(</span><span class="n">beam</span><span class="p">,</span> <span class="n">noise_window</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="n">noise_window</span><span class="o">.</span><span class="n">end</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">n2use</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s2">&quot;Windowing failed when trying to extract noise data from beam signal</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+            <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Killing entire ensemble because we cannot deconvolve these data with this algorithm without noise data&quot;</span>
+            <span class="n">ensemble</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">prog</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+            <span class="n">ensemble</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">return_wavelet</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">[</span><span class="n">ensemble</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">ensemble</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">n2use</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">)</span> <span class="ow">and</span> <span class="n">use_3C_noise</span><span class="p">:</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s2">&quot;beam is a TimeSeries but requested 3C noise with windowing enabled</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+            <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Using windowed scalar beam data to compute noise spectrum&quot;</span>
+            <span class="n">ensemble</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">prog</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">beam</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">use_3C_noise</span><span class="p">:</span>
+                <span class="n">n2use</span> <span class="o">=</span> <span class="n">ExtractComponent</span><span class="p">(</span><span class="n">n2use</span><span class="p">,</span> <span class="n">beam_component</span><span class="p">)</span>
+            <span class="c1"># noise is extracted, now we need to extract the beam component</span>
+            <span class="c1"># as the wavelet</span>
+            <span class="n">beam</span> <span class="o">=</span> <span class="n">ExtractComponent</span><span class="p">(</span><span class="n">beam</span><span class="p">,</span> <span class="n">beam_component</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">use_3C_noise</span><span class="p">:</span>
+            <span class="n">psnoise</span> <span class="o">=</span> <span class="n">engine</span><span class="o">.</span><span class="n">compute_noise_spectrum3C</span><span class="p">(</span><span class="n">n2use</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">psnoise</span> <span class="o">=</span> <span class="n">engine</span><span class="o">.</span><span class="n">compute_noise_spectrum</span><span class="p">(</span><span class="n">n2use</span><span class="p">)</span>
+        <span class="c1"># we cannot proceed if the noise spectrum estimation failed</span>
+        <span class="k">if</span> <span class="n">psnoise</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
+            <span class="n">ensemble</span><span class="o">.</span><span class="n">elog</span> <span class="o">+=</span> <span class="n">psnoise</span><span class="o">.</span><span class="n">elog</span>
+            <span class="n">ensemble</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
+                <span class="n">prog</span><span class="p">,</span>
+                <span class="s2">&quot;compute_noise_spectrum failed - cannot process this ensemble&quot;</span><span class="p">,</span>
+                <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">ensemble</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">return_wavelet</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">[</span><span class="n">ensemble</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">ensemble</span>
+        <span class="n">beam</span> <span class="o">=</span> <span class="n">WindowData</span><span class="p">(</span><span class="n">beam</span><span class="p">,</span> <span class="n">signal_window</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="n">signal_window</span><span class="o">.</span><span class="n">end</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;Illegal argument combination.</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;When noise_spectrum is not set both noise_window and signal_windows are required</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;See docstring for this function&quot;</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">signal_window</span><span class="p">:</span>
+        <span class="n">ensout</span> <span class="o">=</span> <span class="n">WindowData</span><span class="p">(</span><span class="n">ensemble</span><span class="p">,</span> <span class="n">signal_window</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="n">signal_window</span><span class="o">.</span><span class="n">end</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">ensout</span> <span class="o">=</span> <span class="n">ensemble</span>
+
+    <span class="c1"># this is a key step that computes the inverse operator in the</span>
+    <span class="c1"># frequency domain.  In this algorithm that inverse is applied to all</span>
+    <span class="c1"># ensemble members.</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">engine</span><span class="o">.</span><span class="n">initialize_inverse_operator</span><span class="p">(</span><span class="n">beam</span><span class="p">,</span> <span class="n">psnoise</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">MsPASSError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+        <span class="n">ensout</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+        <span class="n">ensout</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">generr</span><span class="p">:</span>
+        <span class="n">ensout</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
+            <span class="s2">&quot;CNRArrayDecon&quot;</span><span class="p">,</span> <span class="s2">&quot;Unexpected exception&quot;</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span>
+        <span class="p">)</span>
+        <span class="n">ensout</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="s2">&quot;CNRArrayDecon&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">generr</span><span class="p">),</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+        <span class="n">ensout</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">ensout</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">return_wavelet</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">ensout</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">ensout</span>
+
+    <span class="k">if</span> <span class="n">use_wavelet_bandwidth</span><span class="p">:</span>
+        <span class="p">[</span><span class="n">beam</span><span class="p">,</span> <span class="n">flow</span><span class="p">,</span> <span class="n">fhigh</span><span class="p">]</span> <span class="o">=</span> <span class="n">fetch_and_validate_bandwidth_data</span><span class="p">(</span>
+            <span class="n">beam</span><span class="p">,</span> <span class="n">bandwidth_keys</span><span class="p">,</span> <span class="n">bandwidth_subdocument_key</span>
+        <span class="p">)</span>
+        <span class="c1"># the above can kill - no choice in this case but to kill the entire</span>
+        <span class="c1"># ensemble.  This is so bad it maybe should be an exception</span>
+        <span class="c1"># or allow an option to abort on this error</span>
+        <span class="k">if</span> <span class="n">beam</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;Invalid bandwidth data encountered when trying to fetch from beam datum</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Details in earlier log message - killing entire ensemble&quot;</span>
+            <span class="n">ensout</span><span class="o">.</span><span class="n">elog</span> <span class="o">=</span> <span class="n">beam</span><span class="o">.</span><span class="n">elog</span>
+            <span class="n">ensout</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">prog</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+            <span class="n">ensout</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">return_wavelet</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">[</span><span class="n">ensout</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">ensout</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ensout</span><span class="o">.</span><span class="n">member</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="n">ensout</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">live</span><span class="p">:</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="n">ensout</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>  <span class="c1"># only an alias in this context</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">use_wavelet_bandwidth</span><span class="p">:</span>
+                <span class="p">[</span><span class="n">d</span><span class="p">,</span> <span class="n">flow</span><span class="p">,</span> <span class="n">fhigh</span><span class="p">]</span> <span class="o">=</span> <span class="n">fetch_and_validate_bandwidth_data</span><span class="p">(</span>
+                    <span class="n">d</span><span class="p">,</span> <span class="n">bandwidth_keys</span><span class="p">,</span> <span class="n">bandwidth_subdocument_key</span>
+                <span class="p">)</span>
+            <span class="c1"># We don&#39;t need to test for psnoise being live as we assume</span>
+            <span class="c1"># that error was trapped above - caution if code is altered</span>
+            <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">live</span><span class="p">:</span>
+                <span class="c1"># There are other ways this can throw an exception so we</span>
+                <span class="c1"># need this error handler</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">ensout</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">engine</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">psnoise</span><span class="p">,</span> <span class="n">flow</span><span class="p">,</span> <span class="n">fhigh</span><span class="p">)</span>
+                <span class="k">except</span> <span class="n">MsPASSError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+                    <span class="n">ensout</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+                    <span class="n">ensout</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">return_wavelet</span><span class="p">:</span>
+        <span class="n">retval</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">retval</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ensout</span><span class="p">)</span>
+        <span class="n">ao</span> <span class="o">=</span> <span class="n">engine</span><span class="o">.</span><span class="n">actual_output</span><span class="p">(</span><span class="n">beam</span><span class="p">)</span>
+        <span class="n">retval</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ao</span><span class="p">)</span>
+        <span class="n">ideal_out</span> <span class="o">=</span> <span class="n">engine</span><span class="o">.</span><span class="n">ideal_output</span><span class="p">()</span>
+        <span class="n">retval</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ideal_out</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">retval</span> <span class="o">=</span> <span class="n">ensout</span>
+
+    <span class="k">return</span> <span class="n">retval</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020-2021, Ian Wang.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

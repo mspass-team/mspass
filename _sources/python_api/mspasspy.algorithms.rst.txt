@@ -1,6 +1,14 @@
 mspasspy.algorithms
 ===================
 
+CNRDecon
+---------------------
+
+.. automodule:: mspasspy.algorithms.CNRDecon
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 MCXcorStacking
 ---------------------
 

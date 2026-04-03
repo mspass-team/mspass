@@ -116,6 +116,15 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Python API</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">mspasspy.algorithms</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#module-mspasspy.algorithms.CNRDecon">CNRDecon</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.CNRDecon.CNRArrayDecon"><code class="docutils literal notranslate"><span class="pre">CNRArrayDecon()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.CNRDecon.CNRRFDecon"><code class="docutils literal notranslate"><span class="pre">CNRRFDecon()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.CNRDecon.fetch_and_validate_bandwidth_data"><code class="docutils literal notranslate"><span class="pre">fetch_and_validate_bandwidth_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.CNRDecon.fetch_bandwidth_data"><code class="docutils literal notranslate"><span class="pre">fetch_bandwidth_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.CNRDecon.prediction_error"><code class="docutils literal notranslate"><span class="pre">prediction_error()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.CNRDecon.validate_bandwidth_data"><code class="docutils literal notranslate"><span class="pre">validate_bandwidth_data()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="#module-mspasspy.algorithms.MCXcorStacking">MCXcorStacking</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.MCXcorStacking.MCXcorPrepP"><code class="docutils literal notranslate"><span class="pre">MCXcorPrepP()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mspasspy.algorithms.MCXcorStacking.align_and_stack"><code class="docutils literal notranslate"><span class="pre">align_and_stack()</span></code></a></li>
@@ -292,6 +301,405 @@
              
   <section id="mspasspy-algorithms">
 <h1>mspasspy.algorithms<a class="headerlink" href="#mspasspy-algorithms" title="Link to this heading"></a></h1>
+<section id="module-mspasspy.algorithms.CNRDecon">
+<span id="cnrdecon"></span><h2>CNRDecon<a class="headerlink" href="#module-mspasspy.algorithms.CNRDecon" title="Link to this heading"></a></h2>
+<p>This file contains a set of wrappers for the revised version of the
+colored noise greulagrization (CNR) algorithms.  The prototype was
+called CNR3CDecon.   It will be deprecated.  This one uses a set of
+revised C++ classes for the engine that allow the functions used here
+to satify the dask definition of “pure”.</p>
+<p>Created on Tue May 28 19:22:10 2024</p>
+<p>&#64;author: pavlis</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.algorithms.CNRDecon.CNRArrayDecon">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.CNRDecon.</span></span><span class="sig-name descname"><span class="pre">CNRArrayDecon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ensemble</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beam</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">engine</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise_window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal_window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise_spectrum</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_3C_noise</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beam_component</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_wavelet_bandwidth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bandwidth_subdocument_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bandwidth_keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['low_f_band_edge',</span> <span class="pre">'high_f_band_edge']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_wavelet</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handles_ensembles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="reference internal" href="../_modules/mspasspy/algorithms/CNRDecon.html#CNRArrayDecon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.CNRDecon.CNRArrayDecon" title="Link to this definition"></a></dt>
+<dd><p>Notes:  delete when writing final docstring
+- assume ensemble members are aligned
+- allow beam to be scalar or 3c, use component only if 3c
+- get noise either by windowing beam or via noise_spectrum arg.  cross checks required to be one or the other</p>
+<p>This function applies the Colored Noise Regularization (CNR)
+deconvolution algorithm to data from an array held in a
+<cite>SeismogramEnsemble</cite> object passed as the <cite>ensemble</cite> argument.
+It is important to understand that the algorithm assumes the ensemble
+data all have a common source wavelet that is to be deconvolved with
+the signal defined by the <cite>wavelet</cite> argument.  The only case where that is
+known to be true is for P or S phases at teleseismic distances
+where high frequencies are automatically removed by attentuation.
+The approach may also work for smaller aperture arrays with regional phases
+but the spatial scale of aperture limits is more ambiguous.   It is known
+that teleseismic body waves produce coherent stacks with arrays having
+an aperture of thousands of kiloments (e.g. the Earthscope TA).</p>
+<p>The deconvolution is driven by the single signal stored in the
+TimeSeries object passed via the <cite>wavelet</cite> argument.   The inverse of that
+wavelet is computed by the CNR algorithm using the spectrum of the noise
+computed or passed to the funtion via the <cite>noise_spectrum</cite> argument. That is, we
+use the same method as the multitaper method where damping*noise(f) is
+added to the wavelet spectrum w(f) at each frequency in computing the
+inverse operator in the frequency domain.</p>
+<p>To allow some flexibility in the input, at the cost of a small amount of
+complexity in argument checking, the function is expected to be run in
+one of two ways.  The two modes are driven by the content of
+three arguments:   noise_window, signal_window, and noise_spectrum.
+Your inputs should match the assumptions for one of these two modes:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>If <cite>noise_spectrum</cite> is set (default is a None type),
+the function assumes beam and the ensemble members have all
+been previously windowed down to contain only the signal that
+is to be deconvolved.   In this case, the noise_spectrum is
+used to regularized the inverse to be computed from
+the wavelet TimeSeries input.</p></li>
+<li><p>If <cite>noise_spectrum</cite> is undefined (i.e. None type default)
+the two arguments <cite>signal_window</cite> and <cite>noise_window</cite> must both
+be defined as valid mspass <cite>TimeWindow</cite> objects.  In this mode
+beam and all the members of the ensemble are assumed to be in
+relative time and of sufficient duration that we can use
+<cite>WindowData</cite> to extract required data.  Note the time range
+of the <cite>noise_window</cite> is only relevant to the beam
+<cite>TimeSeries</cite> input.   i.e. what happens in this mode is that
+<cite>WindowData</cite> is applied to the <cite>beam</cite> signal and the spectrum of
+the noise is computed from that windowed segment.   If the
+<cite>beam</cite> data does not contain that time range the entire
+ensemble will be marked dead and the function will return
+immediately.   Hence, if running in this mode be sure the
+computed stack (beam) has data in the time range defined by
+noise_window.   In this mode the <cite>signal_window</cite> is applied to
+both the beam and all ensemble members and the time span
+will be the same as <cite>signal_window</cite> for all data.  The
+cleanest model to assure the function works in this mode is
+to create the input with these restrictions:  (a) all enemble
+members are in relative time, (b) the beam is in the same
+relative time base based on a phase arrival time,
+and (c) the beam is a stack of the ensemble members with
+a range large enough to span the input <cite>noise_window</cite> range.</p></li>
+</ol>
+</div></blockquote>
+<p>These two modes exist because at the time of this writing I could see
+two very different ways to estimate the spectrum used to regularize
+the inversion:  (a) the method of mode 2 derived from stack, and
+(b) some average of the noise spectra of the ensemble members.
+It is not at all clear which are preferred or even if it matters.</p>
+<p>The other key issue in a solution produced by the algorithm used in
+CNRDeconEngine is the bandwidth used to shape the output.   The engine’s’
+deconvolution algorithm has arguments for the low and high frequency corners
+that should be used to set the shaping wavelet for the output.
+With an ensemble the choice of what that bandwidth should be is
+not clear.   The default extracts the required data form the
+<cite>beam</cite> TimeSeries object using the keys defined by the recipe
+described in the next paragraph.  That is enabled by setting the
+boolan arg <cite>use_wavelet_bandwidth</cite> True (the default).  If that
+arg is set False, every member of the output ensemble that is
+successfully deconvolved will have a different shaping wavelet
+set by the bandwidth attributes defined for that datum.   It is
+unknown at this writing which of these modes will be more useful
+in what settings.</p>
+<p>The bandwidth of the output for either of the approaches described in the
+previous paragraph are controlled by two arguments:  <cite>bandwidth_subdocument_key</cite>
+and <cite>bandwidth_keys</cite>.   If <cite>bandwidth_subdocument_key</cite> is set
+(default is a None type) the function will attempt to extract a dictionary
+with the key that is defined.  It will treat that as a “subdocument” and
+attempt to low and high frequency band edges from that sudocument.  If
+that arg is not set (None type defaullt) the function fetches the
+low and high frequency band edges directly from the relevant data
+object’s Metadata container. The keys used to fetch the low and
+high frequency band edges always come from a 2-element tuple that
+is assumed to be the content of the <cite>bandwidth_keys</cite> argument.
+(the 0 component is the low frequency edge and 1 the high edge)
+Where that data is extracted depends on the <cite>use_wavelet_bandwidth</cite> boolean.
+When True the function tries to extract the required attributes from
+the <cite>beam</cite> TimeSeries object.  If that fails the entire ensemble
+will be returned marked dead.  If False, the required values will
+be extracted from each member and only members lacking the required
+attributes would be killed.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.algorithms.CNRDecon.CNRRFDecon">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.CNRDecon.</span></span><span class="sig-name descname"><span class="pre">CNRRFDecon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seis</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">engine</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">component</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise_spectrum</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal_window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise_window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_3C_noise</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bandwidth_subdocument_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bandwidth_keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['low_f_band_edge',</span> <span class="pre">'high_f_band_edge']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">QCdata_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'CNRFDecon_properties'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_wavelet</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_output</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'CNRRFDecon'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dryrun</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace_return</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handles_ensembles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">function_return_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">checks_arg0_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handles_dead_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="reference internal" href="../_modules/mspasspy/algorithms/CNRDecon.html#CNRRFDecon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.CNRDecon.CNRRFDecon" title="Link to this definition"></a></dt>
+<dd><p>Uses the CNRRFDeconEngine instance passed as <cite>engine</cite> to
+produce a “receiver function” type of deconvolution from an
+input <cite>Seismogram</cite> object passed through arg0.   I define a
+“receiver function” as the output of a deconvolution
+from a single seismogram input.   That differs from an array
+deconvolution where multiple seismograms are used to compute
+the convolution operator.   The <cite>CNRDeconEngine</cite> C++ class
+used by this function has a sibling called <cite>CNRArrayDecon</cite> that
+uses the same engine but is an array method.</p>
+<p>As a “receiver function” algorithm this function demands some
+restrictions on the input that are checked before it will run.
+1.   The input through arg0 must be a <cite>Seismgram</cite>.
+2.   An instance of a <cite>CNRDeconEngine</cite> is required and must</p>
+<blockquote>
+<div><p>be entered via arg1.</p>
+</div></blockquote>
+<ol class="arabic simple" start="3">
+<li><p>The algorithm requires a segment of the input Seismogram
+data it should treat as signal and a power spectrum
+estimate of the noise to use for regularization.</p></li>
+</ol>
+<p>For flexibility the way you can satisify item 3 has some
+complexity.   There are two combinations of arguments that
+can be used to satisfy requirement 3
+1.  Define BOTH signal_window and noise_window (both args are None</p>
+<blockquote>
+<div><p>by default).   When that constraint is true the input
+Seismogram (seis == arg0) is cut into two segments defined
+by the noise_window and signal_window <cite>TimeWindow</cite> objects.
+The segment defined by “signal_window” will be deconvolved in
+the frequency domain using the component defined by the
+<cite>component</cite> argument as the wavelet estimate.   Since this
+algorithm is designed for P wave data that is expected to
+be some estimate of the longitudinal component (Z of RTZ, L of LQT,
+of P of the free surface transformation).  This algorithm
+then computes a noise spectrum estimate internally from the
+waveform segment extracted with using the noise_window time range.
+If use_3C_noise is set True the average of all three components is
+used for the spectrum estimate.   When False the spectrum is
+computed form the longitudinal component defined with the
+“component” argument.  NOTE:   this approach should be viewed
+as the standard usage of this function.</p>
+</div></blockquote>
+<ol class="arabic simple" start="2">
+<li><p>An alternative approach is triggered by passing a valid
+<cite>PowerSpectrum</cite> object via the “noise_data” argument.   When
+that is the case the spectrum estimate in the object received is
+used for the inverse operator regularization.   In this
+case the data are assumed already windowed if signal_window is
+None and noise_window is ignored.  When signal_window is defined
+the data for deconvolution is windowed to that time range
+before running the deconvolution operator.</p></li>
+</ol>
+<p>An alternative way to look at this is the function uses the following
+logic to sort out valid inputs.  It is written in python pseudocode</p>
+<blockquote>
+<div><dl>
+<dt>if noise_data:</dt><dd><dl class="simple">
+<dt>if signal_window:</dt><dd><p>seis = WindowData(seis,signal_window.start, signal_window.end)</p>
+</dd>
+</dl>
+<p>deconvolve seis</p>
+</dd>
+<dt>elif signal_window and noise_window:</dt><dd><p>seis = WindowData(seis,signal_window.start, signal_window.end)
+noise = WindowData(seis,noise_window.start,noise_window.end)
+noise_spectrum = engine.compute_spectrum(noise)
+deconvolve seis using noise_spectrum</p>
+</dd>
+<dt>else:</dt><dd><p>raise exception</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>The algorithm applied by this function has two novel features:
+1.  The bandwidth of the deconvolution operator is adjusted based on</p>
+<blockquote>
+<div><p>estimated bandwith from the spectrum of the signal and noise.
+The bandwwidth properties are extracted from Metadata
+using keys with defaults defined by values stored in a
+subdocument (python dict) accessed by the key defined by
+the “bandwidth_keys” argument.  The defaults are those
+set by the mspass function broadband_snr_QC.</p>
+</div></blockquote>
+<ol class="arabic simple" start="2">
+<li><p>The inverse is regularized by by a frequency dependent damping
+using the noise spectrum.</p></li>
+</ol>
+<p>Examples found in tutorials demonstrate how this algorithm
+produce usable output in marginal snr conditions that would cause
+other common RF decon operators to produce junk.</p>
+<p>The main work of this function is done inside a C++ function
+bound to python of type <cite>CNRDeconEngine</cite> passed as the arg1
+(symbol <cite>engine</cite>).   The engine is passed as an argument because
+it has a fairly high instantiation cost.   Note that object
+is always instantiated an AntelopePf file that defines its
+properties.  See the comments in the default file and the
+documentation of the C++ class for guidance on setting the
+engine parameters.</p>
+<p>Function arguments:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>seis</strong> (Must be a <cite>Seismogram</cite> object.) – <cite>Seismogram</cite> object containing data to be deconvolved.
+As noted above it should normally be the section of data that is to be
+deconvolved or a larger window that will contain data spanning the time
+range defined by the signal_window and noise_window arguments.</p></li>
+<li><p><strong>engine</strong> (<cite>CNRDeconEngine</cite>) – Instance of the CNRDeconEngine object noted above.
+Most of the behavior of the operator is defined by this engine object.</p></li>
+<li><p><strong>component</strong> (<em>integer</em><em> (</em><em>default 2</em><em>)</em>) – component of seis to use as the wavelet estimate.
+As noted above this function is designed for P wave data so ths
+should defined the component number of seis to assume is an
+estimate of the source wavelet.</p></li>
+<li><p><strong>wavelet</strong> – Alternative way to specify wavelet to use for deconvolution, f</p></li>
+<li><p><strong>noise_spectrum</strong> (<cite>PowerSpectrum</cite> object or None.   If None (default)
+both the <cite>signal_window</cite> and <cite>noise_window</cite> must be defines
+(see above for the full logic).) – Alternative way to define data to be used
+to regularize the deconvolution operator.  See above for
+usage restrictions.</p></li>
+<li><p><strong>signal_window</strong> (mspasspy <cite>TimeWindow</cite> object.) – time span to extract as the signal to be
+deconvolved.  If defined it is always used.   Only allowed to
+be None if <cite>noise_spectrum</cite> is defined.</p></li>
+<li><p><strong>noise_window</strong> (<cite>TimeSeries</cite> object or None (default)  Note
+can be None only if <cite>noise_spectum</cite> is defined.) – similar to signal_window but for data section that
+is to be defined as noise.  Ignored if <cite>noise_spectrum</cite> is defined.
+Otherwise it is required and data in the specified time range is
+used to regularize the inverse operator in the frequency domain.</p></li>
+<li><p><strong>use_3C_noise</strong> – When True the power spectrum used for regularizing
+the inverse for deconvolution will be computed from the average power
+spectrum on all three components.   When False (default) the spectrum
+is derived by extracting a TimeSeries from that defined by the
+component argument.  Ignored if <cite>noise_spectrum</cite> is defined</p></li>
+<li><p><strong>bandwidth_subdocument_key</strong> (<em>string</em>) – When set (default is None)
+bandwidth data will be extracted from a subdocument retrieved with
+this key.   e.g. the broadband_snr_QC function, which would be the normal
+input, has a default of <cite>Parrival</cite> into which snr data are posted including
+bandwidth estimates.  When set the function first retrieves the
+subdocument dict and then the keys defined by <cite>bandwidth_keys</cite> are
+extracted from that dict container.   When this arg is None (default)
+the <cite>bandwidth_keys</cite> are assumed to be defined directly in the Metadata
+container of seis.</p></li>
+<li><p><strong>bandwidth_keys</strong> (tuple with two strings defining value keys.
+Defaults are keys used by <cite>broadband_snr_QC</cite> so this parameter
+will not need to be changed unless a different algorithm is used
+to estimate te bandwidth parameters.) – must define a tuple with two strings that are
+keys defining the bandwidth defined for the inverse operator.   Those
+values should normally be computed by using the MsPASS function
+<cite>broadband_srr_QC</cite>.  The 0 component of the tuple is assumed to be
+a key to use to extract the low frequency corner estimate for the data
+bandwidth.   Component 1 is the key used to extract the high frequency
+corner.  Note the relationship of this parameter to
+<cite>bandwidth_subdocument_key</cite> described immediately above.</p></li>
+<li><p><strong>QCdata_key</strong> (<em>string</em><em> (</em><em>default &quot;CNRFDecon_properties&quot;</em><em> )</em>) – The engine has a QCMetrics method that
+posts some useful data for evaluating results.  This function
+adds others.  The combination is posted to a python dict
+that is then pushed to the return datum’s Metadata container
+with this key.  The result when stored in MongoDB is a
+“subdocument” with this key.</p></li>
+<li><p><strong>return_wavelet</strong> – When False (default) only the estimated
+receiver function is returned.  When True the return is a tuple
+with 0 containing the RF estimate, 1 containing the actual_output
+of the operator and 1 containing the ideal outpu wavelet.</p></li>
+<li><p><strong>window_output</strong> – boolean that when True (default) causes the
+output to be windowed in the range defined by signal_window.
+When False the output will normally be longer with the number of
+points being the fft size used internally.   That is, the fft
+is normally zero padded so some signal bleeds to samples between
+npts an the fft size.   False is largely reserved for debugging.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><cite>Seismogram</cite> when return_wavelet is False and a tuple as
+described above if True.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.algorithms.CNRDecon.fetch_and_validate_bandwidth_data">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.CNRDecon.</span></span><span class="sig-name descname"><span class="pre">fetch_and_validate_bandwidth_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bdkeys</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bandwidth_subdocument_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="reference internal" href="../_modules/mspasspy/algorithms/CNRDecon.html#fetch_and_validate_bandwidth_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.CNRDecon.fetch_and_validate_bandwidth_data" title="Link to this definition"></a></dt>
+<dd><p>Top-level function to validate bandwidth data passed via a Metadata
+container in a seismic data object.   This uses both the fetch_bandwidth_data
+and the validate_bandwidth_data functions to standardize getting a valid
+range of frequencies to use for the inverse operator estimated by
+the CNRDeconEngine operator.  It will never raise an exception but
+can kill the datum it receives for testing if the keys are invalid
+or the values are not reasonble (i.e. high edge of the band is less than
+the low frequency edge).  This function is used in both the single
+station and array (ensemble) versions of the CNR Deconvolution
+method.   It like the things it uses avoids a bunch of otherwise
+redundant code.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>d</strong> (<em>atomic  mnpass seismic data object</em>) – input datum</p></li>
+<li><p><strong>bdkeys</strong> – required tuple/array of keys that define the</p></li>
+</ul>
+</dd>
+</dl>
+<p>keys that should be used top fetch the low (component 0) and
+high (component 1) band edges for the operator.
+:type:  subscriptable container with two strings - python array or tuple.
+:param bandwidth_subdocument_key:   When not None (the default) the
+function will first attempt to extract a subdocument (dictionary) from
+the input data using this key.   If successful it will attempt to
+extract data from that dictionary using the keys defined in bdkeys.
+If the key is not found the datum will be marked data, and returned
+with a descriptive error message.
+:type bandwith_subdocument_key:  None or string
+:return: type with 3 components</p>
+<blockquote>
+<div><p>0 = copy of data which may be marked dead if the process failed
+1 - flow
+2 - fhigh</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.algorithms.CNRDecon.fetch_bandwidth_data">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.CNRDecon.</span></span><span class="sig-name descname"><span class="pre">fetch_bandwidth_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keys</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="reference internal" href="../_modules/mspasspy/algorithms/CNRDecon.html#fetch_bandwidth_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.CNRDecon.fetch_bandwidth_data" title="Link to this definition"></a></dt>
+<dd><p>Small convenience function extracts high and low frequency
+bandwidth data from dictionary like container md.   Assumes keys is
+assumed a pair of strings passed as the content of the bandwidth_keys
+argument of CNRRFDecon or CNRArrayDecon.   It is one of those
+small functions used to avoid repetitions code.
+:param md:  dictionary like container from which values are to be fetched.
+:type md:  dictionary like container - needs string subscripting and
+in test (“x” in md).
+:param keys:  pair of strings that will be used to extract values from md.
+:type keys:  list/array/tuple of two strings
+:return tuple:  returns a tuple with two values.  With success two floating
+point numbers that are the values returned by each of the keys passed via
+the keys argument.   The decon operator assume that 0 is the low frequency
+edge of the working band and 1 is the high frequency band edge.
+Returns a -1.0 value in any field that was not defined.   Note that makes
+sense since although a negative frequency is meaningful it is not in  this
+context.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.algorithms.CNRDecon.prediction_error">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.CNRDecon.</span></span><span class="sig-name descname"><span class="pre">prediction_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">engine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wavelet</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../_modules/mspasspy/algorithms/CNRDecon.html#prediction_error"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.CNRDecon.prediction_error" title="Link to this definition"></a></dt>
+<dd><p>Computes prediction error of deconvolution operator defined as
+norm(ao-io)/norm(io) where ao is the return from the
+actual_output method of engine and io is the return from
+the ideal_output of engine.  The computed norm is L2
+:param engine:   assumed valid instance of a CNRDeconEngine</p>
+<blockquote>
+<div><p>class</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>wavelet</strong> – wavelet TimeSeries object used in deconvolution.
+For this operator it is not necessarily constant this
+required for actual_output method.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.algorithms.CNRDecon.validate_bandwidth_data">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.CNRDecon.</span></span><span class="sig-name descname"><span class="pre">validate_bandwidth_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bd</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bdkeys</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/CNRDecon.html#validate_bandwidth_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.CNRDecon.validate_bandwidth_data" title="Link to this definition"></a></dt>
+<dd><p>Companion to fetch_bandwidth_data above to regularize handing of
+errors from fetching bandwidth data.  A negative frequency is used as a
+signal b fetch_bnadwidth_data of a metadata error in fetching a particular
+bandwidth value.   This function posts a standard message to d, kills it,
+and returns the body with the appended error message.  Another helper
+done to reduce duplicate code.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>d</strong> (normally a <cite>Seismogram</cite> object but there is no type checking.) – seismic data object being processed</p>
+</dd>
+</dl>
+<p>Uses kill and error log concepts.
+:param bd:  pair of floats returned by fetch_bandwidth_data.  -1.0 is
+used by that function to flag undefined.
+:type bd:  tuple/array/list with 2 floats
+:param bdkeys:   parallel list/array/tuple of keys that were used by
+fetch_bandwidth_data to fetch bandwidth data.  Required to post an
+error message when necessary that will be helpful.
+:return:  copy of the data if there are not problems.  If the bandwidth
+data is not defined or is invalide (flow&gt;figh) the return will be marked
+dead and contain error messages describing the problem.</p>
+</dd></dl>
+
+</section>
 <section id="module-mspasspy.algorithms.MCXcorStacking">
 <span id="mcxcorstacking"></span><h2>MCXcorStacking<a class="headerlink" href="#module-mspasspy.algorithms.MCXcorStacking" title="Link to this heading"></a></h2>
 <p>Module implementing a similar algorithm to dbxcor in python.</p>
@@ -299,7 +707,7 @@
 <p>&#64;author: pavlis</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="mspasspy.algorithms.MCXcorStacking.MCXcorPrepP">
-<span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.MCXcorStacking.</span></span><span class="sig-name descname"><span class="pre">MCXcorPrepP</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ensemble</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise_window</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise_metric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mad'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_beam_metric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'bandwidth'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snr_doc_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Parrival'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">low_f_corner</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">high_f_corner</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">npoles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter_parameter_keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['MCXcor_f_low',</span> <span class="pre">'MCXcor_f_high',</span> <span class="pre">'MCXcor_npoles']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coda_level_factor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">set_phases</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Ptime_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Ptime'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pPtime_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pPtime'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">PPtime_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'PPtime'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">station_collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'channel'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">search_window_fraction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.9</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minimum_coda_duration</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">correlation_window_start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-3.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handles_ensembles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">checks_arg0_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handles_dead_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeriesEnsemble" title="mspasspy.ccore.seismic.TimeSeriesEnsemble"><span class="pre">TimeSeriesEnsemble</span></a></span></span><a class="reference internal" href="../_modules/mspasspy/algorithms/MCXcorStacking.html#MCXcorPrepP"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.MCXcorStacking.MCXcorPrepP" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.MCXcorStacking.</span></span><span class="sig-name descname"><span class="pre">MCXcorPrepP</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ensemble</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise_window</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise_metric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mad'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_beam_metric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'bandwidth'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snr_doc_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Parrival'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">low_f_corner</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">high_f_corner</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">npoles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter_parameter_keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['MCXcor_f_low',</span> <span class="pre">'MCXcor_f_high',</span> <span class="pre">'MCXcor_npoles']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coda_level_factor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">set_phases</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Ptime_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Ptime'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pPtime_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pPtime'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">PPtime_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'PPtime'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">station_collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'channel'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">search_window_fraction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.9</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minimum_coda_duration</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">correlation_window_start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-3.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handles_ensembles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">checks_arg0_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handles_dead_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="reference internal" href="../_modules/mspasspy/algorithms/MCXcorStacking.html#MCXcorPrepP"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.MCXcorStacking.MCXcorPrepP" title="Link to this definition"></a></dt>
 <dd><p>Function used to preprocess an ensemble  to prepare input for
 running multichannel cross-correlation and stacking method
 (automated dbxcor algorithm) of P phase data.  This function should
@@ -311,10 +719,7 @@ user interface.   This function can be thought of a robot that will
 attempt to set all the required parameters automatically using signal processing.
 It will attempt to produce two inputs required by the <cite>align_and_stack</cite>:
 1.  What I call a “correlation window”.
-2.  The ensemble member that is to be used as the initial estimate of the</p>
-<blockquote>
-<div><p>beam (stack of the data aligned by cross correlation).</p>
-</div></blockquote>
+2.  The ensemble member that is to be used as the initial estimate of the beam (stack of the data aligned by cross correlation).</p>
 <p>A CRITICAL assumption of this function is that the input ensemble’s data
 have been processed with the snr module function <cite>broadband_snr_QC</cite>.
 That function computes and posts multiple snr metrics to a subdocument
@@ -346,7 +751,7 @@ argument and the coda level cutoff is computed as
 valued passed via the function argument with that key.
 Because this function is designed strictly for P phases it has to
 handle the complexity of interference by secondary P phases.   For
-that reason it compute arrival times for pP and PP and will always
+that reason it computes arrival times for pP and PP and will always
 start the coda search before time of the smaller of pP or PP.
 Note, however, that pP is not used a constraint if the source depth is
 less than 100 km.   The justification for that number can be found in
@@ -365,12 +770,13 @@ to the <cite>Metadata</cite> of that <cite>TimeSeries</cite> where <cite>align_a
 can parse them to set the correlation time window.</p></li>
 </ol>
 <p>The function returns a copy of the input ensemble filtered to the
-average bandwidth and the initial beam estimate.  They are return
-as a tuple with 0 the ensemble and 1 the initial beam estimate.
+average bandwidth as component 0 of a tuple.  Component 1 of that
+tuple contains an the initial beam estimate that should be used
+as the input to align_and_stack.
 Callers should verify the beam signal is marked live.  A dead
 beam signal indicates the algorithm failed in one way or another.
-Errors at the level will result in errors being posted to the
-<cite>ErrorLogger</cite> container of the beam output.  Note also this
+Errors at that level will result in messages being posted to the
+<cite>ErrorLogger</cite> container of the beam output (elog attribute).  Note also this
 algorithm can kill some ensemble members in the output that
 were marked live in the input.</p>
 <dl class="field-list simple">
@@ -425,7 +831,7 @@ pPtimme_key, and PPtime_key.</p></li>
 <li><p><strong>PPtime_key</strong> – These three arguments define alternative keys that
 will be used to fetch (if set_phases is false) or post (if set_phases is True)
 computed P, pP, and PP times to each member’s Metadata container.
-Changing any of these values not really advised when set_phases is True.
+Changing any of these values is not really advised when set_phases is True.
 These are most useful if the phase arrival times were previously
 computed or measured and posted with different keys.</p></li>
 <li><p><strong>station_collection</strong> (<em>string</em><em> (</em><em>default &quot;channel&quot;</em><em>)</em>) – MonogDB collection name used to fetch
@@ -460,6 +866,13 @@ set in the output “beam” is fixed as this value.   It is normally
 a negative number defining a time before P that no signal is likely to
 have an arrival before this relative time.</p></li>
 </ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>tuple with two components.  Component 0 holds a copy of the
+input ensembled filtered with bandwidth range estimated by the
+algorithm but NOT time shifted. Component 1 is an best guess of
+a suitable initial beam estimate for running the robust stacking
+algorithm of dbxcor (it requires an initial bean estiamte).</p>
 </dd>
 </dl>
 </dd></dl>
@@ -512,13 +925,11 @@ input via the <cite>correlation_window_keys</cite> argument.  If
 defined that argument is assumed to contain a pair of strings
 that can be used as keys to fetch start (component 0)
 and end times (component 1) from the Metadata container of
-the TimeSeries objct passed via beam. For example,
-<a href="#id1"><span class="problematic" id="id2">``</span></a><a href="#id3"><span class="problematic" id="id4">`</span></a></p>
+the TimeSeries objct passed via beam. For example,</p>
 <blockquote>
 <div><p>correlation_window_keys = [‘correlation_start’,’correlation_end’]</p>
 </div></blockquote>
-<p><a href="#id5"><span class="problematic" id="id6">``</span></a>`
-would cause the function to attempt to fetch the
+<p>would cause the function to attempt to fetch the
 start time with “correlation_start” and end time with
 “correlation_end”.  In the default both <cite>correlation_window</cite>
 and <cite>correlation_window_keys</cite> are None which cause the
@@ -662,7 +1073,7 @@ extracting the robust window for this algorithm.   Interacts with the
 robust_stack_window_keys argument as described above.</p></li>
 <li><p><strong>robust_stack_window_keys</strong> (<em>iterable list</em><em> of </em><em>two strings</em>) – specifies a pair of strings to be used
 as keys to extract the strart time (component 0) and end time (component 1)
-of the robust time window to use from the beam <a href="#id7"><span class="problematic" id="id8">`</span></a>TimeSeries.</p></li>
+of the robust time window to use from the beam <a href="#id1"><span class="problematic" id="id2">`</span></a>TimeSeries.</p></li>
 <li><p><strong>output_stack_window</strong> (<cite>TimeWindow</cite> object.  If None (default) the range
 is derived from the ensemble member time ranges.) – optional <cite>TimeWindow</cite> to apply to the
 computed robust stack output.   Default returns a stack spanning the
@@ -711,8 +1122,11 @@ have zero mean.</p></li>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>tuple with 0 containing the original ensemble but time
 shifted by cross-correlation.   Failed/discarded signals for the
-stack are not killed but should be detected by not having the
-time shift Metadata value set.   component 1 is the computed
+stack are not killed but can be detected by testing the
+key defined by the “time_shift_key” argument
+(default is ‘arrival_time_correction’) being set.
+i.e. that value will not be set for components dropped from
+the stack.   Component 1 of return tuple is the computed
 stack windowed to the range defined by <cite>stack_time_window</cite>.</p>
 </dd>
 </dl>
@@ -3470,7 +3884,7 @@ of testing for validity of the operation.</p>
 <dt class="sig sig-object py" id="mspasspy.algorithms.edit.Multiply">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.edit.</span></span><span class="sig-name descname"><span class="pre">Multiply</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value_to_multiply</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/edit.html#Multiply"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.edit.Multiply" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#mspasspy.algorithms.edit.MetadataOperator" title="mspasspy.algorithms.edit.MetadataOperator"><code class="xref py py-class docutils literal notranslate"><span class="pre">MetadataOperator</span></code></a></p>
-<p>Used to implement <a href="#id9"><span class="problematic" id="id10">*</span></a>= operator on a specified Metadata key.</p>
+<p>Used to implement <a href="#id3"><span class="problematic" id="id4">*</span></a>= operator on a specified Metadata key.</p>
 <p>Example:  to multiple metadata in, d, with key=’Pamp’ by 2.5
 you could use this</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">op</span> <span class="o">=</span> <span class="n">Multiply</span><span class="p">(</span><span class="s1">&#39;Pamp&#39;</span><span class="p">,</span><span class="mf">2.5</span><span class="p">)</span>
