@@ -386,16 +386,7 @@
 
         <span class="c1"># Auto-register MongoDB worker plugin for dask to avoid DB serialization leaks</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scheduler</span> <span class="o">==</span> <span class="s2">&quot;dask&quot;</span><span class="p">:</span>
-            <span class="n">dbname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default_database_name</span>
-            <span class="n">url</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_db_client</span><span class="p">,</span> <span class="s2">&quot;_mspass_db_host&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">url</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;mongodb://localhost:27017/&quot;</span>
-            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">url</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;mongodb://&quot;</span><span class="p">):</span>
-                <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;mongodb://</span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2">&quot;</span>
-
-            <span class="n">mongo_plugin</span> <span class="o">=</span> <span class="n">MongoDBWorker</span><span class="p">(</span>
-                <span class="n">dbname</span><span class="o">=</span><span class="n">dbname</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">dbclient_key</span><span class="o">=</span><span class="s2">&quot;dbclient&quot;</span>
-            <span class="p">)</span>
+            <span class="n">mongo_plugin</span> <span class="o">=</span> <span class="n">MongoDBWorker</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dbclient_key</span><span class="o">=</span><span class="s2">&quot;dbclient&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_dask_client</span><span class="o">.</span><span class="n">register_plugin</span><span class="p">(</span><span class="n">mongo_plugin</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;mongodb_worker&quot;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Client.get_database_client">

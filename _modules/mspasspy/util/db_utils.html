@@ -214,14 +214,22 @@
 <span class="sd">    Creates a DBClient instance for each worker and stores it in worker.data.</span>
 <span class="sd">    This ensures each worker has its own database connection to prevent</span>
 <span class="sd">    connection leaks when Database objects are serialized to workers.</span>
+
+<span class="sd">    :param mspass_client: MSPASS :class:`~mspasspy.client.Client` (or any object</span>
+<span class="sd">        with ``get_database_client()`` returning a :class:`~mspasspy.db.client.DBClient`).</span>
+<span class="sd">        The worker uses that client&#39;s ``_mspass_db_host`` for per-worker connections.</span>
+<span class="sd">    :param dbclient_key: Key under ``worker.data`` for the created :class:`~mspasspy.db.client.DBClient`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">dbname</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="s2">&quot;mongodb://localhost:27017/&quot;</span><span class="p">,</span> <span class="n">dbclient_key</span><span class="o">=</span><span class="s2">&quot;dbclient&quot;</span>
-    <span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">dbname</span> <span class="o">=</span> <span class="n">dbname</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">connection_url</span> <span class="o">=</span> <span class="n">url</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mspass_client</span><span class="p">,</span> <span class="n">dbclient_key</span><span class="o">=</span><span class="s2">&quot;dbclient&quot;</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dbclient_key</span> <span class="o">=</span> <span class="n">dbclient_key</span>
+        <span class="n">db_client</span> <span class="o">=</span> <span class="n">mspass_client</span><span class="o">.</span><span class="n">get_database_client</span><span class="p">()</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">db_client</span><span class="p">,</span> <span class="s2">&quot;_mspass_db_host&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">url</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;mongodb://localhost:27017/&quot;</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">url</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;mongodb://&quot;</span><span class="p">):</span>
+            <span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;mongodb://</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">connection_url</span> <span class="o">=</span> <span class="n">url</span>
 
 <div class="viewcode-block" id="MongoDBWorker.setup">
 <a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.db_utils.MongoDBWorker.setup">[docs]</a>

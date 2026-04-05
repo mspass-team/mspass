@@ -662,12 +662,22 @@ check_all_members is False.</p></li>
 serial and parallel (Dask worker) contexts.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.util.db_utils.MongoDBWorker">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.util.db_utils.</span></span><span class="sig-name descname"><span class="pre">MongoDBWorker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dbname</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mongodb://localhost:27017/'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dbclient_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'dbclient'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/db_utils.html#MongoDBWorker"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.db_utils.MongoDBWorker" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.util.db_utils.</span></span><span class="sig-name descname"><span class="pre">MongoDBWorker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mspass_client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dbclient_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'dbclient'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/db_utils.html#MongoDBWorker"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.db_utils.MongoDBWorker" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">WorkerPlugin</span></code></p>
 <p>Dask worker plugin to manage MongoDB client per worker.</p>
 <p>Creates a DBClient instance for each worker and stores it in worker.data.
 This ensures each worker has its own database connection to prevent
 connection leaks when Database objects are serialized to workers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mspass_client</strong> – MSPASS <a class="reference internal" href="mspasspy.client.html#mspasspy.client.Client" title="mspasspy.client.Client"><code class="xref py py-class docutils literal notranslate"><span class="pre">Client</span></code></a> (or any object
+with <code class="docutils literal notranslate"><span class="pre">get_database_client()</span></code> returning a <a class="reference internal" href="mspasspy.db.html#mspasspy.db.client.DBClient" title="mspasspy.db.client.DBClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">DBClient</span></code></a>).
+The worker uses that client’s <code class="docutils literal notranslate"><span class="pre">_mspass_db_host</span></code> for per-worker connections.</p></li>
+<li><p><strong>dbclient_key</strong> – Key under <code class="docutils literal notranslate"><span class="pre">worker.data</span></code> for the created <a class="reference internal" href="mspasspy.db.html#mspasspy.db.client.DBClient" title="mspasspy.db.client.DBClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">DBClient</span></code></a>.</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.util.db_utils.MongoDBWorker.setup">
 <span class="sig-name descname"><span class="pre">setup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">worker</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/db_utils.html#MongoDBWorker.setup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.db_utils.MongoDBWorker.setup" title="Link to this definition"></a></dt>
