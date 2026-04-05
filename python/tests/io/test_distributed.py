@@ -30,6 +30,17 @@ from mspasspy.db.normalize import ObjectIdMatcher
 from mspasspy.ccore.utility import ErrorSeverity
 from mspasspy.util.db_utils import MongoDBWorker
 
+
+class _MongoPluginMsPASSClientStub:
+    """Minimal object with get_database_client() for MongoDBWorker tests."""
+
+    def __init__(self, db_client):
+        self._db_client = db_client
+
+    def get_database_client(self):
+        return self._db_client
+
+
 # globals for this test module
 number_atomic_wf = 5  # with 3 partitions this intentionally gives uneven sizes
 number_ensemble_wf = 4  # intentionaly not same as number_atomic_wf
@@ -1057,7 +1068,9 @@ def test_read_distributed_ensemble(
         context = None
         # Create Dask distributed client with MongoDB worker plugin for ensemble tests
         dask_client = DaskClient(processes=False, n_workers=2, threads_per_worker=1)
-        plugin = MongoDBWorker(dbname=testdbname, url="mongodb://localhost:27017/")
+        plugin = MongoDBWorker(
+            _MongoPluginMsPASSClientStub(DBClient("mongodb://localhost:27017/"))
+        )
         dask_client.register_worker_plugin(plugin)
 
     # warning src_data_list values must match string set in generators
@@ -1239,7 +1252,9 @@ def test_write_distributed_ensemble(
         context = None
         # Create Dask distributed client with MongoDB worker plugin for ensemble tests
         dask_client = DaskClient(processes=False, n_workers=2, threads_per_worker=1)
-        plugin = MongoDBWorker(dbname=testdbname, url="mongodb://localhost:27017/")
+        plugin = MongoDBWorker(
+            _MongoPluginMsPASSClientStub(DBClient("mongodb://localhost:27017/"))
+        )
         dask_client.register_worker_plugin(plugin)
     if collection == "wf_TimeSeries":
         wfid_list = TimeSeriesEnsemble_generator
