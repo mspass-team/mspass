@@ -309,6 +309,8 @@ def sliding_window_pipeline(
                 print(
                     "This setting makes sense only if you are running on a cluster service being used by multiple applications"
                 )
+        else:
+            swsize = sliding_window_size
     else:
 
         message = "{}: Illegal value for arg2.  Must be an instance of dask.distributed.Client".format(
