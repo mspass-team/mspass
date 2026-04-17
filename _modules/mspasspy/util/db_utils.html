@@ -231,6 +231,16 @@
             <span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;mongodb://</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">connection_url</span> <span class="o">=</span> <span class="n">url</span>
 
+    <span class="k">def</span><span class="w"> </span><span class="nf">__getstate__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;dbclient_key&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">dbclient_key</span><span class="p">,</span>
+            <span class="s2">&quot;connection_url&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection_url</span><span class="p">,</span>
+        <span class="p">}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">__setstate__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dbclient_key</span> <span class="o">=</span> <span class="n">state</span><span class="p">[</span><span class="s2">&quot;dbclient_key&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">connection_url</span> <span class="o">=</span> <span class="n">state</span><span class="p">[</span><span class="s2">&quot;connection_url&quot;</span><span class="p">]</span>
+
 <div class="viewcode-block" id="MongoDBWorker.setup">
 <a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.db_utils.MongoDBWorker.setup">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">worker</span><span class="p">):</span>
