@@ -81,6 +81,16 @@ class MongoDBWorker(WorkerPlugin):
             url = "mongodb://{}".format(url)
         self.connection_url = url
 
+    def __getstate__(self):
+        return {
+            "dbclient_key": self.dbclient_key,
+            "connection_url": self.connection_url,
+        }
+
+    def __setstate__(self, state):
+        self.dbclient_key = state["dbclient_key"]
+        self.connection_url = state["connection_url"]
+
     def setup(self, worker):
         """Called when worker starts - create DBClient for this worker."""
         if self.connection_url is None:
