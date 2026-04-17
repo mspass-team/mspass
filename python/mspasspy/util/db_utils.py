@@ -82,7 +82,10 @@ class MongoDBWorker(WorkerPlugin):
         self.connection_url = url
 
     def __getstate__(self):
-        return {"dbclient_key": self.dbclient_key, "connection_url": self.connection_url}
+        return {
+            "dbclient_key": self.dbclient_key,
+            "connection_url": self.connection_url,
+        }
 
     def __setstate__(self, state):
         self.dbclient_key = state["dbclient_key"]
