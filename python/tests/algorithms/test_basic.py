@@ -412,11 +412,12 @@ def test_free_surface_transform():
     sout = free_surface_transformation(seis)
     assert sout.dead()
     assert sout.elog.size() == 1
-    # invalid arg0 should throw an exception
+    # invalid arg0: logged to elog (mspass_func_wrapper catches generic exceptions)
     x = TimeSeries()
     x.set_live()
-    with pytest.raises(TypeError, match="received invalid type"):
-        sout = free_surface_transformation(x)
+    sout = free_surface_transformation(x)
+    assert sout.elog.size() >= 1
+    assert "received invalid type" in sout.elog.get_error_log()[-1].message.lower()
 
 
 def test_transform_to_RTZ():
@@ -509,11 +510,12 @@ def test_transform_to_RTZ():
     assert sout.elog.size() == 1
     assert sout.dead()
 
-    # invalid data throws an exception
+    # invalid data: TypeError is logged on arg0 (inplace_return default False)
     x = TimeSeries()
     x.set_live()
-    with pytest.raises(TypeError, match="received invalid type"):
-        sout = transform_to_RTZ(x)
+    transform_to_RTZ(x)
+    assert x.elog.size() >= 1
+    assert "received invalid type" in x.elog.get_error_log()[-1].message.lower()
 
 
 def test_transform_to_LQT():
@@ -656,8 +658,9 @@ def test_transform_to_LQT():
     assert sout.elog.size() == 1
     assert sout.dead()
 
-    # invalid data throws an exception
+    # invalid data: TypeError is logged on arg0 (inplace_return default False)
     x = TimeSeries()
     x.set_live()
-    with pytest.raises(TypeError, match="received invalid type"):
-        sout = transform_to_LQT(x)
+    transform_to_LQT(x)
+    assert x.elog.size() >= 1
+    assert "received invalid type" in x.elog.get_error_log()[-1].message.lower()

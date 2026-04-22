@@ -13,6 +13,14 @@ from mspasspy.util.seismic import number_live
 # from mspasspy.global_history.manager import GlobalHistoryManager
 from mspasspy.util import logging_helper
 
+# Arg0/arg1/arg2 passed to wrapper try blocks must be one of these to use elog/ensemble_error.
+_MSPASS_WRAPPER_DATA_TYPES = (
+    Seismogram,
+    TimeSeries,
+    TimeSeriesEnsemble,
+    SeismogramEnsemble,
+)
+
 
 @decorator
 def mspass_func_wrapper(
@@ -280,6 +288,8 @@ def mspass_func_wrapper(
         if inplace_return:
             return data
     except Exception as exc:
+        if not isinstance(data, _MSPASS_WRAPPER_DATA_TYPES):
+            raise exc
         if isinstance(data, (Seismogram, TimeSeries)):
             data.elog.log_error(alg_name, str(exc), ErrorSeverity.Invalid)
         else:
@@ -378,6 +388,10 @@ def mspass_func_wrapper_multi(
         else:
             logging_helper.ensemble_error(data2, alg_name, ex.message, ex.severity)
     except Exception as exc:
+        if not isinstance(data1, _MSPASS_WRAPPER_DATA_TYPES) or not isinstance(
+            data2, _MSPASS_WRAPPER_DATA_TYPES
+        ):
+            raise exc
         if isinstance(data1, (Seismogram, TimeSeries)):
             data1.elog.log_error(alg_name, str(exc), ErrorSeverity.Invalid)
         else:
@@ -586,6 +600,8 @@ def mspass_method_wrapper(
         if inplace_return:
             return data
     except Exception as exc:
+        if not isinstance(data, _MSPASS_WRAPPER_DATA_TYPES):
+            raise exc
         if isinstance(data, (Seismogram, TimeSeries)):
             data.elog.log_error(alg_name, str(exc), ErrorSeverity.Invalid)
         else:
@@ -984,6 +1000,10 @@ def mspass_reduce_func_wrapper(
             logging_helper.ensemble_error(data1, alg_name, ex.message, ex.severity)
             logging_helper.ensemble_error(data2, alg_name, ex.message, ex.severity)
     except Exception as exc:
+        if not isinstance(data1, _MSPASS_WRAPPER_DATA_TYPES) or not isinstance(
+            data2, _MSPASS_WRAPPER_DATA_TYPES
+        ):
+            raise exc
         if isinstance(data1, (Seismogram, TimeSeries)):
             data1.elog.log_error(alg_name, str(exc), ErrorSeverity.Invalid)
             data2.elog.log_error(alg_name, str(exc), ErrorSeverity.Invalid)
