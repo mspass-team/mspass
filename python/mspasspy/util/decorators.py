@@ -279,6 +279,13 @@ def mspass_func_wrapper(
         # some unexpected error happen, if inplace_return is true, we may want to return the original data
         if inplace_return:
             return data
+    except Exception as exc:
+        if isinstance(data, (Seismogram, TimeSeries)):
+            data.elog.log_error(alg_name, str(exc), ErrorSeverity.Invalid)
+        else:
+            logging_helper.ensemble_error(data, alg_name, exc, ErrorSeverity.Invalid)
+        if inplace_return:
+            return data
 
 
 @decorator
@@ -370,6 +377,15 @@ def mspass_func_wrapper_multi(
             data2.elog.log_error(alg_name, ex.message, ex.severity)
         else:
             logging_helper.ensemble_error(data2, alg_name, ex.message, ex.severity)
+    except Exception as exc:
+        if isinstance(data1, (Seismogram, TimeSeries)):
+            data1.elog.log_error(alg_name, str(exc), ErrorSeverity.Invalid)
+        else:
+            logging_helper.ensemble_error(data1, alg_name, exc, ErrorSeverity.Invalid)
+        if isinstance(data2, (Seismogram, TimeSeries)):
+            data2.elog.log_error(alg_name, str(exc), ErrorSeverity.Invalid)
+        else:
+            logging_helper.ensemble_error(data2, alg_name, exc, ErrorSeverity.Invalid)
 
 
 @decorator
@@ -567,6 +583,13 @@ def mspass_method_wrapper(
         else:
             logging_helper.ensemble_error(data, alg_name, ex.message, ex.severity)
         # some unexpected error happen, if inplace_return is true, we may want to return the original data
+        if inplace_return:
+            return data
+    except Exception as exc:
+        if isinstance(data, (Seismogram, TimeSeries)):
+            data.elog.log_error(alg_name, str(exc), ErrorSeverity.Invalid)
+        else:
+            logging_helper.ensemble_error(data, alg_name, exc, ErrorSeverity.Invalid)
         if inplace_return:
             return data
 
@@ -960,6 +983,13 @@ def mspass_reduce_func_wrapper(
         else:
             logging_helper.ensemble_error(data1, alg_name, ex.message, ex.severity)
             logging_helper.ensemble_error(data2, alg_name, ex.message, ex.severity)
+    except Exception as exc:
+        if isinstance(data1, (Seismogram, TimeSeries)):
+            data1.elog.log_error(alg_name, str(exc), ErrorSeverity.Invalid)
+            data2.elog.log_error(alg_name, str(exc), ErrorSeverity.Invalid)
+        else:
+            logging_helper.ensemble_error(data1, alg_name, exc, ErrorSeverity.Invalid)
+            logging_helper.ensemble_error(data2, alg_name, exc, ErrorSeverity.Invalid)
 
 
 # @decorator
