@@ -565,8 +565,10 @@ def test_CNRArrayDecon_error_handlers():
     ):
         e_d = CNRArrayDecon("foo", w, engine, noise_window=nw, signal_window=sw)
 
-    with pytest.raises(TypeError, match="Illegal type for required arg1"):
-        e_d = CNRArrayDecon(e, "foo", engine, noise_window=nw, signal_window=sw)
+    CNRArrayDecon(e, "foo", engine, noise_window=nw, signal_window=sw)
+    errs = e.member[0].elog.get_error_log()
+    assert len(errs) >= 1
+    assert "illegal type" in errs[-1].message.lower()
 
     with pytest.raises(ValueError, match="Illegal argument combination"):
         e_d = CNRArrayDecon(e, w, engine)
