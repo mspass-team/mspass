@@ -248,8 +248,10 @@ def test_mspass_func_wrapper():
     # function only takes TimeSeries - this will work for a TimeSeriesEnsemble
     # and not throw an exceptoin
     e = get_live_seismogram_ensemble(3)
-    with pytest.raises(TypeError, match="test function arg0 is an invalid type"):
-        e = check_arg0_tester(e, checks_arg0_type=False, handles_ensembles=False)
+    check_arg0_tester(e, checks_arg0_type=False, handles_ensembles=False)
+    errs = e.member[0].elog.get_error_log()
+    assert len(errs) >= 1
+    assert "invalid type" in errs[-1].message.lower()
     # True-True not testable directly - would fail referencing "member"
     # attibute in decorator - an incorrect usage not worth testing
 
@@ -559,10 +561,10 @@ def test_mspass_method_wrapper():
     # simulate case of mismatched member type but valid seismic data type
     # here we get the method's exception message
     e = get_live_seismogram_ensemble(3)
-    with pytest.raises(TypeError, match="test function arg0 is an invalid type"):
-        e = dummy_instance.check_arg0_tester(
-            e, checks_arg0_type=False, handles_ensembles=False
-        )
+    dummy_instance.check_arg0_tester(e, checks_arg0_type=False, handles_ensembles=False)
+    errs = e.member[0].elog.get_error_log()
+    assert len(errs) >= 1
+    assert "invalid type" in errs[-1].message.lower()
 
     # check handling of an algorithm killing all data
     e = get_live_timeseries_ensemble(3)
