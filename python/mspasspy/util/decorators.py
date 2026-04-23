@@ -13,7 +13,7 @@ from mspasspy.util.seismic import number_live
 # from mspasspy.global_history.manager import GlobalHistoryManager
 from mspasspy.util import logging_helper
 
-# Arg0/arg1/arg2 passed to wrapper try blocks must be one of these to use elog/ensemble_error. 
+# Arg0/arg1/arg2 passed to wrapper try blocks must be one of these to use elog/ensemble_error.
 _MSPASS_WRAPPER_DATA_TYPES = (
     Seismogram,
     TimeSeries,
@@ -1045,4 +1045,4 @@ def mspass_reduce_func_wrapper(
 #             alg_id = ObjectId()
 #         global_history.logging(alg_id, alg_name, parameters)
 
-#     return func(*args, **kwargs) 
+#     return func(*args, **kwargs)
