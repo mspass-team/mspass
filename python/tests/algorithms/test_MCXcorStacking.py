@@ -623,7 +623,8 @@ def test_MCXcorPrepP():
     errs = e.member[0].elog.get_error_log()
     assert len(errs) >= 1
     assert "illegal type" in errs[-1].message.lower()
-    # test handling of dead ensemble
+    # test handling of dead ensemble (fresh ensemble; prior call returns None)
+    e = TimeSeriesEnsemble(e0)
     e.kill()
     [eo, beam] = MCXcorPrepP(e, nw, station_collection="site")
     assert eo.dead()
@@ -657,18 +658,17 @@ def test_MCXcorPrepP():
     assert eo.member[ibad].dead()
 
     # test handling of frequency bandwidth override with arguments
-    # low_f_corner and high_f_corner
+    # low_f_corner and high_f_corner (errors posted to elog by wrapper)
     e = TimeSeriesEnsemble(e0)
-    with pytest.raises(
-        ValueError, match="low_f_corner value is greater than high_f_corner value"
-    ):
-        [eo, beam] = MCXcorPrepP(
-            e, nw, station_collection="site", low_f_corner=10.0, high_f_corner=0.1
-        )
-    with pytest.raises(
-        ValueError, match="If you specify one you must specify the other"
-    ):
-        [eo, beam] = MCXcorPrepP(e, nw, station_collection="site", low_f_corner=0.1)
+    MCXcorPrepP(e, nw, station_collection="site", low_f_corner=10.0, high_f_corner=0.1)
+    errs = e.member[0].elog.get_error_log()
+    assert len(errs) >= 1
+    assert "greater than" in errs[-1].message.lower()
+    e = TimeSeriesEnsemble(e0)
+    MCXcorPrepP(e, nw, station_collection="site", low_f_corner=0.1)
+    errs = e.member[0].elog.get_error_log()
+    assert len(errs) >= 1
+    assert "specify" in errs[-1].message.lower() or "other" in errs[-1].message.lower()
 
 
 #    from mspasspy.graphics import SeismicPlotter

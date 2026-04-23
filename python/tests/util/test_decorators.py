@@ -238,8 +238,10 @@ def test_mspass_func_wrapper():
     for d in e.member:
         assert d["foo"] == "bar"
     e = get_live_timeseries_ensemble(3)
-    with pytest.raises(TypeError, match="test function arg0 is an invalid type"):
-        e = check_arg0_tester(e, checks_arg0_type=True, handles_ensembles=True)
+    check_arg0_tester(e, checks_arg0_type=True, handles_ensembles=True)
+    errs = e.member[0].elog.get_error_log()
+    assert len(errs) >= 1
+    assert "invalid type" in errs[-1].message.lower()
     # this would be a mistake in usage for this test function but is the
     # behavio the decoraor should have - returns the functions message not
     # the decorator message.  Note using seismogram because the
@@ -550,10 +552,10 @@ def test_mspass_method_wrapper():
     for d in e.member:
         assert d["foo"] == "bar"
     e = get_live_timeseries_ensemble(3)
-    with pytest.raises(TypeError, match="test function arg0 is an invalid type"):
-        e = dummy_instance.check_arg0_tester(
-            e, checks_arg0_type=True, handles_ensembles=True
-        )
+    dummy_instance.check_arg0_tester(e, checks_arg0_type=True, handles_ensembles=True)
+    errs = e.member[0].elog.get_error_log()
+    assert len(errs) >= 1
+    assert "invalid type" in errs[-1].message.lower()
     # simulate case of mismatched member type but valid seismic data type
     # here we get the method's exception message
     e = get_live_seismogram_ensemble(3)
