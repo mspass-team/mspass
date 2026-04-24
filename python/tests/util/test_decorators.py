@@ -135,6 +135,20 @@ def check_arg0_tester(
         raise TypeError("test function arg0 is an invalid type")
 
 
+@mspass_func_wrapper
+def raises_generic_exception(
+    data,
+    *args,
+    object_history=False,
+    alg_id=None,
+    dryrun=False,
+    inplace_return=False,
+    function_return_key=None,
+    **kwargs,
+):
+    raise ValueError("deliberate test exception")
+
+
 def test_mspass_func_wrapper():
     with pytest.raises(TypeError) as err:
         dummy_func(1)
@@ -263,6 +277,13 @@ def test_mspass_func_wrapper():
     e = check_arg0_tester(e, checks_arg0_type=True, handles_ensembles=False)
     assert e.dead()
     assert e.elog.size() == 1
+
+    # Exception path must return arg0 when inplace_return is False (not None).
+    ts_exc = get_live_timeseries()
+    out_exc = raises_generic_exception(ts_exc, inplace_return=False)
+    assert out_exc is ts_exc
+    assert out_exc.live is True
+    assert len(ts_exc.elog.get_error_log()) >= 1
 
 
 @timeseries_as_trace
@@ -443,6 +464,24 @@ class dummy_class_method_wrapper:
         else:
             raise TypeError("test function arg0 is an invalid type")
 
+    @mspass_method_wrapper
+    def raises_method_exception(
+        self,
+        data,
+        *args,
+        object_history=False,
+        alg_id=None,
+        alg_name=None,
+        dryrun=False,
+        inplace_return=False,
+        function_return_key=None,
+        handles_ensembles=False,
+        checks_arg0_type=False,
+        handles_dead_data=False,
+        **kwargs,
+    ):
+        raise ValueError("deliberate test exception")
+
 
 def test_mspass_method_wrapper():
     dummy_instance = dummy_class_method_wrapper()
@@ -576,6 +615,11 @@ def test_mspass_method_wrapper():
     )
     assert e.dead()
     assert e.elog.size() == 1
+
+    seis_exc = get_live_seismogram()
+    out_m = dummy_instance.raises_method_exception(seis_exc, inplace_return=False)
+    assert out_m is seis_exc
+    assert len(seis_exc.elog.get_error_log()) >= 1
 
 
 @mspass_func_wrapper

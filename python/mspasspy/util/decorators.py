@@ -274,9 +274,7 @@ def mspass_func_wrapper(
             data.elog.log_error(alg_name, str(err), ErrorSeverity.Invalid)
         else:
             logging_helper.ensemble_error(data, alg_name, err, ErrorSeverity.Invalid)
-        # some unexpected error happen, if inplace_return is true, we may want to return the original data
-        if inplace_return:
-            return data
+        return data
     except MsPASSError as ex:
         if ex.severity == ErrorSeverity.Fatal:
             raise
@@ -284,9 +282,7 @@ def mspass_func_wrapper(
             data.elog.log_error(alg_name, ex.message, ex.severity)
         else:
             logging_helper.ensemble_error(data, alg_name, ex.message, ex.severity)
-        # some unexpected error happen, if inplace_return is true, we may want to return the original data
-        if inplace_return:
-            return data
+        return data
     except Exception as exc:
         if not isinstance(data, _MSPASS_WRAPPER_DATA_TYPES):
             raise exc
@@ -294,8 +290,7 @@ def mspass_func_wrapper(
             data.elog.log_error(alg_name, str(exc), ErrorSeverity.Invalid)
         else:
             logging_helper.ensemble_error(data, alg_name, exc, ErrorSeverity.Invalid)
-        if inplace_return:
-            return data
+        return data
 
 
 @decorator
@@ -586,9 +581,7 @@ def mspass_method_wrapper(
             data.elog.log_error(alg_name, str(err), ErrorSeverity.Invalid)
         else:
             logging_helper.ensemble_error(data, alg_name, err, ErrorSeverity.Invalid)
-        # some unexpected error happen, if inplace_return is true, we may want to return the original data
-        if inplace_return:
-            return data
+        return data
     except MsPASSError as ex:
         if ex.severity == ErrorSeverity.Fatal:
             raise
@@ -596,9 +589,7 @@ def mspass_method_wrapper(
             data.elog.log_error(alg_name, ex.message, ex.severity)
         else:
             logging_helper.ensemble_error(data, alg_name, ex.message, ex.severity)
-        # some unexpected error happen, if inplace_return is true, we may want to return the original data
-        if inplace_return:
-            return data
+        return data
     except Exception as exc:
         if not isinstance(data, _MSPASS_WRAPPER_DATA_TYPES):
             raise exc
@@ -606,8 +597,7 @@ def mspass_method_wrapper(
             data.elog.log_error(alg_name, str(exc), ErrorSeverity.Invalid)
         else:
             logging_helper.ensemble_error(data, alg_name, exc, ErrorSeverity.Invalid)
-        if inplace_return:
-            return data
+        return data
 
 
 def is_input_dead(*args, **kwargs):
