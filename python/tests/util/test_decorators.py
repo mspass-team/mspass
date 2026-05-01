@@ -136,7 +136,7 @@ def check_arg0_tester(
 
 
 @mspass_func_wrapper
-def raises_generic_exception(
+def dummy_func_raises_valueerror(
     data,
     *args,
     object_history=False,
@@ -147,6 +147,34 @@ def raises_generic_exception(
     **kwargs,
 ):
     raise ValueError("deliberate test exception")
+
+
+@mspass_func_wrapper
+def dummy_func_raises_runtimeerror(
+    data,
+    *args,
+    object_history=False,
+    alg_id=None,
+    dryrun=False,
+    inplace_return=False,
+    function_return_key=None,
+    **kwargs,
+):
+    raise RuntimeError("runtime wrapper test")
+
+
+@mspass_func_wrapper
+def dummy_func_raises_mspass_invalid(
+    data,
+    *args,
+    object_history=False,
+    alg_id=None,
+    dryrun=False,
+    inplace_return=False,
+    function_return_key=None,
+    **kwargs,
+):
+    raise MsPASSError("mspass invalid wrapper", ErrorSeverity.Invalid)
 
 
 def test_mspass_func_wrapper():
@@ -280,10 +308,22 @@ def test_mspass_func_wrapper():
 
     # Exception path must return arg0 when inplace_return is False (not None).
     ts_exc = get_live_timeseries()
-    out_exc = raises_generic_exception(ts_exc, inplace_return=False)
+    out_exc = dummy_func_raises_valueerror(ts_exc, inplace_return=False)
     assert out_exc is ts_exc
-    assert out_exc.live is True
+    assert out_exc.live is False
     assert len(ts_exc.elog.get_error_log()) >= 1
+
+    ts_rt = get_live_timeseries()
+    out_rt = dummy_func_raises_runtimeerror(ts_rt, inplace_return=False)
+    assert out_rt is ts_rt
+    assert out_rt.live is False
+    assert len(ts_rt.elog.get_error_log()) >= 1
+
+    ts_ms = get_live_timeseries()
+    out_ms = dummy_func_raises_mspass_invalid(ts_ms, inplace_return=False)
+    assert out_ms is ts_ms
+    assert out_ms.live is False
+    assert len(ts_ms.elog.get_error_log()) >= 1
 
 
 @timeseries_as_trace
@@ -465,7 +505,7 @@ class dummy_class_method_wrapper:
             raise TypeError("test function arg0 is an invalid type")
 
     @mspass_method_wrapper
-    def raises_method_exception(
+    def dummy_method_raises_valueerror(
         self,
         data,
         *args,
@@ -617,8 +657,11 @@ def test_mspass_method_wrapper():
     assert e.elog.size() == 1
 
     seis_exc = get_live_seismogram()
-    out_m = dummy_instance.raises_method_exception(seis_exc, inplace_return=False)
+    out_m = dummy_instance.dummy_method_raises_valueerror(
+        seis_exc, inplace_return=False
+    )
     assert out_m is seis_exc
+    assert seis_exc.live is False
     assert len(seis_exc.elog.get_error_log()) >= 1
 
 
@@ -710,6 +753,34 @@ def dummy_func_multi(
     return None
 
 
+@mspass_func_wrapper_multi
+def dummy_multi_runtime(
+    data1, data2, *args, object_history=False, alg_id=None, dryrun=False, **kwargs
+):
+    raise RuntimeError("multi runtime test")
+
+
+@mspass_func_wrapper_multi
+def dummy_multi_mspass_invalid(
+    data1, data2, *args, object_history=False, alg_id=None, dryrun=False, **kwargs
+):
+    raise MsPASSError("multi invalid", ErrorSeverity.Invalid)
+
+
+@mspass_func_wrapper_multi
+def dummy_multi_mspass_fatal(
+    data1, data2, *args, object_history=False, alg_id=None, dryrun=False, **kwargs
+):
+    raise MsPASSError("multi fatal", ErrorSeverity.Fatal)
+
+
+@mspass_func_wrapper_multi
+def dummy_multi_valueerror(
+    data1, data2, *args, object_history=False, alg_id=None, dryrun=False, **kwargs
+):
+    raise ValueError("multi generic test")
+
+
 def test_mspass_func_wrapper_multi():
     with pytest.raises(TypeError) as err:
         dummy_func_multi(1, 2)
@@ -740,6 +811,48 @@ def test_mspass_func_wrapper_multi():
     for i in range(3):
         assert seis_e.member[i].number_of_stages() == 1
 
+    # mspass_func_wrapper_multi error paths: log, kill both, return data1 (Fatal MsPASSError re-raises).
+    sa = get_live_seismogram()
+    sb = get_live_seismogram()
+    ret = dummy_multi_runtime(sa, sb)
+    assert ret is sa
+    assert not sa.live
+    assert not sb.live
+    assert len(sa.elog.get_error_log()) >= 1
+    assert len(sb.elog.get_error_log()) >= 1
+
+    sa = get_live_seismogram()
+    sb = get_live_seismogram()
+    ret = dummy_multi_mspass_invalid(sa, sb)
+    assert ret is sa
+    assert not sa.live
+    assert not sb.live
+    assert len(sa.elog.get_error_log()) >= 1
+    assert len(sb.elog.get_error_log()) >= 1
+
+    sa = get_live_seismogram()
+    sb = get_live_seismogram()
+    with pytest.raises(MsPASSError, match="multi fatal"):
+        dummy_multi_mspass_fatal(sa, sb)
+
+    sa = get_live_seismogram()
+    sb = get_live_seismogram()
+    ret = dummy_multi_valueerror(sa, sb)
+    assert ret is sa
+    assert not sa.live
+    assert not sb.live
+    assert len(sa.elog.get_error_log()) >= 1
+    assert len(sb.elog.get_error_log()) >= 1
+
+    sa = get_live_seismogram()
+    ens = get_live_seismogram_ensemble(2)
+    ret = dummy_multi_runtime(sa, ens)
+    assert ret is sa
+    assert not sa.live
+    assert not ens.live
+    assert len(sa.elog.get_error_log()) >= 1
+    assert len(ens.member[0].elog.get_error_log()) >= 1
+
     # dead object will return immediately
     seis1.kill()
     seis2.kill()
@@ -766,6 +879,13 @@ def dummy_reduce_func_mspasserror(
     data1, data2, *args, object_history=False, alg_id=None, dryrun=False, **kwargs
 ):
     raise MsPASSError("test", ErrorSeverity.Fatal)
+
+
+@mspass_reduce_func_wrapper
+def dummy_reduce_valueerror(
+    data1, data2, *args, object_history=False, alg_id=None, dryrun=False, **kwargs
+):
+    raise ValueError("reduce generic")
 
 
 def test_mspass_reduce_func_wrapper():
@@ -803,9 +923,21 @@ def test_mspass_reduce_func_wrapper():
     ts1 = get_live_timeseries()
     ts2 = get_live_timeseries()
     assert len(ts1.elog.get_error_log()) == 0
-    dummy_reduce_func_runtime(ts1, ts2, object_history=True, alg_id="3")
+    ret = dummy_reduce_func_runtime(ts1, ts2, object_history=True, alg_id="3")
+    assert ret is ts1
+    assert not ts1.live
+    assert not ts2.live
     assert len(ts1.elog.get_error_log()) == 1
     assert len(ts2.elog.get_error_log()) == 1
+
+    ts1 = get_live_timeseries()
+    ts2 = get_live_timeseries()
+    ret = dummy_reduce_valueerror(ts1, ts2, object_history=True, alg_id="3")
+    assert ret is ts1
+    assert not ts1.live
+    assert not ts2.live
+    assert len(ts1.elog.get_error_log()) >= 1
+    assert len(ts2.elog.get_error_log()) >= 1
 
     ts1 = get_live_timeseries()
     ts2 = get_live_timeseries()
