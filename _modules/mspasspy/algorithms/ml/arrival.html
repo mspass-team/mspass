@@ -150,7 +150,6 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">seisbench.models.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">WaveformModel</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.ccore.seismic</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span><span class="p">,</span> <span class="n">TimeSeriesEnsemble</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.ccore.algorithms.basic</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeWindow</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.algorithms.window</span><span class="w"> </span><span class="kn">import</span> <span class="n">WindowData</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">obspy</span><span class="w"> </span><span class="kn">import</span> <span class="n">UTCDateTime</span>
 
 
@@ -240,10 +239,15 @@
     <span class="n">pred_st</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="n">windowed_stream</span><span class="p">)</span>
 
     <span class="c1"># Step 1: Access the probability data</span>
+    <span class="n">trace</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">for</span> <span class="n">tr</span> <span class="ow">in</span> <span class="n">pred_st</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">tr</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">channel</span> <span class="o">==</span> <span class="s2">&quot;PhaseNet_P&quot;</span><span class="p">:</span>
             <span class="n">trace</span> <span class="o">=</span> <span class="n">tr</span>
             <span class="k">break</span>
+    <span class="k">if</span> <span class="n">trace</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">timeseries</span><span class="p">[</span><span class="s2">&quot;p_wave_picks&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Model annotation output does not contain a PhaseNet_P trace.&quot;</span><span class="p">)</span>
+        <span class="k">return</span>
     <span class="n">data</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">data</span>
 
     <span class="c1"># Step 2: Find all the index with probability value greater than the threshold</span>
@@ -251,6 +255,10 @@
 
     <span class="c1"># Step 3: Calculate the corresponding time in utc timestamp</span>
     <span class="n">timestamps</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">times</span><span class="p">(</span><span class="s2">&quot;timestamp&quot;</span><span class="p">)[</span><span class="n">indices</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">time_window</span><span class="p">:</span>
+        <span class="n">in_window</span> <span class="o">=</span> <span class="p">(</span><span class="n">timestamps</span> <span class="o">&gt;=</span> <span class="n">time_window</span><span class="o">.</span><span class="n">start</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">timestamps</span> <span class="o">&lt;=</span> <span class="n">time_window</span><span class="o">.</span><span class="n">end</span><span class="p">)</span>
+        <span class="n">timestamps</span> <span class="o">=</span> <span class="n">timestamps</span><span class="p">[</span><span class="n">in_window</span><span class="p">]</span>
+        <span class="n">indices</span> <span class="o">=</span> <span class="n">indices</span><span class="p">[</span><span class="n">in_window</span><span class="p">]</span>
 
     <span class="c1"># Step 4: Create a dictionary with timestamps as keys and probability values as values</span>
     <span class="n">p_wave_picks</span> <span class="o">=</span> <span class="p">{</span><span class="n">ts</span><span class="p">:</span> <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">ts</span><span class="p">,</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">timestamps</span><span class="p">,</span> <span class="n">indices</span><span class="p">)}</span>
