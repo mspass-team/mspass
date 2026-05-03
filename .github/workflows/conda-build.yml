@@ -72,7 +72,6 @@ jobs:
         - name: Setup Conda
           uses: conda-incubator/setup-miniconda@v4
           with:
-            python-version: ${{ matrix.python-version }}
             auto-update-conda: true
             channels: conda-forge,defaults
             activate-environment: ""
