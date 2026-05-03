@@ -70,26 +70,24 @@ jobs:
             fetch-depth: 0
   
         - name: Setup Conda
-          uses: conda-incubator/setup-miniconda@v3
+          uses: conda-incubator/setup-miniconda@v4
           with:
             python-version: ${{ matrix.python-version }}
             auto-update-conda: true
             channels: conda-forge,defaults
-            extra-specs: |
-              conda-build
-              anaconda-client
-  
+            activate-environment: ""
+            auto-activate: true
+
         - name: Build and Upload
           shell: bash -el {0}
           env:
             ANACONDA_API_TOKEN: ${{ secrets.CONDA_TOKEN }}
           run: |
+            export PYTHON_VERSION=${{ matrix.python-version }}
+            conda install -n base -y conda-build anaconda-client
             conda config --set anaconda_upload no
-            
-            # Use the matrix variable directly
             PACKAGE_PATH=$(conda build . --python ${{ matrix.python-version }} --output)
             conda build . --python ${{ matrix.python-version }}
-            
             if [ "${{ matrix.python-version }}" == "3.13" ]; then
               anaconda -t $ANACONDA_API_TOKEN upload $PACKAGE_PATH --label main --label py${{ matrix.python-version }} --force
             else
