@@ -5,7 +5,6 @@ import seisbench.models as sbm
 from seisbench.models.base import WaveformModel
 from mspasspy.ccore.seismic import TimeSeries, TimeSeriesEnsemble
 from mspasspy.ccore.algorithms.basic import TimeWindow
-from mspasspy.algorithms.window import WindowData
 from obspy import UTCDateTime
 
 
@@ -93,10 +92,15 @@ def annotate_arrival_time(
     pred_st = model.annotate(windowed_stream)
 
     # Step 1: Access the probability data
+    trace = None
     for tr in pred_st:
         if tr.stats.channel == "PhaseNet_P":
             trace = tr
             break
+    if trace is None:
+        timeseries["p_wave_picks"] = {}
+        logging.warning("Model annotation output does not contain a PhaseNet_P trace.")
+        return
     data = trace.data
 
     # Step 2: Find all the index with probability value greater than the threshold
@@ -104,6 +108,10 @@ def annotate_arrival_time(
 
     # Step 3: Calculate the corresponding time in utc timestamp
     timestamps = trace.times("timestamp")[indices]
+    if time_window:
+        in_window = (timestamps >= time_window.start) & (timestamps <= time_window.end)
+        timestamps = timestamps[in_window]
+        indices = indices[in_window]
 
     # Step 4: Create a dictionary with timestamps as keys and probability values as values
     p_wave_picks = {ts: data[i] for ts, i in zip(timestamps, indices)}

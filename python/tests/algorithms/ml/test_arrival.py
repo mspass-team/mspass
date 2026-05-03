@@ -7,7 +7,7 @@ import seisbench.models as sbm
 from mspasspy.algorithms.ml.arrival import annotate_arrival_time
 from mspasspy.ccore.algorithms.basic import TimeWindow
 from mspasspy.util.converter import Trace2TimeSeries
-from obspy import Stream, UTCDateTime, read
+from obspy import Stream, Trace, UTCDateTime, read
 from obspy.clients.fdsn import Client
 
 sys.path.append("python/tests")
@@ -104,6 +104,52 @@ def test_annotate_arrival_time_window():
 
     # Compare the sets
     assert mspass_set == seis_set
+
+
+class _BoundaryPredictionModel:
+    channel = "PhaseNet_P"
+
+    def annotate(self, stream):
+        tr = Trace(np.ones(stream[0].stats.npts))
+        tr.stats.starttime = stream[0].stats.starttime
+        tr.stats.delta = stream[0].stats.delta
+        tr.stats.channel = self.channel
+        return Stream([tr])
+
+
+def test_annotate_arrival_time_filters_trimmed_boundary_samples():
+    trace = Trace(np.zeros(10))
+    trace.stats.starttime = UTCDateTime(0)
+    trace.stats.delta = 1.0
+    timeseries = Trace2TimeSeries(trace)
+
+    window_start = 0.4
+    window_end = 3.6
+    annotate_arrival_time(
+        timeseries,
+        threshold=0,
+        time_window=TimeWindow(window_start, window_end),
+        model=_BoundaryPredictionModel(),
+    )
+
+    picks = timeseries["p_wave_picks"]
+    assert set(picks.keys()) == {1.0, 2.0, 3.0}
+    assert all(window_start <= pick_time <= window_end for pick_time in picks)
+
+
+class _NoPPhasePredictionModel(_BoundaryPredictionModel):
+    channel = "PhaseNet_S"
+
+
+def test_annotate_arrival_time_handles_missing_p_trace():
+    trace = Trace(np.zeros(10))
+    trace.stats.starttime = UTCDateTime(0)
+    trace.stats.delta = 1.0
+    timeseries = Trace2TimeSeries(trace)
+
+    annotate_arrival_time(timeseries, threshold=0, model=_NoPPhasePredictionModel())
+
+    assert timeseries["p_wave_picks"] == {}
 
 
 def test_annotate_arrival_time_for_mseed():
