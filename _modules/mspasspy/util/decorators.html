@@ -158,6 +158,14 @@
 <span class="c1"># from mspasspy.global_history.manager import GlobalHistoryManager</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">logging_helper</span>
 
+<span class="c1"># Arg0/arg1/arg2 passed to wrapper try blocks must be one of these to use elog/ensemble_error.</span>
+<span class="n">_MSPASS_WRAPPER_DATA_TYPES</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">Seismogram</span><span class="p">,</span>
+    <span class="n">TimeSeries</span><span class="p">,</span>
+    <span class="n">TimeSeriesEnsemble</span><span class="p">,</span>
+    <span class="n">SeismogramEnsemble</span><span class="p">,</span>
+<span class="p">)</span>
+
 
 <span class="nd">@decorator</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">mspass_func_wrapper</span><span class="p">(</span>
@@ -292,7 +300,8 @@
 <span class="sd">    :param kwargs: extra kv arguments</span>
 <span class="sd">    :return: modified seismic data object.  Can be a different type than</span>
 <span class="sd">       the input.   If function_return_key is used only the Metadata</span>
-<span class="sd">       container  should be altered.</span>
+<span class="sd">       container  should be altered.  On RuntimeError, MsPASSError (non-Fatal),</span>
+<span class="sd">       or generic Exception, arg0 is logged, killed, and returned.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Add an error trap for arg0 if this function doesn&#39;t do that</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">checks_arg0_type</span><span class="p">:</span>
@@ -406,14 +415,15 @@
             <span class="c1"># ensemles - all are in place by defintion if passed through</span>
             <span class="c1"># this wrapper</span>
             <span class="k">return</span> <span class="n">data</span>
+    <span class="c1"># On failure log arg0, kill it, and return it so callers never see implicit None.</span>
+    <span class="c1"># Fatal MsPASSError is re-raised and does not use this handler.</span>
     <span class="k">except</span> <span class="ne">RuntimeError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="n">Seismogram</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">)):</span>
             <span class="n">data</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg_name</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">err</span><span class="p">),</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">logging_helper</span><span class="o">.</span><span class="n">ensemble_error</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">err</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
-        <span class="c1"># some unexpected error happen, if inplace_return is true, we may want to return the original data</span>
-        <span class="k">if</span> <span class="n">inplace_return</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">data</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">data</span>
     <span class="k">except</span> <span class="n">MsPASSError</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">ex</span><span class="o">.</span><span class="n">severity</span> <span class="o">==</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Fatal</span><span class="p">:</span>
             <span class="k">raise</span>
@@ -421,9 +431,17 @@
             <span class="n">data</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg_name</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">severity</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">logging_helper</span><span class="o">.</span><span class="n">ensemble_error</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">severity</span><span class="p">)</span>
-        <span class="c1"># some unexpected error happen, if inplace_return is true, we may want to return the original data</span>
-        <span class="k">if</span> <span class="n">inplace_return</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">data</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">data</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">_MSPASS_WRAPPER_DATA_TYPES</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">exc</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="n">Seismogram</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">)):</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg_name</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">exc</span><span class="p">),</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logging_helper</span><span class="o">.</span><span class="n">ensemble_error</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">exc</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">data</span>
 
 
 <span class="nd">@decorator</span>
@@ -461,7 +479,8 @@
 <span class="sd">      This is useful for pre-run checks of a large job to validate a workflow. Errors generate exceptions</span>
 <span class="sd">      but the function returns before attempting any calculations.</span>
 <span class="sd">    :param kwargs: extra kv arguments</span>
-<span class="sd">    :return: the output of func</span>
+<span class="sd">    :return: the output of func.  On RuntimeError, MsPASSError (non-Fatal), or</span>
+<span class="sd">      generic Exception, both inputs are logged, killed, and data1 is returned.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span>
         <span class="n">data1</span><span class="p">,</span> <span class="p">(</span><span class="n">Seismogram</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">,</span> <span class="n">SeismogramEnsemble</span><span class="p">,</span> <span class="n">TimeSeriesEnsemble</span><span class="p">)</span>
@@ -495,6 +514,8 @@
             <span class="n">logging_helper</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="n">alg_id</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">)</span>
             <span class="n">logging_helper</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">data2</span><span class="p">,</span> <span class="n">alg_id</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">res</span>
+    <span class="c1"># On failure log each input, kill both, and return data1 so callers never see implicit None.</span>
+    <span class="c1"># Fatal MsPASSError is re-raised and does not use this handler.</span>
     <span class="k">except</span> <span class="ne">RuntimeError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="p">(</span><span class="n">Seismogram</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">)):</span>
             <span class="n">data1</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg_name</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">err</span><span class="p">),</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
@@ -504,6 +525,9 @@
             <span class="n">data2</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg_name</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">err</span><span class="p">),</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">logging_helper</span><span class="o">.</span><span class="n">ensemble_error</span><span class="p">(</span><span class="n">data2</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">err</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+        <span class="n">data1</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+        <span class="n">data2</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">data1</span>
     <span class="k">except</span> <span class="n">MsPASSError</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">ex</span><span class="o">.</span><span class="n">severity</span> <span class="o">==</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Fatal</span><span class="p">:</span>
             <span class="k">raise</span>
@@ -515,6 +539,25 @@
             <span class="n">data2</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg_name</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">severity</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">logging_helper</span><span class="o">.</span><span class="n">ensemble_error</span><span class="p">(</span><span class="n">data2</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">severity</span><span class="p">)</span>
+        <span class="n">data1</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+        <span class="n">data2</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">data1</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="n">_MSPASS_WRAPPER_DATA_TYPES</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span>
+            <span class="n">data2</span><span class="p">,</span> <span class="n">_MSPASS_WRAPPER_DATA_TYPES</span>
+        <span class="p">):</span>
+            <span class="k">raise</span> <span class="n">exc</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="p">(</span><span class="n">Seismogram</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">)):</span>
+            <span class="n">data1</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg_name</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">exc</span><span class="p">),</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logging_helper</span><span class="o">.</span><span class="n">ensemble_error</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">exc</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data2</span><span class="p">,</span> <span class="p">(</span><span class="n">Seismogram</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">)):</span>
+            <span class="n">data2</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg_name</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">exc</span><span class="p">),</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logging_helper</span><span class="o">.</span><span class="n">ensemble_error</span><span class="p">(</span><span class="n">data2</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">exc</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+        <span class="n">data1</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+        <span class="n">data2</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">data1</span>
 
 
 <span class="nd">@decorator</span>
@@ -590,7 +633,8 @@
 <span class="sd">       applies the atomic function to each ensemble member in</span>
 <span class="sd">       a loop over members.</span>
 <span class="sd">    :param kwargs: extra kv arguments</span>
-<span class="sd">    :return: origin data or the output of func</span>
+<span class="sd">    :return: origin data or the output of func.  On RuntimeError, MsPASSError</span>
+<span class="sd">       (non-Fatal), or generic Exception, arg0 is logged, killed, and returned.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Add an error trap for arg0 if this function doesn&#39;t do that</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">checks_arg0_type</span><span class="p">:</span>
@@ -696,14 +740,15 @@
             <span class="c1"># ensembles - all are in place by defintion if passed through</span>
             <span class="c1"># this wrapper</span>
             <span class="k">return</span> <span class="n">data</span>
+    <span class="c1"># On failure log arg0, kill it, and return it so callers never see implicit None.</span>
+    <span class="c1"># Fatal MsPASSError is re-raised and does not use this handler.</span>
     <span class="k">except</span> <span class="ne">RuntimeError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="n">Seismogram</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">)):</span>
             <span class="n">data</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg_name</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">err</span><span class="p">),</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">logging_helper</span><span class="o">.</span><span class="n">ensemble_error</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">err</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
-        <span class="c1"># some unexpected error happen, if inplace_return is true, we may want to return the original data</span>
-        <span class="k">if</span> <span class="n">inplace_return</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">data</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">data</span>
     <span class="k">except</span> <span class="n">MsPASSError</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">ex</span><span class="o">.</span><span class="n">severity</span> <span class="o">==</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Fatal</span><span class="p">:</span>
             <span class="k">raise</span>
@@ -711,9 +756,17 @@
             <span class="n">data</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg_name</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">severity</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">logging_helper</span><span class="o">.</span><span class="n">ensemble_error</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">severity</span><span class="p">)</span>
-        <span class="c1"># some unexpected error happen, if inplace_return is true, we may want to return the original data</span>
-        <span class="k">if</span> <span class="n">inplace_return</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">data</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">data</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">_MSPASS_WRAPPER_DATA_TYPES</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">exc</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="n">Seismogram</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">)):</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg_name</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">exc</span><span class="p">),</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logging_helper</span><span class="o">.</span><span class="n">ensemble_error</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">exc</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">data</span>
 
 
 <div class="viewcode-block" id="is_input_dead">
@@ -1077,7 +1130,9 @@
 <span class="sd">      This is useful for pre-run checks of a large job to validate a workflow. Errors generate exceptions</span>
 <span class="sd">      but the function returns before attempting any calculations.</span>
 <span class="sd">    :param kwargs: extra kv arguments</span>
-<span class="sd">    :return: the output of func</span>
+<span class="sd">    :return: the output of func.  On RuntimeError, logged MsPASSError</span>
+<span class="sd">      (Informational or Debug), or generic Exception, both inputs are killed</span>
+<span class="sd">      and data1 is returned; other MsPASSError severities are re-raised.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">alg_name</span><span class="p">:</span>
         <span class="n">alg_name</span> <span class="o">=</span> <span class="n">func</span><span class="o">.</span><span class="vm">__name__</span>
@@ -1101,6 +1156,8 @@
         <span class="k">if</span> <span class="n">object_history</span><span class="p">:</span>
             <span class="n">logging_helper</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="n">data2</span><span class="p">,</span> <span class="n">alg_id</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">res</span>
+    <span class="c1"># On failure log both inputs, kill both, and return data1 so callers never see implicit None.</span>
+    <span class="c1"># mspass_reduce_func_wrapper MsPASSError: only Informational/Debug are logged here; others re-raise.</span>
     <span class="k">except</span> <span class="ne">RuntimeError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="p">(</span><span class="n">Seismogram</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">)):</span>
             <span class="n">data1</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg_name</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">err</span><span class="p">),</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
@@ -1108,6 +1165,9 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">logging_helper</span><span class="o">.</span><span class="n">ensemble_error</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">err</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
             <span class="n">logging_helper</span><span class="o">.</span><span class="n">ensemble_error</span><span class="p">(</span><span class="n">data2</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">err</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+        <span class="n">data1</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+        <span class="n">data2</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">data1</span>
     <span class="k">except</span> <span class="n">MsPASSError</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
         <span class="k">if</span> <span class="p">(</span>
             <span class="n">ex</span><span class="o">.</span><span class="n">severity</span> <span class="o">!=</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Informational</span>
@@ -1120,6 +1180,23 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">logging_helper</span><span class="o">.</span><span class="n">ensemble_error</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">severity</span><span class="p">)</span>
             <span class="n">logging_helper</span><span class="o">.</span><span class="n">ensemble_error</span><span class="p">(</span><span class="n">data2</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">severity</span><span class="p">)</span>
+        <span class="n">data1</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+        <span class="n">data2</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">data1</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="n">_MSPASS_WRAPPER_DATA_TYPES</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span>
+            <span class="n">data2</span><span class="p">,</span> <span class="n">_MSPASS_WRAPPER_DATA_TYPES</span>
+        <span class="p">):</span>
+            <span class="k">raise</span> <span class="n">exc</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="p">(</span><span class="n">Seismogram</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">)):</span>
+            <span class="n">data1</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg_name</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">exc</span><span class="p">),</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+            <span class="n">data2</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg_name</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">exc</span><span class="p">),</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logging_helper</span><span class="o">.</span><span class="n">ensemble_error</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">exc</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+            <span class="n">logging_helper</span><span class="o">.</span><span class="n">ensemble_error</span><span class="p">(</span><span class="n">data2</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">exc</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+        <span class="n">data1</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+        <span class="n">data2</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">data1</span>
 
 
 <span class="c1"># @decorator</span>
