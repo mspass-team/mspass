@@ -1,23 +1,26 @@
 FROM continuumio/miniconda3:latest
+
+RUN conda install -n base -y conda-build anaconda-client && \
+    conda config --add channels conda-forge && \
+    conda config --set anaconda_upload no && \
+    conda clean -afy
+
 ADD . /mspass
 ADD .git /mspass/.git
 RUN mv /mspass /mspasspy_build && cd /mspasspy_build && git status
 
 ARG PYTHON_VERSION
 ARG TARGETARCH
+ARG ANACONDA_API_TOKEN
 
 ENV PATH /opt/conda/bin:$PATH
+
 RUN apt-get update --fix-missing && \
     apt-get install -y cmake wget bzip2 ca-certificates curl git && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-ARG ANACONDA_API_TOKEN
-
 RUN cd /mspasspy_build \
-    && conda install -y conda-build anaconda-client \
-    && conda config --set anaconda_upload no \
-    && conda config --add channels conda-forge \
     && export CONDA_BUILD_DEBUG=1 \
     && PACKAGE_PATH=$(conda build . --python ${PYTHON_VERSION} --output) \
     && conda build . --python ${PYTHON_VERSION} --debug \
