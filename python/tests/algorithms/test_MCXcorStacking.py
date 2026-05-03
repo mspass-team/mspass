@@ -317,30 +317,27 @@ def test_align_and_stack_error_handlers():
             "badtype",
             e.member[0],
         )
-    with pytest.raises(TypeError, match="illegal type for arg1"):
-        [eo, beam] = align_and_stack(
-            e,
-            "badtype",
-        )
-    with pytest.raises(ValueError, match="Invalid value for robust_stack_method="):
-        [eo, beam] = align_and_stack(
-            e,
-            e.member[0],
-            robust_stack_method="notvalid",
-        )
+    e = TimeSeriesEnsemble(e0)
+    align_and_stack(e, "badtype")
+    errs = e.member[0].elog.get_error_log()
+    assert len(errs) >= 1
+    assert "illegal type for arg1" in errs[-1].message.lower()
+    e = TimeSeriesEnsemble(e0)
+    align_and_stack(e, e.member[0], robust_stack_method="notvalid")
+    errs = e.member[0].elog.get_error_log()
+    assert len(errs) >= 1
+    assert "invalid value for robust_stack_method" in errs[-1].message.lower()
     # test handlers for setting correlation window
-    with pytest.raises(TypeError, match="Illegal type for correlation_window="):
-        [eo, beam] = align_and_stack(
-            e,
-            e.member[0],
-            correlation_window="badarg",
-        )
-    with pytest.raises(TypeError, match="Illegal type="):
-        [eo, beam] = align_and_stack(
-            e,
-            e.member[0],
-            correlation_window_keys="badarg",
-        )
+    e = TimeSeriesEnsemble(e0)
+    align_and_stack(e, e.member[0], correlation_window="badarg")
+    errs = e.member[0].elog.get_error_log()
+    assert len(errs) >= 1
+    assert "illegal type for correlation_window" in errs[-1].message.lower()
+    e = TimeSeriesEnsemble(e0)
+    align_and_stack(e, e.member[0], correlation_window_keys="badarg")
+    errs = e.member[0].elog.get_error_log()
+    assert len(errs) >= 1
+    assert "illegal type" in errs[-1].message.lower()
     # these handlers log errors but don't throw exceptions - test them differently
     e = TimeSeriesEnsemble(e0)
     w = TimeSeries(e.member[0])
@@ -376,18 +373,16 @@ def test_align_and_stack_error_handlers():
     assert eo.live
     assert eo.elog.size() == 0
     # test handlers for setting robust window
-    with pytest.raises(ValueError, match="Illegal type for robust_stack_window"):
-        [eo, beam] = align_and_stack(
-            e,
-            e.member[0],
-            robust_stack_window="badarg",
-        )
-    with pytest.raises(ValueError, match="Illegal type="):
-        [eo, beam] = align_and_stack(
-            e,
-            e.member[0],
-            robust_stack_window_keys="badarg",
-        )
+    e = TimeSeriesEnsemble(e0)
+    align_and_stack(e, e.member[0], robust_stack_window="badarg")
+    errs = e.member[0].elog.get_error_log()
+    assert len(errs) >= 1
+    assert "illegal type for robust_stack_window" in errs[-1].message.lower()
+    e = TimeSeriesEnsemble(e0)
+    align_and_stack(e, e.member[0], robust_stack_window_keys="badarg")
+    errs = e.member[0].elog.get_error_log()
+    assert len(errs) >= 1
+    assert "illegal type" in errs[-1].message.lower()
     # these handlers log errors but don't throw exceptions - test them differently
     # as above but for section setting robust window
     e = TimeSeriesEnsemble(e0)
@@ -623,9 +618,13 @@ def test_MCXcorPrepP():
     e = TimeSeriesEnsemble(e0)
     with pytest.raises(TypeError, match="MCXcorPrepP:  Illegal type="):
         [eo, beam] = MCXcorPrepP("foo", nw, checks_arg0_type=True)
-    with pytest.raises(TypeError, match="MCXcorPrepP:  Illegal type="):
-        [eo, beam] = MCXcorPrepP(e, "foo")
-    # test handling of dead ensemble
+    e = TimeSeriesEnsemble(e0)
+    MCXcorPrepP(e, "foo")
+    errs = e.member[0].elog.get_error_log()
+    assert len(errs) >= 1
+    assert "illegal type" in errs[-1].message.lower()
+    # test handling of dead ensemble (fresh ensemble; prior call returns None)
+    e = TimeSeriesEnsemble(e0)
     e.kill()
     [eo, beam] = MCXcorPrepP(e, nw, station_collection="site")
     assert eo.dead()
@@ -659,18 +658,17 @@ def test_MCXcorPrepP():
     assert eo.member[ibad].dead()
 
     # test handling of frequency bandwidth override with arguments
-    # low_f_corner and high_f_corner
+    # low_f_corner and high_f_corner (errors posted to elog by wrapper)
     e = TimeSeriesEnsemble(e0)
-    with pytest.raises(
-        ValueError, match="low_f_corner value is greater than high_f_corner value"
-    ):
-        [eo, beam] = MCXcorPrepP(
-            e, nw, station_collection="site", low_f_corner=10.0, high_f_corner=0.1
-        )
-    with pytest.raises(
-        ValueError, match="If you specify one you must specify the other"
-    ):
-        [eo, beam] = MCXcorPrepP(e, nw, station_collection="site", low_f_corner=0.1)
+    MCXcorPrepP(e, nw, station_collection="site", low_f_corner=10.0, high_f_corner=0.1)
+    errs = e.member[0].elog.get_error_log()
+    assert len(errs) >= 1
+    assert "greater than" in errs[-1].message.lower()
+    e = TimeSeriesEnsemble(e0)
+    MCXcorPrepP(e, nw, station_collection="site", low_f_corner=0.1)
+    errs = e.member[0].elog.get_error_log()
+    assert len(errs) >= 1
+    assert "specify" in errs[-1].message.lower() or "other" in errs[-1].message.lower()
 
 
 #    from mspasspy.graphics import SeismicPlotter

@@ -115,9 +115,10 @@ def test_reduce_stack():
 def test_reduce_stack_exception():
     tse1 = get_live_timeseries_ensemble(2)
     tse2 = get_live_timeseries_ensemble(3)
-    with pytest.raises(IndexError) as err:
-        stack(tse1, tse2)
-    assert str(err.value) == "data1 and data2 have different sizes of member"
+    stack(tse1, tse2)
+    errs = tse1.member[0].elog.get_error_log()
+    assert len(errs) >= 1
+    assert "different sizes of member" in errs[-1].message
 
     # fixme cxx is not throwing error
     # ts1 = get_live_timeseries()

@@ -13,6 +13,14 @@ from mspasspy.util.seismic import number_live
 # from mspasspy.global_history.manager import GlobalHistoryManager
 from mspasspy.util import logging_helper
 
+# Arg0/arg1/arg2 passed to wrapper try blocks must be one of these to use elog/ensemble_error.
+_MSPASS_WRAPPER_DATA_TYPES = (
+    Seismogram,
+    TimeSeries,
+    TimeSeriesEnsemble,
+    SeismogramEnsemble,
+)
+
 
 @decorator
 def mspass_func_wrapper(
@@ -147,7 +155,8 @@ def mspass_func_wrapper(
     :param kwargs: extra kv arguments
     :return: modified seismic data object.  Can be a different type than
        the input.   If function_return_key is used only the Metadata
-       container  should be altered.
+       container  should be altered.  On RuntimeError, MsPASSError (non-Fatal),
+       or generic Exception, arg0 is logged, killed, and returned.
     """
     # Add an error trap for arg0 if this function doesn't do that
     if not checks_arg0_type:
@@ -261,14 +270,15 @@ def mspass_func_wrapper(
             # ensemles - all are in place by defintion if passed through
             # this wrapper
             return data
+    # On failure log arg0, kill it, and return it so callers never see implicit None.
+    # Fatal MsPASSError is re-raised and does not use this handler.
     except RuntimeError as err:
         if isinstance(data, (Seismogram, TimeSeries)):
             data.elog.log_error(alg_name, str(err), ErrorSeverity.Invalid)
         else:
             logging_helper.ensemble_error(data, alg_name, err, ErrorSeverity.Invalid)
-        # some unexpected error happen, if inplace_return is true, we may want to return the original data
-        if inplace_return:
-            return data
+        data.kill()
+        return data
     except MsPASSError as ex:
         if ex.severity == ErrorSeverity.Fatal:
             raise
@@ -276,9 +286,17 @@ def mspass_func_wrapper(
             data.elog.log_error(alg_name, ex.message, ex.severity)
         else:
             logging_helper.ensemble_error(data, alg_name, ex.message, ex.severity)
-        # some unexpected error happen, if inplace_return is true, we may want to return the original data
-        if inplace_return:
-            return data
+        data.kill()
+        return data
+    except Exception as exc:
+        if not isinstance(data, _MSPASS_WRAPPER_DATA_TYPES):
+            raise exc
+        if isinstance(data, (Seismogram, TimeSeries)):
+            data.elog.log_error(alg_name, str(exc), ErrorSeverity.Invalid)
+        else:
+            logging_helper.ensemble_error(data, alg_name, exc, ErrorSeverity.Invalid)
+        data.kill()
+        return data
 
 
 @decorator
@@ -316,7 +334,8 @@ def mspass_func_wrapper_multi(
       This is useful for pre-run checks of a large job to validate a workflow. Errors generate exceptions
       but the function returns before attempting any calculations.
     :param kwargs: extra kv arguments
-    :return: the output of func
+    :return: the output of func.  On RuntimeError, MsPASSError (non-Fatal), or
+      generic Exception, both inputs are logged, killed, and data1 is returned.
     """
     if not isinstance(
         data1, (Seismogram, TimeSeries, SeismogramEnsemble, TimeSeriesEnsemble)
@@ -350,6 +369,8 @@ def mspass_func_wrapper_multi(
             logging_helper.info(data1, alg_id, alg_name)
             logging_helper.info(data2, alg_id, alg_name)
         return res
+    # On failure log each input, kill both, and return data1 so callers never see implicit None.
+    # Fatal MsPASSError is re-raised and does not use this handler.
     except RuntimeError as err:
         if isinstance(data1, (Seismogram, TimeSeries)):
             data1.elog.log_error(alg_name, str(err), ErrorSeverity.Invalid)
@@ -359,6 +380,9 @@ def mspass_func_wrapper_multi(
             data2.elog.log_error(alg_name, str(err), ErrorSeverity.Invalid)
         else:
             logging_helper.ensemble_error(data2, alg_name, err, ErrorSeverity.Invalid)
+        data1.kill()
+        data2.kill()
+        return data1
     except MsPASSError as ex:
         if ex.severity == ErrorSeverity.Fatal:
             raise
@@ -370,6 +394,25 @@ def mspass_func_wrapper_multi(
             data2.elog.log_error(alg_name, ex.message, ex.severity)
         else:
             logging_helper.ensemble_error(data2, alg_name, ex.message, ex.severity)
+        data1.kill()
+        data2.kill()
+        return data1
+    except Exception as exc:
+        if not isinstance(data1, _MSPASS_WRAPPER_DATA_TYPES) or not isinstance(
+            data2, _MSPASS_WRAPPER_DATA_TYPES
+        ):
+            raise exc
+        if isinstance(data1, (Seismogram, TimeSeries)):
+            data1.elog.log_error(alg_name, str(exc), ErrorSeverity.Invalid)
+        else:
+            logging_helper.ensemble_error(data1, alg_name, exc, ErrorSeverity.Invalid)
+        if isinstance(data2, (Seismogram, TimeSeries)):
+            data2.elog.log_error(alg_name, str(exc), ErrorSeverity.Invalid)
+        else:
+            logging_helper.ensemble_error(data2, alg_name, exc, ErrorSeverity.Invalid)
+        data1.kill()
+        data2.kill()
+        return data1
 
 
 @decorator
@@ -445,7 +488,8 @@ def mspass_method_wrapper(
        applies the atomic function to each ensemble member in
        a loop over members.
     :param kwargs: extra kv arguments
-    :return: origin data or the output of func
+    :return: origin data or the output of func.  On RuntimeError, MsPASSError
+       (non-Fatal), or generic Exception, arg0 is logged, killed, and returned.
     """
     # Add an error trap for arg0 if this function doesn't do that
     if not checks_arg0_type:
@@ -551,14 +595,15 @@ def mspass_method_wrapper(
             # ensembles - all are in place by defintion if passed through
             # this wrapper
             return data
+    # On failure log arg0, kill it, and return it so callers never see implicit None.
+    # Fatal MsPASSError is re-raised and does not use this handler.
     except RuntimeError as err:
         if isinstance(data, (Seismogram, TimeSeries)):
             data.elog.log_error(alg_name, str(err), ErrorSeverity.Invalid)
         else:
             logging_helper.ensemble_error(data, alg_name, err, ErrorSeverity.Invalid)
-        # some unexpected error happen, if inplace_return is true, we may want to return the original data
-        if inplace_return:
-            return data
+        data.kill()
+        return data
     except MsPASSError as ex:
         if ex.severity == ErrorSeverity.Fatal:
             raise
@@ -566,9 +611,17 @@ def mspass_method_wrapper(
             data.elog.log_error(alg_name, ex.message, ex.severity)
         else:
             logging_helper.ensemble_error(data, alg_name, ex.message, ex.severity)
-        # some unexpected error happen, if inplace_return is true, we may want to return the original data
-        if inplace_return:
-            return data
+        data.kill()
+        return data
+    except Exception as exc:
+        if not isinstance(data, _MSPASS_WRAPPER_DATA_TYPES):
+            raise exc
+        if isinstance(data, (Seismogram, TimeSeries)):
+            data.elog.log_error(alg_name, str(exc), ErrorSeverity.Invalid)
+        else:
+            logging_helper.ensemble_error(data, alg_name, exc, ErrorSeverity.Invalid)
+        data.kill()
+        return data
 
 
 def is_input_dead(*args, **kwargs):
@@ -917,7 +970,9 @@ def mspass_reduce_func_wrapper(
       This is useful for pre-run checks of a large job to validate a workflow. Errors generate exceptions
       but the function returns before attempting any calculations.
     :param kwargs: extra kv arguments
-    :return: the output of func
+    :return: the output of func.  On RuntimeError, logged MsPASSError
+      (Informational or Debug), or generic Exception, both inputs are killed
+      and data1 is returned; other MsPASSError severities are re-raised.
     """
     if not alg_name:
         alg_name = func.__name__
@@ -941,6 +996,8 @@ def mspass_reduce_func_wrapper(
         if object_history:
             logging_helper.reduce(data1, data2, alg_id, alg_name)
         return res
+    # On failure log both inputs, kill both, and return data1 so callers never see implicit None.
+    # mspass_reduce_func_wrapper MsPASSError: only Informational/Debug are logged here; others re-raise.
     except RuntimeError as err:
         if isinstance(data1, (Seismogram, TimeSeries)):
             data1.elog.log_error(alg_name, str(err), ErrorSeverity.Invalid)
@@ -948,6 +1005,9 @@ def mspass_reduce_func_wrapper(
         else:
             logging_helper.ensemble_error(data1, alg_name, err, ErrorSeverity.Invalid)
             logging_helper.ensemble_error(data2, alg_name, err, ErrorSeverity.Invalid)
+        data1.kill()
+        data2.kill()
+        return data1
     except MsPASSError as ex:
         if (
             ex.severity != ErrorSeverity.Informational
@@ -960,6 +1020,23 @@ def mspass_reduce_func_wrapper(
         else:
             logging_helper.ensemble_error(data1, alg_name, ex.message, ex.severity)
             logging_helper.ensemble_error(data2, alg_name, ex.message, ex.severity)
+        data1.kill()
+        data2.kill()
+        return data1
+    except Exception as exc:
+        if not isinstance(data1, _MSPASS_WRAPPER_DATA_TYPES) or not isinstance(
+            data2, _MSPASS_WRAPPER_DATA_TYPES
+        ):
+            raise exc
+        if isinstance(data1, (Seismogram, TimeSeries)):
+            data1.elog.log_error(alg_name, str(exc), ErrorSeverity.Invalid)
+            data2.elog.log_error(alg_name, str(exc), ErrorSeverity.Invalid)
+        else:
+            logging_helper.ensemble_error(data1, alg_name, exc, ErrorSeverity.Invalid)
+            logging_helper.ensemble_error(data2, alg_name, exc, ErrorSeverity.Invalid)
+        data1.kill()
+        data2.kill()
+        return data1
 
 
 # @decorator

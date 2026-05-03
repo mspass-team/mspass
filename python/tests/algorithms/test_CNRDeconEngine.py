@@ -368,18 +368,20 @@ def test_CNRRFDecon_error_handlers():
         d_decon = CNRRFDecon("foo", engine, signal_window=sw, noise_window=nw)
 
     d = Seismogram(d0wn)
-    with pytest.raises(TypeError, match="Must be an instance of a CNRDeconEngine"):
-        d_decon = CNRRFDecon(d, "foo", signal_window=sw, noise_window=nw)
+    CNRRFDecon(d, "foo", signal_window=sw, noise_window=nw)
+    assert d.elog.size() >= 1
+    assert "must be an instance" in d.elog.get_error_log()[-1].message.lower()
 
     d = Seismogram(d0wn)
-    with pytest.raises(ValueError, match="Illegal value received"):
-        d_decon = CNRRFDecon(
-            d,
-            engine,
-            component=20,
-            signal_window=sw,
-            noise_window=nw,
-        )
+    CNRRFDecon(
+        d,
+        engine,
+        component=20,
+        signal_window=sw,
+        noise_window=nw,
+    )
+    assert d.elog.size() >= 1
+    assert "illegal value" in d.elog.get_error_log()[-1].message.lower()
     # verify handling of dead datum
     d = Seismogram(d0wn)
     d.kill()
@@ -565,11 +567,17 @@ def test_CNRArrayDecon_error_handlers():
     ):
         e_d = CNRArrayDecon("foo", w, engine, noise_window=nw, signal_window=sw)
 
-    with pytest.raises(TypeError, match="Illegal type for required arg1"):
-        e_d = CNRArrayDecon(e, "foo", engine, noise_window=nw, signal_window=sw)
+    CNRArrayDecon(e, "foo", engine, noise_window=nw, signal_window=sw)
+    errs = e.member[0].elog.get_error_log()
+    assert len(errs) >= 1
+    assert "illegal type" in errs[-1].message.lower()
 
-    with pytest.raises(ValueError, match="Illegal argument combination"):
-        e_d = CNRArrayDecon(e, w, engine)
+    e = SeismogramEnsemble(e0)
+    w = Seismogram(s0)
+    CNRArrayDecon(e, w, engine)
+    errs = e.member[0].elog.get_error_log()
+    assert len(errs) >= 1
+    assert "illegal argument combination" in errs[-1].message.lower()
 
     # verify handlling of dead input
     e = SeismogramEnsemble(e0)

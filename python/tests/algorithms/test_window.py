@@ -479,11 +479,11 @@ def test_windowdata_exceptions():
     ts_ens0.member[0].t0 += offset_m0
     se_ens0.member[0].t0 += offset_m0
 
-    # First test argument mistake handler.  i.e. these cases throw
-    # exceptions instead of posting elog messages
+    # First test argument mistake handler: ValueError is logged on arg0
     ts = TimeSeries(ts0)
-    with pytest.raises(ValueError, match="illegal option"):
-        d = WindowData(ts, 2, 3, short_segment_handling="notvalid")
+    WindowData(ts, 2, 3, short_segment_handling="notvalid")
+    assert ts.elog.size() >= 1
+    assert "illegal option" in ts.elog.get_error_log()[-1].message.lower()
     ts = TimeSeries(ts0)
     # WindowData handles both atomic and ensemble data \
     # this exception is handled by the function itself, no the decorators
