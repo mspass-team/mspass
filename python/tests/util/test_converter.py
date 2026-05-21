@@ -324,6 +324,7 @@ def test_TimeSeriesEnsemble_as_Stream():
     stream = tse.toStream()
     assert len(tse.member) == len(stream)
     tse_c = stream.toTimeSeriesEnsemble()
+    assert tse_c.live
     assert len(tse) == len(tse_c)
     for k in range(3):
         assert np.isclose(tse.member[k].data, tse_c.member[k].data).all()
@@ -353,12 +354,21 @@ def test_TimeSeriesEnsemble_as_Stream():
     assert teststr == "bar"
     assert tse_c["fake_lat"] == 22.4
     assert tse_c["fake_evid"] == 9999
+    
+    # check handling of all ensembles containing only bodies
+    tse = get_live_timeseries_ensemble(3)
+    for i in range(len(tse.member)):
+        tse.member[i].kill()
+    stream = tse.toStream()
+    tse_c = stream.toTimeSeriesEnsemble()
+    assert tse_c.dead()
 
 
 def test_SeismogramEnsemble_as_Stream():
     seis_e = get_live_seismogram_ensemble(3)
     stream = seis_e.toStream()
     seis_e_c = stream.toSeismogramEnsemble()
+    assert seis_e_c.live
     assert len(seis_e) == len(seis_e_c)
     for k in range(3):
         for i in range(3):
@@ -388,6 +398,14 @@ def test_SeismogramEnsemble_as_Stream():
     assert seis_e_c["foo"] == "bar"
     assert seis_e_c["fake_lat"] == 22.4
     assert seis_e_c["fake_evid"] == 9999
+    
+    # check handling of all ensembles containing only bodies
+    seis_e = get_live_seismogram_ensemble(3)
+    for i in range(len(seis_e.member)):
+        seis_e.memmber[i].kill()
+    stream = seis_e.toStream()
+    seis_e_c = stream.toSeismogramEnsemble()
+    assert seis_e.dead()
 
 
 def test_list2Ensemble():
