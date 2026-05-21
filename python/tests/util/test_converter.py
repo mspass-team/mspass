@@ -402,7 +402,7 @@ def test_SeismogramEnsemble_as_Stream():
     # check handling of all ensembles containing only bodies
     seis_e = get_live_seismogram_ensemble(3)
     for i in range(len(seis_e.member)):
-        seis_e.memmber[i].kill()
+        seis_e.member[i].kill()
     stream = seis_e.toStream()
     seis_e_c = stream.toSeismogramEnsemble()
     assert seis_e.dead()
