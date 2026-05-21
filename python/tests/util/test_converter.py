@@ -405,7 +405,7 @@ def test_SeismogramEnsemble_as_Stream():
         seis_e.member[i].kill()
     stream = seis_e.toStream()
     seis_e_c = stream.toSeismogramEnsemble()
-    assert seis_e.dead()
+    assert seis_e_c.dead()
 
 
 def test_list2Ensemble():
