@@ -4,7 +4,7 @@ from mspasspy.ccore.seismic import (
     TimeSeriesEnsemble,
     SeismogramEnsemble,
 )
-from mspasspy.ccore.utility import Metadata, ErrorSeverity,MsPASSError
+from mspasspy.ccore.utility import Metadata, ErrorSeverity, MsPASSError
 from mspasspy.ccore.algorithms.basic import TimeWindow
 from bson import json_util
 import numpy as np
@@ -66,26 +66,28 @@ def number_live(ensemble) -> int:
         if d.live:
             nlive += 1
     return nlive
-def has_live_data(ensemble)->bool:
+
+
+def has_live_data(ensemble) -> bool:
     """
     Check if an ensemble has any live data and return True if it does.
-    
-    This function simply scans the member vector of ensemble and returns 
-    True the first time if finds a datum marked live.   That is much 
-    faster with large ensembles than an alternative os using `number_live` 
-    and using the result to set an ensemble  live or dead.   The normal 
-    use of this function is to call it after accumulating a set of atomic 
-    data into an ensemble.  An empty ensemble container is always marked 
-    dead until explicitly set live.   Hence, after adding data to such 
+
+    This function simply scans the member vector of ensemble and returns
+    True the first time if finds a datum marked live.   That is much
+    faster with large ensembles than an alternative os using `number_live`
+    and using the result to set an ensemble  live or dead.   The normal
+    use of this function is to call it after accumulating a set of atomic
+    data into an ensemble.  An empty ensemble container is always marked
+    dead until explicitly set live.   Hence, after adding data to such
     a container run this with a construct like this:
-    ```    
+    ```
         if has_live_data(ensemble):
             ensemble.set_live()
     ```
-    Note this function will throw a ValueError exception if ensemble is 
-    anything but a TimeSeriesEnsemble or SeismogramEnsemble.  
-    
-    :param enemble:   input ensemble to be scanned 
+    Note this function will throw a ValueError exception if ensemble is
+    anything but a TimeSeriesEnsemble or SeismogramEnsemble.
+
+    :param enemble:   input ensemble to be scanned
     """
     if not isinstance(ensemble, (TimeSeriesEnsemble, SeismogramEnsemble)):
         message = "has_live_data:  arg0 must be a TimeSeriesEnsemble or SeismogramEnsemble object\n"
@@ -95,6 +97,7 @@ def has_live_data(ensemble)->bool:
         if d.live:
             return True
     return False
+
 
 def regularize_sampling(ensemble, dt_expected, Nsamp=10000, abort_on_error=False):
     """
