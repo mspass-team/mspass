@@ -25,6 +25,7 @@ from mspasspy.ccore.seismic import (
     Keywords,
 )
 from mspasspy.ccore.algorithms.basic import _ExtractComponent
+from mspasspy.util.seismic import has_live_data
 
 
 def dict2Metadata(dic):
@@ -777,7 +778,8 @@ def Stream2TimeSeriesEnsemble(stream):
     for d in tse.member:
         if d.is_defined("CONVERTER_ENSEMBLE_KEYS"):
             d.erase("CONVERTER_ENSEMBLE_KEYS")
-
+    if has_live_data(tse):
+        tse.set_live()
     return tse
 
 
@@ -831,6 +833,8 @@ def Stream2SeismogramEnsemble(stream):
     for d in res.member:
         if d.is_defined("CONVERTER_ENSEMBLE_KEYS"):
             d.erase("CONVERTER_ENSEMBLE_KEYS")
+    if has_live_data(res):
+        res.set_live()
     return res
 
 
