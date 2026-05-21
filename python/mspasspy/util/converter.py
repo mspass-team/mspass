@@ -756,6 +756,8 @@ def _converter_get_ensemble_keys(ens):
                 return d["CONVERTER_ENSEMBLE_KEYS"]
             else:
                 return list()
+    # need this to handle ensembles with all dead members
+    return list()
 
 
 def Stream2TimeSeriesEnsemble(stream):
