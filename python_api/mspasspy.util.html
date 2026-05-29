@@ -170,6 +170,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#module-mspasspy.util.seismic">seismic</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#mspasspy.util.seismic.ensemble_time_range"><code class="docutils literal notranslate"><span class="pre">ensemble_time_range()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mspasspy.util.seismic.has_live_data"><code class="docutils literal notranslate"><span class="pre">has_live_data()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mspasspy.util.seismic.number_live"><code class="docutils literal notranslate"><span class="pre">number_live()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mspasspy.util.seismic.print_metadata"><code class="docutils literal notranslate"><span class="pre">print_metadata()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mspasspy.util.seismic.regularize_sampling"><code class="docutils literal notranslate"><span class="pre">regularize_sampling()</span></code></a></li>
@@ -1065,6 +1066,35 @@ start and end time vectors</p></li>
 <dd class="field-odd"><p><cite>TimeWindow</cite> object with start and end times.  If the
 ensemble has all dead member the default constructed TimeWindow
 object will be returned which has zero length.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.util.seismic.has_live_data">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.util.seismic.</span></span><span class="sig-name descname"><span class="pre">has_live_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ensemble</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../_modules/mspasspy/util/seismic.html#has_live_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.seismic.has_live_data" title="Link to this definition"></a></dt>
+<dd><p>Check if an ensemble has any live data and return True if it does.</p>
+<p>This function simply scans the member vector of ensemble and returns 
+True the first time if finds a datum marked live.   That is much 
+faster with large ensembles than an alternative os using <cite>number_live</cite> 
+and using the result to set an ensemble  live or dead.   The normal 
+use of this function is to call it after accumulating a set of atomic 
+data into an ensemble.  An empty ensemble container is always marked 
+dead until explicitly set live.   Hence, after adding data to such 
+a container run this with a construct like this:
+<a href="#id1"><span class="problematic" id="id2">``</span></a><a href="#id3"><span class="problematic" id="id4">`</span></a></p>
+<blockquote>
+<div><dl class="simple">
+<dt>if has_live_data(ensemble):</dt><dd><p>ensemble.set_live()</p>
+</dd>
+</dl>
+</div></blockquote>
+<p><a href="#id5"><span class="problematic" id="id6">``</span></a>`
+Note this function will throw a ValueError exception if ensemble is 
+anything but a TimeSeriesEnsemble or SeismogramEnsemble.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>enemble</strong> – input ensemble to be scanned</p>
 </dd>
 </dl>
 </dd></dl>

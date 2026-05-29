@@ -170,6 +170,7 @@
     <span class="n">Keywords</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.ccore.algorithms.basic</span><span class="w"> </span><span class="kn">import</span> <span class="n">_ExtractComponent</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.util.seismic</span><span class="w"> </span><span class="kn">import</span> <span class="n">has_live_data</span>
 
 
 <div class="viewcode-block" id="dict2Metadata">
@@ -933,6 +934,8 @@
                 <span class="k">return</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;CONVERTER_ENSEMBLE_KEYS&quot;</span><span class="p">]</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">return</span> <span class="nb">list</span><span class="p">()</span>
+    <span class="c1"># need this to handle ensembles with all dead members</span>
+    <span class="k">return</span> <span class="nb">list</span><span class="p">()</span>
 
 
 <div class="viewcode-block" id="Stream2TimeSeriesEnsemble">
@@ -957,7 +960,8 @@
     <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">tse</span><span class="o">.</span><span class="n">member</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="s2">&quot;CONVERTER_ENSEMBLE_KEYS&quot;</span><span class="p">):</span>
             <span class="n">d</span><span class="o">.</span><span class="n">erase</span><span class="p">(</span><span class="s2">&quot;CONVERTER_ENSEMBLE_KEYS&quot;</span><span class="p">)</span>
-
+    <span class="k">if</span> <span class="n">has_live_data</span><span class="p">(</span><span class="n">tse</span><span class="p">):</span>
+        <span class="n">tse</span><span class="o">.</span><span class="n">set_live</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">tse</span></div>
 
 
@@ -1017,6 +1021,8 @@
     <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">res</span><span class="o">.</span><span class="n">member</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="s2">&quot;CONVERTER_ENSEMBLE_KEYS&quot;</span><span class="p">):</span>
             <span class="n">d</span><span class="o">.</span><span class="n">erase</span><span class="p">(</span><span class="s2">&quot;CONVERTER_ENSEMBLE_KEYS&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">has_live_data</span><span class="p">(</span><span class="n">res</span><span class="p">):</span>
+        <span class="n">res</span><span class="o">.</span><span class="n">set_live</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">res</span></div>
 
 
