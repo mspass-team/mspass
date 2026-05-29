@@ -2,6 +2,7 @@ import pytest
 from mspasspy.util.seismic import (
     print_metadata,
     number_live,
+    has_live_data,
     ensemble_time_range,
     regularize_sampling,
 )
@@ -50,7 +51,21 @@ def test_number_live():
 
     with pytest.raises(TypeError, match="illegal type for arg0="):
         number_live(d)
-
+        
+def test_has_live_data():
+    nme = 3
+    e = TimeSeriesEnsemble(nme)
+    d = TimeSeries()
+    d.set_npts(20)
+    d.set_live()
+    for i in range(nme):
+        e.member.append(d)
+    assert has_live_data(e)
+    # now kill all members and verify we get false 
+    for i in range(len(e.member)):
+        e.member[i].kill()
+    assert not has_live_data(e)
+    
 
 def test_regularize_sampling():
     # test only on TimeSeriesEnsemble
@@ -117,7 +132,6 @@ def test_ensemble_time_range():
         stvals.append(d.t0)
         etvals.append(d.endtime())
         e.member.append(d)
-    e0 = TimeSeriesEnsemble(e)
 
     tw = ensemble_time_range(e, metric="inner")
     assert tw.start == np.max(stvals)

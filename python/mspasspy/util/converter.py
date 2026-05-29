@@ -25,6 +25,7 @@ from mspasspy.ccore.seismic import (
     Keywords,
 )
 from mspasspy.ccore.algorithms.basic import _ExtractComponent
+from mspasspy.util.seismic import has_live_data
 
 
 def dict2Metadata(dic):
@@ -755,6 +756,8 @@ def _converter_get_ensemble_keys(ens):
                 return d["CONVERTER_ENSEMBLE_KEYS"]
             else:
                 return list()
+    # need this to handle ensembles with all dead members
+    return list()
 
 
 def Stream2TimeSeriesEnsemble(stream):
@@ -777,7 +780,8 @@ def Stream2TimeSeriesEnsemble(stream):
     for d in tse.member:
         if d.is_defined("CONVERTER_ENSEMBLE_KEYS"):
             d.erase("CONVERTER_ENSEMBLE_KEYS")
-
+    if has_live_data(tse):
+        tse.set_live()
     return tse
 
 
@@ -831,6 +835,8 @@ def Stream2SeismogramEnsemble(stream):
     for d in res.member:
         if d.is_defined("CONVERTER_ENSEMBLE_KEYS"):
             d.erase("CONVERTER_ENSEMBLE_KEYS")
+    if has_live_data(res):
+        res.set_live()
     return res
 
 
