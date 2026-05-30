@@ -51,7 +51,21 @@ def test_number_live():
 
     with pytest.raises(TypeError, match="illegal type for arg0="):
         number_live(d)
-
+        
+def test_has_live_data():
+    nme = 3
+    e = TimeSeriesEnsemble(nme)
+    d = TimeSeries()
+    d.set_npts(20)
+    d.set_live()
+    for i in range(nme):
+        e.member.append(d)
+    assert has_live_data(e)
+    # now kill all members and verify we get false 
+    for i in range(len(e.member)):
+        e.member[i].kill()
+    assert not has_live_data(e)
+    
 
 def test_has_live_data():
     nme = 3
