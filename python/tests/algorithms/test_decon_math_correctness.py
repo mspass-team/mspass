@@ -7,6 +7,7 @@ import pytest
 from mspasspy.ccore.algorithms.deconvolution import (
     DoubleVector,
     LeastSquareDecon,
+    TimeDomainLeastSquareDecon,
     WaterLevelDecon,
 )
 from mspasspy.ccore.utility import MsPASSError, pfread
@@ -23,6 +24,25 @@ deconvolution_data_window_end {float(nfft - 1)}
 damping_factor {damping:.12f}
 water_level {water_level:.12f}
 shaping_wavelet_dt 1.0
+shaping_wavelet_type none
+"""
+    )
+    return pfread(str(pf))
+
+
+def _write_time_domain_ls_pf(tmp_path, *, damping=1.0e-12, model_length=None):
+    model_length_line = ""
+    if model_length is not None:
+        model_length_line = f"model_length {model_length}\n"
+    pf = tmp_path / "time_domain_ls.pf"
+    pf.write_text(
+        f"""
+target_sample_interval 1.0
+operator_nfft 64
+deconvolution_data_window_start 0.0
+deconvolution_data_window_end 63.0
+damping_factor {damping:.12f}
+{model_length_line}shaping_wavelet_dt 1.0
 shaping_wavelet_type none
 """
     )
@@ -146,3 +166,45 @@ def test_zero_wavelet_is_rejected_by_damped_least_squares(tmp_path):
 
     with pytest.raises(MsPASSError):
         engine.process()
+
+
+def test_time_domain_least_squares_recovers_cropped_linear_convolution(tmp_path):
+    model = np.zeros(24)
+    model[[0, 4, 11, 23]] = [1.0, -0.5, 0.25, 0.75]
+    wavelet = np.array([1.0, -0.3, 0.1, 0.05])
+    data = np.convolve(wavelet, model, mode="full")[: model.size]
+    pf = _write_time_domain_ls_pf(tmp_path, model_length=model.size)
+
+    recovered = _run_scalar_engine(TimeDomainLeastSquareDecon, pf, wavelet, data)
+
+    assert len(recovered) == len(model)
+    assert np.allclose(recovered, model, atol=1.0e-8)
+
+
+def test_time_domain_least_squares_uses_linear_not_circular_boundaries(tmp_path):
+    model = np.zeros(8)
+    model[-1] = 2.0
+    wavelet = np.array([1.0, 0.0, 0.5])
+    data = np.convolve(wavelet, model, mode="full")[: model.size]
+    pf = _write_time_domain_ls_pf(tmp_path, model_length=model.size)
+
+    recovered = _run_scalar_engine(TimeDomainLeastSquareDecon, pf, wavelet, data)
+
+    assert np.argmax(np.abs(recovered)) == model.size - 1
+    assert recovered[1] == pytest.approx(0.0, abs=1.0e-8)
+    assert np.allclose(recovered, model, atol=1.0e-8)
+
+
+def test_time_domain_least_squares_regularizes_ill_conditioned_problem(tmp_path):
+    wavelet = np.array([1.0, -1.0])
+    model = np.zeros(32)
+    model[[4, 18]] = [1.0, -0.5]
+    rng = np.random.default_rng(20260602)
+    data = np.convolve(wavelet, model, mode="full")[: model.size]
+    data += 1.0e-5 * rng.standard_normal(data.size)
+    pf = _write_time_domain_ls_pf(tmp_path, damping=0.1, model_length=model.size)
+
+    recovered = _run_scalar_engine(TimeDomainLeastSquareDecon, pf, wavelet, data)
+
+    assert np.isfinite(recovered).all()
+    assert np.linalg.norm(recovered) < 10.0 * np.linalg.norm(model)

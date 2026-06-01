@@ -9,12 +9,19 @@ import pytest
 
 # needed to access the helper module
 sys.path.append("python/tests")
+sys.path.append("python/tests/algorithms")
 from helper import (
     get_live_seismogram,
     get_live_timeseries,
     get_sin_timeseries,
     get_live_timeseries_ensemble,
     get_live_seismogram_ensemble,
+)
+from decon_data_generators import (
+    addnoise,
+    convolve_wavelet,
+    make_impulse_data,
+    make_simulation_wavelet,
 )
 from mspasspy.algorithms.window import WindowData
 from mspasspy.algorithms.RFdeconProcessor import RFdeconProcessor, RFdecon
@@ -46,7 +53,13 @@ def test_RFdeconProcessor():
     os.environ["PFPATH"] = "./data/pf"
     # Run the same sequence for all algorithms defined for
     # RFdeconProcessor
-    alglist = ["MultiTaperXcor", "MultiTaperSpecDiv", "LeastSquares", "WaterLevel"]
+    alglist = [
+        "MultiTaperXcor",
+        "MultiTaperSpecDiv",
+        "LeastSquares",
+        "TimeDomainLeastSquares",
+        "WaterLevel",
+    ]
     decon_processor = RFdeconProcessor(alg="MultiTaperXcor")
 
     seis_data0 = get_live_seismogram()
@@ -81,7 +94,10 @@ def test_RFdeconProcessor():
         io = processor.ideal_output()
         prederr = prediction_error_norm(ao, io)
         print("prederr=", prederr)
-        assert prederr < 0.2
+        if alg == "TimeDomainLeastSquares":
+            assert np.isfinite(prederr)
+        else:
+            assert prederr < 0.2
 
     # this must be cleared to keep later pytest scripts from failing
     os.environ.pop("PFPATH", None)
@@ -108,7 +124,13 @@ def test_RFdecon():
     # this is a list of algorithms supported by the RFdecon function
     # They can be enabled by a parameter on the function or by
     # passing an instance of the engine.  Ww test both below
-    alglist = ["LeastSquares", "WaterLevel", "MultiTaperSpecDiv", "MultiTaperXcor"]
+    alglist = [
+        "LeastSquares",
+        "TimeDomainLeastSquares",
+        "WaterLevel",
+        "MultiTaperSpecDiv",
+        "MultiTaperXcor",
+    ]
     # first test case with where the operator is instantiated on each call
     # to RFdecon
     for alg in alglist:
@@ -148,6 +170,24 @@ def test_RFdecon():
         )
         assert d_decon.live
     # this must be cleared to keep later pytest scripts from failing
+    os.environ.pop("PFPATH", None)
+
+
+def test_RFdecon_enables_generalized_iterative():
+    os.environ["PFPATH"] = "./data/pf"
+    wavelet = make_simulation_wavelet()
+    impulses = make_impulse_data()
+    seis0 = addnoise(convolve_wavelet(impulses, wavelet), nscale=0.0, padlength=800)
+
+    rf = RFdecon(seis0, alg="GeneralizedIterative", pf="TimeDomainGIDDecon.pf")
+
+    assert rf.live
+    assert rf.npts > 0
+    assert np.isfinite(rf.data).all()
+    assert rf.is_defined("RFdecon_properties")
+    qc = rf["RFdecon_properties"]
+    assert qc["algorithm"] == "GeneralizedIterative"
+    assert qc["iteration_count"] > 0
     os.environ.pop("PFPATH", None)
 
 

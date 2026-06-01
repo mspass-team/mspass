@@ -11,6 +11,7 @@
 #include <mspass/algorithms/deconvolution/ShapingWavelet.h>
 #include <mspass/algorithms/deconvolution/WaterLevelDecon.h>
 #include <mspass/algorithms/deconvolution/LeastSquareDecon.h>
+#include <mspass/algorithms/deconvolution/TimeDomainLeastSquareDecon.h>
 #include <mspass/algorithms/deconvolution/MultiTaperXcorDecon.h>
 #include <mspass/algorithms/deconvolution/MultiTaperSpecDivDecon.h>
 #include <mspass/algorithms/deconvolution/TimeDomainGIDDecon.h>
@@ -211,6 +212,40 @@ PYBIND11_MODULE(deconvolution, m) {
         artm >> lsd;
         ShapingWavelet sw=lsd.get_shaping_wavelet();
         ComplexArray w(*sw.wavelet());
+        pybind11::gil_scoped_release release;
+        return lsd;
+      }
+    ))
+  ;
+  py::class_<TimeDomainLeastSquareDecon,ScalarDecon>(m,"TimeDomainLeastSquareDecon",
+      "Damped least-squares time-domain operator for cropped linear convolution")
+    .def(py::init<const Metadata>())
+    .def("changeparameter",&TimeDomainLeastSquareDecon::changeparameter,
+      "Change operator parameters")
+    .def("process",&TimeDomainLeastSquareDecon::process,
+      "Process previously loaded data")
+    .def("actual_output",&TimeDomainLeastSquareDecon::actual_output,
+      "Return actual output of inverse*wavelet")
+    .def("inverse_wavelet",py::overload_cast<>(&TimeDomainLeastSquareDecon::inverse_wavelet))
+    .def("inverse_wavelet",py::overload_cast<double>(&TimeDomainLeastSquareDecon::inverse_wavelet))
+    .def("QCMetrics",&TimeDomainLeastSquareDecon::QCMetrics,
+      "Return quality metrics for the time-domain least-squares solve")
+    .def(py::pickle(
+      [](const TimeDomainLeastSquareDecon &self) {
+        pybind11::gil_scoped_acquire acquire;
+        stringstream sstm;
+        boost::archive::text_oarchive artm(sstm);
+        artm<<self;
+        pybind11::tuple r_tuple = py::make_tuple(sstm.str());
+        pybind11::gil_scoped_release release;
+        return r_tuple;
+      },
+      [](py::tuple t) {
+        pybind11::gil_scoped_acquire acquire;
+        stringstream sstm(t[0].cast<std::string>());
+        boost::archive::text_iarchive artm(sstm);
+        TimeDomainLeastSquareDecon lsd;
+        artm >> lsd;
         pybind11::gil_scoped_release release;
         return lsd;
       }

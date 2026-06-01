@@ -24,9 +24,12 @@ from mspasspy.algorithms.window import WindowData
 from mspasspy.ccore.algorithms.basic import TimeWindow, _ExtractComponent
 from mspasspy.ccore.algorithms.deconvolution import (
     LeastSquareDecon,
+    TimeDomainLeastSquareDecon,
     WaterLevelDecon,
     MultiTaperXcorDecon,
     MultiTaperSpecDivDecon,
+    TimeDomainGIDDecon,
+    FrequencyDomainGIDDecon,
 )
 from mspasspy.util.decorators import mspass_func_wrapper
 
@@ -58,6 +61,7 @@ class RFdeconProcessor:
 
     def __init__(self, alg="LeastSquares", pf="RFdeconProcessor.pf"):
         self.algorithm = alg
+        self.__is_3c_engine = False
         # use a copy in what is more or less a switch-case block
         # to be robust - I don't think any of the constructors below
         # alter pfhandle but the cost is tiny for this stability
@@ -72,6 +76,10 @@ class RFdeconProcessor:
             self.md = Metadata(pfhandle.get_branch("LeastSquare"))
             self.processor = LeastSquareDecon(self.md)
             self.__uses_noise = False
+        elif self.algorithm == "TimeDomainLeastSquares":
+            self.md = Metadata(pfhandle.get_branch("TimeDomainLeastSquare"))
+            self.processor = TimeDomainLeastSquareDecon(self.md)
+            self.__uses_noise = False
         elif alg == "WaterLevel":
             self.md = Metadata(pfhandle.get_branch("WaterLevel"))
             self.processor = WaterLevelDecon(self.md)
@@ -84,8 +92,18 @@ class RFdeconProcessor:
             self.md = Metadata(pfhandle.get_branch("MultiTaperSpecDiv"))
             self.processor = MultiTaperSpecDivDecon(self.md)
             self.__uses_noise = True
-        elif alg == "GeneralizedIterative":
-            raise RuntimeError("Generalized Iterative method not yet supported")
+        elif alg in ("GeneralizedIterative", "TimeDomainGID"):
+            mdtop = pfhandle.get_branch("deconvolution_operator_type")
+            self.md = Metadata(mdtop.get_branch("time_domain_gid_deconvolution"))
+            self.processor = TimeDomainGIDDecon(pfhandle)
+            self.__uses_noise = True
+            self.__is_3c_engine = True
+        elif alg == "FrequencyDomainGID":
+            mdtop = pfhandle.get_branch("deconvolution_operator_type")
+            self.md = Metadata(mdtop.get_branch("frequency_domain_gid_deconvolution"))
+            self.processor = FrequencyDomainGIDDecon(pfhandle)
+            self.__uses_noise = True
+            self.__is_3c_engine = True
         else:
             raise RuntimeError("Illegal value for alg=" + alg)
 
@@ -244,6 +262,11 @@ class RFdeconProcessor:
 
         :return: vector of data that are the RF estimate computed from previously loaded data.
         """
+        if self.__is_3c_engine:
+            raise RuntimeError(
+                "RFdeconProcessor.apply cannot process a three-component "
+                "iterative engine component by component; use apply_3c instead"
+            )
         if hasattr(self, "dvector"):
             self.processor.loaddata(DoubleVector(self.dvector))
         if hasattr(self, "wvector"):
@@ -252,6 +275,21 @@ class RFdeconProcessor:
             self.processor.loadnoise(DoubleVector(self.nvector))
         self.processor.process()
         return self.processor.getresult()
+
+    def apply_3c(self, d):
+        """
+        Compute a three-component generalized iterative deconvolution result.
+
+        The GID engines operate on a full `Seismogram` because the iteration
+        picks vector spikes from all three components at once.  This method is
+        intentionally separate from `apply`, which remains the scalar
+        component-wise interface for conventional RF methods.
+        """
+        if not self.__is_3c_engine:
+            raise RuntimeError("apply_3c is only valid for GID algorithms")
+        self.processor.load(d, self.full_dwin, self.nwin)
+        self.processor.process()
+        return Seismogram(self.processor.getresult())
 
     def actual_output(self):
         """
@@ -267,6 +305,10 @@ class RFdeconProcessor:
             returned).
         """
         if hasattr(self, "dvector"):
+            if self.__is_3c_engine:
+                raise RuntimeError(
+                    "actual_output for GID engines is available after apply_3c"
+                )
             self.processor.loaddata(DoubleVector(self.dvector))
         if hasattr(self, "wvector"):
             self.processor.loadwavelet(DoubleVector(self.wvector))
@@ -289,6 +331,10 @@ class RFdeconProcessor:
         inverse.
         """
         if hasattr(self, "dvector"):
+            if self.__is_3c_engine:
+                raise RuntimeError(
+                    "ideal_output for GID engines is available after apply_3c"
+                )
             self.processor.loaddata(DoubleVector(self.dvector))
         if hasattr(self, "wvector"):
             self.processor.loadwavelet(DoubleVector(self.wvector))
@@ -312,13 +358,18 @@ class RFdeconProcessor:
         """
 
         if hasattr(self, "dvector"):
+            if self.__is_3c_engine:
+                raise RuntimeError(
+                    "inverse_filter for GID engines is available from the "
+                    "underlying inverse_wavelet method after apply_3c"
+                )
             self.processor.loaddata(DoubleVector(self.dvector))
         if hasattr(self, "wvector"):
             self.processor.loadwavelet(DoubleVector(self.wvector))
         if self.__uses_noise and hasattr(self, "nvector"):
             self.processor.loadnoise(DoubleVector(self.nvector))
         self.processor.process()
-        return self.processor.inverse_filter()
+        return self.processor.inverse_wavelet()
 
     def QCMetrics(self, prediction_error_key="prediction_error") -> dict:
         """
@@ -359,10 +410,22 @@ class RFdeconProcessor:
         return self.__uses_noise
 
     @property
+    def is_3c_engine(self):
+        return self.__is_3c_engine
+
+    @property
     def dwin(self):
         tws = self.md.get_double("deconvolution_data_window_start")
         twe = self.md.get_double("deconvolution_data_window_end")
         return TimeWindow(tws, twe)
+
+    @property
+    def full_dwin(self):
+        if self.md.is_defined("full_data_window_start"):
+            tws = self.md.get_double("full_data_window_start")
+            twe = self.md.get_double("full_data_window_end")
+            return TimeWindow(tws, twe)
+        return self.dwin
 
     @property
     def nwin(self):
@@ -454,7 +517,13 @@ def RFdecon(
         argument.   The algorithm built into the instance of
         RFdeconProcessor is used if engine is not null.
     :param alg: The algorithm to be applied, used for initializing
-        a RFdeconProcessor object.  Ignored if engine is used.
+        a RFdeconProcessor object.  Ignored if engine is used.  Conventional
+        scalar methods are applied component by component.  Generalized
+        iterative methods (`GeneralizedIterative`, `TimeDomainGID`, and
+        `FrequencyDomainGID`) operate on the full three-component seismogram
+        because spike selection is vector-valued; for those methods the source
+        wavelet and noise are extracted from the windows in the GID parameter
+        file and explicit `wavelet`/`noisedata` vectors are not accepted.
     :param pf: The pf file to be parsed, used for inititalizing a
         RFdeconProcessor.  Ignored if engine is used.
     :type pf:  string defining an absolute path for the file name
@@ -538,6 +607,28 @@ def RFdecon(
             raise TypeError(message)
     else:
         processor = RFdeconProcessor(alg, pf)
+
+    if processor.is_3c_engine:
+        if wavelet is not None or noisedata is not None:
+            raise RuntimeError(
+                "RFdecon with a GID engine derives wavelet and noise windows "
+                "from the input Seismogram; explicit wavelet/noisedata "
+                "vectors are not supported"
+            )
+        try:
+            result = processor.apply_3c(d)
+            subdoc = dict(processor.processor.QCMetrics())
+            subdoc["algorithm"] = processor.algorithm
+            result[QCdocument_key] = subdoc
+            return result
+        except MsPASSError as err:
+            d.kill()
+            d.elog.log_error(err)
+            return d
+        except Exception as err:
+            d.kill()
+            d.elog.log_error("RFdecon", str(err), ErrorSeverity.Invalid)
+            return d
 
     try:
         if wavelet is not None:
