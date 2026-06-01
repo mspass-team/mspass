@@ -494,7 +494,7 @@ CoreTimeSeries trim(const CoreTimeSeries &d, double floor = 0.005) {
     point smoother_width/2.   */
     int soffset = smoother_width / 2;
     int half_width(0);
-    double avg;
+    double avg(0.0);
     for (i = soffset, ii = soffset; ii < work.size(); ++i, ++ii) {
       for (k = 0, kk = i - soffset, avg = 0.0; k < smoother_width; ++k, ++kk)
         avg += work[kk];
@@ -556,6 +556,15 @@ void TimeDomainGIDDecon::process() {
       TimeSeries nwavelet(ExtractComponent(n, noise_component),
                           "TimeDomainGIDDecon");
       cnrprocessor->initialize_inverse_operator(current_wavelet, nwavelet);
+      Seismogram dwork(d_decon);
+      PowerSpectrum psnoise(cnrprocessor->compute_noise_spectrum(nwavelet));
+      dwork = cnrprocessor->process(dwork, psnoise, 0.02, 2.0);
+      int copysize = dwork.npts();
+      if (copysize > d_decon.npts())
+        copysize = d_decon.npts();
+      for (int k = 0; k < 3; ++k)
+        cblas_dcopy(copysize, dwork.u.get_address(k, 0), 3,
+                    uwork.get_address(k, 0), 3);
     } else {
       for (int k = 0; k < 3; ++k) {
         CoreTimeSeries dcomp(ExtractComponent(d_decon, k));
@@ -606,11 +615,10 @@ void TimeDomainGIDDecon::process() {
     cerr << "Actual output raw"<<endl;
     cerr << actual_out<<endl;
 */
-    if (decon_type == CNR) {
-      TimeWindow cnr_cutwin(-2.0, 2.0);
-      actual_out = WindowData(actual_out, cnr_cutwin);
-    } else {
-      actual_out = trim(actual_out);
+    actual_out = trim(actual_out);
+    if (actual_out.npts() > d_decon.npts() / 2) {
+      TimeWindow compact_kernel(-2.0, 2.0);
+      actual_out = WindowData(actual_out, compact_kernel);
     }
     actual_o_fir = actual_out.s;
     actual_o_0 = actual_out.sample_number(0.0);
@@ -621,10 +629,7 @@ void TimeDomainGIDDecon::process() {
     /* This is the size of the inverse wavelet convolution transient
     we use it to prevent iterations in transient region of the deconvolved
     data */
-    if (decon_type == CNR)
-      wavelet_pad = actual_o_fir.size();
-    else
-      wavelet_pad = winv.s.size();
+    wavelet_pad = actual_o_fir.size();
     if (2 * wavelet_pad > ndwin) {
       stringstream ss;
       ss << base_error << "Inadequate data window size" << endl
@@ -638,7 +643,7 @@ void TimeDomainGIDDecon::process() {
     sections that are pure edge transients.
     REMOVE me when that is done*/
 
-    r = sparse_convolve(winv, d_all);
+    r = d_decon;
     /* Replace n by convolution with inverse wavelet to get the levels correct
      */
     n = sparse_convolve(winv, n);
@@ -697,21 +702,28 @@ void TimeDomainGIDDecon::process() {
       /* The generic distance algorithm used here returns an integer
       that would work to access amps[imax] so we can use the same index
       for the column of the data in d.u. */
-      int imax = distance(wamps.begin(), amax);
       /* Save the 3c amplitude at this lag to the spike condensed
       respresentation of the output*/
-      ThreeCSpike spk(r.u, imax);
-      spikes.push_back(spk);
-      /* This private method defines how the lag_weights vector is changed
-      in the vicinity of this spike.  The tacit assumption is the weight is
-      made smaller (maybe even zero) at the spike point and a chosen recipe
-      for points in the vicinity of that spike */
-      this->update_lag_weights(imax);
-      /* Subtract the actual output from the data at lag imax.  Note
-      We don't test validity of the lag in spk, but depend on dmatrix to throw
-      an exception of the range is invalid */
-      this->update_residual_matrix(spk);
-      ++iter_count;
+      bool accepted(false);
+      while (!accepted && (*amax > 0.0)) {
+        int imax = distance(wamps.begin(), amax);
+        ThreeCSpike spk(r.u, imax);
+        CoreSeismogram saved_r(r);
+        this->update_residual_matrix(spk);
+        double trial_l2 = L2(r.u);
+        if (trial_l2 < resid_l2_prev) {
+          spikes.push_back(spk);
+          this->update_lag_weights(imax);
+          ++iter_count;
+          accepted = true;
+        } else {
+          r = saved_r;
+          wamps[imax] = 0.0;
+          amax = max_element(wamps.begin(), wamps.end());
+        }
+      }
+      if (!accepted)
+        break;
     } while (this->has_not_converged());
     if (iter_count >= iter_max)
       throw MsPASSError("TimeDomainGIDDecon::process did not converge",
@@ -784,11 +796,9 @@ CoreSeismogram TimeDomainGIDDecon::getresult() {
       for (k = 0; k < 3; ++k)
         result.u(k, resultcol) = sptr->u[k];
     }
-    string wtype = this->shapingwavelet.type();
-    if (wtype != "none") {
-      CoreTimeSeries w(this->shapingwavelet.impulse_response());
-      result = sparse_convolve(w, result);
-    }
+    /* The preprocessor inverse already returns shaped RF estimates.  Applying
+     * the shaping wavelet again here double-shapes the sparse sequence and can
+     * move the apparent peak away from the accepted spike lag. */
     return result;
   } catch (...) {
     throw;

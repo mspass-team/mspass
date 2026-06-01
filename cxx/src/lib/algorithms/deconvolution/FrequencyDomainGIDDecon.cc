@@ -145,12 +145,23 @@ int FrequencyDomainGIDDecon::load(const CoreSeismogram &draw, TimeWindow dwin,
 
 void FrequencyDomainGIDDecon::initialize_inverse_operator() {
   d_decon = WindowData(d_all, fftwin);
+  dmatrix uwork(d_decon.u);
+  uwork.zero();
   CoreTimeSeries srcwavelet(ExtractComponent(d_decon, 2));
   current_wavelet = TimeSeries(srcwavelet, "FrequencyDomainGIDDecon");
   if (decon_type == CNR) {
     TimeSeries nwavelet(ExtractComponent(n, noise_component),
                         "FrequencyDomainGIDDecon");
     cnrprocessor->initialize_inverse_operator(current_wavelet, nwavelet);
+    PowerSpectrum psnoise(cnrprocessor->compute_noise_spectrum(nwavelet));
+    Seismogram dwork(d_decon);
+    dwork = cnrprocessor->process(dwork, psnoise, 0.02, 2.0);
+    int copysize = dwork.npts();
+    if (copysize > d_decon.npts())
+      copysize = d_decon.npts();
+    for (int k = 0; k < 3; ++k)
+      cblas_dcopy(copysize, dwork.u.get_address(k, 0), 3,
+                  uwork.get_address(k, 0), 3);
   } else {
     if (decon_type == MULTI_TAPER) {
       CoreTimeSeries nts(ExtractComponent(n, noise_component));
@@ -158,12 +169,23 @@ void FrequencyDomainGIDDecon::initialize_inverse_operator() {
     }
     preprocessor->ScalarDecon::load(srcwavelet.s, srcwavelet.s);
     preprocessor->process();
+    for (int k = 0; k < 3; ++k) {
+      CoreTimeSeries dcomp(ExtractComponent(d_decon, k));
+      preprocessor->ScalarDecon::load(srcwavelet.s, dcomp.s);
+      preprocessor->process();
+      vector<double> deconout(preprocessor->getresult());
+      int copysize = deconout.size();
+      if (copysize > d_decon.npts())
+        copysize = d_decon.npts();
+      cblas_dcopy(copysize, &(deconout[0]), 1, uwork.get_address(k, 0), 3);
+    }
   }
+  d_decon.u = uwork;
 
   CoreTimeSeries actual_out(this->actual_output());
-  if (decon_type == CNR) {
-    TimeWindow cnr_cutwin(-2.0, 2.0);
-    actual_out = WindowData(actual_out, cnr_cutwin);
+  if (actual_out.npts() > d_decon.npts() / 2) {
+    TimeWindow compact_kernel(-2.0, 2.0);
+    actual_out = WindowData(actual_out, compact_kernel);
   }
   actual_o_fir = actual_out.s;
   actual_o_0 = actual_out.sample_number(0.0);
@@ -259,7 +281,7 @@ void FrequencyDomainGIDDecon::process() {
   const string base_error("FrequencyDomainGIDDecon::process: ");
   try {
     this->initialize_inverse_operator();
-    r = d_all;
+    r = d_decon;
     spikes.clear();
     iter_count = 0;
     resid_l2_initial = matrix_l2(r.u);
@@ -269,7 +291,7 @@ void FrequencyDomainGIDDecon::process() {
       throw MsPASSError(base_error + "input data residual is zero",
                         ErrorSeverity::Invalid);
     for (int iiter = 0; iiter < iter_max; ++iiter) {
-      dmatrix candidate(this->inverse_filter_residual(r));
+      dmatrix candidate(r.u);
       vector<double> amps;
       amps.reserve(r.npts());
       for (int i = 0; i < r.npts(); ++i) {
@@ -287,11 +309,26 @@ void FrequencyDomainGIDDecon::process() {
       if ((amax == amps.end()) || (*amax <= 0.0))
         break;
       int imax = distance(amps.begin(), amax);
-      ThreeCSpike spk(candidate, imax);
-      this->rescale_spike(spk);
-      spikes.push_back(spk);
-      this->update_residual_matrix(spk);
-      iter_count = iiter + 1;
+      bool accepted(false);
+      while (!accepted && (*amax > 0.0)) {
+        imax = distance(amps.begin(), amax);
+        ThreeCSpike spk(candidate, imax);
+        this->rescale_spike(spk);
+        CoreSeismogram saved_r(r);
+        this->update_residual_matrix(spk);
+        double trial_l2 = matrix_l2(r.u);
+        if (trial_l2 < resid_l2_prev) {
+          spikes.push_back(spk);
+          iter_count = iiter + 1;
+          accepted = true;
+        } else {
+          r = saved_r;
+          amps[imax] = 0.0;
+          amax = max_element(amps.begin(), amps.end());
+        }
+      }
+      if (!accepted)
+        break;
       resid_l2_final = matrix_l2(r.u);
       resid_linf_final = matrix_linf(r.u);
       double ratio = resid_l2_final / resid_l2_initial;
@@ -319,10 +356,8 @@ CoreSeismogram FrequencyDomainGIDDecon::getresult() {
     for (int k = 0; k < 3; ++k)
       result.u(k, resultcol) = sptr->u[k];
   }
-  if (this->shapingwavelet.type() != "none") {
-    CoreTimeSeries w(this->shapingwavelet.impulse_response());
-    result = sparse_convolve(w, result);
-  }
+  /* The inverse operator used to build the residual has already shaped the
+   * candidate RF.  Do not apply the shaping wavelet a second time. */
   return result;
 }
 

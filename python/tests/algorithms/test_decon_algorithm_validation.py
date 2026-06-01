@@ -127,10 +127,6 @@ def test_existing_decon_methods_are_consistent_for_noise_free_input():
     assert _normalized_correlation(results["CNR"], results["MultiTaperXcor"]) > 0.87
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason="Current GID implementations do not yet pass multi-spike noise-free RF validation.",
-)
 @pytest.mark.parametrize(
     "engine_class, wrapper, pfname, qc_key",
     [

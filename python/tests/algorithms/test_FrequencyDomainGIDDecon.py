@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import numpy as np
 import pytest
 
 from mspasspy.ccore.algorithms.basic import TimeWindow
@@ -9,9 +8,9 @@ from mspasspy.ccore.algorithms.deconvolution import FrequencyDomainGIDDecon
 from mspasspy.ccore.utility import pfread
 from mspasspy.ccore.seismic import Seismogram
 from mspasspy.algorithms.FrequencyDomainGIDDecon import FrequencyDomainGIDRFDecon
-from mspasspy.algorithms.basic import ExtractComponent
 
 from test_TimeDomainGIDDecon import (
+    _assert_single_spike_recovery,
     _assert_valid_rf,
     _make_gid_test_data,
     _make_single_spike_convolution_data,
@@ -66,14 +65,7 @@ def test_FrequencyDomainGIDDecon_validates_single_spike_recovery():
     assert qc["residual_Linf_final"] < qc["residual_Linf_initial"]
     assert qc["residual_L2_final"] < qc["residual_L2_initial"]
 
-    zrf = ExtractComponent(rf, 2)
-    peak_sample = int(np.argmax(np.abs(zrf.data)))
-    assert np.isclose(
-        rf.data[0, peak_sample] / rf.data[2, peak_sample], 0.2, atol=5.0e-2
-    )
-    assert np.isclose(
-        rf.data[1, peak_sample] / rf.data[2, peak_sample], -0.1, atol=5.0e-2
-    )
+    _assert_single_spike_recovery(rf, ratio_tolerance=5.0e-2)
 
 
 @pytest.mark.parametrize("mode", ["least_square", "water_level", "multi_taper", "cnr"])
@@ -94,6 +86,7 @@ def test_FrequencyDomainGIDDecon_inverse_modes_are_valid(tmp_path, mode):
     qc = rf["FrequencyDomainGIDDecon_properties"]
     assert qc["iteration_count"] > 0
     assert qc["residual_L2_final"] < qc["residual_L2_initial"]
+    _assert_single_spike_recovery(rf, ratio_tolerance=5.0e-2)
 
 
 def test_FrequencyDomainGIDRFDecon_argument_validation():
