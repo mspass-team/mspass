@@ -59,6 +59,12 @@ int MultiTaperXcorDecon::read_metadata(const Metadata &md, bool refresh) {
       this->change_size(nfft_from_win);
     }
     damp = md.get_double("damping_factor");
+    if (damp <= 0.0) {
+      throw MsPASSError(base_error +
+                            "damping_factor must be positive to regularize "
+                            "multitaper spectral division.",
+                        ErrorSeverity::Invalid);
+    }
     nw = md.get_double("time_bandwidth_product");
     /* Wang originally had this as nw*2-2 but Park and Levin say
     the maximum is nw*2-1 which we use here.  P&L papers all use mw=2.5
@@ -199,6 +205,7 @@ void MultiTaperXcorDecon::process() {
   // DEBUG
   // cerr<< "Entering process method"<<endl;
   const string base_error("MultiTaperXcorDecon::process():  ");
+  result.clear();
   /* WARNING about this algorithm. At present there is nothing to stop
   a coding error of calling the algorithm with inconsistent signal and
   noise data vectors. */

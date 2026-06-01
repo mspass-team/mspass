@@ -74,6 +74,11 @@ void CNR3CDecon::read_parameters(const AntelopePf &pf) {
                         ErrorSeverity::Invalid);
     }
     this->damp = pf.get_double("damping_factor");
+    if (this->damp <= 0.0) {
+      throw MsPASSError("CNR3CDecon::read_parameters: damping_factor must be "
+                        "positive for stable regularized deconvolution",
+                        ErrorSeverity::Invalid);
+    }
     /* Note this paramter is used for both the damping method and the
     generalized_water_level */
     this->noise_floor = pf.get_double("noise_floor");

@@ -134,17 +134,10 @@ ShapingWavelet::ShapingWavelet(const Metadata &md, int nfftin) {
       gsl_fft_complex_forward(w.ptr(), 1, nfft, wavetable, workspace);
       delete[] work;
     } else if (wavelettype == "none") {
-      /* Prototype code issued an error in this condition, but we accept it
-      here as an option defined by none.  We could do this by putting
-            all ones in the w array but using a delta function at zero lage
-            avoids scaling issues for little cost - this assumes this
-            object is created only occassionally and not millions of times */
-      double *r = new double[nfft];
-      for (int k = 0; k < nfft; ++k)
-        r[k] = 0.0;
-      r[0] = 1.0;
-      w = ComplexArray(nfft, r);
-      delete[] r;
+      /* The shaping wavelet is stored in the frequency domain.  The identity
+       * filter is therefore one at every frequency bin, not a time-domain
+       * delta stored without an FFT. */
+      w = ComplexArray(nfft, 1.0);
     } else {
       throw MsPASSError(
           base_error + "illegal value for shaping_wavelet_type=" + wavelettype,

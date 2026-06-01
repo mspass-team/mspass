@@ -20,6 +20,12 @@ int WaterLevelDecon::read_metadata(const Metadata &md) {
       this->change_size(nfft_from_win);
     }
     wlv = md.get_double("water_level");
+    if (wlv <= 0.0) {
+      throw MsPASSError(base_error +
+                            "water_level must be positive.  A zero value is "
+                            "an unstable bare spectral division.",
+                        ErrorSeverity::Invalid);
+    }
     shapingwavelet = ShapingWavelet(md, FFTDeconOperator::nfft);
     return 0;
   } catch (...) {
@@ -55,6 +61,7 @@ WaterLevelDecon::WaterLevelDecon(const Metadata &md, const vector<double> &w,
 }
 void WaterLevelDecon::process() {
 
+  result.clear();
   // apply fft to the input trace data
   //  data and wavelet sizes need to be zero padded if the are short
   if (data.size() < nfft)

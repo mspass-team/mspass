@@ -21,6 +21,12 @@ int LeastSquareDecon::read_metadata(const Metadata &md) {
       this->change_size(nfft_from_win);
     }
     damp = md.get_double("damping_factor");
+    if (damp <= 0.0) {
+      throw MsPASSError(base_error +
+                            "damping_factor must be positive.  A zero value "
+                            "is an unstable undamped spectral division.",
+                        ErrorSeverity::Invalid);
+    }
     /* Note this depends on nfft inheritance from FFTDeconOperator.
      * That is a bit error prone with changes*/
     shapingwavelet = ShapingWavelet(md, nfft);
@@ -59,6 +65,7 @@ LeastSquareDecon::LeastSquareDecon(const Metadata &md, const vector<double> &w,
 void LeastSquareDecon::process() {
 
   const string base_error("LeastSquareDecon::process:  ");
+  result.clear();
   // apply fft to the input trace data
   if (data.size() < nfft)
     for (int i = data.size(); i < nfft; ++i)
@@ -79,6 +86,9 @@ void LeastSquareDecon::process() {
   b_fft.conj();
 
   double b_rms = b_fft.rms();
+  if (b_rms == 0.0)
+    throw MsPASSError(base_error + "wavelet data vector is all zeros",
+                      ErrorSeverity::Invalid);
   ComplexArray denom(conj_b_fft * b_fft);
   double theta(b_rms * damp);
   /* This is like normal equation form for damped inverse so theta as computed
