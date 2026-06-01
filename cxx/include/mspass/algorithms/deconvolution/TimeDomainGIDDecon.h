@@ -1,14 +1,18 @@
-#ifndef __SIIMPLE_GENERAL_ITER_DECON__
-#define __SIIMPLE_GENERAL_ITER_DECON__
+#ifndef __TIME_DOMAIN_GID_DECON__
+#define __TIME_DOMAIN_GID_DECON__
 #include "mspass/algorithms/TimeWindow.h"
 #include "mspass/algorithms/deconvolution/ComplexArray.h"
+#include "mspass/algorithms/deconvolution/CNRDeconEngine.h"
 #include "mspass/algorithms/deconvolution/FFTDeconOperator.h"
 #include "mspass/algorithms/deconvolution/ScalarDecon.h"
 #include "mspass/seismic/CoreTimeSeries.h"
 #include "mspass/seismic/Seismogram.h"
+#include "mspass/seismic/TimeSeries.h"
 #include "mspass/utility/AntelopePf.h"
 #include "mspass/utility/Metadata.h"
 #include "mspass/utility/dmatrix.h"
+#include <list>
+#include <ostream>
 #include <vector>
 namespace mspass::algorithms::deconvolution {
 /* Wang's original version allowed XCORR here - dropped for now as this
@@ -16,7 +20,7 @@ code assumes the decon produces a zero phase ideal output while in every
 case the original XCORR iterative method uses the raw wavelet and cross
 correlation. */
 
-enum IterDeconType { WATER_LEVEL, LEAST_SQ, MULTI_TAPER };
+enum IterDeconType { WATER_LEVEL, LEAST_SQ, MULTI_TAPER, CNR };
 class ThreeCSpike {
 public:
   /*! The column position where this spike should be placed in parent
@@ -63,7 +67,7 @@ the assure consistency they need to call loadnoise before load OR call
 only the load method that includes a signal and noise window.
 */
 
-class GeneralIterDecon : public ScalarDecon {
+class TimeDomainGIDDecon : public ScalarDecon {
 public:
   /*! \brief Create an initialize an operator for subseqquent processing.
 
@@ -72,8 +76,8 @@ public:
   how this operator will behave along with what inverse filter is to
   be constructed ans applied before the iterative algorithm is applied.
   The pf is required to have multiple Arr sections the components.  */
-  GeneralIterDecon(mspass::utility::AntelopePf &md);
-  GeneralIterDecon(const GeneralIterDecon &parent);
+  TimeDomainGIDDecon(const mspass::utility::AntelopePf &md);
+  TimeDomainGIDDecon(const TimeDomainGIDDecon &parent);
   void changeparameter(const mspass::utility::Metadata &md) {
     this->preprocessor->changeparameter(md);
   };
@@ -90,20 +94,12 @@ public:
            mspass::algorithms::TimeWindow dwin,
            mspass::algorithms::TimeWindow nwin);
   void process();
-  ~GeneralIterDecon();
+  ~TimeDomainGIDDecon();
   mspass::seismic::CoreSeismogram getresult();
-  mspass::seismic::CoreTimeSeries ideal_output() {
-    return this->preprocessor->ideal_output();
-  };
-  mspass::seismic::CoreTimeSeries actual_output() {
-    return this->preprocessor->actual_output();
-  };
-  mspass::seismic::CoreTimeSeries inverse_wavelet() {
-    return this->preprocessor->inverse_wavelet();
-  };
-  mspass::seismic::CoreTimeSeries inverse_wavelet(double t0parent) {
-    return this->preprocessor->inverse_wavelet(t0parent);
-  };
+  mspass::seismic::CoreTimeSeries ideal_output();
+  mspass::seismic::CoreTimeSeries actual_output();
+  mspass::seismic::CoreTimeSeries inverse_wavelet();
+  mspass::seismic::CoreTimeSeries inverse_wavelet(double t0parent);
   mspass::utility::Metadata QCMetrics();
 
 private:
@@ -151,6 +147,8 @@ private:
   /* This is a pointer to the BasicDeconOperator class used for preprocessing
   Classic use of inheritance to simplify the api. */
   ScalarDecon *preprocessor;
+  CNRDeconEngine *cnrprocessor;
+  mspass::seismic::TimeSeries current_wavelet;
 
   /* This defines a shaping wavelet applied to output.  The inverse filter
   preprocessing algorithm is assumed to have it's own embedded shaping wavelet.

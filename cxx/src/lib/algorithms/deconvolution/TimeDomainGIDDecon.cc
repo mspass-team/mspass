@@ -1,4 +1,4 @@
-#include "mspass/algorithms/deconvolution/GeneralIterDecon.h"
+#include "mspass/algorithms/deconvolution/TimeDomainGIDDecon.h"
 #include "gsl/gsl_cblas.h"
 #include "mspass/algorithms/algorithms.h"
 #include "mspass/algorithms/deconvolution/LeastSquareDecon.h"
@@ -6,6 +6,7 @@
 #include "mspass/algorithms/deconvolution/WaterLevelDecon.h"
 #include "mspass/seismic/CoreSeismogram.h"
 #include "mspass/seismic/CoreTimeSeries.h"
+#include "mspass/seismic/TimeSeries.h"
 #include "mspass/utility/AntelopePf.h"
 #include "mspass/utility/MsPASSError.h"
 #include <algorithm>
@@ -25,8 +26,10 @@ IterDeconType parse_for_itertype(const AntelopePf &md) {
     return LEAST_SQ;
   else if (sval == "multi_taper")
     return MULTI_TAPER;
+  else if ((sval == "cnr") || (sval == "cnr3c"))
+    return CNR;
   else
-    throw MsPASSError("GeneralIterDecon: unknown or illegal value of "
+    throw MsPASSError("TimeDomainGIDDecon: unknown or illegal value of "
                       "deconvolution_type parameter=" +
                           sval,
                       ErrorSeverity::Invalid);
@@ -35,12 +38,15 @@ double Linf(dmatrix &d) {
   int nc, nr;
   nr = d.rows();
   nc = d.columns();
-  double *dmax;
-  /* This C++ generic algorithm works on raw pointers in a vector so
-  because a dmatrix stores the data as a contiguous memory block we
-  can use it in one call.*/
-  dmax = max_element(d.get_address(0, 0), d.get_address(nr - 1, nc - 1));
-  return *dmax;
+  double dmax(0.0);
+  for (int i = 0; i < nr; ++i) {
+    for (int j = 0; j < nc; ++j) {
+      double amp = fabs(d(i, j));
+      if (amp > dmax)
+        dmax = amp;
+    }
+  }
+  return dmax;
 }
 /* Similar function for L2 norm to Linf but here we use dnrm2. */
 double L2(dmatrix &d) {
@@ -50,8 +56,9 @@ double L2(dmatrix &d) {
   dl2 = cblas_dnrm2(nd, d.get_address(0, 0), 1);
   return dl2;
 }
-GeneralIterDecon::GeneralIterDecon(AntelopePf &mdtoplevel) : ScalarDecon() {
-  const string base_error("GeneralIterDecon AntelopePf contructor:  ");
+TimeDomainGIDDecon::TimeDomainGIDDecon(const AntelopePf &mdtoplevel)
+    : ScalarDecon() {
+  const string base_error("TimeDomainGIDDecon AntelopePf contructor:  ");
   stringstream ss; // used for constructing error messages
   /* The pf used for initializing this object has Antelope Arr section
   for each algorithm.   Since the generalized iterative method is a
@@ -61,7 +68,7 @@ GeneralIterDecon::GeneralIterDecon(AntelopePf &mdtoplevel) : ScalarDecon() {
   C calls. */
   try {
     AntelopePf md = mdtoplevel.get_branch("deconvolution_operator_type");
-    AntelopePf mdgiter = md.get_branch("generalized_iterative_deconvolution");
+    AntelopePf mdgiter = md.get_branch("time_domain_gid_deconvolution");
     IterDeconType dct = parse_for_itertype(mdgiter);
     this->decon_type = dct;
     double ts, te;
@@ -104,6 +111,8 @@ GeneralIterDecon::GeneralIterDecon(AntelopePf &mdtoplevel) : ScalarDecon() {
     to be clearer. */
     int n1, n2; // temporaries used below -  needed because declrations illegal
                 // inside case
+    preprocessor = nullptr;
+    cnrprocessor = nullptr;
     switch (decon_type) {
     case WATER_LEVEL:
       mdleaf = md.get_branch("water_level");
@@ -140,7 +149,6 @@ GeneralIterDecon::GeneralIterDecon(AntelopePf &mdtoplevel) : ScalarDecon() {
       preprocessor = new LeastSquareDecon(mdleaf);
       break;
     case MULTI_TAPER:
-    default:
       mdleaf = md.get_branch("multi_taper");
       ts = mdleaf.get<double>("deconvolution_data_window_start");
       te = mdleaf.get<double>("deconvolution_data_window_end");
@@ -174,6 +182,12 @@ GeneralIterDecon::GeneralIterDecon(AntelopePf &mdtoplevel) : ScalarDecon() {
         throw MsPASSError(ss.str(), ErrorSeverity::Invalid);
       }
       preprocessor = new MultiTaperXcorDecon(mdleaf);
+      break;
+    case CNR:
+    default:
+      mdleaf = md.get_branch("cnr");
+      cnrprocessor = new CNRDeconEngine(mdleaf);
+      break;
     };
     /* Because this may evolve we make this a private method to
     make changes easier to implement. */
@@ -189,14 +203,37 @@ GeneralIterDecon::GeneralIterDecon(AntelopePf &mdtoplevel) : ScalarDecon() {
     throw;
   };
 }
-GeneralIterDecon::~GeneralIterDecon() { delete preprocessor; }
+TimeDomainGIDDecon::~TimeDomainGIDDecon() {
+  delete preprocessor;
+  delete cnrprocessor;
+}
 
-vector<double> wtf;
-int nwtf;
-void GeneralIterDecon::construct_weight_penalty_function(const Metadata &md) {
+CoreTimeSeries TimeDomainGIDDecon::ideal_output() {
+  if (decon_type == CNR)
+    return cnrprocessor->ideal_output();
+  return preprocessor->ideal_output();
+}
+
+CoreTimeSeries TimeDomainGIDDecon::actual_output() {
+  if (decon_type == CNR)
+    return cnrprocessor->actual_output(current_wavelet);
+  return preprocessor->actual_output();
+}
+
+CoreTimeSeries TimeDomainGIDDecon::inverse_wavelet() {
+  return this->inverse_wavelet(0.0);
+}
+
+CoreTimeSeries TimeDomainGIDDecon::inverse_wavelet(double t0parent) {
+  if (decon_type == CNR)
+    return cnrprocessor->inverse_wavelet(current_wavelet, t0parent);
+  return preprocessor->inverse_wavelet(t0parent);
+}
+
+void TimeDomainGIDDecon::construct_weight_penalty_function(const Metadata &md) {
   try {
     const string base_error(
-        "GeneralIterDecon::construct_weight_penalty_function:  ");
+        "TimeDomainGIDDecon::construct_weight_penalty_function:  ");
     int i;
     /* All options use this scale factor */
     double wtf_scale = md.get<double>("lag_weight_penalty_scale_factor");
@@ -211,6 +248,7 @@ void GeneralIterDecon::construct_weight_penalty_function(const Metadata &md) {
     /* Most options use this parameter so we set it outside the
     conditional.  With usual use of pffiles this should not be a big issue.
     */
+    wtf.clear();
     nwtf = md.get<int>("lag_weight_function_width");
     /* nwtf must be forced to be an odd number to force the function to
     be symmetric. */
@@ -286,7 +324,7 @@ vector<double> amp3c(dmatrix &d) {
   }
   return result;
 }
-int GeneralIterDecon::load(const CoreSeismogram &draw, TimeWindow dwin_in) {
+int TimeDomainGIDDecon::load(const CoreSeismogram &draw, TimeWindow dwin_in) {
   try {
     dwin = dwin_in;
     /* First we load the requested window.  Note we MUST always make this window
@@ -301,7 +339,7 @@ int GeneralIterDecon::load(const CoreSeismogram &draw, TimeWindow dwin_in) {
     throw;
   };
 }
-int GeneralIterDecon::loadnoise(const CoreSeismogram &draw,
+int TimeDomainGIDDecon::loadnoise(const CoreSeismogram &draw,
                                 TimeWindow nwin_in) {
   try {
     nwin = nwin_in;
@@ -316,7 +354,7 @@ int GeneralIterDecon::loadnoise(const CoreSeismogram &draw,
     throw;
   };
 }
-int GeneralIterDecon::load(const CoreSeismogram &draw, TimeWindow dwin,
+int TimeDomainGIDDecon::load(const CoreSeismogram &draw, TimeWindow dwin,
                            TimeWindow nwin) {
   try {
     int iretn, iret;
@@ -328,9 +366,9 @@ int GeneralIterDecon::load(const CoreSeismogram &draw, TimeWindow dwin,
   };
 }
 /* These are the set of private methods called from the process method */
-void GeneralIterDecon::update_residual_matrix(ThreeCSpike spk) {
+void TimeDomainGIDDecon::update_residual_matrix(ThreeCSpike spk) {
   try {
-    const string base_error("GeneralIterDecon::update_residual_matrix:  ");
+    const string base_error("TimeDomainGIDDecon::update_residual_matrix:  ");
     int ncol = this->r.u.columns();
     int col0 = spk.col - actual_o_0;
     ;
@@ -366,10 +404,13 @@ we we use an explicit loop instead ofa call to daxpy as in the residual
 update method.  Note like update_residual_matrix we assume nwtf is
 correct and don't test for memory faults for efficiency  */
 
-void GeneralIterDecon::update_lag_weights(int col) {
+void TimeDomainGIDDecon::update_lag_weights(int col) {
   try {
     int i, ii;
-    for (i = 0, ii = col; i < nwtf; ++i, ++ii) {
+    int first_col = col - nwtf / 2;
+    for (i = 0, ii = first_col; i < nwtf; ++i, ++ii) {
+      if ((ii < 0) || (ii >= lag_weights.size()))
+        continue;
       lag_weights[ii] -= wtf[i];
       if (lag_weights[ii] < 0.0)
         lag_weights[ii] = 0;
@@ -378,7 +419,7 @@ void GeneralIterDecon::update_lag_weights(int col) {
     throw;
   };
 }
-double GeneralIterDecon::compute_resid_linf_floor() {
+double TimeDomainGIDDecon::compute_resid_linf_floor() {
   try {
     /*Note - this needs an enhancement.   We should not include points
     in a padd region accounting for the inverse filter padding. */
@@ -386,6 +427,10 @@ double GeneralIterDecon::compute_resid_linf_floor() {
     sort(amps.begin(), amps.end());
     int floor_position;
     floor_position = static_cast<int>(resid_linf_prob * ((double)amps.size()));
+    if (floor_position < 0)
+      floor_position = 0;
+    if (floor_position >= amps.size())
+      floor_position = amps.size() - 1;
     resid_linf_floor = amps[floor_position];
     return resid_linf_floor;
   } catch (...) {
@@ -463,7 +508,7 @@ CoreTimeSeries trim(const CoreTimeSeries &d, double floor = 0.005) {
       /* Consider deleting this message if we confirm the assumption about
       this algorithm stated above is valid - smoother algorithm works because
       the oscillations in are high frequency */
-      cerr << "GeneralIterDecon::trim method (WARNING):  "
+      cerr << "TimeDomainGIDDecon::trim method (WARNING):  "
            << "trim algorithm failed. " << endl
            << "Minimum amplitude at ends of impulse response function=" << avg
            << endl
@@ -477,8 +522,8 @@ CoreTimeSeries trim(const CoreTimeSeries &d, double floor = 0.005) {
     throw;
   };
 }
-void GeneralIterDecon::process() {
-  const string base_error("GeneralIterDecon::process method:  ");
+void TimeDomainGIDDecon::process() {
+  const string base_error("TimeDomainGIDDecon::process method:  ");
   try {
     /* We first have to run the signal processing style deconvolution.
     This is defined by the base pointer available through the symbol
@@ -506,17 +551,24 @@ void GeneralIterDecon::process() {
     /* For this case of receiver function deconvolution we always get the
     wavelet from component 2 - assumed here to be Z or L. */
     CoreTimeSeries srcwavelet(ExtractComponent(d_decon, 2));
-    for (int k = 0; k < 3; ++k) {
-      CoreTimeSeries dcomp(ExtractComponent(d_decon, k));
-      /* Need the qualifier or we get the wrong overloaded
-       * load method */
-      preprocessor->ScalarDecon::load(srcwavelet.s, dcomp.s);
-      preprocessor->process();
-      vector<double> deconout(preprocessor->getresult());
-      int copysize = deconout.size();
-      if (copysize > d_decon.npts())
-        copysize = d_decon.npts();
-      cblas_dcopy(copysize, &(deconout[0]), 1, uwork.get_address(k, 0), 3);
+    current_wavelet = TimeSeries(srcwavelet, "TimeDomainGIDDecon");
+    if (decon_type == CNR) {
+      TimeSeries nwavelet(ExtractComponent(n, noise_component),
+                          "TimeDomainGIDDecon");
+      cnrprocessor->initialize_inverse_operator(current_wavelet, nwavelet);
+    } else {
+      for (int k = 0; k < 3; ++k) {
+        CoreTimeSeries dcomp(ExtractComponent(d_decon, k));
+        /* Need the qualifier or we get the wrong overloaded
+         * load method */
+        preprocessor->ScalarDecon::load(srcwavelet.s, dcomp.s);
+        preprocessor->process();
+        vector<double> deconout(preprocessor->getresult());
+        int copysize = deconout.size();
+        if (copysize > d_decon.npts())
+          copysize = d_decon.npts();
+        cblas_dcopy(copysize, &(deconout[0]), 1, uwork.get_address(k, 0), 3);
+      }
     }
     d_decon.u = uwork;
     /* The inverse wavelet and the actual output signals are determined in all
@@ -535,7 +587,7 @@ void GeneralIterDecon::process() {
     // d_decon.to="<<d_decon.t0()<<endl; TimeSeries
     // winv=this->preprocessor->inverse_wavelet(tshift/5.0,d_decon.t0());
     // TimeSeries winv=this->preprocessor->inverse_wavelet(0.0,d_decon.t0());
-    CoreTimeSeries winv = this->preprocessor->inverse_wavelet(d_decon.t0());
+    CoreTimeSeries winv = this->inverse_wavelet(d_decon.t0());
     // This is a test - need a more elegant solution if it works.  Remove me
     // when finished with this test
     // if(d_decon.t0!=0) winv.t0 -= d_decon.t0;
@@ -548,13 +600,18 @@ void GeneralIterDecon::process() {
     /* The actual output signal is used in the iterative
      * recursion of this algorithm.  For efficiency it is important
      * to trim the fir filter.  The call to trim does that.*/
-    CoreTimeSeries actual_out(this->preprocessor->actual_output());
+    CoreTimeSeries actual_out(this->actual_output());
     // DEBUG
     /*
     cerr << "Actual output raw"<<endl;
     cerr << actual_out<<endl;
 */
-    actual_out = trim(actual_out);
+    if (decon_type == CNR) {
+      TimeWindow cnr_cutwin(-2.0, 2.0);
+      actual_out = WindowData(actual_out, cnr_cutwin);
+    } else {
+      actual_out = trim(actual_out);
+    }
     actual_o_fir = actual_out.s;
     actual_o_0 = actual_out.sample_number(0.0);
     double peak_scale = actual_o_fir[actual_o_0];
@@ -564,7 +621,10 @@ void GeneralIterDecon::process() {
     /* This is the size of the inverse wavelet convolution transient
     we use it to prevent iterations in transient region of the deconvolved
     data */
-    wavelet_pad = winv.s.size();
+    if (decon_type == CNR)
+      wavelet_pad = actual_o_fir.size();
+    else
+      wavelet_pad = winv.s.size();
     if (2 * wavelet_pad > ndwin) {
       stringstream ss;
       ss << base_error << "Inadequate data window size" << endl
@@ -594,6 +654,11 @@ void GeneralIterDecon::process() {
     /* d_all now contains the deconvolved data.  Now enter the
     generalized iterative method recursion */
     int i, k;
+    spikes.clear();
+    lw_linf_history.clear();
+    lw_l2_history.clear();
+    resid_l2_history.clear();
+    resid_linf_history.clear();
     lag_weights.clear();
     vector<double> amps, wamps; // raw and weighted amplitudes
     amps.reserve(r.npts());
@@ -602,14 +667,20 @@ void GeneralIterDecon::process() {
     vector<double>::iterator amax;
     for (i = 0; i < r.npts(); ++i)
       lag_weights.push_back(1.0);
-    // DEBUG - temporarily disabled for testing
-    // for(i=0; i<wavelet_pad; ++i) lag_weights[i]=0.0;
-    // for(i=0; i<wavelet_pad; ++i) lag_weights[r.npts()-i-1]=0.0;
+    for (i = 0; i < r.npts(); ++i) {
+      int col0 = i - actual_o_0;
+      if ((col0 < 0) || ((col0 + actual_o_fir.size()) >= r.npts()))
+        lag_weights[i] = 0.0;
+    }
     /* These are initial values of convergence parameters */
     lw_linf_initial = 1.0;
     lw_l2_initial = 1.0;
     resid_linf_initial = Linf(r.u);
     resid_l2_initial = L2(r.u);
+    lw_linf_prev = lw_linf_initial;
+    lw_l2_prev = lw_l2_initial;
+    resid_linf_prev = resid_linf_initial;
+    resid_l2_prev = resid_l2_initial;
     iter_count = 0;
     // DEBUG - remove after testing
     lw_linf_history.push_back(lw_linf_initial);
@@ -631,10 +702,6 @@ void GeneralIterDecon::process() {
       respresentation of the output*/
       ThreeCSpike spk(r.u, imax);
       spikes.push_back(spk);
-      // DEBUG
-      cerr << iter_count << " col=" << spk.col << " " << "t=" << r.time(spk.col)
-           << " amps=" << spk.u[0] << ", " << spk.u[1] << ", " << spk.u[2]
-           << endl;
       /* This private method defines how the lag_weights vector is changed
       in the vicinity of this spike.  The tacit assumption is the weight is
       made smaller (maybe even zero) at the spike point and a chosen recipe
@@ -647,14 +714,14 @@ void GeneralIterDecon::process() {
       ++iter_count;
     } while (this->has_not_converged());
     if (iter_count >= iter_max)
-      throw MsPASSError("GeneralIterDecon::process did not converge",
+      throw MsPASSError("TimeDomainGIDDecon::process did not converge",
                         ErrorSeverity::Suspect);
   } catch (...) {
     throw;
   };
 }
 
-bool GeneralIterDecon::has_not_converged() {
+bool TimeDomainGIDDecon::has_not_converged() {
   try {
     double lw_linf_now, lw_l2_now, resid_linf_now, resid_l2_now;
     vector<double>::iterator vptr;
@@ -668,9 +735,13 @@ bool GeneralIterDecon::has_not_converged() {
     lw_l2_history.push_back(lw_l2_now);
     resid_linf_history.push_back(resid_linf_now);
     resid_l2_history.push_back(resid_l2_now);
-    // DEBUG
-    cerr << "Iteration count=" << iter_count << " lw_linf=" << lw_linf_now
-         << "lw_l2=" << lw_l2_now << " resid_linf=" << resid_linf_now;
+    /* We use a standard calculation for residual l2 as fractional rms change */
+    double eps;
+    eps = (resid_l2_prev - resid_l2_now) / resid_l2_initial;
+    lw_linf_prev = lw_linf_now;
+    lw_l2_prev = lw_l2_now;
+    resid_linf_prev = resid_linf_now;
+    resid_l2_prev = resid_l2_now;
     if (iter_count > iter_max)
       return false;
     if (lw_linf_now < lw_linf_floor)
@@ -679,25 +750,16 @@ bool GeneralIterDecon::has_not_converged() {
       return false;
     if (resid_linf_now < resid_linf_floor)
       return false;
-    /* We use a standard calculation for residual l2 as fractional rms change */
-    double eps;
-    eps = (resid_l2_now - resid_l2_prev) / resid_l2_initial;
-    // DEBUG
-    cerr << "epsilon=" << eps << endl;
     if (eps < resid_l2_tol)
       return false;
-    lw_linf_prev = lw_linf_now;
-    lw_l2_prev = lw_l2_now;
-    resid_linf_prev = resid_linf_now;
-    resid_l2_prev = resid_l2_now;
     return true;
   } catch (...) {
     throw;
   };
 }
-CoreSeismogram GeneralIterDecon::getresult() {
+CoreSeismogram TimeDomainGIDDecon::getresult() {
   try {
-    string base_error("GeneralIterDecon::getresult:  ");
+    string base_error("TimeDomainGIDDecon::getresult:  ");
     CoreSeismogram result(d_all);
     /* We will make the output the size of the processing window for the
     iteration.  May want to alter this to trim the large lag that would not
@@ -716,12 +778,9 @@ CoreSeismogram GeneralIterDecon::getresult() {
     list<ThreeCSpike>::iterator sptr;
     int k, resultcol;
     for (sptr = spikes.begin(); sptr != spikes.end(); ++sptr) {
-      if (((sptr->col) < 0) || ((sptr->col) >= result.npts()))
-        throw MsPASSError(
-            base_error +
-                "Coding error - spike lag is outside output data range",
-            ErrorSeverity::Fatal);
       resultcol = (sptr->col) - delta_col;
+      if ((resultcol < 0) || (resultcol >= result.npts()))
+        continue;
       for (k = 0; k < 3; ++k)
         result.u(k, resultcol) = sptr->u[k];
     }
@@ -735,8 +794,15 @@ CoreSeismogram GeneralIterDecon::getresult() {
     throw;
   };
 }
-Metadata GeneralIterDecon::QCMetrics() {
-  cerr << "QCMetrics method not yet implemented" << endl;
-  exit(-1);
+Metadata TimeDomainGIDDecon::QCMetrics() {
+  Metadata md;
+  md.put("iteration_count", iter_count);
+  md.put("residual_Linf_initial", resid_linf_initial);
+  md.put("residual_Linf_final", resid_linf_prev);
+  md.put("residual_L2_initial", resid_l2_initial);
+  md.put("residual_L2_final", resid_l2_prev);
+  md.put("lag_weight_Linf_final", lw_linf_prev);
+  md.put("lag_weight_L2_final", lw_l2_prev);
+  return md;
 }
 } // namespace mspass::algorithms::deconvolution

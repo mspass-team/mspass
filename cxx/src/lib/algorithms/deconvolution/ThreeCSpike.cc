@@ -1,6 +1,6 @@
 /* This class is defined in this file because it is intimately linked to
 that operator.  We put the C++ code here to make it easier to find. */
-#include "mspass/algorithms/deconvolution/GeneralIterDecon.h"
+#include "mspass/algorithms/deconvolution/TimeDomainGIDDecon.h"
 namespace mspass::algorithms::deconvolution {
 using namespace std;
 using namespace mspass::utility;

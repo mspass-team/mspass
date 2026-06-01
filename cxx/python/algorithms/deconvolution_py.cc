@@ -13,8 +13,8 @@
 #include <mspass/algorithms/deconvolution/LeastSquareDecon.h>
 #include <mspass/algorithms/deconvolution/MultiTaperXcorDecon.h>
 #include <mspass/algorithms/deconvolution/MultiTaperSpecDivDecon.h>
-//Disable until repaired
-//#include <mspass/algorithms/deconvolution/GeneralIterDecon.h>
+#include <mspass/algorithms/deconvolution/TimeDomainGIDDecon.h>
+#include <mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h>
 #include <mspass/algorithms/deconvolution/CNRDeconEngine.h>
 PYBIND11_MAKE_OPAQUE(std::vector<double>);
 
@@ -299,22 +299,45 @@ PYBIND11_MODULE(deconvolution, m) {
       }
     ))
   ;
-  /* this binding code is properly constructed, but for now we disable it
-   * because it has known bugs that need to be squashed.  It should be
-   * turned back on if and when those bugs are squashed.
-  py::class_<GeneralIterDecon,ScalarDecon>(m,"GeneralIterDecon","Water level frequency domain operator")
-    .def(py::init<AntelopePf&>())
-    .def("changeparameter",&GeneralIterDecon::changeparameter,"Change operator parameters")
-    .def("process",&GeneralIterDecon::process,"Process previously loaded data")
-    .def("loadnoise",&GeneralIterDecon::loadnoise,"Load noise data for regularization")
-    .def("load",py::overload_cast<const CoreSeismogram&,const TimeWindow>
-            (&GeneralIterDecon::load),"Load data")
-    .def("actual_output",&GeneralIterDecon::actual_output,"Return actual output of inverse*wavelet")
-    .def("inverse_wavelet",py::overload_cast<>(&GeneralIterDecon::inverse_wavelet))
-    .def("inverse_wavelet",py::overload_cast<double>(&GeneralIterDecon::inverse_wavelet))
-    .def("QCMetrics",&GeneralIterDecon::QCMetrics,"Return ideal output of for inverse")
+  py::class_<TimeDomainGIDDecon,ScalarDecon>(m,"TimeDomainGIDDecon",
+      "Generalized iterative deconvolution operator for three-component receiver functions")
+    .def(py::init<const AntelopePf&>())
+    .def("changeparameter",&TimeDomainGIDDecon::changeparameter,"Change operator parameters")
+    .def("process",&TimeDomainGIDDecon::process,"Process previously loaded data")
+    .def("loadnoise",&TimeDomainGIDDecon::loadnoise,"Load noise data for regularization")
+    .def("load",py::overload_cast<const CoreSeismogram&,mspass::algorithms::TimeWindow>
+            (&TimeDomainGIDDecon::load),"Load data")
+    .def("load",py::overload_cast<const CoreSeismogram&,mspass::algorithms::TimeWindow,mspass::algorithms::TimeWindow>
+            (&TimeDomainGIDDecon::load),"Load data and noise windows")
+    .def("getresult",&TimeDomainGIDDecon::getresult,
+            "Return the deconvolved three-component receiver function")
+    .def("ideal_output",&TimeDomainGIDDecon::ideal_output,
+            "Return ideal output of inverse*wavelet")
+    .def("actual_output",&TimeDomainGIDDecon::actual_output,"Return actual output of inverse*wavelet")
+    .def("inverse_wavelet",py::overload_cast<>(&TimeDomainGIDDecon::inverse_wavelet))
+    .def("inverse_wavelet",py::overload_cast<double>(&TimeDomainGIDDecon::inverse_wavelet))
+    .def("QCMetrics",&TimeDomainGIDDecon::QCMetrics,"Return ideal output of for inverse")
   ;
-  */
+
+  py::class_<FrequencyDomainGIDDecon,ScalarDecon>(m,"FrequencyDomainGIDDecon",
+      "Frequency-domain generalized iterative deconvolution operator for three-component receiver functions")
+    .def(py::init<const AntelopePf&>())
+    .def("changeparameter",&FrequencyDomainGIDDecon::changeparameter,"Change operator parameters")
+    .def("process",&FrequencyDomainGIDDecon::process,"Process previously loaded data")
+    .def("loadnoise",&FrequencyDomainGIDDecon::loadnoise,"Load noise data for regularization")
+    .def("load",py::overload_cast<const CoreSeismogram&,mspass::algorithms::TimeWindow>
+            (&FrequencyDomainGIDDecon::load),"Load data")
+    .def("load",py::overload_cast<const CoreSeismogram&,mspass::algorithms::TimeWindow,mspass::algorithms::TimeWindow>
+            (&FrequencyDomainGIDDecon::load),"Load data and noise windows")
+    .def("getresult",&FrequencyDomainGIDDecon::getresult,
+            "Return the deconvolved three-component receiver function")
+    .def("ideal_output",&FrequencyDomainGIDDecon::ideal_output,
+            "Return ideal output of inverse*wavelet")
+    .def("actual_output",&FrequencyDomainGIDDecon::actual_output,"Return actual output of inverse*wavelet")
+    .def("inverse_wavelet",py::overload_cast<>(&FrequencyDomainGIDDecon::inverse_wavelet))
+    .def("inverse_wavelet",py::overload_cast<double>(&FrequencyDomainGIDDecon::inverse_wavelet))
+    .def("QCMetrics",&FrequencyDomainGIDDecon::QCMetrics,"Return QC metrics")
+  ;
 
   py::class_<CNRDeconEngine,FFTDeconOperator>(m,"CNRDeconEngine",
        "Colored noise regularized deconvolution engine - used for single station and array data")
