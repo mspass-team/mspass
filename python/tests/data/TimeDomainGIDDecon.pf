@@ -1,0 +1,92 @@
+# Parameter file for TimeDomainGIDDecon.
+#
+# The generalized iterative method is a two-stage operator: an inverse
+# deconvolution operator sharpens the source wavelet, then the iterative loop
+# builds a sparse spike sequence and applies an independent output shaping
+# wavelet.
+
+deconvolution_operator_type &Arr{
+    time_domain_gid_deconvolution &Arr{
+        deconvolution_type least_square
+        target_sample_interval 0.05
+        full_data_window_start -8.0
+        full_data_window_end 20.0
+        deconvolution_data_window_start -2.0
+        deconvolution_data_window_end 8.0
+        noise_window_start -25.0
+        noise_window_end -8.0
+        noise_component 2
+
+        maximum_iterations 100
+        lag_weight_Linf_floor 0.01
+        lag_weight_rms_floor 0.01
+        residual_noise_rms_probability_floor 0.95
+        residual_fractional_improvement_floor 0.0001
+
+        lag_weight_penalty_scale_factor 1.0
+        lag_weight_penalty_function cosine_taper
+        lag_weight_function_width 5
+
+        shaping_wavelet_dt 0.05
+        shaping_wavelet_type gaussian
+        shaping_wavelet_frequency 2.0
+    }
+    least_square &Arr{
+        target_sample_interval 0.05
+        operator_nfft 256
+        deconvolution_data_window_start -2.0
+        deconvolution_data_window_end 8.0
+        damping_factor 0.1
+
+        shaping_wavelet_dt 0.05
+        shaping_wavelet_type gaussian
+        shaping_wavelet_frequency 2.0
+    }
+    water_level &Arr{
+        target_sample_interval 0.05
+        operator_nfft 256
+        deconvolution_data_window_start -2.0
+        deconvolution_data_window_end 8.0
+        water_level 0.1
+
+        shaping_wavelet_dt 0.05
+        shaping_wavelet_type gaussian
+        shaping_wavelet_frequency 2.0
+    }
+    multi_taper &Arr{
+        target_sample_interval 0.05
+        operator_nfft 256
+        deconvolution_data_window_start -2.0
+        deconvolution_data_window_end 8.0
+        damping_factor 0.1
+        time_bandwidth_product 2.5
+        number_tapers 4
+
+        shaping_wavelet_dt 0.05
+        shaping_wavelet_type gaussian
+        shaping_wavelet_frequency 2.0
+    }
+    cnr &Arr{
+        target_sample_interval 0.05
+        operator_nfft 256
+        deconvolution_data_window_start -2.0
+        deconvolution_data_window_end 8.0
+        algorithm colored_noise_damping
+        damping_factor 0.1
+        noise_floor 0.01
+        snr_regularization_floor 2.0
+        snr_data_bandwidth_floor 1.5
+        noise_window_start -25.0
+        noise_window_end -8.0
+        time_bandwidth_product 2.5
+        number_tapers 4
+        taper_type none
+
+        shaping_wavelet_dt 0.05
+        shaping_wavelet_type butterworth
+        npoles_lo 3
+        npoles_hi 3
+        f3db_lo 0.02
+        f3db_hi 2.0
+    }
+}
