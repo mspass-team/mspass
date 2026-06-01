@@ -206,6 +206,10 @@ void MultiTaperXcorDecon::process() {
   // cerr<< "Entering process method"<<endl;
   const string base_error("MultiTaperXcorDecon::process():  ");
   result.clear();
+  const int output_length = data.size();
+  if (output_length > nfft)
+    throw MsPASSError(base_error + "data vector exceeds padded fft length",
+                      ErrorSeverity::Invalid);
   /* WARNING about this algorithm. At present there is nothing to stop
   a coding error of calling the algorithm with inconsistent signal and
   noise data vectors. */
@@ -324,19 +328,7 @@ void MultiTaperXcorDecon::process() {
   The time shift formula assumes wrapping in the form used by the gsl
   algorithm. */
   gsl_fft_complex_inverse(rf_fft.ptr(), 1, nfft, wavetable, workspace);
-  if (sample_shift > 0) {
-    for (int k = sample_shift; k > 0; k--)
-      result.push_back(rf_fft[nfft - k].real());
-    for (int k = 0; k < data.size() - sample_shift; k++)
-      result.push_back(rf_fft[k].real());
-  } else if (sample_shift == 0) {
-    for (int k = 0; k < data.size(); k++)
-      result.push_back(rf_fft[k].real());
-  } else {
-    throw MsPASSError(base_error + "Coding error - trying to use an illegal "
-                                   "negative time shift parameter",
-                      ErrorSeverity::Invalid);
-  }
+  result = ExtractLagWindow(rf_fft, output_length, sample_shift);
 }
 CoreTimeSeries MultiTaperXcorDecon::actual_output() {
   try {

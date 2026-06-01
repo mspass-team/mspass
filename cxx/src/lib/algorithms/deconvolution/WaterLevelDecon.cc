@@ -62,19 +62,27 @@ WaterLevelDecon::WaterLevelDecon(const Metadata &md, const vector<double> &w,
 void WaterLevelDecon::process() {
 
   result.clear();
+  const string base_error("WaterLevelDecon::process():  ");
+  const int output_length = data.size();
+  if (output_length > nfft)
+    throw MsPASSError(base_error + "data vector exceeds padded fft length",
+                      ErrorSeverity::Invalid);
   // apply fft to the input trace data
   //  data and wavelet sizes need to be zero padded if the are short
-  if (data.size() < nfft)
-    for (int i = data.size(); i < nfft; ++i)
-      data.push_back(0.0);
-  ComplexArray d_fft(nfft, &(data[0]));
+  vector<double> data_padded(data);
+  if (data_padded.size() < nfft)
+    data_padded.resize(nfft, 0.0);
+  ComplexArray d_fft(nfft, &(data_padded[0]));
   gsl_fft_complex_forward(d_fft.ptr(), 1, nfft, wavetable, workspace);
 
   // apply fft to wavelet
-  if (wavelet.size() < nfft)
-    for (int i = wavelet.size(); i < nfft; ++i)
-      wavelet.push_back(0.0);
-  ComplexArray b_fft(nfft, &(wavelet[0]));
+  if (wavelet.size() > nfft)
+    throw MsPASSError(base_error + "wavelet vector exceeds padded fft length",
+                      ErrorSeverity::Invalid);
+  vector<double> wavelet_padded(wavelet);
+  if (wavelet_padded.size() < nfft)
+    wavelet_padded.resize(nfft, 0.0);
+  ComplexArray b_fft(nfft, &(wavelet_padded[0]));
   gsl_fft_complex_forward(b_fft.ptr(), 1, nfft, wavetable, workspace);
 
   double b_rms = b_fft.rms();
@@ -124,19 +132,14 @@ void WaterLevelDecon::process() {
 
   // ifft gets result
   gsl_fft_complex_inverse(rf_fft.ptr(), 1, nfft, wavetable, workspace);
-  if (sample_shift > 0) {
-    for (int k = sample_shift; k > 0; k--)
-      result.push_back(rf_fft[nfft - k].real());
-    for (unsigned int k = 0; k < data.size() - sample_shift; k++)
-      result.push_back(rf_fft[k].real());
-  } else {
-    for (unsigned int k = 0; k < data.size(); k++)
-      result.push_back(rf_fft[k].real());
-  }
+  result = ExtractLagWindow(rf_fft, output_length, sample_shift);
 }
 CoreTimeSeries WaterLevelDecon::actual_output() {
   try {
-    ComplexArray W(nfft, &(wavelet[0]));
+    vector<double> wavelet_padded(wavelet);
+    if (wavelet_padded.size() < nfft)
+      wavelet_padded.resize(nfft, 0.0);
+    ComplexArray W(nfft, &(wavelet_padded[0]));
     gsl_fft_complex_forward(W.ptr(), 1, nfft, wavetable, workspace);
     ComplexArray ao_fft;
     ao_fft = winv * W;

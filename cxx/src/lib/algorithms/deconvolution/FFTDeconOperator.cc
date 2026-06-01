@@ -1,6 +1,7 @@
 #include "mspass/algorithms/deconvolution/FFTDeconOperator.h"
 #include "mspass/seismic/CoreTimeSeries.h"
 #include "mspass/utility/MsPASSError.h"
+#include <algorithm>
 #include <math.h>
 namespace mspass::algorithms::deconvolution {
 using namespace std;
@@ -160,7 +161,12 @@ CoreTimeSeries FFTDeconOperator::FourierInverse(const ComplexArray &winv,
 int ComputeFFTLength(const TimeWindow w, const double dt) {
   int nsamples, nfft;
   nsamples = static_cast<int>(((w.end - w.start) / dt)) + 1;
-  nfft = nextPowerOf2(nsamples);
+  /* Use a padded work buffer by default.  The scalar FFT decon operators are
+   * intended for linear seismic time windows, not circular convolution of the
+   * finite window.  A three-window buffer gives one window of guard samples on
+   * each side of the requested output after lag shifting, matching the CNR
+   * engine's default padding policy. */
+  nfft = nextPowerOf2(3 * nsamples);
   return nfft;
 }
 /* Newbies note this works because of the fundamental concept of
@@ -183,5 +189,32 @@ int ComputeFFTLength(const Metadata &md) {
   } catch (MetadataGetError &mde) {
     throw mde;
   };
+}
+
+vector<double> ExtractLagWindow(ComplexArray &fft_buffer,
+                                const int output_length,
+                                const int sample_shift) {
+  const string base_error("ExtractLagWindow:  ");
+  const int nfft = fft_buffer.size();
+  if (output_length < 0)
+    throw MsPASSError(base_error + "output_length cannot be negative",
+                      ErrorSeverity::Invalid);
+  if (sample_shift < 0)
+    throw MsPASSError(base_error + "sample_shift cannot be negative",
+                      ErrorSeverity::Invalid);
+  if (sample_shift > nfft)
+    throw MsPASSError(base_error + "sample_shift exceeds fft buffer length",
+                      ErrorSeverity::Invalid);
+  if (output_length > nfft)
+    throw MsPASSError(base_error + "output_length exceeds fft buffer length",
+                      ErrorSeverity::Invalid);
+  vector<double> result;
+  result.reserve(output_length);
+  const int nnegative = std::min(sample_shift, output_length);
+  for (int k = nnegative; k > 0; --k)
+    result.push_back(fft_buffer[nfft - k].real());
+  for (int k = 0; k < output_length - nnegative; ++k)
+    result.push_back(fft_buffer[k].real());
+  return result;
 }
 } // namespace mspass::algorithms::deconvolution

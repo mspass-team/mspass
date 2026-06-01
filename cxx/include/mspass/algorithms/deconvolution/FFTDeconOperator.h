@@ -109,6 +109,18 @@ This procedure extracts these using three parameter keys to extract
 the real numbers form md:  deconvolution_data_window_start,
 decon_window_end, and target dt. */
 int ComputeFFTLength(const mspass::utility::Metadata &md);
+/*! Extract a non-circular output window from an inverse FFT work buffer.
+ *
+ * Fourier deconvolution is computed in a padded FFT buffer.  This helper
+ * applies the standard MsPASS lag convention, where negative lags requested by
+ * a negative deconvolution window start are stored at the end of the padded
+ * FFT buffer, but returns only the requested output window length.  The caller
+ * must provide an FFT size large enough to hold guard samples; the default
+ * ComputeFFTLength helper does that by using a three-window padded buffer.
+ */
+std::vector<double> ExtractLagWindow(ComplexArray &fft_buffer,
+                                     const int output_length,
+                                     const int sample_shift);
 /*! Returns next power of 2 larger than n.
  *
  * Some FFT implementations require the size of the input data vector be a power

@@ -208,6 +208,10 @@ MultiTaperSpecDivDecon::taper_data(const vector<double> &signal) {
 void MultiTaperSpecDivDecon::process() {
   const string base_error("MultiTaperSpecDivDecon::process():  ");
   try {
+    const int output_length = data.size();
+    if (output_length > nfft)
+      throw MsPASSError(base_error + "data vector exceeds padded fft length",
+                        ErrorSeverity::Invalid);
     /* WARNING about this algorithm. At present there is nothing to stop
     a coding error of calling the algorithm with inconsistent signal and
     noise data vectors. */
@@ -327,10 +331,9 @@ void MultiTaperSpecDivDecon::process() {
     }
 
     /* To mesh with the API of other methods we now compute the average
-    rf estimate.  We compute this as a simple average. */
-    result.clear();
-    for (j = 0; j < nfft; ++j)
-      result.push_back(0.0);
+    rf estimate.  We compute this as a simple average in the padded work
+    buffer, then extract the requested lag window. */
+    vector<double> padded_result(nfft, 0.0);
     vector<double> wtmp;
     for (i = 0; i < nseq; ++i) {
       ComplexArray work(rfestimates[i]);
@@ -339,15 +342,14 @@ void MultiTaperSpecDivDecon::process() {
       work = (*shapingwavelet.wavelet()) * work;
       gsl_fft_complex_inverse(work.ptr(), 1, nfft, wavetable, workspace);
       for (j = 0; j < nfft; ++j) {
-        result[j] += work[j].real();
+        padded_result[j] += work[j].real();
       }
     }
     double nrmscl = 1.0 / ((double)nseq);
     for (j = 0; j < nfft; ++j)
-      result[j] *= nrmscl;
-    /* Finally do a circular shift if requested. */
-    if (sample_shift > 0)
-      result = circular_shift(result, -sample_shift);
+      padded_result[j] *= nrmscl;
+    ComplexArray rf_work(nfft, padded_result);
+    result = ExtractLagWindow(rf_work, output_length, sample_shift);
   } catch (...) {
     throw;
   };
