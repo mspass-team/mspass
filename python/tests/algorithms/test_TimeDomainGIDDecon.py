@@ -53,9 +53,9 @@ def _assert_single_spike_recovery(rf, ratio_tolerance):
 
 
 def _make_single_spike_convolution_data():
-    n = 1000
+    n = 1400
     dt = 0.05
-    t0 = -25.0
+    t0 = -45.0
     time_axis = np.arange(n) * dt + t0
     wavelet = np.exp(-((time_axis / 0.12) ** 2))
     wavelet /= np.max(wavelet)
@@ -167,7 +167,7 @@ def test_TimeDomainGIDDecon_validates_single_spike_recovery():
         data,
         engine,
         signal_window=TimeWindow(-10.0, 20.0),
-        noise_window=TimeWindow(-24.0, -12.0),
+        noise_window=TimeWindow(-35.0, -5.0),
     )
 
     _assert_valid_rf(rf)
@@ -191,7 +191,7 @@ def test_TimeDomainGIDDecon_inverse_modes_are_valid(tmp_path, mode):
         data,
         engine,
         signal_window=TimeWindow(-10.0, 20.0),
-        noise_window=TimeWindow(-24.0, -12.0),
+        noise_window=TimeWindow(-35.0, -5.0),
         return_wavelet=True,
     )
 

@@ -7,7 +7,7 @@ deconvolution_operator_type &Arr{
         full_data_window_start -8.0
         full_data_window_end 20.0
         deconvolution_data_window_start -5.0
-        deconvolution_data_window_end 8.0
+        deconvolution_data_window_end 20.0
         noise_window_start -35.0
         noise_window_end -5.0
         noise_component 2
@@ -25,7 +25,7 @@ deconvolution_operator_type &Arr{
         target_sample_interval 0.05
         operator_nfft 512
         deconvolution_data_window_start -5.0
-        deconvolution_data_window_end 8.0
+        deconvolution_data_window_end 20.0
         damping_factor 1.0
 
         shaping_wavelet_dt 0.05
@@ -37,7 +37,7 @@ deconvolution_operator_type &Arr{
         target_sample_interval 0.05
         operator_nfft 512
         deconvolution_data_window_start -5.0
-        deconvolution_data_window_end 8.0
+        deconvolution_data_window_end 20.0
         water_level 0.1
 
         shaping_wavelet_dt 0.05
@@ -49,7 +49,7 @@ deconvolution_operator_type &Arr{
         target_sample_interval 0.05
         operator_nfft 512
         deconvolution_data_window_start -5.0
-        deconvolution_data_window_end 8.0
+        deconvolution_data_window_end 20.0
         damping_factor 1.0
         time_bandwidth_product 2.5
         number_tapers 4
@@ -63,7 +63,7 @@ deconvolution_operator_type &Arr{
         target_sample_interval 0.05
         operator_nfft 512
         deconvolution_data_window_start -5.0
-        deconvolution_data_window_end 8.0
+        deconvolution_data_window_end 20.0
         algorithm colored_noise_damping
         damping_factor 1.0
         noise_floor 0.01

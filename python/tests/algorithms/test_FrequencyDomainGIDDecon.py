@@ -24,7 +24,7 @@ def _run_frequency_gid(data, pf):
         data,
         engine,
         signal_window=TimeWindow(-10.0, 20.0),
-        noise_window=TimeWindow(-24.0, -12.0),
+        noise_window=TimeWindow(-35.0, -5.0),
         return_wavelet=True,
     )
 
@@ -124,7 +124,7 @@ def test_FrequencyDomainGIDRFDecon_error_return_and_optional_qc():
         zero_data,
         engine,
         signal_window=TimeWindow(-10.0, 20.0),
-        noise_window=TimeWindow(-24.0, -12.0),
+        noise_window=TimeWindow(-35.0, -5.0),
         return_wavelet=True,
     )
     assert bad_result[0].dead()

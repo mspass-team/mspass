@@ -74,6 +74,19 @@ def _normalized_correlation(x, y):
     return np.dot(xv, yv) / (np.linalg.norm(xv) * np.linalg.norm(yv))
 
 
+def _pf_with_gid_mode(tmp_path, pfname, branch_name, mode):
+    # The C++ engines expect an AntelopePf tree, so write a temporary pf file
+    # after changing only the GID inverse mode under test.
+    text = open(pfname, encoding="utf-8").read()
+    text = text.replace(
+        f"{branch_name} &Arr{{\n        deconvolution_type least_square",
+        f"{branch_name} &Arr{{\n        deconvolution_type {mode}",
+    )
+    dst = tmp_path / pfname.split("/")[-1]
+    dst.write_text(text)
+    return pfread(str(dst))
+
+
 def _assert_direct_arrival_is_recovered(matrix, ratio_tol=2.0e-2):
     z = matrix[2, :]
     search = slice(DIRECT_SAMPLE - 3, DIRECT_SAMPLE + 4)
@@ -128,45 +141,51 @@ def test_existing_decon_methods_are_consistent_for_noise_free_input():
 
 
 @pytest.mark.parametrize(
-    "engine_class, wrapper, pfname, qc_key",
+    "engine_class, wrapper, pfname, branch_name, modes, qc_key",
     [
         (
             TimeDomainGIDDecon,
             TimeDomainGIDRFDecon,
             "data/pf/TimeDomainGIDDecon.pf",
+            "time_domain_gid_deconvolution",
+            ["least_square", "water_level", "multi_taper", "cnr3c"],
             "TimeDomainGIDDecon_properties",
         ),
         (
             FrequencyDomainGIDDecon,
             FrequencyDomainGIDRFDecon,
             "data/pf/FrequencyDomainGIDDecon.pf",
+            "frequency_domain_gid_deconvolution",
+            ["least_square", "water_level", "multi_taper", "cnr"],
             "FrequencyDomainGIDDecon_properties",
         ),
     ],
 )
-def test_gid_methods_recover_noise_free_multi_spike_rf(
-    engine_class, wrapper, pfname, qc_key
+def test_gid_methods_recover_noise_free_multi_spike_rf_for_all_inverse_modes(
+    tmp_path, engine_class, wrapper, pfname, branch_name, modes, qc_key
 ):
-    data = _make_validation_data(noise_level=0.0)
-    engine = engine_class(pfread(pfname))
-    rf = wrapper(
-        data,
-        engine,
-        signal_window=TimeWindow(-8.0, 20.0),
-        noise_window=TimeWindow(-25.0, -8.0),
-    )
-    assert rf.live
-    assert rf[qc_key]["residual_L2_final"] < rf[qc_key]["residual_L2_initial"]
-    zrf = ExtractComponent(rf, 2)
-    peak_sample = int(np.argmax(np.abs(zrf.data)))
-    assert abs(zrf.time(peak_sample)) <= 0.15
-    assert np.isclose(
-        rf.data[0, peak_sample] / rf.data[2, peak_sample],
-        EXPECTED_EW_Z_RATIO,
-        atol=5.0e-2,
-    )
-    assert np.isclose(
-        rf.data[1, peak_sample] / rf.data[2, peak_sample],
-        EXPECTED_NS_Z_RATIO,
-        atol=5.0e-2,
-    )
+    for mode in modes:
+        data = _make_validation_data(noise_level=0.0)
+        pf = _pf_with_gid_mode(tmp_path, pfname, branch_name, mode)
+        engine = engine_class(pf)
+        rf = wrapper(
+            data,
+            engine,
+            signal_window=TimeWindow(-8.0, 20.0),
+            noise_window=TimeWindow(-25.0, -8.0),
+        )
+        assert rf.live, mode
+        assert rf[qc_key]["residual_L2_final"] < rf[qc_key]["residual_L2_initial"]
+        zrf = ExtractComponent(rf, 2)
+        peak_sample = int(np.argmax(np.abs(zrf.data)))
+        assert abs(zrf.time(peak_sample)) <= 0.15, mode
+        assert np.isclose(
+            rf.data[0, peak_sample] / rf.data[2, peak_sample],
+            EXPECTED_EW_Z_RATIO,
+            atol=5.0e-2,
+        ), mode
+        assert np.isclose(
+            rf.data[1, peak_sample] / rf.data[2, peak_sample],
+            EXPECTED_NS_Z_RATIO,
+            atol=5.0e-2,
+        ), mode
