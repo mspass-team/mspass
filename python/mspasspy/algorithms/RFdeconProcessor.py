@@ -17,7 +17,7 @@ Created on Fri Jul 31 06:24:10 2020
 
 import numpy as np
 
-from mspasspy.ccore.seismic import DoubleVector, Seismogram
+from mspasspy.ccore.seismic import DoubleVector, PowerSpectrum, Seismogram, TimeSeries
 from mspasspy.ccore.utility import AntelopePf, Metadata, MsPASSError, ErrorSeverity
 from mspasspy.util.converter import Metadata2dict
 from mspasspy.algorithms.window import WindowData
@@ -32,6 +32,33 @@ from mspasspy.ccore.algorithms.deconvolution import (
     FrequencyDomainGIDDecon,
 )
 from mspasspy.util.decorators import mspass_func_wrapper
+
+
+def _as_gid_timeseries(x, dt, t0, argname):
+    if isinstance(x, TimeSeries):
+        return x
+    if isinstance(x, DoubleVector):
+        values = np.asarray(x, dtype=float)
+    else:
+        try:
+            values = np.asarray(x, dtype=float)
+        except Exception as err:
+            raise TypeError(
+                "RFdecon: for GID algorithms, {} must be a TimeSeries "
+                "or one-dimensional numeric vector".format(argname)
+            ) from err
+    if values.ndim != 1:
+        raise TypeError(
+            "RFdecon: for GID algorithms, {} must be a TimeSeries "
+            "or one-dimensional numeric vector".format(argname)
+        )
+    ts = TimeSeries(len(values))
+    ts.set_t0(t0)
+    ts.set_dt(dt)
+    ts.set_live()
+    for i, value in enumerate(values):
+        ts.data[i] = float(value)
+    return ts
 
 
 class RFdeconProcessor:
@@ -495,9 +522,11 @@ def RFdecon(
     adding tapering to one or more of the time series inputs)
     use the d, wavelet, and (if required) noise arguments to load
     each component separately.  Note d is dogmatically required
-    to be three component data while optional wavelet and noisedata
-    series are passed as plain numpy vectors (i.e. without the
-    decoration of a TimeSeries).
+    to be three component data.  Conventional scalar methods accept
+    optional wavelet and noisedata as plain numeric vectors.  GID methods
+    accept prepared TimeSeries inputs or one-dimensional numeric vectors;
+    raw vectors are converted to TimeSeries using the processor target
+    sample interval and the configured deconvolution/noise window start.
 
     To make use of the extended outputs from RFdeconProcessor
     algorithms (e.g. actual output of the computed operator)
@@ -533,26 +562,32 @@ def RFdecon(
         `FrequencyDomainGID`) operate on the full three-component seismogram
         because spike selection is vector-valued.  By default they preserve the
         receiver-function convention of deriving the source wavelet from
-        component 2, but callers may pass a prepared TimeSeries wavelet to use
-        the same external wavelet for all components.
+        component 2, but callers may pass a prepared TimeSeries wavelet or a
+        one-dimensional numeric vector to use the same external wavelet for all
+        components.
     :param pf: The pf file to be parsed, used for inititalizing a
         RFdeconProcessor.  Ignored if engine is used.
     :type pf:  string defining an absolute path for the file name
         or a path relative to a directory defined by PFPATH.
     :param wavelet:   vector of doubles (numpy array or the
-        std::vector container internal to TimeSeries object) defining
-        the wavelet to use to compute deconvolution operator.
+        std::vector container internal to TimeSeries object) or TimeSeries
+        defining the wavelet to use to compute deconvolution operator.
         Default is None which assumes processor was set up to use
         a component of d as the wavelet estimate.
-    :type wavelet:  None or an iterable vector container
+        For GID algorithms, raw vectors are converted to a TimeSeries using
+        target_sample_interval and deconvolution_data_window_start.
+    :type wavelet:  None, TimeSeries, or an iterable vector container
         (in MsPASS that means a python array, a numpy array, or a DoubleVector)
     :param noisedata:  vector of doubles (numpy array or the
-        std::vector container internal to TimeSeries object) defining
-        noise data to use for computing regularization.  Not all RF
+        std::vector container internal to TimeSeries object), TimeSeries, or
+        PowerSpectrum defining noise data to use for computing regularization.
+        Not all RF
         estimation algorithms use noise estimators so this parameter
         is optional.   It can also be extracted from d depending on
         parameter file options.
-    :type noisedata:  None or an iterable vector container
+        For GID algorithms, raw vectors are converted to a TimeSeries using
+        target_sample_interval and noise_window_start.
+    :type noisedata:  None, TimeSeries, PowerSpectrum, or an iterable vector container
         (in MsPASS that means a python array, a numpy array, or a DoubleVector)
     :param wcomp:  When defined from Seismogram d the wavelet
         estimate in conventional RFs is one of the components that
@@ -594,7 +629,7 @@ def RFdecon(
     :return:  Normally returns Seismogram object containing the RF estimates.
         The orientations are always the same as the input.  If `return-wavelets` is set
         True returns a tuple with three components:  0 - `Seismogram` returned as with
-        default, 1 - ideal output wavelet `TimeSeries`, 2 - actual output wavelet
+        default, 1 - actual output wavelet `TimeSeries`, 2 - ideal output wavelet
         stored as a `TimeSeries` object.
     """
 
@@ -621,10 +656,26 @@ def RFdecon(
 
     if processor.is_3c_engine:
         try:
+            target_dt = processor.md.get_double("target_sample_interval")
             if wavelet is not None:
-                processor.processor.loadwavelet(wavelet)
+                wts = _as_gid_timeseries(
+                    wavelet,
+                    target_dt,
+                    processor.dwin.start,
+                    "wavelet",
+                )
+                processor.processor.loadwavelet(wts)
             if noisedata is not None:
-                processor.processor.loadnoise(noisedata)
+                if isinstance(noisedata, PowerSpectrum):
+                    processor.processor.loadnoise(noisedata)
+                else:
+                    nts = _as_gid_timeseries(
+                        noisedata,
+                        target_dt,
+                        processor.nwin.start,
+                        "noisedata",
+                    )
+                    processor.processor.loadnoise(nts)
             result = processor.apply_3c(d)
             subdoc = dict(processor.processor.QCMetrics())
             subdoc["algorithm"] = processor.algorithm
@@ -646,7 +697,7 @@ def RFdecon(
             # processor.loadwavelet(d,dtype='Seismogram',window=True,component=wcomp)
             processor.loadwavelet(d, window=True, component=wcomp)
         if processor.uses_noise:
-            if noisedata != None:
+            if noisedata is not None:
                 processor.loadnoise(noisedata, dtype="raw_vector")
             else:
                 processor.loadnoise(d, window=True, component=ncomp)

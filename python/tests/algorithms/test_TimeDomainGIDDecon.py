@@ -37,6 +37,15 @@ def _assert_valid_rf(rf):
     assert np.linalg.norm(rf.data) > 0.0
 
 
+def _assert_actual_and_ideal_outputs_are_distinct(actual_output, ideal_output):
+    actual = np.asarray(actual_output.data)
+    ideal = np.asarray(ideal_output.data)
+    if actual.shape == ideal.shape:
+        assert not np.allclose(actual, ideal, atol=1.0e-10)
+    else:
+        assert actual.size != ideal.size
+
+
 def _assert_single_spike_recovery(rf, ratio_tolerance):
     zrf = ExtractComponent(rf, 2)
     peak_sample = int(np.argmax(np.abs(zrf.data)))
@@ -253,6 +262,7 @@ def test_TimeDomainGIDDecon_binding_and_wrapper():
     _assert_valid_rf(rf)
     assert actual_output.live
     assert ideal_output.live
+    _assert_actual_and_ideal_outputs_are_distinct(actual_output, ideal_output)
     assert rf.is_defined("TimeDomainGIDDecon_properties")
     qc = rf["TimeDomainGIDDecon_properties"]
     assert qc["iteration_count"] > 0
@@ -339,6 +349,7 @@ def test_TimeDomainGIDDecon_inverse_modes_are_valid(tmp_path, mode):
     _assert_valid_rf(rf)
     assert actual_output.live
     assert ideal_output.live
+    _assert_actual_and_ideal_outputs_are_distinct(actual_output, ideal_output)
     qc = rf["TimeDomainGIDDecon_properties"]
     assert qc["iteration_count"] > 0
     assert qc["residual_L2_final"] < qc["residual_L2_initial"]

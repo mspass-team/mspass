@@ -222,6 +222,38 @@ def test_RFdecon_generalized_iterative_accepts_external_wavelet():
     os.environ.pop("PFPATH", None)
 
 
+@pytest.mark.parametrize(
+    "alg,pf",
+    [
+        ("GeneralizedIterative", "TimeDomainGIDDecon.pf"),
+        ("FrequencyDomainGID", "FrequencyDomainGIDDecon.pf"),
+    ],
+)
+def test_RFdecon_gid_accepts_raw_vector_wavelet_and_noise(alg, pf):
+    os.environ["PFPATH"] = "./data/pf"
+    wavelet = make_simulation_wavelet()
+    impulses = make_impulse_data()
+    seis0 = addnoise(convolve_wavelet(impulses, wavelet), nscale=0.0, padlength=800)
+    processor = RFdeconProcessor(alg=alg, pf=pf)
+    noise = WindowData(seis0, processor.nwin.start, processor.nwin.end)
+    noise = ExtractComponent(noise, 2)
+
+    rf = RFdecon(
+        seis0,
+        alg=alg,
+        pf=pf,
+        wavelet=np.asarray(wavelet.data),
+        noisedata=np.asarray(noise.data),
+    )
+
+    assert rf.live
+    assert rf.npts > 0
+    assert np.isfinite(rf.data).all()
+    assert rf.is_defined("RFdecon_properties")
+    assert rf["RFdecon_properties"]["iteration_count"] > 0
+    os.environ.pop("PFPATH", None)
+
+
 def test_RFdecon_error_handlers():
     """
     This test function tests error handlers for RFdecon function.

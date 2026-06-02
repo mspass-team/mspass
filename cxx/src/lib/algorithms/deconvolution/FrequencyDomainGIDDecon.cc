@@ -425,7 +425,9 @@ CoreTimeSeries FrequencyDomainGIDDecon::ideal_output() {
 }
 
 CoreTimeSeries FrequencyDomainGIDDecon::actual_output() {
-  return this->ideal_output();
+  if (decon_type == CNR)
+    return cnrprocessor->actual_output(current_wavelet);
+  return preprocessor->actual_output();
 }
 
 CoreTimeSeries FrequencyDomainGIDDecon::inverse_wavelet() {
