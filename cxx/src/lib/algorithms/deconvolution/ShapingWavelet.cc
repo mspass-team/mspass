@@ -10,6 +10,7 @@
 #include <gsl/gsl_fft_complex.h>
 #include <math.h>
 #include <string>
+#include <vector>
 namespace mspass::algorithms::deconvolution {
 using namespace std;
 using namespace mspass::seismic;
@@ -125,14 +126,11 @@ ShapingWavelet::ShapingWavelet(const Metadata &md, int nfftin) {
       double c = tbp / target_pulse_width;
       int nwsize = round(c * (static_cast<double>(nfft)));
       double *wtmp = slepian0(tbp, nwsize);
-      double *work = new double[nfft];
-      for (int k = 0; k < nfft; ++k)
-        work[k] = 0.0;
-      dcopy(nwsize, wtmp, 1, work, 1);
+      vector<double> work(nfft, 0.0);
+      dcopy(nwsize, wtmp, 1, &(work[0]), 1);
       delete[] wtmp;
       w = ComplexArray(nfft, work);
       gsl_fft_complex_forward(w.ptr(), 1, nfft, wavetable, workspace);
-      delete[] work;
     } else if (wavelettype == "none") {
       /* The shaping wavelet is stored in the frequency domain.  The identity
        * filter is therefore one at every frequency bin, not a time-domain

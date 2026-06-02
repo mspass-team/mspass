@@ -34,9 +34,9 @@ MultiTaperSpecDivDecon::MultiTaperSpecDivDecon(const Metadata &md)
 
 MultiTaperSpecDivDecon::MultiTaperSpecDivDecon(
     const MultiTaperSpecDivDecon &parent)
-    : FFTDeconOperator(parent), ScalarDecon(parent), tapers(parent.tapers),
-      noise(parent.noise), ao_fft(parent.ao_fft),
-      rfestimates(parent.rfestimates), winv_taper(parent.winv_taper) {
+    : FFTDeconOperator(parent), ScalarDecon(parent), noise(parent.noise),
+      tapers(parent.tapers), winv_taper(parent.winv_taper),
+      ao_fft(parent.ao_fft), rfestimates(parent.rfestimates) {
   nw = parent.nw;
   nseq = parent.nseq;
   damp = parent.damp;
@@ -105,14 +105,13 @@ int MultiTaperSpecDivDecon::read_metadata(const Metadata &md, bool refresh) {
     with a constructor, but bypass it when called in refresh mode
     if we don't need to recompute the slepian functions */
     if ((!refresh) || parameters_changed) {
-      double *work(NULL);
-      work = new double[nseq * taperlen];
+      vector<double> work(nseq * taperlen, 0.0);
       /* This procedure allows selection of slepian tapers over a range
       from seql to sequ.   We alway swan the first nseq values so
       set them as follows */
       seql = 0;
       int sequ = nseq - 1;
-      dpss_calc(taperlen, nw, seql, sequ, work);
+      dpss_calc(taperlen, nw, seql, sequ, &(work[0]));
       /* The tapers are stored in row order in work.  We preserve that
       here but use the dmatrix to store the values as transpose*/
       tapers = dmatrix(nseq, taperlen);
@@ -123,7 +122,6 @@ int MultiTaperSpecDivDecon::read_metadata(const Metadata &md, bool refresh) {
           ++ii;
         }
       }
-      delete[] work;
       shapingwavelet = ShapingWavelet(md, nfft);
     }
     return 0;

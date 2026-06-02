@@ -397,12 +397,9 @@ void CNRDeconEngine::compute_gwl_inverse(const TimeSeries &wavelet,
     /* This is used in QCMetric */
     this->regularization_bandwidth_fraction =
         static_cast<double>(nreg) / static_cast<double>(FFTDeconOperator::nfft);
-    double *d0 = new double[FFTDeconOperator::nfft];
-    for (int k = 0; k < FFTDeconOperator::nfft; ++k)
-      d0[k] = 0.0;
+    vector<double> d0(FFTDeconOperator::nfft, 0.0);
     d0[0] = 1.0;
     ComplexArray delta0(FFTDeconOperator::nfft, d0);
-    delete[] d0;
     gsl_fft_complex_forward(delta0.ptr(), 1, FFTDeconOperator::nfft, wavetable,
                             workspace);
     winv = delta0 / cwvec;

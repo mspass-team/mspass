@@ -655,12 +655,9 @@ void CNR3CDecon::compute_gwl_inverse() {
     /* This is used in QCMetric */
     regularization_bandwidth_fraction =
         static_cast<double>(nreg) / static_cast<double>(FFTDeconOperator::nfft);
-    double *d0 = new double[FFTDeconOperator::nfft];
-    for (int k = 0; k < FFTDeconOperator::nfft; ++k)
-      d0[k] = 0.0;
+    vector<double> d0(FFTDeconOperator::nfft, 0.0);
     d0[0] = 1.0;
     ComplexArray delta0(FFTDeconOperator::nfft, d0);
-    delete[] d0;
     gsl_fft_complex_forward(delta0.ptr(), 1, FFTDeconOperator::nfft, wavetable,
                             workspace);
     winv = delta0 / cwvec;
@@ -765,14 +762,6 @@ void post_bandwidth_data(Seismogram &d, const BandwidthData &bwd) {
   d.put("CNR3CDecon_low_f_snr", bwd.low_edge_snr);
   d.put("CNR3CDecon_high_f_snr", bwd.high_edge_snr);
 }
-/*  DEBUG Temporary for debug - remove or comment out for release */
-void print_bwdata(const BandwidthData &bwd) {
-  cout << "low edge frequency=" << bwd.low_edge_f << endl
-       << "low edge snr=" << bwd.low_edge_snr << endl
-       << "high edge frequency=" << bwd.high_edge_f << endl
-       << "high edge snr=" << bwd.high_edge_snr << endl
-       << "Computed bandwidth (db)=" << bwd.bandwidth() << endl;
-}
 Seismogram CNR3CDecon::process() {
   // DEBUG
   // cout << "Entering process method"<<endl;
@@ -788,13 +777,6 @@ Seismogram CNR3CDecon::process() {
     functions should catch useless data before getting this far. */
     BandwidthData bo;
     bo = band_overlap(wavelet_bwd, signal_bwd);
-    // DEBUG
-    cout << "Bandwidth data from wavelet" << endl;
-    print_bwdata(wavelet_bwd);
-    cout << "Bandwidth data from 3D data" << endl;
-    print_bwdata(signal_bwd);
-    cout << "Bandwidth data overlap " << endl;
-    print_bwdata(bo);
     /* Note both of the quantities in this test must be in consistent
     untis of dB */
     if (bo.bandwidth() < (this->decon_bandwidth_cutoff)) {

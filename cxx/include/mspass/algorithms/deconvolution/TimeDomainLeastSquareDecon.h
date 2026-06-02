@@ -29,7 +29,8 @@ The normal equations are regularized as
 where lambda is `damping_factor * max(diag(S^T S))`.  `damping_factor` must be
 positive; smaller values give higher resolution but amplify noise and
 conditioning errors, while larger values suppress noise at the cost of
-resolution.
+resolution.  The solve uses LAPACK Cholesky with LU fallback; it does not
+explicitly invert the normal-equation matrix.
 */
 class TimeDomainLeastSquareDecon : public ScalarDecon {
 public:

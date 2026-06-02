@@ -31,8 +31,8 @@ MultiTaperXcorDecon::MultiTaperXcorDecon(const Metadata &md)
 }
 
 MultiTaperXcorDecon::MultiTaperXcorDecon(const MultiTaperXcorDecon &parent)
-    : FFTDeconOperator(parent), ScalarDecon(parent), tapers(parent.tapers),
-      noise(parent.noise), ao_fft(parent.ao_fft) {
+    : FFTDeconOperator(parent), ScalarDecon(parent), noise(parent.noise),
+      tapers(parent.tapers), ao_fft(parent.ao_fft) {
   /* multitaper parameters to copy */
   nw = parent.nw;
   nseq = parent.nseq;
@@ -102,14 +102,13 @@ int MultiTaperXcorDecon::read_metadata(const Metadata &md, bool refresh) {
     with a constructor, but bypass it when called in refresh mode
     if we don't need to recompute the slepian functions */
     if ((!refresh) || parameters_changed) {
-      double *work(NULL);
-      work = new double[nseq * taperlen];
+      vector<double> work(nseq * taperlen, 0.0);
       /* This procedure allows selection of slepian tapers over a range
       from seql to sequ.   We alway swan the first nseq values so
       set them as follows */
       seql = 0;
       int sequ = nseq - 1;
-      dpss_calc(taperlen, nw, seql, sequ, work);
+      dpss_calc(taperlen, nw, seql, sequ, &(work[0]));
       /* The tapers are stored in row order in work.  We preserve that
       here but use the dmatrix to store the values */
       tapers = dmatrix(nseq, taperlen);
@@ -119,7 +118,6 @@ int MultiTaperXcorDecon::read_metadata(const Metadata &md, bool refresh) {
           ++ii;
         }
       }
-      delete[] work;
       shapingwavelet = ShapingWavelet(md, nfft);
     }
     // DEBUG
@@ -187,12 +185,11 @@ MultiTaperXcorDecon::taper_data(const vector<double> &signal) {
   vector<ComplexArray> tdata;
   int ntapers = tapers.rows();
   tdata.reserve(ntapers);
+  vector<double> work(nfft, 0.0);
   for (i = 0; i < ntapers; ++i) {
-    double *work = new double[nfft];
     /* This will assure part of vector between end of
      * data and nfft is zero padded */
-    for (j = 0; j < nfft; ++j)
-      work[j] = 0.0;
+    std::fill(work.begin(), work.end(), 0.0);
     for (j = 0; j < tapers.columns(); ++j) {
       work[j] = tapers(i, j) * signal[j];
     }

@@ -37,8 +37,16 @@ time.  If an operator reports ``actual_output`` or ``inverse_wavelet``, that
 diagnostic object may be the full padded operator response; use the returned
 receiver function for the cropped seismic result.
 
-Regularized scalar operators
-----------------------------
+Scalar inverse operators
+------------------------
+
+Scalar operators load one source wavelet and one data trace at a time.  They
+return a finite-bandwidth receiver-function trace, not a sparse spike train.
+The historical FFT scalar operators in MsPASS also multiply the inverse result
+by a configured output wavelet before returning ``getresult``.  That output
+wavelet is a scalar target-pulse/bandlimiting convention.  It is distinct from
+GID output shaping, where a separately stored sparse spike train is convolved
+with a display wavelet after iterative picking.
 
 ``LeastSquareDecon``
     Frequency-domain damped least-squares deconvolution.  The inverse
@@ -51,13 +59,21 @@ Regularized scalar operators
 
     where ``mu`` is the damping term.  Smaller damping improves resolution
     for clean data but amplifies noise and spectral notches.  Larger damping
-    produces a smoother, more stable estimate.
+    produces a smoother, more stable estimate.  In the implementation
+    ``mu`` is ``(rms(S) * damping_factor)^2`` in the normal-equation
+    denominator.  The data and wavelet are zero padded to the linear
+    convolution length before the FFT, ``winv`` stores the stabilized inverse,
+    and ``getresult`` returns the cropped lag window of
+    ``W_out(omega) S_g^{-1}(omega) D(omega)``.
 
 ``WaterLevelDecon``
     Frequency-domain deconvolution with a water-level floor on the source
     power spectrum.  The water level protects the result from division by
-    near-zero spectral amplitudes.  Raising the floor improves stability at
-    the cost of reduced resolution.
+    near-zero spectral amplitudes.  The implementation raises
+    ``|S(omega)|`` to at least ``water_level * rms(S)`` before division, then
+    applies the configured scalar output wavelet and extracts the linear lag
+    window.  Raising the floor improves stability at the cost of reduced
+    resolution.
 
 ``MultiTaperXcorDecon`` and ``MultiTaperSpecDivDecon``
     Multitaper frequency-domain operators.  Both estimate source and noise
@@ -74,24 +90,50 @@ Regularized scalar operators
     default behavior still returns a linear-convolution lag window; tapering
     controls variance and leakage in the spectral estimates.
 
+``NoiseStableDecon``
+    Noise-aware stable scalar inverse used by the ``ns_gid`` GID mode and also
+    exposed as a standalone scalar operator for validation.  It applies one
+    inverse operator,
+
+    .. math::
+
+       G(f)=B(f)\frac{\overline{S(f)}}{|S(f)|^2+\mu(f)},
+
+    directly to the data spectrum and returns the finite-bandwidth inverse
+    result.  It does not run spike picking, does not expose a sparse output,
+    and does not apply the GID output shaping wavelet.  ``mu(f)`` is the
+    maximum of a relative minimum floor scaled by peak ``|S|^2``, a
+    noise-spectrum damping term, and a term required to enforce
+    ``|G(f)| <= ns_gid_gain_max``.  An optional SNR reliability taper can
+    reduce or zero low-SNR bands before inverse filtering.
+
 ``TimeDomainLeastSquareDecon``
     Time-domain least-squares deconvolution.  This operator builds the
     Toeplitz linear-convolution matrix for the requested output lag window
     and solves the regularized normal equations with a stable linear solver.
     It does not build a circular convolution matrix.  The damping parameter
     controls the same resolution/noise trade-off as the frequency-domain
-    least-squares operator.
+    least-squares operator.  The implementation forms ``S^T S`` and
+    ``S^T d`` directly from the cropped linear convolution operator, adds
+    ``damping_factor * max(diag(S^T S))`` to the diagonal, and solves with
+    LAPACK Cholesky.  If Cholesky fails, it falls back to LAPACK LU and raises
+    an error if the regularized system is still singular.  No explicit matrix
+    inverse is constructed.
 
 Three-component and iterative operators
 ---------------------------------------
 
 ``CNRDeconEngine`` and ``CNR3CDecon``
     Three-component correlation-noise-ratio receiver-function deconvolution.
-    These operators use the vertical component as the source wavelet and
-    estimate the transverse and radial responses with a three-component
-    noise model.  ``CNRDeconEngine`` is the current engine used by the Python
-    wrappers and GID inverse mode.  ``CNR3CDecon`` is the older prototype kept
-    for compatibility.
+    These operators estimate a noise spectrum from a configured noise window
+    and regularize the source spectrum as a function of colored noise level
+    and SNR.  ``colored_noise_damping`` adds a frequency-dependent damping term
+    to the normal-equation denominator.  ``generalized_water_level`` raises
+    low-SNR source amplitudes before division.  Both produce scalar
+    finite-bandwidth component traces after the configured output wavelet is
+    applied.  ``CNRDeconEngine`` is the current engine used by the Python
+    wrappers and GID inverse mode.  ``CNR3CDecon`` is the older 3C prototype
+    kept for compatibility.
 
 ``TimeDomainGIDDecon`` and ``FrequencyDomainGIDDecon``
     Generalized iterative deconvolution following Wang and Pavlis (2016).
@@ -108,6 +150,13 @@ Three-component and iterative operators
     available.  The displayed receiver function is the sparse spike train
     convolved with the output shaping wavelet; the raw sparse train is not
     the finite-bandwidth receiver function.
+
+    The GID engines maintain residuals in the original data domain.  The
+    inverse operator is used only to form the detection function for candidate
+    spike selection.  Residual subtraction uses the inverse operator's
+    ``actual_output`` kernel, and optional joint refitting of accepted spike
+    amplitudes solves a small dense system with LAPACK Cholesky and LU
+    fallback.  The raw sparse spike train is exposed by ``sparse_output``.
 
     The ``multi_taper`` inverse mode in both GID engines currently uses
     ``MultiTaperXcorDecon`` as the core inverse operator.  In

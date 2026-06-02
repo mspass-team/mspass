@@ -118,12 +118,9 @@ void WaterLevelDecon::process() {
   ComplexArray rf_fft;
   rf_fft = d_fft / b_fft;
   /* Make numerator for inverse from zero lag spike */
-  double *d0 = new double[nfft];
-  for (int k = 0; k < nfft; ++k)
-    d0[k] = 0.0;
+  vector<double> d0(nfft, 0.0);
   d0[0] = 1.0;
   ComplexArray delta0(nfft, d0);
-  delete[] d0;
   gsl_fft_complex_forward(delta0.ptr(), 1, nfft, wavetable, workspace);
   winv = delta0 / b_fft;
 

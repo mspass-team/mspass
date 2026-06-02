@@ -1,9 +1,10 @@
 #include "mspass/algorithms/deconvolution/TimeDomainLeastSquareDecon.h"
+#include "gsl/gsl_cblas.h"
 #include "mspass/algorithms/amplitudes.h"
 #include "mspass/utility/MsPASSError.h"
 #include <cmath>
-#include <limits>
 #include <sstream>
+#include "misc/blas.h"
 
 namespace mspass::algorithms::deconvolution {
 using namespace std;
@@ -13,48 +14,49 @@ using mspass::algorithms::amplitudes::normalize;
 
 namespace {
 double l2_norm(const vector<double> &x) {
-  double sum(0.0);
-  for (auto v : x)
-    sum += v * v;
-  return sqrt(sum);
+  if (x.empty())
+    return 0.0;
+  return cblas_dnrm2(x.size(), &(x[0]), 1);
 }
 
-vector<double> solve_cholesky(vector<double> a, vector<double> b, int n,
+vector<double> solve_cholesky(vector<double> normal_row_major,
+                              const vector<double> &rhs, int n,
                               const string &base_error) {
-  for (int j = 0; j < n; ++j) {
-    double d = a[j * n + j];
-    for (int k = 0; k < j; ++k) {
-      const double ljk = a[j * n + k];
-      d -= ljk * ljk;
-    }
-    if (d <= numeric_limits<double>::epsilon())
-      throw MsPASSError(base_error +
-                            "regularized normal equations are not positive "
-                            "definite; increase damping_factor",
-                        ErrorSeverity::Invalid);
-    a[j * n + j] = sqrt(d);
-    for (int i = j + 1; i < n; ++i) {
-      double s = a[i * n + j];
-      for (int k = 0; k < j; ++k)
-        s -= a[i * n + k] * a[j * n + k];
-      a[i * n + j] = s / a[j * n + j];
-    }
+  vector<double> A(n * n, 0.0);
+  for (int row = 0; row < n; ++row)
+    for (int col = 0; col < n; ++col)
+      A[col * n + row] = normal_row_major[row * n + col];
+
+  vector<double> B(rhs);
+  int nrhs = 1;
+  int n_lapack = n;
+  int lda = n;
+  int ldb = n;
+  int info = 0;
+  char lower = 'L';
+  dpotrf(&lower, n_lapack, &(A[0]), lda, info);
+  if (info == 0) {
+    n_lapack = n;
+    dpotrs(&lower, n_lapack, nrhs, &(A[0]), lda, &(B[0]), ldb, info);
+    if (info == 0)
+      return B;
   }
-  vector<double> y(n, 0.0);
-  for (int i = 0; i < n; ++i) {
-    double s = b[i];
-    for (int k = 0; k < i; ++k)
-      s -= a[i * n + k] * y[k];
-    y[i] = s / a[i * n + i];
+
+  for (int row = 0; row < n; ++row) {
+    B[row] = rhs[row];
+    for (int col = 0; col < n; ++col)
+      A[col * n + row] = normal_row_major[row * n + col];
   }
-  vector<double> x(n, 0.0);
-  for (int i = n - 1; i >= 0; --i) {
-    double s = y[i];
-    for (int k = i + 1; k < n; ++k)
-      s -= a[k * n + i] * x[k];
-    x[i] = s / a[i * n + i];
-  }
-  return x;
+  vector<int> ipiv(n, 0);
+  n_lapack = n;
+  dgesv(n_lapack, nrhs, &(A[0]), lda, &(ipiv[0]), &(B[0]), ldb, info);
+  if (info == 0)
+    return B;
+
+  throw MsPASSError(base_error +
+                        "regularized normal equations are singular or "
+                        "ill-conditioned; increase damping_factor",
+                    ErrorSeverity::Invalid);
 }
 } // namespace
 
