@@ -3,6 +3,7 @@
 #include "mspass/algorithms/algorithms.h"
 #include "mspass/algorithms/deconvolution/LeastSquareDecon.h"
 #include "mspass/algorithms/deconvolution/MultiTaperXcorDecon.h"
+#include "mspass/algorithms/deconvolution/NoiseStableDecon.h"
 #include "mspass/algorithms/deconvolution/WaterLevelDecon.h"
 #include "mspass/seismic/CoreSeismogram.h"
 #include "mspass/seismic/CoreTimeSeries.h"
@@ -30,6 +31,9 @@ IterDeconType parse_for_itertype(const AntelopePf &md) {
     return MULTI_TAPER;
   else if ((sval == "cnr") || (sval == "cnr3c"))
     return CNR;
+  else if ((sval == "ns_gid") || (sval == "noise_stable") ||
+           (sval == "noise_aware_stable"))
+    return NS_GID;
   else
     throw MsPASSError("TimeDomainGIDDecon: unknown or illegal value of "
                       "deconvolution_type parameter=" +
@@ -57,6 +61,24 @@ double L2(dmatrix &d) {
   double dl2;
   dl2 = cblas_dnrm2(nd, d.get_address(0, 0), 1);
   return dl2;
+}
+double get_double_default_gid(const Metadata &md, const string &key,
+                              const double default_value) {
+  if (md.is_defined(key))
+    return md.get_double(key);
+  return default_value;
+}
+int get_int_default_gid(const Metadata &md, const string &key,
+                        const int default_value) {
+  if (md.is_defined(key))
+    return md.get_int(key);
+  return default_value;
+}
+bool get_bool_default_gid(const Metadata &md, const string &key,
+                          const bool default_value) {
+  if (md.is_defined(key))
+    return md.get_bool(key);
+  return default_value;
 }
 TimeDomainGIDDecon::TimeDomainGIDDecon(const AntelopePf &mdtoplevel)
     : ScalarDecon() {
@@ -112,6 +134,9 @@ TimeDomainGIDDecon::TimeDomainGIDDecon(const AntelopePf &mdtoplevel)
                 // inside case
     preprocessor = nullptr;
     cnrprocessor = nullptr;
+    external_wavelet_loaded = false;
+    external_noise_loaded = false;
+    external_noise_spectrum_loaded = false;
     switch (decon_type) {
     case WATER_LEVEL:
       mdleaf = md.get_branch("water_level");
@@ -183,9 +208,22 @@ TimeDomainGIDDecon::TimeDomainGIDDecon(const AntelopePf &mdtoplevel)
       preprocessor = new MultiTaperXcorDecon(mdleaf);
       break;
     case CNR:
-    default:
       mdleaf = md.get_branch("cnr");
       cnrprocessor = new CNRDeconEngine(mdleaf);
+      break;
+    case NS_GID:
+    default:
+      mdleaf = md.get_branch("ns_gid");
+      ts = mdleaf.get<double>("deconvolution_data_window_start");
+      te = mdleaf.get<double>("deconvolution_data_window_end");
+      if ((ts != fftwin.start) || (te != fftwin.end)) {
+        ss << base_error
+           << "NS-GID inverse operator window is not consistent with gid "
+              "parameters"
+           << endl;
+        throw MsPASSError(ss.str(), ErrorSeverity::Invalid);
+      }
+      preprocessor = new NoiseStableDecon(mdleaf);
       break;
     };
     /* Because this may evolve we make this a private method to
@@ -198,6 +236,26 @@ TimeDomainGIDDecon::TimeDomainGIDDecon(const AntelopePf &mdtoplevel)
     resid_linf_prob =
         mdgiter.get<double>("residual_noise_rms_probability_floor");
     resid_l2_tol = mdgiter.get<double>("residual_fractional_improvement_floor");
+    ns_peak_sigma_threshold =
+        get_double_default_gid(mdgiter, "ns_gid_peak_sigma_threshold", 4.0);
+    ns_peak_probability_threshold = get_double_default_gid(
+        mdgiter, "ns_gid_peak_probability_threshold", 0.995);
+    ns_use_empirical_noise_threshold = get_bool_default_gid(
+        mdgiter, "ns_gid_use_empirical_noise_threshold", true);
+    ns_residual_noise_ratio_floor = get_double_default_gid(
+        mdgiter, "ns_gid_residual_noise_ratio_floor", 1.0);
+    ns_max_spikes = get_int_default_gid(mdgiter, "ns_gid_max_spikes", 0);
+    ns_refit_interval = get_int_default_gid(mdgiter, "ns_gid_refit_interval", 1);
+    ns_ridge_beta =
+        get_double_default_gid(mdgiter, "ns_gid_ridge_beta", 1.0e-10);
+    external_wavelet_allowed = get_bool_default_gid(
+        mdgiter, "ns_gid_external_wavelet_allowed", true);
+    ns_peak_threshold = 0.0;
+    ns_last_peak_significance = 0.0;
+    ns_noise_l2 = 0.0;
+    ns_fractional_improvement_final = 0.0;
+    ns_converged = false;
+    ns_stop_reason = "not_started";
   } catch (...) {
     throw;
   };
@@ -460,6 +518,43 @@ int TimeDomainGIDDecon::loadnoise(const CoreSeismogram &draw,
     throw;
   };
 }
+int TimeDomainGIDDecon::loadwavelet(const TimeSeries &wavelet) {
+  if (!external_wavelet_allowed)
+    throw MsPASSError("TimeDomainGIDDecon::loadwavelet: external wavelets are "
+                      "disabled by ns_gid_external_wavelet_allowed",
+                      ErrorSeverity::Invalid);
+  external_wavelet = wavelet;
+  external_wavelet_loaded = true;
+  return 0;
+}
+int TimeDomainGIDDecon::loadwavelet(const CoreTimeSeries &wavelet) {
+  TimeSeries ts(wavelet, "TimeDomainGIDDecon");
+  return this->loadwavelet(ts);
+}
+int TimeDomainGIDDecon::loadnoise(const TimeSeries &noise_in) {
+  external_noise = noise_in;
+  external_noise_loaded = true;
+  external_noise_spectrum_loaded = false;
+  n = CoreSeismogram(noise_in.npts());
+  n.set_t0(noise_in.t0());
+  n.set_dt(noise_in.dt());
+  n.set_live();
+  n.set_tref(noise_in.timetype());
+  for (int k = 0; k < 3; ++k)
+    cblas_dcopy(noise_in.npts(), &(noise_in.s[0]), 1, n.u.get_address(k, 0), 3);
+  nnwin = n.npts();
+  return 0;
+}
+int TimeDomainGIDDecon::loadnoise(const CoreTimeSeries &noise_in) {
+  TimeSeries ts(noise_in, "TimeDomainGIDDecon");
+  return this->loadnoise(ts);
+}
+int TimeDomainGIDDecon::loadnoise(const PowerSpectrum &noise_spectrum_in) {
+  external_noise_spectrum = noise_spectrum_in;
+  external_noise_spectrum_loaded = true;
+  external_noise_loaded = false;
+  return 0;
+}
 int TimeDomainGIDDecon::load(const CoreSeismogram &draw, TimeWindow dwin,
                            TimeWindow nwin) {
   try {
@@ -654,9 +749,11 @@ void TimeDomainGIDDecon::process() {
       CoreTimeSeries nts(ExtractComponent(n, noise_component));
       dynamic_cast<MultiTaperXcorDecon *>(preprocessor)->loadnoise(nts.s);
     }
-    /* For this case of receiver function deconvolution we always get the
-    wavelet from component 2 - assumed here to be Z or L. */
-    CoreTimeSeries srcwavelet(ExtractComponent(d_decon, 2));
+    CoreTimeSeries srcwavelet;
+    if (external_wavelet_loaded)
+      srcwavelet = CoreTimeSeries(external_wavelet);
+    else
+      srcwavelet = CoreTimeSeries(ExtractComponent(d_decon, 2));
     current_wavelet = TimeSeries(srcwavelet, "TimeDomainGIDDecon");
     if (decon_type == CNR) {
       TimeSeries nwavelet(ExtractComponent(n, noise_component),
@@ -672,6 +769,17 @@ void TimeDomainGIDDecon::process() {
         cblas_dcopy(copysize, dwork.u.get_address(k, 0), 3,
                     uwork.get_address(k, 0), 3);
     } else {
+      if (decon_type == NS_GID) {
+        NoiseStableDecon *nsop = dynamic_cast<NoiseStableDecon *>(preprocessor);
+        if (external_noise_spectrum_loaded)
+          nsop->loadnoise(external_noise_spectrum);
+        else if (external_noise_loaded)
+          nsop->loadnoise(external_noise);
+        else {
+          CoreTimeSeries nts(ExtractComponent(n, noise_component));
+          nsop->loadnoise(nts);
+        }
+      }
       for (int k = 0; k < 3; ++k) {
         CoreTimeSeries dcomp(ExtractComponent(d_decon, k));
         /* Need the qualifier or we get the wrong overloaded
@@ -767,6 +875,30 @@ void TimeDomainGIDDecon::process() {
     trimwin.start = n.t0() + (n.dt()) * ((double)(winv.npts()));
     trimwin.end = n.endtime() - (n.dt()) * ((double)(winv.npts()));
     n = WindowData(n, trimwin);
+    if (decon_type == NS_GID) {
+      vector<double> noise_amps(amp3c(n.u));
+      sort(noise_amps.begin(), noise_amps.end());
+      if (!noise_amps.empty()) {
+        int ip = static_cast<int>(ns_peak_probability_threshold *
+                                  static_cast<double>(noise_amps.size()));
+        if (ip < 0)
+          ip = 0;
+        if (ip >= noise_amps.size())
+          ip = noise_amps.size() - 1;
+        double empirical = noise_amps[ip];
+        double sumsq(0.0);
+        for (auto x : noise_amps)
+          sumsq += x * x;
+        double rms = sqrt(sumsq / static_cast<double>(noise_amps.size()));
+        double sigma_floor = ns_peak_sigma_threshold * rms;
+        ns_peak_threshold =
+            ns_use_empirical_noise_threshold ? max(empirical, sigma_floor)
+                                             : sigma_floor;
+      } else {
+        ns_peak_threshold = 0.0;
+      }
+      ns_noise_l2 = L2(n.u);
+    }
     // double nfloor;
     // nfloor=compute_resid_linf_floor();
     // DEBUG - for debug always print this.  Should be a verbose option
@@ -802,6 +934,9 @@ void TimeDomainGIDDecon::process() {
     resid_linf_prev = resid_linf_initial;
     resid_l2_prev = resid_l2_initial;
     iter_count = 0;
+    ns_converged = false;
+    ns_stop_reason = "running";
+    ns_last_peak_significance = 0.0;
     // DEBUG - remove after testing
     lw_linf_history.push_back(lw_linf_initial);
     lw_l2_history.push_back(lw_l2_initial);
@@ -817,6 +952,23 @@ void TimeDomainGIDDecon::process() {
         wamps.push_back(amp2 * lag_weights[j] * lag_weights[j]);
       }
       amax = max_element(wamps.begin(), wamps.end());
+      if (decon_type == NS_GID) {
+        const double candidate_amp = sqrt(max(0.0, *amax));
+        ns_last_peak_significance =
+            (ns_peak_threshold > 0.0) ? candidate_amp / ns_peak_threshold
+                                      : 0.0;
+        if (ns_peak_threshold > 0.0 && candidate_amp < ns_peak_threshold) {
+          ns_stop_reason = "candidate_not_significant";
+          ns_converged = true;
+          break;
+        }
+        if ((ns_max_spikes > 0) &&
+            (static_cast<int>(spikes.size()) >= ns_max_spikes)) {
+          ns_stop_reason = "max_spikes";
+          ns_converged = true;
+          break;
+        }
+      }
       /* The generic distance algorithm used here returns an integer
       that would work to access amps[imax] so we can use the same index
       for the column of the data in d.u. */
@@ -849,7 +1001,14 @@ void TimeDomainGIDDecon::process() {
       this->update_residual_matrix(*sptr);
     resid_linf_prev = Linf(r.u);
     resid_l2_prev = L2(r.u);
-    if (iter_count >= iter_max)
+    if (decon_type == NS_GID && ns_stop_reason == "running") {
+      if (iter_count >= iter_max)
+        ns_stop_reason = "max_iterations";
+      else
+        ns_stop_reason = "converged";
+      ns_converged = (iter_count < iter_max);
+    }
+    if ((decon_type != NS_GID) && iter_count >= iter_max)
       throw MsPASSError("TimeDomainGIDDecon::process did not converge",
                         ErrorSeverity::Suspect);
   } catch (...) {
@@ -874,20 +1033,49 @@ bool TimeDomainGIDDecon::has_not_converged() {
     /* We use a standard calculation for residual l2 as fractional rms change */
     double eps;
     eps = (resid_l2_prev - resid_l2_now) / resid_l2_initial;
+    ns_fractional_improvement_final = eps;
     lw_linf_prev = lw_linf_now;
     lw_l2_prev = lw_l2_now;
     resid_linf_prev = resid_linf_now;
     resid_l2_prev = resid_l2_now;
-    if (iter_count > iter_max)
+    if (decon_type == NS_GID) {
+      if ((ns_max_spikes > 0) && (static_cast<int>(spikes.size()) >= ns_max_spikes)) {
+        ns_stop_reason = "max_spikes";
+        ns_converged = true;
+        return false;
+      }
+      if (ns_noise_l2 > 0.0 &&
+          (resid_l2_now / ns_noise_l2) <= ns_residual_noise_ratio_floor) {
+        ns_stop_reason = "residual_reached_noise_floor";
+        ns_converged = true;
+        return false;
+      }
+    }
+    if (iter_count > iter_max) {
+      if (decon_type == NS_GID)
+        ns_stop_reason = "max_iterations";
       return false;
-    if (lw_linf_now < lw_linf_floor)
+    }
+    if (lw_linf_now < lw_linf_floor) {
+      if (decon_type == NS_GID)
+        ns_stop_reason = "lag_weight_linf_floor";
       return false;
-    if (lw_l2_now < lw_l2_floor)
+    }
+    if (lw_l2_now < lw_l2_floor) {
+      if (decon_type == NS_GID)
+        ns_stop_reason = "lag_weight_l2_floor";
       return false;
-    if (resid_linf_now < resid_linf_floor)
+    }
+    if (resid_linf_now < resid_linf_floor) {
+      if (decon_type == NS_GID)
+        ns_stop_reason = "residual_linf_floor";
       return false;
-    if (eps < resid_l2_tol)
+    }
+    if (eps < resid_l2_tol) {
+      if (decon_type == NS_GID)
+        ns_stop_reason = "fractional_improvement_floor";
       return false;
+    }
     return true;
   } catch (...) {
     throw;
@@ -937,6 +1125,37 @@ Metadata TimeDomainGIDDecon::QCMetrics() {
   md.put("residual_L2_final", resid_l2_prev);
   md.put("lag_weight_Linf_final", lw_linf_prev);
   md.put("lag_weight_L2_final", lw_l2_prev);
+  md.put("ns_gid_enabled", decon_type == NS_GID);
+  if (decon_type == NS_GID) {
+    md.put("ns_gid_stop_reason", ns_stop_reason);
+    md.put("ns_gid_converged", ns_converged);
+    md.put("ns_gid_iterations", iter_count);
+    md.put("ns_gid_number_spikes", static_cast<int>(spikes.size()));
+    md.put("ns_gid_peak_threshold", ns_peak_threshold);
+    md.put("ns_gid_last_peak_significance", ns_last_peak_significance);
+    md.put("ns_gid_external_wavelet_used", external_wavelet_loaded);
+    md.put("ns_gid_residual_l2_initial", resid_l2_initial);
+    md.put("ns_gid_residual_l2_final", resid_l2_prev);
+    md.put("ns_gid_residual_noise_ratio",
+           (ns_noise_l2 > 0.0) ? resid_l2_prev / ns_noise_l2 : 0.0);
+    md.put("ns_gid_fractional_improvement_final",
+           ns_fractional_improvement_final);
+    NoiseStableDecon *nsop = dynamic_cast<NoiseStableDecon *>(preprocessor);
+    if (nsop != nullptr) {
+      Metadata nsmd(nsop->QCMetrics());
+      md.put("ns_gid_gain_max_requested",
+             nsmd.get_double("ns_gid_gain_max_requested"));
+      md.put("ns_gid_gain_max_actual",
+             nsmd.get_double("ns_gid_gain_max_actual"));
+      md.put("ns_gid_mu_min", nsmd.get_double("ns_gid_mu_min"));
+      md.put("ns_gid_alpha", nsmd.get_double("ns_gid_alpha"));
+      md.put("ns_gid_noise_amplification",
+             nsmd.get_double("ns_gid_noise_amplification"));
+      md.put("ns_gid_effective_bandwidth_fraction",
+             nsmd.get_double("ns_gid_effective_bandwidth_fraction"));
+      md.put("ns_gid_operator_nfft", nsmd.get_int("ns_gid_operator_nfft"));
+    }
+  }
   return md;
 }
 } // namespace mspass::algorithms::deconvolution

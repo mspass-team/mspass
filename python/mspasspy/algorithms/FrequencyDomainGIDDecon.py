@@ -25,6 +25,8 @@ def FrequencyDomainGIDRFDecon(
     *args,
     signal_window=None,
     noise_window=None,
+    external_wavelet=None,
+    external_noise=None,
     QCdata_key="FrequencyDomainGIDDecon_properties",
     return_wavelet=False,
     object_history=False,
@@ -73,6 +75,10 @@ def FrequencyDomainGIDRFDecon(
 
     d = Seismogram(seis)
     try:
+        if external_wavelet is not None:
+            engine.loadwavelet(external_wavelet)
+        if external_noise is not None:
+            engine.loadnoise(external_noise)
         if noise_window is None:
             engine.load(d, signal_window)
         else:

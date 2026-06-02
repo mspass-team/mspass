@@ -6,10 +6,10 @@ import pytest
 from pathlib import Path
 
 from mspasspy.ccore.utility import pfread
-from mspasspy.ccore.seismic import Seismogram
+from mspasspy.ccore.seismic import Seismogram, TimeSeries
 from mspasspy.ccore.seismic import TimeReferenceType, DoubleVector
 from mspasspy.ccore.algorithms.basic import TimeWindow
-from mspasspy.ccore.algorithms.deconvolution import TimeDomainGIDDecon
+from mspasspy.ccore.algorithms.deconvolution import NoiseStableDecon, TimeDomainGIDDecon
 from mspasspy.algorithms.TimeDomainGIDDecon import TimeDomainGIDRFDecon
 from mspasspy.algorithms.basic import ExtractComponent
 
@@ -90,6 +90,148 @@ def _pf_with_mode(tmp_path, pf_name, branch_name, mode):
     dst = tmp_path / pf_name
     dst.write_text(text)
     return pfread(str(dst))
+
+
+def _make_external_wavelet_3c_data(noise_level=1.0e-4):
+    n = 1400
+    dt = 0.05
+    t0 = -45.0
+    w = TimeSeries(101)
+    w.set_t0(-2.5)
+    w.set_dt(dt)
+    w.set_live()
+    x = np.arange(w.npts) * dt + w.t0
+    wv = np.exp(-0.5 * (x / 0.16) ** 2) - 0.35 * np.exp(
+        -0.5 * ((x - 0.35) / 0.22) ** 2
+    )
+    wv /= np.max(np.abs(wv))
+    for i, v in enumerate(wv):
+        w.data[i] = v
+
+    model = np.zeros((3, n))
+    spike_times = [0.0, 3.0, 8.0, 18.0]
+    amps = np.array(
+        [[0.45, -0.25, 0.18, 0.12], [-0.2, 0.15, -0.12, 0.05], [0.0, 0.0, 0.0, 0.0]]
+    )
+    for it, t in enumerate(spike_times):
+        isamp = int(round((t - t0) / dt))
+        model[:, isamp] = amps[:, it]
+    data = Seismogram(n)
+    data.set_t0(t0)
+    data.set_dt(dt)
+    data.set_live()
+    data.tref = TimeReferenceType.Relative
+    rng = np.random.default_rng(421)
+    for k in range(3):
+        y = np.convolve(model[k], np.array(w.data), mode="same")
+        y += noise_level * rng.standard_normal(n)
+        data.data[k, :] = DoubleVector(y)
+    return data, w, spike_times
+
+
+def _ns_gid_pf(tmp_path, pf_name, branch_name, gain_max=30.0, peak_sigma=3.0):
+    src = Path("./data/pf") / pf_name
+    text = src.read_text()
+    text = text.replace(
+        f"{branch_name} &Arr{{\n        deconvolution_type least_square",
+        f"{branch_name} &Arr{{\n        deconvolution_type ns_gid",
+    )
+    text = text.replace("ns_gid_gain_max 1.0e3", f"ns_gid_gain_max {gain_max}")
+    text = text.replace(
+        "ns_gid_peak_sigma_threshold 4.0",
+        f"ns_gid_peak_sigma_threshold {peak_sigma}",
+    )
+    text = text.replace(
+        "ns_gid_peak_probability_threshold 0.995",
+        "ns_gid_peak_probability_threshold 0.999",
+    )
+    dst = tmp_path / pf_name
+    dst.write_text(text)
+    return pfread(str(dst))
+
+
+def test_NoiseStableDecon_enforces_gain_cap_on_notched_wavelet():
+    pf = pfread("./data/pf/TimeDomainGIDDecon.pf")
+    md = pf.get_branch("deconvolution_operator_type").get_branch("ns_gid")
+    md["ns_gid_gain_max"] = 12.5
+    op = NoiseStableDecon(md)
+    n = 501
+    t = np.arange(n) * 0.05
+    wavelet = np.sin(2.0 * np.pi * 0.55 * t) - np.sin(2.0 * np.pi * 0.56 * t)
+    data = np.zeros(n)
+    data[250] = 1.0
+    op.loadwavelet(DoubleVector(wavelet))
+    op.loaddata(DoubleVector(data))
+    op.loadnoise(DoubleVector(0.02 * np.ones(n)))
+    op.process()
+    qc = dict(op.QCMetrics())
+    assert qc["ns_gid_gain_max_actual"] <= 12.5 * (1.0 + 1.0e-10)
+    assert qc["ns_gid_operator_nfft"] >= 2 * n - 1
+
+
+def test_TimeDomainNSGID_uses_external_wavelet_and_rejects_noise_spikes(tmp_path):
+    data, wavelet, spike_times = _make_external_wavelet_3c_data(noise_level=2.0e-4)
+    pf = _ns_gid_pf(
+        tmp_path, "TimeDomainGIDDecon.pf", "time_domain_gid_deconvolution"
+    )
+    engine = TimeDomainGIDDecon(pf)
+    rf = TimeDomainGIDRFDecon(
+        data,
+        engine,
+        signal_window=TimeWindow(-8.0, 22.0),
+        noise_window=TimeWindow(-35.0, -8.0),
+        external_wavelet=wavelet,
+    )
+    _assert_valid_rf(rf)
+    qc = rf["TimeDomainGIDDecon_properties"]
+    assert qc["ns_gid_enabled"]
+    assert qc["ns_gid_external_wavelet_used"]
+    assert qc["ns_gid_gain_max_actual"] <= qc["ns_gid_gain_max_requested"] * (
+        1.0 + 1.0e-10
+    )
+    assert qc["ns_gid_number_spikes"] <= 2 * len(spike_times)
+    assert qc["ns_gid_stop_reason"] in {
+        "candidate_not_significant",
+        "fractional_improvement_floor",
+        "residual_reached_noise_floor",
+        "converged",
+    }
+    support = np.where(np.linalg.norm(np.asarray(rf.data), axis=0) > 1.0e-8)[0]
+    picked_times = [rf.time(int(i)) for i in support]
+    assert picked_times
+    expected_times = [t - wavelet.t0 for t in spike_times[:2]]
+    for t in expected_times:
+        assert min(abs(t - p) for p in picked_times) < 0.15
+
+
+def test_TimeDomainNSGID_rejects_pure_noise(tmp_path):
+    data, wavelet, _ = _make_external_wavelet_3c_data(noise_level=0.0)
+    rng = np.random.default_rng(314)
+    data.data[:, :] = 0.002 * rng.standard_normal((3, data.npts))
+    pf = _ns_gid_pf(
+        tmp_path,
+        "TimeDomainGIDDecon.pf",
+        "time_domain_gid_deconvolution",
+        peak_sigma=8.0,
+    )
+    engine = TimeDomainGIDDecon(pf)
+    rf = TimeDomainGIDRFDecon(
+        data,
+        engine,
+        signal_window=TimeWindow(-8.0, 22.0),
+        noise_window=TimeWindow(-35.0, -8.0),
+        external_wavelet=wavelet,
+    )
+    assert rf.live
+    qc = rf["TimeDomainGIDDecon_properties"]
+    assert qc["ns_gid_enabled"]
+    assert qc["ns_gid_number_spikes"] <= 2
+    assert qc["ns_gid_stop_reason"] in {
+        "candidate_not_significant",
+        "fractional_improvement_floor",
+        "residual_reached_noise_floor",
+        "residual_linf_floor",
+    }
 
 
 def test_TimeDomainGIDDecon_binding_and_wrapper():

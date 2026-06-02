@@ -121,6 +121,43 @@ Three-component and iterative operators
     suppresses noise-generated spikes, while decreasing it can recover weak
     arrivals at the risk of fitting noise.
 
+``NS-GID`` inverse mode
+    Noise-aware stable generalized iterative deconvolution is selected with
+    ``deconvolution_type ns_gid`` in either GID engine.  It is a stable
+    inverse-operator variant of GID, not a separate receiver-function
+    preprocessing workflow.  The core inverse operator is
+
+    .. math::
+
+       G(f) = B(f)\frac{\overline{S(f)}}{|S(f)|^2 + \mu(f)},
+
+    with frequency-dependent damping from the wavelet and noise spectra, an
+    explicit maximum gain cap, and an optional smooth SNR reliability taper.
+    The implementation enforces ``|G(f)| <= ns_gid_gain_max`` within floating
+    point tolerance.  Stability comes from ``G(f)``, ``mu(f)``, the gain cap,
+    and noise-aware stopping; it does not come from the output shaping
+    wavelet.
+
+    NS-GID supports externally supplied wavelets through the GID
+    ``loadwavelet`` APIs and the Python wrappers' ``external_wavelet``
+    argument.  This is the intended path when the source wavelet is a prepared
+    P-wave stack from a network, subarray, or other caller-managed procedure.
+    Constructing that stack, selecting events, rotating components, and array
+    stacking are outside this operator.  If no external wavelet is loaded, the
+    engines preserve the existing receiver-function compatibility behavior and
+    estimate the wavelet from the configured component/window.
+
+    The sparse spike train is kept conceptually separate from the shaped
+    receiver-function representation.  The inverse operator is used only for
+    candidate spike detection and stabilization.  The residual update remains
+    in the GID data domain, and the configured ``ShapingWavelet`` controls only
+    how the accepted sparse support is represented in finite bandwidth output.
+    Candidate acceptance can use an empirical inverse-filtered noise threshold,
+    a sigma threshold, residual-to-noise stopping, maximum spike count, and
+    the existing fractional-improvement limit.  Higher thresholds suppress
+    noise-generated spikes; lower thresholds may recover weaker arrivals but
+    can overfit noise.
+
 ``RFdeconProcessor``
     High-level scalar receiver-function wrapper.  It exposes the scalar
     frequency-domain methods, time-domain least squares, conventional

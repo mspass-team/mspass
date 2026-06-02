@@ -531,9 +531,10 @@ def RFdecon(
         scalar methods are applied component by component.  Generalized
         iterative methods (`GeneralizedIterative`, `TimeDomainGID`, and
         `FrequencyDomainGID`) operate on the full three-component seismogram
-        because spike selection is vector-valued; for those methods the source
-        wavelet and noise are extracted from the windows in the GID parameter
-        file and explicit `wavelet`/`noisedata` vectors are not accepted.
+        because spike selection is vector-valued.  By default they preserve the
+        receiver-function convention of deriving the source wavelet from
+        component 2, but callers may pass a prepared TimeSeries wavelet to use
+        the same external wavelet for all components.
     :param pf: The pf file to be parsed, used for inititalizing a
         RFdeconProcessor.  Ignored if engine is used.
     :type pf:  string defining an absolute path for the file name
@@ -619,13 +620,11 @@ def RFdecon(
         processor = RFdeconProcessor(alg, pf)
 
     if processor.is_3c_engine:
-        if wavelet is not None or noisedata is not None:
-            raise RuntimeError(
-                "RFdecon with a GID engine derives wavelet and noise windows "
-                "from the input Seismogram; explicit wavelet/noisedata "
-                "vectors are not supported"
-            )
         try:
+            if wavelet is not None:
+                processor.processor.loadwavelet(wavelet)
+            if noisedata is not None:
+                processor.processor.loadnoise(noisedata)
             result = processor.apply_3c(d)
             subdoc = dict(processor.processor.QCMetrics())
             subdoc["algorithm"] = processor.algorithm

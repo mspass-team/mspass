@@ -14,6 +14,7 @@
 #include <mspass/algorithms/deconvolution/TimeDomainLeastSquareDecon.h>
 #include <mspass/algorithms/deconvolution/MultiTaperXcorDecon.h>
 #include <mspass/algorithms/deconvolution/MultiTaperSpecDivDecon.h>
+#include <mspass/algorithms/deconvolution/NoiseStableDecon.h>
 #include <mspass/algorithms/deconvolution/TimeDomainGIDDecon.h>
 #include <mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h>
 #include <mspass/algorithms/deconvolution/CNRDeconEngine.h>
@@ -217,6 +218,28 @@ PYBIND11_MODULE(deconvolution, m) {
       }
     ))
   ;
+  py::class_<NoiseStableDecon,ScalarDecon>(m,"NoiseStableDecon",
+      "Noise-aware stable frequency-domain inverse operator used by NS-GID")
+    .def(py::init<const Metadata>())
+    .def("changeparameter",&NoiseStableDecon::changeparameter,
+      "Change operator parameters")
+    .def("process",&NoiseStableDecon::process,
+      "Process previously loaded data")
+    .def("loadnoise",py::overload_cast<const std::vector<double>&>(&NoiseStableDecon::loadnoise),
+      "Load a noise time series vector used to estimate inverse-gain stability")
+    .def("loadnoise",py::overload_cast<const CoreTimeSeries&>(&NoiseStableDecon::loadnoise),
+      "Load a noise CoreTimeSeries used to estimate inverse-gain stability")
+    .def("loadnoise",py::overload_cast<const PowerSpectrum&>(&NoiseStableDecon::loadnoise),
+      "Load a noise PowerSpectrum used to estimate inverse-gain stability")
+    .def("actual_output",&NoiseStableDecon::actual_output,
+      "Return actual output of inverse*wavelet")
+    .def("inverse_wavelet",py::overload_cast<>(&NoiseStableDecon::inverse_wavelet))
+    .def("inverse_wavelet",py::overload_cast<double>(&NoiseStableDecon::inverse_wavelet))
+    .def("QCMetrics",&NoiseStableDecon::QCMetrics,
+      "Return NS-GID inverse operator QC metrics")
+    .def("max_gain",&NoiseStableDecon::max_gain)
+    .def("gain_cap",&NoiseStableDecon::gain_cap)
+  ;
   py::class_<TimeDomainLeastSquareDecon,ScalarDecon>(m,"TimeDomainLeastSquareDecon",
       "Damped least-squares time-domain operator for cropped linear convolution")
     .def(py::init<const Metadata>())
@@ -339,7 +362,18 @@ PYBIND11_MODULE(deconvolution, m) {
     .def(py::init<const AntelopePf&>())
     .def("changeparameter",&TimeDomainGIDDecon::changeparameter,"Change operator parameters")
     .def("process",&TimeDomainGIDDecon::process,"Process previously loaded data")
-    .def("loadnoise",&TimeDomainGIDDecon::loadnoise,"Load noise data for regularization")
+    .def("loadnoise",py::overload_cast<const CoreSeismogram&,mspass::algorithms::TimeWindow>(&TimeDomainGIDDecon::loadnoise),
+      "Load noise data for regularization from a Seismogram window")
+    .def("loadnoise",py::overload_cast<const TimeSeries&>(&TimeDomainGIDDecon::loadnoise),
+      "Load externally supplied scalar noise")
+    .def("loadnoise",py::overload_cast<const CoreTimeSeries&>(&TimeDomainGIDDecon::loadnoise),
+      "Load externally supplied scalar noise")
+    .def("loadnoise",py::overload_cast<const PowerSpectrum&>(&TimeDomainGIDDecon::loadnoise),
+      "Load externally supplied noise power spectrum")
+    .def("loadwavelet",py::overload_cast<const TimeSeries&>(&TimeDomainGIDDecon::loadwavelet),
+      "Load an externally supplied wavelet used for all components")
+    .def("loadwavelet",py::overload_cast<const CoreTimeSeries&>(&TimeDomainGIDDecon::loadwavelet),
+      "Load an externally supplied wavelet used for all components")
     .def("load",py::overload_cast<const CoreSeismogram&,mspass::algorithms::TimeWindow>
             (&TimeDomainGIDDecon::load),"Load data")
     .def("load",py::overload_cast<const CoreSeismogram&,mspass::algorithms::TimeWindow,mspass::algorithms::TimeWindow>
@@ -359,7 +393,18 @@ PYBIND11_MODULE(deconvolution, m) {
     .def(py::init<const AntelopePf&>())
     .def("changeparameter",&FrequencyDomainGIDDecon::changeparameter,"Change operator parameters")
     .def("process",&FrequencyDomainGIDDecon::process,"Process previously loaded data")
-    .def("loadnoise",&FrequencyDomainGIDDecon::loadnoise,"Load noise data for regularization")
+    .def("loadnoise",py::overload_cast<const CoreSeismogram&,mspass::algorithms::TimeWindow>(&FrequencyDomainGIDDecon::loadnoise),
+      "Load noise data for regularization from a Seismogram window")
+    .def("loadnoise",py::overload_cast<const TimeSeries&>(&FrequencyDomainGIDDecon::loadnoise),
+      "Load externally supplied scalar noise")
+    .def("loadnoise",py::overload_cast<const CoreTimeSeries&>(&FrequencyDomainGIDDecon::loadnoise),
+      "Load externally supplied scalar noise")
+    .def("loadnoise",py::overload_cast<const PowerSpectrum&>(&FrequencyDomainGIDDecon::loadnoise),
+      "Load externally supplied noise power spectrum")
+    .def("loadwavelet",py::overload_cast<const TimeSeries&>(&FrequencyDomainGIDDecon::loadwavelet),
+      "Load an externally supplied wavelet used for all components")
+    .def("loadwavelet",py::overload_cast<const CoreTimeSeries&>(&FrequencyDomainGIDDecon::loadwavelet),
+      "Load an externally supplied wavelet used for all components")
     .def("load",py::overload_cast<const CoreSeismogram&,mspass::algorithms::TimeWindow>
             (&FrequencyDomainGIDDecon::load),"Load data")
     .def("load",py::overload_cast<const CoreSeismogram&,mspass::algorithms::TimeWindow,mspass::algorithms::TimeWindow>

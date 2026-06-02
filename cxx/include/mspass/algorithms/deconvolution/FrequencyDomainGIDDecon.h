@@ -7,11 +7,13 @@
 #include "mspass/algorithms/deconvolution/TimeDomainGIDDecon.h"
 #include "mspass/seismic/CoreSeismogram.h"
 #include "mspass/seismic/CoreTimeSeries.h"
+#include "mspass/seismic/PowerSpectrum.h"
 #include "mspass/seismic/TimeSeries.h"
 #include "mspass/utility/AntelopePf.h"
 #include "mspass/utility/Metadata.h"
 #include "mspass/utility/dmatrix.h"
 #include <list>
+#include <string>
 #include <vector>
 
 namespace mspass::algorithms::deconvolution {
@@ -27,6 +29,11 @@ public:
            mspass::algorithms::TimeWindow dwin);
   int loadnoise(const mspass::seismic::CoreSeismogram &d,
                 mspass::algorithms::TimeWindow nwin);
+  int loadwavelet(const mspass::seismic::TimeSeries &wavelet);
+  int loadwavelet(const mspass::seismic::CoreTimeSeries &wavelet);
+  int loadnoise(const mspass::seismic::TimeSeries &noise);
+  int loadnoise(const mspass::seismic::CoreTimeSeries &noise);
+  int loadnoise(const mspass::seismic::PowerSpectrum &noise_spectrum);
   int load(const mspass::seismic::CoreSeismogram &d,
            mspass::algorithms::TimeWindow dwin,
            mspass::algorithms::TimeWindow nwin);
@@ -50,10 +57,23 @@ private:
   ScalarDecon *preprocessor;
   CNRDeconEngine *cnrprocessor;
   mspass::seismic::TimeSeries current_wavelet;
+  mspass::seismic::TimeSeries external_wavelet;
+  mspass::seismic::TimeSeries external_noise;
+  mspass::seismic::PowerSpectrum external_noise_spectrum;
+  bool external_wavelet_loaded, external_noise_loaded,
+      external_noise_spectrum_loaded, external_wavelet_allowed;
   std::vector<double> actual_o_fir;
   std::list<ThreeCSpike> spikes;
+  double ns_peak_sigma_threshold, ns_peak_probability_threshold;
+  double ns_residual_noise_ratio_floor, ns_peak_threshold;
+  double ns_last_peak_significance, ns_noise_l2;
+  double ns_fractional_improvement_final, ns_ridge_beta;
+  int ns_max_spikes, ns_refit_interval;
+  bool ns_use_empirical_noise_threshold, ns_converged;
+  std::string ns_stop_reason;
 
   void initialize_inverse_operator();
+  double compute_ns_peak_threshold();
   void rescale_spike(ThreeCSpike &spk);
   void update_residual_matrix(const ThreeCSpike &spk);
 };

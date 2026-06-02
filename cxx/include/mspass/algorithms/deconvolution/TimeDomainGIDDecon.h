@@ -6,6 +6,7 @@
 #include "mspass/algorithms/deconvolution/FFTDeconOperator.h"
 #include "mspass/algorithms/deconvolution/ScalarDecon.h"
 #include "mspass/seismic/CoreTimeSeries.h"
+#include "mspass/seismic/PowerSpectrum.h"
 #include "mspass/seismic/Seismogram.h"
 #include "mspass/seismic/TimeSeries.h"
 #include "mspass/utility/AntelopePf.h"
@@ -13,6 +14,7 @@
 #include "mspass/utility/dmatrix.h"
 #include <list>
 #include <ostream>
+#include <string>
 #include <vector>
 namespace mspass::algorithms::deconvolution {
 /* Wang's original version allowed XCORR here - dropped for now as this
@@ -20,7 +22,7 @@ code assumes the decon produces a zero phase ideal output while in every
 case the original XCORR iterative method uses the raw wavelet and cross
 correlation. */
 
-enum IterDeconType { WATER_LEVEL, LEAST_SQ, MULTI_TAPER, CNR };
+enum IterDeconType { WATER_LEVEL, LEAST_SQ, MULTI_TAPER, CNR, NS_GID };
 class ThreeCSpike {
 public:
   /*! The column position where this spike should be placed in parent
@@ -89,6 +91,11 @@ public:
            mspass::algorithms::TimeWindow dwin);
   int loadnoise(const mspass::seismic::CoreSeismogram &d,
                 mspass::algorithms::TimeWindow nwin);
+  int loadwavelet(const mspass::seismic::TimeSeries &wavelet);
+  int loadwavelet(const mspass::seismic::CoreTimeSeries &wavelet);
+  int loadnoise(const mspass::seismic::TimeSeries &noise);
+  int loadnoise(const mspass::seismic::CoreTimeSeries &noise);
+  int loadnoise(const mspass::seismic::PowerSpectrum &noise_spectrum);
   /*! \brief Load all needed data and process.
 
   This method is little more than a call to loadnoise followed
@@ -150,6 +157,11 @@ private:
   ScalarDecon *preprocessor;
   CNRDeconEngine *cnrprocessor;
   mspass::seismic::TimeSeries current_wavelet;
+  mspass::seismic::TimeSeries external_wavelet;
+  mspass::seismic::TimeSeries external_noise;
+  mspass::seismic::PowerSpectrum external_noise_spectrum;
+  bool external_wavelet_loaded, external_noise_loaded,
+      external_noise_spectrum_loaded, external_wavelet_allowed;
 
   /* This parameter is set in the constructor.  It would normally be half the
   length of the fir representation of the inverse wavelet.*/
@@ -207,6 +219,13 @@ private:
   matrix.   For L2 we use the conventional fractional improvment metric. */
   double resid_linf_prob, resid_linf_floor;
   double resid_l2_tol;
+  double ns_peak_sigma_threshold, ns_peak_probability_threshold;
+  double ns_residual_noise_ratio_floor, ns_peak_threshold;
+  double ns_last_peak_significance, ns_noise_l2;
+  int ns_max_spikes, ns_refit_interval;
+  double ns_ridge_beta, ns_fractional_improvement_final;
+  bool ns_use_empirical_noise_threshold, ns_converged;
+  std::string ns_stop_reason;
 
   /* DEBUG attributes and methods.  These should be deleted after testing. */
   std::vector<double> lw_linf_history, lw_l2_history, resid_l2_history,

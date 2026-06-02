@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import pytest
+import numpy as np
 
 from mspasspy.ccore.algorithms.basic import TimeWindow
 from mspasspy.ccore.algorithms.deconvolution import FrequencyDomainGIDDecon
@@ -12,8 +13,10 @@ from mspasspy.algorithms.FrequencyDomainGIDDecon import FrequencyDomainGIDRFDeco
 from test_TimeDomainGIDDecon import (
     _assert_single_spike_recovery,
     _assert_valid_rf,
+    _make_external_wavelet_3c_data,
     _make_gid_test_data,
     _make_single_spike_convolution_data,
+    _ns_gid_pf,
     _pf_with_mode,
 )
 
@@ -66,6 +69,37 @@ def test_FrequencyDomainGIDDecon_validates_single_spike_recovery():
     assert qc["residual_L2_final"] < qc["residual_L2_initial"]
 
     _assert_single_spike_recovery(rf, ratio_tolerance=5.0e-2)
+
+
+def test_FrequencyDomainNSGID_uses_external_wavelet_and_gain_cap(tmp_path):
+    data, wavelet, spike_times = _make_external_wavelet_3c_data(noise_level=2.0e-4)
+    pf = _ns_gid_pf(
+        tmp_path,
+        "FrequencyDomainGIDDecon.pf",
+        "frequency_domain_gid_deconvolution",
+        gain_max=30.0,
+    )
+    engine = FrequencyDomainGIDDecon(pf)
+    rf = FrequencyDomainGIDRFDecon(
+        data,
+        engine,
+        signal_window=TimeWindow(-8.0, 22.0),
+        noise_window=TimeWindow(-35.0, -8.0),
+        external_wavelet=wavelet,
+    )
+
+    _assert_valid_rf(rf)
+    qc = rf["FrequencyDomainGIDDecon_properties"]
+    assert qc["ns_gid_enabled"]
+    assert qc["ns_gid_external_wavelet_used"]
+    assert qc["ns_gid_gain_max_actual"] <= 30.0 * (1.0 + 1.0e-10)
+    assert qc["ns_gid_number_spikes"] <= 2 * len(spike_times)
+    support = np.where(np.linalg.norm(np.asarray(rf.data), axis=0) > 1.0e-8)[0]
+    picked_times = [rf.time(int(i)) for i in support]
+    assert picked_times
+    expected_times = [t - wavelet.t0 for t in spike_times[:2]]
+    for t in expected_times:
+        assert min(abs(t - p) for p in picked_times) < 0.15
 
 
 @pytest.mark.parametrize("mode", ["least_square", "water_level", "multi_taper", "cnr"])

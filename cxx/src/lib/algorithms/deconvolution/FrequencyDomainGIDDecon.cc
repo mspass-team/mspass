@@ -3,6 +3,7 @@
 #include "mspass/algorithms/algorithms.h"
 #include "mspass/algorithms/deconvolution/LeastSquareDecon.h"
 #include "mspass/algorithms/deconvolution/MultiTaperXcorDecon.h"
+#include "mspass/algorithms/deconvolution/NoiseStableDecon.h"
 #include "mspass/algorithms/deconvolution/WaterLevelDecon.h"
 #include "mspass/utility/MsPASSError.h"
 #include <algorithm>
@@ -27,6 +28,9 @@ IterDeconType parse_frequency_gid_type(const AntelopePf &md) {
     return MULTI_TAPER;
   if ((sval == "cnr") || (sval == "cnr3c"))
     return CNR;
+  if ((sval == "ns_gid") || (sval == "noise_stable") ||
+      (sval == "noise_aware_stable"))
+    return NS_GID;
   throw MsPASSError("FrequencyDomainGIDDecon: unknown deconvolution_type=" +
                         sval,
                     ErrorSeverity::Invalid);
@@ -44,6 +48,36 @@ double matrix_linf(dmatrix &d) {
       dmax = max(dmax, fabs(d(i, j)));
   }
   return dmax;
+}
+
+vector<double> amp3c_fd(dmatrix &d) {
+  vector<double> result;
+  result.reserve(d.columns());
+  for (int i = 0; i < d.columns(); ++i) {
+    double amp2(0.0);
+    for (int k = 0; k < 3; ++k)
+      amp2 += d(k, i) * d(k, i);
+    result.push_back(sqrt(amp2));
+  }
+  return result;
+}
+double get_double_default_fd_gid(const Metadata &md, const string &key,
+                                 const double default_value) {
+  if (md.is_defined(key))
+    return md.get_double(key);
+  return default_value;
+}
+int get_int_default_fd_gid(const Metadata &md, const string &key,
+                           const int default_value) {
+  if (md.is_defined(key))
+    return md.get_int(key);
+  return default_value;
+}
+bool get_bool_default_fd_gid(const Metadata &md, const string &key,
+                             const bool default_value) {
+  if (md.is_defined(key))
+    return md.get_bool(key);
+  return default_value;
 }
 
 double fir_self_overlap_fd(const vector<double> &fir, const int col0_i,
@@ -197,11 +231,38 @@ FrequencyDomainGIDDecon::FrequencyDomainGIDDecon(const AntelopePf &mdtoplevel)
       preprocessor = new MultiTaperXcorDecon(mdleaf);
       break;
     case CNR:
-    default:
       mdleaf = md.get_branch("cnr");
       cnrprocessor = new CNRDeconEngine(mdleaf);
       break;
+    case NS_GID:
+    default:
+      mdleaf = md.get_branch("ns_gid");
+      preprocessor = new NoiseStableDecon(mdleaf);
+      break;
     };
+    external_wavelet_loaded = false;
+    external_noise_loaded = false;
+    external_noise_spectrum_loaded = false;
+    external_wavelet_allowed = get_bool_default_fd_gid(
+        mdgid, "ns_gid_external_wavelet_allowed", true);
+    ns_peak_sigma_threshold =
+        get_double_default_fd_gid(mdgid, "ns_gid_peak_sigma_threshold", 4.0);
+    ns_peak_probability_threshold = get_double_default_fd_gid(
+        mdgid, "ns_gid_peak_probability_threshold", 0.995);
+    ns_use_empirical_noise_threshold = get_bool_default_fd_gid(
+        mdgid, "ns_gid_use_empirical_noise_threshold", true);
+    ns_residual_noise_ratio_floor = get_double_default_fd_gid(
+        mdgid, "ns_gid_residual_noise_ratio_floor", 1.0);
+    ns_max_spikes = get_int_default_fd_gid(mdgid, "ns_gid_max_spikes", 0);
+    ns_refit_interval = get_int_default_fd_gid(mdgid, "ns_gid_refit_interval", 1);
+    ns_ridge_beta =
+        get_double_default_fd_gid(mdgid, "ns_gid_ridge_beta", 1.0e-10);
+    ns_peak_threshold = 0.0;
+    ns_last_peak_significance = 0.0;
+    ns_noise_l2 = 0.0;
+    ns_fractional_improvement_final = 0.0;
+    ns_converged = false;
+    ns_stop_reason = "not_started";
   } catch (...) {
     throw;
   };
@@ -235,6 +296,49 @@ int FrequencyDomainGIDDecon::loadnoise(const CoreSeismogram &draw,
   return 0;
 }
 
+int FrequencyDomainGIDDecon::loadwavelet(const TimeSeries &wavelet) {
+  if (!external_wavelet_allowed)
+    throw MsPASSError("FrequencyDomainGIDDecon::loadwavelet: external "
+                      "wavelets are disabled by "
+                      "ns_gid_external_wavelet_allowed",
+                      ErrorSeverity::Invalid);
+  external_wavelet = wavelet;
+  external_wavelet_loaded = true;
+  return 0;
+}
+
+int FrequencyDomainGIDDecon::loadwavelet(const CoreTimeSeries &wavelet) {
+  TimeSeries ts(wavelet, "FrequencyDomainGIDDecon");
+  return this->loadwavelet(ts);
+}
+
+int FrequencyDomainGIDDecon::loadnoise(const TimeSeries &noise_in) {
+  external_noise = noise_in;
+  external_noise_loaded = true;
+  external_noise_spectrum_loaded = false;
+  n = CoreSeismogram(noise_in.npts());
+  n.set_t0(noise_in.t0());
+  n.set_dt(noise_in.dt());
+  n.set_live();
+  n.set_tref(noise_in.timetype());
+  for (int k = 0; k < 3; ++k)
+    cblas_dcopy(noise_in.npts(), &(noise_in.s[0]), 1, n.u.get_address(k, 0), 3);
+  nnwin = n.npts();
+  return 0;
+}
+
+int FrequencyDomainGIDDecon::loadnoise(const CoreTimeSeries &noise_in) {
+  TimeSeries ts(noise_in, "FrequencyDomainGIDDecon");
+  return this->loadnoise(ts);
+}
+
+int FrequencyDomainGIDDecon::loadnoise(const PowerSpectrum &noise_spectrum_in) {
+  external_noise_spectrum = noise_spectrum_in;
+  external_noise_spectrum_loaded = true;
+  external_noise_loaded = false;
+  return 0;
+}
+
 int FrequencyDomainGIDDecon::load(const CoreSeismogram &draw, TimeWindow dwin,
                                   TimeWindow nwin) {
   int iretn = this->loadnoise(draw, nwin);
@@ -246,7 +350,11 @@ void FrequencyDomainGIDDecon::initialize_inverse_operator() {
   d_decon = WindowData(d_all, fftwin);
   dmatrix uwork(d_decon.u);
   uwork.zero();
-  CoreTimeSeries srcwavelet(ExtractComponent(d_decon, 2));
+  CoreTimeSeries srcwavelet;
+  if (external_wavelet_loaded)
+    srcwavelet = CoreTimeSeries(external_wavelet);
+  else
+    srcwavelet = CoreTimeSeries(ExtractComponent(d_decon, 2));
   current_wavelet = TimeSeries(srcwavelet, "FrequencyDomainGIDDecon");
   if (decon_type == CNR) {
     TimeSeries nwavelet(ExtractComponent(n, noise_component),
@@ -265,6 +373,16 @@ void FrequencyDomainGIDDecon::initialize_inverse_operator() {
     if (decon_type == MULTI_TAPER) {
       CoreTimeSeries nts(ExtractComponent(n, noise_component));
       dynamic_cast<MultiTaperXcorDecon *>(preprocessor)->loadnoise(nts.s);
+    } else if (decon_type == NS_GID) {
+      NoiseStableDecon *nsop = dynamic_cast<NoiseStableDecon *>(preprocessor);
+      if (external_noise_spectrum_loaded)
+        nsop->loadnoise(external_noise_spectrum);
+      else if (external_noise_loaded)
+        nsop->loadnoise(external_noise);
+      else {
+        CoreTimeSeries nts(ExtractComponent(n, noise_component));
+        nsop->loadnoise(nts);
+      }
     }
     preprocessor->ScalarDecon::load(srcwavelet.s, srcwavelet.s);
     preprocessor->process();
@@ -318,6 +436,47 @@ CoreTimeSeries FrequencyDomainGIDDecon::inverse_wavelet(double t0parent) {
   return preprocessor->inverse_wavelet(t0parent);
 }
 
+double FrequencyDomainGIDDecon::compute_ns_peak_threshold() {
+  if (decon_type != NS_GID)
+    return 0.0;
+  CoreSeismogram nwork(WindowData(n, nwin));
+  dmatrix uwork(nwork.u);
+  uwork.zero();
+  NoiseStableDecon *nsop = dynamic_cast<NoiseStableDecon *>(preprocessor);
+  if (nsop == nullptr)
+    return 0.0;
+  for (int k = 0; k < 3; ++k) {
+    CoreTimeSeries ncomp(ExtractComponent(nwork, k));
+    preprocessor->ScalarDecon::load(current_wavelet.s, ncomp.s);
+    preprocessor->process();
+    vector<double> deconout(preprocessor->getresult());
+    int copysize = min(static_cast<int>(deconout.size()),
+                       static_cast<int>(nwork.npts()));
+    if (copysize > 0)
+      cblas_dcopy(copysize, &(deconout[0]), 1, uwork.get_address(k, 0), 3);
+  }
+  nwork.u = uwork;
+  vector<double> noise_amps(amp3c_fd(nwork.u));
+  sort(noise_amps.begin(), noise_amps.end());
+  if (noise_amps.empty())
+    return 0.0;
+  int ip = static_cast<int>(ns_peak_probability_threshold *
+                            static_cast<double>(noise_amps.size()));
+  if (ip < 0)
+    ip = 0;
+  if (ip >= noise_amps.size())
+    ip = noise_amps.size() - 1;
+  double empirical = noise_amps[ip];
+  double sumsq(0.0);
+  for (auto x : noise_amps)
+    sumsq += x * x;
+  double rms = sqrt(sumsq / static_cast<double>(noise_amps.size()));
+  ns_noise_l2 = matrix_l2(nwork.u);
+  return ns_use_empirical_noise_threshold ? max(empirical,
+                                                ns_peak_sigma_threshold * rms)
+                                          : ns_peak_sigma_threshold * rms;
+}
+
 void FrequencyDomainGIDDecon::rescale_spike(ThreeCSpike &spk) {
   int col0 = spk.col - actual_o_0;
   double denom =
@@ -351,9 +510,13 @@ void FrequencyDomainGIDDecon::process() {
   const string base_error("FrequencyDomainGIDDecon::process: ");
   try {
     this->initialize_inverse_operator();
+    ns_peak_threshold = this->compute_ns_peak_threshold();
     r = d_decon;
     spikes.clear();
     iter_count = 0;
+    ns_converged = false;
+    ns_stop_reason = (decon_type == NS_GID) ? "running" : "not_enabled";
+    ns_last_peak_significance = 0.0;
     resid_l2_initial = matrix_l2(r.u);
     resid_linf_initial = matrix_linf(r.u);
     resid_l2_prev = resid_l2_initial;
@@ -378,6 +541,23 @@ void FrequencyDomainGIDDecon::process() {
       auto amax = max_element(amps.begin(), amps.end());
       if ((amax == amps.end()) || (*amax <= 0.0))
         break;
+      if (decon_type == NS_GID) {
+        double candidate_amp = sqrt(max(0.0, *amax));
+        ns_last_peak_significance =
+            (ns_peak_threshold > 0.0) ? candidate_amp / ns_peak_threshold
+                                      : 0.0;
+        if (ns_peak_threshold > 0.0 && candidate_amp < ns_peak_threshold) {
+          ns_stop_reason = "candidate_not_significant";
+          ns_converged = true;
+          break;
+        }
+        if ((ns_max_spikes > 0) &&
+            (static_cast<int>(spikes.size()) >= ns_max_spikes)) {
+          ns_stop_reason = "max_spikes";
+          ns_converged = true;
+          break;
+        }
+      }
       int imax = distance(amps.begin(), amax);
       bool accepted(false);
       while (!accepted && (*amax > 0.0)) {
@@ -403,10 +583,36 @@ void FrequencyDomainGIDDecon::process() {
       resid_linf_final = matrix_linf(r.u);
       double ratio = resid_l2_final / resid_l2_initial;
       double improvement = (resid_l2_prev - resid_l2_final) / resid_l2_initial;
+      ns_fractional_improvement_final = improvement;
       resid_l2_prev = resid_l2_final;
-      if ((ratio <= residual_ratio_floor) ||
-          (improvement <= residual_improvement_floor))
+      if (decon_type == NS_GID && ns_noise_l2 > 0.0 &&
+          (resid_l2_final / ns_noise_l2) <= ns_residual_noise_ratio_floor) {
+        ns_stop_reason = "residual_reached_noise_floor";
+        ns_converged = true;
         break;
+      }
+      if (ratio <= residual_ratio_floor) {
+        if (decon_type == NS_GID) {
+          ns_stop_reason = "residual_ratio_floor";
+          ns_converged = true;
+        }
+        break;
+      }
+      if (improvement <= residual_improvement_floor) {
+        if (decon_type == NS_GID) {
+          ns_stop_reason = "fractional_improvement_floor";
+          ns_converged = true;
+        }
+        break;
+      }
+    }
+    if (decon_type == NS_GID && ns_stop_reason == "running") {
+      if (iter_count >= iter_max)
+        ns_stop_reason = "max_iterations";
+      else {
+        ns_stop_reason = "converged";
+        ns_converged = true;
+      }
     }
     refit_spike_amplitudes_fd(spikes, d_decon, actual_o_fir, actual_o_0);
     r = d_decon;
@@ -444,6 +650,37 @@ Metadata FrequencyDomainGIDDecon::QCMetrics() {
   md.put("residual_Linf_final", resid_linf_final);
   md.put("residual_L2_initial", resid_l2_initial);
   md.put("residual_L2_final", resid_l2_final);
+  md.put("ns_gid_enabled", decon_type == NS_GID);
+  if (decon_type == NS_GID) {
+    md.put("ns_gid_stop_reason", ns_stop_reason);
+    md.put("ns_gid_converged", ns_converged);
+    md.put("ns_gid_iterations", iter_count);
+    md.put("ns_gid_number_spikes", static_cast<int>(spikes.size()));
+    md.put("ns_gid_peak_threshold", ns_peak_threshold);
+    md.put("ns_gid_last_peak_significance", ns_last_peak_significance);
+    md.put("ns_gid_external_wavelet_used", external_wavelet_loaded);
+    md.put("ns_gid_residual_l2_initial", resid_l2_initial);
+    md.put("ns_gid_residual_l2_final", resid_l2_final);
+    md.put("ns_gid_residual_noise_ratio",
+           (ns_noise_l2 > 0.0) ? resid_l2_final / ns_noise_l2 : 0.0);
+    md.put("ns_gid_fractional_improvement_final",
+           ns_fractional_improvement_final);
+    NoiseStableDecon *nsop = dynamic_cast<NoiseStableDecon *>(preprocessor);
+    if (nsop != nullptr) {
+      Metadata nsmd(nsop->QCMetrics());
+      md.put("ns_gid_gain_max_requested",
+             nsmd.get_double("ns_gid_gain_max_requested"));
+      md.put("ns_gid_gain_max_actual",
+             nsmd.get_double("ns_gid_gain_max_actual"));
+      md.put("ns_gid_mu_min", nsmd.get_double("ns_gid_mu_min"));
+      md.put("ns_gid_alpha", nsmd.get_double("ns_gid_alpha"));
+      md.put("ns_gid_noise_amplification",
+             nsmd.get_double("ns_gid_noise_amplification"));
+      md.put("ns_gid_effective_bandwidth_fraction",
+             nsmd.get_double("ns_gid_effective_bandwidth_fraction"));
+      md.put("ns_gid_operator_nfft", nsmd.get_int("ns_gid_operator_nfft"));
+    }
+  }
   return md;
 }
 } // namespace mspass::algorithms::deconvolution

@@ -25,6 +25,8 @@ def TimeDomainGIDRFDecon(
     *args,
     signal_window=None,
     noise_window=None,
+    external_wavelet=None,
+    external_noise=None,
     QCdata_key="TimeDomainGIDDecon_properties",
     return_wavelet=False,
     object_history=False,
@@ -55,6 +57,11 @@ def TimeDomainGIDRFDecon(
         used.
     :param noise_window: optional `TimeWindow` defining pre-event noise.  When
         omitted the engine's parameter-file noise window is used.
+    :param external_wavelet: optional prepared wavelet passed directly to the
+        GID engine.  When omitted, the engine preserves RF compatibility and
+        derives the wavelet from component 2 of the input seismogram.
+    :param external_noise: optional scalar noise `TimeSeries`, `CoreTimeSeries`,
+        or `PowerSpectrum` passed to NS-GID inverse stabilization.
     :param QCdata_key: metadata key used to store the engine's QC metrics.
     :param return_wavelet: when True return `[rf, actual_output, ideal_output]`.
     :return: deconvolved `Seismogram`, or the tuple described above.
@@ -85,6 +92,10 @@ def TimeDomainGIDRFDecon(
 
     d = Seismogram(seis)
     try:
+        if external_wavelet is not None:
+            engine.loadwavelet(external_wavelet)
+        if external_noise is not None:
+            engine.loadnoise(external_noise)
         if noise_window is None:
             engine.load(d, signal_window)
         else:
