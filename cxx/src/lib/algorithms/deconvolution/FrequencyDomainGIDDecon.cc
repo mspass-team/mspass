@@ -52,6 +52,96 @@ vector<double> padded_vector(const vector<double> &x, const int n) {
     result[i] = x[i];
   return result;
 }
+
+vector<double> solve_dense_system_fd(vector<vector<double>> a,
+                                     vector<double> b) {
+  const int n = b.size();
+  for (int i = 0; i < n; ++i) {
+    int pivot = i;
+    double pivot_abs = fabs(a[i][i]);
+    for (int r = i + 1; r < n; ++r) {
+      double candidate = fabs(a[r][i]);
+      if (candidate > pivot_abs) {
+        pivot = r;
+        pivot_abs = candidate;
+      }
+    }
+    if (pivot_abs <= 0.0)
+      continue;
+    if (pivot != i) {
+      swap(a[i], a[pivot]);
+      swap(b[i], b[pivot]);
+    }
+    double diag = a[i][i];
+    for (int c = i; c < n; ++c)
+      a[i][c] /= diag;
+    b[i] /= diag;
+    for (int r = 0; r < n; ++r) {
+      if (r == i)
+        continue;
+      double factor = a[r][i];
+      if (factor == 0.0)
+        continue;
+      for (int c = i; c < n; ++c)
+        a[r][c] -= factor * a[i][c];
+      b[r] -= factor * b[i];
+    }
+  }
+  return b;
+}
+
+void refit_spike_amplitudes_fd(list<ThreeCSpike> &spikes,
+                               const CoreSeismogram &target,
+                               const vector<double> &actual_o_fir,
+                               const int actual_o_0) {
+  const int nspikes = spikes.size();
+  if (nspikes <= 0)
+    return;
+  vector<ThreeCSpike *> spike_ptrs;
+  spike_ptrs.reserve(nspikes);
+  for (auto &spk : spikes)
+    spike_ptrs.push_back(&spk);
+  vector<vector<double>> gram(nspikes, vector<double>(nspikes, 0.0));
+  for (int i = 0; i < nspikes; ++i) {
+    int col0_i = spike_ptrs[i]->col - actual_o_0;
+    for (int j = i; j < nspikes; ++j) {
+      int col0_j = spike_ptrs[j]->col - actual_o_0;
+      double gij(0.0);
+      for (int p = 0; p < actual_o_fir.size(); ++p) {
+        int target_col = col0_i + p;
+        int q = target_col - col0_j;
+        if ((target_col >= 0) && (target_col < target.npts()) && (q >= 0) &&
+            (q < actual_o_fir.size()))
+          gij += actual_o_fir[p] * actual_o_fir[q];
+      }
+      gram[i][j] = gij;
+      gram[j][i] = gij;
+    }
+  }
+  double maxdiag(0.0);
+  for (int i = 0; i < nspikes; ++i)
+    maxdiag = max(maxdiag, fabs(gram[i][i]));
+  double damping = maxdiag * 1.0e-10;
+  for (int i = 0; i < nspikes; ++i)
+    gram[i][i] += damping;
+  for (int component = 0; component < 3; ++component) {
+    vector<double> rhs(nspikes, 0.0);
+    for (int i = 0; i < nspikes; ++i) {
+      int col0 = spike_ptrs[i]->col - actual_o_0;
+      for (int p = 0; p < actual_o_fir.size(); ++p) {
+        int target_col = col0 + p;
+        if ((target_col >= 0) && (target_col < target.npts()))
+          rhs[i] += actual_o_fir[p] * target.u(component, target_col);
+      }
+    }
+    vector<double> amps = solve_dense_system_fd(gram, rhs);
+    for (int i = 0; i < nspikes; ++i)
+      spike_ptrs[i]->u[component] = amps[i];
+  }
+  for (auto &spk : spikes)
+    spk.amp =
+        sqrt(spk.u[0] * spk.u[0] + spk.u[1] * spk.u[1] + spk.u[2] * spk.u[2]);
+}
 } // namespace
 
 FrequencyDomainGIDDecon::FrequencyDomainGIDDecon(const AntelopePf &mdtoplevel)
@@ -338,6 +428,12 @@ void FrequencyDomainGIDDecon::process() {
           (improvement <= residual_improvement_floor))
         break;
     }
+    refit_spike_amplitudes_fd(spikes, d_decon, actual_o_fir, actual_o_0);
+    r = d_decon;
+    for (auto sptr = spikes.begin(); sptr != spikes.end(); ++sptr)
+      this->update_residual_matrix(*sptr);
+    resid_l2_final = matrix_l2(r.u);
+    resid_linf_final = matrix_linf(r.u);
   } catch (...) {
     throw;
   };

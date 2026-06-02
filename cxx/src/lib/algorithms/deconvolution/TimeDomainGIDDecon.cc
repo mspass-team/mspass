@@ -11,6 +11,7 @@
 #include "mspass/utility/MsPASSError.h"
 #include <algorithm>
 #include <math.h>
+#include <list>
 #include <vector>
 namespace mspass::algorithms::deconvolution {
 using namespace std;
@@ -324,6 +325,96 @@ vector<double> amp3c(dmatrix &d) {
   }
   return result;
 }
+
+vector<double> solve_dense_system(vector<vector<double>> a, vector<double> b) {
+  const int n = b.size();
+  for (int i = 0; i < n; ++i) {
+    int pivot = i;
+    double pivot_abs = fabs(a[i][i]);
+    for (int r = i + 1; r < n; ++r) {
+      double candidate = fabs(a[r][i]);
+      if (candidate > pivot_abs) {
+        pivot = r;
+        pivot_abs = candidate;
+      }
+    }
+    if (pivot_abs <= 0.0)
+      continue;
+    if (pivot != i) {
+      swap(a[i], a[pivot]);
+      swap(b[i], b[pivot]);
+    }
+    double diag = a[i][i];
+    for (int c = i; c < n; ++c)
+      a[i][c] /= diag;
+    b[i] /= diag;
+    for (int r = 0; r < n; ++r) {
+      if (r == i)
+        continue;
+      double factor = a[r][i];
+      if (factor == 0.0)
+        continue;
+      for (int c = i; c < n; ++c)
+        a[r][c] -= factor * a[i][c];
+      b[r] -= factor * b[i];
+    }
+  }
+  return b;
+}
+
+void refit_spike_amplitudes(list<ThreeCSpike> &spikes,
+                            const CoreSeismogram &target,
+                            const vector<double> &actual_o_fir,
+                            const int actual_o_0) {
+  const int nspikes = spikes.size();
+  if (nspikes <= 0)
+    return;
+  vector<ThreeCSpike *> spike_ptrs;
+  spike_ptrs.reserve(nspikes);
+  for (auto &spk : spikes)
+    spike_ptrs.push_back(&spk);
+  vector<vector<double>> gram(nspikes, vector<double>(nspikes, 0.0));
+  for (int i = 0; i < nspikes; ++i) {
+    int col0_i = spike_ptrs[i]->col - actual_o_0;
+    for (int j = i; j < nspikes; ++j) {
+      int col0_j = spike_ptrs[j]->col - actual_o_0;
+      double gij(0.0);
+      for (int p = 0; p < actual_o_fir.size(); ++p) {
+        int target_col = col0_i + p;
+        int q = target_col - col0_j;
+        if ((target_col >= 0) && (target_col < target.npts()) && (q >= 0) &&
+            (q < actual_o_fir.size()))
+          gij += actual_o_fir[p] * actual_o_fir[q];
+      }
+      gram[i][j] = gij;
+      gram[j][i] = gij;
+    }
+  }
+  double maxdiag(0.0);
+  for (int i = 0; i < nspikes; ++i)
+    maxdiag = max(maxdiag, fabs(gram[i][i]));
+  double damping = maxdiag * 1.0e-10;
+  for (int i = 0; i < nspikes; ++i)
+    gram[i][i] += damping;
+  for (int component = 0; component < 3; ++component) {
+    vector<double> rhs(nspikes, 0.0);
+    for (int i = 0; i < nspikes; ++i) {
+      int col0 = spike_ptrs[i]->col - actual_o_0;
+      for (int p = 0; p < actual_o_fir.size(); ++p) {
+        int target_col = col0 + p;
+        if ((target_col >= 0) && (target_col < target.npts()))
+          rhs[i] += actual_o_fir[p] * target.u(component, target_col);
+      }
+    }
+    vector<double> amps = solve_dense_system(gram, rhs);
+    for (int i = 0; i < nspikes; ++i)
+      spike_ptrs[i]->u[component] = amps[i];
+  }
+  for (auto &spk : spikes)
+    spk.amp =
+        sqrt(spk.u[0] * spk.u[0] + spk.u[1] * spk.u[1] + spk.u[2] * spk.u[2]);
+}
+
 int TimeDomainGIDDecon::load(const CoreSeismogram &draw, TimeWindow dwin_in) {
   try {
     dwin = dwin_in;
@@ -735,6 +826,12 @@ void TimeDomainGIDDecon::process() {
       if (!accepted)
         break;
     } while (this->has_not_converged());
+    refit_spike_amplitudes(spikes, d_decon, actual_o_fir, actual_o_0);
+    r = d_decon;
+    for (auto sptr = spikes.begin(); sptr != spikes.end(); ++sptr)
+      this->update_residual_matrix(*sptr);
+    resid_linf_prev = Linf(r.u);
+    resid_l2_prev = L2(r.u);
     if (iter_count >= iter_max)
       throw MsPASSError("TimeDomainGIDDecon::process did not converge",
                         ErrorSeverity::Suspect);

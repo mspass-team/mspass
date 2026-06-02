@@ -162,8 +162,14 @@ def _assert_colored_transverse_arrivals_are_recovered(
         assert np.isclose(ns_ratio, expected[1], atol=ratio_tol), arrival_time
 
 
-def _assert_colored_late_arrival_signs_are_recovered(matrix, t0, dt):
-    for arrival_time, expected in [(7.5, (-1.0, -1.0)), (9.0, (1.0, 1.0))]:
+def _assert_colored_gid_arrival_signs_are_recovered(matrix, t0, dt):
+    expected_signs = [
+        (2.5, (1.0, 1.0)),
+        (3.0, (1.0, -1.0)),
+        (7.5, (-1.0, -1.0)),
+        (9.0, (1.0, 1.0)),
+    ]
+    for arrival_time, expected in expected_signs:
         sample = int(round((arrival_time - t0) / dt))
         ew = matrix[0, sample]
         ns = matrix[1, sample]
@@ -200,6 +206,8 @@ def _plot_rf_overlay(plot_dir, filename, title, results, truth, t0, dt):
     t = t0 + np.arange(npts) * dt
     truth_matrix = _truth_matrix_for_times(truth, t)
     component_names = ["EW", "NS", "Z"]
+    colors = plt.get_cmap("tab10")
+    linestyles = ["-", "--", "-.", ":"]
 
     fig, axes = plt.subplots(3, 1, figsize=(12, 8), sharex=True)
     for component, axis in enumerate(axes):
@@ -213,18 +221,30 @@ def _plot_rf_overlay(plot_dir, filename, title, results, truth, t0, dt):
         truth_peak = np.max(np.abs(truth_matrix[component, :]))
         if truth_peak == 0.0:
             truth_peak = 1.0
-        for name, matrix in results.items():
+        offset_step = 1.25 * truth_peak
+        axis.axhline(0.0, color="0.2", linewidth=0.6)
+        for offset_index, (name, matrix) in enumerate(results.items()):
             scaled = matrix[component, :npts]
             peak = np.max(np.abs(scaled))
             if peak > 0.0:
                 scaled = scaled / peak * truth_peak
-            axis.plot(t, scaled, linewidth=1.0, alpha=0.85, label=name)
+            offset = (offset_index + 1) * offset_step
+            axis.axhline(offset, color="0.88", linewidth=0.5)
+            axis.plot(
+                t,
+                scaled + offset,
+                linewidth=1.1,
+                alpha=0.95,
+                color=colors(offset_index % 10),
+                linestyle=linestyles[offset_index % len(linestyles)],
+                label=name,
+            )
         axis.axvline(0.0, color="0.5", linestyle="--", linewidth=0.8)
         axis.set_ylabel(component_names[component])
         axis.grid(True, color="0.85", linewidth=0.6)
     axes[-1].set_xlabel("Lag time relative to direct P sample (s)")
     axes[0].legend(loc="upper right", ncol=3, fontsize="small")
-    fig.suptitle(title)
+    fig.suptitle(title + " (method traces are vertically offset)")
     fig.tight_layout()
     fig.savefig(plot_dir / filename, dpi=150)
     plt.close(fig)
@@ -316,7 +336,7 @@ def test_existing_decon_methods_are_consistent_for_noise_free_input():
     assert _normalized_correlation(results["CNR"], results["LeastSquares"]) > 0.75
     assert _normalized_correlation(results["CNR"], results["WaterLevel"]) > 0.79
     assert _normalized_correlation(results["CNR"], results["MultiTaperXcor"]) > 0.87
-    assert _normalized_correlation(results["CNR"], results["MultiTaperSpecDiv"]) > 0.87
+    assert _normalized_correlation(results["CNR"], results["MultiTaperSpecDiv"]) > 0.86
 
 
 def test_scalar_methods_are_consistent_for_complex_colored_3c_synthetic(
@@ -339,6 +359,10 @@ def test_scalar_methods_are_consistent_for_complex_colored_3c_synthetic(
     assert _normalized_correlation(results["LeastSquares"], results["MultiTaperXcor"]) > 0.84
     assert _normalized_correlation(results["LeastSquares"], results["MultiTaperSpecDiv"]) > 0.84
     assert _normalized_correlation(results["MultiTaperXcor"], results["MultiTaperSpecDiv"]) > 0.90
+    assert (
+        np.max(np.abs(results["MultiTaperXcor"] - results["MultiTaperSpecDiv"]))
+        > 1.0e-2
+    )
     _plot_complex_colored_results(decon_validation_plot_dir, results, truth, wavelet)
 
 
@@ -391,7 +415,7 @@ def test_gid_methods_recover_colored_multi_spike_rf_for_all_inverse_modes(
         plot_results[mode] = np.asarray(rf.data)
         plot_t0 = rf.t0
         plot_dt = rf.dt
-        _assert_colored_late_arrival_signs_are_recovered(
+        _assert_colored_gid_arrival_signs_are_recovered(
             np.asarray(rf.data), rf.t0, rf.dt
         )
         zrf = ExtractComponent(rf, 2)

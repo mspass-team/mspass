@@ -274,14 +274,14 @@ void MultiTaperSpecDivDecon::process() {
     gsl_fft_complex_forward(untapered_wavelet.ptr(), 1, nfft, wavetable,
                             workspace);
 
-    /* Build a water-level style denominator from the untapered source phase
-    and the multitaper noise-amplitude estimate.  Dividing each DPSS-tapered
-    data spectrum by each DPSS-tapered source spectrum biases time-localized RF
-    arrivals and produces periodic lag-domain artifacts. */
+    /* Build one water-level style denominator for each tapered source
+    spectrum.  The inverse operators are estimated from the DPSS-tapered
+    source/noise spectra, but they are applied to the untapered data window
+    below so delayed RF arrivals are not weighted by taper amplitudes. */
     double wnrm = dnrm2(wavelet.size(), &(wavelet[0]), 1);
     vector<ComplexArray> denominator;
     for (i = 0; i < nseq; ++i) {
-      ComplexArray work(untapered_wavelet);
+      ComplexArray work(wdata[i]);
       for (j = 0; j < nfft; ++j) {
         double *z = work.ptr(j);
         double re = (*z);
@@ -328,6 +328,36 @@ void MultiTaperSpecDivDecon::process() {
       ComplexArray work(winv_taper[i]);
       work = work * untapered_wavelet;
       ao_fft.push_back(work);
+    }
+    vector<double> ao_scale(nfft, 0.0);
+    for (i = 0; i < nseq; ++i) {
+      ComplexArray work(ao_fft[i]);
+      work = (*shapingwavelet.wavelet()) * work;
+      gsl_fft_complex_inverse(work.ptr(), 1, nfft, wavetable, workspace);
+      for (j = 0; j < nfft; ++j)
+        ao_scale[j] += work[j].real();
+    }
+    double ao_nrmscl = 1.0 / ((double)nseq);
+    for (j = 0; j < nfft; ++j)
+      ao_scale[j] *= ao_nrmscl;
+    ComplexArray ao_work(nfft, ao_scale);
+    vector<double> ao_lag = ExtractLagWindow(ao_work, output_length, sample_shift);
+    double ao_peak = ao_lag[sample_shift];
+    if (fabs(ao_peak) <= 0.0)
+      throw MsPASSError(base_error + "actual output has zero peak",
+                        ErrorSeverity::Invalid);
+    for (i = 0; i < nseq; ++i) {
+      for (j = 0; j < nfft; ++j) {
+        double *zrf = rfestimates[i].ptr(j);
+        (*zrf) /= ao_peak;
+        (*(zrf + 1)) /= ao_peak;
+        double *zw = winv_taper[i].ptr(j);
+        (*zw) /= ao_peak;
+        (*(zw + 1)) /= ao_peak;
+        double *zao = ao_fft[i].ptr(j);
+        (*zao) /= ao_peak;
+        (*(zao + 1)) /= ao_peak;
+      }
     }
 
     /* To mesh with the API of other methods we now compute the average

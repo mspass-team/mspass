@@ -289,17 +289,21 @@ void MultiTaperXcorDecon::process() {
   ComplexArray duntapered(nfft, padded_data);
   gsl_fft_complex_forward(wuntapered.ptr(), 1, nfft, wavetable, workspace);
   gsl_fft_complex_forward(duntapered.ptr(), 1, nfft, wavetable, workspace);
-  ComplexArray denominator(wuntapered);
+  ComplexArray denominator(wdata[0]);
   denominator.conj();
-  denominator = denominator * wuntapered;
-  denominator += fdamp;
-  ComplexArray numerator(wuntapered);
-  numerator.conj();
-  numerator = numerator * duntapered;
-  ComplexArray rf_fft = numerator / denominator;
-  winv = wuntapered;
+  denominator = denominator * wdata[0];
+  winv = wdata[0];
   winv.conj();
+  for (i = 1; i < nseq; ++i) {
+    ComplexArray work(wdata[i]);
+    work.conj();
+    winv += work;
+    work = work * wdata[i];
+    denominator += work;
+  }
+  denominator += fdamp;
   winv = winv / denominator;
+  ComplexArray rf_fft = winv * duntapered;
   ao_fft = winv * wuntapered;
   ComplexArray ao_scale_test(ao_fft);
   ao_scale_test = (*shapingwavelet.wavelet()) * ao_scale_test;
