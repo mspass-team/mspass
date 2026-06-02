@@ -164,6 +164,10 @@ FrequencyDomainGIDDecon::FrequencyDomainGIDDecon(const AntelopePf &mdtoplevel)
     noise_component = mdgid.get<int>("noise_component");
     double target_dt = mdgid.get<double>("target_sample_interval");
     int maxns = static_cast<int>((fftwin.end - fftwin.start) / target_dt) + 1;
+    /* This top-level size is for GID output bookkeeping and shaping-wavelet
+     * construction.  Scalar inverse-operator preprocessors use their own
+     * linear FFT padding, and inverse_filter_residual allocates a local padded
+     * work buffer sized to the actual convolution it performs. */
     nfft = nextPowerOf2(maxns);
     mdgid.put("operator_nfft", nfft);
     this->ScalarDecon::changeparameter(mdgid);
@@ -312,23 +316,26 @@ CoreTimeSeries FrequencyDomainGIDDecon::inverse_wavelet(double t0parent) {
 dmatrix FrequencyDomainGIDDecon::inverse_filter_residual(
     const CoreSeismogram &residual) {
   CoreTimeSeries winv_ts(this->inverse_wavelet(residual.t0()));
-  vector<double> winv_work = padded_vector(winv_ts.s, nfft);
-  ComplexArray winv_fft(nfft, &(winv_work[0]));
-  gsl_fft_complex_wavetable *wavetable = gsl_fft_complex_wavetable_alloc(nfft);
-  gsl_fft_complex_workspace *workspace = gsl_fft_complex_workspace_alloc(nfft);
-  gsl_fft_complex_forward(winv_fft.ptr(), 1, nfft, wavetable, workspace);
+  const int conv_nfft = nextPowerOf2(winv_ts.npts() + residual.npts() - 1);
+  vector<double> winv_work = padded_vector(winv_ts.s, conv_nfft);
+  ComplexArray winv_fft(conv_nfft, &(winv_work[0]));
+  gsl_fft_complex_wavetable *wavetable =
+      gsl_fft_complex_wavetable_alloc(conv_nfft);
+  gsl_fft_complex_workspace *workspace =
+      gsl_fft_complex_workspace_alloc(conv_nfft);
+  gsl_fft_complex_forward(winv_fft.ptr(), 1, conv_nfft, wavetable, workspace);
 
   dmatrix candidate(3, residual.npts());
   candidate.zero();
   for (int k = 0; k < 3; ++k) {
-    vector<double> rwork(nfft, 0.0);
-    for (int i = 0; i < residual.npts() && i < nfft; ++i)
+    vector<double> rwork(conv_nfft, 0.0);
+    for (int i = 0; i < residual.npts(); ++i)
       rwork[i] = residual.u(k, i);
-    ComplexArray rfft(nfft, &(rwork[0]));
-    gsl_fft_complex_forward(rfft.ptr(), 1, nfft, wavetable, workspace);
+    ComplexArray rfft(conv_nfft, &(rwork[0]));
+    gsl_fft_complex_forward(rfft.ptr(), 1, conv_nfft, wavetable, workspace);
     ComplexArray gout = winv_fft * rfft;
-    gsl_fft_complex_inverse(gout.ptr(), 1, nfft, wavetable, workspace);
-    for (int i = 0; i < residual.npts() && i < nfft; ++i)
+    gsl_fft_complex_inverse(gout.ptr(), 1, conv_nfft, wavetable, workspace);
+    for (int i = 0; i < residual.npts(); ++i)
       candidate(k, i) = gout[i].real();
   }
   gsl_fft_complex_wavetable_free(wavetable);

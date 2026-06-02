@@ -98,6 +98,12 @@ TimeDomainGIDDecon::TimeDomainGIDDecon(const AntelopePf &mdtoplevel)
     double target_dt = mdgiter.get<double>("target_sample_interval");
     int maxns = static_cast<int>((fftwin.end - fftwin.start) / target_dt);
     ++maxns; // Add one - points not intervals
+    /* This buffer is used for the top-level GID shaping-wavelet object, not
+     * for residual convolution.  Time-domain GID residual updates use an
+     * explicitly bounded FIR subtraction with actual_o_fir, so increasing this
+     * to a full linear-convolution FFT length would add cost without reducing
+     * circular wrap.  The scalar inverse-operator preprocessors have their own
+     * linear FFT padding policy. */
     nfft = nextPowerOf2(maxns);
     /* This should override this even if it was previously set */
     mdgiter.put("operator_nfft", nfft);
