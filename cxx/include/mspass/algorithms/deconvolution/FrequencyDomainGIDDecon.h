@@ -38,7 +38,7 @@ public:
 private:
   mspass::seismic::CoreSeismogram d_all, d_decon, r, n;
   mspass::algorithms::TimeWindow dwin, nwin, fftwin;
-  int ndwin, nnwin, nfft, noise_component;
+  int ndwin, nnwin, noise_component;
   int actual_o_0, iter_count, iter_max;
   double residual_ratio_floor, residual_improvement_floor;
   double resid_l2_initial, resid_l2_prev, resid_l2_final;
@@ -47,13 +47,10 @@ private:
   ScalarDecon *preprocessor;
   CNRDeconEngine *cnrprocessor;
   mspass::seismic::TimeSeries current_wavelet;
-  ShapingWavelet shapingwavelet;
   std::vector<double> actual_o_fir;
   std::list<ThreeCSpike> spikes;
 
   void initialize_inverse_operator();
-  mspass::utility::dmatrix inverse_filter_residual(
-      const mspass::seismic::CoreSeismogram &residual);
   void rescale_spike(ThreeCSpike &spk);
   void update_residual_matrix(const ThreeCSpike &spk);
 };

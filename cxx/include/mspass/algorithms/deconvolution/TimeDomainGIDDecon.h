@@ -117,11 +117,8 @@ private:
   mspass::seismic::CoreSeismogram d_all, d_decon, r, n;
   /* We save the set of data lengths for clarity and a minor bit efficiency.
   ndwin is the number of samples in d_all and r.
-  nnwin is the number of samples in n.
-  nfft is the size of d_decon */
-  int ndwin, nnwin, nfft;
-  /* this is the time shift in sample applied by preprocessor*/
-  int time_shift;
+  nnwin is the number of samples in n. */
+  int ndwin, nnwin;
   /* Save the TimeWindow objects hat define the extent of d_all, d_decon,
   and n.   Some things need at least some of these downstream */
   mspass::algorithms::TimeWindow dwin, nwin, fftwin;
@@ -150,22 +147,18 @@ private:
   CNRDeconEngine *cnrprocessor;
   mspass::seismic::TimeSeries current_wavelet;
 
-  /* This defines a shaping wavelet applied to output.  The inverse filter
-  preprocessing algorithm is assumed to have it's own embedded shaping wavelet.
-  i.e. this is the wavelet convolved with the output spike sequence. */
-  ShapingWavelet shapingwavelet;
   /* This parameter is set in the constructor.  It would normally be half the
-  length of the fir representation of the inverse wavelet. (winv_fir below)*/
+  length of the fir representation of the inverse wavelet.*/
   int wavelet_pad;
   /*! \brief Shorted inverse wavelet used for iteration.
 
   The iteration is done here in the time domain.  The wavelet returned by
   the preprocessor algorithm will commonly have lots of zeros or small numbers
   outside a central area.  The constructor to needs to define how that
-  long wavelet is shortened to build this one. winv_fir is the inverse
-  wavelet vector and actual_o_fir is the ideal output fir filter vector.
+  long wavelet is shortened to build this one. actual_o_fir is the ideal
+  output fir filter vector.
   */
-  std::vector<double> winv_fir, actual_o_fir;
+  std::vector<double> actual_o_fir;
   int actual_o_0; // offset from sample zero for zero lag position
   IterDeconType decon_type;
   /* This is called by the constructor to create the wtf penalty function */

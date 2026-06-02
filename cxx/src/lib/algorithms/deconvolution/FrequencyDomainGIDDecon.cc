@@ -45,14 +45,6 @@ double matrix_linf(dmatrix &d) {
   return dmax;
 }
 
-vector<double> padded_vector(const vector<double> &x, const int n) {
-  vector<double> result(n, 0.0);
-  const int ncopy = min(static_cast<int>(x.size()), n);
-  for (int i = 0; i < ncopy; ++i)
-    result[i] = x[i];
-  return result;
-}
-
 vector<double> solve_dense_system_fd(vector<vector<double>> a,
                                      vector<double> b) {
   const int n = b.size();
@@ -164,14 +156,9 @@ FrequencyDomainGIDDecon::FrequencyDomainGIDDecon(const AntelopePf &mdtoplevel)
     noise_component = mdgid.get<int>("noise_component");
     double target_dt = mdgid.get<double>("target_sample_interval");
     int maxns = static_cast<int>((fftwin.end - fftwin.start) / target_dt) + 1;
-    /* This top-level size is for GID output bookkeeping and shaping-wavelet
-     * construction.  Scalar inverse-operator preprocessors use their own
-     * linear FFT padding, and inverse_filter_residual allocates a local padded
-     * work buffer sized to the actual convolution it performs. */
-    nfft = nextPowerOf2(maxns);
+    int nfft = nextPowerOf2(maxns);
     mdgid.put("operator_nfft", nfft);
     this->ScalarDecon::changeparameter(mdgid);
-    shapingwavelet = ShapingWavelet(mdgid, nfft);
     iter_max = mdgid.get<int>("maximum_iterations");
     residual_ratio_floor = mdgid.get<double>("residual_ratio_floor");
     residual_improvement_floor =
@@ -311,36 +298,6 @@ CoreTimeSeries FrequencyDomainGIDDecon::inverse_wavelet(double t0parent) {
   if (decon_type == CNR)
     return cnrprocessor->inverse_wavelet(current_wavelet, t0parent);
   return preprocessor->inverse_wavelet(t0parent);
-}
-
-dmatrix FrequencyDomainGIDDecon::inverse_filter_residual(
-    const CoreSeismogram &residual) {
-  CoreTimeSeries winv_ts(this->inverse_wavelet(residual.t0()));
-  const int conv_nfft = nextPowerOf2(winv_ts.npts() + residual.npts() - 1);
-  vector<double> winv_work = padded_vector(winv_ts.s, conv_nfft);
-  ComplexArray winv_fft(conv_nfft, &(winv_work[0]));
-  gsl_fft_complex_wavetable *wavetable =
-      gsl_fft_complex_wavetable_alloc(conv_nfft);
-  gsl_fft_complex_workspace *workspace =
-      gsl_fft_complex_workspace_alloc(conv_nfft);
-  gsl_fft_complex_forward(winv_fft.ptr(), 1, conv_nfft, wavetable, workspace);
-
-  dmatrix candidate(3, residual.npts());
-  candidate.zero();
-  for (int k = 0; k < 3; ++k) {
-    vector<double> rwork(conv_nfft, 0.0);
-    for (int i = 0; i < residual.npts(); ++i)
-      rwork[i] = residual.u(k, i);
-    ComplexArray rfft(conv_nfft, &(rwork[0]));
-    gsl_fft_complex_forward(rfft.ptr(), 1, conv_nfft, wavetable, workspace);
-    ComplexArray gout = winv_fft * rfft;
-    gsl_fft_complex_inverse(gout.ptr(), 1, conv_nfft, wavetable, workspace);
-    for (int i = 0; i < residual.npts(); ++i)
-      candidate(k, i) = gout[i].real();
-  }
-  gsl_fft_complex_wavetable_free(wavetable);
-  gsl_fft_complex_workspace_free(workspace);
-  return candidate;
 }
 
 void FrequencyDomainGIDDecon::rescale_spike(ThreeCSpike &spk) {
