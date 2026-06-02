@@ -16,6 +16,13 @@ def pytest_addoption(parser):
         default="decon_validation_plots",
         help="directory used with --decon-validation-plots",
     )
+    parser.addoption(
+        "--decon-validation-noise-scale",
+        action="store",
+        type=float,
+        default=0.01,
+        help="colored-noise scale for optional deconvolution validation plots",
+    )
 
 
 @pytest.fixture
@@ -25,3 +32,8 @@ def decon_validation_plot_dir(request):
     plot_dir = Path(request.config.getoption("--decon-validation-plot-dir"))
     plot_dir.mkdir(parents=True, exist_ok=True)
     return plot_dir
+
+
+@pytest.fixture
+def decon_validation_noise_scale(request):
+    return request.config.getoption("--decon-validation-noise-scale")

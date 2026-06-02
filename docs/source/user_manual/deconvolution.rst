@@ -102,6 +102,12 @@ Three-component and iterative operators
     convolved with the output shaping wavelet; the raw sparse train is not
     the finite-bandwidth receiver function.
 
+    The ``multi_taper`` inverse mode in both GID engines currently uses
+    ``MultiTaperXcorDecon`` as the core inverse operator.  In
+    ``TimeDomainGIDDecon`` the term "time domain" describes the iterative
+    residual subtraction and sparse-spike update.  The multitaper inverse
+    operator itself is still estimated in the frequency domain.
+
     The iterative operators expose separate convergence controls for
     fractional residual improvement and normalized residual energy.  The
     residual-energy threshold is a noise-level stopping rule: increasing it
@@ -129,7 +135,8 @@ colored three-component synthetic validation case, run for example:
    /home/iwang/code/.venvs/mspass-dev/bin/python -m pytest \
        python/tests/algorithms/test_decon_algorithm_validation.py::test_scalar_methods_are_consistent_for_complex_colored_3c_synthetic \
        --decon-validation-plots \
-       --decon-validation-plot-dir /tmp/mspass-decon-validation-plots
+       --decon-validation-plot-dir /tmp/mspass-decon-validation-plots \
+       --decon-validation-noise-scale 0.03
 
 The output directory will contain:
 
@@ -151,5 +158,17 @@ The output directory will contain:
     for each configured inverse-operator mode: least squares, water level,
     multitaper, and CNR.
 
+``scalar_noise_<scale>_stress_spike_results.png``
+    Scalar-method results for a denser synthetic with multiple close,
+    opposite-polarity spike pairs.  The ``<scale>`` value is controlled by
+    ``--decon-validation-noise-scale``.
+
+``TimeDomainGIDDecon_noise_<scale>_stress_spike_results.png`` and
+``FrequencyDomainGIDDecon_noise_<scale>_stress_spike_results.png``
+    GID inverse-mode overlays for the same dense stress synthetic and selected
+    plot noise scale.
+
 These figures are intended as an audit aid.  The numerical assertions in the
-test remain the source of pass/fail behavior.
+test remain the source of pass/fail behavior and use a fixed reproducible
+noise level.  The command-line noise scale is for the optional stress plots so
+you can visually compare behavior as noise increases.

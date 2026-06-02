@@ -16,7 +16,7 @@ from mspasspy.ccore.algorithms.deconvolution import (
     FrequencyDomainGIDDecon,
     TimeDomainGIDDecon,
 )
-from mspasspy.ccore.seismic import DoubleVector
+from mspasspy.ccore.seismic import DoubleVector, Seismogram, TimeReferenceType
 from mspasspy.ccore.utility import pfread
 
 from decon_data_generators import (
@@ -36,6 +36,20 @@ EXPECTED_TRANSVERSE_RATIOS = {
     0.0: (EXPECTED_EW_Z_RATIO, EXPECTED_NS_Z_RATIO),
     7.5: (-20.0 / 150.0, -3.0 / 150.0),
     9.0: (15.0 / 150.0, 2.0 / 150.0),
+}
+STRESS_SPIKES = {
+    0.0: (-15.0, 10.0, 150.0),
+    1.2: (12.0, 18.0, 0.0),
+    1.7: (-10.0, -22.0, 0.0),
+    2.5: (20.0, 20.0, 0.0),
+    3.0: (15.0, -30.0, 0.0),
+    4.2: (-18.0, 26.0, 0.0),
+    4.75: (16.0, -24.0, 0.0),
+    6.8: (-24.0, -16.0, 0.0),
+    7.35: (22.0, 15.0, 0.0),
+    8.9: (15.0, 12.0, 0.0),
+    10.4: (-14.0, 19.0, 0.0),
+    10.95: (13.0, -18.0, 0.0),
 }
 
 
@@ -80,6 +94,46 @@ def _make_complex_colored_validation_data(return_truth=False):
     hf_noise = signal.sosfilt(sos, np.random.default_rng(24680).standard_normal(data.npts))
     data.data[0, :] += 0.006 * hf_noise
     data.data[1, :] -= 0.004 * hf_noise
+    data["low_f_band_edge"] = 0.02
+    data["high_f_band_edge"] = 2.0
+    if return_truth:
+        return data, truth, wavelet
+    return data
+
+
+def _make_stress_truth(n=1500, dt=0.05, t0=-5.0):
+    truth = Seismogram(n)
+    truth.set_t0(t0)
+    truth.set_dt(dt)
+    truth.set_live()
+    truth.tref = TimeReferenceType.Relative
+    for arrival_time, amplitudes in STRESS_SPIKES.items():
+        sample = int(round((arrival_time - t0) / dt))
+        if 0 <= sample < n:
+            for component, amplitude in enumerate(amplitudes):
+                truth.data[component, sample] = amplitude
+    return truth
+
+
+def _make_stress_colored_validation_data(noise_scale=0.025, return_truth=False):
+    np.random.seed(97531)
+    wavelet = make_simulation_wavelet(corners=[0.35, 7.5])
+    notched_wavelet = _notch_filter_vector(
+        wavelet.data,
+        wavelet.dt,
+        [(0.9, 0.10, 0.70), (2.6, 0.18, 0.80), (5.2, 0.25, 0.65)],
+    )
+    wavelet.data = DoubleVector(notched_wavelet.tolist())
+    truth = _make_stress_truth()
+    data = convolve_wavelet(truth, wavelet)
+    data = addnoise(data, nscale=noise_scale, padlength=900, corners=[0.04, 3.0])
+    t = np.arange(data.npts) * data.dt + data.t0
+    for component, scale, phase in [(0, 0.012, 0.4), (1, 0.016, 1.7), (2, 0.009, 2.4)]:
+        data.data[component, :] += scale * np.sin(2.0 * np.pi * 0.16 * t + phase)
+    sos = signal.butter(3, [2.2, 6.5], btype="bandpass", output="sos", fs=1.0 / data.dt)
+    hf_noise = signal.sosfilt(sos, np.random.default_rng(97531).standard_normal(data.npts))
+    data.data[0, :] += 0.006 * hf_noise
+    data.data[1, :] -= 0.005 * hf_noise
     data["low_f_band_edge"] = 0.02
     data["high_f_band_edge"] = 2.0
     if return_truth:
@@ -177,6 +231,51 @@ def _assert_colored_gid_arrival_signs_are_recovered(matrix, t0, dt):
         assert np.sign(ns) == expected[1], arrival_time
         assert abs(ew) > 1.0e-3, arrival_time
         assert abs(ns) > 1.0e-3, arrival_time
+
+
+def _local_peak(matrix, component, sample, half_width=2):
+    start = max(0, sample - half_width)
+    stop = min(matrix.shape[1], sample + half_width + 1)
+    window = matrix[component, start:stop]
+    return window[int(np.argmax(np.abs(window)))]
+
+
+def _assert_stress_arrivals_recovered(matrix, t0, dt, ratio_tol=9.0e-2):
+    z0_sample = int(round((0.0 - t0) / dt))
+    z0 = matrix[2, z0_sample]
+    assert abs(z0) > 1.0e-8
+    for arrival_time, amplitudes in STRESS_SPIKES.items():
+        sample = int(round((arrival_time - t0) / dt))
+        for component in (0, 1):
+            expected = amplitudes[component]
+            if expected == 0.0:
+                continue
+            recovered = _local_peak(matrix, component, sample) / z0
+            assert np.sign(recovered) == np.sign(expected), (
+                arrival_time,
+                component,
+            )
+            assert np.isclose(recovered, expected / 150.0, atol=ratio_tol), (
+                arrival_time,
+                component,
+            )
+
+
+def _assert_stress_gid_signs_recovered(matrix, t0, dt):
+    for arrival_time, amplitudes in STRESS_SPIKES.items():
+        if arrival_time == 0.0:
+            continue
+        sample = int(round((arrival_time - t0) / dt))
+        for component in (0, 1):
+            expected = amplitudes[component]
+            if expected == 0.0:
+                continue
+            recovered = _local_peak(matrix, component, sample)
+            assert np.sign(recovered) == np.sign(expected), (
+                arrival_time,
+                component,
+            )
+            assert abs(recovered) > 1.0e-3, (arrival_time, component)
 
 
 def _truth_matrix_for_times(truth, times):
@@ -286,6 +385,20 @@ def _plot_complex_colored_results(plot_dir, results, truth, wavelet):
     plt.close(fig)
 
 
+def _plot_stress_results(plot_dir, results, truth, wavelet, t0, dt, prefix):
+    if plot_dir is None:
+        return
+    _plot_rf_overlay(
+        plot_dir,
+        f"{prefix}_stress_spike_results.png",
+        f"{prefix} stress validation with close opposite-polarity spikes",
+        results,
+        truth,
+        t0,
+        dt,
+    )
+
+
 def _plot_gid_mode_results(plot_dir, engine_name, results, truth, t0, dt):
     _plot_rf_overlay(
         plot_dir,
@@ -366,6 +479,58 @@ def test_scalar_methods_are_consistent_for_complex_colored_3c_synthetic(
     _plot_complex_colored_results(decon_validation_plot_dir, results, truth, wavelet)
 
 
+def test_scalar_methods_recover_stress_spikes_with_colored_noise(
+    decon_validation_plot_dir,
+    decon_validation_noise_scale,
+):
+    data, truth, wavelet = _make_stress_colored_validation_data(
+        noise_scale=0.01,
+        return_truth=True,
+    )
+    results = {
+        "LeastSquares": _scalar_rf_matrix("LeastSquares", data),
+        "WaterLevel": _scalar_rf_matrix("WaterLevel", data),
+        "MultiTaperXcor": _scalar_rf_matrix("MultiTaperXcor", data),
+        "MultiTaperSpecDiv": _scalar_rf_matrix("MultiTaperSpecDiv", data),
+    }
+
+    for result in results.values():
+        assert np.isfinite(result).all()
+        _assert_stress_arrivals_recovered(result, SIGNAL_WINDOW.start, truth.dt)
+
+    assert _normalized_correlation(results["LeastSquares"], results["WaterLevel"]) > 0.93
+    assert _normalized_correlation(results["LeastSquares"], results["MultiTaperXcor"]) > 0.82
+    assert _normalized_correlation(results["LeastSquares"], results["MultiTaperSpecDiv"]) > 0.82
+    assert _normalized_correlation(results["MultiTaperXcor"], results["MultiTaperSpecDiv"]) > 0.90
+    assert (
+        np.max(np.abs(results["MultiTaperXcor"] - results["MultiTaperSpecDiv"]))
+        > 1.0e-2
+    )
+    plot_results = results
+    plot_truth = truth
+    plot_wavelet = wavelet
+    if decon_validation_plot_dir is not None and decon_validation_noise_scale != 0.01:
+        plot_data, plot_truth, plot_wavelet = _make_stress_colored_validation_data(
+            noise_scale=decon_validation_noise_scale,
+            return_truth=True,
+        )
+        plot_results = {
+            "LeastSquares": _scalar_rf_matrix("LeastSquares", plot_data),
+            "WaterLevel": _scalar_rf_matrix("WaterLevel", plot_data),
+            "MultiTaperXcor": _scalar_rf_matrix("MultiTaperXcor", plot_data),
+            "MultiTaperSpecDiv": _scalar_rf_matrix("MultiTaperSpecDiv", plot_data),
+        }
+    _plot_stress_results(
+        decon_validation_plot_dir,
+        plot_results,
+        plot_truth,
+        plot_wavelet,
+        SIGNAL_WINDOW.start,
+        plot_truth.dt,
+        f"scalar_noise_{decon_validation_noise_scale:g}",
+    )
+
+
 @pytest.mark.parametrize(
     "engine_class, wrapper, pfname, branch_name, modes, qc_key",
     [
@@ -438,4 +603,94 @@ def test_gid_methods_recover_colored_multi_spike_rf_for_all_inverse_modes(
         truth,
         plot_t0,
         plot_dt,
+    )
+
+
+@pytest.mark.parametrize(
+    "engine_class, wrapper, pfname, branch_name, modes, qc_key",
+    [
+        (
+            TimeDomainGIDDecon,
+            TimeDomainGIDRFDecon,
+            "data/pf/TimeDomainGIDDecon.pf",
+            "time_domain_gid_deconvolution",
+            ["least_square", "water_level", "multi_taper", "cnr3c"],
+            "TimeDomainGIDDecon_properties",
+        ),
+        (
+            FrequencyDomainGIDDecon,
+            FrequencyDomainGIDRFDecon,
+            "data/pf/FrequencyDomainGIDDecon.pf",
+            "frequency_domain_gid_deconvolution",
+            ["least_square", "water_level", "multi_taper", "cnr"],
+            "FrequencyDomainGIDDecon_properties",
+        ),
+    ],
+)
+def test_gid_methods_recover_stress_spike_signs_for_all_inverse_modes(
+    tmp_path,
+    decon_validation_plot_dir,
+    decon_validation_noise_scale,
+    engine_class,
+    wrapper,
+    pfname,
+    branch_name,
+    modes,
+    qc_key,
+):
+    plot_results = {}
+    plot_t0 = None
+    plot_dt = None
+    data, truth, _ = _make_stress_colored_validation_data(
+        noise_scale=0.01,
+        return_truth=True,
+    )
+    for mode in modes:
+        pf = _pf_with_gid_mode(tmp_path, pfname, branch_name, mode)
+        engine = engine_class(pf)
+        rf = wrapper(
+            data,
+            engine,
+            signal_window=TimeWindow(-8.0, 20.0),
+            noise_window=TimeWindow(-35.0, -5.0),
+        )
+        assert rf.live, mode
+        assert rf[qc_key]["residual_L2_final"] < rf[qc_key]["residual_L2_initial"]
+        matrix = np.asarray(rf.data)
+        _assert_stress_gid_signs_recovered(matrix, rf.t0, rf.dt)
+        plot_results[mode] = matrix
+        plot_t0 = rf.t0
+        plot_dt = rf.dt
+
+    plot_truth = truth
+    if decon_validation_plot_dir is not None and decon_validation_noise_scale != 0.01:
+        plot_data, plot_truth, _ = _make_stress_colored_validation_data(
+            noise_scale=decon_validation_noise_scale,
+            return_truth=True,
+        )
+        plot_results = {}
+        plot_t0 = None
+        plot_dt = None
+        for mode in modes:
+            pf = _pf_with_gid_mode(tmp_path, pfname, branch_name, mode)
+            engine = engine_class(pf)
+            rf = wrapper(
+                plot_data,
+                engine,
+                signal_window=TimeWindow(-8.0, 20.0),
+                noise_window=TimeWindow(-35.0, -5.0),
+            )
+            if rf.live:
+                plot_results[mode] = np.asarray(rf.data)
+                plot_t0 = rf.t0
+                plot_dt = rf.dt
+
+    _plot_stress_results(
+        decon_validation_plot_dir,
+        plot_results,
+        plot_truth,
+        None,
+        plot_t0,
+        plot_dt,
+        f"{engine_class.__name__}_noise_{decon_validation_noise_scale:g}",
     )
