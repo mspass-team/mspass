@@ -45,7 +45,7 @@ private:
   double reliability_taper(const double snr) const;
   double mu_min, alpha, noise_floor, gain_max;
   double snr_taper_low, snr_taper_high;
-  bool use_reliability_taper;
+  bool use_reliability_taper, apply_output_shaping;
   bool noise_vector_loaded, noise_spectrum_loaded;
   std::vector<double> noise;
   mspass::seismic::PowerSpectrum noise_spectrum;

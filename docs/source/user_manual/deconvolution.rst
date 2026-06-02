@@ -152,6 +152,10 @@ Three-component and iterative operators
     candidate spike detection and stabilization.  The residual update remains
     in the GID data domain, and the configured ``ShapingWavelet`` controls only
     how the accepted sparse support is represented in finite bandwidth output.
+    The underlying ``NoiseStableDecon`` scalar operator defaults to a shaped
+    scalar deconvolution result when used directly.  GID parameter files set
+    ``ns_gid_apply_output_shaping`` to false so the iterative peak picker sees
+    the raw stable inverse-filtered residual instead of a display-shaped trace.
     Candidate acceptance can use an empirical inverse-filtered noise threshold,
     a sigma threshold, residual-to-noise stopping, maximum spike count, and
     the existing fractional-improvement limit.  Higher thresholds suppress

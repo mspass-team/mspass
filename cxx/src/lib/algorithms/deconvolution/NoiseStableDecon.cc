@@ -33,6 +33,7 @@ NoiseStableDecon::NoiseStableDecon()
     : FFTDeconOperator(), ScalarDecon(), mu_min(1.0e-8), alpha(1.0),
       noise_floor(1.0e-12), gain_max(1.0e3), snr_taper_low(1.0),
       snr_taper_high(3.0), use_reliability_taper(false),
+      apply_output_shaping(true),
       noise_vector_loaded(false), noise_spectrum_loaded(false),
       max_gain_actual(0.0), noise_amplification(0.0),
       effective_bandwidth_fraction(0.0) {}
@@ -62,6 +63,8 @@ int NoiseStableDecon::read_metadata(const Metadata &md) {
   snr_taper_high = get_double_default(md, "ns_gid_snr_taper_high", 3.0);
   use_reliability_taper =
       get_bool_default(md, "ns_gid_use_reliability_taper", false);
+  apply_output_shaping =
+      get_bool_default(md, "ns_gid_apply_output_shaping", true);
   if (mu_min <= 0.0)
     throw MsPASSError(base_error + "ns_gid_mu_min must be positive",
                       ErrorSeverity::Invalid);
@@ -200,6 +203,8 @@ void NoiseStableDecon::process() {
       static_cast<double>(usable_bins) / static_cast<double>(nfft);
 
   ComplexArray rf_fft = winv * d_fft;
+  if (apply_output_shaping)
+    rf_fft = (*shapingwavelet.wavelet()) * rf_fft;
   gsl_fft_complex_inverse(rf_fft.ptr(), 1, nfft, wavetable, workspace);
   result = ExtractLagWindow(rf_fft, output_length, sample_shift);
 }
@@ -211,6 +216,8 @@ CoreTimeSeries NoiseStableDecon::actual_output() {
   ComplexArray W(nfft, &(wavelet_padded[0]));
   gsl_fft_complex_forward(W.ptr(), 1, nfft, wavetable, workspace);
   ComplexArray ao_fft = winv * W;
+  if (apply_output_shaping)
+    ao_fft = (*shapingwavelet.wavelet()) * ao_fft;
   gsl_fft_complex_inverse(ao_fft.ptr(), 1, nfft, wavetable, workspace);
   vector<double> ao;
   ao.reserve(nfft);
@@ -236,8 +243,10 @@ CoreTimeSeries NoiseStableDecon::inverse_wavelet(const double t0parent) {
   ComplexArray no_shaping(nfft);
   for (int k = 0; k < nfft; ++k) {
     double *ptr = no_shaping.ptr(k);
-    ptr[0] = 1.0;
+    ptr[0] = apply_output_shaping ? (*shapingwavelet.wavelet())[k].real() : 1.0;
     ptr[1] = 0.0;
+    if (apply_output_shaping)
+      ptr[1] = (*shapingwavelet.wavelet())[k].imag();
   }
   return this->FourierInverse(winv, no_shaping, dt, t0parent);
 }
@@ -257,6 +266,7 @@ Metadata NoiseStableDecon::QCMetrics() {
          effective_bandwidth_fraction);
   md.put("ns_gid_operator_nfft", nfft);
   md.put("ns_gid_use_reliability_taper", use_reliability_taper);
+  md.put("ns_gid_apply_output_shaping", apply_output_shaping);
   return md;
 }
 } // namespace mspass::algorithms::deconvolution

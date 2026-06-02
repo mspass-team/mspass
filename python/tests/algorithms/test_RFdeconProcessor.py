@@ -62,6 +62,7 @@ def test_RFdeconProcessor():
     ]
     decon_processor = RFdeconProcessor(alg="MultiTaperXcor")
 
+    np.random.seed(20240602)
     seis_data0 = get_live_seismogram()
     seis_wavelet0 = get_live_seismogram()
     seis_noise0 = get_live_seismogram()

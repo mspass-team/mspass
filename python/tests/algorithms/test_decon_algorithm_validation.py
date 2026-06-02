@@ -184,6 +184,7 @@ def _noise_stable_metadata():
     md.put_double("ns_gid_snr_taper_low", 1.0)
     md.put_double("ns_gid_snr_taper_high", 3.0)
     md.put_bool("ns_gid_use_reliability_taper", False)
+    md.put_bool("ns_gid_apply_output_shaping", True)
     return md
 
 
