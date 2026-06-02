@@ -9,6 +9,7 @@
 #include "mspass/seismic/TimeSeries.h"
 #include "mspass/utility/AntelopePf.h"
 #include "mspass/utility/MsPASSError.h"
+#include <gsl/gsl_linalg.h>
 #include <algorithm>
 #include <math.h>
 #include <list>
@@ -323,40 +324,58 @@ vector<double> amp3c(dmatrix &d) {
   return result;
 }
 
-vector<double> solve_dense_system(vector<vector<double>> a, vector<double> b) {
+double fir_self_overlap(const vector<double> &fir, const int col0_i,
+                        const int col0_j, const int ncols) {
+  const int nf = static_cast<int>(fir.size());
+  const int offset = col0_i - col0_j;
+  const int p_start = max({0, -col0_i, -offset});
+  const int p_end = min({nf, ncols - col0_i, nf - offset});
+  const int n = p_end - p_start;
+  if (n <= 0)
+    return 0.0;
+  return cblas_ddot(n, &(fir[p_start]), 1, &(fir[p_start + offset]), 1);
+}
+
+double fir_data_overlap(const vector<double> &fir, const CoreSeismogram &target,
+                        const int component, const int col0) {
+  const int nf = static_cast<int>(fir.size());
+  const int p_start = max(0, -col0);
+  const int p_end = min(nf, static_cast<int>(target.npts()) - col0);
+  const int n = p_end - p_start;
+  if (n <= 0)
+    return 0.0;
+  return cblas_ddot(n, &(fir[p_start]), 1,
+                    target.u.get_address(component, col0 + p_start), 3);
+}
+
+vector<double> solve_dense_system(const vector<vector<double>> &a,
+                                  const vector<double> &b) {
   const int n = b.size();
+  vector<double> result(n, 0.0);
+  if (n <= 0)
+    return result;
+  gsl_matrix *A = gsl_matrix_alloc(n, n);
+  gsl_vector *B = gsl_vector_alloc(n);
+  gsl_vector *X = gsl_vector_alloc(n);
+  gsl_permutation *p = gsl_permutation_alloc(n);
   for (int i = 0; i < n; ++i) {
-    int pivot = i;
-    double pivot_abs = fabs(a[i][i]);
-    for (int r = i + 1; r < n; ++r) {
-      double candidate = fabs(a[r][i]);
-      if (candidate > pivot_abs) {
-        pivot = r;
-        pivot_abs = candidate;
-      }
-    }
-    if (pivot_abs <= 0.0)
-      continue;
-    if (pivot != i) {
-      swap(a[i], a[pivot]);
-      swap(b[i], b[pivot]);
-    }
-    double diag = a[i][i];
-    for (int c = i; c < n; ++c)
-      a[i][c] /= diag;
-    b[i] /= diag;
-    for (int r = 0; r < n; ++r) {
-      if (r == i)
-        continue;
-      double factor = a[r][i];
-      if (factor == 0.0)
-        continue;
-      for (int c = i; c < n; ++c)
-        a[r][c] -= factor * a[i][c];
-      b[r] -= factor * b[i];
-    }
+    gsl_vector_set(B, i, b[i]);
+    for (int j = 0; j < n; ++j)
+      gsl_matrix_set(A, i, j, a[i][j]);
   }
-  return b;
+  int signum;
+  int status = gsl_linalg_LU_decomp(A, p, &signum);
+  if (status == 0)
+    status = gsl_linalg_LU_solve(A, p, B, X);
+  if (status == 0) {
+    for (int i = 0; i < n; ++i)
+      result[i] = gsl_vector_get(X, i);
+  }
+  gsl_permutation_free(p);
+  gsl_vector_free(X);
+  gsl_vector_free(B);
+  gsl_matrix_free(A);
+  return result;
 }
 
 void refit_spike_amplitudes(list<ThreeCSpike> &spikes,
@@ -375,14 +394,8 @@ void refit_spike_amplitudes(list<ThreeCSpike> &spikes,
     int col0_i = spike_ptrs[i]->col - actual_o_0;
     for (int j = i; j < nspikes; ++j) {
       int col0_j = spike_ptrs[j]->col - actual_o_0;
-      double gij(0.0);
-      for (int p = 0; p < actual_o_fir.size(); ++p) {
-        int target_col = col0_i + p;
-        int q = target_col - col0_j;
-        if ((target_col >= 0) && (target_col < target.npts()) && (q >= 0) &&
-            (q < actual_o_fir.size()))
-          gij += actual_o_fir[p] * actual_o_fir[q];
-      }
+      double gij =
+          fir_self_overlap(actual_o_fir, col0_i, col0_j, target.npts());
       gram[i][j] = gij;
       gram[j][i] = gij;
     }
@@ -397,11 +410,7 @@ void refit_spike_amplitudes(list<ThreeCSpike> &spikes,
     vector<double> rhs(nspikes, 0.0);
     for (int i = 0; i < nspikes; ++i) {
       int col0 = spike_ptrs[i]->col - actual_o_0;
-      for (int p = 0; p < actual_o_fir.size(); ++p) {
-        int target_col = col0 + p;
-        if ((target_col >= 0) && (target_col < target.npts()))
-          rhs[i] += actual_o_fir[p] * target.u(component, target_col);
-      }
+      rhs[i] = fir_data_overlap(actual_o_fir, target, component, col0);
     }
     vector<double> amps = solve_dense_system(gram, rhs);
     for (int i = 0; i < nspikes; ++i)
@@ -763,8 +772,7 @@ void TimeDomainGIDDecon::process() {
     resid_l2_history.clear();
     resid_linf_history.clear();
     lag_weights.clear();
-    vector<double> amps, wamps; // raw and weighted amplitudes
-    amps.reserve(r.npts());
+    vector<double> wamps; // weighted squared amplitudes
     wamps.reserve(r.npts());
     /* We need these iterators repeatedly in the main loop below */
     vector<double>::iterator amax;
@@ -792,10 +800,13 @@ void TimeDomainGIDDecon::process() {
     resid_linf_history.push_back(resid_linf_initial);
     do {
       /* Compute the vector of amplitudes and find the maximum */
-      amps = amp3c(r.u);
       wamps.clear();
-      for (k = 0; k < amps.size(); ++k)
-        wamps.push_back(amps[k] * lag_weights[k]);
+      for (int j = 0; j < r.npts(); ++j) {
+        double amp2(0.0);
+        for (k = 0; k < 3; ++k)
+          amp2 += r.u(k, j) * r.u(k, j);
+        wamps.push_back(amp2 * lag_weights[j] * lag_weights[j]);
+      }
       amax = max_element(wamps.begin(), wamps.end());
       /* The generic distance algorithm used here returns an integer
       that would work to access amps[imax] so we can use the same index
