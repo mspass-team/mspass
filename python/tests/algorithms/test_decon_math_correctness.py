@@ -10,6 +10,7 @@ from mspasspy.ccore.algorithms.deconvolution import (
     TimeDomainLeastSquareDecon,
     WaterLevelDecon,
 )
+from mspasspy.ccore.seismic import _CoreTimeSeries  # noqa: F401
 from mspasspy.ccore.utility import MsPASSError, pfread
 
 
@@ -83,6 +84,25 @@ def _fft_linear_convolution(wavelet, model):
     return np.fft.ifft(np.fft.fft(wavelet, nfft) * np.fft.fft(model, nfft)).real[
         :nout
     ]
+
+
+def test_scalar_fft_decon_uses_minimal_linear_padding(tmp_path):
+    n = 25
+    pf = _write_scalar_pf(tmp_path, nfft=n, window_end=float(n - 1))
+    model = np.zeros(n)
+    model[[0, 7, 24]] = [1.0, -0.25, 0.5]
+    wavelet = np.zeros(n)
+    wavelet[0] = 1.0
+    engine = LeastSquareDecon(pf)
+    engine.load(_double_vector(wavelet), _double_vector(model))
+    engine.process()
+
+    expected_nfft = 1 << ((2 * n - 1) - 1).bit_length()
+
+    assert expected_nfft == 64
+    assert engine.actual_output().npts == expected_nfft
+    assert len(engine.getresult()) == n
+    assert np.allclose(np.asarray(engine.getresult()), model, atol=1.0e-5)
 
 
 def test_direct_and_fft_padded_linear_convolution_agree():
@@ -172,6 +192,30 @@ def test_scalar_decon_methods_share_nonzero_lag_convention(
     recovered = _run_scalar_engine(engine_class, pf, wavelet, model)
 
     assert len(recovered) == len(model)
+    assert np.allclose(recovered, model, atol=1.0e-5)
+
+
+@pytest.mark.parametrize("engine_class", [LeastSquareDecon, WaterLevelDecon])
+def test_scalar_fft_decon_reduced_padding_does_not_wrap_boundary_lags(
+    tmp_path, engine_class
+):
+    n = 25
+    zero_lag_sample = 8
+    model = np.zeros(n)
+    model[[0, 1, n - 2, n - 1]] = [0.4, -0.8, 0.25, 1.0]
+    wavelet = np.zeros(n)
+    wavelet[zero_lag_sample] = 1.0
+    pf = _write_scalar_pf(
+        tmp_path,
+        nfft=n,
+        window_start=-float(zero_lag_sample),
+        window_end=float(n - zero_lag_sample - 1),
+    )
+
+    recovered = _run_scalar_engine(engine_class, pf, wavelet, model)
+
+    assert len(recovered) == n
+    assert np.argmax(np.abs(recovered)) == n - 1
     assert np.allclose(recovered, model, atol=1.0e-5)
 
 

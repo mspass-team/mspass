@@ -106,8 +106,8 @@ int ComputeFFTLength(const mspass::algorithms::TimeWindow w, const double dt);
 This procedure is basically a higher level version of the function of
 the same name with a time window and sample interval argument.
 This procedure extracts these using three parameter keys to extract
-the real numbers form md:  deconvolution_data_window_start,
-decon_window_end, and target dt. */
+the real numbers from md:  deconvolution_data_window_start,
+deconvolution_data_window_end, and target_sample_interval. */
 int ComputeFFTLength(const mspass::utility::Metadata &md);
 /*! Extract a non-circular output window from an inverse FFT work buffer.
  *
@@ -116,7 +116,8 @@ int ComputeFFTLength(const mspass::utility::Metadata &md);
  * a negative deconvolution window start are stored at the end of the padded
  * FFT buffer, but returns only the requested output window length.  The caller
  * must provide an FFT size large enough to hold guard samples; the default
- * ComputeFFTLength helper does that by using a three-window padded buffer.
+ * ComputeFFTLength helper pads to the exact linear convolution/correlation
+ * length of two loaded windows, rounded up to a power of two.
  */
 std::vector<double> ExtractLagWindow(ComplexArray &fft_buffer,
                                      const int output_length,

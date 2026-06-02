@@ -163,10 +163,11 @@ int ComputeFFTLength(const TimeWindow w, const double dt) {
   nsamples = static_cast<int>(((w.end - w.start) / dt)) + 1;
   /* Use a padded work buffer by default.  The scalar FFT decon operators are
    * intended for linear seismic time windows, not circular convolution of the
-   * finite window.  A three-window buffer gives one window of guard samples on
-   * each side of the requested output after lag shifting, matching the CNR
-   * engine's default padding policy. */
-  nfft = nextPowerOf2(3 * nsamples);
+   * finite window.  For two loaded windows of length N, 2*N-1 samples is the
+   * exact linear convolution/correlation length.  Rounding that value up to a
+   * power of two gives the FFT implementation enough guard samples without the
+   * extra cost and spectral over-sampling of a three-window buffer. */
+  nfft = nextPowerOf2(2 * nsamples - 1);
   return nfft;
 }
 /* Newbies note this works because of the fundamental concept of

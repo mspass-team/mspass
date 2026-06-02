@@ -22,7 +22,12 @@ noise.  For discrete data, the implementation treats this as a linear
 convolution problem.  FFT-based scalar operators pad the working arrays
 before transforming, then extract the requested lag window from the padded
 linear-convolution result.  The default result is therefore not the wrapped
-output of a circular convolution.
+output of a circular convolution.  For a requested output window of ``N``
+samples, scalar FFT operators use an FFT length of at least ``2*N - 1``,
+rounded up to the next power of two.  That is the linear
+convolution/correlation length for the loaded source and data windows and
+avoids the unnecessary computation and diagnostic spectral over-sampling of a
+larger guard buffer.
 
 The receiver-function output window is controlled by the operator parameter
 file, normally through ``deconvolution_data_window_start`` and
