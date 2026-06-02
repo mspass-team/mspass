@@ -3,6 +3,7 @@
 
 import numpy as np
 import pytest
+from scipy import signal
 
 from mspasspy.algorithms.CNRDecon import CNRRFDecon
 from mspasspy.algorithms.FrequencyDomainGIDDecon import FrequencyDomainGIDRFDecon
@@ -15,6 +16,7 @@ from mspasspy.ccore.algorithms.deconvolution import (
     FrequencyDomainGIDDecon,
     TimeDomainGIDDecon,
 )
+from mspasspy.ccore.seismic import DoubleVector
 from mspasspy.ccore.utility import pfread
 
 from decon_data_generators import (
@@ -38,6 +40,41 @@ def _make_validation_data(noise_level=0.0):
     truth = make_impulse_data()
     data = convolve_wavelet(truth, wavelet)
     data = addnoise(data, nscale=noise_level, padlength=800)
+    data["low_f_band_edge"] = 0.02
+    data["high_f_band_edge"] = 2.0
+    return data
+
+
+def _notch_filter_vector(x, dt, notches):
+    spec = np.fft.rfft(np.asarray(x, dtype=np.float64))
+    freq = np.fft.rfftfreq(len(x), dt)
+    response = np.ones_like(freq)
+    for center, width, depth in notches:
+        response *= 1.0 - depth * np.exp(-0.5 * ((freq - center) / width) ** 2)
+    return np.fft.irfft(spec * response, len(x))
+
+
+def _make_complex_colored_validation_data():
+    np.random.seed(24680)
+    wavelet = make_simulation_wavelet(corners=[0.4, 7.0])
+    notched_wavelet = _notch_filter_vector(
+        wavelet.data, wavelet.dt, [(1.2, 0.12, 0.75), (4.5, 0.20, 0.65)]
+    )
+    wavelet.data = DoubleVector(notched_wavelet.tolist())
+    truth = make_impulse_data()
+    data = convolve_wavelet(truth, wavelet)
+    data = addnoise(data, nscale=0.025, padlength=900, corners=[0.04, 2.8])
+
+    # Add a weak, coherent low-frequency field and a higher-frequency
+    # transverse noise term.  This mimics colored seismic noise without
+    # destroying the known receiver-function arrivals.
+    t = np.arange(data.npts) * data.dt + data.t0
+    for component, scale, phase in [(0, 0.010, 0.2), (1, 0.014, 1.1), (2, 0.008, 2.0)]:
+        data.data[component, :] += scale * np.sin(2.0 * np.pi * 0.18 * t + phase)
+    sos = signal.butter(3, [2.5, 6.0], btype="bandpass", output="sos", fs=1.0 / data.dt)
+    hf_noise = signal.sosfilt(sos, np.random.default_rng(24680).standard_normal(data.npts))
+    data.data[0, :] += 0.006 * hf_noise
+    data.data[1, :] -= 0.004 * hf_noise
     data["low_f_band_edge"] = 0.02
     data["high_f_band_edge"] = 2.0
     return data
@@ -106,7 +143,7 @@ def _assert_direct_arrival_is_recovered(matrix, ratio_tol=2.0e-2):
 
 @pytest.mark.parametrize("noise_level", [0.0, 1.0e-6])
 @pytest.mark.parametrize(
-    "algorithm", ["LeastSquares", "WaterLevel", "MultiTaperXcor"]
+    "algorithm", ["LeastSquares", "WaterLevel", "MultiTaperXcor", "MultiTaperSpecDiv"]
 )
 def test_existing_scalar_decon_methods_recover_noise_free_direct_arrival(
     noise_level, algorithm
@@ -129,15 +166,39 @@ def test_existing_decon_methods_are_consistent_for_noise_free_input():
         "LeastSquares": _scalar_rf_matrix("LeastSquares", data),
         "WaterLevel": _scalar_rf_matrix("WaterLevel", data),
         "MultiTaperXcor": _scalar_rf_matrix("MultiTaperXcor", data),
+        "MultiTaperSpecDiv": _scalar_rf_matrix("MultiTaperSpecDiv", data),
         "CNR": _cnr_rf_matrix(data),
     }
 
     assert _normalized_correlation(results["LeastSquares"], results["WaterLevel"]) > 0.97
     assert _normalized_correlation(results["LeastSquares"], results["MultiTaperXcor"]) > 0.88
+    assert _normalized_correlation(results["LeastSquares"], results["MultiTaperSpecDiv"]) > 0.88
     assert _normalized_correlation(results["WaterLevel"], results["MultiTaperXcor"]) > 0.93
+    assert _normalized_correlation(results["WaterLevel"], results["MultiTaperSpecDiv"]) > 0.93
+    assert _normalized_correlation(results["MultiTaperXcor"], results["MultiTaperSpecDiv"]) > 0.93
     assert _normalized_correlation(results["CNR"], results["LeastSquares"]) > 0.75
     assert _normalized_correlation(results["CNR"], results["WaterLevel"]) > 0.79
     assert _normalized_correlation(results["CNR"], results["MultiTaperXcor"]) > 0.87
+    assert _normalized_correlation(results["CNR"], results["MultiTaperSpecDiv"]) > 0.87
+
+
+def test_scalar_methods_are_consistent_for_complex_colored_3c_synthetic():
+    data = _make_complex_colored_validation_data()
+    results = {
+        "LeastSquares": _scalar_rf_matrix("LeastSquares", data),
+        "WaterLevel": _scalar_rf_matrix("WaterLevel", data),
+        "MultiTaperXcor": _scalar_rf_matrix("MultiTaperXcor", data),
+        "MultiTaperSpecDiv": _scalar_rf_matrix("MultiTaperSpecDiv", data),
+    }
+
+    for result in results.values():
+        assert np.isfinite(result).all()
+        _assert_direct_arrival_is_recovered(result, ratio_tol=1.0e-1)
+
+    assert _normalized_correlation(results["LeastSquares"], results["WaterLevel"]) > 0.95
+    assert _normalized_correlation(results["LeastSquares"], results["MultiTaperXcor"]) > 0.84
+    assert _normalized_correlation(results["LeastSquares"], results["MultiTaperSpecDiv"]) > 0.84
+    assert _normalized_correlation(results["MultiTaperXcor"], results["MultiTaperSpecDiv"]) > 0.90
 
 
 @pytest.mark.parametrize(

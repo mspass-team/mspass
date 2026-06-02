@@ -53,6 +53,7 @@ private:
   std::vector<double> apply_shaping_wavelet(
       const std::vector<double> &model);
   int output_length;
+  int sample_shift;
   double damp;
   double dt;
   mutable double residual_norm;
@@ -64,6 +65,7 @@ private:
   void serialize(Archive &ar, const unsigned int version) {
     ar &boost::serialization::base_object<ScalarDecon>(*this);
     ar & output_length;
+    ar & sample_shift;
     ar & damp;
     ar & dt;
     ar & residual_norm;

@@ -59,18 +59,18 @@ vector<double> solve_cholesky(vector<double> a, vector<double> b, int n,
 } // namespace
 
 TimeDomainLeastSquareDecon::TimeDomainLeastSquareDecon()
-    : ScalarDecon(), output_length(0), damp(1.0e-6), dt(1.0),
+    : ScalarDecon(), output_length(0), sample_shift(0), damp(1.0e-6), dt(1.0),
       residual_norm(0.0), data_norm(0.0), regularization_parameter(0.0) {}
 
 TimeDomainLeastSquareDecon::TimeDomainLeastSquareDecon(
     const TimeDomainLeastSquareDecon &parent)
     : ScalarDecon(parent), output_length(parent.output_length),
-      damp(parent.damp), dt(parent.dt), residual_norm(parent.residual_norm),
-      data_norm(parent.data_norm),
+      sample_shift(parent.sample_shift), damp(parent.damp), dt(parent.dt),
+      residual_norm(parent.residual_norm), data_norm(parent.data_norm),
       regularization_parameter(parent.regularization_parameter) {}
 
 TimeDomainLeastSquareDecon::TimeDomainLeastSquareDecon(const Metadata &md)
-    : ScalarDecon(), output_length(0), damp(1.0e-6), dt(1.0),
+    : ScalarDecon(), output_length(0), sample_shift(0), damp(1.0e-6), dt(1.0),
       residual_norm(0.0), data_norm(0.0), regularization_parameter(0.0) {
   this->read_metadata(md);
 }
@@ -94,6 +94,13 @@ void TimeDomainLeastSquareDecon::read_metadata(const Metadata &md) {
     dt = md.get_double("target_sample_interval");
     if (dt <= 0.0)
       throw MsPASSError(base_error + "target_sample_interval must be positive",
+                        ErrorSeverity::Invalid);
+    const double dwinstart = md.get_double("deconvolution_data_window_start");
+    sample_shift = static_cast<int>(round(-dwinstart / dt));
+    if (sample_shift < 0)
+      throw MsPASSError(base_error +
+                            "deconvolution_data_window_start cannot be "
+                            "positive for this lag convention",
                         ErrorSeverity::Invalid);
     if (md.is_defined("model_length")) {
       output_length = md.get_int("model_length");
@@ -137,15 +144,15 @@ vector<double> TimeDomainLeastSquareDecon::solve_for(
   vector<double> rhs(nm, 0.0);
   for (int j = 0; j < nm; ++j) {
     for (int i = 0; i < nd; ++i) {
-      const int iw = i - j;
+      const int iw = i - j + sample_shift;
       if (iw >= 0 && iw < nw)
         rhs[j] += wavelet[iw] * rhs_data[i];
     }
     for (int k = 0; k <= j; ++k) {
       double s(0.0);
       for (int i = 0; i < nd; ++i) {
-        const int iwj = i - j;
-        const int iwk = i - k;
+        const int iwj = i - j + sample_shift;
+        const int iwk = i - k + sample_shift;
         if (iwj >= 0 && iwj < nw && iwk >= 0 && iwk < nw)
           s += wavelet[iwj] * wavelet[iwk];
       }
@@ -172,7 +179,7 @@ TimeDomainLeastSquareDecon::apply_wavelet(const vector<double> &model) const {
   for (int i = 0; i < static_cast<int>(predicted.size()); ++i) {
     double s(0.0);
     for (int j = 0; j < static_cast<int>(model.size()); ++j) {
-      const int iw = i - j;
+      const int iw = i - j + sample_shift;
       if (iw >= 0 && iw < static_cast<int>(wavelet.size()))
         s += wavelet[iw] * model[j];
     }
@@ -270,6 +277,7 @@ CoreTimeSeries TimeDomainLeastSquareDecon::inverse_wavelet() {
 Metadata TimeDomainLeastSquareDecon::QCMetrics() {
   Metadata md;
   md.put("damping_factor", damp);
+  md.put("sample_shift", sample_shift);
   md.put("regularization_parameter", regularization_parameter);
   md.put("residual_norm", residual_norm);
   md.put("data_norm", data_norm);
