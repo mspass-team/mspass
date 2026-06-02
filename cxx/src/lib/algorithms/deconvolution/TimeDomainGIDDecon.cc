@@ -620,6 +620,16 @@ void TimeDomainGIDDecon::process() {
       TimeWindow compact_kernel(-2.0, 2.0);
       actual_out = WindowData(actual_out, compact_kernel);
     }
+    int prezero_available =
+        static_cast<int>(round((-fftwin.start) / d_decon.dt()));
+    int postzero_available = d_decon.npts() - prezero_available - 1;
+    int actual_zero = actual_out.sample_number(0.0);
+    int actual_postzero = actual_out.npts() - actual_zero - 1;
+    if ((actual_zero > prezero_available) ||
+        (actual_postzero > postzero_available)) {
+      TimeWindow compact_kernel(-2.0, 2.0);
+      actual_out = WindowData(actual_out, compact_kernel);
+    }
     actual_o_fir = actual_out.s;
     actual_o_0 = actual_out.sample_number(0.0);
     double peak_scale = actual_o_fir[actual_o_0];

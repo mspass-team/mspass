@@ -32,6 +32,11 @@ NOISE_WINDOW = TimeWindow(-45.0, -5.0)
 DIRECT_SAMPLE = 100
 EXPECTED_EW_Z_RATIO = -15.0 / 150.0
 EXPECTED_NS_Z_RATIO = 10.0 / 150.0
+EXPECTED_TRANSVERSE_RATIOS = {
+    0.0: (EXPECTED_EW_Z_RATIO, EXPECTED_NS_Z_RATIO),
+    7.5: (-20.0 / 150.0, -3.0 / 150.0),
+    9.0: (15.0 / 150.0, 2.0 / 150.0),
+}
 
 
 def _make_validation_data(noise_level=0.0):
@@ -141,6 +146,31 @@ def _assert_direct_arrival_is_recovered(matrix, ratio_tol=2.0e-2):
         EXPECTED_NS_Z_RATIO,
         atol=ratio_tol,
     )
+
+
+def _assert_colored_transverse_arrivals_are_recovered(
+    matrix, t0=SIGNAL_WINDOW.start, dt=0.05, ratio_tol=7.0e-2
+):
+    z0_sample = int(round((0.0 - t0) / dt))
+    z0 = matrix[2, z0_sample]
+    assert abs(z0) > 1.0e-8
+    for arrival_time, expected in EXPECTED_TRANSVERSE_RATIOS.items():
+        sample = int(round((arrival_time - t0) / dt))
+        ew_ratio = matrix[0, sample] / z0
+        ns_ratio = matrix[1, sample] / z0
+        assert np.isclose(ew_ratio, expected[0], atol=ratio_tol), arrival_time
+        assert np.isclose(ns_ratio, expected[1], atol=ratio_tol), arrival_time
+
+
+def _assert_colored_late_arrival_signs_are_recovered(matrix, t0, dt):
+    for arrival_time, expected in [(7.5, (-1.0, -1.0)), (9.0, (1.0, 1.0))]:
+        sample = int(round((arrival_time - t0) / dt))
+        ew = matrix[0, sample]
+        ns = matrix[1, sample]
+        assert np.sign(ew) == expected[0], arrival_time
+        assert np.sign(ns) == expected[1], arrival_time
+        assert abs(ew) > 1.0e-3, arrival_time
+        assert abs(ns) > 1.0e-3, arrival_time
 
 
 def _truth_matrix_for_times(truth, times):
@@ -303,6 +333,7 @@ def test_scalar_methods_are_consistent_for_complex_colored_3c_synthetic(
     for result in results.values():
         assert np.isfinite(result).all()
         _assert_direct_arrival_is_recovered(result, ratio_tol=1.0e-1)
+        _assert_colored_transverse_arrivals_are_recovered(result)
 
     assert _normalized_correlation(results["LeastSquares"], results["WaterLevel"]) > 0.95
     assert _normalized_correlation(results["LeastSquares"], results["MultiTaperXcor"]) > 0.84
@@ -332,7 +363,7 @@ def test_scalar_methods_are_consistent_for_complex_colored_3c_synthetic(
         ),
     ],
 )
-def test_gid_methods_recover_noise_free_multi_spike_rf_for_all_inverse_modes(
+def test_gid_methods_recover_colored_multi_spike_rf_for_all_inverse_modes(
     tmp_path,
     decon_validation_plot_dir,
     engine_class,
@@ -345,22 +376,24 @@ def test_gid_methods_recover_noise_free_multi_spike_rf_for_all_inverse_modes(
     plot_results = {}
     plot_t0 = None
     plot_dt = None
-    truth = make_impulse_data()
+    data, truth, _ = _make_complex_colored_validation_data(return_truth=True)
     for mode in modes:
-        data = _make_validation_data(noise_level=0.0)
         pf = _pf_with_gid_mode(tmp_path, pfname, branch_name, mode)
         engine = engine_class(pf)
         rf = wrapper(
             data,
             engine,
             signal_window=TimeWindow(-8.0, 20.0),
-            noise_window=TimeWindow(-25.0, -8.0),
+            noise_window=TimeWindow(-35.0, -5.0),
         )
         assert rf.live, mode
         assert rf[qc_key]["residual_L2_final"] < rf[qc_key]["residual_L2_initial"]
         plot_results[mode] = np.asarray(rf.data)
         plot_t0 = rf.t0
         plot_dt = rf.dt
+        _assert_colored_late_arrival_signs_are_recovered(
+            np.asarray(rf.data), rf.t0, rf.dt
+        )
         zrf = ExtractComponent(rf, 2)
         peak_sample = int(np.argmax(np.abs(zrf.data)))
         assert abs(zrf.time(peak_sample)) <= 0.15, mode

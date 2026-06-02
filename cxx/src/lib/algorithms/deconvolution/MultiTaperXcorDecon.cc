@@ -6,6 +6,7 @@
 #include "mspass/utility/Metadata.h"
 #include "mspass/utility/MsPASSError.h"
 #include "mspass/utility/utility.h"
+#include <algorithm>
 #include <string>
 #include <vector>
 namespace mspass::algorithms::deconvolution {
@@ -268,40 +269,58 @@ void MultiTaperXcorDecon::process() {
   The ComplexArray object implements operator* as equivalent to .* in matlab.
   i.e. it is NOT a dot product but a sample by sample multiply as normal for
   convolution in the frequency domain.  Here we use that an the += operator
-  to form a sum.  This is complicated by the fact tha conj will alter the
-  data when called so we have to make copies whenever we call conj */
-  ComplexArray numerator(wdata[0]);
-  numerator.conj();
-  /* Keep this term to define winv. Made inverse below */
-  winv = numerator;
-  /* Similarly we always compute this for actual output return */
-  ao_fft = numerator * wdata[0];
-  numerator = numerator * tdata[0]; // initialized with first vector
-  for (i = 1; i < nseq; ++i) {
-    ComplexArray work(wdata[i]);
-    work.conj();
-    winv += work;
-    numerator += work * tdata[i];
-    ao_fft += (work * wdata[i]);
-  }
-  ComplexArray denominator(wdata[0]);
+  to form a sum.
+
+  Earlier versions formed the numerator from DPSS-tapered data.  That is a
+  biased estimator for receiver-function time windows: a delayed converted
+  phase is multiplied by a different taper value than the direct source
+  wavelet.  The multitaper spectra are still used to stabilize the denominator,
+  but the final linear deconvolution numerator uses the untapered, zero-padded
+  source and data windows. */
+  vector<double> padded_wavelet(nfft, 0.0);
+  vector<double> padded_data(nfft, 0.0);
+  const int nwcopy = std::min(static_cast<int>(wavelet.size()), nfft);
+  const int ndcopy = std::min(static_cast<int>(data.size()), nfft);
+  for (i = 0; i < nwcopy; ++i)
+    padded_wavelet[i] = wavelet[i];
+  for (i = 0; i < ndcopy; ++i)
+    padded_data[i] = data[i];
+  ComplexArray wuntapered(nfft, padded_wavelet);
+  ComplexArray duntapered(nfft, padded_data);
+  gsl_fft_complex_forward(wuntapered.ptr(), 1, nfft, wavetable, workspace);
+  gsl_fft_complex_forward(duntapered.ptr(), 1, nfft, wavetable, workspace);
+  ComplexArray denominator(wuntapered);
   denominator.conj();
-  denominator = denominator * wdata[0];
-  for (i = 1; i < nseq; ++i) {
-    ComplexArray work(wdata[i]);
-    work.conj();
-    work = work * wdata[i];
-    denominator += work;
-  }
-  /* Assume fdamp here has already been scaled by damp.  Note Park and
-  Levin's formula has the noise power spectrum inside the brackets of the sum
-  but a basic theorem of summations is that a constant in a sum of N things is
-  N times the constant.   We assume damp will absorb the detail of scaling
-  by N=number of tapers. */
+  denominator = denominator * wuntapered;
   denominator += fdamp;
+  ComplexArray numerator(wuntapered);
+  numerator.conj();
+  numerator = numerator * duntapered;
   ComplexArray rf_fft = numerator / denominator;
+  winv = wuntapered;
+  winv.conj();
   winv = winv / denominator;
-  ao_fft = ao_fft / denominator;
+  ao_fft = winv * wuntapered;
+  ComplexArray ao_scale_test(ao_fft);
+  ao_scale_test = (*shapingwavelet.wavelet()) * ao_scale_test;
+  gsl_fft_complex_inverse(ao_scale_test.ptr(), 1, nfft, wavetable, workspace);
+  vector<double> ao_lag =
+      ExtractLagWindow(ao_scale_test, output_length, sample_shift);
+  double ao_peak = ao_lag[sample_shift];
+  if (fabs(ao_peak) <= 0.0)
+    throw MsPASSError(base_error + "actual output has zero peak",
+                      ErrorSeverity::Invalid);
+  for (j = 0; j < nfft; ++j) {
+    double *zrf = rf_fft.ptr(j);
+    (*zrf) /= ao_peak;
+    (*(zrf + 1)) /= ao_peak;
+    double *zw = winv.ptr(j);
+    (*zw) /= ao_peak;
+    (*(zw + 1)) /= ao_peak;
+    double *zao = ao_fft.ptr(j);
+    (*zao) /= ao_peak;
+    (*(zao + 1)) /= ao_peak;
+  }
   // DEBUG
   /*
   cerr << "Raw RF spectrum"<<endl;

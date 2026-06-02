@@ -5,6 +5,7 @@
 #include "mspass/utility/Metadata.h"
 #include "mspass/utility/MsPASSError.h"
 #include "mspass/utility/utility.h"
+#include <algorithm>
 #include <cfloat>
 #include <string>
 #include <vector>
@@ -196,6 +197,7 @@ MultiTaperSpecDivDecon::taper_data(const vector<double> &signal) {
   for (i = 0; i < ntapers; ++i) {
     /* This will assure part of vector between end of
      * data and nfft is zero padded */
+    std::fill(work.begin(), work.end(), 0.0);
     for (j = 0; j < this->tapers.columns(); ++j) {
       work[j] = tapers(i, j) * signal[j];
     }
@@ -257,76 +259,74 @@ void MultiTaperSpecDivDecon::process() {
     for (nptr = noise_spectrum.begin(); nptr != noise_spectrum.end(); ++nptr) {
       (*nptr) *= scale;
     }
-    /* We compute a RF estimate for each taper independently usinga  variant of
-    the water level method.  The variant is that the level is frequency
-    dependent defined by sacled noise level.
-    */
-    /* We need this for amplitude scaling - depend on Parseval's theorem*/
+    vector<double> padded_data(nfft, 0.0);
+    vector<double> padded_wavelet(nfft, 0.0);
+    int ndcopy = std::min(static_cast<int>(data.size()), nfft);
+    int nwcopy = std::min(static_cast<int>(wavelet.size()), nfft);
+    for (i = 0; i < ndcopy; ++i)
+      padded_data[i] = data[i];
+    for (i = 0; i < nwcopy; ++i)
+      padded_wavelet[i] = wavelet[i];
+    ComplexArray untapered_data(nfft, padded_data);
+    ComplexArray untapered_wavelet(nfft, padded_wavelet);
+    gsl_fft_complex_forward(untapered_data.ptr(), 1, nfft, wavetable,
+                            workspace);
+    gsl_fft_complex_forward(untapered_wavelet.ptr(), 1, nfft, wavetable,
+                            workspace);
+
+    /* Build a water-level style denominator from the untapered source phase
+    and the multitaper noise-amplitude estimate.  Dividing each DPSS-tapered
+    data spectrum by each DPSS-tapered source spectrum biases time-localized RF
+    arrivals and produces periodic lag-domain artifacts. */
     double wnrm = dnrm2(wavelet.size(), &(wavelet[0]), 1);
     vector<ComplexArray> denominator;
     for (i = 0; i < nseq; ++i) {
-      ComplexArray work(wdata[i]);
-      /* This is kind of messy as the noise_spectrum is a vector of real
-      numbers while the wdata vector is a complex fft outputs in fortran
-      style.  We use two different indices, but that is a tad dangerous
-      UNLESS constructor guarantees nfft is ndata.size()*2 doubles*/
-      int number_regularized(0);
+      ComplexArray work(untapered_wavelet);
       for (j = 0; j < nfft; ++j) {
-        /* We do this with pointers.  It makes the code more obscure, but
-        works efficiently.  Note this assumes the ComplexArray implementation
-        uses FortranComplex64*/
         double *z = work.ptr(j);
         double re = (*z);
         double im = (*(z + 1));
         double amp = sqrt(re * re + im * im);
-        /* this normalization assumes noise_spectrum is amplitude NOT
-         * power spectrum values */
         if (amp < noise_spectrum[j]) {
-          double wlscal;
-          /* Avoid divide by zero if amp is tiny */
           if (fabs(amp) / wnrm < DBL_EPSILON) {
             (*z) = noise_spectrum[j];
-            (*(z + 1)) = noise_spectrum[j];
+            (*(z + 1)) = 0.0;
           } else {
-            wlscal = noise_spectrum[j] / amp;
+            double wlscal = noise_spectrum[j] / amp;
             (*z) *= wlscal;
             (*(z + 1)) *= wlscal;
           }
-          ++number_regularized;
         }
       }
       denominator.push_back(work);
     }
-    /* Probably should save these in private area for this estimator*/
-    // vector<ComplexArray> rfestimates;
-    /* Must clear rfestimate and winv_taper containers or they accumulate */
+
+    /* Must clear rfestimate and winv_taper containers or they accumulate.
+    The DPSS tapers are used to build stable inverse operators, but the final
+    RF estimate is applied to the untapered data window.  Applying the tapers
+    directly to the RF data biases delayed arrivals by the taper value at the
+    arrival time and can create harmonic artifacts in the lag-domain result. */
     rfestimates.clear();
+    winv_taper.clear();
+    ao_fft.clear();
     for (i = 0; i < nseq; ++i) {
-      ComplexArray work(tdata[i]);
+      ComplexArray work(untapered_data);
       work = work / denominator[i];
       rfestimates.push_back(work);
     }
-    /* Now we want to compute the inverse filter.
-    For consistency with related methods we'll store the frequency domain
-    values, BUT these now become essentially a matrix - actually stored
-    as a vector of vectors */
-    winv_taper.clear();
-    ao_fft.clear();
-    double *d0 = new double[nfft];
-    for (int k = 0; k < nfft; ++k)
-      d0[k] = 0.0;
-    d0[0] = 1.0;
-    ComplexArray delta0(nfft, d0);
-    delete[] d0;
-    gsl_fft_complex_forward(delta0.ptr(), 1, nfft, wavetable, workspace);
     for (i = 0; i < nseq; ++i) {
-      ComplexArray work(delta0);
+      ComplexArray work(nfft);
+      for (j = 0; j < nfft; ++j) {
+        double *z = work.ptr(j);
+        (*z) = 1.0;
+        (*(z + 1)) = 0.0;
+      }
       work = work / denominator[i];
       winv_taper.push_back(work);
     }
     for (i = 0; i < nseq; ++i) {
-      ComplexArray work(wdata[i]);
-      work = work / denominator[i];
+      ComplexArray work(winv_taper[i]);
+      work = work * untapered_wavelet;
       ao_fft.push_back(work);
     }
 

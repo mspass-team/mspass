@@ -56,9 +56,12 @@ Regularized scalar operators
 
 ``MultiTaperXcorDecon`` and ``MultiTaperSpecDivDecon``
     Multitaper frequency-domain operators.  They estimate spectra with DPSS
-    tapers before forming the inverse operator.  The default behavior still
-    returns a linear-convolution lag window; tapering controls variance and
-    leakage in the spectral estimates.
+    tapers before forming the inverse operator.  The DPSS tapers are used for
+    the source/noise spectral regularization, while the final receiver-function
+    numerator is formed from the untapered, zero-padded data window.  This
+    avoids biasing delayed converted phases by the taper value at their arrival
+    time.  The default behavior still returns a linear-convolution lag window;
+    tapering controls variance and leakage in the spectral estimates.
 
 ``TimeDomainLeastSquareDecon``
     Time-domain least-squares deconvolution.  This operator builds the
