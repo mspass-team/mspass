@@ -638,7 +638,7 @@ void FrequencyDomainGIDDecon::process() {
   };
 }
 
-CoreSeismogram FrequencyDomainGIDDecon::getresult() {
+CoreSeismogram FrequencyDomainGIDDecon::sparse_output() {
   CoreSeismogram result(d_all);
   result = WindowData(result, dwin);
   result.u.zero();
@@ -652,6 +652,13 @@ CoreSeismogram FrequencyDomainGIDDecon::getresult() {
       result.u(k, resultcol) = sptr->u[k];
   }
   return result;
+}
+
+CoreSeismogram FrequencyDomainGIDDecon::getresult() {
+  CoreSeismogram sparse(this->sparse_output());
+  CoreTimeSeries shaping(this->ideal_output());
+  CoreSeismogram shaped(sparse_convolve(shaping, sparse));
+  return WindowData(shaped, dwin);
 }
 
 Metadata FrequencyDomainGIDDecon::QCMetrics() {

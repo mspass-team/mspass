@@ -1155,9 +1155,8 @@ bool TimeDomainGIDDecon::has_not_converged() {
     throw;
   };
 }
-CoreSeismogram TimeDomainGIDDecon::getresult() {
+CoreSeismogram TimeDomainGIDDecon::sparse_output() {
   try {
-    string base_error("TimeDomainGIDDecon::getresult:  ");
     CoreSeismogram result(d_all);
     /* We will make the output the size of the processing window for the
     iteration.  May want to alter this to trim the large lag that would not
@@ -1183,6 +1182,16 @@ CoreSeismogram TimeDomainGIDDecon::getresult() {
         result.u(k, resultcol) = sptr->u[k];
     }
     return result;
+  } catch (...) {
+    throw;
+  };
+}
+CoreSeismogram TimeDomainGIDDecon::getresult() {
+  try {
+    CoreSeismogram sparse(this->sparse_output());
+    CoreTimeSeries shaping(this->ideal_output());
+    CoreSeismogram shaped(sparse_convolve(shaping, sparse));
+    return WindowData(shaped, dwin);
   } catch (...) {
     throw;
   };

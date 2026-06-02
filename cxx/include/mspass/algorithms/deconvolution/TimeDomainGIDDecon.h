@@ -107,6 +107,7 @@ public:
   void process();
   ~TimeDomainGIDDecon();
   mspass::seismic::CoreSeismogram getresult();
+  mspass::seismic::CoreSeismogram sparse_output();
   mspass::seismic::CoreTimeSeries ideal_output();
   mspass::seismic::CoreTimeSeries actual_output();
   mspass::seismic::CoreTimeSeries inverse_wavelet();

@@ -150,8 +150,9 @@ Three-component and iterative operators
     The sparse spike train is kept conceptually separate from the shaped
     receiver-function representation.  The inverse operator is used only for
     candidate spike detection and stabilization.  The residual update remains
-    in the GID data domain, and the configured ``ShapingWavelet`` controls only
-    how the accepted sparse support is represented in finite bandwidth output.
+    in the GID data domain, and ``getresult`` returns the accepted sparse
+    support convolved with the configured output ``ShapingWavelet``.  The raw
+    spike train is available through ``sparse_output`` for QC and validation.
     The underlying ``NoiseStableDecon`` scalar operator defaults to a shaped
     scalar deconvolution result when used directly.  GID parameter files set
     ``ns_gid_apply_output_shaping`` to false so the iterative peak picker sees

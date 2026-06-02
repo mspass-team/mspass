@@ -794,6 +794,9 @@ def test_external_wavelet_validation_across_deconvolution_methods(
         )
         assert rf.live
         results[f"{engine_class.__name__}:ns_gid"] = np.asarray(rf.data)
+        results[f"{engine_class.__name__}:ns_gid_sparse"] = np.asarray(
+            engine.sparse_output().data
+        )
         qc = dict(rf[f"{engine_class.__name__}_properties"])
         assert qc["ns_gid_external_wavelet_used"]
         assert qc["ns_gid_gain_max_actual"] <= qc["ns_gid_gain_max_requested"] * (
@@ -825,13 +828,13 @@ def test_external_wavelet_validation_across_deconvolution_methods(
         + external_wavelet_shift
     )
     td_metrics = _classify_spike_detections_against_times(
-        results["TimeDomainGIDDecon:ns_gid"],
+        results["TimeDomainGIDDecon:ns_gid_sparse"],
         -8.0,
         truth.dt,
         shifted_truth_times,
     )
     fd_metrics = _classify_spike_detections_against_times(
-        results["FrequencyDomainGIDDecon:ns_gid"],
+        results["FrequencyDomainGIDDecon:ns_gid_sparse"],
         -8.0,
         truth.dt,
         shifted_truth_times,
@@ -844,6 +847,8 @@ def test_external_wavelet_validation_across_deconvolution_methods(
     plot_npts = int(round((20.0 - SIGNAL_WINDOW.start) / truth.dt)) + 1
     plot_results = {}
     for name, result in results.items():
+        if name.endswith("_sparse"):
+            continue
         src_t0 = -8.0 if "GIDDecon" in name else SIGNAL_WINDOW.start
         plot_results[name] = _slice_matrix_to_window(
             result, src_t0, truth.dt, SIGNAL_WINDOW.start, plot_npts
@@ -907,8 +912,9 @@ def test_gid_methods_recover_colored_multi_spike_rf_for_all_inverse_modes(
         plot_results[mode] = np.asarray(rf.data)
         plot_t0 = rf.t0
         plot_dt = rf.dt
+        sparse = engine.sparse_output()
         _assert_colored_gid_arrival_signs_are_recovered(
-            np.asarray(rf.data), rf.t0, rf.dt
+            np.asarray(sparse.data), sparse.t0, sparse.dt
         )
         zrf = ExtractComponent(rf, 2)
         peak_sample = int(np.argmax(np.abs(zrf.data)))
@@ -984,7 +990,10 @@ def test_gid_methods_recover_stress_spike_signs_for_all_inverse_modes(
         assert rf.live, mode
         assert rf[qc_key]["residual_L2_final"] < rf[qc_key]["residual_L2_initial"]
         matrix = np.asarray(rf.data)
-        _assert_stress_gid_signs_recovered(matrix, rf.t0, rf.dt)
+        sparse = engine.sparse_output()
+        _assert_stress_gid_signs_recovered(
+            np.asarray(sparse.data), sparse.t0, sparse.dt
+        )
         plot_results[mode] = matrix
         plot_t0 = rf.t0
         plot_dt = rf.dt
@@ -1075,8 +1084,11 @@ def test_gid_detection_precision_recall_tracks_noise_and_stopping_thresholds(
                 noise_window=TimeWindow(-35.0, -5.0),
             )
             assert rf.live, (engine_class.__name__, noise_scale, replacements)
+            sparse = engine.sparse_output()
             metrics_list.append(
-                _classify_gid_spike_detections(np.asarray(rf.data), rf.t0, rf.dt)
+                _classify_gid_spike_detections(
+                    np.asarray(sparse.data), sparse.t0, sparse.dt
+                )
             )
 
     for metrics in loose_metrics:
@@ -1145,8 +1157,11 @@ def test_ns_gid_detection_precision_recall_tracks_max_spike_threshold(
             )
             assert rf.live, (engine_class.__name__, noise_scale)
             qcs.append(dict(rf[qc_key]))
+            sparse = engine.sparse_output()
             metrics.append(
-                _classify_gid_spike_detections(np.asarray(rf.data), rf.t0, rf.dt)
+                _classify_gid_spike_detections(
+                    np.asarray(sparse.data), sparse.t0, sparse.dt
+                )
             )
 
         loose, strict = metrics

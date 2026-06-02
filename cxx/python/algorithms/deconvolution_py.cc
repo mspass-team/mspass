@@ -380,6 +380,8 @@ PYBIND11_MODULE(deconvolution, m) {
             (&TimeDomainGIDDecon::load),"Load data and noise windows")
     .def("getresult",&TimeDomainGIDDecon::getresult,
             "Return the deconvolved three-component receiver function")
+    .def("sparse_output",&TimeDomainGIDDecon::sparse_output,
+            "Return the raw sparse spike train from the GID iteration")
     .def("ideal_output",&TimeDomainGIDDecon::ideal_output,
             "Return ideal output of inverse*wavelet")
     .def("actual_output",&TimeDomainGIDDecon::actual_output,"Return actual output of inverse*wavelet")
@@ -411,6 +413,8 @@ PYBIND11_MODULE(deconvolution, m) {
             (&FrequencyDomainGIDDecon::load),"Load data and noise windows")
     .def("getresult",&FrequencyDomainGIDDecon::getresult,
             "Return the deconvolved three-component receiver function")
+    .def("sparse_output",&FrequencyDomainGIDDecon::sparse_output,
+            "Return the raw sparse spike train from the GID iteration")
     .def("ideal_output",&FrequencyDomainGIDDecon::ideal_output,
             "Return ideal output of inverse*wavelet")
     .def("actual_output",&FrequencyDomainGIDDecon::actual_output,"Return actual output of inverse*wavelet")
