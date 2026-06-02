@@ -621,7 +621,7 @@ def test_scalar_methods_recover_stress_spikes_with_colored_noise(
             TimeDomainGIDRFDecon,
             "data/pf/TimeDomainGIDDecon.pf",
             "time_domain_gid_deconvolution",
-            ["least_square", "water_level", "multi_taper", "cnr3c"],
+            ["least_square", "water_level", "multi_taper", "cnr"],
             "TimeDomainGIDDecon_properties",
         ),
         (
@@ -696,7 +696,7 @@ def test_gid_methods_recover_colored_multi_spike_rf_for_all_inverse_modes(
             TimeDomainGIDRFDecon,
             "data/pf/TimeDomainGIDDecon.pf",
             "time_domain_gid_deconvolution",
-            ["least_square", "water_level", "multi_taper", "cnr3c"],
+            ["least_square", "water_level", "multi_taper", "cnr"],
             "TimeDomainGIDDecon_properties",
         ),
         (

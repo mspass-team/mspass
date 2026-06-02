@@ -89,7 +89,9 @@ Three-component and iterative operators
     Three-component correlation-noise-ratio receiver-function deconvolution.
     These operators use the vertical component as the source wavelet and
     estimate the transverse and radial responses with a three-component
-    noise model.
+    noise model.  ``CNRDeconEngine`` is the current engine used by the Python
+    wrappers and GID inverse mode.  ``CNR3CDecon`` is the older prototype kept
+    for compatibility.
 
 ``TimeDomainGIDDecon`` and ``FrequencyDomainGIDDecon``
     Generalized iterative deconvolution following Wang and Pavlis (2016).
@@ -156,7 +158,7 @@ The output directory will contain:
 ``TimeDomainGIDDecon_inverse_modes.png``
     Overlay of time-domain generalized iterative deconvolution results for
     each configured inverse-operator mode: least squares, water level,
-    multitaper, and CNR3C.
+    multitaper, and CNR.
 
 ``FrequencyDomainGIDDecon_inverse_modes.png``
     Overlay of frequency-domain generalized iterative deconvolution results

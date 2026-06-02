@@ -178,7 +178,7 @@ def test_TimeDomainGIDDecon_validates_single_spike_recovery():
     _assert_single_spike_recovery(rf, ratio_tolerance=2.0e-3)
 
 
-@pytest.mark.parametrize("mode", ["least_square", "water_level", "multi_taper", "cnr3c"])
+@pytest.mark.parametrize("mode", ["least_square", "water_level", "multi_taper", "cnr"])
 def test_TimeDomainGIDDecon_inverse_modes_are_valid(tmp_path, mode):
     data = _make_single_spike_convolution_data()
     pf = _pf_with_mode(
@@ -205,13 +205,30 @@ def test_TimeDomainGIDDecon_inverse_modes_are_valid(tmp_path, mode):
 
 def test_TimeDomainGIDDecon_changeparameter_handles_cnr_mode(tmp_path):
     pf = _pf_with_mode(
-        tmp_path, "TimeDomainGIDDecon.pf", "time_domain_gid_deconvolution", "cnr3c"
+        tmp_path, "TimeDomainGIDDecon.pf", "time_domain_gid_deconvolution", "cnr"
     )
     engine = TimeDomainGIDDecon(pf)
     cnr_md = pf.get_branch("deconvolution_operator_type").get_branch("cnr")
     cnr_md["sample_shift"] = 100
 
     engine.changeparameter(cnr_md)
+
+
+def test_TimeDomainGIDDecon_accepts_legacy_cnr3c_mode_alias(tmp_path):
+    data = _make_single_spike_convolution_data()
+    pf = _pf_with_mode(
+        tmp_path, "TimeDomainGIDDecon.pf", "time_domain_gid_deconvolution", "cnr3c"
+    )
+    engine = TimeDomainGIDDecon(pf)
+
+    rf = TimeDomainGIDRFDecon(
+        data,
+        engine,
+        signal_window=TimeWindow(-10.0, 20.0),
+        noise_window=TimeWindow(-35.0, -5.0),
+    )
+
+    _assert_valid_rf(rf)
 
 
 def test_TimeDomainGIDRFDecon_argument_validation():
