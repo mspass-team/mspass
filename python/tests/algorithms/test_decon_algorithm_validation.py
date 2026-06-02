@@ -185,6 +185,22 @@ def _pf_with_gid_mode(tmp_path, pfname, branch_name, mode):
     return pfread(str(dst))
 
 
+def _pf_with_gid_mode_and_replacements(
+    tmp_path, pfname, branch_name, mode, replacements
+):
+    text = open(pfname, encoding="utf-8").read()
+    text = text.replace(
+        f"{branch_name} &Arr{{\n        deconvolution_type least_square",
+        f"{branch_name} &Arr{{\n        deconvolution_type {mode}",
+    )
+    for old, new in replacements.items():
+        text = text.replace(old, new)
+    suffix = abs(hash((pfname, branch_name, mode, tuple(replacements.items()))))
+    dst = tmp_path / f"{pfname.split('/')[-1]}.{suffix}.pf"
+    dst.write_text(text)
+    return pfread(str(dst))
+
+
 def _assert_direct_arrival_is_recovered(matrix, ratio_tol=2.0e-2):
     z = matrix[2, :]
     search = slice(DIRECT_SAMPLE - 3, DIRECT_SAMPLE + 4)
@@ -276,6 +292,65 @@ def _assert_stress_gid_signs_recovered(matrix, t0, dt):
                 component,
             )
             assert abs(recovered) > 1.0e-3, (arrival_time, component)
+
+
+def _classify_gid_spike_detections(
+    matrix, t0, dt, detection_threshold=0.02, match_tolerance=0.15
+):
+    truth_times = np.asarray(sorted(STRESS_SPIKES.keys()), dtype=np.float64)
+    transverse_amp = np.sqrt(matrix[0, :] ** 2 + matrix[1, :] ** 2)
+    peak = np.max(transverse_amp)
+    if peak <= 0.0:
+        return {
+            "detections": 0,
+            "true_positive": 0,
+            "false_positive": 0,
+            "false_negative": len(truth_times),
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+        }
+    candidate_samples = np.where(transverse_amp >= detection_threshold * peak)[0]
+    detection_samples = []
+    groups = []
+    for sample in candidate_samples:
+        if not groups or sample - groups[-1][-1] > 2:
+            groups.append([sample])
+        else:
+            groups[-1].append(sample)
+    for group in groups:
+        detection_samples.append(max(group, key=lambda i: transverse_amp[i]))
+    detection_times = t0 + dt * np.asarray(detection_samples, dtype=np.float64)
+    matched_truth = set()
+    true_positive = 0
+    for detection_time in detection_times:
+        distances = np.abs(truth_times - detection_time)
+        truth_index = int(np.argmin(distances))
+        if (
+            distances[truth_index] <= match_tolerance
+            and truth_index not in matched_truth
+        ):
+            matched_truth.add(truth_index)
+            true_positive += 1
+    detections = len(detection_times)
+    false_positive = detections - true_positive
+    false_negative = len(truth_times) - true_positive
+    precision = true_positive / detections if detections else 0.0
+    recall = true_positive / len(truth_times)
+    f1 = (
+        2.0 * precision * recall / (precision + recall)
+        if precision + recall
+        else 0.0
+    )
+    return {
+        "detections": detections,
+        "true_positive": true_positive,
+        "false_positive": false_positive,
+        "false_negative": false_negative,
+        "precision": precision,
+        "recall": recall,
+        "f1": f1,
+    }
 
 
 def _truth_matrix_for_times(truth, times):
@@ -701,3 +776,76 @@ def test_gid_methods_recover_stress_spike_signs_for_all_inverse_modes(
         plot_dt,
         f"{engine_class.__name__}_noise_{decon_validation_noise_scale:g}",
     )
+
+
+@pytest.mark.parametrize(
+    "engine_class, wrapper, pfname, branch_name, strict_replacements",
+    [
+        (
+            TimeDomainGIDDecon,
+            TimeDomainGIDRFDecon,
+            "data/pf/TimeDomainGIDDecon.pf",
+            "time_domain_gid_deconvolution",
+            {
+                "residual_fractional_improvement_floor 0.0001":
+                    "residual_fractional_improvement_floor 0.01"
+            },
+        ),
+        (
+            FrequencyDomainGIDDecon,
+            FrequencyDomainGIDRFDecon,
+            "data/pf/FrequencyDomainGIDDecon.pf",
+            "frequency_domain_gid_deconvolution",
+            {"residual_ratio_floor 0.01": "residual_ratio_floor 0.35"},
+        ),
+    ],
+)
+def test_gid_detection_precision_recall_tracks_noise_and_stopping_thresholds(
+    tmp_path, engine_class, wrapper, pfname, branch_name, strict_replacements
+):
+    noise_levels = [0.0, 0.01, 0.03]
+    loose_metrics = []
+    strict_metrics = []
+    for noise_scale in noise_levels:
+        data, _, _ = _make_stress_colored_validation_data(
+            noise_scale=noise_scale,
+            return_truth=True,
+        )
+        for replacements, metrics_list in [
+            ({}, loose_metrics),
+            (strict_replacements, strict_metrics),
+        ]:
+            pf = _pf_with_gid_mode_and_replacements(
+                tmp_path,
+                pfname,
+                branch_name,
+                "least_square",
+                replacements,
+            )
+            engine = engine_class(pf)
+            rf = wrapper(
+                data,
+                engine,
+                signal_window=TimeWindow(-8.0, 20.0),
+                noise_window=TimeWindow(-35.0, -5.0),
+            )
+            assert rf.live, (engine_class.__name__, noise_scale, replacements)
+            metrics_list.append(
+                _classify_gid_spike_detections(np.asarray(rf.data), rf.t0, rf.dt)
+            )
+
+    for metrics in loose_metrics:
+        assert metrics["recall"] >= 0.95
+        assert metrics["precision"] >= 0.60
+        assert metrics["f1"] >= 0.75
+        assert metrics["false_positive"] <= 8
+
+    for loose, strict in zip(loose_metrics, strict_metrics):
+        assert strict["detections"] <= loose["detections"]
+        assert strict["precision"] >= loose["precision"]
+        assert strict["false_positive"] <= loose["false_positive"]
+        if engine_class is FrequencyDomainGIDDecon:
+            assert strict["recall"] < loose["recall"]
+            assert strict["precision"] >= 0.99
+        else:
+            assert strict["recall"] >= 0.95

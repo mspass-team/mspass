@@ -203,6 +203,17 @@ def test_TimeDomainGIDDecon_inverse_modes_are_valid(tmp_path, mode):
     _assert_single_spike_recovery(rf, ratio_tolerance=5.0e-2)
 
 
+def test_TimeDomainGIDDecon_changeparameter_handles_cnr_mode(tmp_path):
+    pf = _pf_with_mode(
+        tmp_path, "TimeDomainGIDDecon.pf", "time_domain_gid_deconvolution", "cnr3c"
+    )
+    engine = TimeDomainGIDDecon(pf)
+    cnr_md = pf.get_branch("deconvolution_operator_type").get_branch("cnr")
+    cnr_md["sample_shift"] = 100
+
+    engine.changeparameter(cnr_md)
+
+
 def test_TimeDomainGIDRFDecon_argument_validation():
     pf = pfread("./data/pf/TimeDomainGIDDecon.pf")
     engine = TimeDomainGIDDecon(pf)

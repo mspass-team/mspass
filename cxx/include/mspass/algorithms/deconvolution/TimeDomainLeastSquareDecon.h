@@ -42,7 +42,7 @@ public:
   void changeparameter(const mspass::utility::Metadata &md);
   void process();
   mspass::seismic::CoreTimeSeries actual_output();
-  mspass::seismic::CoreTimeSeries inverse_wavelet(const double t0parent = 0.0);
+  mspass::seismic::CoreTimeSeries inverse_wavelet(const double t0parent);
   mspass::seismic::CoreTimeSeries inverse_wavelet();
   mspass::utility::Metadata QCMetrics();
 

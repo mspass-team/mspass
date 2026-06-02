@@ -5,9 +5,9 @@
 #include "mspass/algorithms/deconvolution/MultiTaperXcorDecon.h"
 #include "mspass/algorithms/deconvolution/WaterLevelDecon.h"
 #include "mspass/utility/MsPASSError.h"
-#include <gsl/gsl_linalg.h>
 #include <algorithm>
 #include <cmath>
+#include "misc/blas.h"
 #include <sstream>
 
 namespace mspass::algorithms::deconvolution {
@@ -77,27 +77,36 @@ vector<double> solve_dense_system_fd(const vector<vector<double>> &a,
   vector<double> result(n, 0.0);
   if (n <= 0)
     return result;
-  gsl_matrix *A = gsl_matrix_alloc(n, n);
-  gsl_vector *B = gsl_vector_alloc(n);
-  gsl_vector *X = gsl_vector_alloc(n);
-  gsl_permutation *p = gsl_permutation_alloc(n);
-  for (int i = 0; i < n; ++i) {
-    gsl_vector_set(B, i, b[i]);
-    for (int j = 0; j < n; ++j)
-      gsl_matrix_set(A, i, j, a[i][j]);
+  vector<double> A(n * n, 0.0);
+  vector<double> B(b);
+  for (int row = 0; row < n; ++row) {
+    for (int col = 0; col < n; ++col)
+      A[col * n + row] = a[row][col];
   }
-  int signum;
-  int status = gsl_linalg_LU_decomp(A, p, &signum);
-  if (status == 0)
-    status = gsl_linalg_LU_solve(A, p, B, X);
-  if (status == 0) {
-    for (int i = 0; i < n; ++i)
-      result[i] = gsl_vector_get(X, i);
+  int nrhs = 1;
+  int n_lapack = n;
+  int lda = n;
+  int ldb = n;
+  int info = 0;
+  char lower = 'L';
+  dpotrf(&lower, n_lapack, &(A[0]), lda, info);
+  if (info == 0) {
+    n_lapack = n;
+    dpotrs(&lower, n_lapack, nrhs, &(A[0]), lda, &(B[0]), ldb, info);
+    if (info == 0)
+      return B;
   }
-  gsl_permutation_free(p);
-  gsl_vector_free(X);
-  gsl_vector_free(B);
-  gsl_matrix_free(A);
+
+  for (int row = 0; row < n; ++row) {
+    B[row] = b[row];
+    for (int col = 0; col < n; ++col)
+      A[col * n + row] = a[row][col];
+  }
+  vector<int> ipiv(n, 0);
+  n_lapack = n;
+  dgesv(n_lapack, nrhs, &(A[0]), lda, &(ipiv[0]), &(B[0]), ldb, info);
+  if (info == 0)
+    result = B;
   return result;
 }
 

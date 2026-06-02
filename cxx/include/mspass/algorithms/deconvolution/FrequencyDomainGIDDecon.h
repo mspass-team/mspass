@@ -18,6 +18,9 @@ namespace mspass::algorithms::deconvolution {
 class FrequencyDomainGIDDecon : public ScalarDecon {
 public:
   FrequencyDomainGIDDecon(const mspass::utility::AntelopePf &md);
+  FrequencyDomainGIDDecon(const FrequencyDomainGIDDecon &parent) = delete;
+  FrequencyDomainGIDDecon &operator=(const FrequencyDomainGIDDecon &parent) =
+      delete;
   ~FrequencyDomainGIDDecon();
   void changeparameter(const mspass::utility::Metadata &md);
   int load(const mspass::seismic::CoreSeismogram &d,
