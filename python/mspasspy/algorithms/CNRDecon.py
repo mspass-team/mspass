@@ -188,6 +188,7 @@ def CNRRFDecon(
     engine,
     *args,
     component=2,
+    external_wavelet=None,
     noise_spectrum=None,
     signal_window=None,
     noise_window=None,
@@ -314,7 +315,10 @@ def CNRRFDecon(
         should defined the component number of seis to assume is an
         estimate of the source wavelet.
     :type component: integer (default 2)
-    :param wavelet:   Alternative way to specify wavelet to use for deconvolution, f
+    :param external_wavelet: optional prepared `TimeSeries` wavelet to use for
+        all components.  When None, the wrapper preserves receiver-function
+        compatibility and extracts the wavelet from `component` of the signal
+        window.
     :param noise_spectrum:   Alternative way to define data to be used
         to regularize the deconvolution operator.  See above for
         usage restrictions.
@@ -481,8 +485,13 @@ def CNRRFDecon(
             return [d, None, None]
         else:
             return d
-    # for an RF a data component is used as a wavelet
-    w = ExtractComponent(d, component)
+    if external_wavelet is not None:
+        if not isinstance(external_wavelet, TimeSeries):
+            raise TypeError("external_wavelet must be a TimeSeries or None")
+        w = external_wavelet
+    else:
+        # for an RF a data component is used as a wavelet
+        w = ExtractComponent(d, component)
     # the engine can throw an exception we need to handle
     try:
         engine.initialize_inverse_operator(w, psnoise)

@@ -160,6 +160,7 @@ private:
   mspass::seismic::TimeSeries external_wavelet;
   mspass::seismic::TimeSeries external_noise;
   mspass::seismic::PowerSpectrum external_noise_spectrum;
+  std::vector<std::vector<double>> ns_noise_components;
   bool external_wavelet_loaded, external_noise_loaded,
       external_noise_spectrum_loaded, external_wavelet_allowed;
 

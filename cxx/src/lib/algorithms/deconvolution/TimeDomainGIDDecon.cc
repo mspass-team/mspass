@@ -509,6 +509,16 @@ int TimeDomainGIDDecon::loadnoise(const CoreSeismogram &draw,
     nwin = nwin_in;
     n = WindowData(draw, nwin);
     nnwin = n.npts();
+    if (decon_type == NS_GID) {
+      ns_noise_components.clear();
+      ns_noise_components.reserve(3);
+      for (int k = 0; k < 3; ++k) {
+        CoreTimeSeries ncomp(ExtractComponent(draw, k));
+        ncomp = WindowData(ncomp, nwin);
+        ns_noise_components.push_back(ncomp.s);
+      }
+      return 0;
+    }
     double ret = this->compute_resid_linf_floor();
     if (ret > 0)
       return 0;
@@ -535,6 +545,7 @@ int TimeDomainGIDDecon::loadnoise(const TimeSeries &noise_in) {
   external_noise = noise_in;
   external_noise_loaded = true;
   external_noise_spectrum_loaded = false;
+  ns_noise_components.assign(3, noise_in.s);
   n = CoreSeismogram(noise_in.npts());
   n.set_t0(noise_in.t0());
   n.set_dt(noise_in.dt());
@@ -553,6 +564,7 @@ int TimeDomainGIDDecon::loadnoise(const PowerSpectrum &noise_spectrum_in) {
   external_noise_spectrum = noise_spectrum_in;
   external_noise_spectrum_loaded = true;
   external_noise_loaded = false;
+  ns_noise_components.clear();
   return 0;
 }
 int TimeDomainGIDDecon::load(const CoreSeismogram &draw, TimeWindow dwin,
@@ -725,6 +737,7 @@ CoreTimeSeries trim(const CoreTimeSeries &d, double floor = 0.005) {
 }
 void TimeDomainGIDDecon::process() {
   const string base_error("TimeDomainGIDDecon::process method:  ");
+  string process_stage("initialization");
   try {
     /* We first have to run the signal processing style deconvolution.
     This is defined by the base pointer available through the symbol
@@ -739,6 +752,7 @@ void TimeDomainGIDDecon::process() {
     /* d_decon will hold the preprocessor output.  We normally expect to
     derive it by windowing of t_all.  We assume WindowData will be
     successful - constructor should guarantee that. */
+    process_stage = "window input data";
     d_decon = WindowData(d_all, fftwin);
     dmatrix uwork(d_decon.u);
     uwork.zero();
@@ -746,16 +760,19 @@ void TimeDomainGIDDecon::process() {
     right data here. We need a scalar function to pass to the multtitaper
     algorithm though. */
     if (decon_type == MULTI_TAPER) {
+      process_stage = "load multitaper noise";
       CoreTimeSeries nts(ExtractComponent(n, noise_component));
       dynamic_cast<MultiTaperXcorDecon *>(preprocessor)->loadnoise(nts.s);
     }
     CoreTimeSeries srcwavelet;
+    process_stage = "load source wavelet";
     if (external_wavelet_loaded)
       srcwavelet = CoreTimeSeries(external_wavelet);
     else
       srcwavelet = CoreTimeSeries(ExtractComponent(d_decon, 2));
     current_wavelet = TimeSeries(srcwavelet, "TimeDomainGIDDecon");
     if (decon_type == CNR) {
+      process_stage = "CNR preprocessing";
       TimeSeries nwavelet(ExtractComponent(n, noise_component),
                           "TimeDomainGIDDecon");
       cnrprocessor->initialize_inverse_operator(current_wavelet, nwavelet);
@@ -770,17 +787,32 @@ void TimeDomainGIDDecon::process() {
                     uwork.get_address(k, 0), 3);
     } else {
       if (decon_type == NS_GID) {
+        process_stage = "NS-GID load inverse-operator noise";
         NoiseStableDecon *nsop = dynamic_cast<NoiseStableDecon *>(preprocessor);
         if (external_noise_spectrum_loaded)
           nsop->loadnoise(external_noise_spectrum);
         else if (external_noise_loaded)
           nsop->loadnoise(external_noise);
         else {
-          CoreTimeSeries nts(ExtractComponent(n, noise_component));
+          CoreTimeSeries nts;
+          if (!ns_noise_components.empty()) {
+            size_t component_index =
+                min(static_cast<size_t>(noise_component),
+                    ns_noise_components.size() - 1);
+            nts = CoreTimeSeries(ns_noise_components[component_index].size());
+            nts.s = ns_noise_components[component_index];
+            nts.set_dt(n.dt());
+            nts.set_t0(n.t0());
+            nts.set_tref(n.timetype());
+            nts.set_live();
+          } else {
+            nts = ExtractComponent(n, noise_component);
+          }
           nsop->loadnoise(nts);
         }
       }
       for (int k = 0; k < 3; ++k) {
+        process_stage = "scalar preprocessing";
         CoreTimeSeries dcomp(ExtractComponent(d_decon, k));
         /* Need the qualifier or we get the wrong overloaded
          * load method */
@@ -810,6 +842,7 @@ void TimeDomainGIDDecon::process() {
     // d_decon.to="<<d_decon.t0()<<endl; TimeSeries
     // winv=this->preprocessor->inverse_wavelet(tshift/5.0,d_decon.t0());
     // TimeSeries winv=this->preprocessor->inverse_wavelet(0.0,d_decon.t0());
+    process_stage = "compute inverse wavelet";
     CoreTimeSeries winv = this->inverse_wavelet(d_decon.t0());
     // This is a test - need a more elegant solution if it works.  Remove me
     // when finished with this test
@@ -823,6 +856,7 @@ void TimeDomainGIDDecon::process() {
     /* The actual output signal is used in the iterative
      * recursion of this algorithm.  For efficiency it is important
      * to trim the fir filter.  The call to trim does that.*/
+    process_stage = "compute actual output wavelet";
     CoreTimeSeries actual_out(this->actual_output());
     // DEBUG
     /*
@@ -867,16 +901,49 @@ void TimeDomainGIDDecon::process() {
     sections that are pure edge transients.
     REMOVE me when that is done*/
 
-    r = d_decon;
-    /* Replace n by convolution with inverse wavelet to get the levels correct
-     */
-    n = sparse_convolve(winv, n);
-    TimeWindow trimwin;
-    trimwin.start = n.t0() + (n.dt()) * ((double)(winv.npts()));
-    trimwin.end = n.endtime() - (n.dt()) * ((double)(winv.npts()));
-    n = WindowData(n, trimwin);
     if (decon_type == NS_GID) {
-      vector<double> noise_amps(amp3c(n.u));
+      process_stage = "NS-GID estimate inverse-filtered noise threshold";
+      int ns_noise_npts(0);
+      if (!ns_noise_components.empty()) {
+        ns_noise_npts = static_cast<int>(ns_noise_components[0].size());
+        for (size_t kc = 1; kc < ns_noise_components.size(); ++kc)
+          ns_noise_npts =
+              min(ns_noise_npts, static_cast<int>(ns_noise_components[kc].size()));
+      } else {
+        ns_noise_npts = static_cast<int>(n.npts());
+      }
+      ns_noise_npts = min(ns_noise_npts, static_cast<int>(d_decon.npts()));
+      if (ns_noise_npts <= 0)
+        throw MsPASSError(base_error +
+                              "NS-GID requires a nonempty noise window to "
+                              "estimate candidate significance",
+                          ErrorSeverity::Invalid);
+      dmatrix nfiltered(3, ns_noise_npts);
+      nfiltered.zero();
+      for (int kc = 0; kc < 3; ++kc) {
+        vector<double> ncomp;
+        if (!ns_noise_components.empty()) {
+          size_t component_index =
+              min(static_cast<size_t>(kc), ns_noise_components.size() - 1);
+          ncomp = ns_noise_components[component_index];
+        } else {
+          CoreTimeSeries nts(ExtractComponent(n, kc));
+          ncomp = nts.s;
+        }
+        if (ncomp.size() > static_cast<size_t>(ns_noise_npts))
+          ncomp.resize(ns_noise_npts);
+        preprocessor->ScalarDecon::load(srcwavelet.s, ncomp);
+        preprocessor->process();
+        vector<double> deconout(preprocessor->getresult());
+        int copysize =
+            min(static_cast<int>(deconout.size()), ns_noise_npts);
+        if (copysize > 0)
+          cblas_dcopy(copysize, &(deconout[0]), 1,
+                      nfiltered.get_address(kc, 0), 3);
+      }
+      preprocessor->ScalarDecon::load(srcwavelet.s, srcwavelet.s);
+      preprocessor->process();
+      vector<double> noise_amps(amp3c(nfiltered));
       sort(noise_amps.begin(), noise_amps.end());
       if (!noise_amps.empty()) {
         int ip = static_cast<int>(ns_peak_probability_threshold *
@@ -897,7 +964,17 @@ void TimeDomainGIDDecon::process() {
       } else {
         ns_peak_threshold = 0.0;
       }
-      ns_noise_l2 = L2(n.u);
+      ns_noise_l2 = cblas_dnrm2(3 * ns_noise_npts,
+                                nfiltered.get_address(0, 0), 1);
+    } else {
+      process_stage = "legacy GID inverse-filter noise";
+      /* Replace n by convolution with inverse wavelet to get the levels
+       * correct for legacy GID stopping criteria. */
+      n = sparse_convolve(winv, n);
+      TimeWindow trimwin;
+      trimwin.start = n.t0() + (n.dt()) * ((double)(winv.npts()));
+      trimwin.end = n.endtime() - (n.dt()) * ((double)(winv.npts()));
+      n = WindowData(n, trimwin);
     }
     // double nfloor;
     // nfloor=compute_resid_linf_floor();
@@ -907,7 +984,9 @@ void TimeDomainGIDDecon::process() {
     /* d_all now contains the deconvolved data.  Now enter the
     generalized iterative method recursion */
     int i, k;
+    r = d_decon;
     spikes.clear();
+    process_stage = "initialize sparse iteration";
     lw_linf_history.clear();
     lw_l2_history.clear();
     resid_l2_history.clear();
@@ -943,6 +1022,7 @@ void TimeDomainGIDDecon::process() {
     resid_l2_history.push_back(resid_l2_initial);
     resid_linf_history.push_back(resid_linf_initial);
     do {
+      process_stage = "sparse iteration";
       /* Compute the vector of amplitudes and find the maximum */
       wamps.clear();
       for (int j = 0; j < r.npts(); ++j) {
@@ -995,7 +1075,9 @@ void TimeDomainGIDDecon::process() {
       if (!accepted)
         break;
     } while (this->has_not_converged());
+    process_stage = "refit sparse amplitudes";
     refit_spike_amplitudes(spikes, d_decon, actual_o_fir, actual_o_0);
+    process_stage = "recompute final residual";
     r = d_decon;
     for (auto sptr = spikes.begin(); sptr != spikes.end(); ++sptr)
       this->update_residual_matrix(*sptr);
@@ -1011,6 +1093,10 @@ void TimeDomainGIDDecon::process() {
     if ((decon_type != NS_GID) && iter_count >= iter_max)
       throw MsPASSError("TimeDomainGIDDecon::process did not converge",
                         ErrorSeverity::Suspect);
+  } catch (const MsPASSError &err) {
+    throw MsPASSError(base_error + "failed during " + process_stage + "\n" +
+                          string(err.what()),
+                      err.severity());
   } catch (...) {
     throw;
   };
@@ -1039,6 +1125,10 @@ bool TimeDomainGIDDecon::has_not_converged() {
     resid_linf_prev = resid_linf_now;
     resid_l2_prev = resid_l2_now;
     if (decon_type == NS_GID) {
+      if (iter_count >= iter_max) {
+        ns_stop_reason = "max_iterations";
+        return false;
+      }
       if ((ns_max_spikes > 0) && (static_cast<int>(spikes.size()) >= ns_max_spikes)) {
         ns_stop_reason = "max_spikes";
         ns_converged = true;
@@ -1050,30 +1140,25 @@ bool TimeDomainGIDDecon::has_not_converged() {
         ns_converged = true;
         return false;
       }
+      if (eps < resid_l2_tol) {
+        ns_stop_reason = "fractional_improvement_floor";
+        return false;
+      }
+      return true;
     }
     if (iter_count > iter_max) {
-      if (decon_type == NS_GID)
-        ns_stop_reason = "max_iterations";
       return false;
     }
     if (lw_linf_now < lw_linf_floor) {
-      if (decon_type == NS_GID)
-        ns_stop_reason = "lag_weight_linf_floor";
       return false;
     }
     if (lw_l2_now < lw_l2_floor) {
-      if (decon_type == NS_GID)
-        ns_stop_reason = "lag_weight_l2_floor";
       return false;
     }
     if (resid_linf_now < resid_linf_floor) {
-      if (decon_type == NS_GID)
-        ns_stop_reason = "residual_linf_floor";
       return false;
     }
     if (eps < resid_l2_tol) {
-      if (decon_type == NS_GID)
-        ns_stop_reason = "fractional_improvement_floor";
       return false;
     }
     return true;

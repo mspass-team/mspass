@@ -195,12 +195,19 @@ The output directory will contain:
 ``TimeDomainGIDDecon_inverse_modes.png``
     Overlay of time-domain generalized iterative deconvolution results for
     each configured inverse-operator mode: least squares, water level,
-    multitaper, and CNR.
+    multitaper, CNR, and NS-GID.
 
 ``FrequencyDomainGIDDecon_inverse_modes.png``
     Overlay of frequency-domain generalized iterative deconvolution results
     for each configured inverse-operator mode: least squares, water level,
-    multitaper, and CNR.
+    multitaper, CNR, and NS-GID.
+
+``external_wavelet_all_methods.png``
+    Overlay of scalar, CNR, and NS-GID results when every method is driven by
+    the same externally supplied prepared wavelet.  Scalar operators load the
+    external wavelet as a raw vector, so this plot shifts the truth spike train
+    to the measured direct-arrival lag of the least-squares result for visual
+    comparison.
 
 ``scalar_noise_<scale>_stress_spike_results.png``
     Scalar-method and CNR results for a denser synthetic with multiple close,

@@ -153,13 +153,26 @@ def _scalar_rf_matrix(algorithm, data):
     return np.vstack([x[:npts] for x in components])
 
 
-def _cnr_rf_matrix(data):
+def _scalar_rf_matrix_external_wavelet(algorithm, data, wavelet):
+    processor = RFdeconProcessor(alg=algorithm, pf="data/pf/RFdeconProcessor.pf")
+    processor.loadwavelet(wavelet, dtype="TimeSeries")
+    processor.loadnoise(data, dtype="Seismogram", component=2, window=True)
+    components = []
+    for component in range(3):
+        processor.loaddata(data, dtype="Seismogram", component=component, window=True)
+        components.append(np.asarray(processor.apply()))
+    npts = min(len(x) for x in components)
+    return np.vstack([x[:npts] for x in components])
+
+
+def _cnr_rf_matrix(data, external_wavelet=None):
     engine = CNRDeconEngine(pfread("data/pf/CNRDeconEngine.pf"))
     rf = CNRRFDecon(
         data,
         engine,
         signal_window=SIGNAL_WINDOW,
         noise_window=NOISE_WINDOW,
+        external_wavelet=external_wavelet,
     )
     assert rf.live
     return np.asarray(rf.data)
@@ -277,6 +290,41 @@ def _assert_stress_arrivals_recovered(matrix, t0, dt, ratio_tol=9.0e-2):
             )
 
 
+def _assert_shifted_stress_arrivals_recovered(
+    matrix, t0, dt, shift, ratio_tol=1.8e-1
+):
+    z0_sample = int(round((shift - t0) / dt))
+    z0 = matrix[2, z0_sample]
+    assert abs(z0) > 1.0e-8
+    for arrival_time, amplitudes in STRESS_SPIKES.items():
+        sample = int(round((arrival_time + shift - t0) / dt))
+        for component in (0, 1):
+            expected = amplitudes[component]
+            if expected == 0.0:
+                continue
+            recovered = _local_peak(matrix, component, sample) / z0
+            assert np.sign(recovered) == np.sign(expected), (
+                arrival_time,
+                component,
+            )
+            assert np.isclose(recovered, expected / 150.0, atol=ratio_tol), (
+                arrival_time,
+                component,
+            )
+
+
+def _assert_shifted_direct_arrival_recovered(
+    matrix, t0, dt, shift, ratio_tol=8.0e-2
+):
+    z0_sample = int(round((shift - t0) / dt))
+    z0 = matrix[2, z0_sample]
+    assert abs(z0) > 1.0e-8
+    ew_ratio = _local_peak(matrix, 0, z0_sample) / z0
+    ns_ratio = _local_peak(matrix, 1, z0_sample) / z0
+    assert np.isclose(ew_ratio, EXPECTED_EW_Z_RATIO, atol=ratio_tol)
+    assert np.isclose(ns_ratio, EXPECTED_NS_Z_RATIO, atol=ratio_tol)
+
+
 def _assert_stress_gid_signs_recovered(matrix, t0, dt):
     for arrival_time, amplitudes in STRESS_SPIKES.items():
         if arrival_time == 0.0:
@@ -298,6 +346,14 @@ def _classify_gid_spike_detections(
     matrix, t0, dt, detection_threshold=0.02, match_tolerance=0.15
 ):
     truth_times = np.asarray(sorted(STRESS_SPIKES.keys()), dtype=np.float64)
+    return _classify_spike_detections_against_times(
+        matrix, t0, dt, truth_times, detection_threshold, match_tolerance
+    )
+
+
+def _classify_spike_detections_against_times(
+    matrix, t0, dt, truth_times, detection_threshold=0.02, match_tolerance=0.15
+):
     transverse_amp = np.sqrt(matrix[0, :] ** 2 + matrix[1, :] ** 2)
     peak = np.max(transverse_amp)
     if peak <= 0.0:
@@ -360,6 +416,25 @@ def _truth_matrix_for_times(truth, times):
     valid = np.logical_and(samples >= 0, samples < truth.npts)
     truth_matrix[:, valid] = truth_data[:, samples[valid]]
     return truth_matrix
+
+
+def _shift_truth_time(truth, shift):
+    shifted = Seismogram(truth)
+    shifted.set_t0(truth.t0 + shift)
+    return shifted
+
+
+def _slice_matrix_to_window(matrix, src_t0, dt, out_t0, out_npts):
+    result = np.zeros((matrix.shape[0], out_npts))
+    start = int(round((out_t0 - src_t0) / dt))
+    src_start = max(0, start)
+    dst_start = max(0, -start)
+    ncopy = min(matrix.shape[1] - src_start, out_npts - dst_start)
+    if ncopy > 0:
+        result[:, dst_start : dst_start + ncopy] = matrix[
+            :, src_start : src_start + ncopy
+        ]
+    return result
 
 
 def _plot_rf_overlay(plot_dir, filename, title, results, truth, t0, dt):
@@ -479,6 +554,18 @@ def _plot_gid_mode_results(plot_dir, engine_name, results, truth, t0, dt):
         plot_dir,
         f"{engine_name}_inverse_modes.png",
         f"{engine_name} validation by inverse-operator mode",
+        results,
+        truth,
+        t0,
+        dt,
+    )
+
+
+def _plot_external_wavelet_results(plot_dir, results, truth, t0, dt):
+    _plot_rf_overlay(
+        plot_dir,
+        "external_wavelet_all_methods.png",
+        "External prepared wavelet validation across deconvolution methods",
         results,
         truth,
         t0,
@@ -613,6 +700,115 @@ def test_scalar_methods_recover_stress_spikes_with_colored_noise(
     )
 
 
+def test_external_wavelet_validation_across_deconvolution_methods(
+    tmp_path, decon_validation_plot_dir
+):
+    data, truth, wavelet = _make_stress_colored_validation_data(
+        noise_scale=0.01,
+        return_truth=True,
+    )
+    results = {
+        "LeastSquares": _scalar_rf_matrix_external_wavelet(
+            "LeastSquares", data, wavelet
+        ),
+        "WaterLevel": _scalar_rf_matrix_external_wavelet("WaterLevel", data, wavelet),
+        "MultiTaperXcor": _scalar_rf_matrix_external_wavelet(
+            "MultiTaperXcor", data, wavelet
+        ),
+        "MultiTaperSpecDiv": _scalar_rf_matrix_external_wavelet(
+            "MultiTaperSpecDiv", data, wavelet
+        ),
+        "CNR": _cnr_rf_matrix(data, external_wavelet=wavelet),
+    }
+    for engine_class, wrapper, pfname, branch_name in [
+        (
+            TimeDomainGIDDecon,
+            TimeDomainGIDRFDecon,
+            "data/pf/TimeDomainGIDDecon.pf",
+            "time_domain_gid_deconvolution",
+        ),
+        (
+            FrequencyDomainGIDDecon,
+            FrequencyDomainGIDRFDecon,
+            "data/pf/FrequencyDomainGIDDecon.pf",
+            "frequency_domain_gid_deconvolution",
+        ),
+    ]:
+        pf = _pf_with_gid_mode(tmp_path, pfname, branch_name, "ns_gid")
+        engine = engine_class(pf)
+        rf = wrapper(
+            data,
+            engine,
+            signal_window=TimeWindow(-8.0, 20.0),
+            noise_window=TimeWindow(-35.0, -5.0),
+            external_wavelet=wavelet,
+        )
+        assert rf.live
+        results[f"{engine_class.__name__}:ns_gid"] = np.asarray(rf.data)
+        qc = dict(rf[f"{engine_class.__name__}_properties"])
+        assert qc["ns_gid_external_wavelet_used"]
+        assert qc["ns_gid_gain_max_actual"] <= qc["ns_gid_gain_max_requested"] * (
+            1.0 + 1.0e-10
+        )
+
+    reference = results["LeastSquares"]
+    amp = np.sqrt(reference[0, :] ** 2 + reference[1, :] ** 2 + reference[2, :] ** 2)
+    external_wavelet_shift = SIGNAL_WINDOW.start + 0.05 * int(np.argmax(amp))
+    shifted_truth = _shift_truth_time(truth, external_wavelet_shift)
+    for name, result in results.items():
+        assert np.isfinite(result).all(), name
+        if "GIDDecon" not in name:
+            _assert_shifted_direct_arrival_recovered(
+                result, SIGNAL_WINDOW.start, truth.dt, external_wavelet_shift
+            )
+
+    assert _normalized_correlation(results["LeastSquares"], results["WaterLevel"]) > 0.95
+    assert _normalized_correlation(results["LeastSquares"], results["MultiTaperXcor"]) > 0.82
+    assert _normalized_correlation(results["MultiTaperXcor"], results["MultiTaperSpecDiv"]) > 0.35
+    assert (
+        np.max(np.abs(results["MultiTaperXcor"] - results["MultiTaperSpecDiv"]))
+        > 1.0e-2
+    )
+    assert _normalized_correlation(results["CNR"], results["LeastSquares"]) > 0.55
+
+    shifted_truth_times = (
+        np.asarray(sorted(STRESS_SPIKES.keys()), dtype=np.float64)
+        + external_wavelet_shift
+    )
+    td_metrics = _classify_spike_detections_against_times(
+        results["TimeDomainGIDDecon:ns_gid"],
+        -8.0,
+        truth.dt,
+        shifted_truth_times,
+    )
+    fd_metrics = _classify_spike_detections_against_times(
+        results["FrequencyDomainGIDDecon:ns_gid"],
+        -8.0,
+        truth.dt,
+        shifted_truth_times,
+    )
+    assert td_metrics["recall"] >= 0.95
+    assert td_metrics["precision"] >= 0.45
+    assert fd_metrics["recall"] >= 0.95
+    assert fd_metrics["precision"] >= 0.75
+
+    plot_npts = int(round((20.0 - SIGNAL_WINDOW.start) / truth.dt)) + 1
+    plot_results = {}
+    for name, result in results.items():
+        src_t0 = -8.0 if "GIDDecon" in name else SIGNAL_WINDOW.start
+        plot_results[name] = _slice_matrix_to_window(
+            result, src_t0, truth.dt, SIGNAL_WINDOW.start, plot_npts
+        )
+
+    _plot_external_wavelet_results(
+        decon_validation_plot_dir,
+        plot_results,
+        shifted_truth,
+        SIGNAL_WINDOW.start,
+        truth.dt,
+    )
+
+
 @pytest.mark.parametrize(
     "engine_class, wrapper, pfname, branch_name, modes, qc_key",
     [
@@ -621,7 +817,7 @@ def test_scalar_methods_recover_stress_spikes_with_colored_noise(
             TimeDomainGIDRFDecon,
             "data/pf/TimeDomainGIDDecon.pf",
             "time_domain_gid_deconvolution",
-            ["least_square", "water_level", "multi_taper", "cnr"],
+            ["least_square", "water_level", "multi_taper", "cnr", "ns_gid"],
             "TimeDomainGIDDecon_properties",
         ),
         (
@@ -629,7 +825,7 @@ def test_scalar_methods_recover_stress_spikes_with_colored_noise(
             FrequencyDomainGIDRFDecon,
             "data/pf/FrequencyDomainGIDDecon.pf",
             "frequency_domain_gid_deconvolution",
-            ["least_square", "water_level", "multi_taper", "cnr"],
+            ["least_square", "water_level", "multi_taper", "cnr", "ns_gid"],
             "FrequencyDomainGIDDecon_properties",
         ),
     ],
@@ -696,7 +892,7 @@ def test_gid_methods_recover_colored_multi_spike_rf_for_all_inverse_modes(
             TimeDomainGIDRFDecon,
             "data/pf/TimeDomainGIDDecon.pf",
             "time_domain_gid_deconvolution",
-            ["least_square", "water_level", "multi_taper", "cnr"],
+            ["least_square", "water_level", "multi_taper", "cnr", "ns_gid"],
             "TimeDomainGIDDecon_properties",
         ),
         (
@@ -704,7 +900,7 @@ def test_gid_methods_recover_colored_multi_spike_rf_for_all_inverse_modes(
             FrequencyDomainGIDRFDecon,
             "data/pf/FrequencyDomainGIDDecon.pf",
             "frequency_domain_gid_deconvolution",
-            ["least_square", "water_level", "multi_taper", "cnr"],
+            ["least_square", "water_level", "multi_taper", "cnr", "ns_gid"],
             "FrequencyDomainGIDDecon_properties",
         ),
     ],
@@ -849,3 +1045,70 @@ def test_gid_detection_precision_recall_tracks_noise_and_stopping_thresholds(
             assert strict["precision"] >= 0.99
         else:
             assert strict["recall"] >= 0.95
+
+
+@pytest.mark.parametrize(
+    "engine_class, wrapper, pfname, branch_name, qc_key",
+    [
+        (
+            TimeDomainGIDDecon,
+            TimeDomainGIDRFDecon,
+            "data/pf/TimeDomainGIDDecon.pf",
+            "time_domain_gid_deconvolution",
+            "TimeDomainGIDDecon_properties",
+        ),
+        (
+            FrequencyDomainGIDDecon,
+            FrequencyDomainGIDRFDecon,
+            "data/pf/FrequencyDomainGIDDecon.pf",
+            "frequency_domain_gid_deconvolution",
+            "FrequencyDomainGIDDecon_properties",
+        ),
+    ],
+)
+def test_ns_gid_detection_precision_recall_tracks_max_spike_threshold(
+    tmp_path, engine_class, wrapper, pfname, branch_name, qc_key
+):
+    for noise_scale in [0.0, 0.01, 0.03]:
+        data, _, _ = _make_stress_colored_validation_data(
+            noise_scale=noise_scale,
+            return_truth=True,
+        )
+        loose_pf = _pf_with_gid_mode_and_replacements(
+            tmp_path, pfname, branch_name, "ns_gid", {}
+        )
+        strict_pf = _pf_with_gid_mode_and_replacements(
+            tmp_path,
+            pfname,
+            branch_name,
+            "ns_gid",
+            {"ns_gid_max_spikes 0": "ns_gid_max_spikes 12"},
+        )
+        metrics = []
+        qcs = []
+        for pf in (loose_pf, strict_pf):
+            engine = engine_class(pf)
+            rf = wrapper(
+                data,
+                engine,
+                signal_window=TimeWindow(-8.0, 20.0),
+                noise_window=TimeWindow(-35.0, -5.0),
+            )
+            assert rf.live, (engine_class.__name__, noise_scale)
+            qcs.append(dict(rf[qc_key]))
+            metrics.append(
+                _classify_gid_spike_detections(np.asarray(rf.data), rf.t0, rf.dt)
+            )
+
+        loose, strict = metrics
+        loose_qc, strict_qc = qcs
+        assert loose["recall"] >= 0.95
+        assert strict["recall"] >= 0.95
+        assert strict["detections"] <= loose["detections"]
+        assert strict["false_positive"] <= loose["false_positive"]
+        assert strict["precision"] >= loose["precision"]
+        assert strict_qc["ns_gid_stop_reason"] == "max_spikes"
+        assert strict_qc["ns_gid_number_spikes"] <= 12
+        assert loose_qc["ns_gid_gain_max_actual"] <= (
+            loose_qc["ns_gid_gain_max_requested"] * (1.0 + 1.0e-10)
+        )

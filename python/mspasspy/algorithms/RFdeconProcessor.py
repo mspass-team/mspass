@@ -215,7 +215,7 @@ class RFdeconProcessor:
                 ts = _ExtractComponent(w, component)
                 wvector = ts.data
             elif dtype == "TimeSeries":
-                wvector = ts.data
+                wvector = w.data
             else:
                 wvector = w
         # Have to explicitly convert to ndarray because DoubleVector cannot be serialized.

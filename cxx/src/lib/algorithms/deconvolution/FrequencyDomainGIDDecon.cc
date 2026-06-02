@@ -455,6 +455,8 @@ double FrequencyDomainGIDDecon::compute_ns_peak_threshold() {
     if (copysize > 0)
       cblas_dcopy(copysize, &(deconout[0]), 1, uwork.get_address(k, 0), 3);
   }
+  preprocessor->ScalarDecon::load(current_wavelet.s, current_wavelet.s);
+  preprocessor->process();
   nwork.u = uwork;
   vector<double> noise_amps(amp3c_fd(nwork.u));
   sort(noise_amps.begin(), noise_amps.end());
