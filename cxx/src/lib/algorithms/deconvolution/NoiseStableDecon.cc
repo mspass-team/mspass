@@ -30,10 +30,9 @@ double folded_frequency(const int k, const int nfft, const double dt) {
 } // namespace
 
 NoiseStableDecon::NoiseStableDecon()
-    : FFTDeconOperator(), ScalarDecon(), mu_min(1.0e-8), alpha(1.0),
+    : FFTDeconOperator(), ScalarDecon(), mu_min(3.0e-3), alpha(1.0),
       noise_floor(1.0e-12), gain_max(1.0e3), snr_taper_low(1.0),
       snr_taper_high(3.0), use_reliability_taper(false),
-      apply_output_shaping(true),
       noise_vector_loaded(false), noise_spectrum_loaded(false),
       max_gain_actual(0.0), noise_amplification(0.0),
       effective_bandwidth_fraction(0.0) {}
@@ -55,7 +54,7 @@ int NoiseStableDecon::read_metadata(const Metadata &md) {
   int nfft_from_win = ComputeFFTLength(md);
   if (nfft_from_win != nfft)
     this->change_size(nfft_from_win);
-  mu_min = get_double_default(md, "ns_gid_mu_min", 1.0e-8);
+  mu_min = get_double_default(md, "ns_gid_mu_min", 3.0e-3);
   alpha = get_double_default(md, "ns_gid_alpha", 1.0);
   noise_floor = get_double_default(md, "ns_gid_noise_floor", 1.0e-12);
   gain_max = get_double_default(md, "ns_gid_gain_max", 1.0e3);
@@ -63,8 +62,6 @@ int NoiseStableDecon::read_metadata(const Metadata &md) {
   snr_taper_high = get_double_default(md, "ns_gid_snr_taper_high", 3.0);
   use_reliability_taper =
       get_bool_default(md, "ns_gid_use_reliability_taper", false);
-  apply_output_shaping =
-      get_bool_default(md, "ns_gid_apply_output_shaping", true);
   if (mu_min <= 0.0)
     throw MsPASSError(base_error + "ns_gid_mu_min must be positive",
                       ErrorSeverity::Invalid);
@@ -172,6 +169,10 @@ void NoiseStableDecon::process() {
   winv = ComplexArray(nfft);
   max_gain_actual = 0.0;
   noise_amplification = 0.0;
+  double spectral_power_peak = 0.0;
+  for (int k = 0; k < nfft; ++k)
+    spectral_power_peak = max(spectral_power_peak, norm(s_fft[k]));
+  const double mu_floor = mu_min * spectral_power_peak;
   int usable_bins = 0;
   for (int k = 0; k < nfft; ++k) {
     Complex64 s = s_fft[k];
@@ -180,7 +181,7 @@ void NoiseStableDecon::process() {
     double snr = absS2 / (pn[k] + noise_floor);
     double mu_noise = alpha * absS2 / (snr + 1.0e-12);
     double mu_gain = max(0.0, absS / gain_max - absS2);
-    double mu = max({mu_min, mu_noise, mu_gain});
+    double mu = max({mu_floor, mu_noise, mu_gain});
     double b = this->reliability_taper(snr);
     Complex64 g(0.0, 0.0);
     if ((absS2 + mu) > 0.0)
@@ -203,8 +204,6 @@ void NoiseStableDecon::process() {
       static_cast<double>(usable_bins) / static_cast<double>(nfft);
 
   ComplexArray rf_fft = winv * d_fft;
-  if (apply_output_shaping)
-    rf_fft = (*shapingwavelet.wavelet()) * rf_fft;
   gsl_fft_complex_inverse(rf_fft.ptr(), 1, nfft, wavetable, workspace);
   result = ExtractLagWindow(rf_fft, output_length, sample_shift);
 }
@@ -216,8 +215,6 @@ CoreTimeSeries NoiseStableDecon::actual_output() {
   ComplexArray W(nfft, &(wavelet_padded[0]));
   gsl_fft_complex_forward(W.ptr(), 1, nfft, wavetable, workspace);
   ComplexArray ao_fft = winv * W;
-  if (apply_output_shaping)
-    ao_fft = (*shapingwavelet.wavelet()) * ao_fft;
   gsl_fft_complex_inverse(ao_fft.ptr(), 1, nfft, wavetable, workspace);
   vector<double> ao;
   ao.reserve(nfft);
@@ -243,10 +240,8 @@ CoreTimeSeries NoiseStableDecon::inverse_wavelet(const double t0parent) {
   ComplexArray no_shaping(nfft);
   for (int k = 0; k < nfft; ++k) {
     double *ptr = no_shaping.ptr(k);
-    ptr[0] = apply_output_shaping ? (*shapingwavelet.wavelet())[k].real() : 1.0;
+    ptr[0] = 1.0;
     ptr[1] = 0.0;
-    if (apply_output_shaping)
-      ptr[1] = (*shapingwavelet.wavelet())[k].imag();
   }
   return this->FourierInverse(winv, no_shaping, dt, t0parent);
 }
@@ -266,7 +261,6 @@ Metadata NoiseStableDecon::QCMetrics() {
          effective_bandwidth_fraction);
   md.put("ns_gid_operator_nfft", nfft);
   md.put("ns_gid_use_reliability_taper", use_reliability_taper);
-  md.put("ns_gid_apply_output_shaping", apply_output_shaping);
   return md;
 }
 } // namespace mspass::algorithms::deconvolution

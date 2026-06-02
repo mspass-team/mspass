@@ -212,6 +212,7 @@ FrequencyDomainGIDDecon::FrequencyDomainGIDDecon(const AntelopePf &mdtoplevel)
     int nfft = nextPowerOf2(maxns);
     mdgid.put("operator_nfft", nfft);
     this->ScalarDecon::changeparameter(mdgid);
+    this->shapingwavelet = ShapingWavelet(mdgid, nfft);
     iter_max = mdgid.get<int>("maximum_iterations");
     residual_ratio_floor = mdgid.get<double>("residual_ratio_floor");
     residual_improvement_floor =
@@ -400,7 +401,11 @@ void FrequencyDomainGIDDecon::initialize_inverse_operator() {
   }
   d_decon.u = uwork;
 
-  CoreTimeSeries actual_out(this->actual_output());
+  CoreTimeSeries actual_out;
+  if (decon_type == CNR)
+    actual_out = cnrprocessor->actual_output(current_wavelet);
+  else
+    actual_out = preprocessor->actual_output();
   if (actual_out.npts() > d_decon.npts() / 2) {
     TimeWindow compact_kernel(-2.0, 2.0);
     actual_out = WindowData(actual_out, compact_kernel);
@@ -416,15 +421,11 @@ void FrequencyDomainGIDDecon::initialize_inverse_operator() {
 }
 
 CoreTimeSeries FrequencyDomainGIDDecon::ideal_output() {
-  if (decon_type == CNR)
-    return cnrprocessor->ideal_output();
-  return preprocessor->ideal_output();
+  return this->ScalarDecon::ideal_output();
 }
 
 CoreTimeSeries FrequencyDomainGIDDecon::actual_output() {
-  if (decon_type == CNR)
-    return cnrprocessor->actual_output(current_wavelet);
-  return preprocessor->actual_output();
+  return this->ideal_output();
 }
 
 CoreTimeSeries FrequencyDomainGIDDecon::inverse_wavelet() {

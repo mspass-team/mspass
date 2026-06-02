@@ -177,14 +177,13 @@ def _noise_stable_metadata():
     md.put_string("shaping_wavelet_type", "ricker")
     md.put_double("shaping_wavelet_frequency", 1.0)
     md.put_double("shaping_wavelet_frequency_for_inverse", 0.5)
-    md.put_double("ns_gid_mu_min", 1.0e-8)
+    md.put_double("ns_gid_mu_min", 3.0e-3)
     md.put_double("ns_gid_alpha", 1.0)
     md.put_double("ns_gid_noise_floor", 1.0e-12)
     md.put_double("ns_gid_gain_max", 1.0e3)
     md.put_double("ns_gid_snr_taper_low", 1.0)
     md.put_double("ns_gid_snr_taper_high", 3.0)
     md.put_bool("ns_gid_use_reliability_taper", False)
-    md.put_bool("ns_gid_apply_output_shaping", True)
     return md
 
 
@@ -225,6 +224,18 @@ def _normalized_correlation(x, y):
     xv = x[:, :npts].ravel()
     yv = y[:, :npts].ravel()
     return np.dot(xv, yv) / (np.linalg.norm(xv) * np.linalg.norm(yv))
+
+
+def _assert_scalar_result_is_not_discrete_sparse_output(matrix, name):
+    """Scalar inverse operators should produce finite-bandwidth traces."""
+    x = np.asarray(matrix, dtype=np.float64)
+    assert np.count_nonzero(np.abs(x) > 1.0e-10) > 0.35 * x.size, name
+    for component in range(x.shape[0]):
+        y = np.abs(x[component, :])
+        if np.max(y) <= 0.0:
+            continue
+        active = np.count_nonzero(y > 0.02 * np.max(y))
+        assert active > 0.02 * y.size, name
 
 
 def _pf_with_gid_mode(tmp_path, pfname, branch_name, mode):
@@ -603,6 +614,18 @@ def _plot_gid_mode_results(plot_dir, engine_name, results, truth, t0, dt):
     )
 
 
+def _plot_gid_sparse_results(plot_dir, engine_name, results, truth, t0, dt, suffix):
+    _plot_rf_overlay(
+        plot_dir,
+        f"{engine_name}_{suffix}_sparse_results.png",
+        f"{engine_name} raw sparse spike output ({suffix})",
+        results,
+        truth,
+        t0,
+        dt,
+    )
+
+
 def _plot_external_wavelet_results(plot_dir, results, truth, t0, dt):
     _plot_rf_overlay(
         plot_dir,
@@ -672,9 +695,9 @@ def test_scalar_methods_are_consistent_for_complex_colored_3c_synthetic(
 
     for name, result in results.items():
         assert np.isfinite(result).all()
-        if name != "NoiseStable":
-            _assert_direct_arrival_is_recovered(result, ratio_tol=1.0e-1)
-            _assert_colored_transverse_arrivals_are_recovered(result)
+        _assert_scalar_result_is_not_discrete_sparse_output(result, name)
+        _assert_direct_arrival_is_recovered(result, ratio_tol=1.0e-1)
+        _assert_colored_transverse_arrivals_are_recovered(result)
 
     assert _normalized_correlation(results["LeastSquares"], results["WaterLevel"]) > 0.95
     assert _normalized_correlation(results["LeastSquares"], results["MultiTaperXcor"]) > 0.84
@@ -708,8 +731,8 @@ def test_scalar_methods_recover_stress_spikes_with_colored_noise(
 
     for name, result in results.items():
         assert np.isfinite(result).all()
-        if name != "NoiseStable":
-            _assert_stress_arrivals_recovered(result, SIGNAL_WINDOW.start, truth.dt)
+        _assert_scalar_result_is_not_discrete_sparse_output(result, name)
+        _assert_stress_arrivals_recovered(result, SIGNAL_WINDOW.start, truth.dt)
 
     assert _normalized_correlation(results["LeastSquares"], results["WaterLevel"]) > 0.93
     assert _normalized_correlation(results["LeastSquares"], results["MultiTaperXcor"]) > 0.82
@@ -895,6 +918,7 @@ def test_gid_methods_recover_colored_multi_spike_rf_for_all_inverse_modes(
     qc_key,
 ):
     plot_results = {}
+    plot_sparse_results = {}
     plot_t0 = None
     plot_dt = None
     data, truth, _ = _make_complex_colored_validation_data(return_truth=True)
@@ -913,6 +937,7 @@ def test_gid_methods_recover_colored_multi_spike_rf_for_all_inverse_modes(
         plot_t0 = rf.t0
         plot_dt = rf.dt
         sparse = engine.sparse_output()
+        plot_sparse_results[mode] = np.asarray(sparse.data)
         _assert_colored_gid_arrival_signs_are_recovered(
             np.asarray(sparse.data), sparse.t0, sparse.dt
         )
@@ -937,6 +962,67 @@ def test_gid_methods_recover_colored_multi_spike_rf_for_all_inverse_modes(
         plot_t0,
         plot_dt,
     )
+    _plot_gid_sparse_results(
+        decon_validation_plot_dir,
+        engine_class.__name__,
+        plot_sparse_results,
+        truth,
+        plot_t0,
+        plot_dt,
+        "inverse_modes",
+    )
+
+
+@pytest.mark.parametrize(
+    "engine_class, wrapper, pfname, branch_name",
+    [
+        (
+            TimeDomainGIDDecon,
+            TimeDomainGIDRFDecon,
+            "data/pf/TimeDomainGIDDecon.pf",
+            "time_domain_gid_deconvolution",
+        ),
+        (
+            FrequencyDomainGIDDecon,
+            FrequencyDomainGIDRFDecon,
+            "data/pf/FrequencyDomainGIDDecon.pf",
+            "frequency_domain_gid_deconvolution",
+        ),
+    ],
+)
+def test_gid_output_shaping_wavelet_is_configurable_and_separate_from_sparse_support(
+    tmp_path, engine_class, wrapper, pfname, branch_name
+):
+    data, _, _ = _make_stress_colored_validation_data(
+        noise_scale=0.0,
+        return_truth=True,
+    )
+    pf_default = _pf_with_gid_mode(tmp_path, pfname, branch_name, "ns_gid")
+    pf_wide = _pf_with_gid_mode_and_replacements(
+        tmp_path,
+        pfname,
+        branch_name,
+        "ns_gid",
+        {"shaping_wavelet_frequency 1.0": "shaping_wavelet_frequency 2.0"},
+    )
+
+    shaped_outputs = []
+    sparse_outputs = []
+    for pf in (pf_default, pf_wide):
+        engine = engine_class(pf)
+        rf = wrapper(
+            data,
+            engine,
+            signal_window=TimeWindow(-8.0, 20.0),
+            noise_window=TimeWindow(-35.0, -5.0),
+        )
+        assert rf.live
+        shaped_outputs.append(np.asarray(rf.data))
+        sparse_outputs.append(np.asarray(engine.sparse_output().data))
+
+    assert np.allclose(sparse_outputs[0], sparse_outputs[1], atol=1.0e-10)
+    assert not np.allclose(shaped_outputs[0], shaped_outputs[1], atol=1.0e-5)
+    assert _normalized_correlation(shaped_outputs[0], shaped_outputs[1]) < 0.999
 
 
 @pytest.mark.parametrize(
@@ -972,6 +1058,7 @@ def test_gid_methods_recover_stress_spike_signs_for_all_inverse_modes(
     qc_key,
 ):
     plot_results = {}
+    plot_sparse_results = {}
     plot_t0 = None
     plot_dt = None
     data, truth, _ = _make_stress_colored_validation_data(
@@ -995,6 +1082,7 @@ def test_gid_methods_recover_stress_spike_signs_for_all_inverse_modes(
             np.asarray(sparse.data), sparse.t0, sparse.dt
         )
         plot_results[mode] = matrix
+        plot_sparse_results[mode] = np.asarray(sparse.data)
         plot_t0 = rf.t0
         plot_dt = rf.dt
 
@@ -1005,6 +1093,7 @@ def test_gid_methods_recover_stress_spike_signs_for_all_inverse_modes(
             return_truth=True,
         )
         plot_results = {}
+        plot_sparse_results = {}
         plot_t0 = None
         plot_dt = None
         for mode in modes:
@@ -1018,6 +1107,7 @@ def test_gid_methods_recover_stress_spike_signs_for_all_inverse_modes(
             )
             if rf.live:
                 plot_results[mode] = np.asarray(rf.data)
+                plot_sparse_results[mode] = np.asarray(engine.sparse_output().data)
                 plot_t0 = rf.t0
                 plot_dt = rf.dt
 
@@ -1029,6 +1119,15 @@ def test_gid_methods_recover_stress_spike_signs_for_all_inverse_modes(
         plot_t0,
         plot_dt,
         f"{engine_class.__name__}_noise_{decon_validation_noise_scale:g}",
+    )
+    _plot_gid_sparse_results(
+        decon_validation_plot_dir,
+        engine_class.__name__,
+        plot_sparse_results,
+        plot_truth,
+        plot_t0,
+        plot_dt,
+        f"noise_{decon_validation_noise_scale:g}_stress",
     )
 
 

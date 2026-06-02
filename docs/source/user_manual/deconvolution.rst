@@ -134,9 +134,11 @@ Three-component and iterative operators
     with frequency-dependent damping from the wavelet and noise spectra, an
     explicit maximum gain cap, and an optional smooth SNR reliability taper.
     The implementation enforces ``|G(f)| <= ns_gid_gain_max`` within floating
-    point tolerance.  Stability comes from ``G(f)``, ``mu(f)``, the gain cap,
-    and noise-aware stopping; it does not come from the output shaping
-    wavelet.
+    point tolerance.  ``ns_gid_mu_min`` is interpreted as a relative floor
+    scaled by the peak wavelet spectral power, so the same parameter remains
+    meaningful for externally supplied wavelets with different amplitudes.
+    Stability comes from ``G(f)``, ``mu(f)``, the gain cap, and noise-aware
+    stopping; it does not come from the output shaping wavelet.
 
     NS-GID supports externally supplied wavelets through the GID
     ``loadwavelet`` APIs and the Python wrappers' ``external_wavelet``
@@ -153,10 +155,10 @@ Three-component and iterative operators
     in the GID data domain, and ``getresult`` returns the accepted sparse
     support convolved with the configured output ``ShapingWavelet``.  The raw
     spike train is available through ``sparse_output`` for QC and validation.
-    The underlying ``NoiseStableDecon`` scalar operator defaults to a shaped
-    scalar deconvolution result when used directly.  GID parameter files set
-    ``ns_gid_apply_output_shaping`` to false so the iterative peak picker sees
-    the raw stable inverse-filtered residual instead of a display-shaped trace.
+    The underlying ``NoiseStableDecon`` scalar operator is a single stable
+    inverse operation.  It is not a sparse picker and does not apply the GID
+    output shaping wavelet; finite bandwidth comes from the stable inverse
+    operator itself.
     Candidate acceptance can use an empirical inverse-filtered noise threshold,
     a sigma threshold, residual-to-noise stopping, maximum spike count, and
     the existing fractional-improvement limit.  Higher thresholds suppress
@@ -202,10 +204,19 @@ The output directory will contain:
     each configured inverse-operator mode: least squares, water level,
     multitaper, CNR, and NS-GID.
 
+``TimeDomainGIDDecon_inverse_modes_sparse_results.png``
+    Raw sparse spike trains selected by the time-domain GID loop for the same
+    inverse-operator modes.  This is the plot to compare directly against the
+    known sparse truth.
+
 ``FrequencyDomainGIDDecon_inverse_modes.png``
     Overlay of frequency-domain generalized iterative deconvolution results
     for each configured inverse-operator mode: least squares, water level,
     multitaper, CNR, and NS-GID.
+
+``FrequencyDomainGIDDecon_inverse_modes_sparse_results.png``
+    Raw sparse spike trains selected by the frequency-domain GID loop for the
+    same inverse-operator modes.
 
 ``external_wavelet_all_methods.png``
     Overlay of scalar, CNR, and NS-GID results when every method is driven by
@@ -223,6 +234,12 @@ The output directory will contain:
 ``FrequencyDomainGIDDecon_noise_<scale>_stress_spike_results.png``
     GID inverse-mode overlays for the same dense stress synthetic and selected
     plot noise scale.
+
+``TimeDomainGIDDecon_noise_<scale>_stress_sparse_results.png`` and
+``FrequencyDomainGIDDecon_noise_<scale>_stress_sparse_results.png``
+    Raw GID sparse spike trains for the dense stress synthetic.  These plots
+    intentionally show ``sparse_output`` rather than the shaped ``getresult``
+    representation.
 
 These figures are intended as an audit aid.  The numerical assertions in the
 test remain the source of pass/fail behavior and use a fixed reproducible

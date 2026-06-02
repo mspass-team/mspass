@@ -107,14 +107,13 @@ deconvolution_operator_type &Arr{
         deconvolution_data_window_start -5.0
         deconvolution_data_window_end 20.0
 
-        ns_gid_mu_min 1.0e-8
+        ns_gid_mu_min 3.0e-3
         ns_gid_alpha 1.0
         ns_gid_noise_floor 1.0e-12
         ns_gid_gain_max 1.0e3
         ns_gid_snr_taper_low 1.0
         ns_gid_snr_taper_high 3.0
         ns_gid_use_reliability_taper false
-        ns_gid_apply_output_shaping false
 
         shaping_wavelet_dt 0.05
         shaping_wavelet_type ricker

@@ -125,6 +125,7 @@ TimeDomainGIDDecon::TimeDomainGIDDecon(const AntelopePf &mdtoplevel)
     /* This should override this even if it was previously set */
     mdgiter.put("operator_nfft", nfft);
     this->ScalarDecon::changeparameter(mdgiter);
+    this->shapingwavelet = ShapingWavelet(mdgiter, nfft);
     AntelopePf mdleaf;
     /* We make sure the window parameters in each algorithm mactch what
     is set for this algorithm.  Abort if they are not consistent.  The
@@ -266,15 +267,11 @@ TimeDomainGIDDecon::~TimeDomainGIDDecon() {
 }
 
 CoreTimeSeries TimeDomainGIDDecon::ideal_output() {
-  if (decon_type == CNR)
-    return cnrprocessor->ideal_output();
-  return preprocessor->ideal_output();
+  return this->ScalarDecon::ideal_output();
 }
 
 CoreTimeSeries TimeDomainGIDDecon::actual_output() {
-  if (decon_type == CNR)
-    return cnrprocessor->actual_output(current_wavelet);
-  return preprocessor->actual_output();
+  return this->ideal_output();
 }
 
 CoreTimeSeries TimeDomainGIDDecon::inverse_wavelet() {
@@ -857,8 +854,12 @@ void TimeDomainGIDDecon::process() {
     /* The actual output signal is used in the iterative
      * recursion of this algorithm.  For efficiency it is important
      * to trim the fir filter.  The call to trim does that.*/
-    process_stage = "compute actual output wavelet";
-    CoreTimeSeries actual_out(this->actual_output());
+    process_stage = "compute inverse-domain actual output wavelet";
+    CoreTimeSeries actual_out;
+    if (decon_type == CNR)
+      actual_out = cnrprocessor->actual_output(current_wavelet);
+    else
+      actual_out = preprocessor->actual_output();
     actual_out = trim(actual_out);
     if (actual_out.npts() > d_decon.npts() / 2) {
       TimeWindow compact_kernel(-2.0, 2.0);
