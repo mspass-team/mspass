@@ -132,5 +132,15 @@ The output directory will contain:
     Source wavelet used in the synthetic validation, including the imposed
     spectral notches.
 
+``TimeDomainGIDDecon_inverse_modes.png``
+    Overlay of time-domain generalized iterative deconvolution results for
+    each configured inverse-operator mode: least squares, water level,
+    multitaper, and CNR3C.
+
+``FrequencyDomainGIDDecon_inverse_modes.png``
+    Overlay of frequency-domain generalized iterative deconvolution results
+    for each configured inverse-operator mode: least squares, water level,
+    multitaper, and CNR.
+
 These figures are intended as an audit aid.  The numerical assertions in the
 test remain the source of pass/fail behavior.

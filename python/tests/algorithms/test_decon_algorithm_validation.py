@@ -143,7 +143,16 @@ def _assert_direct_arrival_is_recovered(matrix, ratio_tol=2.0e-2):
     )
 
 
-def _plot_complex_colored_results(plot_dir, results, truth, wavelet):
+def _truth_matrix_for_times(truth, times):
+    truth_data = np.asarray(truth.data)
+    truth_matrix = np.zeros((3, len(times)))
+    samples = np.rint((times - truth.t0) / truth.dt).astype(int)
+    valid = np.logical_and(samples >= 0, samples < truth.npts)
+    truth_matrix[:, valid] = truth_data[:, samples[valid]]
+    return truth_matrix
+
+
+def _plot_rf_overlay(plot_dir, filename, title, results, truth, t0, dt):
     if plot_dir is None:
         return
     try:
@@ -158,8 +167,8 @@ def _plot_complex_colored_results(plot_dir, results, truth, wavelet):
         )
 
     npts = min(matrix.shape[1] for matrix in results.values())
-    t = SIGNAL_WINDOW.start + np.arange(npts) * truth.dt
-    truth_matrix = np.asarray(truth.data)[:, :npts]
+    t = t0 + np.arange(npts) * dt
+    truth_matrix = _truth_matrix_for_times(truth, t)
     component_names = ["EW", "NS", "Z"]
 
     fig, axes = plt.subplots(3, 1, figsize=(12, 8), sharex=True)
@@ -171,21 +180,49 @@ def _plot_complex_colored_results(plot_dir, results, truth, wavelet):
             linewidth=1.4,
             label="truth spike train",
         )
+        truth_peak = np.max(np.abs(truth_matrix[component, :]))
+        if truth_peak == 0.0:
+            truth_peak = 1.0
         for name, matrix in results.items():
             scaled = matrix[component, :npts]
             peak = np.max(np.abs(scaled))
             if peak > 0.0:
-                scaled = scaled / peak * np.max(np.abs(truth_matrix[component, :]))
+                scaled = scaled / peak * truth_peak
             axis.plot(t, scaled, linewidth=1.0, alpha=0.85, label=name)
         axis.axvline(0.0, color="0.5", linestyle="--", linewidth=0.8)
         axis.set_ylabel(component_names[component])
         axis.grid(True, color="0.85", linewidth=0.6)
     axes[-1].set_xlabel("Lag time relative to direct P sample (s)")
     axes[0].legend(loc="upper right", ncol=3, fontsize="small")
-    fig.suptitle("Scalar deconvolution validation on colored 3C synthetic")
+    fig.suptitle(title)
     fig.tight_layout()
-    fig.savefig(plot_dir / "complex_colored_scalar_methods.png", dpi=150)
+    fig.savefig(plot_dir / filename, dpi=150)
     plt.close(fig)
+
+
+def _plot_complex_colored_results(plot_dir, results, truth, wavelet):
+    if plot_dir is None:
+        return
+    try:
+        import matplotlib
+
+        matplotlib.use("Agg", force=True)
+        import matplotlib.pyplot as plt
+    except ImportError as err:
+        pytest.fail(
+            "--decon-validation-plots requires matplotlib; install it to write "
+            f"validation plots ({err})"
+        )
+
+    _plot_rf_overlay(
+        plot_dir,
+        "complex_colored_scalar_methods.png",
+        "Scalar deconvolution validation on colored 3C synthetic",
+        results,
+        truth,
+        SIGNAL_WINDOW.start,
+        truth.dt,
+    )
 
     tw = wavelet.t0 + np.arange(wavelet.npts) * wavelet.dt
     fig, axis = plt.subplots(1, 1, figsize=(10, 3))
@@ -197,6 +234,18 @@ def _plot_complex_colored_results(plot_dir, results, truth, wavelet):
     fig.tight_layout()
     fig.savefig(plot_dir / "complex_colored_validation_wavelet.png", dpi=150)
     plt.close(fig)
+
+
+def _plot_gid_mode_results(plot_dir, engine_name, results, truth, t0, dt):
+    _plot_rf_overlay(
+        plot_dir,
+        f"{engine_name}_inverse_modes.png",
+        f"{engine_name} validation by inverse-operator mode",
+        results,
+        truth,
+        t0,
+        dt,
+    )
 
 
 @pytest.mark.parametrize("noise_level", [0.0, 1.0e-6])
@@ -284,8 +333,19 @@ def test_scalar_methods_are_consistent_for_complex_colored_3c_synthetic(
     ],
 )
 def test_gid_methods_recover_noise_free_multi_spike_rf_for_all_inverse_modes(
-    tmp_path, engine_class, wrapper, pfname, branch_name, modes, qc_key
+    tmp_path,
+    decon_validation_plot_dir,
+    engine_class,
+    wrapper,
+    pfname,
+    branch_name,
+    modes,
+    qc_key,
 ):
+    plot_results = {}
+    plot_t0 = None
+    plot_dt = None
+    truth = make_impulse_data()
     for mode in modes:
         data = _make_validation_data(noise_level=0.0)
         pf = _pf_with_gid_mode(tmp_path, pfname, branch_name, mode)
@@ -298,6 +358,9 @@ def test_gid_methods_recover_noise_free_multi_spike_rf_for_all_inverse_modes(
         )
         assert rf.live, mode
         assert rf[qc_key]["residual_L2_final"] < rf[qc_key]["residual_L2_initial"]
+        plot_results[mode] = np.asarray(rf.data)
+        plot_t0 = rf.t0
+        plot_dt = rf.dt
         zrf = ExtractComponent(rf, 2)
         peak_sample = int(np.argmax(np.abs(zrf.data)))
         assert abs(zrf.time(peak_sample)) <= 0.15, mode
@@ -311,3 +374,11 @@ def test_gid_methods_recover_noise_free_multi_spike_rf_for_all_inverse_modes(
             EXPECTED_NS_Z_RATIO,
             atol=5.0e-2,
         ), mode
+    _plot_gid_mode_results(
+        decon_validation_plot_dir,
+        engine_class.__name__,
+        plot_results,
+        truth,
+        plot_t0,
+        plot_dt,
+    )
