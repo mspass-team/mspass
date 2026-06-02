@@ -228,35 +228,6 @@ private:
   bool ns_use_empirical_noise_threshold, ns_converged;
   std::string ns_stop_reason;
 
-  /* DEBUG attributes and methods.  These should be deleted after testing. */
-  std::vector<double> lw_linf_history, lw_l2_history, resid_l2_history,
-      resid_linf_history;
-  void print_convergence_history(std::ostream &ofs) {
-    ofs << "lw_inf lw_l2 resid_l2, resid_linf" << std::endl;
-    for (int i = 0; i < iter_count; ++i) {
-      if (i < lw_linf_history.size()) {
-        ofs << lw_linf_history[i] << " ";
-      } else {
-        ofs << "xxxx ";
-      }
-      if (i < lw_l2_history.size()) {
-        ofs << lw_l2_history[i] << " ";
-      } else {
-        ofs << "xxxx ";
-      }
-      if (i < resid_linf_history.size()) {
-        ofs << resid_linf_history[i] << " ";
-      } else {
-        ofs << "xxxx ";
-      }
-      if (i < resid_l2_history.size()) {
-        ofs << resid_l2_history[i] << " ";
-      } else {
-        ofs << "xxxx ";
-      }
-      ofs << std::endl;
-    }
-  }
 };
 } // namespace mspass::algorithms::deconvolution
 #endif

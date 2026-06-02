@@ -448,7 +448,8 @@ vector<double> solve_dense_system(const vector<vector<double>> &a,
 void refit_spike_amplitudes(list<ThreeCSpike> &spikes,
                             const CoreSeismogram &target,
                             const vector<double> &actual_o_fir,
-                            const int actual_o_0) {
+                            const int actual_o_0,
+                            const double ridge_beta = 1.0e-10) {
   const int nspikes = spikes.size();
   if (nspikes <= 0)
     return;
@@ -470,7 +471,7 @@ void refit_spike_amplitudes(list<ThreeCSpike> &spikes,
   double maxdiag(0.0);
   for (int i = 0; i < nspikes; ++i)
     maxdiag = max(maxdiag, fabs(gram[i][i]));
-  double damping = maxdiag * 1.0e-10;
+  double damping = maxdiag * ridge_beta;
   for (int i = 0; i < nspikes; ++i)
     gram[i][i] += damping;
   for (int component = 0; component < 3; ++component) {
@@ -486,6 +487,23 @@ void refit_spike_amplitudes(list<ThreeCSpike> &spikes,
   for (auto &spk : spikes)
     spk.amp =
         sqrt(spk.u[0] * spk.u[0] + spk.u[1] * spk.u[1] + spk.u[2] * spk.u[2]);
+}
+
+void rescale_spike_amplitude(ThreeCSpike &spk, const CoreSeismogram &target,
+                             const vector<double> &actual_o_fir,
+                             const int actual_o_0) {
+  double denom =
+      cblas_ddot(actual_o_fir.size(), &(actual_o_fir[0]), 1,
+                 &(actual_o_fir[0]), 1);
+  if (denom <= 0.0)
+    return;
+  int col0 = spk.col - actual_o_0;
+  for (int k = 0; k < 3; ++k) {
+    double num = fir_data_overlap(actual_o_fir, target, k, col0);
+    spk.u[k] = num / denom;
+  }
+  spk.amp =
+      sqrt(spk.u[0] * spk.u[0] + spk.u[1] * spk.u[1] + spk.u[2] * spk.u[2]);
 }
 
 int TimeDomainGIDDecon::load(const CoreSeismogram &draw, TimeWindow dwin_in) {
@@ -834,35 +852,13 @@ void TimeDomainGIDDecon::process() {
     data in the longer time window.   Note for efficiency may want to
     convert this to a frequency domain convolution if it proves to be
     a bottleneck */
-    // double dt;
-    // dt=this->shapingwavelet.sample_interval();
-    // TimeSeries winv=this->preprocessor->inverse_wavelet(tshift,d_decon.t0());
-    // DEBUG
-    // cerr << "inverse wavelet tshift="<<tshift/5.0<<"
-    // d_decon.to="<<d_decon.t0()<<endl; TimeSeries
-    // winv=this->preprocessor->inverse_wavelet(tshift/5.0,d_decon.t0());
-    // TimeSeries winv=this->preprocessor->inverse_wavelet(0.0,d_decon.t0());
     process_stage = "compute inverse wavelet";
     CoreTimeSeries winv = this->inverse_wavelet(d_decon.t0());
-    // This is a test - need a more elegant solution if it works.  Remove me
-    // when finished with this test
-    // if(d_decon.t0!=0) winv.t0 -= d_decon.t0;
-    // DEBUG
-    /*
-    cerr << "Inverse wavelet"<<endl
-         << winv
-         <<endl;
-*/
     /* The actual output signal is used in the iterative
      * recursion of this algorithm.  For efficiency it is important
      * to trim the fir filter.  The call to trim does that.*/
     process_stage = "compute actual output wavelet";
     CoreTimeSeries actual_out(this->actual_output());
-    // DEBUG
-    /*
-    cerr << "Actual output raw"<<endl;
-    cerr << actual_out<<endl;
-*/
     actual_out = trim(actual_out);
     if (actual_out.npts() > d_decon.npts() / 2) {
       TimeWindow compact_kernel(-2.0, 2.0);
@@ -897,10 +893,6 @@ void TimeDomainGIDDecon::process() {
          << "Window size must be larger than two times FIR filter size" << endl;
       throw MsPASSError(ss.str(), ErrorSeverity::Invalid);
     }
-    /* These two signals should be trimmed by winv.npts() on both ends to remove
-    sections that are pure edge transients.
-    REMOVE me when that is done*/
-
     if (decon_type == NS_GID) {
       process_stage = "NS-GID estimate inverse-filtered noise threshold";
       int ns_noise_npts(0);
@@ -987,10 +979,6 @@ void TimeDomainGIDDecon::process() {
     r = d_decon;
     spikes.clear();
     process_stage = "initialize sparse iteration";
-    lw_linf_history.clear();
-    lw_l2_history.clear();
-    resid_l2_history.clear();
-    resid_linf_history.clear();
     lag_weights.clear();
     vector<double> wamps; // weighted squared amplitudes
     wamps.reserve(r.npts());
@@ -1016,11 +1004,6 @@ void TimeDomainGIDDecon::process() {
     ns_converged = false;
     ns_stop_reason = "running";
     ns_last_peak_significance = 0.0;
-    // DEBUG - remove after testing
-    lw_linf_history.push_back(lw_linf_initial);
-    lw_l2_history.push_back(lw_l2_initial);
-    resid_l2_history.push_back(resid_l2_initial);
-    resid_linf_history.push_back(resid_linf_initial);
     do {
       process_stage = "sparse iteration";
       /* Compute the vector of amplitudes and find the maximum */
@@ -1058,6 +1041,7 @@ void TimeDomainGIDDecon::process() {
       while (!accepted && (*amax > 0.0)) {
         int imax = distance(wamps.begin(), amax);
         ThreeCSpike spk(r.u, imax);
+        rescale_spike_amplitude(spk, r, actual_o_fir, actual_o_0);
         CoreSeismogram saved_r(r);
         this->update_residual_matrix(spk);
         double trial_l2 = L2(r.u);
@@ -1066,6 +1050,14 @@ void TimeDomainGIDDecon::process() {
           this->update_lag_weights(imax);
           ++iter_count;
           accepted = true;
+          if (decon_type == NS_GID && ns_refit_interval > 0 &&
+              (static_cast<int>(spikes.size()) % ns_refit_interval) == 0) {
+            refit_spike_amplitudes(spikes, d_decon, actual_o_fir, actual_o_0,
+                                   ns_ridge_beta);
+            r = d_decon;
+            for (auto sptr = spikes.begin(); sptr != spikes.end(); ++sptr)
+              this->update_residual_matrix(*sptr);
+          }
         } else {
           r = saved_r;
           wamps[imax] = 0.0;
@@ -1076,7 +1068,9 @@ void TimeDomainGIDDecon::process() {
         break;
     } while (this->has_not_converged());
     process_stage = "refit sparse amplitudes";
-    refit_spike_amplitudes(spikes, d_decon, actual_o_fir, actual_o_0);
+    double ridge_beta = (decon_type == NS_GID) ? ns_ridge_beta : 1.0e-10;
+    refit_spike_amplitudes(spikes, d_decon, actual_o_fir, actual_o_0,
+                           ridge_beta);
     process_stage = "recompute final residual";
     r = d_decon;
     for (auto sptr = spikes.begin(); sptr != spikes.end(); ++sptr)
@@ -1111,11 +1105,6 @@ bool TimeDomainGIDDecon::has_not_converged() {
     lw_l2_now = cblas_dnrm2(lag_weights.size(), &(lag_weights[0]), 1);
     resid_linf_now = Linf(r.u);
     resid_l2_now = L2(r.u);
-    /* DEBUG - saving the convergence vector - after testing delete*/
-    lw_linf_history.push_back(lw_linf_now);
-    lw_l2_history.push_back(lw_l2_now);
-    resid_linf_history.push_back(resid_linf_now);
-    resid_l2_history.push_back(resid_l2_now);
     /* We use a standard calculation for residual l2 as fractional rms change */
     double eps;
     eps = (resid_l2_prev - resid_l2_now) / resid_l2_initial;
@@ -1193,9 +1182,6 @@ CoreSeismogram TimeDomainGIDDecon::getresult() {
       for (k = 0; k < 3; ++k)
         result.u(k, resultcol) = sptr->u[k];
     }
-    /* The preprocessor inverse already returns shaped RF estimates.  Applying
-     * the shaping wavelet again here double-shapes the sparse sequence and can
-     * move the apparent peak away from the accepted spike lag. */
     return result;
   } catch (...) {
     throw;

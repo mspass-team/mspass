@@ -200,8 +200,6 @@ void NoiseStableDecon::process() {
       static_cast<double>(usable_bins) / static_cast<double>(nfft);
 
   ComplexArray rf_fft = winv * d_fft;
-  ShapingWavelet sw(this->get_shaping_wavelet());
-  rf_fft = (*sw.wavelet()) * rf_fft;
   gsl_fft_complex_inverse(rf_fft.ptr(), 1, nfft, wavetable, workspace);
   result = ExtractLagWindow(rf_fft, output_length, sample_shift);
 }
@@ -213,7 +211,6 @@ CoreTimeSeries NoiseStableDecon::actual_output() {
   ComplexArray W(nfft, &(wavelet_padded[0]));
   gsl_fft_complex_forward(W.ptr(), 1, nfft, wavetable, workspace);
   ComplexArray ao_fft = winv * W;
-  ao_fft = (*shapingwavelet.wavelet()) * ao_fft;
   gsl_fft_complex_inverse(ao_fft.ptr(), 1, nfft, wavetable, workspace);
   vector<double> ao;
   ao.reserve(nfft);
@@ -236,7 +233,13 @@ CoreTimeSeries NoiseStableDecon::actual_output() {
 
 CoreTimeSeries NoiseStableDecon::inverse_wavelet(const double t0parent) {
   double dt = shapingwavelet.sample_interval();
-  return this->FourierInverse(winv, *shapingwavelet.wavelet(), dt, t0parent);
+  ComplexArray no_shaping(nfft);
+  for (int k = 0; k < nfft; ++k) {
+    double *ptr = no_shaping.ptr(k);
+    ptr[0] = 1.0;
+    ptr[1] = 0.0;
+  }
+  return this->FourierInverse(winv, no_shaping, dt, t0parent);
 }
 
 CoreTimeSeries NoiseStableDecon::inverse_wavelet() {

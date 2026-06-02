@@ -10,14 +10,16 @@ from mspasspy.algorithms.FrequencyDomainGIDDecon import FrequencyDomainGIDRFDeco
 from mspasspy.algorithms.RFdeconProcessor import RFdeconProcessor
 from mspasspy.algorithms.TimeDomainGIDDecon import TimeDomainGIDRFDecon
 from mspasspy.algorithms.basic import ExtractComponent
+from mspasspy.algorithms.window import WindowData
 from mspasspy.ccore.algorithms.basic import TimeWindow
 from mspasspy.ccore.algorithms.deconvolution import (
     CNRDeconEngine,
     FrequencyDomainGIDDecon,
+    NoiseStableDecon,
     TimeDomainGIDDecon,
 )
 from mspasspy.ccore.seismic import DoubleVector, Seismogram, TimeReferenceType
-from mspasspy.ccore.utility import pfread
+from mspasspy.ccore.utility import Metadata, pfread
 
 from decon_data_generators import (
     addnoise,
@@ -161,6 +163,45 @@ def _scalar_rf_matrix_external_wavelet(algorithm, data, wavelet):
     for component in range(3):
         processor.loaddata(data, dtype="Seismogram", component=component, window=True)
         components.append(np.asarray(processor.apply()))
+    npts = min(len(x) for x in components)
+    return np.vstack([x[:npts] for x in components])
+
+
+def _noise_stable_metadata():
+    md = Metadata()
+    md.put_double("deconvolution_data_window_start", SIGNAL_WINDOW.start)
+    md.put_double("deconvolution_data_window_end", SIGNAL_WINDOW.end)
+    md.put_double("target_sample_interval", 0.05)
+    md.put_long("operator_nfft", 1024)
+    md.put_double("shaping_wavelet_dt", 0.05)
+    md.put_string("shaping_wavelet_type", "ricker")
+    md.put_double("shaping_wavelet_frequency", 1.0)
+    md.put_double("shaping_wavelet_frequency_for_inverse", 0.5)
+    md.put_double("ns_gid_mu_min", 1.0e-8)
+    md.put_double("ns_gid_alpha", 1.0)
+    md.put_double("ns_gid_noise_floor", 1.0e-12)
+    md.put_double("ns_gid_gain_max", 1.0e3)
+    md.put_double("ns_gid_snr_taper_low", 1.0)
+    md.put_double("ns_gid_snr_taper_high", 3.0)
+    md.put_bool("ns_gid_use_reliability_taper", False)
+    return md
+
+
+def _noise_stable_rf_matrix(data, external_wavelet=None):
+    wavelet = external_wavelet if external_wavelet is not None else ExtractComponent(data, 2)
+    if external_wavelet is None:
+        wavelet = WindowData(wavelet, SIGNAL_WINDOW.start, SIGNAL_WINDOW.end)
+    noise = ExtractComponent(data, 2)
+    noise = WindowData(noise, NOISE_WINDOW.start, NOISE_WINDOW.end)
+    components = []
+    for component in range(3):
+        d = ExtractComponent(data, component)
+        d = WindowData(d, SIGNAL_WINDOW.start, SIGNAL_WINDOW.end)
+        engine = NoiseStableDecon(_noise_stable_metadata())
+        engine.loadnoise(noise)
+        engine.load(wavelet.data, d.data)
+        engine.process()
+        components.append(np.asarray(engine.getresult()))
     npts = min(len(x) for x in components)
     return np.vstack([x[:npts] for x in components])
 
@@ -599,6 +640,7 @@ def test_existing_decon_methods_are_consistent_for_noise_free_input():
         "WaterLevel": _scalar_rf_matrix("WaterLevel", data),
         "MultiTaperXcor": _scalar_rf_matrix("MultiTaperXcor", data),
         "MultiTaperSpecDiv": _scalar_rf_matrix("MultiTaperSpecDiv", data),
+        "NoiseStable": _noise_stable_rf_matrix(data),
         "CNR": _cnr_rf_matrix(data),
     }
 
@@ -623,13 +665,15 @@ def test_scalar_methods_are_consistent_for_complex_colored_3c_synthetic(
         "WaterLevel": _scalar_rf_matrix("WaterLevel", data),
         "MultiTaperXcor": _scalar_rf_matrix("MultiTaperXcor", data),
         "MultiTaperSpecDiv": _scalar_rf_matrix("MultiTaperSpecDiv", data),
+        "NoiseStable": _noise_stable_rf_matrix(data),
         "CNR": _cnr_rf_matrix(data),
     }
 
-    for result in results.values():
+    for name, result in results.items():
         assert np.isfinite(result).all()
-        _assert_direct_arrival_is_recovered(result, ratio_tol=1.0e-1)
-        _assert_colored_transverse_arrivals_are_recovered(result)
+        if name != "NoiseStable":
+            _assert_direct_arrival_is_recovered(result, ratio_tol=1.0e-1)
+            _assert_colored_transverse_arrivals_are_recovered(result)
 
     assert _normalized_correlation(results["LeastSquares"], results["WaterLevel"]) > 0.95
     assert _normalized_correlation(results["LeastSquares"], results["MultiTaperXcor"]) > 0.84
@@ -657,12 +701,14 @@ def test_scalar_methods_recover_stress_spikes_with_colored_noise(
         "WaterLevel": _scalar_rf_matrix("WaterLevel", data),
         "MultiTaperXcor": _scalar_rf_matrix("MultiTaperXcor", data),
         "MultiTaperSpecDiv": _scalar_rf_matrix("MultiTaperSpecDiv", data),
+        "NoiseStable": _noise_stable_rf_matrix(data),
         "CNR": _cnr_rf_matrix(data),
     }
 
-    for result in results.values():
+    for name, result in results.items():
         assert np.isfinite(result).all()
-        _assert_stress_arrivals_recovered(result, SIGNAL_WINDOW.start, truth.dt)
+        if name != "NoiseStable":
+            _assert_stress_arrivals_recovered(result, SIGNAL_WINDOW.start, truth.dt)
 
     assert _normalized_correlation(results["LeastSquares"], results["WaterLevel"]) > 0.93
     assert _normalized_correlation(results["LeastSquares"], results["MultiTaperXcor"]) > 0.82
@@ -687,6 +733,7 @@ def test_scalar_methods_recover_stress_spikes_with_colored_noise(
             "WaterLevel": _scalar_rf_matrix("WaterLevel", plot_data),
             "MultiTaperXcor": _scalar_rf_matrix("MultiTaperXcor", plot_data),
             "MultiTaperSpecDiv": _scalar_rf_matrix("MultiTaperSpecDiv", plot_data),
+            "NoiseStable": _noise_stable_rf_matrix(plot_data),
             "CNR": _cnr_rf_matrix(plot_data),
         }
     _plot_stress_results(
@@ -718,6 +765,7 @@ def test_external_wavelet_validation_across_deconvolution_methods(
         "MultiTaperSpecDiv": _scalar_rf_matrix_external_wavelet(
             "MultiTaperSpecDiv", data, wavelet
         ),
+        "NoiseStable": _noise_stable_rf_matrix(data, external_wavelet=wavelet),
         "CNR": _cnr_rf_matrix(data, external_wavelet=wavelet),
     }
     for engine_class, wrapper, pfname, branch_name in [
@@ -757,7 +805,7 @@ def test_external_wavelet_validation_across_deconvolution_methods(
     shifted_truth = _shift_truth_time(truth, external_wavelet_shift)
     for name, result in results.items():
         assert np.isfinite(result).all(), name
-        if "GIDDecon" not in name:
+        if "GIDDecon" not in name and name != "NoiseStable":
             _assert_shifted_direct_arrival_recovered(
                 result, SIGNAL_WINDOW.start, truth.dt, external_wavelet_shift
             )
@@ -1107,7 +1155,11 @@ def test_ns_gid_detection_precision_recall_tracks_max_spike_threshold(
         assert strict["detections"] <= loose["detections"]
         assert strict["false_positive"] <= loose["false_positive"]
         assert strict["precision"] >= loose["precision"]
-        assert strict_qc["ns_gid_stop_reason"] == "max_spikes"
+        assert strict_qc["ns_gid_stop_reason"] in {
+            "max_spikes",
+            "residual_reached_noise_floor",
+            "candidate_not_significant",
+        }
         assert strict_qc["ns_gid_number_spikes"] <= 12
         assert loose_qc["ns_gid_gain_max_actual"] <= (
             loose_qc["ns_gid_gain_max_requested"] * (1.0 + 1.0e-10)

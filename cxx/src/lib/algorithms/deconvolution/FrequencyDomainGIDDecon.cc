@@ -147,7 +147,8 @@ vector<double> solve_dense_system_fd(const vector<vector<double>> &a,
 void refit_spike_amplitudes_fd(list<ThreeCSpike> &spikes,
                                const CoreSeismogram &target,
                                const vector<double> &actual_o_fir,
-                               const int actual_o_0) {
+                               const int actual_o_0,
+                               const double ridge_beta = 1.0e-10) {
   const int nspikes = spikes.size();
   if (nspikes <= 0)
     return;
@@ -169,7 +170,7 @@ void refit_spike_amplitudes_fd(list<ThreeCSpike> &spikes,
   double maxdiag(0.0);
   for (int i = 0; i < nspikes; ++i)
     maxdiag = max(maxdiag, fabs(gram[i][i]));
-  double damping = maxdiag * 1.0e-10;
+  double damping = maxdiag * ridge_beta;
   for (int i = 0; i < nspikes; ++i)
     gram[i][i] += damping;
   for (int component = 0; component < 3; ++component) {
@@ -573,6 +574,14 @@ void FrequencyDomainGIDDecon::process() {
           spikes.push_back(spk);
           iter_count = iiter + 1;
           accepted = true;
+          if (decon_type == NS_GID && ns_refit_interval > 0 &&
+              (static_cast<int>(spikes.size()) % ns_refit_interval) == 0) {
+            refit_spike_amplitudes_fd(spikes, d_decon, actual_o_fir,
+                                      actual_o_0, ns_ridge_beta);
+            r = d_decon;
+            for (auto sptr = spikes.begin(); sptr != spikes.end(); ++sptr)
+              this->update_residual_matrix(*sptr);
+          }
         } else {
           r = saved_r;
           amps[imax] = 0.0;
@@ -616,7 +625,9 @@ void FrequencyDomainGIDDecon::process() {
         ns_converged = true;
       }
     }
-    refit_spike_amplitudes_fd(spikes, d_decon, actual_o_fir, actual_o_0);
+    double ridge_beta = (decon_type == NS_GID) ? ns_ridge_beta : 1.0e-10;
+    refit_spike_amplitudes_fd(spikes, d_decon, actual_o_fir, actual_o_0,
+                              ridge_beta);
     r = d_decon;
     for (auto sptr = spikes.begin(); sptr != spikes.end(); ++sptr)
       this->update_residual_matrix(*sptr);
@@ -640,8 +651,6 @@ CoreSeismogram FrequencyDomainGIDDecon::getresult() {
     for (int k = 0; k < 3; ++k)
       result.u(k, resultcol) = sptr->u[k];
   }
-  /* The inverse operator used to build the residual has already shaped the
-   * candidate RF.  Do not apply the shaping wavelet a second time. */
   return result;
 }
 
