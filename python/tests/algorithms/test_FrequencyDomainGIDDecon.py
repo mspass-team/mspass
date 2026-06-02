@@ -11,7 +11,7 @@ from mspasspy.ccore.seismic import Seismogram
 from mspasspy.algorithms.FrequencyDomainGIDDecon import FrequencyDomainGIDRFDecon
 
 from test_TimeDomainGIDDecon import (
-    _assert_actual_and_ideal_outputs_are_distinct,
+    _assert_actual_and_output_shaping_are_distinct,
     _assert_single_spike_recovery,
     _assert_valid_rf,
     _make_external_wavelet_3c_data,
@@ -38,7 +38,7 @@ def test_FrequencyDomainGIDDecon_binding_and_wrapper():
     pf = pfread("./data/pf/FrequencyDomainGIDDecon.pf")
     engine = FrequencyDomainGIDDecon(pf)
 
-    rf, actual_output, ideal_output = FrequencyDomainGIDRFDecon(
+    rf, actual_output, output_shaping_wavelet = FrequencyDomainGIDRFDecon(
         data,
         engine,
         signal_window=TimeWindow(-8.0, 20.0),
@@ -48,8 +48,10 @@ def test_FrequencyDomainGIDDecon_binding_and_wrapper():
 
     _assert_valid_rf(rf)
     assert actual_output.live
-    assert ideal_output.live
-    _assert_actual_and_ideal_outputs_are_distinct(actual_output, ideal_output)
+    assert output_shaping_wavelet.live
+    _assert_actual_and_output_shaping_are_distinct(
+        actual_output, output_shaping_wavelet
+    )
     assert rf.is_defined("FrequencyDomainGIDDecon_properties")
     qc = rf["FrequencyDomainGIDDecon_properties"]
     assert qc["iteration_count"] > 0
@@ -60,12 +62,14 @@ def test_FrequencyDomainGIDDecon_validates_single_spike_recovery():
     data = _make_single_spike_convolution_data()
     pf = pfread("./data/pf/FrequencyDomainGIDDecon.pf")
 
-    rf, actual_output, ideal_output = _run_frequency_gid(data, pf)
+    rf, actual_output, output_shaping_wavelet = _run_frequency_gid(data, pf)
 
     _assert_valid_rf(rf)
     assert actual_output.live
-    assert ideal_output.live
-    _assert_actual_and_ideal_outputs_are_distinct(actual_output, ideal_output)
+    assert output_shaping_wavelet.live
+    _assert_actual_and_output_shaping_are_distinct(
+        actual_output, output_shaping_wavelet
+    )
     qc = rf["FrequencyDomainGIDDecon_properties"]
     assert qc["iteration_count"] > 0
     assert qc["residual_Linf_final"] < qc["residual_Linf_initial"]
@@ -115,12 +119,14 @@ def test_FrequencyDomainGIDDecon_inverse_modes_are_valid(tmp_path, mode):
         mode,
     )
 
-    rf, actual_output, ideal_output = _run_frequency_gid(data, pf)
+    rf, actual_output, output_shaping_wavelet = _run_frequency_gid(data, pf)
 
     _assert_valid_rf(rf)
     assert actual_output.live
-    assert ideal_output.live
-    _assert_actual_and_ideal_outputs_are_distinct(actual_output, ideal_output)
+    assert output_shaping_wavelet.live
+    _assert_actual_and_output_shaping_are_distinct(
+        actual_output, output_shaping_wavelet
+    )
     qc = rf["FrequencyDomainGIDDecon_properties"]
     assert qc["iteration_count"] > 0
     assert qc["residual_L2_final"] < qc["residual_L2_initial"]

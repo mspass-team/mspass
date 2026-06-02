@@ -40,6 +40,7 @@ public:
   void process();
   mspass::seismic::CoreSeismogram getresult();
   mspass::seismic::CoreSeismogram sparse_output();
+  /*! Legacy alias for output_shaping_wavelet inherited from ScalarDecon. */
   mspass::seismic::CoreTimeSeries ideal_output();
   mspass::seismic::CoreTimeSeries actual_output();
   mspass::seismic::CoreTimeSeries inverse_wavelet();

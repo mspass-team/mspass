@@ -104,5 +104,5 @@ def FrequencyDomainGIDRFDecon(
         return d
 
     if return_wavelet:
-        return [rf, engine.actual_output(), engine.ideal_output()]
+        return [rf, engine.actual_output(), engine.output_shaping_wavelet()]
     return rf

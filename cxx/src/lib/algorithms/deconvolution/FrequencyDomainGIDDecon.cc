@@ -421,7 +421,7 @@ void FrequencyDomainGIDDecon::initialize_inverse_operator() {
 }
 
 CoreTimeSeries FrequencyDomainGIDDecon::ideal_output() {
-  return this->ScalarDecon::ideal_output();
+  return this->ScalarDecon::output_shaping_wavelet();
 }
 
 CoreTimeSeries FrequencyDomainGIDDecon::actual_output() {
@@ -659,7 +659,7 @@ CoreSeismogram FrequencyDomainGIDDecon::sparse_output() {
 
 CoreSeismogram FrequencyDomainGIDDecon::getresult() {
   CoreSeismogram sparse(this->sparse_output());
-  CoreTimeSeries shaping(this->ideal_output());
+  CoreTimeSeries shaping(this->output_shaping_wavelet());
   CoreSeismogram shaped(sparse_convolve(shaping, sparse));
   return WindowData(shaped, dwin);
 }

@@ -6,9 +6,9 @@ engine.
 
 The underlying operator follows the generalized iterative deconvolution
 interpretation of Wang and Pavlis (2016).  Iteration is performed on a sparse
-three-component spike train.  The returned receiver function is that sparse
-train convolved with the configured shaping wavelet for the requested lag
-window; it is not the raw spike train itself.
+three-component impulse response.  The returned receiver function is that
+sparse impulse response convolved with the configured output shaping wavelet
+for the requested lag window; it is not the raw sparse result itself.
 """
 
 from mspasspy.util.decorators import mspass_func_wrapper
@@ -63,7 +63,8 @@ def TimeDomainGIDRFDecon(
     :param external_noise: optional scalar noise `TimeSeries`, `CoreTimeSeries`,
         or `PowerSpectrum` passed to NS-GID inverse stabilization.
     :param QCdata_key: metadata key used to store the engine's QC metrics.
-    :param return_wavelet: when True return `[rf, actual_output, ideal_output]`.
+    :param return_wavelet: when True return
+        `[rf, actual_output, output_shaping_wavelet]`.
     :return: deconvolved `Seismogram`, or the tuple described above.
     """
     alg = "TimeDomainGIDRFDecon"
@@ -121,5 +122,5 @@ def TimeDomainGIDRFDecon(
         return d
 
     if return_wavelet:
-        return [rf, engine.actual_output(), engine.ideal_output()]
+        return [rf, engine.actual_output(), engine.output_shaping_wavelet()]
     return rf

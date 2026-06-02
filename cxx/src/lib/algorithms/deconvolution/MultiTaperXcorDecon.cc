@@ -352,7 +352,7 @@ void MultiTaperXcorDecon::process() {
 }
 CoreTimeSeries MultiTaperXcorDecon::actual_output() {
   try {
-    /* The ao_fft array contains the fft of the actual output wavelet.
+    /* The ao_fft array contains the fft of the actual output/resolution kernel.
      * We do need to appy the shaping wavelet for consistency before
      * converting it to the time domain.*/
     ao_fft = (*shapingwavelet.wavelet()) * ao_fft;

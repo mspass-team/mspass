@@ -518,7 +518,7 @@ def _plot_rf_overlay(plot_dir, filename, title, results, truth, t0, dt):
             truth_matrix[component, :],
             color="black",
             linewidth=1.4,
-            label="truth spike train",
+            label="truth sparse impulse response",
         )
         truth_peak = np.max(np.abs(truth_matrix[component, :]))
         if truth_peak == 0.0:

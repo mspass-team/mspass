@@ -212,7 +212,8 @@ def make_test_data(noise_level=None, front_pad=40.0):
 
 def make_expected_result(wavelet):
     """
-    This function computes an ideal output Seismogram from this tes.
+    This function computes the expected output Seismogram from the output
+    shaping wavelet used in this test.
     """
     dimp = make_impulse_data()
     dout = convolve_wavelet(dimp, wavelet)
@@ -230,7 +231,7 @@ def verify_decon_output(d_decon, engine, wavelet):
     """
     print("Metadata container content of decon output")
     print_metadata(d_decon)
-    iout = engine.ideal_output()
+    iout = engine.output_shaping_wavelet()
     aout = engine.actual_output(wavelet)
     d_e = make_expected_result(iout)
     # may want to window this to reduce the size of the test data pattern file

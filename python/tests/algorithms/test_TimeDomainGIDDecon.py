@@ -37,13 +37,15 @@ def _assert_valid_rf(rf):
     assert np.linalg.norm(rf.data) > 0.0
 
 
-def _assert_actual_and_ideal_outputs_are_distinct(actual_output, ideal_output):
+def _assert_actual_and_output_shaping_are_distinct(
+    actual_output, output_shaping_wavelet
+):
     actual = np.asarray(actual_output.data)
-    ideal = np.asarray(ideal_output.data)
-    if actual.shape == ideal.shape:
-        assert not np.allclose(actual, ideal, atol=1.0e-10)
+    shaping = np.asarray(output_shaping_wavelet.data)
+    if actual.shape == shaping.shape:
+        assert not np.allclose(actual, shaping, atol=1.0e-10)
     else:
-        assert actual.size != ideal.size
+        assert actual.size != shaping.size
 
 
 def _assert_single_spike_recovery(rf, ratio_tolerance):
@@ -251,7 +253,7 @@ def test_TimeDomainGIDDecon_binding_and_wrapper():
     signal_window = TimeWindow(-8.0, 20.0)
     noise_window = TimeWindow(-25.0, -8.0)
 
-    rf, actual_output, ideal_output = TimeDomainGIDRFDecon(
+    rf, actual_output, output_shaping_wavelet = TimeDomainGIDRFDecon(
         data,
         engine,
         signal_window=signal_window,
@@ -261,8 +263,10 @@ def test_TimeDomainGIDDecon_binding_and_wrapper():
 
     _assert_valid_rf(rf)
     assert actual_output.live
-    assert ideal_output.live
-    _assert_actual_and_ideal_outputs_are_distinct(actual_output, ideal_output)
+    assert output_shaping_wavelet.live
+    _assert_actual_and_output_shaping_are_distinct(
+        actual_output, output_shaping_wavelet
+    )
     assert rf.is_defined("TimeDomainGIDDecon_properties")
     qc = rf["TimeDomainGIDDecon_properties"]
     assert qc["iteration_count"] > 0
@@ -338,7 +342,7 @@ def test_TimeDomainGIDDecon_inverse_modes_are_valid(tmp_path, mode):
     )
     engine = TimeDomainGIDDecon(pf)
 
-    rf, actual_output, ideal_output = TimeDomainGIDRFDecon(
+    rf, actual_output, output_shaping_wavelet = TimeDomainGIDRFDecon(
         data,
         engine,
         signal_window=TimeWindow(-10.0, 20.0),
@@ -348,8 +352,10 @@ def test_TimeDomainGIDDecon_inverse_modes_are_valid(tmp_path, mode):
 
     _assert_valid_rf(rf)
     assert actual_output.live
-    assert ideal_output.live
-    _assert_actual_and_ideal_outputs_are_distinct(actual_output, ideal_output)
+    assert output_shaping_wavelet.live
+    _assert_actual_and_output_shaping_are_distinct(
+        actual_output, output_shaping_wavelet
+    )
     qc = rf["TimeDomainGIDDecon_properties"]
     assert qc["iteration_count"] > 0
     assert qc["residual_L2_final"] < qc["residual_L2_initial"]

@@ -79,7 +79,7 @@ class RFdeconProcessor:
     the configured lag window rather than a wrapped circular-convolution
     result.  Frequency-domain operators use padding before FFT processing;
     ``TimeDomainLeastSquares`` builds a Toeplitz linear-convolution matrix.
-    The GID variants iterate on a sparse spike train and return the shaped
+    The GID variants iterate on a sparse impulse response and return the shaped
     receiver function for the configured output window.
     """
 
@@ -354,23 +354,20 @@ class RFdeconProcessor:
         self.processor.process()
         return self.processor.actual_output()
 
-    def ideal_output(self):
+    def output_shaping_wavelet(self):
         """
-        The ideal output of a decon operator is the same thing we call a
-        shaping wavelet.  This method returns the ideal output=shaping wavelet
-        as a TimeSeries object.   Like the actual output method the return
-        function is circular shifted so the function peaks at 0 time located
-        at n/2 samples from the start sample.  Graphic displays will then show
-        the wavelet centered and peaked at time 0.   The prediction error
-        can be computed as the difference between the actual_output and
-        ideal_output TimeSeries objects.   The norm of the prediction error
-        is a helpful metric to display the stability and accuracy of the
-        inverse.
+        Return the output shaping wavelet, ws(t) in Wang and Pavlis (2016).
+
+        For GID this is the wavelet convolved with the sparse impulse response to
+        form the represented receiver function.  For legacy scalar operators
+        it is the configured target/bandlimiting wavelet applied to the scalar
+        inverse result.
         """
         if hasattr(self, "dvector"):
             if self.__is_3c_engine:
                 raise RuntimeError(
-                    "ideal_output for GID engines is available after apply_3c"
+                    "output_shaping_wavelet for GID engines is available "
+                    "after apply_3c"
                 )
             self.processor.loaddata(DoubleVector(self.dvector))
         if hasattr(self, "wvector"):
@@ -378,7 +375,16 @@ class RFdeconProcessor:
         if self.__uses_noise and hasattr(self, "nvector"):
             self.processor.loadnoise(DoubleVector(self.nvector))
         self.processor.process()
-        return self.processor.ideal_output()
+        return self.processor.output_shaping_wavelet()
+
+    def ideal_output(self):
+        """
+        Legacy alias for output_shaping_wavelet.
+
+        New code should use output_shaping_wavelet to avoid confusing this
+        diagnostic with the actual output/resolution kernel.
+        """
+        return self.output_shaping_wavelet()
 
     def inverse_filter(self):
         """
@@ -480,7 +486,7 @@ class RFdeconProcessor:
         norm is L2.
         """
         ao = self.actual_output()
-        io = self.ideal_output()
+        io = self.output_shaping_wavelet()
         # with internal use can assume ao and io are the same length
         err = ao - io
         return np.linalg.norm(err.data) / np.linalg.norm(io.data)
@@ -629,7 +635,7 @@ def RFdecon(
     :return:  Normally returns Seismogram object containing the RF estimates.
         The orientations are always the same as the input.  If `return-wavelets` is set
         True returns a tuple with three components:  0 - `Seismogram` returned as with
-        default, 1 - actual output wavelet `TimeSeries`, 2 - ideal output wavelet
+        default, 1 - actual output/resolution kernel `TimeSeries`, 2 - output shaping wavelet
         stored as a `TimeSeries` object.
     """
 

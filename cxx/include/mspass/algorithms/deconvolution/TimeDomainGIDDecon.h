@@ -18,8 +18,8 @@
 #include <vector>
 namespace mspass::algorithms::deconvolution {
 /* Wang's original version allowed XCORR here - dropped for now as this
-code assumes the decon produces a zero phase ideal output while in every
-case the original XCORR iterative method uses the raw wavelet and cross
+code assumes the inverse operator produces a zero-phase resolution kernel,
+while the original XCORR iterative method uses the raw wavelet and cross
 correlation. */
 
 enum IterDeconType { WATER_LEVEL, LEAST_SQ, MULTI_TAPER, CNR, NS_GID };
@@ -108,6 +108,7 @@ public:
   ~TimeDomainGIDDecon();
   mspass::seismic::CoreSeismogram getresult();
   mspass::seismic::CoreSeismogram sparse_output();
+  /*! Legacy alias for output_shaping_wavelet inherited from ScalarDecon. */
   mspass::seismic::CoreTimeSeries ideal_output();
   mspass::seismic::CoreTimeSeries actual_output();
   mspass::seismic::CoreTimeSeries inverse_wavelet();

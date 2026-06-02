@@ -144,14 +144,20 @@ PYBIND11_MODULE(deconvolution, m) {
     .def("get_shaping_wavelet",&ScalarDecon::get_shaping_wavelet,
 	    "Get the shaping wavelet used by this operator")
     .def("actual_output",&ScalarDecon::actual_output,
-      "Return actual output of inverse*wavelet"
+      "Return actual output/resolution kernel of inverse*wavelet"
+      )
+    .def("resolution_kernel",&ScalarDecon::resolution_kernel,
+      "Return actual output/resolution kernel of inverse*wavelet"
+      )
+    .def("output_shaping_wavelet",&ScalarDecon::output_shaping_wavelet,
+      "Return the output shaping wavelet ws(t)"
       )
     .def("ideal_output",&ScalarDecon::ideal_output,
-      "Return ideal output of for inverse"
+      "Legacy alias for output_shaping_wavelet"
       )
     .def("inverse_wavelet",py::overload_cast<>(&ScalarDecon::inverse_wavelet))
     .def("inverse_wavelet",py::overload_cast<double>(&ScalarDecon::inverse_wavelet))
-    .def("QCMetrics",&ScalarDecon::QCMetrics,"Return ideal output of for inverse")
+    .def("QCMetrics",&ScalarDecon::QCMetrics,"Return QC metrics")
   ;
   py::class_<WaterLevelDecon,ScalarDecon>(m,"WaterLevelDecon","Water level frequency domain operator")
     .def(py::init<const Metadata>())
@@ -162,7 +168,7 @@ PYBIND11_MODULE(deconvolution, m) {
       "Return actual output of inverse*wavelet")
     .def("inverse_wavelet",py::overload_cast<>(&WaterLevelDecon::inverse_wavelet))
     .def("inverse_wavelet",py::overload_cast<double>(&WaterLevelDecon::inverse_wavelet))
-    .def("QCMetrics",&WaterLevelDecon::QCMetrics,"Return ideal output of for inverse")
+    .def("QCMetrics",&WaterLevelDecon::QCMetrics,"Return QC metrics")
     .def(py::pickle(
       [](const WaterLevelDecon &self) {
         pybind11::gil_scoped_acquire acquire;
@@ -194,7 +200,7 @@ PYBIND11_MODULE(deconvolution, m) {
     .def("inverse_wavelet",py::overload_cast<>(&LeastSquareDecon::inverse_wavelet))
     .def("inverse_wavelet",py::overload_cast<double>(&LeastSquareDecon::inverse_wavelet))
     .def("QCMetrics",&LeastSquareDecon::QCMetrics,
-      "Return ideal output of for inverse")
+      "Return QC metrics")
     .def(py::pickle(
       [](const LeastSquareDecon &self) {
         pybind11::gil_scoped_acquire acquire;
@@ -287,7 +293,7 @@ PYBIND11_MODULE(deconvolution, m) {
       "Return actual output of inverse*wavelet")
     .def("inverse_wavelet",py::overload_cast<>(&MultiTaperSpecDivDecon::inverse_wavelet))
     .def("inverse_wavelet",py::overload_cast<double>(&MultiTaperSpecDivDecon::inverse_wavelet))
-    .def("QCMetrics",&MultiTaperSpecDivDecon::QCMetrics,"Return ideal output of for inverse")
+    .def("QCMetrics",&MultiTaperSpecDivDecon::QCMetrics,"Return QC metrics")
     .def("get_taperlen",&MultiTaperSpecDivDecon::get_taperlen,"Get length of the Slepian tapers used by the operator")
     .def("get_number_tapers",&MultiTaperSpecDivDecon::get_number_tapers,"Get number of Slepian tapers used by the operator")
     .def("get_time_bandwidth_product",&MultiTaperSpecDivDecon::get_time_bandwidth_product,"Get time bandwidt product of Slepian tapers used by the operator")
@@ -332,7 +338,7 @@ PYBIND11_MODULE(deconvolution, m) {
       "Return actual output of inverse*wavelet")
     .def("inverse_wavelet",py::overload_cast<>(&MultiTaperXcorDecon::inverse_wavelet))
     .def("inverse_wavelet",py::overload_cast<double>(&MultiTaperXcorDecon::inverse_wavelet))
-    .def("QCMetrics",&MultiTaperXcorDecon::QCMetrics,"Return ideal output of for inverse")
+    .def("QCMetrics",&MultiTaperXcorDecon::QCMetrics,"Return QC metrics")
     .def("get_taperlen",&MultiTaperXcorDecon::get_taperlen,"Get length of the Slepian tapers used by the operator")
     .def("get_number_tapers",&MultiTaperXcorDecon::get_number_tapers,"Get number of Slepian tapers used by the operator")
     .def("get_time_bandwidth_product",&MultiTaperXcorDecon::get_time_bandwidth_product,"Get time bandwidt product of Slepian tapers used by the operator")
@@ -381,13 +387,14 @@ PYBIND11_MODULE(deconvolution, m) {
     .def("getresult",&TimeDomainGIDDecon::getresult,
             "Return the deconvolved three-component receiver function")
     .def("sparse_output",&TimeDomainGIDDecon::sparse_output,
-            "Return the raw sparse spike train from the GID iteration")
+            "Return the raw sparse impulse response from the GID iteration")
     .def("ideal_output",&TimeDomainGIDDecon::ideal_output,
-            "Return ideal output of inverse*wavelet")
-    .def("actual_output",&TimeDomainGIDDecon::actual_output,"Return actual output of inverse*wavelet")
+            "Legacy alias for output_shaping_wavelet")
+    .def("actual_output",&TimeDomainGIDDecon::actual_output,
+            "Return actual output/resolution kernel of the inverse operator")
     .def("inverse_wavelet",py::overload_cast<>(&TimeDomainGIDDecon::inverse_wavelet))
     .def("inverse_wavelet",py::overload_cast<double>(&TimeDomainGIDDecon::inverse_wavelet))
-    .def("QCMetrics",&TimeDomainGIDDecon::QCMetrics,"Return ideal output of for inverse")
+    .def("QCMetrics",&TimeDomainGIDDecon::QCMetrics,"Return QC metrics")
   ;
 
   py::class_<FrequencyDomainGIDDecon,ScalarDecon>(m,"FrequencyDomainGIDDecon",
@@ -414,10 +421,11 @@ PYBIND11_MODULE(deconvolution, m) {
     .def("getresult",&FrequencyDomainGIDDecon::getresult,
             "Return the deconvolved three-component receiver function")
     .def("sparse_output",&FrequencyDomainGIDDecon::sparse_output,
-            "Return the raw sparse spike train from the GID iteration")
+            "Return the raw sparse impulse response from the GID iteration")
     .def("ideal_output",&FrequencyDomainGIDDecon::ideal_output,
-            "Return ideal output of inverse*wavelet")
-    .def("actual_output",&FrequencyDomainGIDDecon::actual_output,"Return actual output of inverse*wavelet")
+            "Legacy alias for output_shaping_wavelet")
+    .def("actual_output",&FrequencyDomainGIDDecon::actual_output,
+            "Return actual output/resolution kernel of the inverse operator")
     .def("inverse_wavelet",py::overload_cast<>(&FrequencyDomainGIDDecon::inverse_wavelet))
     .def("inverse_wavelet",py::overload_cast<double>(&FrequencyDomainGIDDecon::inverse_wavelet))
     .def("QCMetrics",&FrequencyDomainGIDDecon::QCMetrics,"Return QC metrics")
@@ -450,9 +458,13 @@ PYBIND11_MODULE(deconvolution, m) {
         py::overload_cast<const Seismogram&>(&CNRDeconEngine::compute_noise_spectrum),
         "Computes a noise spectrum from a Seismogram object using the same multitaper parameters as the inverse operator with average of three components")
     .def("ideal_output",&CNRDeconEngine::ideal_output,
-      "Return the ideal output of the currently loaded operator")
+      "Legacy alias for output_shaping_wavelet")
+    .def("output_shaping_wavelet",&CNRDeconEngine::output_shaping_wavelet,
+      "Return the output shaping wavelet ws(t)")
     .def("actual_output",&CNRDeconEngine::actual_output,
-      "Return the actual output of the currently loaded operator")
+      "Return actual output/resolution kernel for the supplied wavelet")
+    .def("resolution_kernel",&CNRDeconEngine::resolution_kernel,
+      "Return actual output/resolution kernel for the supplied wavelet")
     .def("inverse_wavelet",&CNRDeconEngine::inverse_wavelet,
         "Return the time-domain inverse operator computed form current frequency domain operator")
     .def("QCMetrics",&CNRDeconEngine::QCMetrics,"Return a Metadata container of QC metrics computed by this algorithm")
@@ -512,8 +524,13 @@ PYBIND11_MODULE(deconvolution, m) {
         "Load an externally determined wavelet for deconvolution")
     .def("process",&CNR3CDecon::process,"Process data previously loaded")
     .def("ideal_output",&CNR3CDecon::ideal_output,
-        "Return ideal output for this operator")
-    .def("actual_output",&CNR3CDecon::actual_output,"Return actual output computed for current wavelet")
+        "Legacy alias for output_shaping_wavelet")
+    .def("output_shaping_wavelet",&CNR3CDecon::output_shaping_wavelet,
+        "Return the output shaping wavelet ws(t)")
+    .def("actual_output",&CNR3CDecon::actual_output,
+        "Return actual output/resolution kernel computed for current wavelet")
+    .def("resolution_kernel",&CNR3CDecon::resolution_kernel,
+        "Return actual output/resolution kernel computed for current wavelet")
     .def("inverse_wavelet",&CNR3CDecon::inverse_wavelet,
         "Return time domain form of inverse wavelet")
     .def("QCMetrics",&CNR3CDecon::QCMetrics,

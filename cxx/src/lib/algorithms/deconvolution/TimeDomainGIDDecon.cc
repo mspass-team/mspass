@@ -267,7 +267,7 @@ TimeDomainGIDDecon::~TimeDomainGIDDecon() {
 }
 
 CoreTimeSeries TimeDomainGIDDecon::ideal_output() {
-  return this->ScalarDecon::ideal_output();
+  return this->ScalarDecon::output_shaping_wavelet();
 }
 
 CoreTimeSeries TimeDomainGIDDecon::actual_output() {
@@ -856,7 +856,7 @@ void TimeDomainGIDDecon::process() {
     /* The actual output signal is used in the iterative
      * recursion of this algorithm.  For efficiency it is important
      * to trim the fir filter.  The call to trim does that.*/
-    process_stage = "compute inverse-domain actual output wavelet";
+    process_stage = "compute inverse-domain resolution kernel";
     CoreTimeSeries actual_out;
     if (decon_type == CNR)
       actual_out = cnrprocessor->actual_output(current_wavelet);
@@ -1192,7 +1192,7 @@ CoreSeismogram TimeDomainGIDDecon::sparse_output() {
 CoreSeismogram TimeDomainGIDDecon::getresult() {
   try {
     CoreSeismogram sparse(this->sparse_output());
-    CoreTimeSeries shaping(this->ideal_output());
+    CoreTimeSeries shaping(this->output_shaping_wavelet());
     CoreSeismogram shaped(sparse_convolve(shaping, sparse));
     return WindowData(shaped, dwin);
   } catch (...) {

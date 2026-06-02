@@ -63,14 +63,21 @@ public:
   void change_shaping_wavelet(const ShapingWavelet &nsw);
   /*! getter for ShapingWavelet stored with the operator. */
   ShapingWavelet get_shaping_wavelet() const { return this->shapingwavelet; };
-  /* \brief Return the ideal output of the deconvolution operator.
-
-  All deconvolution operators have a implicit or explicit ideal output
-  signal. e.g. for a spiking Wiener filter it is a delta function with or
-  without a lag.  For a shaping wavelt it is the time domain version of the
-  wavelet. */
-  mspass::seismic::CoreTimeSeries ideal_output() {
+  /*! \brief Return the output shaping wavelet.
+   *
+   * Wang and Pavlis (2016) call this wavelet ws(t).  GID methods convolve the
+   * sparse impulse response with this wavelet to form the finite-duration
+   * receiver-function representation used for stacking and imaging. */
+  mspass::seismic::CoreTimeSeries output_shaping_wavelet() {
     return this->shapingwavelet.impulse_response();
+  };
+  /*! \brief Legacy alias for output_shaping_wavelet.
+   *
+   * Older MsPASS code called the output shaping wavelet "ideal_output".  New
+   * code and documentation should prefer output_shaping_wavelet, which matches
+   * the terminology of Wang and Pavlis (2016). */
+  mspass::seismic::CoreTimeSeries ideal_output() {
+    return this->output_shaping_wavelet();
   };
   /*! \brief Return the actual output of the deconvolution operator.
 
@@ -79,6 +86,10 @@ public:
   normally expect this function to be peaked at 0.   Offsets from 0
   would imply a bias. */
   virtual mspass::seismic::CoreTimeSeries actual_output() = 0;
+  /*! \brief Alias for actual_output using inverse-theory terminology. */
+  mspass::seismic::CoreTimeSeries resolution_kernel() {
+    return this->actual_output();
+  };
 
   /*! \brief Return a FIR represention of the inverse filter.
 

@@ -164,9 +164,9 @@ def fetch_and_validate_bandwidth_data(
 def prediction_error(engine, wavelet) -> float:
     """
     Computes prediction error of deconvolution operator defined as
-    norm(ao-io)/norm(io) where ao is the return from the
-    actual_output method of engine and io is the return from
-    the ideal_output of engine.  The computed norm is L2
+    norm(ao-ws)/norm(ws) where ao is the return from the
+    actual_output method of engine and ws is the output shaping
+    wavelet.  The computed norm is L2
     :param engine:   assumed valid instance of a CNRDeconEngine
        class
     :param wavelet:   wavelet TimeSeries object used in deconvolution.
@@ -174,12 +174,12 @@ def prediction_error(engine, wavelet) -> float:
        required for actual_output method.
     """
 
-    # with internal use can assume ao and io are the same length
+    # with internal use can assume ao and ws are the same length
     # and time aligned - caution
     ao = engine.actual_output(wavelet)
-    io = engine.ideal_output()
-    err = ao - io
-    return np.linalg.norm(err.data) / np.linalg.norm(io.data)
+    ws = engine.output_shaping_wavelet()
+    err = ao - ws
+    return np.linalg.norm(err.data) / np.linalg.norm(ws.data)
 
 
 @mspass_func_wrapper
@@ -544,8 +544,8 @@ def CNRRFDecon(
         retval.append(d)
         ao = engine.actual_output(w)
         retval.append(ao)
-        ideal_out = engine.ideal_output()
-        retval.append(ideal_out)
+        output_shaping_wavelet = engine.output_shaping_wavelet()
+        retval.append(output_shaping_wavelet)
         return retval
     else:
         return d
@@ -811,8 +811,8 @@ def CNRArrayDecon(
         retval.append(ensout)
         ao = engine.actual_output(beam)
         retval.append(ao)
-        ideal_out = engine.ideal_output()
-        retval.append(ideal_out)
+        output_shaping_wavelet = engine.output_shaping_wavelet()
+        retval.append(output_shaping_wavelet)
     else:
         retval = ensout
 

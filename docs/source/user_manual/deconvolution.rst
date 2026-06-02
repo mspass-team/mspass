@@ -37,16 +37,44 @@ time.  If an operator reports ``actual_output`` or ``inverse_wavelet``, that
 diagnostic object may be the full padded operator response; use the returned
 receiver function for the cropped seismic result.
 
+Terminology
+-----------
+
+This page follows the terminology of Wang & Pavlis (2016) for generalized
+iterative deconvolution:
+
+``sparse impulse response``
+    The finite spike series :math:`\hat{i}(t)` selected by the iterative loop.
+    In code this is returned by ``sparse_output``.
+
+``output shaping wavelet``
+    The wavelet :math:`w_s(t)` convolved with :math:`\hat{i}(t)` to form the
+    finite-duration receiver-function representation
+    :math:`\hat{m}_{id}(t)=w_s(t)*\hat{i}(t)`.  In code the preferred method
+    name is ``output_shaping_wavelet``.  The older method name
+    ``ideal_output`` is retained only as a legacy alias.
+
+``actual output`` or ``resolution kernel``
+    The inverse operator applied to the estimated source wavelet,
+    :math:`\hat{R}(\omega)=\hat{s}^{-g}(\omega)\hat{s}(\omega)`.  This is the
+    paper's actual output of the inverse filter and is returned by
+    ``actual_output`` or the alias ``resolution_kernel``.
+
+``inverse operator``
+    The operator :math:`\hat{s}^{-g}` used to transform the residual into the
+    GID detection function.  It is not the output shaping wavelet.
+
 Scalar inverse operators
 ------------------------
 
 Scalar operators load one source wavelet and one data trace at a time.  They
-return a finite-bandwidth receiver-function trace, not a sparse spike train.
+return a finite-bandwidth receiver-function trace, not a sparse impulse
+response.
 The historical FFT scalar operators in MsPASS also multiply the inverse result
-by a configured output wavelet before returning ``getresult``.  That output
-wavelet is a scalar target-pulse/bandlimiting convention.  It is distinct from
-GID output shaping, where a separately stored sparse spike train is convolved
-with a display wavelet after iterative picking.
+by a configured output shaping wavelet before returning ``getresult``.  In
+scalar operators this wavelet is a target-pulse/bandlimiting convention.  It
+is distinct from the GID sparse impulse response, where
+``output_shaping_wavelet`` is applied only after iterative spike picking.
 
 ``LeastSquareDecon``
     Frequency-domain damped least-squares deconvolution.  The inverse
@@ -71,9 +99,9 @@ with a display wavelet after iterative picking.
     power spectrum.  The water level protects the result from division by
     near-zero spectral amplitudes.  The implementation raises
     ``|S(omega)|`` to at least ``water_level * rms(S)`` before division, then
-    applies the configured scalar output wavelet and extracts the linear lag
-    window.  Raising the floor improves stability at the cost of reduced
-    resolution.
+    applies the configured scalar output shaping wavelet and extracts the
+    linear lag window.  Raising the floor improves stability at the cost of
+    reduced resolution.
 
 ``MultiTaperXcorDecon`` and ``MultiTaperSpecDivDecon``
     Multitaper frequency-domain operators.  Both estimate source and noise
@@ -130,14 +158,14 @@ Three-component and iterative operators
     and SNR.  ``colored_noise_damping`` adds a frequency-dependent damping term
     to the normal-equation denominator.  ``generalized_water_level`` raises
     low-SNR source amplitudes before division.  Both produce scalar
-    finite-bandwidth component traces after the configured output wavelet is
-    applied.  ``CNRDeconEngine`` is the current engine used by the Python
-    wrappers and GID inverse mode.  ``CNR3CDecon`` is the older 3C prototype
-    kept for compatibility.
+    finite-bandwidth component traces after the configured output shaping
+    wavelet is applied.  ``CNRDeconEngine`` is the current engine used by the
+    Python wrappers and GID inverse mode.  ``CNR3CDecon`` is the older 3C
+    prototype kept for compatibility.
 
 ``TimeDomainGIDDecon`` and ``FrequencyDomainGIDDecon``
     Generalized iterative deconvolution following Wang and Pavlis (2016).
-    The method maintains a sparse spike train during iteration.  At each
+    The method maintains a sparse impulse response during iteration.  At each
     step it computes a detection function
 
     .. math::
@@ -147,16 +175,16 @@ Three-component and iterative operators
     where ``r`` is the current residual and ``s_g^{-1}`` is a configurable
     inverse operator.  Supported inverse modes include damped least squares,
     water level, multitaper, and the three-component CNR inverse where
-    available.  The displayed receiver function is the sparse spike train
-    convolved with the output shaping wavelet; the raw sparse train is not
-    the finite-bandwidth receiver function.
+    available.  The represented receiver function is the sparse impulse
+    response convolved with the output shaping wavelet; the raw sparse impulse
+    response is not the finite-bandwidth receiver function.
 
     The GID engines maintain residuals in the original data domain.  The
     inverse operator is used only to form the detection function for candidate
-    spike selection.  Residual subtraction uses the inverse operator's
-    ``actual_output`` kernel, and optional joint refitting of accepted spike
+    spike selection.  Residual subtraction uses the inverse operator's actual
+    output/resolution kernel, and optional joint refitting of accepted spike
     amplitudes solves a small dense system with LAPACK Cholesky and LU
-    fallback.  The raw sparse spike train is exposed by ``sparse_output``.
+    fallback.  The sparse impulse response is exposed by ``sparse_output``.
 
     The ``multi_taper`` inverse mode in both GID engines currently uses
     ``MultiTaperXcorDecon`` as the core inverse operator.  In
@@ -198,12 +226,13 @@ Three-component and iterative operators
     engines preserve the existing receiver-function compatibility behavior and
     estimate the wavelet from the configured component/window.
 
-    The sparse spike train is kept conceptually separate from the shaped
+    The sparse impulse response is kept conceptually separate from the shaped
     receiver-function representation.  The inverse operator is used only for
     candidate spike detection and stabilization.  The residual update remains
     in the GID data domain, and ``getresult`` returns the accepted sparse
-    support convolved with the configured output ``ShapingWavelet``.  The raw
-    spike train is available through ``sparse_output`` for QC and validation.
+    support convolved with the configured output shaping wavelet.  The sparse
+    impulse response is available through ``sparse_output`` for QC and
+    validation.
     The underlying ``NoiseStableDecon`` scalar operator is a single stable
     inverse operation.  It is not a sparse picker and does not apply the GID
     output shaping wavelet; finite bandwidth comes from the stable inverse
@@ -254,9 +283,9 @@ The output directory will contain:
     multitaper, CNR, and NS-GID.
 
 ``TimeDomainGIDDecon_inverse_modes_sparse_results.png``
-    Raw sparse spike trains selected by the time-domain GID loop for the same
-    inverse-operator modes.  This is the plot to compare directly against the
-    known sparse truth.
+    Raw sparse impulse responses selected by the time-domain GID loop for the
+    same inverse-operator modes.  This is the plot to compare directly against
+    the known sparse truth.
 
 ``FrequencyDomainGIDDecon_inverse_modes.png``
     Overlay of frequency-domain generalized iterative deconvolution results
@@ -264,15 +293,15 @@ The output directory will contain:
     multitaper, CNR, and NS-GID.
 
 ``FrequencyDomainGIDDecon_inverse_modes_sparse_results.png``
-    Raw sparse spike trains selected by the frequency-domain GID loop for the
-    same inverse-operator modes.
+    Raw sparse impulse responses selected by the frequency-domain GID loop for
+    the same inverse-operator modes.
 
 ``external_wavelet_all_methods.png``
     Overlay of scalar, CNR, and NS-GID results when every method is driven by
     the same externally supplied prepared wavelet.  Scalar operators load the
-    external wavelet as a raw vector, so this plot shifts the truth spike train
-    to the measured direct-arrival lag of the least-squares result for visual
-    comparison.
+    external wavelet as a raw vector, so this plot shifts the truth sparse
+    impulse response to the measured direct-arrival lag of the least-squares
+    result for visual comparison.
 
 ``scalar_noise_<scale>_stress_spike_results.png``
     Scalar-method and CNR results for a denser synthetic with multiple close,
@@ -286,9 +315,9 @@ The output directory will contain:
 
 ``TimeDomainGIDDecon_noise_<scale>_stress_sparse_results.png`` and
 ``FrequencyDomainGIDDecon_noise_<scale>_stress_sparse_results.png``
-    Raw GID sparse spike trains for the dense stress synthetic.  These plots
-    intentionally show ``sparse_output`` rather than the shaped ``getresult``
-    representation.
+    Raw GID sparse impulse responses for the dense stress synthetic.  These
+    plots intentionally show ``sparse_output`` rather than the shaped
+    ``getresult`` representation.
 
 These figures are intended as an audit aid.  The numerical assertions in the
 test remain the source of pass/fail behavior and use a fixed reproducible
