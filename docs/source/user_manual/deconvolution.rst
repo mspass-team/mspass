@@ -146,8 +146,8 @@ colored three-component synthetic validation case, run for example:
 The output directory will contain:
 
 ``complex_colored_scalar_methods.png``
-    Overlay of the known sparse receiver function and the recovered scalar
-    deconvolution results for each component.
+    Overlay of the known sparse receiver function and the recovered scalar and
+    CNR deconvolution results for each component.
 
 ``complex_colored_validation_wavelet.png``
     Source wavelet used in the synthetic validation, including the imposed
@@ -164,7 +164,7 @@ The output directory will contain:
     multitaper, and CNR.
 
 ``scalar_noise_<scale>_stress_spike_results.png``
-    Scalar-method results for a denser synthetic with multiple close,
+    Scalar-method and CNR results for a denser synthetic with multiple close,
     opposite-polarity spike pairs.  The ``<scale>`` value is controlled by
     ``--decon-validation-noise-scale``.
 

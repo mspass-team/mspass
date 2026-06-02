@@ -366,7 +366,7 @@ def _plot_complex_colored_results(plot_dir, results, truth, wavelet):
     _plot_rf_overlay(
         plot_dir,
         "complex_colored_scalar_methods.png",
-        "Scalar deconvolution validation on colored 3C synthetic",
+        "Scalar and CNR deconvolution validation on colored 3C synthetic",
         results,
         truth,
         SIGNAL_WINDOW.start,
@@ -461,6 +461,7 @@ def test_scalar_methods_are_consistent_for_complex_colored_3c_synthetic(
         "WaterLevel": _scalar_rf_matrix("WaterLevel", data),
         "MultiTaperXcor": _scalar_rf_matrix("MultiTaperXcor", data),
         "MultiTaperSpecDiv": _scalar_rf_matrix("MultiTaperSpecDiv", data),
+        "CNR": _cnr_rf_matrix(data),
     }
 
     for result in results.values():
@@ -472,6 +473,8 @@ def test_scalar_methods_are_consistent_for_complex_colored_3c_synthetic(
     assert _normalized_correlation(results["LeastSquares"], results["MultiTaperXcor"]) > 0.84
     assert _normalized_correlation(results["LeastSquares"], results["MultiTaperSpecDiv"]) > 0.84
     assert _normalized_correlation(results["MultiTaperXcor"], results["MultiTaperSpecDiv"]) > 0.90
+    assert _normalized_correlation(results["CNR"], results["LeastSquares"]) > 0.70
+    assert _normalized_correlation(results["CNR"], results["MultiTaperXcor"]) > 0.82
     assert (
         np.max(np.abs(results["MultiTaperXcor"] - results["MultiTaperSpecDiv"]))
         > 1.0e-2
@@ -492,6 +495,7 @@ def test_scalar_methods_recover_stress_spikes_with_colored_noise(
         "WaterLevel": _scalar_rf_matrix("WaterLevel", data),
         "MultiTaperXcor": _scalar_rf_matrix("MultiTaperXcor", data),
         "MultiTaperSpecDiv": _scalar_rf_matrix("MultiTaperSpecDiv", data),
+        "CNR": _cnr_rf_matrix(data),
     }
 
     for result in results.values():
@@ -502,6 +506,8 @@ def test_scalar_methods_recover_stress_spikes_with_colored_noise(
     assert _normalized_correlation(results["LeastSquares"], results["MultiTaperXcor"]) > 0.82
     assert _normalized_correlation(results["LeastSquares"], results["MultiTaperSpecDiv"]) > 0.82
     assert _normalized_correlation(results["MultiTaperXcor"], results["MultiTaperSpecDiv"]) > 0.90
+    assert _normalized_correlation(results["CNR"], results["LeastSquares"]) > 0.58
+    assert _normalized_correlation(results["CNR"], results["MultiTaperXcor"]) > 0.68
     assert (
         np.max(np.abs(results["MultiTaperXcor"] - results["MultiTaperSpecDiv"]))
         > 1.0e-2
@@ -519,6 +525,7 @@ def test_scalar_methods_recover_stress_spikes_with_colored_noise(
             "WaterLevel": _scalar_rf_matrix("WaterLevel", plot_data),
             "MultiTaperXcor": _scalar_rf_matrix("MultiTaperXcor", plot_data),
             "MultiTaperSpecDiv": _scalar_rf_matrix("MultiTaperSpecDiv", plot_data),
+            "CNR": _cnr_rf_matrix(plot_data),
         }
     _plot_stress_results(
         decon_validation_plot_dir,
