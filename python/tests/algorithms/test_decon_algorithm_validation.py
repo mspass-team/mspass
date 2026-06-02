@@ -54,7 +54,7 @@ def _notch_filter_vector(x, dt, notches):
     return np.fft.irfft(spec * response, len(x))
 
 
-def _make_complex_colored_validation_data():
+def _make_complex_colored_validation_data(return_truth=False):
     np.random.seed(24680)
     wavelet = make_simulation_wavelet(corners=[0.4, 7.0])
     notched_wavelet = _notch_filter_vector(
@@ -77,6 +77,8 @@ def _make_complex_colored_validation_data():
     data.data[1, :] -= 0.004 * hf_noise
     data["low_f_band_edge"] = 0.02
     data["high_f_band_edge"] = 2.0
+    if return_truth:
+        return data, truth, wavelet
     return data
 
 
@@ -141,6 +143,62 @@ def _assert_direct_arrival_is_recovered(matrix, ratio_tol=2.0e-2):
     )
 
 
+def _plot_complex_colored_results(plot_dir, results, truth, wavelet):
+    if plot_dir is None:
+        return
+    try:
+        import matplotlib
+
+        matplotlib.use("Agg", force=True)
+        import matplotlib.pyplot as plt
+    except ImportError as err:
+        pytest.fail(
+            "--decon-validation-plots requires matplotlib; install it to write "
+            f"validation plots ({err})"
+        )
+
+    npts = min(matrix.shape[1] for matrix in results.values())
+    t = SIGNAL_WINDOW.start + np.arange(npts) * truth.dt
+    truth_matrix = np.asarray(truth.data)[:, :npts]
+    component_names = ["EW", "NS", "Z"]
+
+    fig, axes = plt.subplots(3, 1, figsize=(12, 8), sharex=True)
+    for component, axis in enumerate(axes):
+        axis.plot(
+            t,
+            truth_matrix[component, :],
+            color="black",
+            linewidth=1.4,
+            label="truth spike train",
+        )
+        for name, matrix in results.items():
+            scaled = matrix[component, :npts]
+            peak = np.max(np.abs(scaled))
+            if peak > 0.0:
+                scaled = scaled / peak * np.max(np.abs(truth_matrix[component, :]))
+            axis.plot(t, scaled, linewidth=1.0, alpha=0.85, label=name)
+        axis.axvline(0.0, color="0.5", linestyle="--", linewidth=0.8)
+        axis.set_ylabel(component_names[component])
+        axis.grid(True, color="0.85", linewidth=0.6)
+    axes[-1].set_xlabel("Lag time relative to direct P sample (s)")
+    axes[0].legend(loc="upper right", ncol=3, fontsize="small")
+    fig.suptitle("Scalar deconvolution validation on colored 3C synthetic")
+    fig.tight_layout()
+    fig.savefig(plot_dir / "complex_colored_scalar_methods.png", dpi=150)
+    plt.close(fig)
+
+    tw = wavelet.t0 + np.arange(wavelet.npts) * wavelet.dt
+    fig, axis = plt.subplots(1, 1, figsize=(10, 3))
+    axis.plot(tw, np.asarray(wavelet.data), color="black", linewidth=1.2)
+    axis.set_title("Notched source wavelet used for validation")
+    axis.set_xlabel("Time (s)")
+    axis.set_ylabel("Amplitude")
+    axis.grid(True, color="0.85", linewidth=0.6)
+    fig.tight_layout()
+    fig.savefig(plot_dir / "complex_colored_validation_wavelet.png", dpi=150)
+    plt.close(fig)
+
+
 @pytest.mark.parametrize("noise_level", [0.0, 1.0e-6])
 @pytest.mark.parametrize(
     "algorithm", ["LeastSquares", "WaterLevel", "MultiTaperXcor", "MultiTaperSpecDiv"]
@@ -182,8 +240,10 @@ def test_existing_decon_methods_are_consistent_for_noise_free_input():
     assert _normalized_correlation(results["CNR"], results["MultiTaperSpecDiv"]) > 0.87
 
 
-def test_scalar_methods_are_consistent_for_complex_colored_3c_synthetic():
-    data = _make_complex_colored_validation_data()
+def test_scalar_methods_are_consistent_for_complex_colored_3c_synthetic(
+    decon_validation_plot_dir,
+):
+    data, truth, wavelet = _make_complex_colored_validation_data(return_truth=True)
     results = {
         "LeastSquares": _scalar_rf_matrix("LeastSquares", data),
         "WaterLevel": _scalar_rf_matrix("WaterLevel", data),
@@ -199,6 +259,7 @@ def test_scalar_methods_are_consistent_for_complex_colored_3c_synthetic():
     assert _normalized_correlation(results["LeastSquares"], results["MultiTaperXcor"]) > 0.84
     assert _normalized_correlation(results["LeastSquares"], results["MultiTaperSpecDiv"]) > 0.84
     assert _normalized_correlation(results["MultiTaperXcor"], results["MultiTaperSpecDiv"]) > 0.90
+    _plot_complex_colored_results(decon_validation_plot_dir, results, truth, wavelet)
 
 
 @pytest.mark.parametrize(

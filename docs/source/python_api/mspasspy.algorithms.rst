@@ -33,6 +33,22 @@ RFdeconProcessor
     :undoc-members:
     :show-inheritance:
 
+FrequencyDomainGIDDecon
+-----------------------
+
+.. automodule:: mspasspy.algorithms.FrequencyDomainGIDDecon
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+TimeDomainGIDDecon
+------------------
+
+.. automodule:: mspasspy.algorithms.TimeDomainGIDDecon
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 basic
 -------
 

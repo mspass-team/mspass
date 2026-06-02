@@ -3,6 +3,12 @@
 """
 Python wrappers for the frequency-domain generalized iterative deconvolution
 engine.
+
+The operator uses the same sparse-spike iterative model as
+``TimeDomainGIDDecon`` but evaluates the configurable inverse operator in the
+frequency domain with padded FFTs.  The returned receiver function is the
+shaped sparse-spike estimate for the requested lag window, not a circularly
+wrapped inverse-filter response.
 """
 
 from mspasspy.util.decorators import mspass_func_wrapper
@@ -35,6 +41,11 @@ def FrequencyDomainGIDRFDecon(
     """
     Estimate a three-component receiver function with the frequency-domain
     generalized iterative deconvolution algorithm.
+
+    The inverse operator mode is selected in the engine parameter file.  The
+    supported modes include damped least squares, water level, multitaper, and
+    CNR.  Damping or water-level protection is required for stable behavior
+    near source-wavelet spectral zeros.
     """
     alg = "FrequencyDomainGIDRFDecon"
     if not isinstance(seis, Seismogram):

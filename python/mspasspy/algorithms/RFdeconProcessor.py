@@ -44,6 +44,16 @@ class RFdeconProcessor:
     processor object to be used in a spark job.  The design assumes the
     processor object will be passed as an argument to the RFdecon
     function that should appear as a function in a spark map call.
+
+    Supported algorithm names are ``LeastSquares``, ``WaterLevel``,
+    ``MultiTaperXcor``, ``MultiTaperSpecDiv``, ``TimeDomainLeastSquares``,
+    ``GeneralizedIterative``/``TimeDomainGID``, and ``FrequencyDomainGID``.
+    The default scalar operators solve linear convolution problems and return
+    the configured lag window rather than a wrapped circular-convolution
+    result.  Frequency-domain operators use padding before FFT processing;
+    ``TimeDomainLeastSquares`` builds a Toeplitz linear-convolution matrix.
+    The GID variants iterate on a sparse spike train and return the shaped
+    receiver function for the configured output window.
     """
 
     def __repr__(self) -> str:

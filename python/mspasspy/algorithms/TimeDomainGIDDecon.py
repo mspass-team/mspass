@@ -1,7 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Python wrappers for the generalized iterative deconvolution engine.
+Python wrappers for the time-domain generalized iterative deconvolution
+engine.
+
+The underlying operator follows the generalized iterative deconvolution
+interpretation of Wang and Pavlis (2016).  Iteration is performed on a sparse
+three-component spike train.  The returned receiver function is that sparse
+train convolved with the configured shaping wavelet for the requested lag
+window; it is not the raw spike train itself.
 """
 
 from mspasspy.util.decorators import mspass_func_wrapper
@@ -34,6 +41,12 @@ def TimeDomainGIDRFDecon(
     """
     Estimate a three-component receiver function with generalized iterative
     deconvolution.
+
+    The engine first builds a configurable inverse operator for the source
+    wavelet, applies it to the current residual to form the detection function,
+    picks the largest vector spike, subtracts the corresponding shaped source
+    pulse from the residual, and repeats until the residual-improvement or
+    residual-energy convergence criteria are met.
 
     :param seis: input `Seismogram` containing signal and noise windows.
     :param engine: configured `TimeDomainGIDDecon` instance.
