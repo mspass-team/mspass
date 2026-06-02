@@ -24,6 +24,12 @@ package.
 
 .. toctree::
    :maxdepth: 1
+   :caption: Introduction
+
+   user_manual/introduction
+
+.. toctree::
+   :maxdepth: 1
    :caption: Desktop Operation
 
    getting_started/mspass_desktop
@@ -38,12 +44,6 @@ package.
    getting_started/deploy_mspass_on_HPC
    getting_started/deploy_mspass_with_conda_and_coiled
    getting_started/getting_started_overview
-
-.. toctree::
-   :maxdepth: 1
-   :caption: Introduction
-
-   user_manual/introduction
 
 .. toctree::
    :maxdepth: 1
