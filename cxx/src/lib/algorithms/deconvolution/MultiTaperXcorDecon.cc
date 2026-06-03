@@ -8,6 +8,7 @@
 #include "mspass/utility/utility.h"
 #include <algorithm>
 #include <cfloat>
+#include <cmath>
 #include <string>
 #include <vector>
 namespace mspass::algorithms::deconvolution {
@@ -60,6 +61,18 @@ int MultiTaperXcorDecon::read_metadata(const Metadata &md, bool refresh) {
     if (nfft_from_win != nfft) {
       this->change_size(nfft_from_win);
     }
+    const double dt_to_use = md.get_double("target_sample_interval");
+    const double dwinstart = md.get_double("deconvolution_data_window_start");
+    const int i0 = static_cast<int>(std::round(dwinstart / dt_to_use));
+    sample_shift = -i0;
+    if (sample_shift < 0)
+      throw MsPASSError(base_error +
+                            "illegal sample_shift parameter - must be ge 0",
+                        ErrorSeverity::Invalid);
+    if (sample_shift > nfft)
+      throw MsPASSError(base_error +
+                            "computed sample_shift exceeds length of fft",
+                        ErrorSeverity::Invalid);
     damp = md.get_double("damping_factor");
     if (damp <= 0.0) {
       throw MsPASSError(base_error +
@@ -171,9 +184,8 @@ MultiTaperXcorDecon::MultiTaperXcorDecon(const Metadata &md,
   } catch (...) {
     throw;
   }
-  wavelet = w;
-  data = d;
-  noise = n;
+  this->loadnoise(n);
+  this->ScalarDecon::load(w, d);
 }
 vector<ComplexArray>
 MultiTaperXcorDecon::taper_data(const vector<double> &signal) {

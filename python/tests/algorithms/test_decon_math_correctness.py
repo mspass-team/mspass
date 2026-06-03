@@ -602,6 +602,48 @@ def test_multitaper_changeparameter_refreshes_shaping_wavelet_only(
 
 
 @pytest.mark.parametrize(
+    "engine_class", [MultiTaperXcorDecon, MultiTaperSpecDivDecon]
+)
+def test_multitaper_changeparameter_refreshes_lag_window(
+    tmp_path, engine_class
+):
+    n = 160
+    dt = 0.05
+    base_pf = _write_multitaper_pf(
+        tmp_path,
+        window_start=0.0,
+        window_end=float(n - 1) * dt,
+        nfft=512,
+        damping=1.0e-6,
+    )
+    shifted_pf = _write_multitaper_pf(
+        tmp_path,
+        window_start=-2.0,
+        window_end=float(n - 1) * dt,
+        nfft=512,
+        damping=1.0e-6,
+    )
+    t = np.arange(n) * dt
+    wavelet = np.exp(-0.5 * ((t - 0.8) / 0.15) ** 2)
+    data = 1.5 * wavelet
+    noise = 1.0e-4 * np.sin(2.0 * np.pi * 3.2 * t)
+    engine = engine_class(base_pf)
+    engine.load(_double_vector(wavelet), _double_vector(data), _double_vector(noise))
+    engine.process()
+    result_base = np.asarray(engine.getresult(), dtype=np.float64)
+    assert np.argmax(np.abs(result_base)) <= 1
+
+    engine.changeparameter(shifted_pf)
+    assert dict(engine.QCMetrics())["multitaper_processed"] is False
+    engine.process()
+    result_shifted = np.asarray(engine.getresult(), dtype=np.float64)
+    zero_lag_index = int(round(2.0 / dt))
+
+    assert np.argmax(np.abs(result_shifted)) == zero_lag_index
+    assert result_shifted[zero_lag_index] == pytest.approx(1.5, abs=2.0e-3)
+
+
+@pytest.mark.parametrize(
     "engine_class,operator_type",
     [
         (MultiTaperXcorDecon, "xcor_power_stabilized"),
@@ -655,6 +697,9 @@ def test_noise_stable_rejects_invalid_power_spectrum(tmp_path):
     below_dc_spectrum = PowerSpectrum(
         Metadata(), _double_vector([1.0, 1.0]), 1.0, "below_dc", -10.0, 1.0, 2
     )
+    dc_at_last_bin_spectrum = PowerSpectrum(
+        Metadata(), _double_vector([1.0, 1.0]), 1.0, "dc_at_last", -1.0, 1.0, 2
+    )
 
     with pytest.raises(MsPASSError, match="noise vector cannot be empty"):
         engine.loadnoise(_double_vector([]))
@@ -668,6 +713,8 @@ def test_noise_stable_rejects_invalid_power_spectrum(tmp_path):
         engine.loadnoise(missing_dc_spectrum)
     with pytest.raises(MsPASSError, match="cover DC"):
         engine.loadnoise(below_dc_spectrum)
+    with pytest.raises(MsPASSError, match="cover DC"):
+        engine.loadnoise(dc_at_last_bin_spectrum)
 
 
 def _run_multitaper_engine(engine_class, pf, wavelet, data, noise):
@@ -697,11 +744,17 @@ def _multitaper_reference(
     )
     source_power = np.abs(Wk) ** 2
     noise_power = np.abs(Nk) ** 2
-    relative_floor = max(np.finfo(float).eps, 1.0e-12 * float(np.max(source_power)))
     if method == "xcor":
-        den = np.mean(source_power, axis=0) + damping * np.mean(noise_power, axis=0)
+        mean_source_power = np.mean(source_power, axis=0)
+        relative_floor = max(
+            np.finfo(float).eps, 1.0e-12 * float(np.max(mean_source_power))
+        )
+        den = mean_source_power + damping * np.mean(noise_power, axis=0)
         den += relative_floor
     elif method == "specdiv":
+        relative_floor = max(
+            np.finfo(float).eps, 1.0e-12 * float(np.max(source_power))
+        )
         den = np.mean(
             np.maximum.reduce(
                 [

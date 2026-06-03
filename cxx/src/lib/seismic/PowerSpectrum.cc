@@ -36,24 +36,24 @@ PowerSpectrum &PowerSpectrum::operator+=(const PowerSpectrum &other) {
     if (this->nf() != other.nf()) {
       stringstream ss;
       ss << "operator+=(accumulation) size mismatch of spectrum arrays" << endl
-         << "right hade side spectrum size=" << other.nf() << endl
-         << "left had side spectrum size=" << this->nf() << endl;
+         << "right hand side spectrum size=" << other.nf() << endl
+         << "left hand side spectrum size=" << this->nf() << endl;
       this->elog.log_error("PowerSpectrum::operator+-", ss.str(),
                            ErrorSeverity::Invalid);
       this->kill();
     } else if (this->f0() != other.f0()) {
       stringstream ss;
       ss << "operator+=(accumulation) f0 mismatch of spectrum estimates" << endl
-         << "right hade side spectrum f0=" << other.f0() << endl
-         << "left had side spectrum f0=" << this->f0() << endl;
+         << "right hand side spectrum f0=" << other.f0() << endl
+         << "left hand side spectrum f0=" << this->f0() << endl;
       this->elog.log_error("PowerSpectrum::operator+-", ss.str(),
                            ErrorSeverity::Invalid);
       this->kill();
     } else if (this->df() != other.df()) {
       stringstream ss;
       ss << "operator+=(accumulation) df mismatch of spectrum estimates" << endl
-         << "right hade side spectrum df=" << other.df() << endl
-         << "left had side spectrum df=" << this->df() << endl;
+         << "right hand side spectrum df=" << other.df() << endl
+         << "left hand side spectrum df=" << this->df() << endl;
       this->elog.log_error("PowerSpectrum::operator+-", ss.str(),
                            ErrorSeverity::Invalid);
       this->kill();

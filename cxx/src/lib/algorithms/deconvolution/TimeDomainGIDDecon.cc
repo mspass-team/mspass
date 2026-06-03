@@ -600,7 +600,7 @@ int TimeDomainGIDDecon::loadnoise(const PowerSpectrum &noise_spectrum_in) {
   const double fmax =
       noise_spectrum_in.f0() +
       noise_spectrum_in.df() * static_cast<double>(noise_spectrum_in.nf() - 1);
-  if (noise_spectrum_in.f0() > 0.0 || fmax < 0.0)
+  if (noise_spectrum_in.f0() > 0.0 || fmax <= 0.0)
     throw MsPASSError("TimeDomainGIDDecon::loadnoise: noise PowerSpectrum must "
                       "cover DC frequency",
                       ErrorSeverity::Invalid);
