@@ -25,6 +25,9 @@ public:
   ~MultiTaperXcorDecon() {};
   void changeparameter(const mspass::utility::Metadata &md) {
     this->read_metadata(md, true);
+    this->result.clear();
+    this->winv = ComplexArray();
+    this->ao_fft = ComplexArray();
   };
   /*! \brief Load a section of pre-event noise.
 
@@ -104,7 +107,6 @@ private:
   int read_metadata(const mspass::utility::Metadata &md, bool refresh);
   /* Returns a tapered data in container of ComplexArray objects*/
   std::vector<ComplexArray> taper_data(const std::vector<double> &signal);
-  int apply();
   friend boost::serialization::access;
   template <class Archive>
   void serialize(Archive &ar, const unsigned int version) {

@@ -16,6 +16,7 @@ Created on Fri Jul 31 06:24:10 2020
 """
 
 import numpy as np
+import warnings
 
 from mspasspy.ccore.seismic import DoubleVector, PowerSpectrum, Seismogram, TimeSeries
 from mspasspy.ccore.utility import AntelopePf, Metadata, MsPASSError, ErrorSeverity
@@ -77,8 +78,11 @@ class RFdeconProcessor:
     function that should appear as a function in a spark map call.
 
     Supported algorithm names are ``LeastSquares``, ``WaterLevel``,
-    ``MultiTaperXcor``, ``MultiTaperSpecDiv``, ``TimeDomainLeastSquares``,
-    ``GeneralizedIterative``/``TimeDomainGID``, and ``FrequencyDomainGID``.
+    ``MultiTaperPowerXcor``, ``MultiTaperPowerSpecDiv``,
+    ``TimeDomainLeastSquares``, ``GeneralizedIterative``/``TimeDomainGID``,
+    and ``FrequencyDomainGID``.  ``MultiTaperXcor`` and
+    ``MultiTaperSpecDiv`` are retained as deprecated compatibility aliases for
+    the power-stabilized multitaper operators.
     The default scalar operators solve linear convolution problems and return
     the configured lag window rather than a wrapped circular-convolution
     result.  Frequency-domain operators use padding before FFT processing;
@@ -130,12 +134,38 @@ class RFdeconProcessor:
             self.md = Metadata(pfhandle.get_branch("WaterLevel"))
             self.processor = WaterLevelDecon(self.md)
             self.__uses_noise = False
-        elif alg == "MultiTaperXcor":
-            self.md = Metadata(pfhandle.get_branch("MultiTaperXcor"))
+        elif alg in ("MultiTaperPowerXcor", "MultiTaperXcor"):
+            branch_name = (
+                "MultiTaperPowerXcor"
+                if alg == "MultiTaperPowerXcor"
+                else "MultiTaperXcor"
+            )
+            if alg == "MultiTaperXcor":
+                warnings.warn(
+                    "MultiTaperXcor is a deprecated compatibility name for "
+                    "the multitaper power-stabilized untapered-phase operator. "
+                    "Use MultiTaperPowerXcor for new code.",
+                    DeprecationWarning,
+                    stacklevel=2,
+                )
+            self.md = Metadata(pfhandle.get_branch(branch_name))
             self.processor = MultiTaperXcorDecon(self.md)
             self.__uses_noise = True
-        elif alg == "MultiTaperSpecDiv":
-            self.md = Metadata(pfhandle.get_branch("MultiTaperSpecDiv"))
+        elif alg in ("MultiTaperPowerSpecDiv", "MultiTaperSpecDiv"):
+            branch_name = (
+                "MultiTaperPowerSpecDiv"
+                if alg == "MultiTaperPowerSpecDiv"
+                else "MultiTaperSpecDiv"
+            )
+            if alg == "MultiTaperSpecDiv":
+                warnings.warn(
+                    "MultiTaperSpecDiv is a deprecated compatibility name for "
+                    "the multitaper power-stabilized untapered-phase operator. "
+                    "Use MultiTaperPowerSpecDiv for new code.",
+                    DeprecationWarning,
+                    stacklevel=2,
+                )
+            self.md = Metadata(pfhandle.get_branch(branch_name))
             self.processor = MultiTaperSpecDivDecon(self.md)
             self.__uses_noise = True
         elif alg in ("GeneralizedIterative", "TimeDomainGID"):

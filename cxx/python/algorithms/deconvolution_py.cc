@@ -300,7 +300,7 @@ PYBIND11_MODULE(deconvolution, m) {
     .def("get_taperlen",&MultiTaperSpecDivDecon::get_taperlen,"Get length of the Slepian tapers used by the operator")
     .def("get_number_tapers",&MultiTaperSpecDivDecon::get_number_tapers,"Get number of Slepian tapers used by the operator")
     .def("get_number_outputs",&MultiTaperSpecDivDecon::get_number_outputs,"Get number of combined output products retained by the operator")
-    .def("get_time_bandwidth_product",&MultiTaperSpecDivDecon::get_time_bandwidth_product,"Get time bandwidt product of Slepian tapers used by the operator")
+    .def("get_time_bandwidth_product",&MultiTaperSpecDivDecon::get_time_bandwidth_product,"Get time-bandwidth product of Slepian tapers used by the operator")
     .def(py::pickle(
       [](const MultiTaperSpecDivDecon &self) {
         pybind11::gil_scoped_acquire acquire;
@@ -322,6 +322,7 @@ PYBIND11_MODULE(deconvolution, m) {
       }
     ))
   ;
+  m.attr("MultiTaperPowerSpecDivDecon") = m.attr("MultiTaperSpecDivDecon");
   py::class_<FFTDeconOperator>(m,"FFTDeconOperator","Base class used by frequency domain deconvolution methods")
     .def(py::init<>())
     .def("change_size",&FFTDeconOperator::change_size,"Change fft buffer size")
@@ -348,7 +349,7 @@ PYBIND11_MODULE(deconvolution, m) {
     .def("QCMetrics",&MultiTaperXcorDecon::QCMetrics,"Return QC metrics")
     .def("get_taperlen",&MultiTaperXcorDecon::get_taperlen,"Get length of the Slepian tapers used by the operator")
     .def("get_number_tapers",&MultiTaperXcorDecon::get_number_tapers,"Get number of Slepian tapers used by the operator")
-    .def("get_time_bandwidth_product",&MultiTaperXcorDecon::get_time_bandwidth_product,"Get time bandwidt product of Slepian tapers used by the operator")
+    .def("get_time_bandwidth_product",&MultiTaperXcorDecon::get_time_bandwidth_product,"Get time-bandwidth product of Slepian tapers used by the operator")
     .def(py::pickle(
       [](const MultiTaperXcorDecon &self) {
         pybind11::gil_scoped_acquire acquire;
@@ -370,6 +371,7 @@ PYBIND11_MODULE(deconvolution, m) {
       }
     ))
   ;
+  m.attr("MultiTaperPowerXcorDecon") = m.attr("MultiTaperXcorDecon");
   py::class_<TimeDomainGIDDecon,ScalarDecon>(m,"TimeDomainGIDDecon",
       "Generalized iterative deconvolution operator for three-component receiver functions")
     .def(py::init<const AntelopePf&>())

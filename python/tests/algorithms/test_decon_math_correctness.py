@@ -8,6 +8,8 @@ from scipy.signal import windows
 from mspasspy.ccore.algorithms.deconvolution import (
     DoubleVector,
     LeastSquareDecon,
+    MultiTaperPowerSpecDivDecon,
+    MultiTaperPowerXcorDecon,
     MultiTaperSpecDivDecon,
     MultiTaperXcorDecon,
     NoiseStableDecon,
@@ -130,6 +132,11 @@ def _run_scalar_engine(engine_class, pf, wavelet, data):
     engine.load(_double_vector(wavelet), _double_vector(data))
     engine.process()
     return np.asarray(engine.getresult(), dtype=np.float64)
+
+
+def test_multitaper_power_stabilized_aliases_are_exported():
+    assert MultiTaperPowerXcorDecon is MultiTaperXcorDecon
+    assert MultiTaperPowerSpecDivDecon is MultiTaperSpecDivDecon
 
 
 def _fft_linear_convolution(wavelet, model):
@@ -529,6 +536,12 @@ def test_multitaper_changeparameter_refreshes_shaping_wavelet_only(
     engine.process()
     actual_none = np.asarray(engine.actual_output().data, dtype=np.float64)
     engine.changeparameter(ricker_pf)
+    assert dict(engine.QCMetrics())["multitaper_processed"] is False
+    with pytest.raises(MsPASSError, match="process must be called"):
+        engine.actual_output()
+    with pytest.raises(MsPASSError, match="process must be called"):
+        engine.inverse_wavelet()
+    engine.process()
     actual_ricker = np.asarray(engine.actual_output().data, dtype=np.float64)
 
     assert not np.allclose(actual_none, actual_ricker)
@@ -580,11 +593,18 @@ def test_noise_stable_rejects_invalid_power_spectrum(tmp_path):
     live_empty_spectrum = PowerSpectrum(
         Metadata(), _double_vector([]), 1.0, "empty", 0.0, 1.0, 0
     )
+    one_bin_spectrum = PowerSpectrum(
+        Metadata(), _double_vector([1.0]), 1.0, "one_bin", 0.0, 1.0, 1
+    )
 
+    with pytest.raises(MsPASSError, match="noise vector cannot be empty"):
+        engine.loadnoise(_double_vector([]))
     with pytest.raises(MsPASSError, match="PowerSpectrum is marked dead"):
         engine.loadnoise(dead_spectrum)
-    with pytest.raises(MsPASSError, match="PowerSpectrum is empty"):
+    with pytest.raises(MsPASSError, match="at least two frequency bins"):
         engine.loadnoise(live_empty_spectrum)
+    with pytest.raises(MsPASSError, match="at least two frequency bins"):
+        engine.loadnoise(one_bin_spectrum)
 
 
 def _run_multitaper_engine(engine_class, pf, wavelet, data, noise):

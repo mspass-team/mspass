@@ -90,6 +90,10 @@ void NoiseStableDecon::changeparameter(const Metadata &md) {
 }
 
 void NoiseStableDecon::loadnoise(const vector<double> &noise_in) {
+  if (noise_in.empty())
+    throw MsPASSError("NoiseStableDecon::loadnoise: noise vector cannot be "
+                      "empty",
+                      ErrorSeverity::Invalid);
   noise = noise_in;
   noise_vector_loaded = true;
   noise_spectrum_loaded = false;
@@ -104,9 +108,13 @@ void NoiseStableDecon::loadnoise(const PowerSpectrum &noise_spectrum_in) {
     throw MsPASSError("NoiseStableDecon::loadnoise: noise PowerSpectrum is "
                       "marked dead",
                       ErrorSeverity::Invalid);
-  if (noise_spectrum_in.nf() <= 0 || noise_spectrum_in.spectrum.empty())
+  if (noise_spectrum_in.nf() < 2 || noise_spectrum_in.spectrum.size() < 2)
     throw MsPASSError("NoiseStableDecon::loadnoise: noise PowerSpectrum is "
-                      "empty",
+                      "too short; at least two frequency bins are required",
+                      ErrorSeverity::Invalid);
+  if (noise_spectrum_in.df() <= 0.0)
+    throw MsPASSError("NoiseStableDecon::loadnoise: noise PowerSpectrum has "
+                      "nonpositive frequency spacing",
                       ErrorSeverity::Invalid);
   noise_spectrum = noise_spectrum_in;
   noise_spectrum_loaded = true;

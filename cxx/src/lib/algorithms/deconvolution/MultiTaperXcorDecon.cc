@@ -375,6 +375,10 @@ CoreTimeSeries MultiTaperXcorDecon::actual_output() {
 
 CoreTimeSeries MultiTaperXcorDecon::inverse_wavelet(const double t0parent) {
   try {
+    if (winv.size() <= 0)
+      throw MsPASSError("MultiTaperXcorDecon::inverse_wavelet: process must "
+                        "be called before inverse_wavelet",
+                        ErrorSeverity::Invalid);
     /* Getting dt from here is unquestionably a flaw in the api, but will
      *         retain for now.   Perhaps should a copy of dt in the ScalarDecon
      * object. */

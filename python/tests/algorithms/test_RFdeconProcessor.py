@@ -55,6 +55,8 @@ def test_RFdeconProcessor():
     # Run the same sequence for all algorithms defined for
     # RFdeconProcessor
     alglist = [
+        "MultiTaperPowerXcor",
+        "MultiTaperPowerSpecDiv",
         "MultiTaperXcor",
         "MultiTaperSpecDiv",
         "LeastSquares",
@@ -100,7 +102,12 @@ def test_RFdeconProcessor():
             assert np.linalg.norm(ao_data) > 0.0
             assert ao.t0 < 0.0
             assert abs(ao.time(ao.sample_number(0.0))) <= ao.dt
-        elif alg in ("MultiTaperXcor", "MultiTaperSpecDiv"):
+        elif alg in (
+            "MultiTaperPowerXcor",
+            "MultiTaperPowerSpecDiv",
+            "MultiTaperXcor",
+            "MultiTaperSpecDiv",
+        ):
             # Multitaper operators return effective multitaper resolution
             # kernels, which need not match the ideal shaping wavelet as
             # closely as scalar water-level style operators.
@@ -383,6 +390,8 @@ def test_RFdecon_error_handlers():
         ("LeastSquares", "RFdeconProcessor.pf"),
         ("TimeDomainLeastSquares", "RFdeconProcessor.pf"),
         ("WaterLevel", "RFdeconProcessor.pf"),
+        ("MultiTaperPowerSpecDiv", "RFdeconProcessor.pf"),
+        ("MultiTaperPowerXcor", "RFdeconProcessor.pf"),
         ("MultiTaperSpecDiv", "RFdeconProcessor.pf"),
         ("MultiTaperXcor", "RFdeconProcessor.pf"),
         ("GeneralizedIterative", "TimeDomainGIDDecon.pf"),

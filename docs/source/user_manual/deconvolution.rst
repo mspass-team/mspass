@@ -126,7 +126,7 @@ wavelet used to represent sparse spikes.
     extracts the linear lag window.  Raising the floor improves stability at
     the cost of reduced resolution.
 
-``MultiTaperXcorDecon`` and ``MultiTaperSpecDivDecon``
+``MultiTaperPowerXcorDecon`` and ``MultiTaperPowerSpecDivDecon``
     Multitaper frequency-domain operators.  Both use DPSS tapers to stabilize
     spectral estimates, but the final receiver-function estimate is produced
     by applying the inverse operator to the untapered, zero-padded data
@@ -144,14 +144,18 @@ wavelet used to represent sparse spikes.
        G(f) = \frac{\overline{W_0(f)}}{\operatorname{Den}_{mt}(f)},\quad
        RF(f)=G(f)D_0(f),\quad AO(f)=G(f)W_0(f).
 
-    ``MultiTaperXcorDecon`` uses the mean multitaper source power plus a
-    damped mean multitaper noise power as ``Den_mt``.  ``MultiTaperSpecDivDecon``
-    is retained for API compatibility as a multitaper power-stabilized
+    ``MultiTaperPowerXcorDecon`` uses the mean multitaper source power plus a
+    damped mean multitaper noise power as ``Den_mt``.
+    ``MultiTaperPowerSpecDivDecon`` is the multitaper power-stabilized
     spectral-division variant: it regularizes each tapered source power by the
-    corresponding noise power and a small relative floor, combines those powers,
-    and then forms the same untapered-phase inverse.  The two methods should be
-    close on clean data; large differences normally indicate instability or a
-    configuration problem.  Both return a linear-convolution lag window.
+    corresponding noise power and a small relative floor, combines those
+    powers, and then forms the same untapered-phase inverse.  The two methods
+    should be close on clean data; large differences normally indicate
+    instability or a configuration problem.  Both return a linear-convolution
+    lag window.  The old Python class names ``MultiTaperXcorDecon`` and
+    ``MultiTaperSpecDivDecon`` and RF processor algorithm names
+    ``MultiTaperXcor`` and ``MultiTaperSpecDiv`` remain available as
+    deprecated compatibility aliases for these two power-stabilized operators.
     ``MultiTaperSpecDivDecon`` still exposes legacy ``all_inverse_wavelets``,
     ``all_rfestimates``, and ``all_actual_outputs`` methods, but in the current
     implementation those compatibility methods normally contain one combined
@@ -159,12 +163,11 @@ wavelet used to represent sparse spikes.
 
     .. warning::
 
-       The public class names and parameter-file keys are retained for source
-       compatibility, but on the generalized-iterative-decon branch they are
-       compatibility names for the power-stabilized, untapered-phase operators
-       described here.  This is a migration point: ``damping_factor`` is now
-       interpreted in the power-domain denominator, and parameter files tuned
-       against older tapered-numerator behavior should be retuned and
+       This is a migration point.  New code should use the explicit
+       ``MultiTaperPowerXcor`` and ``MultiTaperPowerSpecDiv`` RF algorithm
+       names or the matching ``*Decon`` Python aliases.  ``damping_factor`` is
+       now interpreted in the power-domain denominator, and parameter files
+       tuned against older tapered-numerator behavior should be retuned and
        revalidated.  Values should not be assumed numerically equivalent to the
        historical Park-Levin-style implementation.
 
@@ -248,8 +251,19 @@ Three-component and iterative operators
     the sparse iteration before legacy residual-noise stopping thresholds are
     evaluated.
 
+    For ``ns_gid``, externally supplied noise and the configured noise window
+    serve different roles.  External noise passed to ``loadnoise`` or the
+    Python wrappers is used by the stable inverse operator to estimate
+    frequency-dependent regularization and gain limits.  The input datum's
+    ``noise_window`` is still loaded by ``engine.load`` and is used to estimate
+    residual-domain spike significance and residual-noise stopping.  Passing
+    external noise therefore does not replace the residual-domain noise window;
+    callers that want both roles to use the same noise segment should pass that
+    segment externally and configure ``noise_window`` to the matching time
+    interval.
+
     The ``multi_taper`` inverse mode in both GID engines currently uses
-    ``MultiTaperXcorDecon`` as the core inverse operator.  In
+    ``MultiTaperPowerXcorDecon`` as the core inverse operator.  In
     ``TimeDomainGIDDecon`` the term "time domain" describes the iterative
     residual subtraction and sparse-spike update.  The multitaper inverse
     operator itself is still estimated in the frequency domain.

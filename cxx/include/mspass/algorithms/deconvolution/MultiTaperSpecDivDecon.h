@@ -26,6 +26,11 @@ public:
   ~MultiTaperSpecDivDecon() {};
   void changeparameter(const mspass::utility::Metadata &md) {
     this->read_metadata(md, true);
+    this->result.clear();
+    this->winv = ComplexArray();
+    this->winv_taper.clear();
+    this->ao_fft.clear();
+    this->rfestimates.clear();
   };
   /*! \brief Load a section of pre-event noise.
 
@@ -75,8 +80,8 @@ public:
   mspass::seismic::CoreTimeSeries inverse_wavelet(const double t0parent = 0.0);
   /*! \brief Return default FIR representation of the inverse filter.
 
-  This is an overloaded version of the parameterized method.   It is
-  equivalent to this->inverse_wavelet(0.0,0.0);
+  This is an overloaded version of the parameterized method.  It is
+  equivalent to this->inverse_wavelet(0.0);
   */
   mspass::seismic::CoreTimeSeries inverse_wavelet();
   /*! Return inverse wavelets retained for API compatibility.
@@ -136,7 +141,6 @@ private:
   std::vector<ComplexArray> taper_data(const std::vector<double> &signal);
   /*! Private method called by constructors to load parameters.   */
   int read_metadata(const mspass::utility::Metadata &md, bool refresh);
-  int apply();
   friend boost::serialization::access;
   template <class Archive>
   void serialize(Archive &ar, const unsigned int version) {

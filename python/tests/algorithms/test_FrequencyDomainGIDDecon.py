@@ -188,11 +188,16 @@ def test_FrequencyDomainGIDDecon_rejects_invalid_external_noise_spectrum(tmp_pat
     live_empty_spectrum = PowerSpectrum(
         Metadata(), DoubleVector([]), 1.0, "empty", 0.0, 1.0, 0
     )
+    one_bin_spectrum = PowerSpectrum(
+        Metadata(), DoubleVector([1.0]), 1.0, "one_bin", 0.0, 1.0, 1
+    )
 
     with pytest.raises(MsPASSError, match="PowerSpectrum is marked dead"):
         engine.loadnoise(dead_spectrum)
-    with pytest.raises(MsPASSError, match="PowerSpectrum is empty"):
+    with pytest.raises(MsPASSError, match="at least two frequency bins"):
         engine.loadnoise(live_empty_spectrum)
+    with pytest.raises(MsPASSError, match="at least two frequency bins"):
+        engine.loadnoise(one_bin_spectrum)
 
 
 def test_FrequencyDomainGIDDecon_rejects_dead_external_wavelet_and_noise(tmp_path):

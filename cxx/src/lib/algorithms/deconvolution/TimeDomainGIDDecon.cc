@@ -589,9 +589,13 @@ int TimeDomainGIDDecon::loadnoise(const PowerSpectrum &noise_spectrum_in) {
     throw MsPASSError("TimeDomainGIDDecon::loadnoise: noise PowerSpectrum is "
                       "marked dead",
                       ErrorSeverity::Invalid);
-  if (noise_spectrum_in.nf() <= 0 || noise_spectrum_in.spectrum.empty())
+  if (noise_spectrum_in.nf() < 2 || noise_spectrum_in.spectrum.size() < 2)
     throw MsPASSError("TimeDomainGIDDecon::loadnoise: noise PowerSpectrum is "
-                      "empty",
+                      "too short; at least two frequency bins are required",
+                      ErrorSeverity::Invalid);
+  if (noise_spectrum_in.df() <= 0.0)
+    throw MsPASSError("TimeDomainGIDDecon::loadnoise: noise PowerSpectrum has "
+                      "nonpositive frequency spacing",
                       ErrorSeverity::Invalid);
   external_noise_spectrum = noise_spectrum_in;
   external_noise_spectrum_loaded = true;
