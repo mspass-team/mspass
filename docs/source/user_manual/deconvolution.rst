@@ -186,6 +186,16 @@ Three-component and iterative operators
     amplitudes solves a small dense system with LAPACK Cholesky and LU
     fallback.  The sparse impulse response is exposed by ``sparse_output``.
 
+    Both GID Python wrappers use the same window convention.  If
+    ``signal_window`` is omitted, the input datum's full time range is used as
+    the analysis/output window.  If ``noise_window`` is omitted, the engine's
+    configured parameter-file noise window is used.  The analysis window must
+    contain the configured deconvolution/inverse-operator window; otherwise
+    the wrappers return a killed datum instead of processing a partial window.
+    Internally, the loaded noise window is transformed into the same domain as
+    the sparse iteration before legacy residual-noise stopping thresholds are
+    evaluated.
+
     The ``multi_taper`` inverse mode in both GID engines currently uses
     ``MultiTaperXcorDecon`` as the core inverse operator.  In
     ``TimeDomainGIDDecon`` the term "time domain" describes the iterative

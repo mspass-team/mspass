@@ -54,7 +54,8 @@ def TimeDomainGIDRFDecon(
     :param engine: configured `TimeDomainGIDDecon` instance.
     :param signal_window: optional `TimeWindow` defining the full output and
         iterative analysis window.  When omitted the input datum time range is
-        used.
+        used.  The window must contain the engine's configured deconvolution
+        window.
     :param noise_window: optional `TimeWindow` defining pre-event noise.  When
         omitted the engine's parameter-file noise window is used.
     :param external_wavelet: optional prepared wavelet passed directly to the

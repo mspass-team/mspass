@@ -1131,8 +1131,27 @@ def test_gid_methods_recover_stress_spike_signs_for_all_inverse_modes(
     )
 
 
-def test_time_domain_legacy_gid_modes_continue_after_inverse_filtered_noise_floor(
-    tmp_path,
+@pytest.mark.parametrize(
+    "engine_class, wrapper, pfname, branch_name, qc_key",
+    [
+        (
+            TimeDomainGIDDecon,
+            TimeDomainGIDRFDecon,
+            "data/pf/TimeDomainGIDDecon.pf",
+            "time_domain_gid_deconvolution",
+            "TimeDomainGIDDecon_properties",
+        ),
+        (
+            FrequencyDomainGIDDecon,
+            FrequencyDomainGIDRFDecon,
+            "data/pf/FrequencyDomainGIDDecon.pf",
+            "frequency_domain_gid_deconvolution",
+            "FrequencyDomainGIDDecon_properties",
+        ),
+    ],
+)
+def test_legacy_gid_modes_continue_with_elevated_noise_floor(
+    tmp_path, engine_class, wrapper, pfname, branch_name, qc_key
 ):
     data, _, _ = _make_stress_colored_validation_data(
         noise_scale=0.3,
@@ -1141,19 +1160,19 @@ def test_time_domain_legacy_gid_modes_continue_after_inverse_filtered_noise_floo
     for mode in ["least_square", "water_level", "multi_taper", "cnr"]:
         pf = _pf_with_gid_mode(
             tmp_path,
-            "data/pf/TimeDomainGIDDecon.pf",
-            "time_domain_gid_deconvolution",
+            pfname,
+            branch_name,
             mode,
         )
-        engine = TimeDomainGIDDecon(pf)
-        rf = TimeDomainGIDRFDecon(
+        engine = engine_class(pf)
+        rf = wrapper(
             data,
             engine,
             signal_window=TimeWindow(-8.0, 20.0),
             noise_window=TimeWindow(-35.0, -5.0),
         )
         assert rf.live, mode
-        qc = rf["TimeDomainGIDDecon_properties"]
+        qc = rf[qc_key]
         assert qc["iteration_count"] > 5, mode
         sparse = engine.sparse_output()
         _assert_stress_gid_signs_recovered(

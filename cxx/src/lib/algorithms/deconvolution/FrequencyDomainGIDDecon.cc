@@ -284,6 +284,8 @@ void FrequencyDomainGIDDecon::changeparameter(const Metadata &md) {
 
 int FrequencyDomainGIDDecon::load(const CoreSeismogram &draw,
                                   TimeWindow dwin_in) {
+  if ((dwin_in.start > fftwin.start) || (dwin_in.end < fftwin.end))
+    return 1;
   dwin = dwin_in;
   d_all = WindowData(draw, dwin);
   ndwin = d_all.npts();
@@ -343,6 +345,8 @@ int FrequencyDomainGIDDecon::loadnoise(const PowerSpectrum &noise_spectrum_in) {
 
 int FrequencyDomainGIDDecon::load(const CoreSeismogram &draw, TimeWindow dwin,
                                   TimeWindow nwin) {
+  if ((dwin.start > fftwin.start) || (dwin.end < fftwin.end))
+    return 1;
   int iretn = this->loadnoise(draw, nwin);
   int iretd = this->load(draw, dwin);
   return iretn + iretd;
@@ -443,7 +447,7 @@ CoreTimeSeries FrequencyDomainGIDDecon::inverse_wavelet(double t0parent) {
 double FrequencyDomainGIDDecon::compute_ns_peak_threshold() {
   if (decon_type != NS_GID)
     return 0.0;
-  CoreSeismogram nwork(WindowData(n, nwin));
+  CoreSeismogram nwork(n);
   dmatrix uwork(nwork.u);
   uwork.zero();
   NoiseStableDecon *nsop = dynamic_cast<NoiseStableDecon *>(preprocessor);

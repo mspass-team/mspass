@@ -7,7 +7,7 @@ engine.
 The operator uses the same sparse-spike iterative model as
 ``TimeDomainGIDDecon`` but evaluates the configurable inverse operator in the
 frequency domain with padded FFTs.  The returned receiver function is the
-shaped sparse-spike estimate for the requested lag window, not a circularly
+shaped sparse impulse response for the requested lag window, not a circularly
 wrapped inverse-filter response.
 """
 
@@ -48,6 +48,10 @@ def FrequencyDomainGIDRFDecon(
     supported modes include damped least squares, water level, multitaper, and
     CNR.  Damping or water-level protection is required for stable behavior
     near source-wavelet spectral zeros.
+
+    When ``noise_window`` is omitted, the engine's configured parameter-file
+    noise window is used.  ``signal_window`` must contain the configured
+    deconvolution window used to build the inverse operator.
     """
     alg = "FrequencyDomainGIDRFDecon"
     if not isinstance(seis, Seismogram):
@@ -72,6 +76,20 @@ def FrequencyDomainGIDRFDecon(
         raise TypeError("signal_window must be a TimeWindow or None")
     if noise_window is not None and not isinstance(noise_window, TimeWindow):
         raise TypeError("noise_window must be a TimeWindow or None")
+    if noise_window is None:
+        noise_window = TimeWindow(
+            engine.noise_window_start(), engine.noise_window_end()
+        )
+
+    if (
+        signal_window.start > engine.deconvolution_window_start()
+        or signal_window.end < engine.deconvolution_window_end()
+    ):
+        d = Seismogram()
+        d.kill()
+        if return_wavelet:
+            return [d, None, None]
+        return d
 
     d = Seismogram(seis)
     try:
@@ -79,10 +97,12 @@ def FrequencyDomainGIDRFDecon(
             engine.loadwavelet(external_wavelet)
         if external_noise is not None:
             engine.loadnoise(external_noise)
-        if noise_window is None:
-            engine.load(d, signal_window)
-        else:
-            engine.load(d, signal_window, noise_window)
+        load_status = engine.load(d, signal_window, noise_window)
+        if load_status:
+            d.kill()
+            if return_wavelet:
+                return [d, None, None]
+            return d
         engine.process()
         rf = Seismogram(engine.getresult())
         qcmd = engine.QCMetrics()
