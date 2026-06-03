@@ -533,6 +533,8 @@ def RFdecon(
     accept prepared TimeSeries inputs or one-dimensional numeric vectors;
     raw vectors are converted to TimeSeries using the processor target
     sample interval and the configured deconvolution/noise window start.
+    If any configured data, wavelet, or noise window cannot be extracted, the
+    function returns a killed datum and does not attach the QC subdocument.
 
     To make use of the extended outputs from RFdeconProcessor
     algorithms (e.g. actual output of the computed operator)
@@ -755,6 +757,8 @@ def RFdecon(
             "RFdecon", "Unexpected exception caught", ErrorSeverity.Invalid
         )
     finally:
+        if result.dead():
+            return result
         # assume this method creates the dictionary we use as base for the
         # QC subdocument.  Note that always includes the prediction error
         subdoc = processor.QCMetrics()

@@ -304,3 +304,30 @@ def test_RFdecon_error_handlers():
     assert dret.elog.size() > 0
     # this must be cleared to keep later pytest scripts from failing
     os.environ.pop("PFPATH", None)
+
+
+@pytest.mark.parametrize(
+    "alg,pf",
+    [
+        ("LeastSquares", "RFdeconProcessor.pf"),
+        ("TimeDomainLeastSquares", "RFdeconProcessor.pf"),
+        ("WaterLevel", "RFdeconProcessor.pf"),
+        ("MultiTaperSpecDiv", "RFdeconProcessor.pf"),
+        ("MultiTaperXcor", "RFdeconProcessor.pf"),
+        ("GeneralizedIterative", "TimeDomainGIDDecon.pf"),
+        ("FrequencyDomainGID", "FrequencyDomainGIDDecon.pf"),
+    ],
+)
+def test_RFdecon_invalid_configured_windows_return_dead_without_qc(alg, pf):
+    os.environ["PFPATH"] = "./data/pf"
+    try:
+        seis0 = get_live_seismogram(3000, 20.0)
+        seis0.t0 = 1000.0
+
+        result = RFdecon(Seismogram(seis0), alg=alg, pf=pf)
+
+        assert result.dead(), alg
+        assert result.elog.size() > 0, alg
+        assert not result.is_defined("RFdecon_properties"), alg
+    finally:
+        os.environ.pop("PFPATH", None)

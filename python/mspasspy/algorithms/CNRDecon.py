@@ -372,7 +372,7 @@ def CNRRFDecon(
     :param return_wavelet:  When False (default) only the estimated
         receiver function is returned.  When True the return is a tuple
         with 0 containing the RF estimate, 1 containing the actual_output
-        of the operator and 1 containing the ideal outpu wavelet.
+        of the operator, and 2 containing the output shaping wavelet.
     :param window_output:  boolean that when True (default) causes the
         output to be windowed in the range defined by signal_window.
         When False the output will normally be longer with the number of

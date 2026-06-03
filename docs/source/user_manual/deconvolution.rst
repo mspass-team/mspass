@@ -64,6 +64,30 @@ iterative deconvolution:
     The operator :math:`\hat{s}^{-g}` used to transform the residual into the
     GID detection function.  It is not the output shaping wavelet.
 
+Wrapper Data Handling
+---------------------
+
+The low-level scalar C++ operators load raw vectors and do not carry absolute
+time windows.  ``RFdeconProcessor`` and ``RFdecon`` own scalar data handling:
+they extract the configured deconvolution, wavelet, and noise windows before
+calling the scalar engines.  If a configured window is not present in the
+input datum, the wrapper returns a killed datum and does not attach a QC
+subdocument.
+
+``CNRRFDecon`` and ``CNRArrayDecon`` have a stricter explicit contract.  A
+caller must either provide both ``signal_window`` and ``noise_window`` or
+provide a precomputed ``PowerSpectrum`` noise estimate.  If a signal window is
+provided it is applied to the output data.  If an external wavelet is provided,
+that wavelet is used for all components; otherwise the configured component of
+the signal window is used as the source wavelet.
+
+The GID wrappers share a common convention.  If ``signal_window`` is omitted,
+the input datum's full time range is used as the analysis/output window.  If
+``noise_window`` is omitted, the engine's configured parameter-file noise
+window is used.  The analysis window must contain the configured
+deconvolution/inverse-operator window; otherwise the wrapper returns a killed
+datum instead of processing a partial window.
+
 Scalar inverse operators
 ------------------------
 
@@ -146,7 +170,9 @@ is distinct from the GID sparse impulse response, where
     ``damping_factor * max(diag(S^T S))`` to the diagonal, and solves with
     LAPACK Cholesky.  If Cholesky fails, it falls back to LAPACK LU and raises
     an error if the regularized system is still singular.  No explicit matrix
-    inverse is constructed.
+    inverse is constructed.  ``getresult`` applies the configured scalar output
+    shaping wavelet to the solved model; set ``shaping_wavelet_type none`` only
+    when the raw high-resolution Toeplitz model is desired.
 
 Three-component and iterative operators
 ---------------------------------------
