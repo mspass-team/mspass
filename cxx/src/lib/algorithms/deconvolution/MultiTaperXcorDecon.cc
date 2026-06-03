@@ -96,6 +96,9 @@ int MultiTaperXcorDecon::read_metadata(const Metadata &md, bool refresh) {
           (nw != nw_old))
         parameters_changed = true;
     }
+    /* The shaping wavelet can change independently of the DPSS parameters, so
+     * rebuild it on every parameter refresh. */
+    shapingwavelet = ShapingWavelet(md, nfft);
     /* Odd negative logic here.   Idea is to always call this section
     with a constructor, but bypass it when called in refresh mode
     if we don't need to recompute the slepian functions */
@@ -116,7 +119,6 @@ int MultiTaperXcorDecon::read_metadata(const Metadata &md, bool refresh) {
           ++ii;
         }
       }
-      shapingwavelet = ShapingWavelet(md, nfft);
     }
     // DEBUG
     // cerr<< "Exiting constructor - damp="<<damp<<endl;
@@ -335,6 +337,10 @@ void MultiTaperXcorDecon::process() {
 }
 CoreTimeSeries MultiTaperXcorDecon::actual_output() {
   try {
+    if (ao_fft.size() <= 0)
+      throw MsPASSError("MultiTaperXcorDecon::actual_output: process must "
+                        "be called before actual_output",
+                        ErrorSeverity::Invalid);
     /* The ao_fft array contains the fft of the actual output/resolution kernel.
      * We do need to appy the shaping wavelet for consistency before
      * converting it to the time domain.*/
@@ -388,11 +394,15 @@ CoreTimeSeries MultiTaperXcorDecon::inverse_wavelet() {
 }
 
 Metadata MultiTaperXcorDecon::QCMetrics() {
-  /* Return only an empty Metadata container.  Done as it is
-  easier to maintain the code letting python do this work.
-  This also anticipates new metrics being added which would be
-  easier in python.*/
   Metadata md;
+  md.put("multitaper_operator_type", string("xcor_power_stabilized"));
+  md.put("multitaper_operator_nfft", nfft);
+  md.put("multitaper_taper_length", static_cast<int>(taperlen));
+  md.put("multitaper_number_tapers", nseq);
+  md.put("multitaper_time_bandwidth_product", nw);
+  md.put("multitaper_damping_factor", damp);
+  md.put("multitaper_processed", ao_fft.size() > 0);
+  md.put("multitaper_number_outputs", ao_fft.size() > 0 ? 1 : 0);
   return md;
 }
 } // namespace mspass::algorithms::deconvolution

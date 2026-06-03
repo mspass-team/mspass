@@ -97,6 +97,9 @@ int MultiTaperSpecDivDecon::read_metadata(const Metadata &md, bool refresh) {
           (nw != nw_old))
         parameters_changed = true;
     }
+    /* The shaping wavelet can change independently of the DPSS parameters, so
+     * rebuild it on every parameter refresh. */
+    shapingwavelet = ShapingWavelet(md, nfft);
     /* Odd negative logic here.   Idea is to always call this section
     with a constructor, but bypass it when called in refresh mode
     if we don't need to recompute the slepian functions */
@@ -118,7 +121,6 @@ int MultiTaperSpecDivDecon::read_metadata(const Metadata &md, bool refresh) {
           ++ii;
         }
       }
-      shapingwavelet = ShapingWavelet(md, nfft);
     }
     return 0;
   } catch (...) {
@@ -356,6 +358,10 @@ void MultiTaperSpecDivDecon::process() {
 }
 CoreTimeSeries MultiTaperSpecDivDecon::actual_output() {
   try {
+    if (ao_fft.empty())
+      throw MsPASSError("MultiTaperSpecDivDecon::actual_output: process must "
+                        "be called before actual_output",
+                        ErrorSeverity::Invalid);
     int i, k;
     vector<double> ao;
     ao.reserve(nfft);
@@ -368,10 +374,6 @@ CoreTimeSeries MultiTaperSpecDivDecon::actual_output() {
       for (k = 0; k < nfft; ++k)
         ao[k] += work[k].real();
     }
-    if (ao_fft.empty())
-      throw MsPASSError("MultiTaperSpecDivDecon::actual_output: process must "
-                        "be called before actual_output",
-                        ErrorSeverity::Invalid);
     double nrmscl = 1.0 / static_cast<double>(ao_fft.size());
     for (k = 0; k < nfft; ++k)
       ao[k] *= nrmscl;
@@ -446,6 +448,10 @@ CoreTimeSeries MultiTaperSpecDivDecon::inverse_wavelet() {
 std::vector<CoreTimeSeries>
 MultiTaperSpecDivDecon::all_inverse_wavelets(const double t0parent) {
   try {
+    if (winv_taper.empty())
+      throw MsPASSError("MultiTaperSpecDivDecon::all_inverse_wavelets: "
+                        "process must be called before all_inverse_wavelets",
+                        ErrorSeverity::Invalid);
     std::vector<CoreTimeSeries> all;
     all.reserve(winv_taper.size());
     double dt = this->shapingwavelet.sample_interval();
@@ -462,6 +468,10 @@ MultiTaperSpecDivDecon::all_inverse_wavelets(const double t0parent) {
 std::vector<CoreTimeSeries>
 MultiTaperSpecDivDecon::all_rfestimates(const double t0parent) {
   try {
+    if (rfestimates.empty())
+      throw MsPASSError("MultiTaperSpecDivDecon::all_rfestimates: process "
+                        "must be called before all_rfestimates",
+                        ErrorSeverity::Invalid);
     std::vector<CoreTimeSeries> all;
     all.reserve(rfestimates.size());
     double dt = this->shapingwavelet.sample_interval();
@@ -481,6 +491,10 @@ MultiTaperSpecDivDecon::all_rfestimates(const double t0parent) {
 std::vector<CoreTimeSeries>
 MultiTaperSpecDivDecon::all_actual_outputs(const double t0parent) {
   try {
+    if (ao_fft.empty())
+      throw MsPASSError("MultiTaperSpecDivDecon::all_actual_outputs: process "
+                        "must be called before all_actual_outputs",
+                        ErrorSeverity::Invalid);
     std::vector<CoreTimeSeries> all;
     all.reserve(ao_fft.size());
     double dt = this->shapingwavelet.sample_interval();
@@ -499,11 +513,15 @@ MultiTaperSpecDivDecon::all_actual_outputs(const double t0parent) {
 }
 
 Metadata MultiTaperSpecDivDecon::QCMetrics() {
-  /* Return only an empty Metadata container.  Done as it is
-  easier to maintain the code letting python do this work.
-  This also anticipates new metrics being added which would be
-  easier in python.*/
   Metadata md;
+  md.put("multitaper_operator_type", string("specdiv_power_stabilized"));
+  md.put("multitaper_operator_nfft", nfft);
+  md.put("multitaper_taper_length", static_cast<int>(taperlen));
+  md.put("multitaper_number_tapers", nseq);
+  md.put("multitaper_time_bandwidth_product", nw);
+  md.put("multitaper_damping_factor", damp);
+  md.put("multitaper_processed", !winv_taper.empty());
+  md.put("multitaper_number_outputs", static_cast<int>(winv_taper.size()));
   return md;
 }
 } // namespace mspass::algorithms::deconvolution

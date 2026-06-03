@@ -10,11 +10,12 @@ from mspasspy.ccore.algorithms.deconvolution import (
     LeastSquareDecon,
     MultiTaperSpecDivDecon,
     MultiTaperXcorDecon,
+    NoiseStableDecon,
     TimeDomainLeastSquareDecon,
     WaterLevelDecon,
 )
-from mspasspy.ccore.seismic import _CoreTimeSeries  # noqa: F401
-from mspasspy.ccore.utility import MsPASSError, pfread
+from mspasspy.ccore.seismic import PowerSpectrum, _CoreTimeSeries  # noqa: F401
+from mspasspy.ccore.utility import Metadata, MsPASSError, pfread
 
 
 def _write_scalar_pf(
@@ -77,6 +78,8 @@ def _write_multitaper_pf(
     window_end=0.0,
     nfft=512,
     damping=0.1,
+    shaping_wavelet_type="none",
+    shaping_frequency=1.0,
 ):
     pf = tmp_path / "multitaper_decon.pf"
     pf.write_text(
@@ -89,6 +92,29 @@ damping_factor {damping:.12f}
 time_bandwidth_product 2.5
 number_tapers 4
 shaping_wavelet_dt 0.05
+shaping_wavelet_type {shaping_wavelet_type}
+shaping_wavelet_frequency {shaping_frequency:.12f}
+"""
+    )
+    return pfread(str(pf))
+
+
+def _write_noise_stable_pf(tmp_path, *, window_start=0.0, window_end=63.0, nfft=128):
+    pf = tmp_path / "noise_stable_decon.pf"
+    pf.write_text(
+        f"""
+target_sample_interval 1.0
+operator_nfft {nfft}
+deconvolution_data_window_start {window_start:.12f}
+deconvolution_data_window_end {window_end:.12f}
+ns_gid_mu_min 1.0e-4
+ns_gid_alpha 1.0
+ns_gid_noise_floor 1.0e-12
+ns_gid_gain_max 1.0e3
+ns_gid_use_reliability_taper false
+ns_gid_snr_taper_low 1.0
+ns_gid_snr_taper_high 3.0
+shaping_wavelet_dt 1.0
 shaping_wavelet_type none
 """
     )
@@ -371,6 +397,23 @@ def test_multitaper_rejects_empty_noise_vector(tmp_path, engine_class):
 @pytest.mark.parametrize(
     "engine_class", [MultiTaperXcorDecon, MultiTaperSpecDivDecon]
 )
+def test_multitaper_actual_output_requires_process(tmp_path, engine_class):
+    n = 64
+    pf = _write_multitaper_pf(
+        tmp_path,
+        window_start=0.0,
+        window_end=float(n - 1) * 0.05,
+        nfft=256,
+    )
+    engine = engine_class(pf)
+
+    with pytest.raises(MsPASSError, match="process must be called"):
+        engine.actual_output()
+
+
+@pytest.mark.parametrize(
+    "engine_class", [MultiTaperXcorDecon, MultiTaperSpecDivDecon]
+)
 def test_multitaper_safely_pads_vectors_shorter_than_taper_length(
     tmp_path, engine_class
 ):
@@ -452,6 +495,96 @@ def test_multitaper_process_and_actual_output_are_idempotent(tmp_path, engine_cl
 
     assert np.allclose(first_actual, second_actual, atol=1.0e-12)
     assert np.allclose(first_result, second_result, atol=1.0e-12)
+
+
+@pytest.mark.parametrize(
+    "engine_class", [MultiTaperXcorDecon, MultiTaperSpecDivDecon]
+)
+def test_multitaper_changeparameter_refreshes_shaping_wavelet_only(
+    tmp_path, engine_class
+):
+    n = 160
+    base_pf = _write_multitaper_pf(
+        tmp_path,
+        window_start=0.0,
+        window_end=float(n - 1) * 0.05,
+        nfft=512,
+        shaping_wavelet_type="none",
+    )
+    ricker_pf = _write_multitaper_pf(
+        tmp_path,
+        window_start=0.0,
+        window_end=float(n - 1) * 0.05,
+        nfft=512,
+        shaping_wavelet_type="ricker",
+        shaping_frequency=2.0,
+    )
+    t = np.arange(n) * 0.05
+    wavelet = np.exp(-0.5 * ((t - 0.8) / 0.15) ** 2)
+    data = 1.2 * wavelet
+    noise = 0.001 * np.sin(2.0 * np.pi * 3.0 * t)
+
+    engine = engine_class(base_pf)
+    engine.load(_double_vector(wavelet), _double_vector(data), _double_vector(noise))
+    engine.process()
+    actual_none = np.asarray(engine.actual_output().data, dtype=np.float64)
+    engine.changeparameter(ricker_pf)
+    actual_ricker = np.asarray(engine.actual_output().data, dtype=np.float64)
+
+    assert not np.allclose(actual_none, actual_ricker)
+    assert np.isfinite(actual_ricker).all()
+
+
+@pytest.mark.parametrize(
+    "engine_class,operator_type",
+    [
+        (MultiTaperXcorDecon, "xcor_power_stabilized"),
+        (MultiTaperSpecDivDecon, "specdiv_power_stabilized"),
+    ],
+)
+def test_multitaper_qc_reports_regularization_metadata(
+    tmp_path, engine_class, operator_type
+):
+    n = 96
+    pf = _write_multitaper_pf(
+        tmp_path,
+        window_start=0.0,
+        window_end=float(n - 1) * 0.05,
+        nfft=256,
+        damping=0.04,
+    )
+    t = np.arange(n) * 0.05
+    wavelet = np.exp(-0.5 * ((t - 0.8) / 0.15) ** 2)
+    data = wavelet.copy()
+    noise = 0.001 * np.cos(2.0 * np.pi * 2.2 * t)
+    engine = engine_class(pf)
+    engine.load(_double_vector(wavelet), _double_vector(data), _double_vector(noise))
+    engine.process()
+    qc = dict(engine.QCMetrics())
+
+    assert qc["multitaper_operator_type"] == operator_type
+    assert qc["multitaper_operator_nfft"] == 256
+    assert qc["multitaper_number_tapers"] == 4
+    assert qc["multitaper_damping_factor"] == pytest.approx(0.04)
+    assert qc["multitaper_processed"]
+    assert qc["multitaper_number_outputs"] >= 1
+
+
+def test_noise_stable_rejects_invalid_power_spectrum(tmp_path):
+    pf = _write_noise_stable_pf(tmp_path)
+    engine = NoiseStableDecon(pf)
+    dead_spectrum = PowerSpectrum(
+        Metadata(), _double_vector([1.0]), 1.0, "dead", 0.0, 1.0, 1
+    )
+    dead_spectrum.kill()
+    live_empty_spectrum = PowerSpectrum(
+        Metadata(), _double_vector([]), 1.0, "empty", 0.0, 1.0, 0
+    )
+
+    with pytest.raises(MsPASSError, match="PowerSpectrum is marked dead"):
+        engine.loadnoise(dead_spectrum)
+    with pytest.raises(MsPASSError, match="PowerSpectrum is empty"):
+        engine.loadnoise(live_empty_spectrum)
 
 
 def _run_multitaper_engine(engine_class, pf, wavelet, data, noise):

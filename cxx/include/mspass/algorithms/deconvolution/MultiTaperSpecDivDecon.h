@@ -97,11 +97,20 @@ public:
   all_actual_outputs(const double t0parent = 0.0);
   /*! \brief Return appropriate quality measures.
 
-  Each operator commonly has different was to measure the quality of the
+  Each operator commonly has different ways to measure the quality of the
   result.  This method should return these in a generic Metadata object. */
   mspass::utility::Metadata QCMetrics();
   int get_taperlen() { return taperlen; };
+  /*! Return the number of DPSS tapers used to build the combined denominator.
+
+  This is intentionally different from get_number_outputs().  The current
+  implementation combines the multitaper powers before forming one inverse
+  operator, so processed products normally contain one combined output. */
   int get_number_tapers() { return nseq; };
+  /*! Return the number of combined inverse/RF/AO products stored after process.
+
+  The value is normally 1 after a successful process call and 0 before
+  process. */
   int get_number_outputs() { return winv_taper.size(); };
   double get_time_bandwidth_product() { return nw; };
 

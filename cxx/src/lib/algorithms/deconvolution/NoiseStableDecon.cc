@@ -100,6 +100,14 @@ void NoiseStableDecon::loadnoise(const CoreTimeSeries &noise_in) {
 }
 
 void NoiseStableDecon::loadnoise(const PowerSpectrum &noise_spectrum_in) {
+  if (noise_spectrum_in.dead())
+    throw MsPASSError("NoiseStableDecon::loadnoise: noise PowerSpectrum is "
+                      "marked dead",
+                      ErrorSeverity::Invalid);
+  if (noise_spectrum_in.nf() <= 0 || noise_spectrum_in.spectrum.empty())
+    throw MsPASSError("NoiseStableDecon::loadnoise: noise PowerSpectrum is "
+                      "empty",
+                      ErrorSeverity::Invalid);
   noise_spectrum = noise_spectrum_in;
   noise_spectrum_loaded = true;
   noise_vector_loaded = false;

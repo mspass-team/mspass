@@ -585,6 +585,14 @@ int TimeDomainGIDDecon::loadnoise(const CoreTimeSeries &noise_in) {
   return this->loadnoise(ts);
 }
 int TimeDomainGIDDecon::loadnoise(const PowerSpectrum &noise_spectrum_in) {
+  if (noise_spectrum_in.dead())
+    throw MsPASSError("TimeDomainGIDDecon::loadnoise: noise PowerSpectrum is "
+                      "marked dead",
+                      ErrorSeverity::Invalid);
+  if (noise_spectrum_in.nf() <= 0 || noise_spectrum_in.spectrum.empty())
+    throw MsPASSError("TimeDomainGIDDecon::loadnoise: noise PowerSpectrum is "
+                      "empty",
+                      ErrorSeverity::Invalid);
   external_noise_spectrum = noise_spectrum_in;
   external_noise_spectrum_loaded = true;
   external_noise_loaded = false;

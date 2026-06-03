@@ -902,8 +902,8 @@ def test_external_wavelet_validation_across_deconvolution_methods(
         )
         > 0.90
     )
-    assert _normalized_correlation(results["LeastSquares"], results["MultiTaperXcor"]) > 0.70
-    assert _normalized_correlation(results["MultiTaperXcor"], results["MultiTaperSpecDiv"]) > 0.55
+    assert _normalized_correlation(results["LeastSquares"], results["MultiTaperXcor"]) > 0.84
+    assert _normalized_correlation(results["MultiTaperXcor"], results["MultiTaperSpecDiv"]) > 0.95
 
     shifted_truth_times = (
         np.asarray(sorted(STRESS_SPIKES.keys()), dtype=np.float64)

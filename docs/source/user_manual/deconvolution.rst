@@ -159,11 +159,14 @@ wavelet used to represent sparse spikes.
 
     .. warning::
 
-       On the generalized-iterative-decon branch, ``damping_factor`` for these
-       multitaper operators is interpreted in the power-domain denominator
-       described above.  Parameter files tuned against older behavior may need
-       retuning; values should not be assumed numerically equivalent to the
-       historical tapered-numerator implementation.
+       The public class names and parameter-file keys are retained for source
+       compatibility, but on the generalized-iterative-decon branch they are
+       compatibility names for the power-stabilized, untapered-phase operators
+       described here.  This is a migration point: ``damping_factor`` is now
+       interpreted in the power-domain denominator, and parameter files tuned
+       against older tapered-numerator behavior should be retuned and
+       revalidated.  Values should not be assumed numerically equivalent to the
+       historical Park-Levin-style implementation.
 
 ``NoiseStableDecon``
     Noise-aware stable scalar inverse used by the ``ns_gid`` GID mode and also

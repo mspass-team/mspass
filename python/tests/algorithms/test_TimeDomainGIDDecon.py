@@ -5,8 +5,8 @@ import numpy as np
 import pytest
 from pathlib import Path
 
-from mspasspy.ccore.utility import MsPASSError, pfread
-from mspasspy.ccore.seismic import Seismogram, TimeSeries
+from mspasspy.ccore.utility import Metadata, MsPASSError, pfread
+from mspasspy.ccore.seismic import PowerSpectrum, Seismogram, TimeSeries
 from mspasspy.ccore.seismic import TimeReferenceType, DoubleVector
 from mspasspy.ccore.algorithms.basic import TimeWindow
 from mspasspy.ccore.algorithms.deconvolution import NoiseStableDecon, TimeDomainGIDDecon
@@ -257,6 +257,25 @@ def test_TimeDomainGIDDecon_rejects_empty_external_noise(tmp_path):
 
     with pytest.raises(MsPASSError, match="external noise is empty"):
         engine.loadnoise(empty_noise)
+
+
+def test_TimeDomainGIDDecon_rejects_invalid_external_noise_spectrum(tmp_path):
+    pf = _ns_gid_pf(
+        tmp_path, "TimeDomainGIDDecon.pf", "time_domain_gid_deconvolution"
+    )
+    engine = TimeDomainGIDDecon(pf)
+    dead_spectrum = PowerSpectrum(
+        Metadata(), DoubleVector([1.0]), 1.0, "dead", 0.0, 1.0, 1
+    )
+    dead_spectrum.kill()
+    live_empty_spectrum = PowerSpectrum(
+        Metadata(), DoubleVector([]), 1.0, "empty", 0.0, 1.0, 0
+    )
+
+    with pytest.raises(MsPASSError, match="PowerSpectrum is marked dead"):
+        engine.loadnoise(dead_spectrum)
+    with pytest.raises(MsPASSError, match="PowerSpectrum is empty"):
+        engine.loadnoise(live_empty_spectrum)
 
 
 def test_TimeDomainGIDDecon_rejects_dead_external_wavelet_and_noise(tmp_path):
