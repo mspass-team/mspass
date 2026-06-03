@@ -424,12 +424,12 @@ def test_RFdeconProcessor_multitaper_legacy_names_match_preferred_output(
         os.environ.pop("PFPATH", None)
 
 
-def test_RFdeconProcessor_malformed_preferred_multitaper_branch_does_not_fallback(
-    tmp_path,
-):
-    pf_text = open("data/pf/RFdeconProcessor.pf", encoding="utf-8").read()
-    pf_text += """
-MultiTaperPowerXcor &Arr{
+@pytest.mark.parametrize(
+    "preferred_alg,malformed_text,expected_message",
+    [
+        (
+            "MultiTaperPowerXcor",
+            """MultiTaperPowerXcor &Arr{
 damping_factor -1.0
 shaping_wavelet_dt 0.05
 shaping_wavelet_type none
@@ -442,12 +442,49 @@ deconvolution_data_window_end 30.0
 noise_window_start -35.0
 noise_window_end -5.0
 }
-"""
+""",
+            "damping_factor must be positive",
+        ),
+        (
+            "MultiTaperPowerSpecDiv",
+            """MultiTaperPowerSpecDiv &Arr{
+damping_factor -1.0
+shaping_wavelet_dt 0.05
+shaping_wavelet_type none
+target_sample_interval 0.05
+operator_nfft 1024
+time_bandwidth_product 2.5
+number_tapers 4
+deconvolution_data_window_start -5.0
+deconvolution_data_window_end 30.0
+noise_window_start -35.0
+noise_window_end -5.0
+}
+""",
+            "damping_factor must be positive",
+        ),
+        (
+            "MultiTaperPowerXcor",
+            "MultiTaperPowerXcor 5\n",
+            "defined but is not an &Arr",
+        ),
+        (
+            "MultiTaperPowerSpecDiv",
+            "MultiTaperPowerSpecDiv 5\n",
+            "defined but is not an &Arr",
+        ),
+    ],
+)
+def test_RFdeconProcessor_malformed_preferred_multitaper_branch_does_not_fallback(
+    tmp_path, preferred_alg, malformed_text, expected_message
+):
+    pf_text = open("data/pf/RFdeconProcessor.pf", encoding="utf-8").read()
+    pf_text += malformed_text
     pf = tmp_path / "RFdeconProcessor_bad_preferred.pf"
     pf.write_text(pf_text)
 
-    with pytest.raises(MsPASSError, match="damping_factor must be positive"):
-        RFdeconProcessor(alg="MultiTaperPowerXcor", pf=str(pf))
+    with pytest.raises(MsPASSError, match=expected_message):
+        RFdeconProcessor(alg=preferred_alg, pf=str(pf))
 
 
 @pytest.mark.parametrize(

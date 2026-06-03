@@ -73,8 +73,8 @@ vector<double> PowerSpectrum::amplitude() const {
 }
 double PowerSpectrum::power(const double f) const {
   if (f < 0.0)
-    throw MsPASSError("PowerSpectrum::amplitude:  requested amplitude for a "
-                      "negative frequency which is assumed to be an erorr",
+    throw MsPASSError("PowerSpectrum::power:  requested power for a "
+                      "negative frequency",
                       ErrorSeverity::Invalid);
   if (f < this->f0val)
     return 0.0;

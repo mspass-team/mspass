@@ -67,13 +67,14 @@ def _as_gid_timeseries(x, dt, t0, argname):
 
 
 def _get_pf_branch_with_legacy_fallback(pfhandle, preferred, legacy):
-    try:
+    if preferred in pfhandle.arr_keys():
         return Metadata(pfhandle.get_branch(preferred))
-    except MsPASSError as err:
-        missing_message = f"get_branch failed trying to find data for key={preferred}"
-        if missing_message in str(err):
-            return Metadata(pfhandle.get_branch(legacy))
-        raise
+    if pfhandle.is_defined(preferred):
+        raise MsPASSError(
+            f"{preferred} is defined but is not an &Arr parameter branch",
+            ErrorSeverity.Invalid,
+        )
+    return Metadata(pfhandle.get_branch(legacy))
 
 
 class RFdeconProcessor:
