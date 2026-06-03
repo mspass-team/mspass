@@ -7,6 +7,7 @@
 #include "mspass/utility/MsPASSError.h"
 #include "mspass/utility/utility.h"
 #include <algorithm>
+#include <cfloat>
 #include <string>
 #include <vector>
 namespace mspass::algorithms::deconvolution {
@@ -215,65 +216,40 @@ void MultiTaperXcorDecon::process() {
     throw MsPASSError(base_error + "noise data is empty.",
                       ErrorSeverity::Invalid);
   }
-  // DEBUG
-  // cerr<< "tapering data vector"<<endl;
-  /* The tapered data are stored in this vector of arrays */
   int i, j;
-  vector<ComplexArray> tdata;
-  tdata = taper_data(data);
-  /* Apply fft to each tapered data vector */
-  for (i = 0; i < nseq; ++i) {
-    gsl_fft_complex_forward(tdata[i].ptr(), 1, nfft, wavetable, workspace);
-  }
-  // DEBUG
-  // cerr<< "Tapering wavelet vector"<<endl;
-  /* Now we need to do the same for the wavelet data */
+  /* The final inverse is applied to the untapered wavelet/data spectra.  DPSS
+  tapers are used only to estimate stable source and noise power terms. */
   vector<ComplexArray> wdata;
   wdata = taper_data(wavelet);
   for (i = 0; i < nseq; ++i) {
     gsl_fft_complex_forward(wdata[i].ptr(), 1, nfft, wavetable, workspace);
   }
-  /* And the noise data - although with noise we quickly turn to power spectrum
-   */
   vector<ComplexArray> ndata;
   ndata = taper_data(noise);
   for (i = 0; i < nseq; ++i) {
     gsl_fft_complex_forward(ndata[i].ptr(), 1, nfft, wavetable, workspace);
   }
-  vector<double> noise_spectrum(ndata[0].abs());
-  for (i = 1; i < nseq; ++i) {
-    vector<double> nwork(ndata[i].abs());
-    for (j = 0; j < ndata.size(); ++j) {
-      noise_spectrum[j] += nwork[j];
+  vector<double> source_power_denominator(nfft, 0.0);
+  for (i = 0; i < nseq; ++i) {
+    for (j = 0; j < nfft; ++j) {
+      double *zw = wdata[i].ptr(j);
+      source_power_denominator[j] +=
+          ((*zw) * (*zw) + (*(zw + 1)) * (*(zw + 1))) /
+          static_cast<double>(nseq);
     }
   }
-  /* normalize and add damping */
-  vector<double>::iterator nptr;
-  double scale = damp / (static_cast<double>(nseq));
-  // DEBUG
-  // cerr << "scale computed from damp="<<damp<<" and nseq="<<nseq<<endl;
-  // cerr << "Noise spectrum"<<endl;
-  for (nptr = noise_spectrum.begin(); nptr != noise_spectrum.end(); ++nptr) {
-    (*nptr) *= scale;
-    // DEBUG
-    // cerr << (*nptr)<<endl;
+  vector<double> noise_power_spectrum(ndata[0].abs());
+  for (j = 0; j < static_cast<int>(noise_power_spectrum.size()); ++j)
+    noise_power_spectrum[j] *= noise_power_spectrum[j];
+  for (i = 1; i < nseq; ++i) {
+    vector<double> nwork(ndata[i].abs());
+    for (j = 0; j < static_cast<int>(noise_power_spectrum.size()); ++j) {
+      noise_power_spectrum[j] += nwork[j] * nwork[j];
+    }
   }
-  /* We put noise_spectrum data into ndata array with this constructor.  We
-  then just add ComplexArray vectors in the decon calculation below */
-  ComplexArray fdamp(noise_spectrum.size(), noise_spectrum);
-  /* Now we compute the deconvolved data using formulas in Park and Levin 2000
-
-  The ComplexArray object implements operator* as equivalent to .* in matlab.
-  i.e. it is NOT a dot product but a sample by sample multiply as normal for
-  convolution in the frequency domain.  Here we use that an the += operator
-  to form a sum.
-
-  Earlier versions formed the numerator from DPSS-tapered data.  That is a
-  biased estimator for receiver-function time windows: a delayed converted
-  phase is multiplied by a different taper value than the direct source
-  wavelet.  The multitaper spectra are still used to stabilize the denominator,
-  but the final linear deconvolution numerator uses the untapered, zero-padded
-  source and data windows. */
+  for (j = 0; j < static_cast<int>(noise_power_spectrum.size()); ++j)
+    noise_power_spectrum[j] =
+        damp * noise_power_spectrum[j] / static_cast<double>(nseq);
   vector<double> padded_wavelet(nfft, 0.0);
   vector<double> padded_data(nfft, 0.0);
   const int nwcopy = std::min(static_cast<int>(wavelet.size()), nfft);
@@ -286,20 +262,19 @@ void MultiTaperXcorDecon::process() {
   ComplexArray duntapered(nfft, padded_data);
   gsl_fft_complex_forward(wuntapered.ptr(), 1, nfft, wavetable, workspace);
   gsl_fft_complex_forward(duntapered.ptr(), 1, nfft, wavetable, workspace);
-  ComplexArray denominator(wdata[0]);
-  denominator.conj();
-  denominator = denominator * wdata[0];
-  winv = wdata[0];
+
+  double max_source_power =
+      *max_element(source_power_denominator.begin(), source_power_denominator.end());
+  const double relative_floor = max(DBL_EPSILON, 1.0e-12 * max_source_power);
+  winv = wuntapered;
   winv.conj();
-  for (i = 1; i < nseq; ++i) {
-    ComplexArray work(wdata[i]);
-    work.conj();
-    winv += work;
-    work = work * wdata[i];
-    denominator += work;
+  for (j = 0; j < nfft; ++j) {
+    const double den =
+        source_power_denominator[j] + noise_power_spectrum[j] + relative_floor;
+    double *zw = winv.ptr(j);
+    (*zw) /= den;
+    (*(zw + 1)) /= den;
   }
-  denominator += fdamp;
-  winv = winv / denominator;
   ComplexArray rf_fft = winv * duntapered;
   ao_fft = winv * wuntapered;
   ComplexArray ao_scale_test(ao_fft);
@@ -359,12 +334,13 @@ CoreTimeSeries MultiTaperXcorDecon::actual_output() {
     /* The ao_fft array contains the fft of the actual output/resolution kernel.
      * We do need to appy the shaping wavelet for consistency before
      * converting it to the time domain.*/
-    ao_fft = (*shapingwavelet.wavelet()) * ao_fft;
-    gsl_fft_complex_inverse(ao_fft.ptr(), 1, nfft, wavetable, workspace);
+    ComplexArray work(ao_fft);
+    work = (*shapingwavelet.wavelet()) * work;
+    gsl_fft_complex_inverse(work.ptr(), 1, nfft, wavetable, workspace);
     vector<double> ao;
     ao.reserve(nfft);
-    for (int k = 0; k < ao_fft.size(); ++k)
-      ao.push_back(ao_fft[k].real());
+    for (int k = 0; k < work.size(); ++k)
+      ao.push_back(work[k].real());
     /* We always shift this wavelet to the center of the data vector.
     We handle the time through the CoreTimeSeries object. */
     int i0 = nfft / 2;

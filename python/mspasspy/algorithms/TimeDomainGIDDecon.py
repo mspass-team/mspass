@@ -110,8 +110,12 @@ def TimeDomainGIDRFDecon(
     try:
         if external_wavelet is not None:
             engine.loadwavelet(external_wavelet)
+        else:
+            engine.clear_external_wavelet()
         if external_noise is not None:
             engine.loadnoise(external_noise)
+        else:
+            engine.clear_external_noise()
         load_status = engine.load(d, signal_window, noise_window)
         if load_status:
             d.kill()

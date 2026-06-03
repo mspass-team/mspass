@@ -122,6 +122,58 @@ def test_FrequencyDomainNSGID_uses_external_wavelet_and_gain_cap(tmp_path):
         assert min(abs(t - p) for p in picked_times) < 0.15
 
 
+def test_FrequencyDomainGIDRFDecon_clears_external_state_between_calls(tmp_path):
+    data = _make_gid_test_data(noise_level=1.0e-4)
+    from decon_data_generators import make_simulation_wavelet
+
+    external_wavelet = make_simulation_wavelet()
+    pf = _ns_gid_pf(
+        tmp_path,
+        "FrequencyDomainGIDDecon.pf",
+        "frequency_domain_gid_deconvolution",
+    )
+    engine = FrequencyDomainGIDDecon(pf)
+
+    rf_external = FrequencyDomainGIDRFDecon(
+        data,
+        engine,
+        signal_window=TimeWindow(-8.0, 20.0),
+        noise_window=TimeWindow(-25.0, -8.0),
+        external_wavelet=external_wavelet,
+    )
+    assert rf_external.live
+    assert rf_external["FrequencyDomainGIDDecon_properties"][
+        "ns_gid_external_wavelet_used"
+    ]
+
+    rf_internal = FrequencyDomainGIDRFDecon(
+        data,
+        engine,
+        signal_window=TimeWindow(-8.0, 20.0),
+        noise_window=TimeWindow(-25.0, -8.0),
+    )
+    assert rf_internal.live
+    assert not rf_internal["FrequencyDomainGIDDecon_properties"][
+        "ns_gid_external_wavelet_used"
+    ]
+
+
+def test_FrequencyDomainGIDDecon_rejects_empty_external_noise(tmp_path):
+    from mspasspy.ccore.seismic import TimeSeries
+
+    pf = _ns_gid_pf(
+        tmp_path,
+        "FrequencyDomainGIDDecon.pf",
+        "frequency_domain_gid_deconvolution",
+    )
+    engine = FrequencyDomainGIDDecon(pf)
+    empty_noise = TimeSeries(0)
+    empty_noise.set_live()
+
+    with pytest.raises(MsPASSError, match="external noise is empty"):
+        engine.loadnoise(empty_noise)
+
+
 @pytest.mark.parametrize("mode", ["least_square", "water_level", "multi_taper", "cnr"])
 def test_FrequencyDomainGIDDecon_inverse_modes_are_valid(tmp_path, mode):
     data = _make_single_spike_convolution_data()

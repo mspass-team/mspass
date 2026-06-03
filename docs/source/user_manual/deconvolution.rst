@@ -133,14 +133,25 @@ wavelet used to represent sparse spikes.
     window.  This avoids biasing delayed converted phases by the taper value
     at their arrival time.
 
-    ``MultiTaperXcorDecon`` forms a single stabilized cross-spectral inverse
-    from the sum of tapered source cross spectra.  ``MultiTaperSpecDivDecon``
-    uses the prepared source wavelet's untapered phase and power with
-    per-taper noise spectra to form regularized spectral-division inverses,
-    then averages the RF estimates.  The two methods should be similar on
-    clean data, but they are not expected to be identical.  The default
-    behavior still returns a linear-convolution lag window; tapering controls
-    variance and leakage in the stabilizing spectra.
+    These MsPASS operators are not paper-faithful Park and Levin (2000)
+    multitaper correlation estimators.  Park and Levin use tapered data/source
+    cross spectra in both numerator and denominator.  The current operators
+    instead use the untapered wavelet phase and untapered data spectrum in the
+    final inverse, while DPSS spectra stabilize the source-power denominator:
+
+    .. math::
+
+       G(f) = \frac{\overline{W_0(f)}}{\operatorname{Den}_{mt}(f)},\quad
+       RF(f)=G(f)D_0(f),\quad AO(f)=G(f)W_0(f).
+
+    ``MultiTaperXcorDecon`` uses the mean multitaper source power plus a
+    damped mean multitaper noise power as ``Den_mt``.  ``MultiTaperSpecDivDecon``
+    is retained for API compatibility as a multitaper power-stabilized
+    spectral-division variant: it regularizes each tapered source power by the
+    corresponding noise power and a small relative floor, combines those powers,
+    and then forms the same untapered-phase inverse.  The two methods should be
+    close on clean data; large differences normally indicate instability or a
+    configuration problem.  Both return a linear-convolution lag window.
 
 ``NoiseStableDecon``
     Noise-aware stable scalar inverse used by the ``ns_gid`` GID mode and also
@@ -294,14 +305,14 @@ Validation plots
 ----------------
 
 The deconvolution validation tests can optionally write diagnostic plots for
-manual inspection.  Normal test runs do not create figures.  To plot the
-colored three-component synthetic validation case, run for example:
+manual inspection.  Normal test runs do not create figures.  To write the full
+set of scalar, GID, sparse-output, and external-wavelet validation plots, run:
 
 .. code-block:: bash
 
    PYTHONPATH=/tmp/mspass-cxx-import:/home/iwang/code/mspass/python \
    /home/iwang/code/.venvs/mspass-dev/bin/python -m pytest \
-       python/tests/algorithms/test_decon_algorithm_validation.py::test_scalar_methods_are_consistent_for_complex_colored_3c_synthetic \
+       python/tests/algorithms/test_decon_algorithm_validation.py \
        --decon-validation-plots \
        --decon-validation-plot-dir /tmp/mspass-decon-validation-plots \
        --decon-validation-noise-scale 0.03

@@ -5,7 +5,7 @@ import numpy as np
 import pytest
 from pathlib import Path
 
-from mspasspy.ccore.utility import pfread
+from mspasspy.ccore.utility import MsPASSError, pfread
 from mspasspy.ccore.seismic import Seismogram, TimeSeries
 from mspasspy.ccore.seismic import TimeReferenceType, DoubleVector
 from mspasspy.ccore.algorithms.basic import TimeWindow
@@ -213,6 +213,50 @@ def test_TimeDomainNSGID_uses_external_wavelet_and_rejects_noise_spikes(tmp_path
     expected_times = [t - wavelet.t0 for t in spike_times[:2]]
     for t in expected_times:
         assert min(abs(t - p) for p in picked_times) < 0.15
+
+
+def test_TimeDomainGIDRFDecon_clears_external_state_between_calls(tmp_path):
+    data = _make_gid_test_data(noise_level=1.0e-4)
+    external_wavelet = make_simulation_wavelet()
+    pf = _ns_gid_pf(
+        tmp_path, "TimeDomainGIDDecon.pf", "time_domain_gid_deconvolution"
+    )
+    engine = TimeDomainGIDDecon(pf)
+
+    rf_external = TimeDomainGIDRFDecon(
+        data,
+        engine,
+        signal_window=TimeWindow(-8.0, 20.0),
+        noise_window=TimeWindow(-25.0, -8.0),
+        external_wavelet=external_wavelet,
+    )
+    assert rf_external.live
+    assert rf_external["TimeDomainGIDDecon_properties"][
+        "ns_gid_external_wavelet_used"
+    ]
+
+    rf_internal = TimeDomainGIDRFDecon(
+        data,
+        engine,
+        signal_window=TimeWindow(-8.0, 20.0),
+        noise_window=TimeWindow(-25.0, -8.0),
+    )
+    assert rf_internal.live
+    assert not rf_internal["TimeDomainGIDDecon_properties"][
+        "ns_gid_external_wavelet_used"
+    ]
+
+
+def test_TimeDomainGIDDecon_rejects_empty_external_noise(tmp_path):
+    pf = _ns_gid_pf(
+        tmp_path, "TimeDomainGIDDecon.pf", "time_domain_gid_deconvolution"
+    )
+    engine = TimeDomainGIDDecon(pf)
+    empty_noise = TimeSeries(0)
+    empty_noise.set_live()
+
+    with pytest.raises(MsPASSError, match="external noise is empty"):
+        engine.loadnoise(empty_noise)
 
 
 def test_TimeDomainNSGID_rejects_pure_noise(tmp_path):

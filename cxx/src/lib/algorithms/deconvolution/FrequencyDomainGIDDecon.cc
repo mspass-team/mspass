@@ -338,6 +338,10 @@ int FrequencyDomainGIDDecon::loadwavelet(const TimeSeries &wavelet) {
                       "wavelets are disabled by "
                       "ns_gid_external_wavelet_allowed",
                       ErrorSeverity::Invalid);
+  if (wavelet.npts() <= 0)
+    throw MsPASSError("FrequencyDomainGIDDecon::loadwavelet: external wavelet "
+                      "is empty",
+                      ErrorSeverity::Invalid);
   external_wavelet = wavelet;
   external_wavelet_loaded = true;
   return 0;
@@ -349,6 +353,10 @@ int FrequencyDomainGIDDecon::loadwavelet(const CoreTimeSeries &wavelet) {
 }
 
 int FrequencyDomainGIDDecon::loadnoise(const TimeSeries &noise_in) {
+  if (noise_in.npts() <= 0)
+    throw MsPASSError("FrequencyDomainGIDDecon::loadnoise: external noise is "
+                      "empty",
+                      ErrorSeverity::Invalid);
   external_noise = noise_in;
   external_noise_loaded = true;
   external_noise_spectrum_loaded = false;
@@ -455,6 +463,10 @@ void FrequencyDomainGIDDecon::initialize_inverse_operator() {
   }
   actual_o_fir = actual_out.s;
   actual_o_0 = actual_out.sample_number(0.0);
+  if (actual_o_0 < 0 || actual_o_0 >= static_cast<int>(actual_o_fir.size()))
+    throw MsPASSError("FrequencyDomainGIDDecon: actual output zero-lag "
+                      "sample is outside kernel",
+                      ErrorSeverity::Invalid);
   double peak_scale = fabs(actual_o_fir[actual_o_0]);
   if (peak_scale <= 0.0)
     throw MsPASSError("FrequencyDomainGIDDecon: actual output has zero peak",
@@ -557,9 +569,12 @@ void FrequencyDomainGIDDecon::update_residual_matrix(const ThreeCSpike &spk) {
 
 void FrequencyDomainGIDDecon::process() {
   const string base_error("FrequencyDomainGIDDecon::process: ");
+  string process_stage("initialize inverse operator");
   try {
     this->initialize_inverse_operator();
+    process_stage = "compute NS-GID peak threshold";
     ns_peak_threshold = this->compute_ns_peak_threshold();
+    process_stage = "initialize residual";
     r = d_decon;
     spikes.clear();
     iter_count = 0;
@@ -574,6 +589,7 @@ void FrequencyDomainGIDDecon::process() {
                         ErrorSeverity::Invalid);
     vector<double> amps;
     amps.reserve(r.npts());
+    process_stage = "sparse iteration";
     for (int iiter = 0; iiter < iter_max; ++iiter) {
       amps.clear();
       for (int i = 0; i < r.npts(); ++i) {
@@ -671,14 +687,20 @@ void FrequencyDomainGIDDecon::process() {
         ns_converged = true;
       }
     }
+    process_stage = "refit sparse amplitudes";
     double ridge_beta = (decon_type == NS_GID) ? ns_ridge_beta : 1.0e-10;
     refit_spike_amplitudes_fd(spikes, d_decon, actual_o_fir, actual_o_0,
                               ridge_beta);
+    process_stage = "recompute final residual";
     r = d_decon;
     for (auto sptr = spikes.begin(); sptr != spikes.end(); ++sptr)
       this->update_residual_matrix(*sptr);
     resid_l2_final = matrix_l2(r.u);
     resid_linf_final = matrix_linf(r.u);
+  } catch (const MsPASSError &err) {
+    throw MsPASSError(base_error + "failed during " + process_stage + "\n" +
+                          string(err.what()),
+                      err.severity());
   } catch (...) {
     throw;
   };

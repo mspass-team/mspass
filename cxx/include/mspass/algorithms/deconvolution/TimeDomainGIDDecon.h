@@ -25,59 +25,42 @@ correlation. */
 enum IterDeconType { WATER_LEVEL, LEAST_SQ, MULTI_TAPER, CNR, NS_GID };
 class ThreeCSpike {
 public:
-  /*! The column position where this spike should be placed in parent
-  three component dmatrix where time is the column field */
+  /*! Column index where this spike is placed in a three-component matrix. */
   int col;
-  /*! This holds the amplitude of this spike as three components */
+  /*! Three-component spike amplitude. */
   double u[3];
-  /*! L2 norm of u savd for efficiency to avoid repeated calculations */
+  /*! Cached L2 norm of u. */
   double amp;
-  /* This is the primary constructor for oneo of thise.  In the iterative
-  sequnce of generalized iterative decon we find the column with maximum
-  amplitude and point this constructor at the right column.  The
-  parent dmatrix is then updated subtracting the inverse wavelet at
-  this lag. */
+  /*! Construct a spike from the vector sample at column k. */
   ThreeCSpike(mspass::utility::dmatrix &d, int k);
-  /*! Copy consructor.  Could be defaulted, I think, but best to
-  create it explicitly. */
+  /*! Copy constructor. */
   ThreeCSpike(const ThreeCSpike &parent);
-  /*! Makign sure operator= is also essential be sure STL containers
-  work correctly */
+  /*! Assignment operator required for STL containers. */
   ThreeCSpike &operator=(const ThreeCSpike &parent);
 };
-/*! \brief Implements the Generalized Iterative Method of Wang and Pavlis.
+/*! \brief Three-component generalized iterative deconvolution in time.
 
-This class is an extension of the idea o the generalized iterative method
-described in the paper by Wang and Pavlis.   Their original paper worked
-on scalar seismograms.  This implemenation differs by iterating on the
-vector data effectively reducing a 3c seismogram to a sequence of
-3D vectors at computed lags.   The iterative reduction then iterates
-on the data matrix.   In addition, Wang's original implementation did the
-iteration by repeated forward and inverse fourier transforms.  This algorithm
-works completely in the time domain.
+This class implements the Wang and Pavlis generalized iterative deconvolution
+idea for a three-component seismogram.  Each iteration selects a vector spike
+from an inverse-filtered residual, subtracts the inverse operator's
+actual-output/resolution kernel in the original data domain, and stores the
+accepted sparse spike train internally.  The public receiver-function output is
+the sparse train convolved with the configured output shaping wavelet.
 
-The class retains a concept Wang used in the original implementation.
-Many OOP books stress the idea of construction is initialization.   That is
-not pruddent fo this case since construction involves some work that we
-do not want to repeat for each new seismogram.   Hence, construction only
-initializes parameters required to run the algorithm. Calculation is
-triggered by calling one of the two overloaded load methods.  The user
-should be warned, however, that we did not build ina  test to assure
-the noise and signal windows are consistent.  Anyone wanting to use this
-code outside of applications developed by the authors must recognize That
-the assure consistency they need to call loadnoise before load OR call
-only the load method that includes a signal and noise window.
+The constructor reads parameters and allocates reusable operators.  A datum is
+processed only after loading signal and noise windows, either with
+load(d, dwin, nwin) or with loadnoise followed by load.  External prepared
+wavelets and noise estimates can be supplied explicitly; otherwise the engine
+uses the configured receiver-function compatibility behavior.
 */
 
 class TimeDomainGIDDecon : public ScalarDecon {
 public:
-  /*! \brief Create an initialize an operator for subseqquent processing.
+  /*! \brief Create and initialize an operator for repeated processing.
 
-  This is the primary constructor for this object.   The PfStyleMetadata
-  object is expected to contain a suite of parameters used to define
-  how this operator will behave along with what inverse filter is to
-  be constructed ans applied before the iterative algorithm is applied.
-  The pf is required to have multiple Arr sections the components.  */
+  The parameter file defines the inverse-operator mode, iteration controls,
+  output shaping wavelet, signal/noise windows, and optional NS-GID stability
+  parameters. */
   TimeDomainGIDDecon(const mspass::utility::AntelopePf &md);
   TimeDomainGIDDecon(const TimeDomainGIDDecon &parent) = delete;
   TimeDomainGIDDecon &operator=(const TimeDomainGIDDecon &parent) = delete;

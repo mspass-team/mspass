@@ -52,6 +52,10 @@ def _as_gid_timeseries(x, dt, t0, argname):
             "RFdecon: for GID algorithms, {} must be a TimeSeries "
             "or one-dimensional numeric vector".format(argname)
         )
+    if values.size <= 0:
+        raise ValueError(
+            "RFdecon: for GID algorithms, {} must not be empty".format(argname)
+        )
     ts = TimeSeries(len(values))
     ts.set_t0(t0)
     ts.set_dt(dt)
@@ -674,7 +678,7 @@ def RFdecon(
         assigned to the stamp for applying this algorithm.
         Default ("WindowData") should normally be just used.
         Note this functionality is implemented via the mspass_func_wrapper decorator.
-    :param ald_id:  algorithm id to assign to history record (used only if
+    :param alg_id:  algorithm id to assign to history record (used only if
         object_history is set True.)
         Note this functionality is implemented via the mspass_func_wrapper decorator.
     :param dryrun:  When true only the arguments are checked for validity.
@@ -682,7 +686,7 @@ def RFdecon(
         Note this functionality is implemented via the mspass_func_wrapper decorator.
 
     :return:  Normally returns Seismogram object containing the RF estimates.
-        The orientations are always the same as the input.  If `return-wavelets` is set
+        The orientations are always the same as the input.  If `return_wavelets` is set
         True returns a tuple with three components:  0 - `Seismogram` returned as with
         default, 1 - actual output/resolution kernel `TimeSeries`, 2 - output shaping wavelet
         stored as a `TimeSeries` object.

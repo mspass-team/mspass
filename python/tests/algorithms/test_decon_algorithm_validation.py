@@ -756,10 +756,6 @@ def test_scalar_methods_are_consistent_for_complex_colored_3c_synthetic(
     assert _normalized_correlation(results["LeastSquares"], results["MultiTaperXcor"]) > 0.84
     assert _normalized_correlation(results["LeastSquares"], results["MultiTaperSpecDiv"]) > 0.84
     assert _normalized_correlation(results["MultiTaperXcor"], results["MultiTaperSpecDiv"]) > 0.90
-    assert (
-        np.max(np.abs(results["MultiTaperXcor"] - results["MultiTaperSpecDiv"]))
-        > 1.0e-2
-    )
     _plot_complex_colored_results(decon_validation_plot_dir, results, truth, wavelet)
 
 
@@ -796,10 +792,6 @@ def test_scalar_methods_recover_stress_spikes_with_colored_noise(
     assert _normalized_correlation(results["LeastSquares"], results["MultiTaperXcor"]) > 0.82
     assert _normalized_correlation(results["LeastSquares"], results["MultiTaperSpecDiv"]) > 0.82
     assert _normalized_correlation(results["MultiTaperXcor"], results["MultiTaperSpecDiv"]) > 0.90
-    assert (
-        np.max(np.abs(results["MultiTaperXcor"] - results["MultiTaperSpecDiv"]))
-        > 1.0e-2
-    )
     plot_results = results
     plot_truth = truth
     plot_wavelet = wavelet
@@ -910,12 +902,8 @@ def test_external_wavelet_validation_across_deconvolution_methods(
         )
         > 0.90
     )
-    assert _normalized_correlation(results["LeastSquares"], results["MultiTaperXcor"]) > 0.82
-    assert _normalized_correlation(results["MultiTaperXcor"], results["MultiTaperSpecDiv"]) > 0.35
-    assert (
-        np.max(np.abs(results["MultiTaperXcor"] - results["MultiTaperSpecDiv"]))
-        > 1.0e-2
-    )
+    assert _normalized_correlation(results["LeastSquares"], results["MultiTaperXcor"]) > 0.70
+    assert _normalized_correlation(results["MultiTaperXcor"], results["MultiTaperSpecDiv"]) > 0.55
 
     shifted_truth_times = (
         np.asarray(sorted(STRESS_SPIKES.keys()), dtype=np.float64)

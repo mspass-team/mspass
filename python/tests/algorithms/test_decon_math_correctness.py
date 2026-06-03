@@ -75,6 +75,7 @@ def _write_multitaper_pf(
     window_start=-10.0,
     window_end=0.0,
     nfft=512,
+    damping=0.1,
 ):
     pf = tmp_path / "multitaper_decon.pf"
     pf.write_text(
@@ -83,7 +84,7 @@ target_sample_interval 0.05
 operator_nfft {nfft}
 deconvolution_data_window_start {window_start:.12f}
 deconvolution_data_window_end {window_end:.12f}
-damping_factor 0.1
+damping_factor {damping:.12f}
 time_bandwidth_product 2.5
 number_tapers 4
 shaping_wavelet_dt 0.05
@@ -347,3 +348,72 @@ def test_multitaper_rejects_zero_lag_outside_output_window(tmp_path, engine_clas
 
     with pytest.raises(MsPASSError, match="zero-lag sample"):
         engine.process()
+
+
+@pytest.mark.parametrize(
+    "engine_class", [MultiTaperXcorDecon, MultiTaperSpecDivDecon]
+)
+@pytest.mark.parametrize("amplitude", [0.5, -1.25, 2.0])
+def test_multitaper_direct_ratio_matches_scalar_amplitude(
+    tmp_path, engine_class, amplitude
+):
+    n = 128
+    pf = _write_multitaper_pf(
+        tmp_path,
+        window_start=0.0,
+        window_end=float(n - 1) * 0.05,
+        nfft=512,
+        damping=1.0e-6,
+    )
+    t = np.arange(n) * 0.05
+    wavelet = np.exp(-0.5 * ((t - 1.0) / 0.18) ** 2)
+    wavelet += 0.35 * np.exp(-0.5 * ((t - 1.55) / 0.25) ** 2)
+    data = amplitude * wavelet
+    noise = 1.0e-4 * np.sin(2.0 * np.pi * 4.5 * t)
+
+    recovered = _run_multitaper_engine(engine_class, pf, wavelet, data, noise)
+
+    assert recovered[0] == pytest.approx(amplitude, abs=2.0e-3)
+    assert np.sign(recovered[0]) == np.sign(amplitude)
+    assert np.max(np.abs(recovered)) == pytest.approx(
+        abs(amplitude), rel=1.0e-2
+    )
+
+
+@pytest.mark.parametrize(
+    "engine_class", [MultiTaperXcorDecon, MultiTaperSpecDivDecon]
+)
+def test_multitaper_process_and_actual_output_are_idempotent(tmp_path, engine_class):
+    n = 160
+    pf = _write_multitaper_pf(
+        tmp_path,
+        window_start=0.0,
+        window_end=float(n - 1) * 0.05,
+        nfft=512,
+        damping=0.05,
+    )
+    t = np.arange(n) * 0.05
+    wavelet = np.exp(-0.5 * ((t - 0.8) / 0.15) ** 2)
+    model = np.zeros(n)
+    model[[0, 37, 113]] = [1.0, -0.35, 0.22]
+    data = np.convolve(wavelet, model, mode="full")[:n]
+    noise = 0.01 * np.sin(2.0 * np.pi * 3.7 * t)
+
+    engine = engine_class(pf)
+    engine.load(_double_vector(wavelet), _double_vector(data), _double_vector(noise))
+    engine.process()
+    first_result = np.asarray(engine.getresult(), dtype=np.float64)
+    first_actual = np.asarray(engine.actual_output().data, dtype=np.float64)
+    second_actual = np.asarray(engine.actual_output().data, dtype=np.float64)
+    engine.process()
+    second_result = np.asarray(engine.getresult(), dtype=np.float64)
+
+    assert np.allclose(first_actual, second_actual, atol=1.0e-12)
+    assert np.allclose(first_result, second_result, atol=1.0e-12)
+
+
+def _run_multitaper_engine(engine_class, pf, wavelet, data, noise):
+    engine = engine_class(pf)
+    engine.load(_double_vector(wavelet), _double_vector(data), _double_vector(noise))
+    engine.process()
+    return np.asarray(engine.getresult(), dtype=np.float64)
