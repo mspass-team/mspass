@@ -142,7 +142,7 @@ def test_RFdecon():
     seis0.t0 = -35.0
     # this is a list of algorithms supported by the RFdecon function
     # They can be enabled by a parameter on the function or by
-    # passing an instance of the engine.  Ww test both below
+    # passing an instance of the engine.  We test both below
     alglist = [
         "LeastSquares",
         "TimeDomainLeastSquares",
@@ -150,11 +150,11 @@ def test_RFdecon():
         "MultiTaperPowerSpecDiv",
         "MultiTaperPowerXcor",
     ]
-    # first test case with where the operator is instantiated on each call
+    # first test case where the operator is instantiated on each call
     # to RFdecon
     for alg in alglist:
         d = Seismogram(seis0)
-        # first verify it works without returnin actual and ideal wavelets
+        # first verify it works without returning actual and ideal wavelets
         d_decon = RFdecon(d, alg=alg)
         assert d_decon.live
         print(alg, d_decon.npts)
@@ -471,6 +471,22 @@ noise_window_end -5.0
         (
             "MultiTaperPowerSpecDiv",
             "MultiTaperPowerSpecDiv 5\n",
+            "defined but is not an &Arr",
+        ),
+        (
+            "MultiTaperPowerXcor",
+            """MultiTaperPowerXcor &Tbl{
+bad
+}
+""",
+            "defined but is not an &Arr",
+        ),
+        (
+            "MultiTaperPowerSpecDiv",
+            """MultiTaperPowerSpecDiv &Tbl{
+bad
+}
+""",
             "defined but is not an &Arr",
         ),
     ],

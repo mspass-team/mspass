@@ -597,9 +597,12 @@ int TimeDomainGIDDecon::loadnoise(const PowerSpectrum &noise_spectrum_in) {
     throw MsPASSError("TimeDomainGIDDecon::loadnoise: noise PowerSpectrum has "
                       "nonpositive frequency spacing",
                       ErrorSeverity::Invalid);
-  if (noise_spectrum_in.f0() > 0.0)
+  const double fmax =
+      noise_spectrum_in.f0() +
+      noise_spectrum_in.df() * static_cast<double>(noise_spectrum_in.nf() - 1);
+  if (noise_spectrum_in.f0() > 0.0 || fmax < 0.0)
     throw MsPASSError("TimeDomainGIDDecon::loadnoise: noise PowerSpectrum must "
-                      "include DC or start at a nonpositive frequency",
+                      "cover DC frequency",
                       ErrorSeverity::Invalid);
   external_noise_spectrum = noise_spectrum_in;
   external_noise_spectrum_loaded = true;

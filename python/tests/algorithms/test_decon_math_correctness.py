@@ -652,6 +652,9 @@ def test_noise_stable_rejects_invalid_power_spectrum(tmp_path):
     missing_dc_spectrum = PowerSpectrum(
         Metadata(), _double_vector([1.0, 1.0]), 1.0, "missing_dc", 1.0, 1.0, 2
     )
+    below_dc_spectrum = PowerSpectrum(
+        Metadata(), _double_vector([1.0, 1.0]), 1.0, "below_dc", -10.0, 1.0, 2
+    )
 
     with pytest.raises(MsPASSError, match="noise vector cannot be empty"):
         engine.loadnoise(_double_vector([]))
@@ -661,8 +664,10 @@ def test_noise_stable_rejects_invalid_power_spectrum(tmp_path):
         engine.loadnoise(live_empty_spectrum)
     with pytest.raises(MsPASSError, match="at least two frequency bins"):
         engine.loadnoise(one_bin_spectrum)
-    with pytest.raises(MsPASSError, match="include DC"):
+    with pytest.raises(MsPASSError, match="cover DC"):
         engine.loadnoise(missing_dc_spectrum)
+    with pytest.raises(MsPASSError, match="cover DC"):
+        engine.loadnoise(below_dc_spectrum)
 
 
 def _run_multitaper_engine(engine_class, pf, wavelet, data, noise):

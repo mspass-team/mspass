@@ -69,7 +69,7 @@ def _as_gid_timeseries(x, dt, t0, argname):
 def _get_pf_branch_with_legacy_fallback(pfhandle, preferred, legacy):
     if preferred in pfhandle.arr_keys():
         return Metadata(pfhandle.get_branch(preferred))
-    if pfhandle.is_defined(preferred):
+    if preferred in pfhandle.tbl_keys() or pfhandle.is_defined(preferred):
         raise MsPASSError(
             f"{preferred} is defined but is not an &Arr parameter branch",
             ErrorSeverity.Invalid,
@@ -742,7 +742,7 @@ def RFdecon(
             processor = engine
         else:
             message = (
-                "RFdecon:   illegal type for define by engine argment = {}\n".format(
+                "RFdecon:   illegal type for defined engine argument = {}\n".format(
                     type(engine)
                 )
             )
