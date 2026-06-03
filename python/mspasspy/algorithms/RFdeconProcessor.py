@@ -685,11 +685,8 @@ def RFdecon(
         When true nothing is calculated and the original data are returned.
         Note this functionality is implemented via the mspass_func_wrapper decorator.
 
-    :return:  Normally returns Seismogram object containing the RF estimates.
-        The orientations are always the same as the input.  If `return_wavelets` is set
-        True returns a tuple with three components:  0 - `Seismogram` returned as with
-        default, 1 - actual output/resolution kernel `TimeSeries`, 2 - output shaping wavelet
-        stored as a `TimeSeries` object.
+    :return:  Returns a Seismogram object containing the RF estimates.
+        The orientations are always the same as the input.
     """
 
     if not isinstance(d, Seismogram):

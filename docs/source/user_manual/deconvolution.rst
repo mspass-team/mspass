@@ -152,6 +152,18 @@ wavelet used to represent sparse spikes.
     and then forms the same untapered-phase inverse.  The two methods should be
     close on clean data; large differences normally indicate instability or a
     configuration problem.  Both return a linear-convolution lag window.
+    ``MultiTaperSpecDivDecon`` still exposes legacy ``all_inverse_wavelets``,
+    ``all_rfestimates``, and ``all_actual_outputs`` methods, but in the current
+    implementation those compatibility methods normally contain one combined
+    multitaper estimate rather than one independent product per taper.
+
+    .. warning::
+
+       On the generalized-iterative-decon branch, ``damping_factor`` for these
+       multitaper operators is interpreted in the power-domain denominator
+       described above.  Parameter files tuned against older behavior may need
+       retuning; values should not be assumed numerically equivalent to the
+       historical tapered-numerator implementation.
 
 ``NoiseStableDecon``
     Noise-aware stable scalar inverse used by the ``ns_gid`` GID mode and also

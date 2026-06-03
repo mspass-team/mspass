@@ -280,7 +280,10 @@ PYBIND11_MODULE(deconvolution, m) {
       }
     ))
   ;
-  py::class_<MultiTaperSpecDivDecon,ScalarDecon>(m,"MultiTaperSpecDivDecon","Water level frequency domain operator")
+  py::class_<MultiTaperSpecDivDecon,ScalarDecon>(
+    m,
+    "MultiTaperSpecDivDecon",
+    "Multitaper power-stabilized spectral-division deconvolution operator")
     .def(py::init<const Metadata>())
     .def("changeparameter",&MultiTaperSpecDivDecon::changeparameter,"Change operator parameters")
     .def("process",&MultiTaperSpecDivDecon::process,
@@ -296,6 +299,7 @@ PYBIND11_MODULE(deconvolution, m) {
     .def("QCMetrics",&MultiTaperSpecDivDecon::QCMetrics,"Return QC metrics")
     .def("get_taperlen",&MultiTaperSpecDivDecon::get_taperlen,"Get length of the Slepian tapers used by the operator")
     .def("get_number_tapers",&MultiTaperSpecDivDecon::get_number_tapers,"Get number of Slepian tapers used by the operator")
+    .def("get_number_outputs",&MultiTaperSpecDivDecon::get_number_outputs,"Get number of combined output products retained by the operator")
     .def("get_time_bandwidth_product",&MultiTaperSpecDivDecon::get_time_bandwidth_product,"Get time bandwidt product of Slepian tapers used by the operator")
     .def(py::pickle(
       [](const MultiTaperSpecDivDecon &self) {
@@ -326,7 +330,10 @@ PYBIND11_MODULE(deconvolution, m) {
     .def("get_shift",&FFTDeconOperator::get_shift,"Get current reference time shift")
     .def("df",&FFTDeconOperator::df,"Get frequency bin size")
   ;
-  py::class_<MultiTaperXcorDecon,ScalarDecon>(m,"MultiTaperXcorDecon","Water level frequency domain operator")
+  py::class_<MultiTaperXcorDecon,ScalarDecon>(
+    m,
+    "MultiTaperXcorDecon",
+    "Multitaper source-power-stabilized deconvolution operator")
     .def(py::init<const Metadata>())
     .def("changeparameter",&MultiTaperXcorDecon::changeparameter,"Change operator parameters")
     .def("process",&MultiTaperXcorDecon::process,

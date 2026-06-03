@@ -27,38 +27,32 @@ public:
   void changeparameter(const mspass::utility::Metadata &md) {
     this->read_metadata(md, true);
   };
-  /*! \brief Load a section of preevent noise.
+  /*! \brief Load a section of pre-event noise.
 
-  The multitaper algorithm requires a preevent noise it uses to compute a
-  frequency dependent regularization.   This method loads the noise data
-  but does not initiate a computation.  It should be called before calling
-  the ScalarDecon::load method which will initiate a computation of the
-  result. */
+  The multitaper algorithm uses pre-event noise to compute frequency-dependent
+  power-domain regularization.  This method loads the noise data but does not
+  initiate computation. */
   int loadnoise(const std::vector<double> &noise);
-  /*! \brief load all data components.
+  /*! \brief Load wavelet, data, and noise vectors.
 
-  This method should be called immediately befor process.  It loads the
-  wavelet and data to which teh deconvolution is to be applied.
-
-  \param w is expected to contain the wavelet data
-  \paarm e is the data to be deconvolved with w.
-  \param n is the vector of noise used for regularization in this method..*/
+  \param w wavelet/source data
+  \param d data to be deconvolved with w
+  \param n noise vector used for regularization */
   int load(const std::vector<double> &w, const std::vector<double> &d,
            const std::vector<double> &n);
   void process();
-  /*! \brif Return the actual output of the deconvolution operator.
+  /*! \brief Return the actual output of the deconvolution operator.
 
-  The actual output is defined as w^-1*w and is compable to resolution
-  kernels in linear inverse theory.   Although not required we would
-  normally expect this function to be peaked at 0.   Offsets from 0
-  would imply a bias. */
+  The actual output/resolution kernel is defined as G(f)W0(f), where G is the
+  combined multitaper-power-stabilized inverse and W0 is the untapered wavelet
+  spectrum. */
   mspass::seismic::CoreTimeSeries actual_output();
-  /*! \brief Return a FIR respresentation of the inverse filter.
+  /*! \brief Return a FIR representation of the inverse filter.
 
   An inverse filter has an impulse response.  For some wavelets this
-  can be respresented by a FIR filter with finite numbers of coefficients.
-  Since this is a Fourier method the best we can do is return the inverse
-  fft of the regularized operator.   The output usually needs to be
+  can be represented by a FIR filter with finite numbers of coefficients.
+  Since this is a Fourier method this method returns the inverse FFT of the
+  regularized operator.  The output usually needs to be
   phase shifted to be most useful.   For typical seismic source wavelets
   that are approximately minimum phase the shift can be small, but for
   zero phase input it should be approximately half the window size.
@@ -79,19 +73,26 @@ public:
 
   */
   mspass::seismic::CoreTimeSeries inverse_wavelet(const double t0parent = 0.0);
-  /*! \brief Return default FIR represesentation of the inverse filter.
+  /*! \brief Return default FIR representation of the inverse filter.
 
   This is an overloaded version of the parameterized method.   It is
   equivalent to this->inverse_wavelet(0.0,0.0);
   */
   mspass::seismic::CoreTimeSeries inverse_wavelet();
-  /*! Return the ensemble for number of tapers inverse wavelets. */
+  /*! Return inverse wavelets retained for API compatibility.
+
+  The current implementation normally returns one combined multitaper inverse,
+  not independent per-taper inverse wavelets. */
   std::vector<mspass::seismic::CoreTimeSeries>
   all_inverse_wavelets(const double t0parent = 0.0);
-  /*! Return the ensemble of rf estimates */
+  /*! Return RF estimates retained for API compatibility.
+
+  The current implementation normally returns one combined RF estimate. */
   std::vector<mspass::seismic::CoreTimeSeries>
   all_rfestimates(const double t0parent = 0.0);
-  /*! Return the ensemble of actual outputs */
+  /*! Return actual outputs retained for API compatibility.
+
+  The current implementation normally returns one combined actual output. */
   std::vector<mspass::seismic::CoreTimeSeries>
   all_actual_outputs(const double t0parent = 0.0);
   /*! \brief Return appropriate quality measures.
@@ -101,6 +102,7 @@ public:
   mspass::utility::Metadata QCMetrics();
   int get_taperlen() { return taperlen; };
   int get_number_tapers() { return nseq; };
+  int get_number_outputs() { return winv_taper.size(); };
   double get_time_bandwidth_product() { return nw; };
 
 private:
@@ -109,19 +111,16 @@ private:
   int nseq; // number of tapers
   unsigned int taperlen;
   mspass::utility::dmatrix tapers;
-  /* With this algorithm we have to keep frequeny domain
-   * representations of the inverse for each taper.  The
-   * xcor version of this alorithm doesn't need that because
-   * the averaging is different. */
+  /* Frequency-domain representation of the combined inverse.  This vector is
+   * retained for compatibility with older APIs that returned per-taper
+   * products. */
   std::vector<ComplexArray> winv_taper;
   /* We also cache the actual output fft because the cost is
    * small compared to need to recompute it when requested.
    * This is a feature added for the GID method that adds
    * an inefficiency for straight application */
   std::vector<ComplexArray> ao_fft;
-  /* This contains the rf estimates from each of the tapers.   They
-  are averaged to produce final result, but we keep them for the
-  option of bootstrap errors. */
+  /* Combined RF estimate retained in a vector for API compatibility. */
   std::vector<ComplexArray> rfestimates;
   /* Private methods */
   /* Returns a tapered data in container of ComplexArray objects*/

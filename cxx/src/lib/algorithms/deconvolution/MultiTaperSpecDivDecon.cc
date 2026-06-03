@@ -76,13 +76,10 @@ int MultiTaperSpecDivDecon::read_metadata(const Metadata &md, bool refresh) {
     nseq = md.get_int("number_tapers");
     int nseqtest = static_cast<int>(2.0 * nw);
     if (nseq > nseqtest || (nseq < 1)) {
-      cerr << base_error
-           << "(WARNING) Illegal value for number_tapers parameter=" << nseq
-           << endl
-           << "Resetting to maximum of 2*(time_bandwidth_product)=" << nseqtest
-           << endl;
-      nseq = nseqtest;
-      cerr << nseq << endl;
+      throw MsPASSError(base_error +
+                            "number_tapers must be between 1 and "
+                            "2*time_bandwidth_product",
+                        ErrorSeverity::Invalid);
     }
     int seql = nseq - 1;
     /* taperlen must be less than or equal nfft */
@@ -129,6 +126,10 @@ int MultiTaperSpecDivDecon::read_metadata(const Metadata &md, bool refresh) {
   };
 }
 int MultiTaperSpecDivDecon::loadnoise(const vector<double> &n) {
+  const string base_error("MultiTaperSpecDivDecon::loadnoise: ");
+  if (n.empty())
+    throw MsPASSError(base_error + "noise vector cannot be empty",
+                      ErrorSeverity::Invalid);
   /* For this implementation we insist n be the same length
    * as d (assumed taperlen) to avoid constant recomputing slepians. */
   if (n.size() == taperlen)
@@ -195,7 +196,10 @@ MultiTaperSpecDivDecon::taper_data(const vector<double> &signal) {
     /* This will assure part of vector between end of
      * data and nfft is zero padded */
     std::fill(work.begin(), work.end(), 0.0);
-    for (j = 0; j < this->tapers.columns(); ++j) {
+    const int ncopy =
+        std::min(static_cast<int>(signal.size()),
+                 static_cast<int>(this->tapers.columns()));
+    for (j = 0; j < ncopy; ++j) {
       work[j] = tapers(i, j) * signal[j];
     }
     /* Force zero pads always */
@@ -233,28 +237,26 @@ void MultiTaperSpecDivDecon::process() {
     for (i = 0; i < nseq; ++i) {
       gsl_fft_complex_forward(ndata[i].ptr(), 1, nfft, wavetable, workspace);
     }
-    vector<vector<double>> tapered_source_power(nseq,
-                                                vector<double>(nfft, 0.0));
-    vector<vector<double>> tapered_noise_power(nseq, vector<double>(nfft, 0.0));
     double max_source_power(0.0);
     for (i = 0; i < nseq; ++i) {
       for (j = 0; j < nfft; ++j) {
         double *zw = wdata[i].ptr(j);
         double swp = (*zw) * (*zw) + (*(zw + 1)) * (*(zw + 1));
-        tapered_source_power[i][j] = swp;
         if (swp > max_source_power)
           max_source_power = swp;
-        double *zn = ndata[i].ptr(j);
-        tapered_noise_power[i][j] =
-            (*zn) * (*zn) + (*(zn + 1)) * (*(zn + 1));
       }
     }
     const double relative_floor = max(DBL_EPSILON, 1.0e-12 * max_source_power);
     vector<double> source_power_denominator(nfft, 0.0);
-    for (j = 0; j < nfft; ++j) {
-      for (i = 0; i < nseq; ++i) {
-        double regularized_power = max(tapered_source_power[i][j],
-                                       damp * tapered_noise_power[i][j]);
+    for (i = 0; i < nseq; ++i) {
+      for (j = 0; j < nfft; ++j) {
+        double *zw = wdata[i].ptr(j);
+        const double source_power =
+            (*zw) * (*zw) + (*(zw + 1)) * (*(zw + 1));
+        double *zn = ndata[i].ptr(j);
+        const double noise_power =
+            (*zn) * (*zn) + (*(zn + 1)) * (*(zn + 1));
+        double regularized_power = max(source_power, damp * noise_power);
         regularized_power = max(regularized_power, relative_floor);
         source_power_denominator[j] +=
             regularized_power / static_cast<double>(nseq);

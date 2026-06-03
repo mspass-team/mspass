@@ -174,6 +174,26 @@ def test_FrequencyDomainGIDDecon_rejects_empty_external_noise(tmp_path):
         engine.loadnoise(empty_noise)
 
 
+def test_FrequencyDomainGIDDecon_rejects_dead_external_wavelet_and_noise(tmp_path):
+    from mspasspy.ccore.seismic import TimeSeries
+
+    pf = _ns_gid_pf(
+        tmp_path,
+        "FrequencyDomainGIDDecon.pf",
+        "frequency_domain_gid_deconvolution",
+    )
+    engine = FrequencyDomainGIDDecon(pf)
+    dead_wavelet = TimeSeries(8)
+    dead_wavelet.kill()
+    dead_noise = TimeSeries(8)
+    dead_noise.kill()
+
+    with pytest.raises(MsPASSError, match="external wavelet is marked dead"):
+        engine.loadwavelet(dead_wavelet)
+    with pytest.raises(MsPASSError, match="external noise is marked dead"):
+        engine.loadnoise(dead_noise)
+
+
 @pytest.mark.parametrize("mode", ["least_square", "water_level", "multi_taper", "cnr"])
 def test_FrequencyDomainGIDDecon_inverse_modes_are_valid(tmp_path, mode):
     data = _make_single_spike_convolution_data()

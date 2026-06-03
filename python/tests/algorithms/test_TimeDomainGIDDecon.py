@@ -259,6 +259,22 @@ def test_TimeDomainGIDDecon_rejects_empty_external_noise(tmp_path):
         engine.loadnoise(empty_noise)
 
 
+def test_TimeDomainGIDDecon_rejects_dead_external_wavelet_and_noise(tmp_path):
+    pf = _ns_gid_pf(
+        tmp_path, "TimeDomainGIDDecon.pf", "time_domain_gid_deconvolution"
+    )
+    engine = TimeDomainGIDDecon(pf)
+    dead_wavelet = TimeSeries(8)
+    dead_wavelet.kill()
+    dead_noise = TimeSeries(8)
+    dead_noise.kill()
+
+    with pytest.raises(MsPASSError, match="external wavelet is marked dead"):
+        engine.loadwavelet(dead_wavelet)
+    with pytest.raises(MsPASSError, match="external noise is marked dead"):
+        engine.loadnoise(dead_noise)
+
+
 def test_TimeDomainNSGID_rejects_pure_noise(tmp_path):
     data, wavelet, _ = _make_external_wavelet_3c_data(noise_level=0.0)
     rng = np.random.default_rng(314)

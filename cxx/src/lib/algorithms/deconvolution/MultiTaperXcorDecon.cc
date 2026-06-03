@@ -75,13 +75,10 @@ int MultiTaperXcorDecon::read_metadata(const Metadata &md, bool refresh) {
     nseq = md.get_int("number_tapers");
     int nseqtest = static_cast<int>(2.0 * nw);
     if (nseq > nseqtest || (nseq < 1)) {
-      cerr << base_error
-           << "(WARNING) Illegal value for number_of tapers parameter=" << nseq
-           << endl
-           << "Resetting to maximum of 2*(time_bandwidth_product)=" << nseqtest
-           << endl;
-      nseq = nseqtest;
-      cerr << nseq << endl;
+      throw MsPASSError(base_error +
+                            "number_tapers must be between 1 and "
+                            "2*time_bandwidth_product",
+                        ErrorSeverity::Invalid);
     }
     int seql = nseq - 1;
     /* taperlen must be less than or equal nfft */
@@ -129,6 +126,10 @@ int MultiTaperXcorDecon::read_metadata(const Metadata &md, bool refresh) {
   };
 }
 int MultiTaperXcorDecon::loadnoise(const vector<double> &n) {
+  const string base_error("MultiTaperXcorDecon::loadnoise: ");
+  if (n.empty())
+    throw MsPASSError(base_error + "noise vector cannot be empty",
+                      ErrorSeverity::Invalid);
   /* For this implementation we insist n be the same length
    * as d (assumed taperlen) to avoid constant recomputing slepians. */
   if (n.size() == taperlen)
@@ -191,7 +192,10 @@ MultiTaperXcorDecon::taper_data(const vector<double> &signal) {
     /* This will assure part of vector between end of
      * data and nfft is zero padded */
     std::fill(work.begin(), work.end(), 0.0);
-    for (j = 0; j < tapers.columns(); ++j) {
+    const int ncopy =
+        std::min(static_cast<int>(signal.size()),
+                 static_cast<int>(this->tapers.columns()));
+    for (j = 0; j < ncopy; ++j) {
       work[j] = tapers(i, j) * signal[j];
     }
     /* Force zero pads always */

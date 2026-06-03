@@ -3,6 +3,7 @@
 
 import numpy as np
 import pytest
+from scipy.signal import windows
 
 from mspasspy.ccore.algorithms.deconvolution import (
     DoubleVector,
@@ -336,18 +337,59 @@ def test_time_domain_least_squares_regularizes_ill_conditioned_problem(tmp_path)
     "engine_class", [MultiTaperXcorDecon, MultiTaperSpecDivDecon]
 )
 def test_multitaper_rejects_zero_lag_outside_output_window(tmp_path, engine_class):
-    pf = _write_multitaper_pf(tmp_path)
-    wavelet = np.zeros(200)
+    pf = _write_multitaper_pf(tmp_path, window_start=-11.0, window_end=-1.0)
+    wavelet = np.zeros(201)
     wavelet[0] = 1.0
-    data = np.zeros(200)
+    data = np.zeros(201)
     data[5] = 1.0
-    noise = 0.01 * np.ones(200)
+    noise = 0.01 * np.ones(201)
 
     engine = engine_class(pf)
     engine.load(_double_vector(wavelet), _double_vector(data), _double_vector(noise))
 
     with pytest.raises(MsPASSError, match="zero-lag sample"):
         engine.process()
+
+
+@pytest.mark.parametrize(
+    "engine_class", [MultiTaperXcorDecon, MultiTaperSpecDivDecon]
+)
+def test_multitaper_rejects_empty_noise_vector(tmp_path, engine_class):
+    n = 64
+    pf = _write_multitaper_pf(
+        tmp_path,
+        window_start=0.0,
+        window_end=float(n - 1) * 0.05,
+        nfft=256,
+    )
+    engine = engine_class(pf)
+
+    with pytest.raises(MsPASSError, match="noise vector cannot be empty"):
+        engine.loadnoise(_double_vector([]))
+
+
+@pytest.mark.parametrize(
+    "engine_class", [MultiTaperXcorDecon, MultiTaperSpecDivDecon]
+)
+def test_multitaper_safely_pads_vectors_shorter_than_taper_length(
+    tmp_path, engine_class
+):
+    pf = _write_multitaper_pf(
+        tmp_path,
+        window_start=0.0,
+        window_end=5.0,
+        nfft=256,
+    )
+    wavelet = np.ones(16)
+    data = np.ones(16)
+    noise = np.ones(101)
+    engine = engine_class(pf)
+    engine.load(_double_vector(wavelet), _double_vector(data), _double_vector(noise))
+    engine.process()
+    recovered = np.asarray(engine.getresult(), dtype=np.float64)
+
+    assert recovered.size == wavelet.size
+    assert np.isfinite(recovered).all()
 
 
 @pytest.mark.parametrize(
@@ -417,3 +459,112 @@ def _run_multitaper_engine(engine_class, pf, wavelet, data, noise):
     engine.load(_double_vector(wavelet), _double_vector(data), _double_vector(noise))
     engine.process()
     return np.asarray(engine.getresult(), dtype=np.float64)
+
+
+def _extract_lag_window(buffer, output_length, sample_shift):
+    return np.concatenate(
+        [buffer[-sample_shift:] if sample_shift else np.array([]), buffer]
+    )[:output_length]
+
+
+def _multitaper_reference(
+    method, wavelet, data, noise, *, nfft, nw=2.5, nseq=4, damping=0.1, dt=0.05, t0=0.0
+):
+    tapers = windows.dpss(len(wavelet), nw, Kmax=nseq, sym=False, norm=2)
+    W0 = np.fft.fft(np.pad(wavelet, (0, nfft - len(wavelet))))
+    D0 = np.fft.fft(np.pad(data, (0, nfft - len(data))))
+    Wk = np.asarray(
+        [np.fft.fft(np.pad(taper * wavelet, (0, nfft - len(wavelet)))) for taper in tapers]
+    )
+    Nk = np.asarray(
+        [np.fft.fft(np.pad(taper * noise, (0, nfft - len(noise)))) for taper in tapers]
+    )
+    source_power = np.abs(Wk) ** 2
+    noise_power = np.abs(Nk) ** 2
+    relative_floor = max(np.finfo(float).eps, 1.0e-12 * float(np.max(source_power)))
+    if method == "xcor":
+        den = np.mean(source_power, axis=0) + damping * np.mean(noise_power, axis=0)
+        den += relative_floor
+    elif method == "specdiv":
+        den = np.mean(
+            np.maximum.reduce(
+                [
+                    source_power,
+                    damping * noise_power,
+                    np.full_like(source_power, relative_floor),
+                ]
+            ),
+            axis=0,
+        )
+    else:
+        raise ValueError(method)
+    G = np.conj(W0) / den
+    ao = np.fft.ifft(G * W0).real
+    sample_shift = int(round(-t0 / dt))
+    ao_lag = _extract_lag_window(ao, len(data), sample_shift)
+    peak = ao_lag[sample_shift]
+    rf = np.fft.ifft((G / peak) * D0).real
+    return _extract_lag_window(rf, len(data), sample_shift)
+
+
+@pytest.mark.parametrize(
+    "engine_class,method",
+    [(MultiTaperXcorDecon, "xcor"), (MultiTaperSpecDivDecon, "specdiv")],
+)
+def test_multitaper_matches_closed_form_hybrid_reference(tmp_path, engine_class, method):
+    n = 192
+    nfft = 512
+    damping = 0.07
+    pf = _write_multitaper_pf(
+        tmp_path,
+        window_start=0.0,
+        window_end=float(n - 1) * 0.05,
+        nfft=nfft,
+        damping=damping,
+    )
+    t = np.arange(n) * 0.05
+    wavelet = np.exp(-0.5 * ((t - 1.0) / 0.16) ** 2)
+    wavelet -= 0.25 * np.exp(-0.5 * ((t - 1.45) / 0.24) ** 2)
+    model = np.zeros(n)
+    model[[0, 41, 129]] = [1.0, -0.35, 0.22]
+    data = np.convolve(wavelet, model, mode="full")[:n]
+    noise = 0.01 * np.sin(2.0 * np.pi * 1.7 * t) + 0.004 * np.cos(2.0 * np.pi * 5.2 * t)
+
+    cpp = _run_multitaper_engine(engine_class, pf, wavelet, data, noise)
+    ref = _multitaper_reference(
+        method, wavelet, data, noise, nfft=nfft, damping=damping, dt=0.05, t0=0.0
+    )
+
+    assert np.corrcoef(cpp, ref)[0, 1] > 0.995
+    assert np.max(np.abs(cpp - ref)) < 0.08 * np.max(np.abs(ref))
+
+
+@pytest.mark.parametrize(
+    "engine_class", [MultiTaperXcorDecon, MultiTaperSpecDivDecon]
+)
+def test_multitaper_recovers_late_sparse_arrivals_without_taper_phase_bias(
+    tmp_path, engine_class
+):
+    n = 260
+    pf = _write_multitaper_pf(
+        tmp_path,
+        window_start=0.0,
+        window_end=float(n - 1) * 0.05,
+        nfft=1024,
+        damping=0.02,
+    )
+    t = np.arange(n) * 0.05
+    wavelet = np.exp(-0.5 * ((t - 1.2) / 0.18) ** 2)
+    wavelet += 0.2 * np.exp(-0.5 * ((t - 1.85) / 0.25) ** 2)
+    model = np.zeros(n)
+    model[[0, 80, 210]] = [1.0, -0.4, 0.25]
+    data = np.convolve(wavelet, model, mode="full")[:n]
+    noise = 0.002 * np.sin(2.0 * np.pi * 2.1 * t)
+
+    recovered = _run_multitaper_engine(engine_class, pf, wavelet, data, noise)
+
+    for idx, amp in zip([0, 80, 210], [1.0, -0.4, 0.25]):
+        local = recovered[max(0, idx - 2) : min(n, idx + 3)]
+        peak = local[np.argmax(np.abs(local))]
+        assert np.sign(peak) == np.sign(amp)
+        assert abs(peak) > 0.4 * abs(amp)

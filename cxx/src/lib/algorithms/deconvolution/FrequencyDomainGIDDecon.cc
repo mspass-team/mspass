@@ -338,6 +338,10 @@ int FrequencyDomainGIDDecon::loadwavelet(const TimeSeries &wavelet) {
                       "wavelets are disabled by "
                       "ns_gid_external_wavelet_allowed",
                       ErrorSeverity::Invalid);
+  if (wavelet.dead())
+    throw MsPASSError("FrequencyDomainGIDDecon::loadwavelet: external wavelet "
+                      "is marked dead",
+                      ErrorSeverity::Invalid);
   if (wavelet.npts() <= 0)
     throw MsPASSError("FrequencyDomainGIDDecon::loadwavelet: external wavelet "
                       "is empty",
@@ -353,6 +357,10 @@ int FrequencyDomainGIDDecon::loadwavelet(const CoreTimeSeries &wavelet) {
 }
 
 int FrequencyDomainGIDDecon::loadnoise(const TimeSeries &noise_in) {
+  if (noise_in.dead())
+    throw MsPASSError("FrequencyDomainGIDDecon::loadnoise: external noise is "
+                      "marked dead",
+                      ErrorSeverity::Invalid);
   if (noise_in.npts() <= 0)
     throw MsPASSError("FrequencyDomainGIDDecon::loadnoise: external noise is "
                       "empty",
