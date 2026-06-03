@@ -78,6 +78,8 @@ double PowerSpectrum::power(const double f) const {
                       ErrorSeverity::Invalid);
   int filow;
   filow = static_cast<int>((f - this->f0val) / this->dfval);
+  if (filow < 0)
+    return 0.0;
   /* Force 0 at Nyquist and above - this allows simple interpolation in else */
   if (filow >= (spectrum.size() - 1))
     return 0.0;

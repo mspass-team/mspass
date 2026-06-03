@@ -57,13 +57,13 @@ def test_RFdeconProcessor():
     alglist = [
         "MultiTaperPowerXcor",
         "MultiTaperPowerSpecDiv",
-        "MultiTaperXcor",
-        "MultiTaperSpecDiv",
+        "MultiTaperPowerXcor",
+        "MultiTaperPowerSpecDiv",
         "LeastSquares",
         "TimeDomainLeastSquares",
         "WaterLevel",
     ]
-    decon_processor = RFdeconProcessor(alg="MultiTaperXcor")
+    decon_processor = RFdeconProcessor(alg="MultiTaperPowerXcor")
 
     np.random.seed(20240602)
     seis_data0 = get_live_seismogram()
@@ -105,8 +105,8 @@ def test_RFdeconProcessor():
         elif alg in (
             "MultiTaperPowerXcor",
             "MultiTaperPowerSpecDiv",
-            "MultiTaperXcor",
-            "MultiTaperSpecDiv",
+            "MultiTaperPowerXcor",
+            "MultiTaperPowerSpecDiv",
         ):
             # Multitaper operators return effective multitaper resolution
             # kernels, which need not match the ideal shaping wavelet as
@@ -151,8 +151,8 @@ def test_RFdecon():
         "LeastSquares",
         "TimeDomainLeastSquares",
         "WaterLevel",
-        "MultiTaperSpecDiv",
-        "MultiTaperXcor",
+        "MultiTaperPowerSpecDiv",
+        "MultiTaperPowerXcor",
     ]
     # first test case with where the operator is instantiated on each call
     # to RFdecon
@@ -368,20 +368,33 @@ def test_RFdecon_error_handlers():
     assert dret.dead()
     assert dret.elog.size() > 0
     # slight variant with invalid noise window but valid data window
-    # requires an algorithm that needs a noise window so use MultiTaperXcorDecon
+    # requires an algorithm that needs a noise window so use multitaper decon
     d = Seismogram(seis0)
     # assumes default data window start is -5
     d.t0 = -1.0
-    dret = RFdecon(d, alg="MultiTaperXcor")
+    dret = RFdecon(d, alg="MultiTaperPowerXcor")
     assert dret.dead()
     assert dret.elog.size() > 0
     # minor variant passing engine
-    engine = RFdeconProcessor(alg="MultiTaperXcor")
+    engine = RFdeconProcessor(alg="MultiTaperPowerXcor")
     dret = RFdecon(d, engine=engine)
     assert dret.dead()
     assert dret.elog.size() > 0
     # this must be cleared to keep later pytest scripts from failing
     os.environ.pop("PFPATH", None)
+
+
+@pytest.mark.parametrize(
+    "legacy_alg",
+    ["MultiTaperXcor", "MultiTaperSpecDiv"],
+)
+def test_RFdeconProcessor_multitaper_legacy_names_warn(legacy_alg):
+    os.environ["PFPATH"] = "./data/pf"
+    try:
+        with pytest.warns(DeprecationWarning, match="deprecated compatibility"):
+            RFdeconProcessor(alg=legacy_alg)
+    finally:
+        os.environ.pop("PFPATH", None)
 
 
 @pytest.mark.parametrize(
@@ -392,8 +405,6 @@ def test_RFdecon_error_handlers():
         ("WaterLevel", "RFdeconProcessor.pf"),
         ("MultiTaperPowerSpecDiv", "RFdeconProcessor.pf"),
         ("MultiTaperPowerXcor", "RFdeconProcessor.pf"),
-        ("MultiTaperSpecDiv", "RFdeconProcessor.pf"),
-        ("MultiTaperXcor", "RFdeconProcessor.pf"),
         ("GeneralizedIterative", "TimeDomainGIDDecon.pf"),
         ("FrequencyDomainGID", "FrequencyDomainGIDDecon.pf"),
     ],

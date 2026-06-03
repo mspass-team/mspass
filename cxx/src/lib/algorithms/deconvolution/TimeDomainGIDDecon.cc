@@ -127,7 +127,7 @@ TimeDomainGIDDecon::TimeDomainGIDDecon(const AntelopePf &mdtoplevel)
     this->ScalarDecon::changeparameter(mdgiter);
     this->shapingwavelet = ShapingWavelet(mdgiter, nfft);
     AntelopePf mdleaf;
-    /* We make sure the window parameters in each algorithm mactch what
+    /* We make sure the window parameters in each algorithm match what
     is set for this algorithm.  Abort if they are not consistent.  The
     test code is a bit repetitious but a necessary evil to allow the message
     to be clearer. */
@@ -179,7 +179,7 @@ TimeDomainGIDDecon::TimeDomainGIDDecon(const AntelopePf &mdtoplevel)
       te = mdleaf.get<double>("deconvolution_data_window_end");
       if ((ts != fftwin.start) || (te != fftwin.end)) {
         ss << base_error
-           << "mulittaper method specification of processing window is not"
+           << "multitaper method specification of processing window is not"
               " consistent with gid parameters"
            << endl
            << "multitaper parameters:  deconvolution_data_window_start=" << ts
@@ -189,8 +189,8 @@ TimeDomainGIDDecon::TimeDomainGIDDecon(const AntelopePf &mdtoplevel)
         throw MsPASSError(ss.str(), ErrorSeverity::Invalid);
       }
       /* Here we also have to test the noise parameters, but the gid
-      window can be different fromt that passed to the mulittaper method.
-      Hence we test only that the mulittaper noise window is within the bounds
+      window can be different from that passed to the multitaper method.
+      Hence we test only that the multitaper noise window is within the bounds
       of the gid noise window */
       n1 = static_cast<int>((fftwin.end - fftwin.start) / target_dt) + 1;
       n2 = static_cast<int>((nwin.end - nwin.start) / target_dt) + 1;
@@ -596,6 +596,10 @@ int TimeDomainGIDDecon::loadnoise(const PowerSpectrum &noise_spectrum_in) {
   if (noise_spectrum_in.df() <= 0.0)
     throw MsPASSError("TimeDomainGIDDecon::loadnoise: noise PowerSpectrum has "
                       "nonpositive frequency spacing",
+                      ErrorSeverity::Invalid);
+  if (noise_spectrum_in.f0() > 0.0)
+    throw MsPASSError("TimeDomainGIDDecon::loadnoise: noise PowerSpectrum must "
+                      "include DC or start at a nonpositive frequency",
                       ErrorSeverity::Invalid);
   external_noise_spectrum = noise_spectrum_in;
   external_noise_spectrum_loaded = true;

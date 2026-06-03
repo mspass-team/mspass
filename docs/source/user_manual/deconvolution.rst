@@ -126,7 +126,7 @@ wavelet used to represent sparse spikes.
     extracts the linear lag window.  Raising the floor improves stability at
     the cost of reduced resolution.
 
-``MultiTaperPowerXcorDecon`` and ``MultiTaperPowerSpecDivDecon``
+``MultiTaperPowerXcor`` and ``MultiTaperPowerSpecDiv``
     Multitaper frequency-domain operators.  Both use DPSS tapers to stabilize
     spectral estimates, but the final receiver-function estimate is produced
     by applying the inverse operator to the untapered, zero-padded data
@@ -144,18 +144,21 @@ wavelet used to represent sparse spikes.
        G(f) = \frac{\overline{W_0(f)}}{\operatorname{Den}_{mt}(f)},\quad
        RF(f)=G(f)D_0(f),\quad AO(f)=G(f)W_0(f).
 
-    ``MultiTaperPowerXcorDecon`` uses the mean multitaper source power plus a
+    ``MultiTaperPowerXcor`` uses the mean multitaper source power plus a
     damped mean multitaper noise power as ``Den_mt``.
-    ``MultiTaperPowerSpecDivDecon`` is the multitaper power-stabilized
+    ``MultiTaperPowerSpecDiv`` is the multitaper power-stabilized
     spectral-division variant: it regularizes each tapered source power by the
     corresponding noise power and a small relative floor, combines those
     powers, and then forms the same untapered-phase inverse.  The two methods
     should be close on clean data; large differences normally indicate
     instability or a configuration problem.  Both return a linear-convolution
-    lag window.  The old Python class names ``MultiTaperXcorDecon`` and
-    ``MultiTaperSpecDivDecon`` and RF processor algorithm names
+    lag window.  The C++/pybind classes are still registered as
+    ``MultiTaperXcorDecon`` and ``MultiTaperSpecDivDecon`` for ABI and pickle
+    compatibility; ``MultiTaperPowerXcorDecon`` and
+    ``MultiTaperPowerSpecDivDecon`` are Python module aliases to those classes,
+    not distinct runtime types.  The old RF processor algorithm names
     ``MultiTaperXcor`` and ``MultiTaperSpecDiv`` remain available as
-    deprecated compatibility aliases for these two power-stabilized operators.
+    deprecated compatibility aliases for the power-stabilized operators.
     ``MultiTaperSpecDivDecon`` still exposes legacy ``all_inverse_wavelets``,
     ``all_rfestimates``, and ``all_actual_outputs`` methods, but in the current
     implementation those compatibility methods normally contain one combined
@@ -165,8 +168,8 @@ wavelet used to represent sparse spikes.
 
        This is a migration point.  New code should use the explicit
        ``MultiTaperPowerXcor`` and ``MultiTaperPowerSpecDiv`` RF algorithm
-       names or the matching ``*Decon`` Python aliases.  ``damping_factor`` is
-       now interpreted in the power-domain denominator, and parameter files
+       names.  ``damping_factor`` is now interpreted in the power-domain
+       denominator, and parameter files
        tuned against older tapered-numerator behavior should be retuned and
        revalidated.  Values should not be assumed numerically equivalent to the
        historical Park-Levin-style implementation.

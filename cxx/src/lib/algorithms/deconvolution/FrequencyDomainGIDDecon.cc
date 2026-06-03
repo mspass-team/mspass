@@ -399,6 +399,11 @@ int FrequencyDomainGIDDecon::loadnoise(const PowerSpectrum &noise_spectrum_in) {
         "FrequencyDomainGIDDecon::loadnoise: noise PowerSpectrum has "
         "nonpositive frequency spacing",
         ErrorSeverity::Invalid);
+  if (noise_spectrum_in.f0() > 0.0)
+    throw MsPASSError(
+        "FrequencyDomainGIDDecon::loadnoise: noise PowerSpectrum must include "
+        "DC or start at a nonpositive frequency",
+        ErrorSeverity::Invalid);
   external_noise_spectrum = noise_spectrum_in;
   external_noise_spectrum_loaded = true;
   external_noise_loaded = false;

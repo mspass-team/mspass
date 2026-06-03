@@ -94,6 +94,7 @@ public:
 PYBIND11_MODULE(deconvolution, m) {
   m.attr("__name__") = "mspasspy.ccore.algorithms.deconvolution";
   m.doc() = "A submodule for deconvolution namespace of ccore.algorithms";
+  py::module_::import("mspasspy.ccore.seismic");
 
   /* Need this to support returns of std::vector in children of ScalarDecon*/
   py::bind_vector<std::vector<double>>(m, "DoubleVector");

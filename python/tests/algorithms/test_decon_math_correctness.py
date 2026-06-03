@@ -3,6 +3,8 @@
 
 import numpy as np
 import pytest
+import subprocess
+import sys
 from scipy.signal import windows
 
 from mspasspy.ccore.algorithms.deconvolution import (
@@ -16,7 +18,7 @@ from mspasspy.ccore.algorithms.deconvolution import (
     TimeDomainLeastSquareDecon,
     WaterLevelDecon,
 )
-from mspasspy.ccore.seismic import PowerSpectrum, _CoreTimeSeries  # noqa: F401
+from mspasspy.ccore.seismic import PowerSpectrum
 from mspasspy.ccore.utility import Metadata, MsPASSError, pfread
 
 
@@ -137,6 +139,27 @@ def _run_scalar_engine(engine_class, pf, wavelet, data):
 def test_multitaper_power_stabilized_aliases_are_exported():
     assert MultiTaperPowerXcorDecon is MultiTaperXcorDecon
     assert MultiTaperPowerSpecDivDecon is MultiTaperSpecDivDecon
+
+
+def test_deconvolution_binding_imports_diagnostic_return_types():
+    code = r"""
+from mspasspy.ccore.algorithms.deconvolution import DoubleVector, LeastSquareDecon
+from mspasspy.ccore.utility import Metadata
+md = Metadata()
+md["target_sample_interval"] = 1.0
+md["operator_nfft"] = 8
+md["deconvolution_data_window_start"] = 0.0
+md["deconvolution_data_window_end"] = 3.0
+md["damping_factor"] = 1.0e-3
+md["shaping_wavelet_dt"] = 1.0
+md["shaping_wavelet_type"] = "none"
+op = LeastSquareDecon(md)
+op.load(DoubleVector([1.0, 0.0, 0.0, 0.0]), DoubleVector([1.0, 0.0, 0.0, 0.0]))
+op.process()
+assert op.actual_output().npts > 0
+assert op.inverse_wavelet().npts > 0
+"""
+    subprocess.run([sys.executable, "-c", code], check=True)
 
 
 def _fft_linear_convolution(wavelet, model):
@@ -421,6 +444,36 @@ def test_multitaper_actual_output_requires_process(tmp_path, engine_class):
 @pytest.mark.parametrize(
     "engine_class", [MultiTaperXcorDecon, MultiTaperSpecDivDecon]
 )
+def test_multitaper_failed_process_does_not_leave_processed_state(
+    tmp_path, engine_class
+):
+    pf = _write_multitaper_pf(
+        tmp_path,
+        window_start=-5.0,
+        window_end=5.0,
+        nfft=256,
+    )
+    n = 24
+    t = np.arange(n) * 0.05
+    wavelet = np.exp(-0.5 * ((t - 0.4) / 0.08) ** 2)
+    data = wavelet.copy()
+    noise = 0.001 * np.sin(2.0 * np.pi * 3.0 * t)
+    engine = engine_class(pf)
+    engine.load(_double_vector(wavelet), _double_vector(data), _double_vector(noise))
+
+    with pytest.raises(MsPASSError, match="zero-lag sample"):
+        engine.process()
+
+    qc = dict(engine.QCMetrics())
+    assert qc["multitaper_processed"] is False
+    assert qc["multitaper_number_outputs"] == 0
+    with pytest.raises(MsPASSError, match="process must be called"):
+        engine.actual_output()
+
+
+@pytest.mark.parametrize(
+    "engine_class", [MultiTaperXcorDecon, MultiTaperSpecDivDecon]
+)
 def test_multitaper_safely_pads_vectors_shorter_than_taper_length(
     tmp_path, engine_class
 ):
@@ -596,6 +649,9 @@ def test_noise_stable_rejects_invalid_power_spectrum(tmp_path):
     one_bin_spectrum = PowerSpectrum(
         Metadata(), _double_vector([1.0]), 1.0, "one_bin", 0.0, 1.0, 1
     )
+    missing_dc_spectrum = PowerSpectrum(
+        Metadata(), _double_vector([1.0, 1.0]), 1.0, "missing_dc", 1.0, 1.0, 2
+    )
 
     with pytest.raises(MsPASSError, match="noise vector cannot be empty"):
         engine.loadnoise(_double_vector([]))
@@ -605,6 +661,8 @@ def test_noise_stable_rejects_invalid_power_spectrum(tmp_path):
         engine.loadnoise(live_empty_spectrum)
     with pytest.raises(MsPASSError, match="at least two frequency bins"):
         engine.loadnoise(one_bin_spectrum)
+    with pytest.raises(MsPASSError, match="include DC"):
+        engine.loadnoise(missing_dc_spectrum)
 
 
 def _run_multitaper_engine(engine_class, pf, wavelet, data, noise):

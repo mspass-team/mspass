@@ -69,10 +69,10 @@ def _as_gid_timeseries(x, dt, t0, argname):
 class RFdeconProcessor:
     """
     This class is a wrapper for the suite of receiver function deconvolution
-    methods we call scalar methods.  That is, the operation is reducable to
+    methods we call scalar methods.  That is, the operation is reducible to
     two time series:   wavelet signal and the data (TimeSeries) signal.
     That is in contrast to three component methods that always treat the
-    data as vector samples.   The class should be created as a global
+    data as vector samples.  The class should be created as a global
     processor object to be used in a spark job.  The design assumes the
     processor object will be passed as an argument to the RFdecon
     function that should appear as a function in a spark map call.
@@ -119,9 +119,9 @@ class RFdeconProcessor:
         if self.algorithm == "LeastSquares":
             # In this and elif blocks below we convert
             # return of get_branch to a Metadata container
-            # that is necessary because get_branch retuns the
+            # that is necessary because get_branch returns the
             # AntelopePf subclass and we want this to be a clean
-            # Metdata object.   Further, at present a pf will not
+            # Metadata object.  Further, at present a pf will not
             # serialize
             self.md = Metadata(pfhandle.get_branch("LeastSquare"))
             self.processor = LeastSquareDecon(self.md)
@@ -135,11 +135,13 @@ class RFdeconProcessor:
             self.processor = WaterLevelDecon(self.md)
             self.__uses_noise = False
         elif alg in ("MultiTaperPowerXcor", "MultiTaperXcor"):
-            branch_name = (
-                "MultiTaperPowerXcor"
-                if alg == "MultiTaperPowerXcor"
-                else "MultiTaperXcor"
-            )
+            if alg == "MultiTaperPowerXcor":
+                try:
+                    self.md = Metadata(pfhandle.get_branch("MultiTaperPowerXcor"))
+                except Exception:
+                    self.md = Metadata(pfhandle.get_branch("MultiTaperXcor"))
+            else:
+                self.md = Metadata(pfhandle.get_branch("MultiTaperXcor"))
             if alg == "MultiTaperXcor":
                 warnings.warn(
                     "MultiTaperXcor is a deprecated compatibility name for "
@@ -148,15 +150,18 @@ class RFdeconProcessor:
                     DeprecationWarning,
                     stacklevel=2,
                 )
-            self.md = Metadata(pfhandle.get_branch(branch_name))
             self.processor = MultiTaperXcorDecon(self.md)
             self.__uses_noise = True
         elif alg in ("MultiTaperPowerSpecDiv", "MultiTaperSpecDiv"):
-            branch_name = (
-                "MultiTaperPowerSpecDiv"
-                if alg == "MultiTaperPowerSpecDiv"
-                else "MultiTaperSpecDiv"
-            )
+            if alg == "MultiTaperPowerSpecDiv":
+                try:
+                    self.md = Metadata(
+                        pfhandle.get_branch("MultiTaperPowerSpecDiv")
+                    )
+                except Exception:
+                    self.md = Metadata(pfhandle.get_branch("MultiTaperSpecDiv"))
+            else:
+                self.md = Metadata(pfhandle.get_branch("MultiTaperSpecDiv"))
             if alg == "MultiTaperSpecDiv":
                 warnings.warn(
                     "MultiTaperSpecDiv is a deprecated compatibility name for "
@@ -165,7 +170,6 @@ class RFdeconProcessor:
                     DeprecationWarning,
                     stacklevel=2,
                 )
-            self.md = Metadata(pfhandle.get_branch(branch_name))
             self.processor = MultiTaperSpecDivDecon(self.md)
             self.__uses_noise = True
         elif alg in ("GeneralizedIterative", "TimeDomainGID"):

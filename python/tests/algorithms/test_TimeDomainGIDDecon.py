@@ -274,6 +274,9 @@ def test_TimeDomainGIDDecon_rejects_invalid_external_noise_spectrum(tmp_path):
     one_bin_spectrum = PowerSpectrum(
         Metadata(), DoubleVector([1.0]), 1.0, "one_bin", 0.0, 1.0, 1
     )
+    missing_dc_spectrum = PowerSpectrum(
+        Metadata(), DoubleVector([1.0, 1.0]), 1.0, "missing_dc", 1.0, 1.0, 2
+    )
 
     with pytest.raises(MsPASSError, match="PowerSpectrum is marked dead"):
         engine.loadnoise(dead_spectrum)
@@ -281,6 +284,8 @@ def test_TimeDomainGIDDecon_rejects_invalid_external_noise_spectrum(tmp_path):
         engine.loadnoise(live_empty_spectrum)
     with pytest.raises(MsPASSError, match="at least two frequency bins"):
         engine.loadnoise(one_bin_spectrum)
+    with pytest.raises(MsPASSError, match="include DC"):
+        engine.loadnoise(missing_dc_spectrum)
 
 
 def test_TimeDomainGIDDecon_rejects_dead_external_wavelet_and_noise(tmp_path):

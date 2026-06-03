@@ -675,8 +675,8 @@ def _apply_common_display_filter(results, dt, frequency=1.0):
         "LeastSquares",
         "TimeDomainLeastSquares",
         "WaterLevel",
-        "MultiTaperXcor",
-        "MultiTaperSpecDiv",
+        "MultiTaperPowerXcor",
+        "MultiTaperPowerSpecDiv",
     ],
 )
 def test_existing_scalar_decon_methods_recover_noise_free_direct_arrival(
@@ -700,8 +700,8 @@ def test_existing_decon_methods_are_consistent_for_noise_free_input():
         "LeastSquares": _scalar_rf_matrix("LeastSquares", data),
         "TimeDomainLeastSquares": _scalar_rf_matrix("TimeDomainLeastSquares", data),
         "WaterLevel": _scalar_rf_matrix("WaterLevel", data),
-        "MultiTaperXcor": _scalar_rf_matrix("MultiTaperXcor", data),
-        "MultiTaperSpecDiv": _scalar_rf_matrix("MultiTaperSpecDiv", data),
+        "MultiTaperPowerXcor": _scalar_rf_matrix("MultiTaperPowerXcor", data),
+        "MultiTaperPowerSpecDiv": _scalar_rf_matrix("MultiTaperPowerSpecDiv", data),
         "NoiseStable": _noise_stable_rf_matrix(data),
         "CNR": _cnr_rf_matrix(data),
     }
@@ -713,17 +713,17 @@ def test_existing_decon_methods_are_consistent_for_noise_free_input():
         )
         > 0.93
     )
-    assert _normalized_correlation(results["LeastSquares"], results["MultiTaperXcor"]) > 0.88
-    assert _normalized_correlation(results["LeastSquares"], results["MultiTaperSpecDiv"]) > 0.88
+    assert _normalized_correlation(results["LeastSquares"], results["MultiTaperPowerXcor"]) > 0.88
+    assert _normalized_correlation(results["LeastSquares"], results["MultiTaperPowerSpecDiv"]) > 0.88
     assert (
         _normalized_correlation(
-            results["TimeDomainLeastSquares"], results["MultiTaperXcor"]
+            results["TimeDomainLeastSquares"], results["MultiTaperPowerXcor"]
         )
         > 0.86
     )
-    assert _normalized_correlation(results["WaterLevel"], results["MultiTaperXcor"]) > 0.93
-    assert _normalized_correlation(results["WaterLevel"], results["MultiTaperSpecDiv"]) > 0.90
-    assert _normalized_correlation(results["MultiTaperXcor"], results["MultiTaperSpecDiv"]) > 0.93
+    assert _normalized_correlation(results["WaterLevel"], results["MultiTaperPowerXcor"]) > 0.93
+    assert _normalized_correlation(results["WaterLevel"], results["MultiTaperPowerSpecDiv"]) > 0.90
+    assert _normalized_correlation(results["MultiTaperPowerXcor"], results["MultiTaperPowerSpecDiv"]) > 0.93
 
 
 def test_scalar_methods_are_consistent_for_complex_colored_3c_synthetic(
@@ -734,8 +734,8 @@ def test_scalar_methods_are_consistent_for_complex_colored_3c_synthetic(
         "LeastSquares": _scalar_rf_matrix("LeastSquares", data),
         "TimeDomainLeastSquares": _scalar_rf_matrix("TimeDomainLeastSquares", data),
         "WaterLevel": _scalar_rf_matrix("WaterLevel", data),
-        "MultiTaperXcor": _scalar_rf_matrix("MultiTaperXcor", data),
-        "MultiTaperSpecDiv": _scalar_rf_matrix("MultiTaperSpecDiv", data),
+        "MultiTaperPowerXcor": _scalar_rf_matrix("MultiTaperPowerXcor", data),
+        "MultiTaperPowerSpecDiv": _scalar_rf_matrix("MultiTaperPowerSpecDiv", data),
         "NoiseStable": _noise_stable_rf_matrix(data),
         "CNR": _cnr_rf_matrix(data),
     }
@@ -753,9 +753,9 @@ def test_scalar_methods_are_consistent_for_complex_colored_3c_synthetic(
         )
         > 0.92
     )
-    assert _normalized_correlation(results["LeastSquares"], results["MultiTaperXcor"]) > 0.84
-    assert _normalized_correlation(results["LeastSquares"], results["MultiTaperSpecDiv"]) > 0.84
-    assert _normalized_correlation(results["MultiTaperXcor"], results["MultiTaperSpecDiv"]) > 0.90
+    assert _normalized_correlation(results["LeastSquares"], results["MultiTaperPowerXcor"]) > 0.84
+    assert _normalized_correlation(results["LeastSquares"], results["MultiTaperPowerSpecDiv"]) > 0.84
+    assert _normalized_correlation(results["MultiTaperPowerXcor"], results["MultiTaperPowerSpecDiv"]) > 0.90
     _plot_complex_colored_results(decon_validation_plot_dir, results, truth, wavelet)
 
 
@@ -771,8 +771,8 @@ def test_scalar_methods_recover_stress_spikes_with_colored_noise(
         "LeastSquares": _scalar_rf_matrix("LeastSquares", data),
         "TimeDomainLeastSquares": _scalar_rf_matrix("TimeDomainLeastSquares", data),
         "WaterLevel": _scalar_rf_matrix("WaterLevel", data),
-        "MultiTaperXcor": _scalar_rf_matrix("MultiTaperXcor", data),
-        "MultiTaperSpecDiv": _scalar_rf_matrix("MultiTaperSpecDiv", data),
+        "MultiTaperPowerXcor": _scalar_rf_matrix("MultiTaperPowerXcor", data),
+        "MultiTaperPowerSpecDiv": _scalar_rf_matrix("MultiTaperPowerSpecDiv", data),
         "NoiseStable": _noise_stable_rf_matrix(data),
         "CNR": _cnr_rf_matrix(data),
     }
@@ -789,9 +789,9 @@ def test_scalar_methods_recover_stress_spikes_with_colored_noise(
         )
         > 0.90
     )
-    assert _normalized_correlation(results["LeastSquares"], results["MultiTaperXcor"]) > 0.82
-    assert _normalized_correlation(results["LeastSquares"], results["MultiTaperSpecDiv"]) > 0.82
-    assert _normalized_correlation(results["MultiTaperXcor"], results["MultiTaperSpecDiv"]) > 0.90
+    assert _normalized_correlation(results["LeastSquares"], results["MultiTaperPowerXcor"]) > 0.82
+    assert _normalized_correlation(results["LeastSquares"], results["MultiTaperPowerSpecDiv"]) > 0.82
+    assert _normalized_correlation(results["MultiTaperPowerXcor"], results["MultiTaperPowerSpecDiv"]) > 0.90
     plot_results = results
     plot_truth = truth
     plot_wavelet = wavelet
@@ -806,8 +806,8 @@ def test_scalar_methods_recover_stress_spikes_with_colored_noise(
                 "TimeDomainLeastSquares", plot_data
             ),
             "WaterLevel": _scalar_rf_matrix("WaterLevel", plot_data),
-            "MultiTaperXcor": _scalar_rf_matrix("MultiTaperXcor", plot_data),
-            "MultiTaperSpecDiv": _scalar_rf_matrix("MultiTaperSpecDiv", plot_data),
+            "MultiTaperPowerXcor": _scalar_rf_matrix("MultiTaperPowerXcor", plot_data),
+            "MultiTaperPowerSpecDiv": _scalar_rf_matrix("MultiTaperPowerSpecDiv", plot_data),
             "NoiseStable": _noise_stable_rf_matrix(plot_data),
             "CNR": _cnr_rf_matrix(plot_data),
         }
@@ -837,11 +837,11 @@ def test_external_wavelet_validation_across_deconvolution_methods(
             "TimeDomainLeastSquares", data, wavelet
         ),
         "WaterLevel": _scalar_rf_matrix_external_wavelet("WaterLevel", data, wavelet),
-        "MultiTaperXcor": _scalar_rf_matrix_external_wavelet(
-            "MultiTaperXcor", data, wavelet
+        "MultiTaperPowerXcor": _scalar_rf_matrix_external_wavelet(
+            "MultiTaperPowerXcor", data, wavelet
         ),
-        "MultiTaperSpecDiv": _scalar_rf_matrix_external_wavelet(
-            "MultiTaperSpecDiv", data, wavelet
+        "MultiTaperPowerSpecDiv": _scalar_rf_matrix_external_wavelet(
+            "MultiTaperPowerSpecDiv", data, wavelet
         ),
         "NoiseStable": _noise_stable_rf_matrix(data, external_wavelet=wavelet),
         "CNR": _cnr_rf_matrix(data, external_wavelet=wavelet),
@@ -902,8 +902,8 @@ def test_external_wavelet_validation_across_deconvolution_methods(
         )
         > 0.90
     )
-    assert _normalized_correlation(results["LeastSquares"], results["MultiTaperXcor"]) > 0.84
-    assert _normalized_correlation(results["MultiTaperXcor"], results["MultiTaperSpecDiv"]) > 0.95
+    assert _normalized_correlation(results["LeastSquares"], results["MultiTaperPowerXcor"]) > 0.84
+    assert _normalized_correlation(results["MultiTaperPowerXcor"], results["MultiTaperPowerSpecDiv"]) > 0.95
 
     shifted_truth_times = (
         np.asarray(sorted(STRESS_SPIKES.keys()), dtype=np.float64)

@@ -211,6 +211,8 @@ void MultiTaperXcorDecon::process() {
   // cerr<< "Entering process method"<<endl;
   const string base_error("MultiTaperXcorDecon::process():  ");
   result.clear();
+  winv = ComplexArray();
+  ao_fft = ComplexArray();
   const int output_length = data.size();
   if (output_length > nfft)
     throw MsPASSError(base_error + "data vector exceeds padded fft length",
@@ -272,18 +274,18 @@ void MultiTaperXcorDecon::process() {
   double max_source_power =
       *max_element(source_power_denominator.begin(), source_power_denominator.end());
   const double relative_floor = max(DBL_EPSILON, 1.0e-12 * max_source_power);
-  winv = wuntapered;
-  winv.conj();
+  ComplexArray winv_work(wuntapered);
+  winv_work.conj();
   for (j = 0; j < nfft; ++j) {
     const double den =
         source_power_denominator[j] + noise_power_spectrum[j] + relative_floor;
-    double *zw = winv.ptr(j);
+    double *zw = winv_work.ptr(j);
     (*zw) /= den;
     (*(zw + 1)) /= den;
   }
-  ComplexArray rf_fft = winv * duntapered;
-  ao_fft = winv * wuntapered;
-  ComplexArray ao_scale_test(ao_fft);
+  ComplexArray rf_fft = winv_work * duntapered;
+  ComplexArray ao_fft_work = winv_work * wuntapered;
+  ComplexArray ao_scale_test(ao_fft_work);
   ao_scale_test = (*shapingwavelet.wavelet()) * ao_scale_test;
   gsl_fft_complex_inverse(ao_scale_test.ptr(), 1, nfft, wavetable, workspace);
   vector<double> ao_lag =
@@ -300,13 +302,15 @@ void MultiTaperXcorDecon::process() {
     double *zrf = rf_fft.ptr(j);
     (*zrf) /= ao_peak;
     (*(zrf + 1)) /= ao_peak;
-    double *zw = winv.ptr(j);
+    double *zw = winv_work.ptr(j);
     (*zw) /= ao_peak;
     (*(zw + 1)) /= ao_peak;
-    double *zao = ao_fft.ptr(j);
+    double *zao = ao_fft_work.ptr(j);
     (*zao) /= ao_peak;
     (*(zao + 1)) /= ao_peak;
   }
+  winv = winv_work;
+  ao_fft = ao_fft_work;
   // DEBUG
   /*
   cerr << "Raw RF spectrum"<<endl;
