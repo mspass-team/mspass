@@ -361,15 +361,15 @@ def _assert_shifted_stress_arrivals_recovered(
 
 
 def _assert_shifted_direct_arrival_recovered(
-    matrix, t0, dt, shift, ratio_tol=8.0e-2
+    matrix, t0, dt, shift, ratio_tol=8.0e-2, name=""
 ):
     z0_sample = int(round((shift - t0) / dt))
     z0 = matrix[2, z0_sample]
     assert abs(z0) > 1.0e-8
     ew_ratio = _local_peak(matrix, 0, z0_sample) / z0
     ns_ratio = _local_peak(matrix, 1, z0_sample) / z0
-    assert np.isclose(ew_ratio, EXPECTED_EW_Z_RATIO, atol=ratio_tol)
-    assert np.isclose(ns_ratio, EXPECTED_NS_Z_RATIO, atol=ratio_tol)
+    assert np.isclose(ew_ratio, EXPECTED_EW_Z_RATIO, atol=ratio_tol), name
+    assert np.isclose(ns_ratio, EXPECTED_NS_Z_RATIO, atol=ratio_tol), name
 
 
 def _assert_stress_gid_signs_recovered(matrix, t0, dt):
@@ -630,6 +630,42 @@ def _plot_external_wavelet_results(plot_dir, results, truth, t0, dt):
         t0,
         dt,
     )
+    display_results = _apply_common_display_filter(results, dt)
+    _plot_rf_overlay(
+        plot_dir,
+        "external_wavelet_all_methods_display_filtered.png",
+        "External prepared wavelet validation with common display filter",
+        display_results,
+        truth,
+        t0,
+        dt,
+    )
+
+
+def _apply_common_display_filter(results, dt, frequency=1.0):
+    """Apply a plotting-only Ricker filter to compare visual bandwidths.
+
+    The numerical validation uses the raw operator outputs.  This helper is
+    only used for optional plots so scalar inverse methods are not given a
+    hidden shaping wavelet in the algorithm under test.
+    """
+
+    half_width = max(1, int(round(2.0 / (frequency * dt))))
+    t = np.arange(-half_width, half_width + 1, dtype=np.float64) * dt
+    arg = (np.pi * frequency * t) ** 2
+    kernel = (1.0 - 2.0 * arg) * np.exp(-arg)
+    peak = np.max(np.abs(kernel))
+    if peak > 0.0:
+        kernel = kernel / peak
+    filtered = {}
+    for name, matrix in results.items():
+        filtered[name] = np.vstack(
+            [
+                signal.fftconvolve(component, kernel, mode="same")
+                for component in matrix
+            ]
+        )
+    return filtered
 
 
 @pytest.mark.parametrize("noise_level", [0.0, 1.0e-6])
@@ -860,7 +896,11 @@ def test_external_wavelet_validation_across_deconvolution_methods(
         assert np.isfinite(result).all(), name
         if "GIDDecon" not in name and name != "NoiseStable":
             _assert_shifted_direct_arrival_recovered(
-                result, SIGNAL_WINDOW.start, truth.dt, external_wavelet_shift
+                result,
+                SIGNAL_WINDOW.start,
+                truth.dt,
+                external_wavelet_shift,
+                name=name,
             )
 
     assert _normalized_correlation(results["LeastSquares"], results["WaterLevel"]) > 0.95
@@ -901,12 +941,15 @@ def test_external_wavelet_validation_across_deconvolution_methods(
     plot_npts = int(round((20.0 - SIGNAL_WINDOW.start) / truth.dt)) + 1
     plot_results = {}
     for name, result in results.items():
-        if name.endswith("_sparse"):
+        if "GIDDecon" in name and not name.endswith("_sparse"):
             continue
-        src_t0 = -8.0 if "GIDDecon" in name else SIGNAL_WINDOW.start
+        plot_name = name.replace("_sparse", ":sparse")
+        src_t0 = -8.0 if name.endswith("_sparse") else SIGNAL_WINDOW.start
         plot_results[name] = _slice_matrix_to_window(
             result, src_t0, truth.dt, SIGNAL_WINDOW.start, plot_npts
         )
+        if plot_name != name:
+            plot_results[plot_name] = plot_results.pop(name)
 
     _plot_external_wavelet_results(
         decon_validation_plot_dir,

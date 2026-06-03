@@ -26,6 +26,7 @@ from decon_data_generators import (
 from mspasspy.algorithms.window import WindowData
 from mspasspy.algorithms.RFdeconProcessor import RFdeconProcessor, RFdecon
 from mspasspy.ccore.seismic import Seismogram
+from mspasspy.ccore.utility import MsPASSError
 from mspasspy.algorithms.basic import ExtractComponent
 from mspasspy.util.seismic import print_metadata
 
@@ -206,6 +207,17 @@ def test_RFdecon_enables_generalized_iterative():
     os.environ.pop("PFPATH", None)
 
 
+@pytest.mark.parametrize("alg", ["GeneralizedIterative", "FrequencyDomainGID"])
+def test_RFdeconProcessor_gid_default_pf_routes_to_gid_parameter_file(alg):
+    os.environ["PFPATH"] = "./data/pf"
+    try:
+        processor = RFdeconProcessor(alg=alg)
+        assert processor.is_3c_engine
+        assert processor.dwin.start <= processor.processor.deconvolution_window_start()
+    finally:
+        os.environ.pop("PFPATH", None)
+
+
 def test_RFdecon_generalized_iterative_accepts_external_wavelet():
     os.environ["PFPATH"] = "./data/pf"
     wavelet = make_simulation_wavelet()
@@ -257,6 +269,60 @@ def test_RFdecon_gid_accepts_raw_vector_wavelet_and_noise(alg, pf):
     assert rf.is_defined("RFdecon_properties")
     assert rf["RFdecon_properties"]["iteration_count"] > 0
     os.environ.pop("PFPATH", None)
+
+
+def test_RFdecon_clears_stale_gid_external_wavelet_when_wavelet_is_none(tmp_path):
+    os.environ["PFPATH"] = "./data/pf"
+    try:
+        text = open("data/pf/TimeDomainGIDDecon.pf", encoding="utf-8").read()
+        text = text.replace(
+            "time_domain_gid_deconvolution &Arr{\n        deconvolution_type least_square",
+            "time_domain_gid_deconvolution &Arr{\n        deconvolution_type ns_gid",
+        )
+        pf = tmp_path / "TimeDomainGIDDecon.pf"
+        pf.write_text(text)
+        wavelet = make_simulation_wavelet()
+        impulses = make_impulse_data()
+        seis0 = addnoise(
+            convolve_wavelet(impulses, wavelet), nscale=0.0, padlength=800
+        )
+        processor = RFdeconProcessor(
+            alg="GeneralizedIterative", pf=str(pf)
+        )
+
+        rf_external = RFdecon(
+            Seismogram(seis0),
+            alg="GeneralizedIterative",
+            engine=processor,
+            wavelet=wavelet,
+        )
+        assert rf_external.live
+        assert rf_external["RFdecon_properties"]["ns_gid_external_wavelet_used"]
+
+        rf_internal = RFdecon(
+            Seismogram(seis0), alg="GeneralizedIterative", engine=processor
+        )
+        assert rf_internal.live
+        assert not rf_internal["RFdecon_properties"][
+            "ns_gid_external_wavelet_used"
+        ]
+    finally:
+        os.environ.pop("PFPATH", None)
+
+
+def test_RFdeconProcessor_apply_3c_reports_failed_gid_load():
+    os.environ["PFPATH"] = "./data/pf"
+    try:
+        processor = RFdeconProcessor(
+            alg="GeneralizedIterative", pf="TimeDomainGIDDecon.pf"
+        )
+        bad_data = get_live_seismogram(3000, 20.0)
+        bad_data.t0 = 1000.0
+
+        with pytest.raises(MsPASSError, match="could not be loaded"):
+            processor.apply_3c(Seismogram(bad_data))
+    finally:
+        os.environ.pop("PFPATH", None)
 
 
 def test_RFdecon_error_handlers():

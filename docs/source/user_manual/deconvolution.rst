@@ -127,19 +127,20 @@ wavelet used to represent sparse spikes.
     the cost of reduced resolution.
 
 ``MultiTaperXcorDecon`` and ``MultiTaperSpecDivDecon``
-    Multitaper frequency-domain operators.  Both estimate source and noise
-    spectra with DPSS tapers before forming the inverse operator.  The final
-    receiver-function estimate is produced by applying the multitaper inverse
-    to the untapered, zero-padded data window.  This avoids biasing delayed
-    converted phases by the taper value at their arrival time.
+    Multitaper frequency-domain operators.  Both use DPSS tapers to stabilize
+    spectral estimates, but the final receiver-function estimate is produced
+    by applying the inverse operator to the untapered, zero-padded data
+    window.  This avoids biasing delayed converted phases by the taper value
+    at their arrival time.
 
     ``MultiTaperXcorDecon`` forms a single stabilized cross-spectral inverse
     from the sum of tapered source cross spectra.  ``MultiTaperSpecDivDecon``
-    forms a separate regularized spectral-division inverse for each taper and
-    then averages the per-taper RF estimates.  The two methods should be
-    similar on clean data, but they are not expected to be identical.  The
-    default behavior still returns a linear-convolution lag window; tapering
-    controls variance and leakage in the spectral estimates.
+    uses the prepared source wavelet's untapered phase and power with
+    per-taper noise spectra to form regularized spectral-division inverses,
+    then averages the RF estimates.  The two methods should be similar on
+    clean data, but they are not expected to be identical.  The default
+    behavior still returns a linear-convolution lag window; tapering controls
+    variance and leakage in the stabilizing spectra.
 
 ``NoiseStableDecon``
     Noise-aware stable scalar inverse used by the ``ns_gid`` GID mode and also
@@ -276,7 +277,10 @@ Three-component and iterative operators
     a sigma threshold, residual-to-noise stopping, maximum spike count, and
     the existing fractional-improvement limit.  Higher thresholds suppress
     noise-generated spikes; lower thresholds may recover weaker arrivals but
-    can overfit noise.
+    can overfit noise.  ``ns_gid_refit_interval`` controls how often accepted
+    spike amplitudes are jointly refit during iteration; the engines always
+    run a final refit, so values larger than one reduce repeated dense solves
+    without disabling final amplitude correction.
 
 ``RFdeconProcessor``
     High-level scalar receiver-function wrapper.  It exposes the scalar
@@ -302,57 +306,17 @@ colored three-component synthetic validation case, run for example:
        --decon-validation-plot-dir /tmp/mspass-decon-validation-plots \
        --decon-validation-noise-scale 0.03
 
-The output directory will contain:
-
-``complex_colored_scalar_methods.png``
-    Overlay of the known sparse receiver function and the recovered scalar and
-    CNR deconvolution results for each component.
-
-``complex_colored_validation_wavelet.png``
-    Source wavelet used in the synthetic validation, including the imposed
-    spectral notches.
-
-``TimeDomainGIDDecon_inverse_modes.png``
-    Overlay of time-domain generalized iterative deconvolution results for
-    each configured inverse-operator mode: least squares, water level,
-    multitaper, CNR, and NS-GID.
-
-``TimeDomainGIDDecon_inverse_modes_sparse_results.png``
-    Raw sparse impulse responses selected by the time-domain GID loop for the
-    same inverse-operator modes.  This is the plot to compare directly against
-    the known sparse truth.
-
-``FrequencyDomainGIDDecon_inverse_modes.png``
-    Overlay of frequency-domain generalized iterative deconvolution results
-    for each configured inverse-operator mode: least squares, water level,
-    multitaper, CNR, and NS-GID.
-
-``FrequencyDomainGIDDecon_inverse_modes_sparse_results.png``
-    Raw sparse impulse responses selected by the frequency-domain GID loop for
-    the same inverse-operator modes.
-
-``external_wavelet_all_methods.png``
-    Overlay of scalar, CNR, and NS-GID results when every method is driven by
-    the same externally supplied prepared wavelet.  Scalar operators load the
-    external wavelet as a raw vector, so this plot shifts the truth sparse
-    impulse response to the measured direct-arrival lag of the least-squares
-    result for visual comparison.
-
-``scalar_noise_<scale>_stress_spike_results.png``
-    Scalar-method and CNR results for a denser synthetic with multiple close,
-    opposite-polarity spike pairs.  The ``<scale>`` value is controlled by
-    ``--decon-validation-noise-scale``.
-
-``TimeDomainGIDDecon_noise_<scale>_stress_spike_results.png`` and
-``FrequencyDomainGIDDecon_noise_<scale>_stress_spike_results.png``
-    GID inverse-mode overlays for the same dense stress synthetic and selected
-    plot noise scale.
-
-``TimeDomainGIDDecon_noise_<scale>_stress_sparse_results.png`` and
-``FrequencyDomainGIDDecon_noise_<scale>_stress_sparse_results.png``
-    Raw GID sparse impulse responses for the dense stress synthetic.  These
-    plots intentionally show ``sparse_output`` rather than the shaped
-    ``getresult`` representation.
+The output directory contains overlays for scalar/CNR methods, shaped GID
+receiver functions, raw GID sparse impulse responses, external-wavelet runs,
+and the source wavelets used in the synthetic cases.  The sparse GID plots are
+the most direct visual comparison against the known sparse truth; shaped GID
+and CNR plots intentionally have more limited bandwidth.  The external-wavelet
+overlay uses raw scalar inverse results and raw GID sparse outputs so spike
+support can be checked visually.  The same plot run also writes a
+``external_wavelet_all_methods_display_filtered.png`` overlay with a common
+plotting-only Ricker filter so different methods can be compared at a similar
+visual bandwidth.  That display filter is not part of the scalar algorithms
+and is not used by the pass/fail assertions.
 
 These figures are intended as an audit aid.  The numerical assertions in the
 test remain the source of pass/fail behavior and use a fixed reproducible

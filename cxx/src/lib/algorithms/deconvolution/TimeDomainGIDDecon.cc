@@ -246,7 +246,7 @@ TimeDomainGIDDecon::TimeDomainGIDDecon(const AntelopePf &mdtoplevel)
     ns_residual_noise_ratio_floor = get_double_default_gid(
         mdgiter, "ns_gid_residual_noise_ratio_floor", 1.0);
     ns_max_spikes = get_int_default_gid(mdgiter, "ns_gid_max_spikes", 0);
-    ns_refit_interval = get_int_default_gid(mdgiter, "ns_gid_refit_interval", 1);
+    ns_refit_interval = get_int_default_gid(mdgiter, "ns_gid_refit_interval", 5);
     ns_ridge_beta =
         get_double_default_gid(mdgiter, "ns_gid_ridge_beta", 1.0e-10);
     external_wavelet_allowed = get_bool_default_gid(
@@ -330,29 +330,12 @@ void TimeDomainGIDDecon::construct_weight_penalty_function(const Metadata &md) {
         wtf.push_back(f);
       }
     } else if (wtf_type == "shaping_wavelet") {
-      /* In this method we use the points in the wavelet at 1/2 max.
-      We extract it from the shaping wavelet - the TimeSeries is baggage
-      but not an efficiency issue since this is called only once */
-      CoreTimeSeries ir = this->preprocessor->actual_output();
-      /* assume the wavelet is symmetric and get the half max sample position
-      from positive side only */
-      int i0 = ir.sample_number(0.0);
-      double peakirval = ir.s[i0];
-      double halfmax = peakirval / 2.0;
-      for (i = i0; i < ir.npts(); ++i) {
-        if (ir.s[i] < halfmax)
-          break;
-      }
-      int halfwidth = i;
-      int peakwidth = 2 * i + 1; // guaranteed odd numbers
-      for (i = i0 - halfwidth; i < (i0 + peakwidth); ++i) {
-        double f;
-        f = ir.s[i];
-        f /= peakirval; // make sure scaled so peaks is 1.0
-        f *= wtf_scale;
-        f = 1.0 - f;
-        wtf.push_back(f);
-      }
+      throw MsPASSError(
+          base_error +
+              "lag_weight_penalty_function=shaping_wavelet is disabled.  "
+              "The actual output/resolution kernel is data dependent and is "
+              "not available during construction; use cosine_taper or boxcar.",
+          ErrorSeverity::Invalid);
     } else {
       throw MsPASSError(
           base_error +
@@ -407,6 +390,7 @@ double fir_data_overlap(const vector<double> &fir, const CoreSeismogram &target,
 
 vector<double> solve_dense_system(const vector<vector<double>> &a,
                                   const vector<double> &b) {
+  const string base_error("TimeDomainGIDDecon::solve_dense_system: ");
   const int n = b.size();
   vector<double> result(n, 0.0);
   if (n <= 0)
@@ -441,6 +425,10 @@ vector<double> solve_dense_system(const vector<vector<double>> &a,
   dgesv(n_lapack, nrhs, &(A[0]), lda, &(ipiv[0]), &(B[0]), ldb, info);
   if (info == 0)
     result = B;
+  else
+    throw MsPASSError(base_error +
+                          "dense spike-amplitude refit system is singular",
+                      ErrorSeverity::Invalid);
   return result;
 }
 
@@ -517,6 +505,8 @@ int TimeDomainGIDDecon::load(const CoreSeismogram &draw, TimeWindow dwin_in) {
     wavelet_pad)
     */
     d_all = WindowData(draw, dwin);
+    if (d_all.dead() || d_all.npts() <= 0)
+      return 1;
     ndwin = d_all.npts();
     return 0;
   } catch (...) {
@@ -528,6 +518,8 @@ int TimeDomainGIDDecon::loadnoise(const CoreSeismogram &draw,
   try {
     nwin = nwin_in;
     n = WindowData(draw, nwin);
+    if (n.dead() || n.npts() <= 0)
+      return 1;
     nnwin = n.npts();
     if (decon_type == NS_GID) {
       ns_noise_components.clear();
@@ -584,6 +576,14 @@ int TimeDomainGIDDecon::loadnoise(const PowerSpectrum &noise_spectrum_in) {
   ns_noise_components.clear();
   return 0;
 }
+void TimeDomainGIDDecon::clear_external_wavelet() {
+  external_wavelet_loaded = false;
+}
+void TimeDomainGIDDecon::clear_external_noise() {
+  external_noise_loaded = false;
+  external_noise_spectrum_loaded = false;
+  ns_noise_components.clear();
+}
 int TimeDomainGIDDecon::load(const CoreSeismogram &draw, TimeWindow dwin,
                            TimeWindow nwin) {
   try {
@@ -613,7 +613,7 @@ void TimeDomainGIDDecon::update_residual_matrix(ThreeCSpike spk) {
                             "Coding problem - computed lag is negative.  "
                             "lag_weights array is probably incorrect",
                         ErrorSeverity::Fatal);
-    if ((col0 + actual_o_fir.size()) >= ncol)
+    if ((col0 + actual_o_fir.size()) > ncol)
       throw MsPASSError(base_error +
                             "Coding problem - computed lag is too large and "
                             "would overflow residual matrix and seg fault.\n"
@@ -662,8 +662,12 @@ double TimeDomainGIDDecon::compute_resid_linf_floor() {
     floor_position = static_cast<int>(resid_linf_prob * ((double)amps.size()));
     if (floor_position < 0)
       floor_position = 0;
-    if (floor_position >= amps.size())
-      floor_position = amps.size() - 1;
+    if (amps.empty())
+      throw MsPASSError("TimeDomainGIDDecon::compute_resid_linf_floor: "
+                        "noise window is empty",
+                        ErrorSeverity::Invalid);
+    if (floor_position >= static_cast<int>(amps.size()))
+      floor_position = static_cast<int>(amps.size()) - 1;
     resid_linf_floor = amps[floor_position];
     return resid_linf_floor;
   } catch (...) {
@@ -738,14 +742,6 @@ CoreTimeSeries trim(const CoreTimeSeries &d, double floor = 0.005) {
       }
     }
     if (half_width == 0) {
-      /* Consider deleting this message if we confirm the assumption about
-      this algorithm stated above is valid - smoother algorithm works because
-      the oscillations in are high frequency */
-      cerr << "TimeDomainGIDDecon::trim method (WARNING):  "
-           << "trim algorithm failed. " << endl
-           << "Minimum amplitude at ends of impulse response function=" << avg
-           << endl
-           << "Trim floor argument specified=" << floor << endl;
       return d; // In this situation just return the original
     }
     double winsize = (static_cast<double>(half_width)) * d.dt();
@@ -882,7 +878,14 @@ void TimeDomainGIDDecon::process() {
     }
     actual_o_fir = actual_out.s;
     actual_o_0 = actual_out.sample_number(0.0);
-    double peak_scale = actual_o_fir[actual_o_0];
+    if (actual_o_0 < 0 || actual_o_0 >= static_cast<int>(actual_o_fir.size()))
+      throw MsPASSError(base_error +
+                            "actual output zero-lag sample is outside kernel",
+                        ErrorSeverity::Invalid);
+    double peak_scale = fabs(actual_o_fir[actual_o_0]);
+    if (peak_scale <= 0.0)
+      throw MsPASSError(base_error + "actual output has zero peak",
+                        ErrorSeverity::Invalid);
     vector<double>::iterator aoptr;
     for (aoptr = actual_o_fir.begin(); aoptr != actual_o_fir.end(); ++aoptr)
       (*aoptr) /= peak_scale;
@@ -996,7 +999,7 @@ void TimeDomainGIDDecon::process() {
       lag_weights.push_back(1.0);
     for (i = 0; i < r.npts(); ++i) {
       int col0 = i - actual_o_0;
-      if ((col0 < 0) || ((col0 + actual_o_fir.size()) >= r.npts()))
+      if ((col0 < 0) || ((col0 + actual_o_fir.size()) > r.npts()))
         lag_weights[i] = 0.0;
     }
     /* These are initial values of convergence parameters */

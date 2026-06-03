@@ -79,6 +79,24 @@ bool get_bool_default_fd_gid(const Metadata &md, const string &key,
     return md.get_bool(key);
   return default_value;
 }
+void validate_leaf_window_fd(const AntelopePf &mdleaf, const TimeWindow &fftwin,
+                             const string &leaf_name,
+                             const string &base_error) {
+  const double ts = mdleaf.get<double>("deconvolution_data_window_start");
+  const double te = mdleaf.get<double>("deconvolution_data_window_end");
+  if ((ts != fftwin.start) || (te != fftwin.end)) {
+    stringstream ss;
+    ss << base_error << leaf_name
+       << " method specification of processing window is not consistent "
+          "with GID parameters"
+       << endl
+       << leaf_name << " parameters: deconvolution_data_window_start=" << ts
+       << ", deconvolution_data_window_end=" << te << endl
+       << "GID parameters: deconvolution_data_window_start=" << fftwin.start
+       << ", deconvolution_data_window_end=" << fftwin.end << endl;
+    throw MsPASSError(ss.str(), ErrorSeverity::Invalid);
+  }
+}
 
 double fir_self_overlap_fd(const vector<double> &fir, const int col0_i,
                            const int col0_j, const int ncols) {
@@ -107,6 +125,7 @@ double fir_data_overlap_fd(const vector<double> &fir,
 
 vector<double> solve_dense_system_fd(const vector<vector<double>> &a,
                                      const vector<double> &b) {
+  const string base_error("FrequencyDomainGIDDecon::solve_dense_system: ");
   const int n = b.size();
   vector<double> result(n, 0.0);
   if (n <= 0)
@@ -141,6 +160,10 @@ vector<double> solve_dense_system_fd(const vector<vector<double>> &a,
   dgesv(n_lapack, nrhs, &(A[0]), lda, &(ipiv[0]), &(B[0]), ldb, info);
   if (info == 0)
     result = B;
+  else
+    throw MsPASSError(base_error +
+                          "dense spike-amplitude refit system is singular",
+                      ErrorSeverity::Invalid);
   return result;
 }
 
@@ -222,23 +245,28 @@ FrequencyDomainGIDDecon::FrequencyDomainGIDDecon(const AntelopePf &mdtoplevel)
     switch (decon_type) {
     case WATER_LEVEL:
       mdleaf = md.get_branch("water_level");
+      validate_leaf_window_fd(mdleaf, fftwin, "water level", base_error);
       preprocessor = new WaterLevelDecon(mdleaf);
       break;
     case LEAST_SQ:
       mdleaf = md.get_branch("least_square");
+      validate_leaf_window_fd(mdleaf, fftwin, "least square", base_error);
       preprocessor = new LeastSquareDecon(mdleaf);
       break;
     case MULTI_TAPER:
       mdleaf = md.get_branch("multi_taper");
+      validate_leaf_window_fd(mdleaf, fftwin, "multi taper", base_error);
       preprocessor = new MultiTaperXcorDecon(mdleaf);
       break;
     case CNR:
       mdleaf = md.get_branch("cnr");
+      validate_leaf_window_fd(mdleaf, fftwin, "CNR", base_error);
       cnrprocessor = new CNRDeconEngine(mdleaf);
       break;
     case NS_GID:
     default:
       mdleaf = md.get_branch("ns_gid");
+      validate_leaf_window_fd(mdleaf, fftwin, "NS-GID", base_error);
       preprocessor = new NoiseStableDecon(mdleaf);
       break;
     };
@@ -256,7 +284,7 @@ FrequencyDomainGIDDecon::FrequencyDomainGIDDecon(const AntelopePf &mdtoplevel)
     ns_residual_noise_ratio_floor = get_double_default_fd_gid(
         mdgid, "ns_gid_residual_noise_ratio_floor", 1.0);
     ns_max_spikes = get_int_default_fd_gid(mdgid, "ns_gid_max_spikes", 0);
-    ns_refit_interval = get_int_default_fd_gid(mdgid, "ns_gid_refit_interval", 1);
+    ns_refit_interval = get_int_default_fd_gid(mdgid, "ns_gid_refit_interval", 5);
     ns_ridge_beta =
         get_double_default_fd_gid(mdgid, "ns_gid_ridge_beta", 1.0e-10);
     ns_peak_threshold = 0.0;
@@ -288,6 +316,8 @@ int FrequencyDomainGIDDecon::load(const CoreSeismogram &draw,
     return 1;
   dwin = dwin_in;
   d_all = WindowData(draw, dwin);
+  if (d_all.dead() || d_all.npts() <= 0)
+    return 1;
   ndwin = d_all.npts();
   return 0;
 }
@@ -296,6 +326,8 @@ int FrequencyDomainGIDDecon::loadnoise(const CoreSeismogram &draw,
                                        TimeWindow nwin_in) {
   nwin = nwin_in;
   n = WindowData(draw, nwin);
+  if (n.dead() || n.npts() <= 0)
+    return 1;
   nnwin = n.npts();
   return 0;
 }
@@ -341,6 +373,13 @@ int FrequencyDomainGIDDecon::loadnoise(const PowerSpectrum &noise_spectrum_in) {
   external_noise_spectrum_loaded = true;
   external_noise_loaded = false;
   return 0;
+}
+void FrequencyDomainGIDDecon::clear_external_wavelet() {
+  external_wavelet_loaded = false;
+}
+void FrequencyDomainGIDDecon::clear_external_noise() {
+  external_noise_loaded = false;
+  external_noise_spectrum_loaded = false;
 }
 
 int FrequencyDomainGIDDecon::load(const CoreSeismogram &draw, TimeWindow dwin,
@@ -539,7 +578,7 @@ void FrequencyDomainGIDDecon::process() {
       amps.clear();
       for (int i = 0; i < r.npts(); ++i) {
         int col0 = i - actual_o_0;
-        if ((col0 < 0) || ((col0 + actual_o_fir.size()) >= r.npts())) {
+        if ((col0 < 0) || ((col0 + actual_o_fir.size()) > r.npts())) {
           amps.push_back(0.0);
         } else {
           double amp2(0.0);

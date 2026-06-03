@@ -1,5 +1,4 @@
 #include "mspass/algorithms/deconvolution/MultiTaperSpecDivDecon.h"
-#include "misc/blas.h"
 #include "mspass/algorithms/amplitudes.h"
 #include "mspass/algorithms/deconvolution/dpss.h"
 #include "mspass/utility/Metadata.h"
@@ -220,31 +219,23 @@ void MultiTaperSpecDivDecon::process() {
                         ErrorSeverity::Invalid);
     }
 
-    /* The tapered data are stored in this vector of arrays */
+    /* The tapered noise windows are used to estimate a frequency-dependent
+    damping term.  The prepared source and RF data are not tapered in the
+    numerator because multiplication by a time taper does not commute with the
+    linear-convolution receiver-function model. */
     int i, j;
-    vector<ComplexArray> tdata;
-    tdata = taper_data(data);
-    /* Apply fft to each tapered data vector */
-    for (i = 0; i < nseq; ++i) {
-      gsl_fft_complex_forward(tdata[i].ptr(), 1, nfft, wavetable, workspace);
-    }
-
-    /* Now we need to do the same for the wavelet data */
-    vector<ComplexArray> wdata;
-    wdata = taper_data(wavelet);
-    for (i = 0; i < nseq; ++i) {
-      gsl_fft_complex_forward(wdata[i].ptr(), 1, nfft, wavetable, workspace);
-    }
-    /* And the noise data - although with noise we quickly turn to power
-     * spectrum */
     vector<ComplexArray> ndata;
     ndata = taper_data(noise);
     for (i = 0; i < nseq; ++i) {
       gsl_fft_complex_forward(ndata[i].ptr(), 1, nfft, wavetable, workspace);
     }
-    vector<double> noise_spectrum(ndata[0].abs());
+    vector<vector<double>> tapered_noise_spectra;
+    tapered_noise_spectra.reserve(nseq);
+    tapered_noise_spectra.push_back(ndata[0].abs());
+    vector<double> noise_spectrum(tapered_noise_spectra[0]);
     for (i = 1; i < nseq; ++i) {
       vector<double> nwork(ndata[i].abs());
+      tapered_noise_spectra.push_back(nwork);
       for (j = 0; j < noise_spectrum.size(); ++j) {
         noise_spectrum[j] += nwork[j];
       }
@@ -256,6 +247,10 @@ void MultiTaperSpecDivDecon::process() {
     double scale = damp / (static_cast<double>(nseq));
     for (nptr = noise_spectrum.begin(); nptr != noise_spectrum.end(); ++nptr) {
       (*nptr) *= scale;
+    }
+    for (i = 0; i < nseq; ++i) {
+      for (j = 0; j < static_cast<int>(tapered_noise_spectra[i].size()); ++j)
+        tapered_noise_spectra[i][j] *= damp;
     }
     vector<double> padded_data(nfft, 0.0);
     vector<double> padded_wavelet(nfft, 0.0);
@@ -272,60 +267,40 @@ void MultiTaperSpecDivDecon::process() {
     gsl_fft_complex_forward(untapered_wavelet.ptr(), 1, nfft, wavetable,
                             workspace);
 
-    /* Build one water-level style denominator for each tapered source
-    spectrum.  The inverse operators are estimated from the DPSS-tapered
-    source/noise spectra, but they are applied to the untapered data window
-    below so delayed RF arrivals are not weighted by taper amplitudes. */
-    double wnrm = dnrm2(wavelet.size(), &(wavelet[0]), 1);
-    vector<ComplexArray> denominator;
-    for (i = 0; i < nseq; ++i) {
-      ComplexArray work(wdata[i]);
-      for (j = 0; j < nfft; ++j) {
-        double *z = work.ptr(j);
-        double re = (*z);
-        double im = (*(z + 1));
-        double amp = sqrt(re * re + im * im);
-        if (amp < noise_spectrum[j]) {
-          if (fabs(amp) / wnrm < DBL_EPSILON) {
-            (*z) = noise_spectrum[j];
-            (*(z + 1)) = 0.0;
-          } else {
-            double wlscal = noise_spectrum[j] / amp;
-            (*z) *= wlscal;
-            (*(z + 1)) *= wlscal;
-          }
-        }
-      }
-      denominator.push_back(work);
-    }
-
     /* Must clear rfestimate and winv_taper containers or they accumulate.
-    The DPSS tapers are used to build stable inverse operators, but the final
-    RF estimate is applied to the untapered data window.  Applying the tapers
-    directly to the RF data biases delayed arrivals by the taper value at the
-    arrival time and can create harmonic artifacts in the lag-domain result. */
+    MultiTaperSpecDiv estimates the stabilizing noise term from DPSS-tapered
+    noise windows, but uses the untapered prepared wavelet for the inverse
+    operator phase and source power.  Applying each taper directly to the RF
+    data or mixing an untapered source phase with tapered-source denominators
+    biases delayed arrivals and can create harmonic lag-domain artifacts. */
     rfestimates.clear();
     winv_taper.clear();
     ao_fft.clear();
     for (i = 0; i < nseq; ++i) {
-      ComplexArray work(untapered_data);
-      work = work / denominator[i];
-      rfestimates.push_back(work);
-    }
-    for (i = 0; i < nseq; ++i) {
-      ComplexArray work(nfft);
+      ComplexArray inv(untapered_wavelet);
+      inv.conj();
       for (j = 0; j < nfft; ++j) {
-        double *z = work.ptr(j);
-        (*z) = 1.0;
-        (*(z + 1)) = 0.0;
+        double *zs = untapered_wavelet.ptr(j);
+        const double sre = (*zs);
+        const double sim = (*(zs + 1));
+        const double source_power = sre * sre + sim * sim;
+        const double den_power = source_power + tapered_noise_spectra[i][j];
+        double *zinv = inv.ptr(j);
+        if (den_power <= DBL_EPSILON) {
+          (*zinv) = 0.0;
+          (*(zinv + 1)) = 0.0;
+        } else {
+          (*zinv) /= den_power;
+          (*(zinv + 1)) /= den_power;
+        }
       }
-      work = work / denominator[i];
-      winv_taper.push_back(work);
-    }
-    for (i = 0; i < nseq; ++i) {
-      ComplexArray work(winv_taper[i]);
-      work = work * untapered_wavelet;
-      ao_fft.push_back(work);
+      winv_taper.push_back(inv);
+      ComplexArray rfwork(inv);
+      rfwork = rfwork * untapered_data;
+      rfestimates.push_back(rfwork);
+      ComplexArray aowork(inv);
+      aowork = aowork * untapered_wavelet;
+      ao_fft.push_back(aowork);
     }
     vector<double> ao_scale(nfft, 0.0);
     for (i = 0; i < nseq; ++i) {

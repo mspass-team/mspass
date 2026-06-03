@@ -6,7 +6,7 @@ import numpy as np
 
 from mspasspy.ccore.algorithms.basic import TimeWindow
 from mspasspy.ccore.algorithms.deconvolution import FrequencyDomainGIDDecon
-from mspasspy.ccore.utility import pfread
+from mspasspy.ccore.utility import MsPASSError, pfread
 from mspasspy.ccore.seismic import Seismogram
 from mspasspy.algorithms.FrequencyDomainGIDDecon import FrequencyDomainGIDRFDecon
 
@@ -76,6 +76,19 @@ def test_FrequencyDomainGIDDecon_validates_single_spike_recovery():
     assert qc["residual_L2_final"] < qc["residual_L2_initial"]
 
     _assert_single_spike_recovery(rf, ratio_tolerance=5.0e-2)
+
+
+def test_FrequencyDomainGIDDecon_rejects_leaf_window_drift(tmp_path):
+    text = open("data/pf/FrequencyDomainGIDDecon.pf", encoding="utf-8").read()
+    text = text.replace(
+        "least_square &Arr{\n        target_sample_interval 0.05\n        operator_nfft 512\n        deconvolution_data_window_start -5.0",
+        "least_square &Arr{\n        target_sample_interval 0.05\n        operator_nfft 512\n        deconvolution_data_window_start -4.0",
+    )
+    pfname = tmp_path / "FrequencyDomainGIDDecon_bad_leaf.pf"
+    pfname.write_text(text)
+
+    with pytest.raises(MsPASSError, match="not consistent with GID parameters"):
+        FrequencyDomainGIDDecon(pfread(str(pfname)))
 
 
 def test_FrequencyDomainNSGID_uses_external_wavelet_and_gain_cap(tmp_path):

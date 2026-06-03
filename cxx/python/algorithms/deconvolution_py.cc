@@ -380,6 +380,10 @@ PYBIND11_MODULE(deconvolution, m) {
       "Load an externally supplied wavelet used for all components")
     .def("loadwavelet",py::overload_cast<const CoreTimeSeries&>(&TimeDomainGIDDecon::loadwavelet),
       "Load an externally supplied wavelet used for all components")
+    .def("clear_external_wavelet",&TimeDomainGIDDecon::clear_external_wavelet,
+      "Clear any previously loaded external wavelet")
+    .def("clear_external_noise",&TimeDomainGIDDecon::clear_external_noise,
+      "Clear any previously loaded external noise or noise spectrum")
     .def("deconvolution_window_start",
       &TimeDomainGIDDecon::deconvolution_window_start,
       "Return start time of the configured deconvolution window")
@@ -426,6 +430,10 @@ PYBIND11_MODULE(deconvolution, m) {
       "Load an externally supplied wavelet used for all components")
     .def("loadwavelet",py::overload_cast<const CoreTimeSeries&>(&FrequencyDomainGIDDecon::loadwavelet),
       "Load an externally supplied wavelet used for all components")
+    .def("clear_external_wavelet",&FrequencyDomainGIDDecon::clear_external_wavelet,
+      "Clear any previously loaded external wavelet")
+    .def("clear_external_noise",&FrequencyDomainGIDDecon::clear_external_noise,
+      "Clear any previously loaded external noise or noise spectrum")
     .def("deconvolution_window_start",
       &FrequencyDomainGIDDecon::deconvolution_window_start,
       "Return start time of the configured deconvolution window")

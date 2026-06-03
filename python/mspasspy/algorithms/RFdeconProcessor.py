@@ -99,6 +99,11 @@ class RFdeconProcessor:
     def __init__(self, alg="LeastSquares", pf="RFdeconProcessor.pf"):
         self.algorithm = alg
         self.__is_3c_engine = False
+        if pf == "RFdeconProcessor.pf":
+            if alg in ("GeneralizedIterative", "TimeDomainGID"):
+                pf = "TimeDomainGIDDecon.pf"
+            elif alg == "FrequencyDomainGID":
+                pf = "FrequencyDomainGIDDecon.pf"
         # use a copy in what is more or less a switch-case block
         # to be robust - I don't think any of the constructors below
         # alter pfhandle but the cost is tiny for this stability
@@ -353,7 +358,20 @@ class RFdeconProcessor:
                         self.nvector, target_dt, self.nwin.start, "noisedata"
                     )
                 )
-        self.processor.load(d, self.full_dwin, self.nwin)
+        try:
+            load_status = self.processor.load(d, self.full_dwin, self.nwin)
+        except MsPASSError as err:
+            raise MsPASSError(
+                "RFdeconProcessor.apply_3c: configured signal/noise windows "
+                "could not be loaded from input data: {}".format(str(err)),
+                ErrorSeverity.Invalid,
+            )
+        if load_status:
+            raise MsPASSError(
+                "RFdeconProcessor.apply_3c: configured signal/noise windows "
+                "could not be loaded from input data",
+                ErrorSeverity.Invalid,
+            )
         self.processor.process()
         return Seismogram(self.processor.getresult())
 
@@ -702,6 +720,11 @@ def RFdecon(
                     "wavelet",
                 )
                 processor.processor.loadwavelet(wts)
+            else:
+                processor.processor.clear_external_wavelet()
+                for attr in ("wvector", "wtimeseries"):
+                    if hasattr(processor, attr):
+                        delattr(processor, attr)
             if noisedata is not None:
                 if isinstance(noisedata, PowerSpectrum):
                     processor.processor.loadnoise(noisedata)
@@ -713,6 +736,11 @@ def RFdecon(
                         "noisedata",
                     )
                     processor.processor.loadnoise(nts)
+            else:
+                processor.processor.clear_external_noise()
+                for attr in ("nvector", "ntimeseries"):
+                    if hasattr(processor, attr):
+                        delattr(processor, attr)
             result = processor.apply_3c(d)
             subdoc = dict(processor.processor.QCMetrics())
             subdoc["algorithm"] = processor.algorithm
@@ -777,13 +805,12 @@ def RFdecon(
     except MsPASSError as err:
         result.kill()
         result.elog.log_error(err)
-    except:
-        print(
-            "RFDecon:  something threw an unexpected exception - this is a bug and needs to be fixed.\nKilling result from RFdecon."
-        )
+    except Exception as err:
         result.kill()
         result.elog.log_error(
-            "RFdecon", "Unexpected exception caught", ErrorSeverity.Invalid
+            "RFdecon",
+            "Unexpected exception caught: {}".format(str(err)),
+            ErrorSeverity.Invalid,
         )
     finally:
         if result.dead():
