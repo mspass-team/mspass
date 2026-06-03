@@ -92,13 +92,12 @@ Scalar inverse operators
 ------------------------
 
 Scalar operators load one source wavelet and one data trace at a time.  They
-return a finite-bandwidth receiver-function trace, not a sparse impulse
-response.
-The historical FFT scalar operators in MsPASS also multiply the inverse result
-by a configured output shaping wavelet before returning ``getresult``.  In
-scalar operators this wavelet is a target-pulse/bandlimiting convention.  It
-is distinct from the GID sparse impulse response, where
-``output_shaping_wavelet`` is applied only after iterative spike picking.
+return a regularized inverse-filter receiver-function trace, not a sparse
+impulse response.  The scalar parameter files default to
+``shaping_wavelet_type none``.  Scalar operators can still apply an optional
+legacy target-pulse filter if a shaping wavelet is configured, but that is a
+post-deconvolution display/bandlimiting filter and is not the GID shaping
+wavelet used to represent sparse spikes.
 
 ``LeastSquareDecon``
     Frequency-domain damped least-squares deconvolution.  The inverse
@@ -116,16 +115,16 @@ is distinct from the GID sparse impulse response, where
     denominator.  The data and wavelet are zero padded to the linear
     convolution length before the FFT, ``winv`` stores the stabilized inverse,
     and ``getresult`` returns the cropped lag window of
-    ``W_out(omega) S_g^{-1}(omega) D(omega)``.
+    ``S_g^{-1}(omega) D(omega)`` unless an optional scalar output filter is
+    configured.
 
 ``WaterLevelDecon``
     Frequency-domain deconvolution with a water-level floor on the source
     power spectrum.  The water level protects the result from division by
     near-zero spectral amplitudes.  The implementation raises
-    ``|S(omega)|`` to at least ``water_level * rms(S)`` before division, then
-    applies the configured scalar output shaping wavelet and extracts the
-    linear lag window.  Raising the floor improves stability at the cost of
-    reduced resolution.
+    ``|S(omega)|`` to at least ``water_level * rms(S)`` before division and
+    extracts the linear lag window.  Raising the floor improves stability at
+    the cost of reduced resolution.
 
 ``MultiTaperXcorDecon`` and ``MultiTaperSpecDivDecon``
     Multitaper frequency-domain operators.  Both estimate source and noise
@@ -170,9 +169,9 @@ is distinct from the GID sparse impulse response, where
     ``damping_factor * max(diag(S^T S))`` to the diagonal, and solves with
     LAPACK Cholesky.  If Cholesky fails, it falls back to LAPACK LU and raises
     an error if the regularized system is still singular.  No explicit matrix
-    inverse is constructed.  ``getresult`` applies the configured scalar output
-    shaping wavelet to the solved model; set ``shaping_wavelet_type none`` only
-    when the raw high-resolution Toeplitz model is desired.
+    inverse is constructed.  ``getresult`` returns the solved Toeplitz model by
+    default.  If a scalar output filter is explicitly configured it is applied
+    after solving, but this is not part of the least-squares inverse itself.
 
 Three-component and iterative operators
 ---------------------------------------

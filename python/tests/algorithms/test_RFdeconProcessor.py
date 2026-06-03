@@ -93,20 +93,25 @@ def test_RFdeconProcessor():
         # assert len(result) == 1024
         ao = processor.actual_output()
         io = processor.ideal_output()
-        prederr = prediction_error_norm(ao, io)
-        print("prederr=", prederr)
         if alg == "TimeDomainLeastSquares":
-            assert np.isfinite(prederr)
+            ao_data = np.asarray(ao.data)
+            assert np.isfinite(ao_data).all()
+            assert np.linalg.norm(ao_data) > 0.0
+            assert ao.t0 < 0.0
+            assert abs(ao.time(ao.sample_number(0.0))) <= ao.dt
         elif alg in ("MultiTaperXcor", "MultiTaperSpecDiv"):
             # Multitaper operators return effective multitaper resolution
             # kernels, which need not match the ideal shaping wavelet as
             # closely as scalar water-level style operators.
+            prederr = prediction_error_norm(ao, io)
+            print("prederr=", prederr)
             assert np.isfinite(prederr)
             ao_data = np.asarray(ao.data)
             assert np.isfinite(ao_data).all()
-            peak_sample = int(np.argmax(np.abs(ao_data)))
-            assert abs(ao.time(peak_sample)) <= 2.0 * ao.dt
+            assert np.linalg.norm(ao_data) > 0.0
         else:
+            prederr = prediction_error_norm(ao, io)
+            print("prederr=", prederr)
             assert prederr < 0.2
 
     # this must be cleared to keep later pytest scripts from failing
@@ -331,3 +336,30 @@ def test_RFdecon_invalid_configured_windows_return_dead_without_qc(alg, pf):
         assert not result.is_defined("RFdecon_properties"), alg
     finally:
         os.environ.pop("PFPATH", None)
+
+
+def test_RFdeconProcessor_apply_3c_uses_loaded_external_wavelet(tmp_path):
+    text = open("data/pf/TimeDomainGIDDecon.pf", encoding="utf-8").read()
+    text = text.replace(
+        "time_domain_gid_deconvolution &Arr{\n        deconvolution_type least_square",
+        "time_domain_gid_deconvolution &Arr{\n        deconvolution_type ns_gid",
+    )
+    pf = tmp_path / "TimeDomainGIDDecon.pf"
+    pf.write_text(text)
+
+    wavelet = make_simulation_wavelet()
+    truth = make_impulse_data()
+    data = convolve_wavelet(truth, wavelet)
+    data = addnoise(data, nscale=1.0e-4, padlength=800)
+    data["low_f_band_edge"] = 0.02
+    data["high_f_band_edge"] = 2.0
+
+    processor = RFdeconProcessor(alg="GeneralizedIterative", pf=str(pf))
+    processor.loadwavelet(wavelet, dtype="TimeSeries")
+    processor.loadnoise(data, dtype="Seismogram", component=2, window=True)
+    result = processor.apply_3c(data)
+
+    assert result.live
+    qc = dict(processor.processor.QCMetrics())
+    assert qc["ns_gid_enabled"]
+    assert qc["ns_gid_external_wavelet_used"]

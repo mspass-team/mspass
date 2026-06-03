@@ -307,6 +307,10 @@ void MultiTaperXcorDecon::process() {
   gsl_fft_complex_inverse(ao_scale_test.ptr(), 1, nfft, wavetable, workspace);
   vector<double> ao_lag =
       ExtractLagWindow(ao_scale_test, output_length, sample_shift);
+  if (sample_shift < 0 || sample_shift >= static_cast<int>(ao_lag.size()))
+    throw MsPASSError(base_error +
+                          "zero-lag sample is outside extracted lag window",
+                      ErrorSeverity::Invalid);
   double ao_peak = ao_lag[sample_shift];
   if (fabs(ao_peak) <= 0.0)
     throw MsPASSError(base_error + "actual output has zero peak",

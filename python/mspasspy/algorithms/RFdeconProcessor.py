@@ -247,6 +247,11 @@ class RFdeconProcessor:
                 wvector = w
         # Have to explicitly convert to ndarray because DoubleVector cannot be serialized.
         self.wvector = np.array(wvector)
+        if self.__is_3c_engine:
+            if dtype == "TimeSeries" and not window:
+                self.wtimeseries = TimeSeries(w)
+            elif hasattr(self, "wtimeseries"):
+                del self.wtimeseries
 
     def loadnoise(self, n, dtype="Seismogram", component=2, window=False):
         # First basic sanity checks
@@ -292,6 +297,11 @@ class RFdeconProcessor:
                 nvector = n
         # Have to explicitly convert to ndarray because DoubleVector cannot be serialized.
         self.nvector = np.array(nvector)
+        if self.__is_3c_engine:
+            if dtype == "TimeSeries" and not window:
+                self.ntimeseries = TimeSeries(n)
+            elif hasattr(self, "ntimeseries"):
+                del self.ntimeseries
 
     def apply(self):
         """
@@ -324,6 +334,25 @@ class RFdeconProcessor:
         """
         if not self.__is_3c_engine:
             raise RuntimeError("apply_3c is only valid for GID algorithms")
+        target_dt = self.md.get_double("target_sample_interval")
+        if hasattr(self, "wvector"):
+            if hasattr(self, "wtimeseries"):
+                self.processor.loadwavelet(self.wtimeseries)
+            else:
+                self.processor.loadwavelet(
+                    _as_gid_timeseries(
+                        self.wvector, target_dt, self.dwin.start, "wavelet"
+                    )
+                )
+        if self.__uses_noise and hasattr(self, "nvector"):
+            if hasattr(self, "ntimeseries"):
+                self.processor.loadnoise(self.ntimeseries)
+            else:
+                self.processor.loadnoise(
+                    _as_gid_timeseries(
+                        self.nvector, target_dt, self.nwin.start, "noisedata"
+                    )
+                )
         self.processor.load(d, self.full_dwin, self.nwin)
         self.processor.process()
         return Seismogram(self.processor.getresult())

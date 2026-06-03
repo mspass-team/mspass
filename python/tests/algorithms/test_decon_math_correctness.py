@@ -7,6 +7,8 @@ import pytest
 from mspasspy.ccore.algorithms.deconvolution import (
     DoubleVector,
     LeastSquareDecon,
+    MultiTaperSpecDivDecon,
+    MultiTaperXcorDecon,
     TimeDomainLeastSquareDecon,
     WaterLevelDecon,
 )
@@ -61,6 +63,30 @@ deconvolution_data_window_start {window_start:.12f}
 deconvolution_data_window_end {window_end:.12f}
 damping_factor {damping:.12f}
 {model_length_line}shaping_wavelet_dt 1.0
+shaping_wavelet_type none
+"""
+    )
+    return pfread(str(pf))
+
+
+def _write_multitaper_pf(
+    tmp_path,
+    *,
+    window_start=-10.0,
+    window_end=0.0,
+    nfft=512,
+):
+    pf = tmp_path / "multitaper_decon.pf"
+    pf.write_text(
+        f"""
+target_sample_interval 0.05
+operator_nfft {nfft}
+deconvolution_data_window_start {window_start:.12f}
+deconvolution_data_window_end {window_end:.12f}
+damping_factor 0.1
+time_bandwidth_product 2.5
+number_tapers 4
+shaping_wavelet_dt 0.05
 shaping_wavelet_type none
 """
     )
@@ -303,3 +329,21 @@ def test_time_domain_least_squares_regularizes_ill_conditioned_problem(tmp_path)
 
     assert np.isfinite(recovered).all()
     assert np.linalg.norm(recovered) < 10.0 * np.linalg.norm(model)
+
+
+@pytest.mark.parametrize(
+    "engine_class", [MultiTaperXcorDecon, MultiTaperSpecDivDecon]
+)
+def test_multitaper_rejects_zero_lag_outside_output_window(tmp_path, engine_class):
+    pf = _write_multitaper_pf(tmp_path)
+    wavelet = np.zeros(200)
+    wavelet[0] = 1.0
+    data = np.zeros(200)
+    data[5] = 1.0
+    noise = 0.01 * np.ones(200)
+
+    engine = engine_class(pf)
+    engine.load(_double_vector(wavelet), _double_vector(data), _double_vector(noise))
+
+    with pytest.raises(MsPASSError, match="zero-lag sample"):
+        engine.process()

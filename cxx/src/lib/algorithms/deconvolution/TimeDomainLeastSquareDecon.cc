@@ -232,22 +232,32 @@ CoreTimeSeries TimeDomainLeastSquareDecon::actual_output() {
     throw MsPASSError("TimeDomainLeastSquareDecon::actual_output: wavelet has "
                       "not been loaded",
                       ErrorSeverity::Invalid);
-  vector<double> delta(shapingwavelet.size(), 0.0);
-  delta[0] = 1.0;
+  const string base_error("TimeDomainLeastSquareDecon::actual_output: ");
+  const int nlag(output_length > 0
+                     ? output_length
+                     : (!data.empty() ? static_cast<int>(data.size())
+                                      : static_cast<int>(wavelet.size())));
+  if (sample_shift < 0 || sample_shift >= nlag)
+    throw MsPASSError(base_error +
+                          "zero-lag sample is outside extracted lag window",
+                      ErrorSeverity::Invalid);
+  vector<double> delta(nlag, 0.0);
+  delta[sample_shift] = 1.0;
   vector<double> inv(this->solve_for(delta));
-  vector<double> ao(delta.size(), 0.0);
+  vector<double> ao(nlag, 0.0);
   for (int i = 0; i < static_cast<int>(ao.size()); ++i) {
     for (int j = 0; j < static_cast<int>(inv.size()); ++j) {
-      const int iw = i - j;
+      const int iw = i - j + sample_shift;
       if (iw >= 0 && iw < static_cast<int>(wavelet.size()))
         ao[i] += wavelet[iw] * inv[j];
     }
   }
+  ao = this->apply_shaping_wavelet(ao);
   if (l2_norm(ao) > 0.0)
     ao = normalize<double>(ao);
   CoreTimeSeries result(ao.size());
   result.set_dt(dt);
-  result.set_t0(0.0);
+  result.set_t0(-dt * static_cast<double>(sample_shift));
   result.set_tref(TimeReferenceType::Relative);
   result.set_live();
   result.s = ao;
@@ -260,12 +270,21 @@ TimeDomainLeastSquareDecon::inverse_wavelet(const double t0parent) {
     throw MsPASSError("TimeDomainLeastSquareDecon::inverse_wavelet: wavelet "
                       "has not been loaded",
                       ErrorSeverity::Invalid);
-  vector<double> delta(shapingwavelet.size(), 0.0);
-  delta[0] = 1.0;
+  const string base_error("TimeDomainLeastSquareDecon::inverse_wavelet: ");
+  const int nlag(output_length > 0
+                     ? output_length
+                     : (!data.empty() ? static_cast<int>(data.size())
+                                      : static_cast<int>(wavelet.size())));
+  if (sample_shift < 0 || sample_shift >= nlag)
+    throw MsPASSError(base_error +
+                          "zero-lag sample is outside extracted lag window",
+                      ErrorSeverity::Invalid);
+  vector<double> delta(nlag, 0.0);
+  delta[sample_shift] = 1.0;
   vector<double> inv(this->solve_for(delta));
   CoreTimeSeries result(inv.size());
   result.set_dt(dt);
-  result.set_t0(-t0parent);
+  result.set_t0(-dt * static_cast<double>(sample_shift) - t0parent);
   result.set_tref(TimeReferenceType::Relative);
   result.set_live();
   result.s = inv;
