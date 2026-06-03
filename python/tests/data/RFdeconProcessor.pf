@@ -27,6 +27,9 @@ deconvolution_data_window_end 30.0
 target_sample_interval 0.05
 shaping_wavelet_type none
 }
+# MultitaperPowerSpecDiv uses this branch unless a pf defines an explicit
+# MultiTaperPowerSpecDiv branch.  MultiTaperSpecDiv remains a deprecated
+# compatibility RF algorithm name for the same operator.
 MultiTaperSpecDiv &Arr{
 damping_factor 0.1
 shaping_wavelet_dt 0.05
@@ -42,6 +45,9 @@ deconvolution_data_window_end 30.0
 noise_window_start -35.0
 noise_window_end -5.0
 }
+# MultiTaperPowerXcor uses this branch unless a pf defines an explicit
+# MultiTaperPowerXcor branch.  MultiTaperXcor remains a deprecated
+# compatibility RF algorithm name for the same operator.
 MultiTaperXcor &Arr{
 damping_factor 0.05
 shaping_wavelet_dt 0.05

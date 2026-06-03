@@ -266,7 +266,8 @@ Three-component and iterative operators
     interval.
 
     The ``multi_taper`` inverse mode in both GID engines currently uses
-    ``MultiTaperPowerXcorDecon`` as the core inverse operator.  In
+    ``MultiTaperXcorDecon`` as the core C++ inverse operator, with the
+    power-stabilized untapered-phase semantics described above.  In
     ``TimeDomainGIDDecon`` the term "time domain" describes the iterative
     residual subtraction and sparse-spike update.  The multitaper inverse
     operator itself is still estimated in the frequency domain.

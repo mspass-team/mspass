@@ -76,6 +76,8 @@ double PowerSpectrum::power(const double f) const {
     throw MsPASSError("PowerSpectrum::amplitude:  requested amplitude for a "
                       "negative frequency which is assumed to be an erorr",
                       ErrorSeverity::Invalid);
+  if (f < this->f0val)
+    return 0.0;
   int filow;
   filow = static_cast<int>((f - this->f0val) / this->dfval);
   if (filow < 0)

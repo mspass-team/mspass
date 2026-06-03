@@ -57,8 +57,6 @@ def test_RFdeconProcessor():
     alglist = [
         "MultiTaperPowerXcor",
         "MultiTaperPowerSpecDiv",
-        "MultiTaperPowerXcor",
-        "MultiTaperPowerSpecDiv",
         "LeastSquares",
         "TimeDomainLeastSquares",
         "WaterLevel",
@@ -103,8 +101,6 @@ def test_RFdeconProcessor():
             assert ao.t0 < 0.0
             assert abs(ao.time(ao.sample_number(0.0))) <= ao.dt
         elif alg in (
-            "MultiTaperPowerXcor",
-            "MultiTaperPowerSpecDiv",
             "MultiTaperPowerXcor",
             "MultiTaperPowerSpecDiv",
         ):
@@ -395,6 +391,63 @@ def test_RFdeconProcessor_multitaper_legacy_names_warn(legacy_alg):
             RFdeconProcessor(alg=legacy_alg)
     finally:
         os.environ.pop("PFPATH", None)
+
+
+@pytest.mark.parametrize(
+    "preferred_alg,legacy_alg",
+    [
+        ("MultiTaperPowerXcor", "MultiTaperXcor"),
+        ("MultiTaperPowerSpecDiv", "MultiTaperSpecDiv"),
+    ],
+)
+def test_RFdeconProcessor_multitaper_legacy_names_match_preferred_output(
+    preferred_alg, legacy_alg
+):
+    os.environ["PFPATH"] = "./data/pf"
+    try:
+        seis0 = get_live_seismogram()
+        preferred = RFdeconProcessor(alg=preferred_alg)
+        preferred.loaddata(Seismogram(seis0))
+        preferred.loadwavelet(Seismogram(seis0))
+        preferred.loadnoise(Seismogram(seis0))
+        preferred_result = np.asarray(preferred.apply(), dtype=np.float64)
+
+        with pytest.warns(DeprecationWarning, match="deprecated compatibility"):
+            legacy = RFdeconProcessor(alg=legacy_alg)
+        legacy.loaddata(Seismogram(seis0))
+        legacy.loadwavelet(Seismogram(seis0))
+        legacy.loadnoise(Seismogram(seis0))
+        legacy_result = np.asarray(legacy.apply(), dtype=np.float64)
+
+        assert np.allclose(preferred_result, legacy_result)
+    finally:
+        os.environ.pop("PFPATH", None)
+
+
+def test_RFdeconProcessor_malformed_preferred_multitaper_branch_does_not_fallback(
+    tmp_path,
+):
+    pf_text = open("data/pf/RFdeconProcessor.pf", encoding="utf-8").read()
+    pf_text += """
+MultiTaperPowerXcor &Arr{
+damping_factor -1.0
+shaping_wavelet_dt 0.05
+shaping_wavelet_type none
+target_sample_interval 0.05
+operator_nfft 1024
+time_bandwidth_product 2.5
+number_tapers 4
+deconvolution_data_window_start -5.0
+deconvolution_data_window_end 30.0
+noise_window_start -35.0
+noise_window_end -5.0
+}
+"""
+    pf = tmp_path / "RFdeconProcessor_bad_preferred.pf"
+    pf.write_text(pf_text)
+
+    with pytest.raises(MsPASSError, match="damping_factor must be positive"):
+        RFdeconProcessor(alg="MultiTaperPowerXcor", pf=str(pf))
 
 
 @pytest.mark.parametrize(

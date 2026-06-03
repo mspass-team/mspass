@@ -66,6 +66,16 @@ def _as_gid_timeseries(x, dt, t0, argname):
     return ts
 
 
+def _get_pf_branch_with_legacy_fallback(pfhandle, preferred, legacy):
+    try:
+        return Metadata(pfhandle.get_branch(preferred))
+    except MsPASSError as err:
+        missing_message = f"get_branch failed trying to find data for key={preferred}"
+        if missing_message in str(err):
+            return Metadata(pfhandle.get_branch(legacy))
+        raise
+
+
 class RFdeconProcessor:
     """
     This class is a wrapper for the suite of receiver function deconvolution
@@ -136,10 +146,9 @@ class RFdeconProcessor:
             self.__uses_noise = False
         elif alg in ("MultiTaperPowerXcor", "MultiTaperXcor"):
             if alg == "MultiTaperPowerXcor":
-                try:
-                    self.md = Metadata(pfhandle.get_branch("MultiTaperPowerXcor"))
-                except Exception:
-                    self.md = Metadata(pfhandle.get_branch("MultiTaperXcor"))
+                self.md = _get_pf_branch_with_legacy_fallback(
+                    pfhandle, "MultiTaperPowerXcor", "MultiTaperXcor"
+                )
             else:
                 self.md = Metadata(pfhandle.get_branch("MultiTaperXcor"))
             if alg == "MultiTaperXcor":
@@ -154,12 +163,9 @@ class RFdeconProcessor:
             self.__uses_noise = True
         elif alg in ("MultiTaperPowerSpecDiv", "MultiTaperSpecDiv"):
             if alg == "MultiTaperPowerSpecDiv":
-                try:
-                    self.md = Metadata(
-                        pfhandle.get_branch("MultiTaperPowerSpecDiv")
-                    )
-                except Exception:
-                    self.md = Metadata(pfhandle.get_branch("MultiTaperSpecDiv"))
+                self.md = _get_pf_branch_with_legacy_fallback(
+                    pfhandle, "MultiTaperPowerSpecDiv", "MultiTaperSpecDiv"
+                )
             else:
                 self.md = Metadata(pfhandle.get_branch("MultiTaperSpecDiv"))
             if alg == "MultiTaperSpecDiv":
