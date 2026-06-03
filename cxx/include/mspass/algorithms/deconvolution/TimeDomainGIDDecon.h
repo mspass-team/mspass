@@ -96,6 +96,10 @@ public:
   int loadnoise(const mspass::seismic::TimeSeries &noise);
   int loadnoise(const mspass::seismic::CoreTimeSeries &noise);
   int loadnoise(const mspass::seismic::PowerSpectrum &noise_spectrum);
+  double deconvolution_window_start() const { return this->fftwin.start; };
+  double deconvolution_window_end() const { return this->fftwin.end; };
+  double noise_window_start() const { return this->nwin.start; };
+  double noise_window_end() const { return this->nwin.end; };
   /*! \brief Load all needed data and process.
 
   This method is little more than a call to loadnoise followed

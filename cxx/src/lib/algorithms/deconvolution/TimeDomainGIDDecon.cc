@@ -507,6 +507,9 @@ void rescale_spike_amplitude(ThreeCSpike &spk, const CoreSeismogram &target,
 
 int TimeDomainGIDDecon::load(const CoreSeismogram &draw, TimeWindow dwin_in) {
   try {
+    if ((dwin_in.start > fftwin.start) || (dwin_in.end < fftwin.end)) {
+      return 1;
+    }
     dwin = dwin_in;
     /* First we load the requested window.  Note we MUST always make this window
     a bit larger than the range of desired lags as the iterative algorithm will
@@ -536,11 +539,8 @@ int TimeDomainGIDDecon::loadnoise(const CoreSeismogram &draw,
       }
       return 0;
     }
-    double ret = this->compute_resid_linf_floor();
-    if (ret > 0)
-      return 0;
-    else
-      return 1;
+    this->compute_resid_linf_floor();
+    return 0;
   } catch (...) {
     throw;
   };
@@ -587,6 +587,9 @@ int TimeDomainGIDDecon::loadnoise(const PowerSpectrum &noise_spectrum_in) {
 int TimeDomainGIDDecon::load(const CoreSeismogram &draw, TimeWindow dwin,
                            TimeWindow nwin) {
   try {
+    if ((dwin.start > fftwin.start) || (dwin.end < fftwin.end)) {
+      return 1;
+    }
     int iretn, iret;
     iretn = this->loadnoise(draw, nwin);
     iret = this->load(draw, dwin);
@@ -970,6 +973,8 @@ void TimeDomainGIDDecon::process() {
       trimwin.start = n.t0() + (n.dt()) * ((double)(winv.npts()));
       trimwin.end = n.endtime() - (n.dt()) * ((double)(winv.npts()));
       n = WindowData(n, trimwin);
+      nnwin = n.npts();
+      this->compute_resid_linf_floor();
     }
     // double nfloor;
     // nfloor=compute_resid_linf_floor();

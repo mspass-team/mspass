@@ -380,6 +380,18 @@ PYBIND11_MODULE(deconvolution, m) {
       "Load an externally supplied wavelet used for all components")
     .def("loadwavelet",py::overload_cast<const CoreTimeSeries&>(&TimeDomainGIDDecon::loadwavelet),
       "Load an externally supplied wavelet used for all components")
+    .def("deconvolution_window_start",
+      &TimeDomainGIDDecon::deconvolution_window_start,
+      "Return start time of the configured deconvolution window")
+    .def("deconvolution_window_end",
+      &TimeDomainGIDDecon::deconvolution_window_end,
+      "Return end time of the configured deconvolution window")
+    .def("noise_window_start",
+      &TimeDomainGIDDecon::noise_window_start,
+      "Return start time of the configured noise window")
+    .def("noise_window_end",
+      &TimeDomainGIDDecon::noise_window_end,
+      "Return end time of the configured noise window")
     .def("load",py::overload_cast<const CoreSeismogram&,mspass::algorithms::TimeWindow>
             (&TimeDomainGIDDecon::load),"Load data")
     .def("load",py::overload_cast<const CoreSeismogram&,mspass::algorithms::TimeWindow,mspass::algorithms::TimeWindow>

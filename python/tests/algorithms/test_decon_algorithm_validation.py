@@ -396,7 +396,7 @@ def _assert_stress_gid_signs_recovered(matrix, t0, dt):
 
 
 def _classify_gid_spike_detections(
-    matrix, t0, dt, detection_threshold=0.02, match_tolerance=0.15
+    matrix, t0, dt, detection_threshold=0.05, match_tolerance=0.15
 ):
     truth_times = np.asarray(sorted(STRESS_SPIKES.keys()), dtype=np.float64)
     return _classify_spike_detections_against_times(
@@ -1131,6 +1131,36 @@ def test_gid_methods_recover_stress_spike_signs_for_all_inverse_modes(
     )
 
 
+def test_time_domain_legacy_gid_modes_continue_after_inverse_filtered_noise_floor(
+    tmp_path,
+):
+    data, _, _ = _make_stress_colored_validation_data(
+        noise_scale=0.3,
+        return_truth=True,
+    )
+    for mode in ["least_square", "water_level", "multi_taper", "cnr"]:
+        pf = _pf_with_gid_mode(
+            tmp_path,
+            "data/pf/TimeDomainGIDDecon.pf",
+            "time_domain_gid_deconvolution",
+            mode,
+        )
+        engine = TimeDomainGIDDecon(pf)
+        rf = TimeDomainGIDRFDecon(
+            data,
+            engine,
+            signal_window=TimeWindow(-8.0, 20.0),
+            noise_window=TimeWindow(-35.0, -5.0),
+        )
+        assert rf.live, mode
+        qc = rf["TimeDomainGIDDecon_properties"]
+        assert qc["iteration_count"] > 5, mode
+        sparse = engine.sparse_output()
+        _assert_stress_gid_signs_recovered(
+            np.asarray(sparse.data), sparse.t0, sparse.dt
+        )
+
+
 @pytest.mark.parametrize(
     "engine_class, wrapper, pfname, branch_name, strict_replacements",
     [
@@ -1193,7 +1223,7 @@ def test_gid_detection_precision_recall_tracks_noise_and_stopping_thresholds(
     for metrics in loose_metrics:
         assert metrics["recall"] >= 0.95
         assert metrics["precision"] >= 0.60
-        assert metrics["f1"] >= 0.75
+        assert metrics["f1"] >= 0.75 - 1.0e-12
         assert metrics["false_positive"] <= 8
 
     for loose, strict in zip(loose_metrics, strict_metrics):

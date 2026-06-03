@@ -90,6 +90,20 @@ def TimeDomainGIDRFDecon(
         raise TypeError("signal_window must be a TimeWindow or None")
     if noise_window is not None and not isinstance(noise_window, TimeWindow):
         raise TypeError("noise_window must be a TimeWindow or None")
+    if noise_window is None:
+        noise_window = TimeWindow(
+            engine.noise_window_start(), engine.noise_window_end()
+        )
+
+    if (
+        signal_window.start > engine.deconvolution_window_start()
+        or signal_window.end < engine.deconvolution_window_end()
+    ):
+        d = Seismogram()
+        d.kill()
+        if return_wavelet:
+            return [d, None, None]
+        return d
 
     d = Seismogram(seis)
     try:
@@ -97,10 +111,12 @@ def TimeDomainGIDRFDecon(
             engine.loadwavelet(external_wavelet)
         if external_noise is not None:
             engine.loadnoise(external_noise)
-        if noise_window is None:
-            engine.load(d, signal_window)
-        else:
-            engine.load(d, signal_window, noise_window)
+        load_status = engine.load(d, signal_window, noise_window)
+        if load_status:
+            d.kill()
+            if return_wavelet:
+                return [d, None, None]
+            return d
         engine.process()
         rf = Seismogram(engine.getresult())
         qcmd = engine.QCMetrics()
