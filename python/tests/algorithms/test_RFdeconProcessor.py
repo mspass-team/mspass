@@ -4,8 +4,10 @@
 import sys
 import os
 import pickle
+import cloudpickle
 import numpy as np
 import pytest
+from distributed.protocol import deserialize, serialize
 
 # needed to access the helper module
 sys.path.append("python/tests")
@@ -26,7 +28,7 @@ from decon_data_generators import (
 from mspasspy.algorithms.window import WindowData
 from mspasspy.algorithms.RFdeconProcessor import RFdeconProcessor, RFdecon
 from mspasspy.ccore.seismic import Seismogram
-from mspasspy.ccore.utility import MsPASSError
+from mspasspy.ccore.utility import Metadata, MsPASSError
 from mspasspy.algorithms.basic import ExtractComponent
 from mspasspy.util.seismic import print_metadata
 
@@ -158,10 +160,19 @@ def test_RFdeconProcessor_gid_pickle_supports_distributed_use(alg, pf):
 
         rf1 = RFdecon(Seismogram(seis0), alg=alg, engine=processor)
         rf2 = RFdecon(Seismogram(seis0), alg=alg, engine=processor2)
+        processor3 = cloudpickle.loads(cloudpickle.dumps(processor))
+        header, frames = serialize(processor)
+        processor4 = deserialize(header, frames)
+        rf3 = RFdecon(Seismogram(seis0), alg=alg, engine=processor3)
+        rf4 = RFdecon(Seismogram(seis0), alg=alg, engine=processor4)
 
         assert rf1.live
         assert rf2.live
+        assert rf3.live
+        assert rf4.live
         assert np.allclose(np.asarray(rf1.data), np.asarray(rf2.data))
+        assert np.allclose(np.asarray(rf1.data), np.asarray(rf3.data))
+        assert np.allclose(np.asarray(rf1.data), np.asarray(rf4.data))
     finally:
         os.environ.pop("PFPATH", None)
 
@@ -186,6 +197,21 @@ def test_RFdeconProcessor_pickle_is_self_contained_without_pfpath(alg):
         assert dict(restored.md) == dict(processor.md)
     finally:
         os.environ.pop("PFPATH", None)
+
+
+def test_RFdeconProcessor_change_parameters_uses_public_engine_api():
+    old_pfpath = os.environ.get("PFPATH")
+    os.environ["PFPATH"] = "./data/pf"
+    try:
+        processor = RFdeconProcessor(alg="LeastSquares")
+        md = Metadata(processor.md)
+        processor.change_parameters(md)
+        assert dict(processor.md) == dict(md)
+    finally:
+        if old_pfpath is None:
+            os.environ.pop("PFPATH", None)
+        else:
+            os.environ["PFPATH"] = old_pfpath
 
 
 @pytest.mark.parametrize(

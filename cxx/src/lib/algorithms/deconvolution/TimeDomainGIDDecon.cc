@@ -101,6 +101,7 @@ TimeDomainGIDDecon::TimeDomainGIDDecon(const AntelopePf &mdtoplevel)
     external_wavelet_loaded = false;
     external_noise_loaded = false;
     external_noise_spectrum_loaded = false;
+    residual_noise_from_external = false;
     switch (decon_type) {
     case WATER_LEVEL:
       mdleaf = md.get_branch("water_level");
@@ -325,7 +326,6 @@ void rescale_spike_amplitude(ThreeCSpike &spk, const CoreSeismogram &target,
 
 int TimeDomainGIDDecon::load(const CoreSeismogram &draw, TimeWindow dwin_in) {
   try {
-    configuration_pickleable = false;
     this->invalidate_processing_state();
     d_all.kill();
     ndwin = 0;
@@ -350,11 +350,11 @@ int TimeDomainGIDDecon::load(const CoreSeismogram &draw, TimeWindow dwin_in) {
 int TimeDomainGIDDecon::loadnoise(const CoreSeismogram &draw,
                                 TimeWindow nwin_in) {
   try {
-    configuration_pickleable = false;
     this->invalidate_processing_state();
     n.kill();
     nnwin = 0;
     ns_noise_components.clear();
+    residual_noise_from_external = false;
     nwin = nwin_in;
     n = WindowData(draw, nwin);
     if (n.dead() || n.npts() <= 0)
@@ -405,7 +405,8 @@ int TimeDomainGIDDecon::loadnoise(const TimeSeries &noise_in) {
   this->invalidate_processing_state();
   external_noise_loaded = false;
   external_noise_spectrum_loaded = false;
-  const bool has_windowed_noise(n.live() && n.npts() > 0);
+  const bool keep_residual_noise =
+      n.live() && n.npts() > 0 && !residual_noise_from_external;
   if (noise_in.dead())
     throw MsPASSError("TimeDomainGIDDecon::loadnoise: external noise is "
                       "marked dead",
@@ -418,7 +419,7 @@ int TimeDomainGIDDecon::loadnoise(const TimeSeries &noise_in) {
   external_noise = noise_in;
   external_noise_loaded = true;
   external_noise_spectrum_loaded = false;
-  if (!has_windowed_noise) {
+  if (!keep_residual_noise) {
     ns_noise_components.clear();
     ns_noise_components.assign(3, noise_in.s);
     n = CoreSeismogram(noise_in.npts());
@@ -430,6 +431,7 @@ int TimeDomainGIDDecon::loadnoise(const TimeSeries &noise_in) {
       cblas_dcopy(noise_in.npts(), &(noise_in.s[0]), 1, n.u.get_address(k, 0),
                   3);
     nnwin = n.npts();
+    residual_noise_from_external = true;
   }
   return 0;
 }
@@ -452,7 +454,12 @@ int TimeDomainGIDDecon::loadnoise(const PowerSpectrum &noise_spectrum_in) {
   external_noise_spectrum = noise_spectrum_in;
   external_noise_spectrum_loaded = true;
   external_noise_loaded = false;
-  ns_noise_components.clear();
+  if (residual_noise_from_external) {
+    n.kill();
+    nnwin = 0;
+    ns_noise_components.clear();
+    residual_noise_from_external = false;
+  }
   return 0;
 }
 void TimeDomainGIDDecon::clear_external_wavelet() {
@@ -462,12 +469,17 @@ void TimeDomainGIDDecon::clear_external_wavelet() {
 void TimeDomainGIDDecon::clear_external_noise() {
   external_noise_loaded = false;
   external_noise_spectrum_loaded = false;
+  if (residual_noise_from_external) {
+    n.kill();
+    nnwin = 0;
+    ns_noise_components.clear();
+    residual_noise_from_external = false;
+  }
   this->invalidate_processing_state();
 }
 int TimeDomainGIDDecon::load(const CoreSeismogram &draw, TimeWindow dwin,
                            TimeWindow nwin) {
   try {
-    configuration_pickleable = false;
     this->invalidate_processing_state();
     d_all.kill();
     n.kill();

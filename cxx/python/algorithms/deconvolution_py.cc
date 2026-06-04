@@ -439,9 +439,9 @@ PYBIND11_MODULE(deconvolution, m) {
         if (!self.configuration_pickle_allowed())
           throw py::type_error(
               "TimeDomainGIDDecon pickling preserves configuration and "
-              "external wavelet/noise only.  Pickle before loading data, "
-              "processing, or changeparameter, or rebuild the engine from a "
-              "parameter file.");
+              "external wavelet/noise only.  It does not preserve loaded "
+              "data, processed output, residuals, or sparse spikes.  Rebuild "
+              "the engine from a parameter file after changeparameter.");
         return py::make_tuple(
             self.configuration_pf_text(), self.external_wavelet_is_loaded(),
             self.loaded_external_wavelet(), self.external_noise_is_loaded(),
@@ -521,9 +521,9 @@ PYBIND11_MODULE(deconvolution, m) {
         if (!self.configuration_pickle_allowed())
           throw py::type_error(
               "FrequencyDomainGIDDecon pickling preserves configuration and "
-              "external wavelet/noise only.  Pickle before loading data, "
-              "processing, or changeparameter, or rebuild the engine from a "
-              "parameter file.");
+              "external wavelet/noise only.  It does not preserve loaded "
+              "data, processed output, residuals, or sparse spikes.  Rebuild "
+              "the engine from a parameter file after changeparameter.");
         return py::make_tuple(
             self.configuration_pf_text(), self.external_wavelet_is_loaded(),
             self.loaded_external_wavelet(), self.external_noise_is_loaded(),

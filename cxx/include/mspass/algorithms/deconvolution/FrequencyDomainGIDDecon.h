@@ -95,6 +95,7 @@ private:
       external_noise_spectrum_loaded, external_wavelet_allowed;
   bool processed;
   bool configuration_pickleable;
+  bool residual_noise_from_external;
   std::vector<double> actual_o_fir;
   std::list<ThreeCSpike> spikes;
   double ns_peak_sigma_threshold, ns_peak_probability_threshold;

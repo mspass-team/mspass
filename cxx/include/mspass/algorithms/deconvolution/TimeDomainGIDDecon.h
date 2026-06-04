@@ -154,6 +154,7 @@ private:
       external_noise_spectrum_loaded, external_wavelet_allowed;
   bool processed;
   bool configuration_pickleable;
+  bool residual_noise_from_external;
 
   /* This parameter is set in the constructor.  It would normally be half the
   length of the fir representation of the inverse wavelet.*/

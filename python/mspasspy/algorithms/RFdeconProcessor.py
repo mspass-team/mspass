@@ -619,14 +619,24 @@ class RFdeconProcessor:
         processor.  It can only change the parameters for a particular
         algorithm.   A new instance of this class needs to be created if
         you need to switch to a different algorithm.   It does little
-        more than call the read_metadata of the already loaded processor.
-        All the scalar decon methods implement that method.
+        more than call the change-parameter method of the already loaded
+        processor.  A new processor should be constructed for GID-level window
+        or iteration-control changes that are intentionally rejected by the
+        GID engines.
 
         :param md: is a mspass.Metadata object containing required parameters
             for the alternative algorithm.
         """
         self.md = Metadata(md)
-        self.processor.read_metadata(self.md)
+        if hasattr(self.processor, "changeparameter"):
+            self.processor.changeparameter(self.md)
+        elif hasattr(self.processor, "change_parameter"):
+            self.processor.change_parameter(self.md)
+        else:
+            raise AttributeError(
+                "wrapped deconvolution processor does not expose a parameter "
+                "change method"
+            )
 
     @property
     def uses_noise(self):

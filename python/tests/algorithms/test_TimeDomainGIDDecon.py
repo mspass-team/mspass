@@ -4,7 +4,9 @@
 import numpy as np
 import pickle
 import pytest
+import cloudpickle
 from pathlib import Path
+from distributed.protocol import deserialize, serialize
 
 from mspasspy.ccore.utility import Metadata, MsPASSError, pfread
 from mspasspy.ccore.seismic import PowerSpectrum, Seismogram, TimeSeries
@@ -31,13 +33,13 @@ def _make_gid_test_data(noise_level=0.02):
     return addnoise(data, nscale=noise_level, padlength=800)
 
 
-def _make_external_noise(npts=300, dt=0.05, t0=-35.0):
+def _make_external_noise(npts=300, dt=0.05, t0=-35.0, scale=1.0):
     noise = TimeSeries(npts)
     noise.set_t0(t0)
     noise.set_dt(dt)
     noise.set_live()
     for i in range(noise.npts):
-        noise.data[i] = 0.01 * np.sin(0.17 * i) + 0.004 * np.cos(0.07 * i)
+        noise.data[i] = scale * (0.01 * np.sin(0.17 * i) + 0.004 * np.cos(0.07 * i))
     return noise
 
 
@@ -455,13 +457,41 @@ def test_TimeDomainGIDDecon_engine_is_pickleable_for_wrapper_use():
     assert rf2.live
     assert np.allclose(np.asarray(rf1.data), np.asarray(rf2.data))
 
-    with pytest.raises(TypeError, match="external wavelet/noise only"):
-        pickle.dumps(engine)
+    restored_after_use = pickle.loads(pickle.dumps(engine))
+    rf3 = TimeDomainGIDRFDecon(
+        Seismogram(data),
+        restored_after_use,
+        signal_window=TimeWindow(-10.0, 20.0),
+        noise_window=TimeWindow(-35.0, -5.0),
+    )
+    assert rf3.live
+    assert np.allclose(np.asarray(rf1.data), np.asarray(rf3.data))
+
+    restored_cloudpickle = cloudpickle.loads(cloudpickle.dumps(engine))
+    rf4 = TimeDomainGIDRFDecon(
+        Seismogram(data),
+        restored_cloudpickle,
+        signal_window=TimeWindow(-10.0, 20.0),
+        noise_window=TimeWindow(-35.0, -5.0),
+    )
+    assert rf4.live
+    assert np.allclose(np.asarray(rf1.data), np.asarray(rf4.data))
+
+    header, frames = serialize(engine)
+    restored_dask = deserialize(header, frames)
+    rf5 = TimeDomainGIDRFDecon(
+        Seismogram(data),
+        restored_dask,
+        signal_window=TimeWindow(-10.0, 20.0),
+        noise_window=TimeWindow(-35.0, -5.0),
+    )
+    assert rf5.live
+    assert np.allclose(np.asarray(rf1.data), np.asarray(rf5.data))
 
     changed = TimeDomainGIDDecon(pf)
     leaf_md = pf.get_branch("deconvolution_operator_type").get_branch("least_square")
     changed.changeparameter(leaf_md)
-    with pytest.raises(TypeError, match="external wavelet/noise only"):
+    with pytest.raises(TypeError, match="changeparameter"):
         pickle.dumps(changed)
 
 
@@ -770,6 +800,31 @@ def test_TimeDomainGIDDecon_combined_load_preserves_external_noise_until_clear(
         np.asarray(switched_engine.getresult().data),
         np.asarray(windowed_engine.getresult().data),
     )
+
+
+def test_TimeDomainGIDDecon_replacing_external_noise_refreshes_threshold(tmp_path):
+    data = _make_single_spike_convolution_data()
+    pf = _ns_gid_pf(
+        tmp_path,
+        "TimeDomainGIDDecon.pf",
+        "time_domain_gid_deconvolution",
+    )
+    dwin = TimeWindow(-10.0, 20.0)
+    low_noise = _make_external_noise(scale=1.0)
+    high_noise = _make_external_noise(scale=1000.0)
+
+    engine = TimeDomainGIDDecon(pf)
+    engine.loadnoise(low_noise)
+    assert engine.load(data, dwin) == 0
+    engine.process()
+    low_threshold = dict(engine.QCMetrics())["ns_gid_peak_threshold"]
+
+    engine.loadnoise(high_noise)
+    assert engine.load(data, dwin) == 0
+    engine.process()
+    high_threshold = dict(engine.QCMetrics())["ns_gid_peak_threshold"]
+
+    assert high_threshold > 10.0 * low_threshold
 
 
 def test_TimeDomainGIDDecon_changeparameter_rejects_leaf_window_drift(tmp_path):
