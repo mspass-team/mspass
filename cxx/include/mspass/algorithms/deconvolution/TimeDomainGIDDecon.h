@@ -119,6 +119,7 @@ private:
   /* Save the TimeWindow objects hat define the extent of d_all, d_decon,
   and n.   Some things need at least some of these downstream */
   mspass::algorithms::TimeWindow dwin, nwin, fftwin;
+  double target_dt;
   /*! For preprocessor algorithms that are scalare we specify which channel
   is used to define the noise for regularization */
   int noise_component;

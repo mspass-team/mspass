@@ -7,7 +7,7 @@ import numpy as np
 from mspasspy.ccore.algorithms.basic import TimeWindow
 from mspasspy.ccore.algorithms.deconvolution import FrequencyDomainGIDDecon
 from mspasspy.ccore.utility import Metadata, MsPASSError, pfread
-from mspasspy.ccore.seismic import DoubleVector, PowerSpectrum, Seismogram
+from mspasspy.ccore.seismic import DoubleVector, PowerSpectrum, Seismogram, TimeSeries
 from mspasspy.algorithms.FrequencyDomainGIDDecon import FrequencyDomainGIDRFDecon
 
 from test_TimeDomainGIDDecon import (
@@ -215,25 +215,24 @@ def test_FrequencyDomainGIDDecon_rejects_invalid_external_noise_spectrum(tmp_pat
         engine.loadnoise(dc_at_last_bin_spectrum)
 
 
-def test_FrequencyDomainGIDDecon_rejects_multitaper_power_spectrum_noise(tmp_path):
+@pytest.mark.parametrize("mode", ["multi_taper", "least_square", "water_level", "cnr"])
+def test_FrequencyDomainGIDDecon_rejects_non_ns_power_spectrum_noise(tmp_path, mode):
     pf = _pf_with_mode(
         tmp_path,
         "FrequencyDomainGIDDecon.pf",
         "frequency_domain_gid_deconvolution",
-        "multi_taper",
+        mode,
     )
     engine = FrequencyDomainGIDDecon(pf)
     spectrum = PowerSpectrum(
         Metadata(), DoubleVector([1.0, 1.0, 1.0]), 1.0, "valid", -1.0, 1.0, 3
     )
 
-    with pytest.raises(MsPASSError, match="not supported for multi_taper"):
+    with pytest.raises(MsPASSError, match="only supported for ns_gid"):
         engine.loadnoise(spectrum)
 
 
 def test_FrequencyDomainGIDDecon_rejects_dead_external_wavelet_and_noise(tmp_path):
-    from mspasspy.ccore.seismic import TimeSeries
-
     pf = _ns_gid_pf(
         tmp_path,
         "FrequencyDomainGIDDecon.pf",
@@ -249,6 +248,26 @@ def test_FrequencyDomainGIDDecon_rejects_dead_external_wavelet_and_noise(tmp_pat
         engine.loadwavelet(dead_wavelet)
     with pytest.raises(MsPASSError, match="external noise is marked dead"):
         engine.loadnoise(dead_noise)
+
+
+def test_FrequencyDomainGIDDecon_rejects_external_timeseries_dt_mismatch(tmp_path):
+    pf = _ns_gid_pf(
+        tmp_path,
+        "FrequencyDomainGIDDecon.pf",
+        "frequency_domain_gid_deconvolution",
+    )
+    engine = FrequencyDomainGIDDecon(pf)
+    wavelet = TimeSeries(8)
+    wavelet.set_live()
+    wavelet.set_dt(0.2)
+    noise = TimeSeries(8)
+    noise.set_live()
+    noise.set_dt(0.2)
+
+    with pytest.raises(MsPASSError, match="target_sample_interval"):
+        engine.loadwavelet(wavelet)
+    with pytest.raises(MsPASSError, match="target_sample_interval"):
+        engine.loadnoise(noise)
 
 
 @pytest.mark.parametrize("mode", ["least_square", "water_level", "multi_taper", "cnr"])
@@ -284,6 +303,18 @@ def test_FrequencyDomainGIDDecon_changeparameter_rejects_gid_level_metadata():
 
     with pytest.raises(MsPASSError, match="GID-level"):
         engine.changeparameter(gid_md)
+
+
+def test_FrequencyDomainGIDDecon_changeparameter_rejects_leaf_window_drift():
+    pf = pfread("./data/pf/FrequencyDomainGIDDecon.pf")
+    engine = FrequencyDomainGIDDecon(pf)
+    leaf_md = pf.get_branch("deconvolution_operator_type").get_branch("least_square")
+    leaf_md["deconvolution_data_window_start"] = (
+        leaf_md.get_double("deconvolution_data_window_start") + 1.0
+    )
+
+    with pytest.raises(MsPASSError, match="does not match"):
+        engine.changeparameter(leaf_md)
 
 
 def test_FrequencyDomainGIDRFDecon_argument_validation():

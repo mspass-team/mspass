@@ -450,10 +450,10 @@ class RFdeconProcessor:
         """
         Return the output shaping wavelet, ws(t) in Wang and Pavlis (2016).
 
-        For GID this is the wavelet convolved with the sparse impulse response to
-        form the represented receiver function.  For legacy scalar operators
-        it is the configured target/bandlimiting wavelet applied to the scalar
-        inverse result.
+        For GID this is the configured wavelet used to convolve the sparse
+        impulse response to form the finite-bandwidth receiver function.  For
+        scalar operators it is the optional post-deconvolution
+        shaping/bandlimiting wavelet.
         """
         if hasattr(self, "dvector"):
             if self.__is_3c_engine:

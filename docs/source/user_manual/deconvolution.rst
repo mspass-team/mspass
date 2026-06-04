@@ -343,8 +343,7 @@ set of scalar, GID, sparse-output, and external-wavelet validation plots, run:
 
 .. code-block:: bash
 
-   PYTHONPATH=/tmp/mspass-cxx-import:/home/iwang/code/mspass/python \
-   /home/iwang/code/.venvs/mspass-dev/bin/python -m pytest \
+   python -m pytest \
        python/tests/algorithms/test_decon_algorithm_validation.py \
        --decon-validation-plots \
        --decon-validation-plot-dir /tmp/mspass-decon-validation-plots \

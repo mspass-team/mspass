@@ -56,6 +56,7 @@ public:
 private:
   mspass::seismic::CoreSeismogram d_all, d_decon, r, n;
   mspass::algorithms::TimeWindow dwin, nwin, fftwin;
+  double target_dt;
   int ndwin, nnwin, noise_component;
   int actual_o_0, iter_count, iter_max;
   double residual_ratio_floor, residual_improvement_floor;

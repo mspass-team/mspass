@@ -298,19 +298,20 @@ def test_TimeDomainGIDDecon_rejects_invalid_external_noise_spectrum(tmp_path):
         engine.loadnoise(dc_at_last_bin_spectrum)
 
 
-def test_TimeDomainGIDDecon_rejects_multitaper_power_spectrum_noise(tmp_path):
+@pytest.mark.parametrize("mode", ["multi_taper", "least_square", "water_level", "cnr"])
+def test_TimeDomainGIDDecon_rejects_non_ns_power_spectrum_noise(tmp_path, mode):
     pf = _pf_with_mode(
         tmp_path,
         "TimeDomainGIDDecon.pf",
         "time_domain_gid_deconvolution",
-        "multi_taper",
+        mode,
     )
     engine = TimeDomainGIDDecon(pf)
     spectrum = PowerSpectrum(
         Metadata(), DoubleVector([1.0, 1.0, 1.0]), 1.0, "valid", -1.0, 1.0, 3
     )
 
-    with pytest.raises(MsPASSError, match="not supported for multi_taper"):
+    with pytest.raises(MsPASSError, match="only supported for ns_gid"):
         engine.loadnoise(spectrum)
 
 
@@ -328,6 +329,24 @@ def test_TimeDomainGIDDecon_rejects_dead_external_wavelet_and_noise(tmp_path):
         engine.loadwavelet(dead_wavelet)
     with pytest.raises(MsPASSError, match="external noise is marked dead"):
         engine.loadnoise(dead_noise)
+
+
+def test_TimeDomainGIDDecon_rejects_external_timeseries_dt_mismatch(tmp_path):
+    pf = _ns_gid_pf(
+        tmp_path, "TimeDomainGIDDecon.pf", "time_domain_gid_deconvolution"
+    )
+    engine = TimeDomainGIDDecon(pf)
+    wavelet = TimeSeries(8)
+    wavelet.set_live()
+    wavelet.set_dt(0.2)
+    noise = TimeSeries(8)
+    noise.set_live()
+    noise.set_dt(0.2)
+
+    with pytest.raises(MsPASSError, match="target_sample_interval"):
+        engine.loadwavelet(wavelet)
+    with pytest.raises(MsPASSError, match="target_sample_interval"):
+        engine.loadnoise(noise)
 
 
 def test_TimeDomainNSGID_rejects_pure_noise(tmp_path):
@@ -486,6 +505,18 @@ def test_TimeDomainGIDDecon_changeparameter_handles_cnr_mode(tmp_path):
     cnr_md["sample_shift"] = 100
 
     engine.changeparameter(cnr_md)
+
+
+def test_TimeDomainGIDDecon_changeparameter_rejects_leaf_window_drift(tmp_path):
+    pf = pfread("./data/pf/TimeDomainGIDDecon.pf")
+    engine = TimeDomainGIDDecon(pf)
+    leaf_md = pf.get_branch("deconvolution_operator_type").get_branch("least_square")
+    leaf_md["deconvolution_data_window_start"] = (
+        leaf_md.get_double("deconvolution_data_window_start") + 1.0
+    )
+
+    with pytest.raises(MsPASSError, match="does not match"):
+        engine.changeparameter(leaf_md)
 
 
 def test_TimeDomainGIDDecon_changeparameter_rejects_gid_level_metadata():

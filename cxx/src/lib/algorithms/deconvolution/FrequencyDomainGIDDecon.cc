@@ -86,6 +86,33 @@ bool has_frequency_gid_level_parameters(const Metadata &md) {
          md.is_defined("ns_gid_peak_sigma_threshold") ||
          md.is_defined("residual_ratio_floor");
 }
+void validate_frequency_gid_leaf_window(const Metadata &md,
+                                        const TimeWindow &fftwin,
+                                        const string &caller) {
+  if (md.is_defined("deconvolution_data_window_start")) {
+    const double ts = md.get_double("deconvolution_data_window_start");
+    if (fabs(ts - fftwin.start) > 1.0e-10)
+      throw MsPASSError(caller + ": leaf deconvolution_data_window_start does "
+                                 "not match the GID deconvolution window",
+                        ErrorSeverity::Invalid);
+  }
+  if (md.is_defined("deconvolution_data_window_end")) {
+    const double te = md.get_double("deconvolution_data_window_end");
+    if (fabs(te - fftwin.end) > 1.0e-10)
+      throw MsPASSError(caller + ": leaf deconvolution_data_window_end does "
+                                 "not match the GID deconvolution window",
+                        ErrorSeverity::Invalid);
+  }
+}
+void validate_frequency_external_series_dt(const TimeSeries &d,
+                                           const double target_dt,
+                                           const string &caller) {
+  if (fabs(d.dt() - target_dt) >
+      1.0e-6 * max(1.0, max(fabs(d.dt()), fabs(target_dt))))
+    throw MsPASSError(caller + ": external TimeSeries dt does not match "
+                               "target_sample_interval",
+                      ErrorSeverity::Invalid);
+}
 void validate_leaf_window_fd(const AntelopePf &mdleaf, const TimeWindow &fftwin,
                              const string &leaf_name,
                              const string &base_error) {
@@ -237,7 +264,7 @@ FrequencyDomainGIDDecon::FrequencyDomainGIDDecon(const AntelopePf &mdtoplevel)
                             "deconvolution window must be inside full window",
                         ErrorSeverity::Invalid);
     noise_component = mdgid.get<int>("noise_component");
-    double target_dt = mdgid.get<double>("target_sample_interval");
+    target_dt = mdgid.get<double>("target_sample_interval");
     int maxns = static_cast<int>((fftwin.end - fftwin.start) / target_dt) + 1;
     int nfft = nextPowerOf2(maxns);
     mdgid.put("operator_nfft", nfft);
@@ -311,6 +338,8 @@ FrequencyDomainGIDDecon::~FrequencyDomainGIDDecon() {
 }
 
 void FrequencyDomainGIDDecon::changeparameter(const Metadata &md) {
+  validate_frequency_gid_leaf_window(
+      md, fftwin, "FrequencyDomainGIDDecon::changeparameter");
   if (has_frequency_gid_level_parameters(md))
     throw MsPASSError("FrequencyDomainGIDDecon::changeparameter: GID-level "
                       "window, iteration, and shaping parameters require "
@@ -359,6 +388,8 @@ int FrequencyDomainGIDDecon::loadwavelet(const TimeSeries &wavelet) {
     throw MsPASSError("FrequencyDomainGIDDecon::loadwavelet: external wavelet "
                       "is empty",
                       ErrorSeverity::Invalid);
+  validate_frequency_external_series_dt(
+      wavelet, target_dt, "FrequencyDomainGIDDecon::loadwavelet");
   external_wavelet = wavelet;
   external_wavelet_loaded = true;
   return 0;
@@ -378,6 +409,8 @@ int FrequencyDomainGIDDecon::loadnoise(const TimeSeries &noise_in) {
     throw MsPASSError("FrequencyDomainGIDDecon::loadnoise: external noise is "
                       "empty",
                       ErrorSeverity::Invalid);
+  validate_frequency_external_series_dt(
+      noise_in, target_dt, "FrequencyDomainGIDDecon::loadnoise");
   external_noise = noise_in;
   external_noise_loaded = true;
   external_noise_spectrum_loaded = false;
@@ -398,10 +431,11 @@ int FrequencyDomainGIDDecon::loadnoise(const CoreTimeSeries &noise_in) {
 }
 
 int FrequencyDomainGIDDecon::loadnoise(const PowerSpectrum &noise_spectrum_in) {
-  if (decon_type == MULTI_TAPER)
+  if (decon_type != NS_GID)
     throw MsPASSError("FrequencyDomainGIDDecon::loadnoise: external "
-                      "PowerSpectrum noise is not supported for multi_taper "
-                      "GID; pass a TimeSeries noise estimate",
+                      "PowerSpectrum noise is only supported for ns_gid; pass "
+                      "a TimeSeries noise estimate for multi_taper or use the "
+                      "configured noise window for other GID modes",
                       ErrorSeverity::Invalid);
   ValidatePowerSpectrumCoversDC(noise_spectrum_in,
                                 "FrequencyDomainGIDDecon::loadnoise");
