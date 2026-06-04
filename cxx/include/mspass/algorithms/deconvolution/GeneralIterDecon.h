@@ -8,9 +8,11 @@ namespace mspass::algorithms::deconvolution {
  * \brief Deprecated compatibility alias for TimeDomainGIDDecon.
  *
  * GeneralIterDecon was replaced by TimeDomainGIDDecon on the generalized
- * iterative deconvolution branch.  This alias preserves C++ source
- * compatibility for code that still includes the old header.  New code should
- * include TimeDomainGIDDecon.h and use TimeDomainGIDDecon directly.
+ * iterative deconvolution branch.  This alias keeps old include paths and
+ * non-copy uses source-compatible.  The old copy-constructor behavior is not
+ * preserved because TimeDomainGIDDecon owns processor state that is not safely
+ * copyable.  New code should include TimeDomainGIDDecon.h and use
+ * TimeDomainGIDDecon directly.
  */
 using GeneralIterDecon [[deprecated("Use TimeDomainGIDDecon instead")]] =
     TimeDomainGIDDecon;

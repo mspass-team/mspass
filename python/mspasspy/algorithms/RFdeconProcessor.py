@@ -80,23 +80,20 @@ def _get_pf_branch_with_legacy_fallback(pfhandle, preferred, legacy):
 
 
 def _read_pf_text(pf):
-    search_paths = []
     if os.path.isabs(pf):
-        search_paths.append(pf)
+        search_paths = [pf]
     else:
-        search_paths.append(pf)
         pfpath = os.environ.get("PFPATH")
         if pfpath:
-            search_paths.extend(os.path.join(path, pf) for path in pfpath.split(":"))
-    parts = []
+            search_paths = [os.path.join(path, pf) for path in pfpath.split(":")]
+        else:
+            search_paths = [pf]
     for path in search_paths:
         try:
             with open(path, encoding="utf-8") as fp:
-                parts.append(fp.read())
+                return fp.read()
         except OSError:
             continue
-    if parts:
-        return "\n".join(parts)
     return None
 
 
@@ -246,6 +243,7 @@ class RFdeconProcessor:
             "algorithm": self.algorithm,
             "pf": self.pf,
             "_pf_text": self._pf_text,
+            "md": Metadata(self.md),
         }
         attrs = ["dvector", "wvector", "nvector"]
         if self.__is_3c_engine:
@@ -262,9 +260,37 @@ class RFdeconProcessor:
         return state
 
     def __setstate__(self, state):
+        alg = state["algorithm"]
+        if alg not in ("GeneralizedIterative", "TimeDomainGID", "FrequencyDomainGID"):
+            self.algorithm = alg
+            self.pf = state["pf"]
+            self._pf_text = state.get("_pf_text")
+            self.md = Metadata(state["md"])
+            self.__is_3c_engine = False
+            if alg == "LeastSquares":
+                self.processor = LeastSquareDecon(self.md)
+                self.__uses_noise = False
+            elif alg == "TimeDomainLeastSquares":
+                self.processor = TimeDomainLeastSquareDecon(self.md)
+                self.__uses_noise = False
+            elif alg == "WaterLevel":
+                self.processor = WaterLevelDecon(self.md)
+                self.__uses_noise = False
+            elif alg in ("MultiTaperPowerXcor", "MultiTaperXcor"):
+                self.processor = MultiTaperXcorDecon(self.md)
+                self.__uses_noise = True
+            elif alg in ("MultiTaperPowerSpecDiv", "MultiTaperSpecDiv"):
+                self.processor = MultiTaperSpecDivDecon(self.md)
+                self.__uses_noise = True
+            else:
+                raise RuntimeError("Illegal value for alg=" + alg)
+            for attr, value in state.items():
+                if attr not in ("algorithm", "pf", "_pf_text", "md"):
+                    setattr(self, attr, value)
+            return
         self.__init__(state["algorithm"], state["pf"], _pf_text=state.get("_pf_text"))
         for attr, value in state.items():
-            if attr not in ("algorithm", "pf", "_pf_text"):
+            if attr not in ("algorithm", "pf", "_pf_text", "md"):
                 setattr(self, attr, value)
 
     def loaddata(self, d, dtype="Seismogram", component=0, window=False):

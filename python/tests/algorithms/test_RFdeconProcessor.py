@@ -188,6 +188,35 @@ def test_RFdeconProcessor_pickle_is_self_contained_without_pfpath(alg):
         os.environ.pop("PFPATH", None)
 
 
+def test_RFdeconProcessor_pickle_uses_same_pf_when_pfpath_has_multiple_matches(
+    tmp_path,
+):
+    pf1 = tmp_path / "pf1"
+    pf2 = tmp_path / "pf2"
+    pf1.mkdir()
+    pf2.mkdir()
+    text = open("data/pf/RFdeconProcessor.pf", encoding="utf-8").read()
+    (pf1 / "RFdeconProcessor.pf").write_text(text)
+    (pf2 / "RFdeconProcessor.pf").write_text(
+        text.replace("damping_factor 1.0", "damping_factor 0.123", 1)
+    )
+    old_pfpath = os.environ.get("PFPATH")
+    os.environ["PFPATH"] = f"{pf1}:{pf2}"
+    try:
+        processor = RFdeconProcessor(alg="LeastSquares")
+        original_damping = processor.md["damping_factor"]
+        payload = pickle.dumps(processor)
+        os.environ.pop("PFPATH", None)
+        restored = pickle.loads(payload)
+        assert restored.md["damping_factor"] == original_damping
+        assert dict(restored.md) == dict(processor.md)
+    finally:
+        if old_pfpath is None:
+            os.environ.pop("PFPATH", None)
+        else:
+            os.environ["PFPATH"] = old_pfpath
+
+
 def test_RFdecon():
     """
     Test program for RFdecon function.
@@ -225,7 +254,7 @@ def test_RFdecon():
         assert d_decon.live
         print(alg, d_decon.npts)
 
-    # repeat the same loop as above but pass the engine as an arguments
+    # repeat the same loop as above but pass the engine as an argument
     # Main difference here is we try before and after running the engine
     # through pickle.  That simulates how dask/spark would handle this
     # if RFdecon is used in a map operator
@@ -399,7 +428,7 @@ def test_RFdecon_error_handlers():
     This test function tests error handlers for RFdecon function.
     Key things to test are not dependent upon the algorithm so we don't
     need a loop of algorithm names like the tests above.   Most errors
-    just kill the return but the content can be variable.  All the possiblel
+    just kill the return but the content can be variable.  All the possible
     variations in what would be posted to elog are too difficult to cover
     so we only test generic handling as kills.
     """
