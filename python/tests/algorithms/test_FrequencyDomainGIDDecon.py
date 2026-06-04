@@ -327,11 +327,23 @@ def test_FrequencyDomainGIDDecon_changeparameter_rejects_leaf_dt_drift():
         engine.changeparameter(leaf_md)
 
 
+def test_FrequencyDomainGIDDecon_changeparameter_rejects_leaf_shaping_dt_drift():
+    pf = pfread("./data/pf/FrequencyDomainGIDDecon.pf")
+    engine = FrequencyDomainGIDDecon(pf)
+    leaf_md = pf.get_branch("deconvolution_operator_type").get_branch("least_square")
+    leaf_md["shaping_wavelet_dt"] = 0.1
+
+    with pytest.raises(MsPASSError, match="shaping_wavelet_dt"):
+        engine.changeparameter(leaf_md)
+
+
 @pytest.mark.parametrize(
     "key,value",
     [
         ("residual_fractional_improvement_floor", 1.0e-3),
         ("ns_gid_refit_interval", 2),
+        ("lag_weight_penalty_scale_factor", 0.5),
+        ("lag_weight_function_width", 5),
     ],
 )
 def test_FrequencyDomainGIDDecon_changeparameter_rejects_gid_keys_on_leaf(

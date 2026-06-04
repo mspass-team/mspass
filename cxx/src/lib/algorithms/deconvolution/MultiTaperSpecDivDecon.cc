@@ -92,15 +92,6 @@ int MultiTaperSpecDivDecon::read_metadata(const Metadata &md, bool refresh) {
                         ErrorSeverity::Invalid);
     }
     int seql = nseq - 1;
-    /* taperlen must be less than or equal nfft */
-    /* old - this can not happen with algorithm change
-    if(taperlen>nfft)
-        throw MsPASSError(base_error
-                            +"illegal taper_length parameter.\ntaper_length must
-    be less than or equal nfft computed from decon time window");
-                                  */
-    /* This is a bit ugly, but the finite set of parameters that change make
-    this the best approach I (glp) can see */
     bool parameters_changed(false);
     if (refresh) {
       if ((nfft != nfft_old) || (nseq != nseq_old) || (taperlen != tl_old) ||

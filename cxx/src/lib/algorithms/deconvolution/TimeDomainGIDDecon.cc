@@ -1,6 +1,7 @@
 #include "mspass/algorithms/deconvolution/TimeDomainGIDDecon.h"
 #include "gsl/gsl_cblas.h"
 #include "mspass/algorithms/algorithms.h"
+#include "mspass/algorithms/deconvolution/GIDDeconUtil.h"
 #include "mspass/algorithms/deconvolution/LeastSquareDecon.h"
 #include "mspass/algorithms/deconvolution/MultiTaperXcorDecon.h"
 #include "mspass/algorithms/deconvolution/NoiseStableDecon.h"
@@ -14,7 +15,6 @@
 #include <cmath>
 #include <math.h>
 #include <list>
-#include "misc/blas.h"
 #include <vector>
 namespace mspass::algorithms::deconvolution {
 using namespace std;
@@ -374,118 +374,6 @@ vector<double> amp3c(dmatrix &d) {
   return result;
 }
 
-double fir_self_overlap(const vector<double> &fir, const int col0_i,
-                        const int col0_j, const int ncols) {
-  const int nf = static_cast<int>(fir.size());
-  const int offset = col0_i - col0_j;
-  const int p_start = max({0, -col0_i, -offset});
-  const int p_end = min({nf, ncols - col0_i, nf - offset});
-  const int n = p_end - p_start;
-  if (n <= 0)
-    return 0.0;
-  return cblas_ddot(n, &(fir[p_start]), 1, &(fir[p_start + offset]), 1);
-}
-
-double fir_data_overlap(const vector<double> &fir, const CoreSeismogram &target,
-                        const int component, const int col0) {
-  const int nf = static_cast<int>(fir.size());
-  const int p_start = max(0, -col0);
-  const int p_end = min(nf, static_cast<int>(target.npts()) - col0);
-  const int n = p_end - p_start;
-  if (n <= 0)
-    return 0.0;
-  return cblas_ddot(n, &(fir[p_start]), 1,
-                    target.u.get_address(component, col0 + p_start), 3);
-}
-
-vector<double> solve_dense_system(const vector<vector<double>> &a,
-                                  const vector<double> &b) {
-  const string base_error("TimeDomainGIDDecon::solve_dense_system: ");
-  const int n = b.size();
-  vector<double> result(n, 0.0);
-  if (n <= 0)
-    return result;
-  vector<double> A(n * n, 0.0);
-  vector<double> B(b);
-  for (int row = 0; row < n; ++row) {
-    for (int col = 0; col < n; ++col)
-      A[col * n + row] = a[row][col];
-  }
-  int nrhs = 1;
-  int n_lapack = n;
-  int lda = n;
-  int ldb = n;
-  int info = 0;
-  char lower = 'L';
-  dpotrf(&lower, n_lapack, &(A[0]), lda, info);
-  if (info == 0) {
-    n_lapack = n;
-    dpotrs(&lower, n_lapack, nrhs, &(A[0]), lda, &(B[0]), ldb, info);
-    if (info == 0)
-      return B;
-  }
-
-  for (int row = 0; row < n; ++row) {
-    B[row] = b[row];
-    for (int col = 0; col < n; ++col)
-      A[col * n + row] = a[row][col];
-  }
-  vector<int> ipiv(n, 0);
-  n_lapack = n;
-  dgesv(n_lapack, nrhs, &(A[0]), lda, &(ipiv[0]), &(B[0]), ldb, info);
-  if (info == 0)
-    result = B;
-  else
-    throw MsPASSError(base_error +
-                          "dense spike-amplitude refit system is singular",
-                      ErrorSeverity::Invalid);
-  return result;
-}
-
-void refit_spike_amplitudes(list<ThreeCSpike> &spikes,
-                            const CoreSeismogram &target,
-                            const vector<double> &actual_o_fir,
-                            const int actual_o_0,
-                            const double ridge_beta = 1.0e-10) {
-  const int nspikes = spikes.size();
-  if (nspikes <= 0)
-    return;
-  vector<ThreeCSpike *> spike_ptrs;
-  spike_ptrs.reserve(nspikes);
-  for (auto &spk : spikes)
-    spike_ptrs.push_back(&spk);
-  vector<vector<double>> gram(nspikes, vector<double>(nspikes, 0.0));
-  for (int i = 0; i < nspikes; ++i) {
-    int col0_i = spike_ptrs[i]->col - actual_o_0;
-    for (int j = i; j < nspikes; ++j) {
-      int col0_j = spike_ptrs[j]->col - actual_o_0;
-      double gij =
-          fir_self_overlap(actual_o_fir, col0_i, col0_j, target.npts());
-      gram[i][j] = gij;
-      gram[j][i] = gij;
-    }
-  }
-  double maxdiag(0.0);
-  for (int i = 0; i < nspikes; ++i)
-    maxdiag = max(maxdiag, fabs(gram[i][i]));
-  double damping = maxdiag * ridge_beta;
-  for (int i = 0; i < nspikes; ++i)
-    gram[i][i] += damping;
-  for (int component = 0; component < 3; ++component) {
-    vector<double> rhs(nspikes, 0.0);
-    for (int i = 0; i < nspikes; ++i) {
-      int col0 = spike_ptrs[i]->col - actual_o_0;
-      rhs[i] = fir_data_overlap(actual_o_fir, target, component, col0);
-    }
-    vector<double> amps = solve_dense_system(gram, rhs);
-    for (int i = 0; i < nspikes; ++i)
-      spike_ptrs[i]->u[component] = amps[i];
-  }
-  for (auto &spk : spikes)
-    spk.amp =
-        sqrt(spk.u[0] * spk.u[0] + spk.u[1] * spk.u[1] + spk.u[2] * spk.u[2]);
-}
-
 void rescale_spike_amplitude(ThreeCSpike &spk, const CoreSeismogram &target,
                              const vector<double> &actual_o_fir,
                              const int actual_o_0) {
@@ -496,7 +384,7 @@ void rescale_spike_amplitude(ThreeCSpike &spk, const CoreSeismogram &target,
     return;
   int col0 = spk.col - actual_o_0;
   for (int k = 0; k < 3; ++k) {
-    double num = fir_data_overlap(actual_o_fir, target, k, col0);
+    double num = FIRDataOverlap(actual_o_fir, target, k, col0);
     spk.u[k] = num / denom;
   }
   spk.amp =
@@ -1105,8 +993,8 @@ void TimeDomainGIDDecon::process() {
           accepted = true;
           if (decon_type == NS_GID && ns_refit_interval > 0 &&
               (static_cast<int>(spikes.size()) % ns_refit_interval) == 0) {
-            refit_spike_amplitudes(spikes, d_decon, actual_o_fir, actual_o_0,
-                                   ns_ridge_beta);
+            RefitSpikeAmplitudes(spikes, d_decon, actual_o_fir, actual_o_0,
+                                 ns_ridge_beta);
             r = d_decon;
             for (auto sptr = spikes.begin(); sptr != spikes.end(); ++sptr)
               this->update_residual_matrix(*sptr);
@@ -1122,8 +1010,8 @@ void TimeDomainGIDDecon::process() {
     } while (this->has_not_converged());
     process_stage = "refit sparse amplitudes";
     double ridge_beta = (decon_type == NS_GID) ? ns_ridge_beta : 1.0e-10;
-    refit_spike_amplitudes(spikes, d_decon, actual_o_fir, actual_o_0,
-                           ridge_beta);
+    RefitSpikeAmplitudes(spikes, d_decon, actual_o_fir, actual_o_0,
+                         ridge_beta);
     process_stage = "recompute final residual";
     r = d_decon;
     for (auto sptr = spikes.begin(); sptr != spikes.end(); ++sptr)
