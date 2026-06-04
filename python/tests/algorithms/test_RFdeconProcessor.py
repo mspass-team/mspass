@@ -419,7 +419,12 @@ def test_RFdecon_generalized_iterative_accepts_external_wavelet():
         assert rf.npts > 0
         assert np.isfinite(rf.data).all()
         assert rf.is_defined("RFdecon_properties")
-        assert rf["RFdecon_properties"]["iteration_count"] > 0
+        qc = rf["RFdecon_properties"]
+        assert qc["iteration_count"] > 0
+        assert "prediction_error" not in qc
+        assert qc["deconvolution_type"] == "least_square"
+        assert "deconvolution_data_window_start" in qc
+        assert "target_sample_interval" in qc
     finally:
         if old_pfpath is None:
             os.environ.pop("PFPATH", None)

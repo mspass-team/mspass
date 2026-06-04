@@ -608,11 +608,9 @@ class RFdeconProcessor:
             centered (i.e. t0 is rounded n/2 where n is the length of the vector
             returned).
         """
+        if self.__is_3c_engine:
+            return self.processor.actual_output()
         if hasattr(self, "dvector"):
-            if self.__is_3c_engine:
-                raise RuntimeError(
-                    "actual_output for GID engines is available after apply_3c"
-                )
             self.processor.loaddata(DoubleVector(self.dvector))
         if hasattr(self, "wvector"):
             self.processor.loadwavelet(DoubleVector(self.wvector))
@@ -630,12 +628,9 @@ class RFdeconProcessor:
         scalar operators it is the optional post-deconvolution
         shaping/bandlimiting wavelet.
         """
+        if self.__is_3c_engine:
+            return self.processor.output_shaping_wavelet()
         if hasattr(self, "dvector"):
-            if self.__is_3c_engine:
-                raise RuntimeError(
-                    "output_shaping_wavelet for GID engines is available "
-                    "after apply_3c"
-                )
             self.processor.loaddata(DoubleVector(self.dvector))
         if hasattr(self, "wvector"):
             self.processor.loadwavelet(DoubleVector(self.wvector))
@@ -667,12 +662,9 @@ class RFdeconProcessor:
         The result is returned as  TimeSeries object.
         """
 
+        if self.__is_3c_engine:
+            return self.processor.inverse_wavelet()
         if hasattr(self, "dvector"):
-            if self.__is_3c_engine:
-                raise RuntimeError(
-                    "inverse_filter for GID engines is available from the "
-                    "underlying inverse_wavelet method after apply_3c"
-                )
             self.processor.loaddata(DoubleVector(self.dvector))
         if hasattr(self, "wvector"):
             self.processor.loadwavelet(DoubleVector(self.wvector))
@@ -695,6 +687,8 @@ class RFdeconProcessor:
         # merge in an output of the implementations QCMetrics method
         qcmeth_output = dict(self.processor.QCMetrics())
         qcmd.update(qcmeth_output)
+        if self.__is_3c_engine:
+            return dict(qcmd)
         # always compute the prediction error
         perr = self._prediction_error()
         qcmd[prediction_error_key] = perr
@@ -977,7 +971,7 @@ def RFdecon(
                     )
                     processor.loadnoise(nts, dtype="TimeSeries")
             result = processor.apply_3c(d)
-            subdoc = dict(processor.processor.QCMetrics())
+            subdoc = processor.QCMetrics()
             subdoc["algorithm"] = processor.algorithm
             result[QCdocument_key] = subdoc
             return result
