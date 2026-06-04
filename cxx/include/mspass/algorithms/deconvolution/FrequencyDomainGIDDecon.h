@@ -18,6 +18,14 @@
 #include <vector>
 
 namespace mspass::algorithms::deconvolution {
+/*! \brief Frequency-domain generalized iterative deconvolution.
+
+This engine shares the sparse GID iteration semantics of TimeDomainGIDDecon
+but applies the candidate inverse operator in the frequency domain.  Processing
+requires both a loaded signal window and residual-domain noise window.  External
+PowerSpectrum noise is only an ns_gid inverse-operator regularization estimate;
+it does not replace load(d, dwin, nwin) or loadnoise(d, nwin).
+*/
 class FrequencyDomainGIDDecon : public ScalarDecon {
 public:
   FrequencyDomainGIDDecon(const mspass::utility::AntelopePf &md);
@@ -42,8 +50,11 @@ public:
   double noise_window_start() const { return this->nwin.start; };
   double noise_window_end() const { return this->nwin.end; };
   std::string configuration_pf_text() const { return this->config_pf_text; };
-  bool configuration_pickle_allowed() const {
-    return this->configuration_pickleable;
+  bool leaf_parameters_have_changed() const {
+    return this->leaf_parameters_changed;
+  };
+  mspass::utility::Metadata changed_leaf_parameters() const {
+    return this->changed_leaf_metadata;
   };
   bool external_wavelet_is_loaded() const {
     return this->external_wavelet_loaded;
@@ -94,8 +105,9 @@ private:
   bool external_wavelet_loaded, external_noise_loaded,
       external_noise_spectrum_loaded, external_wavelet_allowed;
   bool processed;
-  bool configuration_pickleable;
   bool residual_noise_from_external;
+  bool leaf_parameters_changed;
+  mspass::utility::Metadata changed_leaf_metadata;
   std::vector<double> actual_o_fir;
   std::list<ThreeCSpike> spikes;
   double ns_peak_sigma_threshold, ns_peak_probability_threshold;

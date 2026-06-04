@@ -436,17 +436,13 @@ PYBIND11_MODULE(deconvolution, m) {
     .def("QCMetrics",&TimeDomainGIDDecon::QCMetrics,"Return QC metrics")
     .def(py::pickle(
       [](const TimeDomainGIDDecon &self) {
-        if (!self.configuration_pickle_allowed())
-          throw py::type_error(
-              "TimeDomainGIDDecon pickling preserves configuration and "
-              "external wavelet/noise only.  It does not preserve loaded "
-              "data, processed output, residuals, or sparse spikes.  Rebuild "
-              "the engine from a parameter file after changeparameter.");
         return py::make_tuple(
             self.configuration_pf_text(), self.external_wavelet_is_loaded(),
             self.loaded_external_wavelet(), self.external_noise_is_loaded(),
             self.loaded_external_noise(), self.external_noise_spectrum_is_loaded(),
-            self.loaded_external_noise_spectrum());
+            self.loaded_external_noise_spectrum(),
+            self.leaf_parameters_have_changed(),
+            self.changed_leaf_parameters());
       },
       [](py::tuple t) {
         stringstream sstm(t[0].cast<std::string>());
@@ -462,6 +458,8 @@ PYBIND11_MODULE(deconvolution, m) {
           engine->loadnoise(t[4].cast<TimeSeries>());
         if (t[5].cast<bool>())
           engine->loadnoise(t[6].cast<PowerSpectrum>());
+        if (t.size() > 8 && t[7].cast<bool>())
+          engine->changeparameter(t[8].cast<Metadata>());
         return engine;
       }
     ))
@@ -518,17 +516,13 @@ PYBIND11_MODULE(deconvolution, m) {
     .def("QCMetrics",&FrequencyDomainGIDDecon::QCMetrics,"Return QC metrics")
     .def(py::pickle(
       [](const FrequencyDomainGIDDecon &self) {
-        if (!self.configuration_pickle_allowed())
-          throw py::type_error(
-              "FrequencyDomainGIDDecon pickling preserves configuration and "
-              "external wavelet/noise only.  It does not preserve loaded "
-              "data, processed output, residuals, or sparse spikes.  Rebuild "
-              "the engine from a parameter file after changeparameter.");
         return py::make_tuple(
             self.configuration_pf_text(), self.external_wavelet_is_loaded(),
             self.loaded_external_wavelet(), self.external_noise_is_loaded(),
             self.loaded_external_noise(), self.external_noise_spectrum_is_loaded(),
-            self.loaded_external_noise_spectrum());
+            self.loaded_external_noise_spectrum(),
+            self.leaf_parameters_have_changed(),
+            self.changed_leaf_parameters());
       },
       [](py::tuple t) {
         stringstream sstm(t[0].cast<std::string>());
@@ -544,6 +538,8 @@ PYBIND11_MODULE(deconvolution, m) {
           engine->loadnoise(t[4].cast<TimeSeries>());
         if (t[5].cast<bool>())
           engine->loadnoise(t[6].cast<PowerSpectrum>());
+        if (t.size() > 8 && t[7].cast<bool>())
+          engine->changeparameter(t[8].cast<Metadata>());
         return engine;
       }
     ))

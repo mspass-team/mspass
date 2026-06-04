@@ -28,7 +28,7 @@ from decon_data_generators import (
 from mspasspy.algorithms.window import WindowData
 from mspasspy.algorithms.RFdeconProcessor import RFdeconProcessor, RFdecon
 from mspasspy.ccore.seismic import Seismogram
-from mspasspy.ccore.utility import Metadata, MsPASSError
+from mspasspy.ccore.utility import AntelopePf, Metadata, MsPASSError
 from mspasspy.algorithms.basic import ExtractComponent
 from mspasspy.util.seismic import print_metadata
 
@@ -207,6 +207,38 @@ def test_RFdeconProcessor_change_parameters_uses_public_engine_api():
         md = Metadata(processor.md)
         processor.change_parameters(md)
         assert dict(processor.md) == dict(md)
+
+        gid_processor = RFdeconProcessor(
+            alg="GeneralizedIterative", pf="TimeDomainGIDDecon.pf"
+        )
+        leaf_md = Metadata(
+            AntelopePf("TimeDomainGIDDecon.pf")
+            .get_branch("deconvolution_operator_type")
+            .get_branch("least_square")
+        )
+        leaf_md["damping_factor"] = 100.0
+        gid_processor.change_parameters(leaf_md)
+        payloads = [
+            pickle.loads(pickle.dumps(gid_processor)),
+            cloudpickle.loads(cloudpickle.dumps(gid_processor)),
+        ]
+        header, frames = serialize(gid_processor)
+        payloads.append(deserialize(header, frames))
+
+        wavelet = make_simulation_wavelet()
+        impulses = make_impulse_data()
+        seis0 = addnoise(
+            convolve_wavelet(impulses, wavelet), nscale=0.0, padlength=800
+        )
+        rf_changed = RFdecon(
+            Seismogram(seis0), alg="GeneralizedIterative", engine=gid_processor
+        )
+        for restored in payloads:
+            rf_restored = RFdecon(
+                Seismogram(seis0), alg="GeneralizedIterative", engine=restored
+            )
+            assert rf_restored.live
+            assert np.allclose(np.asarray(rf_changed.data), np.asarray(rf_restored.data))
     finally:
         if old_pfpath is None:
             os.environ.pop("PFPATH", None)

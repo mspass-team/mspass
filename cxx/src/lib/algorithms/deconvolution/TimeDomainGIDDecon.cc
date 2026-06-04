@@ -102,6 +102,7 @@ TimeDomainGIDDecon::TimeDomainGIDDecon(const AntelopePf &mdtoplevel)
     external_noise_loaded = false;
     external_noise_spectrum_loaded = false;
     residual_noise_from_external = false;
+    leaf_parameters_changed = false;
     switch (decon_type) {
     case WATER_LEVEL:
       mdleaf = md.get_branch("water_level");
@@ -174,7 +175,6 @@ TimeDomainGIDDecon::TimeDomainGIDDecon(const AntelopePf &mdtoplevel)
     external_wavelet_allowed = GetBoolDefault(
         mdgiter, "ns_gid_external_wavelet_allowed", true);
     this->invalidate_processing_state();
-    configuration_pickleable = true;
   } catch (...) {
     throw;
   };
@@ -210,12 +210,13 @@ void TimeDomainGIDDecon::changeparameter(const Metadata &md) {
   const bool cnr_mode(this->decon_type == CNR);
   ValidateGIDLeafOperatorMetadata(
       md, fftwin, target_dt, "TimeDomainGIDDecon::changeparameter", cnr_mode);
-  configuration_pickleable = false;
   this->invalidate_processing_state();
   if (cnr_mode)
     this->cnrprocessor->changeparameter(md);
   else
     this->preprocessor->changeparameter(md);
+  changed_leaf_metadata = Metadata(md);
+  leaf_parameters_changed = true;
 }
 
 CoreTimeSeries TimeDomainGIDDecon::ideal_output() {

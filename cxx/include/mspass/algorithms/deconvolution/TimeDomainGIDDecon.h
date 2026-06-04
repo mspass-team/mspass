@@ -33,6 +33,12 @@ processed only after loading signal and noise windows, either with
 load(d, dwin, nwin) or with loadnoise followed by load.  External prepared
 wavelets and noise estimates can be supplied explicitly; otherwise the engine
 uses the configured receiver-function compatibility behavior.
+
+External TimeSeries noise can supply both the inverse-operator noise estimate
+and, when no windowed residual noise has been loaded, the residual-domain
+stopping threshold.  External PowerSpectrum noise is only an inverse-operator
+regularization estimate for ns_gid; callers must still load residual-domain
+noise with load(d, dwin, nwin) or loadnoise(d, nwin) before process().
 */
 
 class TimeDomainGIDDecon : public ScalarDecon {
@@ -62,8 +68,11 @@ public:
   double noise_window_start() const { return this->nwin.start; };
   double noise_window_end() const { return this->nwin.end; };
   std::string configuration_pf_text() const { return this->config_pf_text; };
-  bool configuration_pickle_allowed() const {
-    return this->configuration_pickleable;
+  bool leaf_parameters_have_changed() const {
+    return this->leaf_parameters_changed;
+  };
+  mspass::utility::Metadata changed_leaf_parameters() const {
+    return this->changed_leaf_metadata;
   };
   bool external_wavelet_is_loaded() const {
     return this->external_wavelet_loaded;
@@ -153,8 +162,9 @@ private:
   bool external_wavelet_loaded, external_noise_loaded,
       external_noise_spectrum_loaded, external_wavelet_allowed;
   bool processed;
-  bool configuration_pickleable;
   bool residual_noise_from_external;
+  bool leaf_parameters_changed;
+  mspass::utility::Metadata changed_leaf_metadata;
 
   /* This parameter is set in the constructor.  It would normally be half the
   length of the fir representation of the inverse wavelet.*/

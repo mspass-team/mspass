@@ -227,11 +227,11 @@ class RFdeconProcessor:
         state = {
             "algorithm": self.algorithm,
             "pf": self.pf,
+            "md": Metadata(self.md),
         }
         if self.__is_3c_engine:
             state["_pf_text"] = self._pf_text
-        else:
-            state["md"] = Metadata(self.md)
+            state["processor"] = self.processor
         attrs = ["dvector", "wvector", "nvector"]
         if self.__is_3c_engine:
             if hasattr(self, "wtimeseries"):
@@ -275,9 +275,18 @@ class RFdeconProcessor:
                 if attr not in ("algorithm", "pf", "_pf_text", "md"):
                     setattr(self, attr, value)
             return
-        self.__init__(state["algorithm"], state["pf"], _pf_text=state.get("_pf_text"))
+        self.algorithm = alg
+        self.pf = state["pf"]
+        self._pf_text = state.get("_pf_text")
+        self.md = Metadata(state["md"])
+        self.processor = state.get("processor")
+        if self.processor is None:
+            self.__init__(state["algorithm"], state["pf"], _pf_text=state.get("_pf_text"))
+        else:
+            self.__uses_noise = True
+            self.__is_3c_engine = True
         for attr, value in state.items():
-            if attr not in ("algorithm", "pf", "_pf_text", "md"):
+            if attr not in ("algorithm", "pf", "_pf_text", "md", "processor"):
                 setattr(self, attr, value)
 
     def loaddata(self, d, dtype="Seismogram", component=0, window=False):
@@ -627,11 +636,13 @@ class RFdeconProcessor:
         :param md: is a mspass.Metadata object containing required parameters
             for the alternative algorithm.
         """
-        self.md = Metadata(md)
+        parameter_md = Metadata(md)
+        if not self.__is_3c_engine:
+            self.md = parameter_md
         if hasattr(self.processor, "changeparameter"):
-            self.processor.changeparameter(self.md)
+            self.processor.changeparameter(parameter_md)
         elif hasattr(self.processor, "change_parameter"):
-            self.processor.change_parameter(self.md)
+            self.processor.change_parameter(parameter_md)
         else:
             raise AttributeError(
                 "wrapped deconvolution processor does not expose a parameter "

@@ -255,19 +255,20 @@ Three-component and iterative operators
     evaluated.
 
     For ``ns_gid``, externally supplied noise and the configured noise window
-    serve different roles.  External noise passed to ``loadnoise`` or the
-    Python wrappers is used by the stable inverse operator to estimate
-    frequency-dependent regularization and gain limits.  The input datum's
-    ``noise_window`` is still loaded by ``engine.load`` and is used to estimate
-    residual-domain spike significance and residual-noise stopping.  Passing
-    external noise therefore does not replace the residual-domain noise window;
-    callers that want both roles to use the same noise segment should pass that
-    segment externally and configure ``noise_window`` to the matching time
-    interval.
+    serve different roles.  External TimeSeries noise passed to ``loadnoise`` or
+    the Python wrappers is used by the stable inverse operator to estimate
+    frequency-dependent regularization and gain limits.  When a windowed noise
+    segment has already been loaded, that window remains the residual-domain
+    noise estimate for spike significance and residual-noise stopping.  External
+    PowerSpectrum noise is only an inverse-operator regularization estimate; a
+    direct engine call sequence such as ``loadnoise(power_spectrum); load(d,
+    dwin); process()`` is incomplete because no residual-domain noise window has
+    been loaded.  Use ``load(d, dwin, nwin)`` or ``loadnoise(d, nwin)`` as well.
 
     Direct ``TimeDomainGIDDecon`` and ``FrequencyDomainGIDDecon`` engine
     objects are pickleable for distributed wrapper use.  Their pickle state
-    preserves the parameter-file configuration plus any externally loaded
+    preserves the parameter-file configuration, successful leaf-operator
+    changes made through ``changeparameter()``, and any externally loaded
     wavelet, TimeSeries noise, or PowerSpectrum noise.  It does not preserve
     loaded seismograms, processed receiver functions, residuals, sparse spike
     trains, or runtime QC state; a restored engine is a reusable configured

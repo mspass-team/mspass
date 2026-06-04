@@ -490,9 +490,27 @@ def test_TimeDomainGIDDecon_engine_is_pickleable_for_wrapper_use():
 
     changed = TimeDomainGIDDecon(pf)
     leaf_md = pf.get_branch("deconvolution_operator_type").get_branch("least_square")
+    leaf_md["damping_factor"] = 100.0
     changed.changeparameter(leaf_md)
-    with pytest.raises(TypeError, match="changeparameter"):
-        pickle.dumps(changed)
+    rf_changed = TimeDomainGIDRFDecon(
+        Seismogram(data),
+        changed,
+        signal_window=TimeWindow(-10.0, 20.0),
+        noise_window=TimeWindow(-35.0, -5.0),
+    )
+    for restored_changed in (
+        pickle.loads(pickle.dumps(changed)),
+        cloudpickle.loads(cloudpickle.dumps(changed)),
+        deserialize(*serialize(changed)),
+    ):
+        rf_restored = TimeDomainGIDRFDecon(
+            Seismogram(data),
+            restored_changed,
+            signal_window=TimeWindow(-10.0, 20.0),
+            noise_window=TimeWindow(-35.0, -5.0),
+        )
+        assert rf_restored.live
+        assert np.allclose(np.asarray(rf_changed.data), np.asarray(rf_restored.data))
 
 
 def test_TimeDomainGIDDecon_pickle_preserves_external_wavelet_and_noise(tmp_path):
@@ -536,6 +554,26 @@ def test_TimeDomainGIDDecon_pickle_preserves_external_wavelet_and_noise(tmp_path
     qc_spectrum = rf_spectrum["TimeDomainGIDDecon_properties"]
     assert qc_spectrum["ns_gid_external_wavelet_used"]
     assert qc_spectrum["ns_gid_external_noise_spectrum_used"]
+
+
+def test_TimeDomainGIDDecon_powerspectrum_noise_still_requires_residual_noise(
+    tmp_path,
+):
+    data = _make_single_spike_convolution_data()
+    pf = _ns_gid_pf(
+        tmp_path,
+        "TimeDomainGIDDecon.pf",
+        "time_domain_gid_deconvolution",
+    )
+    engine = TimeDomainGIDDecon(pf)
+    engine.loadnoise(
+        PowerSpectrum(
+            Metadata(), DoubleVector([1.0, 1.0, 1.0]), 1.0, "valid", -1.0, 1.0, 3
+        )
+    )
+    assert engine.load(data, TimeWindow(-10.0, 20.0)) == 0
+    with pytest.raises(MsPASSError, match="valid noise window has not been loaded"):
+        engine.process()
 
 
 def test_TimeDomainGIDDecon_engine_reuse_is_stable():

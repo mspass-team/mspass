@@ -97,6 +97,7 @@ FrequencyDomainGIDDecon::FrequencyDomainGIDDecon(const AntelopePf &mdtoplevel)
     external_noise_loaded = false;
     external_noise_spectrum_loaded = false;
     residual_noise_from_external = false;
+    leaf_parameters_changed = false;
     external_wavelet_allowed = GetBoolDefault(
         mdgid, "ns_gid_external_wavelet_allowed", true);
     ns_peak_sigma_threshold =
@@ -112,7 +113,6 @@ FrequencyDomainGIDDecon::FrequencyDomainGIDDecon(const AntelopePf &mdtoplevel)
     ns_ridge_beta =
         GetDoubleDefault(mdgid, "ns_gid_ridge_beta", 1.0e-10);
     this->invalidate_processing_state();
-    configuration_pickleable = true;
   } catch (...) {
     throw;
   };
@@ -145,12 +145,13 @@ void FrequencyDomainGIDDecon::changeparameter(const Metadata &md) {
   ValidateGIDLeafOperatorMetadata(
       md, fftwin, target_dt, "FrequencyDomainGIDDecon::changeparameter",
       cnr_mode);
-  configuration_pickleable = false;
   this->invalidate_processing_state();
   if (cnr_mode)
     cnrprocessor->changeparameter(md);
   else
     preprocessor->changeparameter(md);
+  changed_leaf_metadata = Metadata(md);
+  leaf_parameters_changed = true;
 }
 
 int FrequencyDomainGIDDecon::load(const CoreSeismogram &draw,
