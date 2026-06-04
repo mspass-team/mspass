@@ -274,6 +274,15 @@ Three-component and iterative operators
     trains, or runtime QC state; a restored engine is a reusable configured
     operator, not a copy of the last processed datum.
 
+    For Dask or Spark jobs, build and configure the reusable deconvolution
+    processor on the driver, then scatter or close over that configured object.
+    Avoid loading per-datum scalar data into an ``RFdeconProcessor`` before
+    scattering it, because scalar compatibility mode intentionally preserves
+    cached input vectors for post-processing diagnostics.  For GID processors,
+    externally loaded reusable wavelets/noise are synchronized into the C++
+    engine before serialization and are not duplicated as separate Python
+    arrays in the pickle payload.
+
     The ``multi_taper`` inverse mode in both GID engines currently uses
     ``MultiTaperXcorDecon`` as the core C++ inverse operator, with the
     power-stabilized untapered-phase semantics described above.  In

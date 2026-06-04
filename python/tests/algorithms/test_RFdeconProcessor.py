@@ -746,9 +746,34 @@ def test_RFdeconProcessor_apply_3c_uses_loaded_external_wavelet(tmp_path):
     processor = RFdeconProcessor(alg="GeneralizedIterative", pf=str(pf))
     processor.loadwavelet(wavelet, dtype="TimeSeries")
     processor.loadnoise(data, dtype="Seismogram", component=2, window=True)
+    state = processor.__getstate__()
+    assert "processor" in state
+    assert "wvector" not in state
+    assert "wtimeseries" not in state
+    assert "nvector" not in state
+    assert "ntimeseries" not in state
+
+    payload = cloudpickle.dumps(processor)
+    old_pfpath = os.environ.get("PFPATH")
+    os.environ.pop("PFPATH", None)
+    try:
+        restored = cloudpickle.loads(payload)
+        header, frames = serialize(processor)
+        restored_dask = deserialize(header, frames)
+    finally:
+        if old_pfpath is not None:
+            os.environ["PFPATH"] = old_pfpath
     result = processor.apply_3c(data)
+    restored_result = restored.apply_3c(Seismogram(data))
+    restored_dask_result = restored_dask.apply_3c(Seismogram(data))
 
     assert result.live
+    assert restored_result.live
+    assert restored_dask_result.live
+    assert np.allclose(np.asarray(result.data), np.asarray(restored_result.data))
+    assert np.allclose(
+        np.asarray(result.data), np.asarray(restored_dask_result.data)
+    )
     qc = dict(processor.processor.QCMetrics())
     assert qc["ns_gid_enabled"]
     assert qc["ns_gid_external_wavelet_used"]

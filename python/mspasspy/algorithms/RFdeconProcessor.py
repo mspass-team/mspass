@@ -130,6 +130,39 @@ class RFdeconProcessor:
         )
         return processor_str
 
+    def _sync_gid_external_state_to_engine(self):
+        """
+        Move Python-level GID external wavelet/noise caches into the C++ engine.
+
+        RFdeconProcessor.loadwavelet/loadnoise historically cache numpy arrays
+        on the Python wrapper.  For GID engines the C++ object is now the
+        serialized distributed state, so we synchronize those caches before
+        pickling and avoid serializing the same data twice.
+        """
+        if not self.__is_3c_engine:
+            return
+        target_dt = self.md.get_double("target_sample_interval")
+        if hasattr(self, "wvector"):
+            if hasattr(self, "wtimeseries"):
+                self.processor.loadwavelet(self.wtimeseries)
+            else:
+                self.processor.loadwavelet(
+                    _as_gid_timeseries(
+                        self.wvector, target_dt, self.dwin.start, "wavelet"
+                    )
+                )
+        if self.__uses_noise and hasattr(self, "nvector"):
+            if hasattr(self, "ntimeseries"):
+                self.processor.loadnoise(self.ntimeseries)
+            else:
+                self.processor.loadnoise(
+                    _as_gid_timeseries(
+                        self.nvector, target_dt, self.nwin.start, "noisedata"
+                    )
+                )
+        elif hasattr(self, "external_noise_spectrum"):
+            self.processor.loadnoise(self.external_noise_spectrum)
+
     def __init__(self, alg="LeastSquares", pf="RFdeconProcessor.pf", _pf_text=None):
         self.algorithm = alg
         self.__is_3c_engine = False
@@ -230,17 +263,12 @@ class RFdeconProcessor:
             "md": Metadata(self.md),
         }
         if self.__is_3c_engine:
+            self._sync_gid_external_state_to_engine()
             state["_pf_text"] = self._pf_text
             state["processor"] = self.processor
-        attrs = ["dvector", "wvector", "nvector"]
-        if self.__is_3c_engine:
-            if hasattr(self, "wtimeseries"):
-                attrs.remove("wvector")
-                attrs.append("wtimeseries")
-            if hasattr(self, "ntimeseries"):
-                attrs.remove("nvector")
-                attrs.append("ntimeseries")
-            attrs.append("external_noise_spectrum")
+            attrs = []
+        else:
+            attrs = ["dvector", "wvector", "nvector"]
         for attr in attrs:
             if hasattr(self, attr):
                 state[attr] = getattr(self, attr)
