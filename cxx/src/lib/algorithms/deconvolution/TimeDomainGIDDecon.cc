@@ -378,8 +378,6 @@ int TimeDomainGIDDecon::loadnoise(const CoreSeismogram &draw,
   };
 }
 int TimeDomainGIDDecon::loadwavelet(const TimeSeries &wavelet) {
-  this->invalidate_processing_state();
-  external_wavelet_loaded = false;
   if (!external_wavelet_allowed)
     throw MsPASSError("TimeDomainGIDDecon::loadwavelet: external wavelets are "
                       "disabled by ns_gid_external_wavelet_allowed",
@@ -394,6 +392,8 @@ int TimeDomainGIDDecon::loadwavelet(const TimeSeries &wavelet) {
                       ErrorSeverity::Invalid);
   ValidateExternalTimeSeriesSampleInterval(
       wavelet, target_dt, "TimeDomainGIDDecon::loadwavelet");
+  this->invalidate_processing_state();
+  external_wavelet_loaded = false;
   external_wavelet = wavelet;
   external_wavelet_loaded = true;
   return 0;
@@ -403,11 +403,6 @@ int TimeDomainGIDDecon::loadwavelet(const CoreTimeSeries &wavelet) {
   return this->loadwavelet(ts);
 }
 int TimeDomainGIDDecon::loadnoise(const TimeSeries &noise_in) {
-  this->invalidate_processing_state();
-  external_noise_loaded = false;
-  external_noise_spectrum_loaded = false;
-  const bool keep_residual_noise =
-      n.live() && n.npts() > 0 && !residual_noise_from_external;
   if (noise_in.dead())
     throw MsPASSError("TimeDomainGIDDecon::loadnoise: external noise is "
                       "marked dead",
@@ -417,6 +412,11 @@ int TimeDomainGIDDecon::loadnoise(const TimeSeries &noise_in) {
                       ErrorSeverity::Invalid);
   ValidateExternalTimeSeriesSampleInterval(
       noise_in, target_dt, "TimeDomainGIDDecon::loadnoise");
+  const bool keep_residual_noise =
+      n.live() && n.npts() > 0 && !residual_noise_from_external;
+  this->invalidate_processing_state();
+  external_noise_loaded = false;
+  external_noise_spectrum_loaded = false;
   external_noise = noise_in;
   external_noise_loaded = true;
   external_noise_spectrum_loaded = false;
@@ -441,9 +441,6 @@ int TimeDomainGIDDecon::loadnoise(const CoreTimeSeries &noise_in) {
   return this->loadnoise(ts);
 }
 int TimeDomainGIDDecon::loadnoise(const PowerSpectrum &noise_spectrum_in) {
-  this->invalidate_processing_state();
-  external_noise_loaded = false;
-  external_noise_spectrum_loaded = false;
   if (decon_type != NS_GID)
     throw MsPASSError("TimeDomainGIDDecon::loadnoise: external PowerSpectrum "
                       "noise is only supported for ns_gid; pass a TimeSeries "
@@ -452,6 +449,9 @@ int TimeDomainGIDDecon::loadnoise(const PowerSpectrum &noise_spectrum_in) {
                       ErrorSeverity::Invalid);
   ValidatePowerSpectrumCoversDC(noise_spectrum_in,
                                 "TimeDomainGIDDecon::loadnoise");
+  this->invalidate_processing_state();
+  external_noise_loaded = false;
+  external_noise_spectrum_loaded = false;
   external_noise_spectrum = noise_spectrum_in;
   external_noise_spectrum_loaded = true;
   external_noise_loaded = false;
@@ -680,7 +680,7 @@ void TimeDomainGIDDecon::process() {
     d_decon = WindowData(d_all, fftwin);
     dmatrix uwork(d_decon.u);
     uwork.zero();
-    /* We assume loadnoise has been called previously to set put the
+    /* We assume loadnoise has been called previously to put the
     right data here. We need a scalar function to pass to the multitaper
     algorithm though. */
     if (decon_type == MULTI_TAPER) {

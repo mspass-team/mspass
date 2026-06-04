@@ -672,6 +672,39 @@ def test_FrequencyDomainGIDDecon_replacing_external_noise_refreshes_threshold(
     assert high_threshold > 10.0 * low_threshold
 
 
+def test_FrequencyDomainGIDDecon_failed_external_noise_replacement_preserves_state(
+    tmp_path,
+):
+    data = _make_single_spike_convolution_data()
+    pf = _ns_gid_pf(
+        tmp_path,
+        "FrequencyDomainGIDDecon.pf",
+        "frequency_domain_gid_deconvolution",
+    )
+    dwin = TimeWindow(-10.0, 20.0)
+    noise = _make_external_noise(scale=2.0)
+
+    engine = FrequencyDomainGIDDecon(pf)
+    engine.loadnoise(noise)
+    assert engine.load(data, dwin) == 0
+    engine.process()
+    original_qc = dict(engine.QCMetrics())
+
+    bad_noise = TimeSeries(noise)
+    bad_noise.set_dt(noise.dt * 2.0)
+    with pytest.raises(MsPASSError, match="target_sample_interval"):
+        engine.loadnoise(bad_noise)
+
+    assert engine.load(data, dwin) == 0
+    engine.process()
+    recovered_qc = dict(engine.QCMetrics())
+    assert recovered_qc["ns_gid_external_noise_used"]
+    assert np.isclose(
+        recovered_qc["ns_gid_peak_threshold"],
+        original_qc["ns_gid_peak_threshold"],
+    )
+
+
 def test_FrequencyDomainGIDDecon_changeparameter_rejects_leaf_window_drift():
     pf = pfread("./data/pf/FrequencyDomainGIDDecon.pf")
     engine = FrequencyDomainGIDDecon(pf)

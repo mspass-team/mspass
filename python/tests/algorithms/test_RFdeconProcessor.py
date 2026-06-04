@@ -748,6 +748,7 @@ def test_RFdeconProcessor_apply_3c_uses_loaded_external_wavelet(tmp_path):
     processor.loadnoise(data, dtype="Seismogram", component=2, window=True)
     state = processor.__getstate__()
     assert "processor" in state
+    assert "_pf_text" not in state
     assert "wvector" not in state
     assert "wtimeseries" not in state
     assert "nvector" not in state

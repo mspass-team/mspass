@@ -398,7 +398,7 @@ PYBIND11_MODULE(deconvolution, m) {
     .def("loadnoise",py::overload_cast<const CoreTimeSeries&>(&TimeDomainGIDDecon::loadnoise),
       "Load externally supplied scalar noise")
     .def("loadnoise",py::overload_cast<const PowerSpectrum&>(&TimeDomainGIDDecon::loadnoise),
-      "Load externally supplied noise power spectrum")
+      "Load externally supplied ns_gid inverse-operator noise spectrum; a residual noise window must still be loaded")
     .def("loadwavelet",py::overload_cast<const TimeSeries&>(&TimeDomainGIDDecon::loadwavelet),
       "Load an externally supplied wavelet used for all components")
     .def("loadwavelet",py::overload_cast<const CoreTimeSeries&>(&TimeDomainGIDDecon::loadwavelet),
@@ -478,7 +478,7 @@ PYBIND11_MODULE(deconvolution, m) {
     .def("loadnoise",py::overload_cast<const CoreTimeSeries&>(&FrequencyDomainGIDDecon::loadnoise),
       "Load externally supplied scalar noise")
     .def("loadnoise",py::overload_cast<const PowerSpectrum&>(&FrequencyDomainGIDDecon::loadnoise),
-      "Load externally supplied noise power spectrum")
+      "Load externally supplied ns_gid inverse-operator noise spectrum; a residual noise window must still be loaded")
     .def("loadwavelet",py::overload_cast<const TimeSeries&>(&FrequencyDomainGIDDecon::loadwavelet),
       "Load an externally supplied wavelet used for all components")
     .def("loadwavelet",py::overload_cast<const CoreTimeSeries&>(&FrequencyDomainGIDDecon::loadwavelet),

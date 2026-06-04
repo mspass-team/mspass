@@ -184,8 +184,6 @@ int FrequencyDomainGIDDecon::loadnoise(const CoreSeismogram &draw,
 }
 
 int FrequencyDomainGIDDecon::loadwavelet(const TimeSeries &wavelet) {
-  this->invalidate_processing_state();
-  external_wavelet_loaded = false;
   if (!external_wavelet_allowed)
     throw MsPASSError("FrequencyDomainGIDDecon::loadwavelet: external "
                       "wavelets are disabled by "
@@ -201,6 +199,8 @@ int FrequencyDomainGIDDecon::loadwavelet(const TimeSeries &wavelet) {
                       ErrorSeverity::Invalid);
   ValidateExternalTimeSeriesSampleInterval(
       wavelet, target_dt, "FrequencyDomainGIDDecon::loadwavelet");
+  this->invalidate_processing_state();
+  external_wavelet_loaded = false;
   external_wavelet = wavelet;
   external_wavelet_loaded = true;
   return 0;
@@ -212,11 +212,6 @@ int FrequencyDomainGIDDecon::loadwavelet(const CoreTimeSeries &wavelet) {
 }
 
 int FrequencyDomainGIDDecon::loadnoise(const TimeSeries &noise_in) {
-  this->invalidate_processing_state();
-  external_noise_loaded = false;
-  external_noise_spectrum_loaded = false;
-  const bool keep_residual_noise =
-      n.live() && n.npts() > 0 && !residual_noise_from_external;
   if (noise_in.dead())
     throw MsPASSError("FrequencyDomainGIDDecon::loadnoise: external noise is "
                       "marked dead",
@@ -227,6 +222,11 @@ int FrequencyDomainGIDDecon::loadnoise(const TimeSeries &noise_in) {
                       ErrorSeverity::Invalid);
   ValidateExternalTimeSeriesSampleInterval(
       noise_in, target_dt, "FrequencyDomainGIDDecon::loadnoise");
+  const bool keep_residual_noise =
+      n.live() && n.npts() > 0 && !residual_noise_from_external;
+  this->invalidate_processing_state();
+  external_noise_loaded = false;
+  external_noise_spectrum_loaded = false;
   external_noise = noise_in;
   external_noise_loaded = true;
   external_noise_spectrum_loaded = false;
@@ -251,9 +251,6 @@ int FrequencyDomainGIDDecon::loadnoise(const CoreTimeSeries &noise_in) {
 }
 
 int FrequencyDomainGIDDecon::loadnoise(const PowerSpectrum &noise_spectrum_in) {
-  this->invalidate_processing_state();
-  external_noise_loaded = false;
-  external_noise_spectrum_loaded = false;
   if (decon_type != NS_GID)
     throw MsPASSError("FrequencyDomainGIDDecon::loadnoise: external "
                       "PowerSpectrum noise is only supported for ns_gid; pass "
@@ -262,6 +259,9 @@ int FrequencyDomainGIDDecon::loadnoise(const PowerSpectrum &noise_spectrum_in) {
                       ErrorSeverity::Invalid);
   ValidatePowerSpectrumCoversDC(noise_spectrum_in,
                                 "FrequencyDomainGIDDecon::loadnoise");
+  this->invalidate_processing_state();
+  external_noise_loaded = false;
+  external_noise_spectrum_loaded = false;
   external_noise_spectrum = noise_spectrum_in;
   external_noise_spectrum_loaded = true;
   external_noise_loaded = false;

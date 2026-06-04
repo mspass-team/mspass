@@ -90,11 +90,11 @@ public:
   mspass::seismic::PowerSpectrum loaded_external_noise_spectrum() const {
     return this->external_noise_spectrum;
   };
-  /*! \brief Load all needed data and process.
+  /*! \brief Load signal and residual-noise windows.
 
   This method is little more than a call to loadnoise followed
-  immediately by a call to load that is assumed to initiate the
-  computation. */
+  immediately by a call to load.  Call process after this method returns
+  zero. */
   int load(const mspass::seismic::CoreSeismogram &d,
            mspass::algorithms::TimeWindow dwin,
            mspass::algorithms::TimeWindow nwin);

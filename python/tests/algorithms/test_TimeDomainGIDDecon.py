@@ -865,6 +865,39 @@ def test_TimeDomainGIDDecon_replacing_external_noise_refreshes_threshold(tmp_pat
     assert high_threshold > 10.0 * low_threshold
 
 
+def test_TimeDomainGIDDecon_failed_external_noise_replacement_preserves_state(
+    tmp_path,
+):
+    data = _make_single_spike_convolution_data()
+    pf = _ns_gid_pf(
+        tmp_path,
+        "TimeDomainGIDDecon.pf",
+        "time_domain_gid_deconvolution",
+    )
+    dwin = TimeWindow(-10.0, 20.0)
+    noise = _make_external_noise(scale=2.0)
+
+    engine = TimeDomainGIDDecon(pf)
+    engine.loadnoise(noise)
+    assert engine.load(data, dwin) == 0
+    engine.process()
+    original_qc = dict(engine.QCMetrics())
+
+    bad_noise = TimeSeries(noise)
+    bad_noise.set_dt(noise.dt * 2.0)
+    with pytest.raises(MsPASSError, match="target_sample_interval"):
+        engine.loadnoise(bad_noise)
+
+    assert engine.load(data, dwin) == 0
+    engine.process()
+    recovered_qc = dict(engine.QCMetrics())
+    assert recovered_qc["ns_gid_external_noise_used"]
+    assert np.isclose(
+        recovered_qc["ns_gid_peak_threshold"],
+        original_qc["ns_gid_peak_threshold"],
+    )
+
+
 def test_TimeDomainGIDDecon_changeparameter_rejects_leaf_window_drift(tmp_path):
     pf = pfread("./data/pf/TimeDomainGIDDecon.pf")
     engine = TimeDomainGIDDecon(pf)

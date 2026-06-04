@@ -264,7 +264,6 @@ class RFdeconProcessor:
         }
         if self.__is_3c_engine:
             self._sync_gid_external_state_to_engine()
-            state["_pf_text"] = self._pf_text
             state["processor"] = self.processor
             attrs = []
         else:
@@ -507,7 +506,6 @@ class RFdeconProcessor:
         """
         if not self.__is_3c_engine:
             raise RuntimeError("apply_3c is only valid for GID algorithms")
-        target_dt = self.md.get_double("target_sample_interval")
         try:
             load_status = self.processor.load(d, self.full_dwin, self.nwin)
         except MsPASSError as err:
@@ -522,26 +520,7 @@ class RFdeconProcessor:
                 "could not be loaded from input data",
                 ErrorSeverity.Invalid,
             )
-        if hasattr(self, "wvector"):
-            if hasattr(self, "wtimeseries"):
-                self.processor.loadwavelet(self.wtimeseries)
-            else:
-                self.processor.loadwavelet(
-                    _as_gid_timeseries(
-                        self.wvector, target_dt, self.dwin.start, "wavelet"
-                    )
-                )
-        if self.__uses_noise and hasattr(self, "nvector"):
-            if hasattr(self, "ntimeseries"):
-                self.processor.loadnoise(self.ntimeseries)
-            else:
-                self.processor.loadnoise(
-                    _as_gid_timeseries(
-                        self.nvector, target_dt, self.nwin.start, "noisedata"
-                    )
-                )
-        elif hasattr(self, "external_noise_spectrum"):
-            self.processor.loadnoise(self.external_noise_spectrum)
+        self._sync_gid_external_state_to_engine()
         self.processor.process()
         return Seismogram(self.processor.getresult())
 
@@ -606,7 +585,7 @@ class RFdeconProcessor:
     def inverse_filter(self):
         """
         This method returns the actual inverse filter that if convolved with
-        he original data will produce the RF estimate.  Note the filter is
+        the original data will produce the RF estimate.  Note the filter is
         meaningful only if the source wavelet is minimum phase.  A standard
         theorem from time series analysis shows that the inverse of mixed
         phase wavelet is usually unstable and a maximum phase wavelet is always
@@ -779,7 +758,7 @@ def RFdecon(
     setting the save_history argument to True.   When enabled one should
     normally set a unique id for the algid argument.
 
-    :param d:  Seismogram input data.See notes above about time span of thesedata.
+    :param d:  Seismogram input data.  See notes above about the required time span.
     :type d:  Must be a Seismogram object or the function will throw a TypeError exception.
     :param engine:   optional instance of a RFdeconProcessor
         object.   By default the function instantiates an instance of
