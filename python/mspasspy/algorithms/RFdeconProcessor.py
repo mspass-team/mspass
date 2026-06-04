@@ -173,6 +173,32 @@ class RFdeconProcessor:
         self._load_gid_cached_wavelet_to_engine()
         self._load_gid_cached_noise_to_engine()
 
+    def clear_external_wavelet(self):
+        """
+        Clear a preconfigured external GID wavelet from this wrapper and engine.
+
+        This is only meaningful for GID processors.  For scalar processors it
+        removes any cached scalar wavelet vector from this Python wrapper.
+        """
+        if self.__is_3c_engine:
+            self.processor.clear_external_wavelet()
+        for attr in ("wvector", "wtimeseries"):
+            if hasattr(self, attr):
+                delattr(self, attr)
+
+    def clear_external_noise(self):
+        """
+        Clear preconfigured external GID noise from this wrapper and engine.
+
+        This is only meaningful for GID processors.  For scalar processors it
+        removes any cached scalar noise vector from this Python wrapper.
+        """
+        if self.__is_3c_engine:
+            self.processor.clear_external_noise()
+        for attr in ("nvector", "ntimeseries", "external_noise_spectrum"):
+            if hasattr(self, attr):
+                delattr(self, attr)
+
     def __init__(self, alg="LeastSquares", pf="RFdeconProcessor.pf", _pf_text=None):
         self.algorithm = alg
         self.__is_3c_engine = False
@@ -426,14 +452,27 @@ class RFdeconProcessor:
                 wvector = w.data
             else:
                 wvector = w
-        # Have to explicitly convert to ndarray because DoubleVector cannot be serialized.
-        self.wvector = np.array(wvector)
+        new_wvector = np.array(wvector)
+        new_wtimeseries = None
+        if self.__is_3c_engine and dtype == "TimeSeries" and not window:
+            new_wtimeseries = TimeSeries(w)
         if self.__is_3c_engine:
-            if dtype == "TimeSeries" and not window:
-                self.wtimeseries = TimeSeries(w)
+            if new_wtimeseries is not None:
+                self.processor.loadwavelet(new_wtimeseries)
+            else:
+                target_dt = self.md.get_double("target_sample_interval")
+                self.processor.loadwavelet(
+                    _as_gid_timeseries(
+                        new_wvector, target_dt, self.dwin.start, "wavelet"
+                    )
+                )
+        # Have to explicitly convert to ndarray because DoubleVector cannot be serialized.
+        self.wvector = new_wvector
+        if self.__is_3c_engine:
+            if new_wtimeseries is not None:
+                self.wtimeseries = new_wtimeseries
             elif hasattr(self, "wtimeseries"):
                 del self.wtimeseries
-            self._load_gid_cached_wavelet_to_engine()
 
     def loadnoise(self, n, dtype="Seismogram", component=2, window=False):
         # First basic sanity checks
@@ -474,19 +513,32 @@ class RFdeconProcessor:
                 ts = _ExtractComponent(n, component)
                 nvector = ts.data
             elif dtype == "TimeSeries":
-                nvector = ts.data
+                nvector = n.data
             else:
                 nvector = n
-        # Have to explicitly convert to ndarray because DoubleVector cannot be serialized.
-        self.nvector = np.array(nvector)
+        new_nvector = np.array(nvector)
+        new_ntimeseries = None
+        if self.__is_3c_engine and dtype == "TimeSeries" and not window:
+            new_ntimeseries = TimeSeries(n)
         if self.__is_3c_engine:
-            if dtype == "TimeSeries" and not window:
-                self.ntimeseries = TimeSeries(n)
+            if new_ntimeseries is not None:
+                self.processor.loadnoise(new_ntimeseries)
+            else:
+                target_dt = self.md.get_double("target_sample_interval")
+                self.processor.loadnoise(
+                    _as_gid_timeseries(
+                        new_nvector, target_dt, self.nwin.start, "noisedata"
+                    )
+                )
+        # Have to explicitly convert to ndarray because DoubleVector cannot be serialized.
+        self.nvector = new_nvector
+        if self.__is_3c_engine:
+            if new_ntimeseries is not None:
+                self.ntimeseries = new_ntimeseries
             elif hasattr(self, "ntimeseries"):
                 del self.ntimeseries
             if hasattr(self, "external_noise_spectrum"):
                 del self.external_noise_spectrum
-            self._load_gid_cached_noise_to_engine()
 
     def apply(self):
         """
@@ -754,6 +806,11 @@ def RFdecon(
     accept prepared TimeSeries inputs or one-dimensional numeric vectors;
     raw vectors are converted to TimeSeries using the processor target
     sample interval and the configured deconvolution/noise window start.
+    When a reused GID engine already has a preconfigured external wavelet
+    or noise estimate, omitting wavelet or noisedata preserves that state.
+    Call RFdeconProcessor.clear_external_wavelet() or
+    clear_external_noise() before RFdecon to force component/window-derived
+    input again.
     If any configured data, wavelet, or noise window cannot be extracted, the
     function returns a killed datum and does not attach the QC subdocument.
 
@@ -783,7 +840,9 @@ def RFdecon(
         When None (default) an instance of an RFdeconProcessor is
         created on entry based on the keyword defined by the alg
         argument.   The algorithm built into the instance of
-        RFdeconProcessor is used if engine is not null.
+        RFdeconProcessor is used if engine is not null.  A reused GID engine
+        preserves any external wavelet/noise loaded on the processor unless
+        the corresponding clear_external_* method is called.
     :param alg: The algorithm to be applied, used for initializing
         a RFdeconProcessor object.  Ignored if engine is used.  Conventional
         scalar methods are applied component by component.  Generalized
@@ -801,8 +860,9 @@ def RFdecon(
     :param wavelet:   vector of doubles (numpy array or the
         std::vector container internal to TimeSeries object) or TimeSeries
         defining the wavelet to use to compute deconvolution operator.
-        Default is None which assumes processor was set up to use
-        a component of d as the wavelet estimate.
+        Default is None.  For a fresh processor this uses the configured
+        component/window-derived wavelet estimate.  For a reused GID
+        processor it preserves any previously loaded external wavelet.
         For GID algorithms, raw vectors are converted to a TimeSeries using
         target_sample_interval and deconvolution_data_window_start.
     :type wavelet:  None, TimeSeries, or an iterable vector container
@@ -815,9 +875,11 @@ def RFdecon(
         is optional.   It can also be extracted from d depending on
         parameter file options.
         For GID algorithms, raw vectors are converted to a TimeSeries using
-        target_sample_interval and noise_window_start.  External PowerSpectrum
-        noise is supported only by the NS-GID inverse mode; other GID modes
-        require TimeSeries/vector noise or the configured noise window.
+        target_sample_interval and noise_window_start.  If noisedata is None,
+        a reused GID processor preserves any previously loaded external noise.
+        External PowerSpectrum noise is supported only by the NS-GID inverse
+        mode; other GID modes require TimeSeries/vector noise or the
+        configured noise window.
     :type noisedata:  None, TimeSeries, PowerSpectrum, or an iterable vector container
         (in MsPASS that means a python array, a numpy array, or a DoubleVector)
     :param wcomp:  When defined from Seismogram d the wavelet
@@ -892,10 +954,10 @@ def RFdecon(
                     processor.dwin.start,
                     "wavelet",
                 )
-                processor.wtimeseries = wts
-                processor.wvector = np.asarray(wts.data)
+                processor.loadwavelet(wts, dtype="TimeSeries")
             if noisedata is not None:
                 if isinstance(noisedata, PowerSpectrum):
+                    processor.processor.loadnoise(noisedata)
                     processor.external_noise_spectrum = noisedata
                     for attr in ("nvector", "ntimeseries"):
                         if hasattr(processor, attr):
@@ -907,10 +969,7 @@ def RFdecon(
                         processor.nwin.start,
                         "noisedata",
                     )
-                    processor.ntimeseries = nts
-                    processor.nvector = np.asarray(nts.data)
-                    if hasattr(processor, "external_noise_spectrum"):
-                        delattr(processor, "external_noise_spectrum")
+                    processor.loadnoise(nts, dtype="TimeSeries")
             result = processor.apply_3c(d)
             subdoc = dict(processor.processor.QCMetrics())
             subdoc["algorithm"] = processor.algorithm

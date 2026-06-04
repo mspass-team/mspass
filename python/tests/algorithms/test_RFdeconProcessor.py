@@ -27,7 +27,7 @@ from decon_data_generators import (
 )
 from mspasspy.algorithms.window import WindowData
 from mspasspy.algorithms.RFdeconProcessor import RFdeconProcessor, RFdecon
-from mspasspy.ccore.seismic import Seismogram
+from mspasspy.ccore.seismic import Seismogram, TimeSeries
 from mspasspy.ccore.utility import AntelopePf, Metadata, MsPASSError
 from mspasspy.algorithms.basic import ExtractComponent
 from mspasspy.util.seismic import print_metadata
@@ -502,10 +502,7 @@ def test_RFdecon_preserves_preconfigured_gid_external_wavelet_when_omitted(tmp_p
         assert rf_preserved["RFdecon_properties"]["ns_gid_external_wavelet_used"]
         assert np.allclose(np.asarray(rf_external.data), np.asarray(rf_preserved.data))
 
-        processor.processor.clear_external_wavelet()
-        for attr in ("wvector", "wtimeseries"):
-            if hasattr(processor, attr):
-                delattr(processor, attr)
+        processor.clear_external_wavelet()
         rf_internal = RFdecon(
             Seismogram(seis0), alg="GeneralizedIterative", engine=processor
         )
@@ -787,6 +784,80 @@ def test_RFdeconProcessor_apply_3c_uses_loaded_external_wavelet(tmp_path):
     qc = dict(processor.processor.QCMetrics())
     assert qc["ns_gid_enabled"]
     assert qc["ns_gid_external_wavelet_used"]
+
+
+def test_RFdeconProcessor_gid_loadwavelet_is_transactional(tmp_path):
+    text = open("data/pf/TimeDomainGIDDecon.pf", encoding="utf-8").read()
+    text = text.replace(
+        "time_domain_gid_deconvolution &Arr{\n        deconvolution_type least_square",
+        "time_domain_gid_deconvolution &Arr{\n        deconvolution_type ns_gid",
+    )
+    pf = tmp_path / "TimeDomainGIDDecon.pf"
+    pf.write_text(text)
+
+    wavelet = make_simulation_wavelet()
+    truth = make_impulse_data()
+    data = addnoise(convolve_wavelet(truth, wavelet), nscale=1.0e-4, padlength=800)
+
+    processor = RFdeconProcessor(alg="GeneralizedIterative", pf=str(pf))
+    processor.loadwavelet(wavelet, dtype="TimeSeries")
+    first = processor.apply_3c(Seismogram(data))
+    assert first.live
+    assert dict(processor.processor.QCMetrics())["ns_gid_external_wavelet_used"]
+
+    bad_wavelet = TimeSeries(wavelet)
+    bad_wavelet.set_dt(wavelet.dt * 2.0)
+    with pytest.raises(MsPASSError, match="target_sample_interval"):
+        processor.loadwavelet(bad_wavelet, dtype="TimeSeries")
+
+    second = processor.apply_3c(Seismogram(data))
+    assert second.live
+    qc = dict(processor.processor.QCMetrics())
+    assert qc["ns_gid_external_wavelet_used"]
+    assert np.allclose(np.asarray(first.data), np.asarray(second.data))
+
+    bad_call = RFdecon(Seismogram(data), engine=processor, wavelet=bad_wavelet)
+    assert bad_call.dead()
+    recovered = processor.apply_3c(Seismogram(data))
+    assert recovered.live
+    assert dict(processor.processor.QCMetrics())["ns_gid_external_wavelet_used"]
+
+
+def test_RFdeconProcessor_gid_loadnoise_timeseries_and_clear(tmp_path):
+    text = open("data/pf/TimeDomainGIDDecon.pf", encoding="utf-8").read()
+    text = text.replace(
+        "time_domain_gid_deconvolution &Arr{\n        deconvolution_type least_square",
+        "time_domain_gid_deconvolution &Arr{\n        deconvolution_type ns_gid",
+    )
+    pf = tmp_path / "TimeDomainGIDDecon.pf"
+    pf.write_text(text)
+
+    wavelet = make_simulation_wavelet()
+    truth = make_impulse_data()
+    data = addnoise(convolve_wavelet(truth, wavelet), nscale=1.0e-4, padlength=800)
+    noise = TimeSeries(wavelet)
+    for i in range(noise.npts):
+        noise.data[i] = 0.01 * np.sin(0.17 * i)
+
+    processor = RFdeconProcessor(alg="GeneralizedIterative", pf=str(pf))
+    processor.loadwavelet(wavelet, dtype="TimeSeries")
+    processor.loadnoise(noise, dtype="TimeSeries", window=False)
+    external = processor.apply_3c(Seismogram(data))
+    assert external.live
+    assert dict(processor.processor.QCMetrics())["ns_gid_external_noise_used"]
+
+    bad_noise = TimeSeries(noise)
+    bad_noise.set_dt(noise.dt * 2.0)
+    with pytest.raises(MsPASSError, match="target_sample_interval"):
+        processor.loadnoise(bad_noise, dtype="TimeSeries", window=False)
+    recovered = processor.apply_3c(Seismogram(data))
+    assert recovered.live
+    assert dict(processor.processor.QCMetrics())["ns_gid_external_noise_used"]
+
+    processor.clear_external_noise()
+    internal = processor.apply_3c(Seismogram(data))
+    assert internal.live
+    assert not dict(processor.processor.QCMetrics())["ns_gid_external_noise_used"]
 
 
 def test_RFdeconProcessor_gid_getstate_does_not_invalidate_processed_state(tmp_path):
