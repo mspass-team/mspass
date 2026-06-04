@@ -161,7 +161,7 @@ private:
   updates the weight vector using the lag position (in samples) of the
   current spike. */
   void update_lag_weights(int col);
-  /*! This private method is called after load noise to se the quantity
+  /*! This private method is called after loading noise to set the quantity
   resid_linf_floor = convergence criteria on amplitude.  That parameter is
   computed from sorting the filtered, preevent noise and setting the
   threshold from a probability level.  Returns the computed floor but

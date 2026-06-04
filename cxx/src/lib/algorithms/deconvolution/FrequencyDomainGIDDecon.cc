@@ -169,6 +169,8 @@ int FrequencyDomainGIDDecon::load(const CoreSeismogram &draw,
 int FrequencyDomainGIDDecon::loadnoise(const CoreSeismogram &draw,
                                        TimeWindow nwin_in) {
   this->invalidate_processing_state();
+  external_noise_loaded = false;
+  external_noise_spectrum_loaded = false;
   n.kill();
   nnwin = 0;
   nwin = nwin_in;
@@ -272,6 +274,10 @@ void FrequencyDomainGIDDecon::clear_external_noise() {
 int FrequencyDomainGIDDecon::load(const CoreSeismogram &draw, TimeWindow dwin,
                                   TimeWindow nwin) {
   this->invalidate_processing_state();
+  d_all.kill();
+  n.kill();
+  ndwin = 0;
+  nnwin = 0;
   if ((dwin.start > fftwin.start) || (dwin.end < fftwin.end))
     return 1;
   int iretn = this->loadnoise(draw, nwin);

@@ -630,6 +630,50 @@ def test_TimeDomainGIDDecon_failed_combined_load_invalidates_old_output():
     assert dict(engine.QCMetrics())["gid_processed"] is False
     with pytest.raises(MsPASSError, match="process must be called first"):
         engine.getresult()
+    with pytest.raises(MsPASSError, match="valid data window"):
+        engine.process()
+
+
+def test_TimeDomainGIDDecon_combined_load_clears_stale_external_noise(tmp_path):
+    data = _make_single_spike_convolution_data()
+    pf = _ns_gid_pf(
+        tmp_path,
+        "TimeDomainGIDDecon.pf",
+        "time_domain_gid_deconvolution",
+        gain_max=20.0,
+    )
+    dwin = TimeWindow(-10.0, 20.0)
+    nwin = TimeWindow(-35.0, -5.0)
+    external_noise = TimeSeries(300)
+    external_noise.set_t0(-35.0)
+    external_noise.set_dt(0.05)
+    external_noise.set_live()
+    for i in range(external_noise.npts):
+        external_noise.data[i] = 100.0 * np.sin(0.11 * i)
+
+    windowed_engine = TimeDomainGIDDecon(pf)
+    assert windowed_engine.load(data, dwin, nwin) == 0
+    windowed_engine.process()
+
+    switched_engine = TimeDomainGIDDecon(pf)
+    switched_engine.loadnoise(external_noise)
+    assert switched_engine.load(data, dwin, nwin) == 0
+    switched_engine.process()
+
+    windowed_qc = dict(windowed_engine.QCMetrics())
+    switched_qc = dict(switched_engine.QCMetrics())
+    assert np.isclose(
+        switched_qc["ns_gid_noise_amplification"],
+        windowed_qc["ns_gid_noise_amplification"],
+    )
+    assert np.isclose(
+        switched_qc["ns_gid_gain_max_actual"],
+        windowed_qc["ns_gid_gain_max_actual"],
+    )
+    assert np.allclose(
+        np.asarray(switched_engine.getresult().data),
+        np.asarray(windowed_engine.getresult().data),
+    )
 
 
 def test_TimeDomainGIDDecon_changeparameter_rejects_leaf_window_drift(tmp_path):

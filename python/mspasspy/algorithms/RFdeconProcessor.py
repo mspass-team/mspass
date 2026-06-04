@@ -123,6 +123,7 @@ class RFdeconProcessor:
                 pf = "TimeDomainGIDDecon.pf"
             elif alg == "FrequencyDomainGID":
                 pf = "FrequencyDomainGIDDecon.pf"
+        self.pf = pf
         # use a copy in what is more or less a switch-case block
         # to be robust - I don't think any of the constructors below
         # alter pfhandle but the cost is tiny for this stability
@@ -193,6 +194,26 @@ class RFdeconProcessor:
             self.__is_3c_engine = True
         else:
             raise RuntimeError("Illegal value for alg=" + alg)
+
+    def __getstate__(self):
+        state = {"algorithm": self.algorithm, "pf": self.pf}
+        for attr in (
+            "dvector",
+            "wvector",
+            "nvector",
+            "wtimeseries",
+            "ntimeseries",
+            "external_noise_spectrum",
+        ):
+            if hasattr(self, attr):
+                state[attr] = getattr(self, attr)
+        return state
+
+    def __setstate__(self, state):
+        self.__init__(state["algorithm"], state["pf"])
+        for attr, value in state.items():
+            if attr not in ("algorithm", "pf"):
+                setattr(self, attr, value)
 
     def loaddata(self, d, dtype="Seismogram", component=0, window=False):
         """
@@ -385,6 +406,20 @@ class RFdeconProcessor:
         if not self.__is_3c_engine:
             raise RuntimeError("apply_3c is only valid for GID algorithms")
         target_dt = self.md.get_double("target_sample_interval")
+        try:
+            load_status = self.processor.load(d, self.full_dwin, self.nwin)
+        except MsPASSError as err:
+            raise MsPASSError(
+                "RFdeconProcessor.apply_3c: configured signal/noise windows "
+                "could not be loaded from input data: {}".format(str(err)),
+                ErrorSeverity.Invalid,
+            )
+        if load_status:
+            raise MsPASSError(
+                "RFdeconProcessor.apply_3c: configured signal/noise windows "
+                "could not be loaded from input data",
+                ErrorSeverity.Invalid,
+            )
         if hasattr(self, "wvector"):
             if hasattr(self, "wtimeseries"):
                 self.processor.loadwavelet(self.wtimeseries)
@@ -403,20 +438,8 @@ class RFdeconProcessor:
                         self.nvector, target_dt, self.nwin.start, "noisedata"
                     )
                 )
-        try:
-            load_status = self.processor.load(d, self.full_dwin, self.nwin)
-        except MsPASSError as err:
-            raise MsPASSError(
-                "RFdeconProcessor.apply_3c: configured signal/noise windows "
-                "could not be loaded from input data: {}".format(str(err)),
-                ErrorSeverity.Invalid,
-            )
-        if load_status:
-            raise MsPASSError(
-                "RFdeconProcessor.apply_3c: configured signal/noise windows "
-                "could not be loaded from input data",
-                ErrorSeverity.Invalid,
-            )
+        elif hasattr(self, "external_noise_spectrum"):
+            self.processor.loadnoise(self.external_noise_spectrum)
         self.processor.process()
         return Seismogram(self.processor.getresult())
 
@@ -665,7 +688,7 @@ def RFdecon(
         component 2, but callers may pass a prepared TimeSeries wavelet or a
         one-dimensional numeric vector to use the same external wavelet for all
         components.
-    :param pf: The pf file to be parsed, used for inititalizing a
+    :param pf: The pf file to be parsed, used for initializing a
         RFdeconProcessor.  Ignored if engine is used.
     :type pf:  string defining an absolute path for the file name
         or a path relative to a directory defined by PFPATH.
@@ -763,7 +786,8 @@ def RFdecon(
                     processor.dwin.start,
                     "wavelet",
                 )
-                processor.processor.loadwavelet(wts)
+                processor.wtimeseries = wts
+                processor.wvector = np.asarray(wts.data)
             else:
                 processor.processor.clear_external_wavelet()
                 for attr in ("wvector", "wtimeseries"):
@@ -771,7 +795,10 @@ def RFdecon(
                         delattr(processor, attr)
             if noisedata is not None:
                 if isinstance(noisedata, PowerSpectrum):
-                    processor.processor.loadnoise(noisedata)
+                    processor.external_noise_spectrum = noisedata
+                    for attr in ("nvector", "ntimeseries"):
+                        if hasattr(processor, attr):
+                            delattr(processor, attr)
                 else:
                     nts = _as_gid_timeseries(
                         noisedata,
@@ -779,10 +806,13 @@ def RFdecon(
                         processor.nwin.start,
                         "noisedata",
                     )
-                    processor.processor.loadnoise(nts)
+                    processor.ntimeseries = nts
+                    processor.nvector = np.asarray(nts.data)
+                    if hasattr(processor, "external_noise_spectrum"):
+                        delattr(processor, "external_noise_spectrum")
             else:
                 processor.processor.clear_external_noise()
-                for attr in ("nvector", "ntimeseries"):
+                for attr in ("nvector", "ntimeseries", "external_noise_spectrum"):
                     if hasattr(processor, attr):
                         delattr(processor, attr)
             result = processor.apply_3c(d)

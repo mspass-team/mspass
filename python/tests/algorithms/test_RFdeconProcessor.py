@@ -136,6 +136,35 @@ def test_RFdeconProcessor_gid_defaults_resolve_from_package_pf_path():
             os.environ["PFPATH"] = old_pfpath
 
 
+@pytest.mark.parametrize(
+    "alg,pf",
+    [
+        ("GeneralizedIterative", "TimeDomainGIDDecon.pf"),
+        ("TimeDomainGID", "TimeDomainGIDDecon.pf"),
+        ("FrequencyDomainGID", "FrequencyDomainGIDDecon.pf"),
+    ],
+)
+def test_RFdeconProcessor_gid_pickle_supports_distributed_use(alg, pf):
+    os.environ["PFPATH"] = "./data/pf"
+    try:
+        wavelet = make_simulation_wavelet()
+        impulses = make_impulse_data()
+        seis0 = addnoise(
+            convolve_wavelet(impulses, wavelet), nscale=0.0, padlength=800
+        )
+        processor = RFdeconProcessor(alg=alg, pf=pf)
+        processor2 = pickle.loads(pickle.dumps(processor))
+
+        rf1 = RFdecon(Seismogram(seis0), alg=alg, engine=processor)
+        rf2 = RFdecon(Seismogram(seis0), alg=alg, engine=processor2)
+
+        assert rf1.live
+        assert rf2.live
+        assert np.allclose(np.asarray(rf1.data), np.asarray(rf2.data))
+    finally:
+        os.environ.pop("PFPATH", None)
+
+
 def test_RFdecon():
     """
     Test program for RFdecon function.

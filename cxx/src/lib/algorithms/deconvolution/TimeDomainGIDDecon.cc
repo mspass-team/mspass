@@ -350,6 +350,8 @@ int TimeDomainGIDDecon::loadnoise(const CoreSeismogram &draw,
                                 TimeWindow nwin_in) {
   try {
     this->invalidate_processing_state();
+    external_noise_loaded = false;
+    external_noise_spectrum_loaded = false;
     n.kill();
     nnwin = 0;
     ns_noise_components.clear();
@@ -466,6 +468,11 @@ int TimeDomainGIDDecon::load(const CoreSeismogram &draw, TimeWindow dwin,
                            TimeWindow nwin) {
   try {
     this->invalidate_processing_state();
+    d_all.kill();
+    n.kill();
+    ndwin = 0;
+    nnwin = 0;
+    ns_noise_components.clear();
     if ((dwin.start > fftwin.start) || (dwin.end < fftwin.end)) {
       return 1;
     }
@@ -511,8 +518,8 @@ void TimeDomainGIDDecon::update_residual_matrix(ThreeCSpike spk) {
 }
 /* This method adds (not multiply add) the weighting function created by
 the constructor centered at lag = col.  Because a range can be hit multiple
-times we test for negatives and zero them in the loop.   This is also
-we we use an explicit loop instead ofa call to daxpy as in the residual
+times we test for negatives and zero them in the loop.   This is also why
+we use an explicit loop instead of a call to daxpy as in the residual
 update method.  Note like update_residual_matrix we assume nwtf is
 correct and don't test for memory faults for efficiency  */
 
@@ -565,21 +572,21 @@ didn't want to validate the required combination of a Hilbert transform code
 and the secondary problem of using that to compute an envelope function.
 May want to retrofit that eventually, but for the initial version I am
 assuming the smoothing method will work fine on deconvolution impulse
-response functions because the are mostly a near spike with ringing with a
+response functions because they are mostly a near spike with ringing with a
 period near that of twice the sample interval.   Hence a simple smoother
 a few samples wide should create a pretty effective envelope estimate.
 
 \param d - fir filter to be trimmed
 \param floor - length will be determined from sample here the envelope
- amplitude is peak amplitude times this value. (1/floor is kind of an
- snf floor).
+ amplitude is peak amplitude times this value. (1/floor is a rough
+ signal-to-noise floor).
 
 \return  a copy of d shortened on both ends.
  */
 CoreTimeSeries trim(const CoreTimeSeries &d, double floor = 0.005) {
   try {
     vector<double> work;
-    /* First till work with absolute values of d.s from t=0 to end */
+    /* First fill work with absolute values of d.s from t=0 to end */
     int i, ii, k, kk;
     int i0 = d.sample_number(0.0);
     for (i = i0; i < d.npts(); ++i)
