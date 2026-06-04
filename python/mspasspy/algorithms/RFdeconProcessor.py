@@ -130,14 +130,9 @@ class RFdeconProcessor:
         )
         return processor_str
 
-    def _sync_gid_external_state_to_engine(self):
+    def _load_gid_cached_wavelet_to_engine(self):
         """
-        Move Python-level GID external wavelet/noise caches into the C++ engine.
-
-        RFdeconProcessor.loadwavelet/loadnoise historically cache numpy arrays
-        on the Python wrapper.  For GID engines the C++ object is now the
-        serialized distributed state, so we synchronize those caches before
-        pickling and avoid serializing the same data twice.
+        Move a Python-level cached GID external wavelet into the C++ engine.
         """
         if not self.__is_3c_engine:
             return
@@ -151,6 +146,14 @@ class RFdeconProcessor:
                         self.wvector, target_dt, self.dwin.start, "wavelet"
                     )
                 )
+
+    def _load_gid_cached_noise_to_engine(self):
+        """
+        Move Python-level cached GID external noise into the C++ engine.
+        """
+        if not self.__is_3c_engine:
+            return
+        target_dt = self.md.get_double("target_sample_interval")
         if self.__uses_noise and hasattr(self, "nvector"):
             if hasattr(self, "ntimeseries"):
                 self.processor.loadnoise(self.ntimeseries)
@@ -162,6 +165,13 @@ class RFdeconProcessor:
                 )
         elif hasattr(self, "external_noise_spectrum"):
             self.processor.loadnoise(self.external_noise_spectrum)
+
+    def _sync_gid_external_state_to_engine(self):
+        """
+        Move Python-level GID external wavelet/noise caches into the C++ engine.
+        """
+        self._load_gid_cached_wavelet_to_engine()
+        self._load_gid_cached_noise_to_engine()
 
     def __init__(self, alg="LeastSquares", pf="RFdeconProcessor.pf", _pf_text=None):
         self.algorithm = alg
@@ -263,7 +273,6 @@ class RFdeconProcessor:
             "md": Metadata(self.md),
         }
         if self.__is_3c_engine:
-            self._sync_gid_external_state_to_engine()
             state["processor"] = self.processor
             attrs = []
         else:
@@ -424,6 +433,7 @@ class RFdeconProcessor:
                 self.wtimeseries = TimeSeries(w)
             elif hasattr(self, "wtimeseries"):
                 del self.wtimeseries
+            self._load_gid_cached_wavelet_to_engine()
 
     def loadnoise(self, n, dtype="Seismogram", component=2, window=False):
         # First basic sanity checks
@@ -474,6 +484,9 @@ class RFdeconProcessor:
                 self.ntimeseries = TimeSeries(n)
             elif hasattr(self, "ntimeseries"):
                 del self.ntimeseries
+            if hasattr(self, "external_noise_spectrum"):
+                del self.external_noise_spectrum
+            self._load_gid_cached_noise_to_engine()
 
     def apply(self):
         """
@@ -881,11 +894,6 @@ def RFdecon(
                 )
                 processor.wtimeseries = wts
                 processor.wvector = np.asarray(wts.data)
-            else:
-                processor.processor.clear_external_wavelet()
-                for attr in ("wvector", "wtimeseries"):
-                    if hasattr(processor, attr):
-                        delattr(processor, attr)
             if noisedata is not None:
                 if isinstance(noisedata, PowerSpectrum):
                     processor.external_noise_spectrum = noisedata
@@ -903,11 +911,6 @@ def RFdecon(
                     processor.nvector = np.asarray(nts.data)
                     if hasattr(processor, "external_noise_spectrum"):
                         delattr(processor, "external_noise_spectrum")
-            else:
-                processor.processor.clear_external_noise()
-                for attr in ("nvector", "ntimeseries", "external_noise_spectrum"):
-                    if hasattr(processor, attr):
-                        delattr(processor, attr)
             result = processor.apply_3c(d)
             subdoc = dict(processor.processor.QCMetrics())
             subdoc["algorithm"] = processor.algorithm

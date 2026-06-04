@@ -467,7 +467,7 @@ def test_RFdecon_gid_accepts_raw_vector_wavelet_and_noise(alg, pf):
             os.environ["PFPATH"] = old_pfpath
 
 
-def test_RFdecon_clears_stale_gid_external_wavelet_when_wavelet_is_none(tmp_path):
+def test_RFdecon_preserves_preconfigured_gid_external_wavelet_when_omitted(tmp_path):
     os.environ["PFPATH"] = "./data/pf"
     try:
         text = open("data/pf/TimeDomainGIDDecon.pf", encoding="utf-8").read()
@@ -495,13 +495,22 @@ def test_RFdecon_clears_stale_gid_external_wavelet_when_wavelet_is_none(tmp_path
         assert rf_external.live
         assert rf_external["RFdecon_properties"]["ns_gid_external_wavelet_used"]
 
+        rf_preserved = RFdecon(
+            Seismogram(seis0), alg="GeneralizedIterative", engine=processor
+        )
+        assert rf_preserved.live
+        assert rf_preserved["RFdecon_properties"]["ns_gid_external_wavelet_used"]
+        assert np.allclose(np.asarray(rf_external.data), np.asarray(rf_preserved.data))
+
+        processor.processor.clear_external_wavelet()
+        for attr in ("wvector", "wtimeseries"):
+            if hasattr(processor, attr):
+                delattr(processor, attr)
         rf_internal = RFdecon(
             Seismogram(seis0), alg="GeneralizedIterative", engine=processor
         )
         assert rf_internal.live
-        assert not rf_internal["RFdecon_properties"][
-            "ns_gid_external_wavelet_used"
-        ]
+        assert not rf_internal["RFdecon_properties"]["ns_gid_external_wavelet_used"]
     finally:
         os.environ.pop("PFPATH", None)
 
@@ -778,3 +787,33 @@ def test_RFdeconProcessor_apply_3c_uses_loaded_external_wavelet(tmp_path):
     qc = dict(processor.processor.QCMetrics())
     assert qc["ns_gid_enabled"]
     assert qc["ns_gid_external_wavelet_used"]
+
+
+def test_RFdeconProcessor_gid_getstate_does_not_invalidate_processed_state(tmp_path):
+    text = open("data/pf/TimeDomainGIDDecon.pf", encoding="utf-8").read()
+    text = text.replace(
+        "time_domain_gid_deconvolution &Arr{\n        deconvolution_type least_square",
+        "time_domain_gid_deconvolution &Arr{\n        deconvolution_type ns_gid",
+    )
+    pf = tmp_path / "TimeDomainGIDDecon.pf"
+    pf.write_text(text)
+
+    wavelet = make_simulation_wavelet()
+    truth = make_impulse_data()
+    data = addnoise(convolve_wavelet(truth, wavelet), nscale=1.0e-4, padlength=800)
+
+    processor = RFdeconProcessor(alg="GeneralizedIterative", pf=str(pf))
+    processor.loadwavelet(wavelet, dtype="TimeSeries")
+    processor.loadnoise(data, dtype="Seismogram", component=2, window=True)
+    result = processor.apply_3c(data)
+    assert result.live
+    assert dict(processor.processor.QCMetrics())["gid_processed"]
+    actual_before = processor.processor.actual_output()
+
+    cloudpickle.dumps(processor)
+    header, frames = serialize(processor)
+    deserialize(header, frames)
+
+    assert dict(processor.processor.QCMetrics())["gid_processed"]
+    actual_after = processor.processor.actual_output()
+    assert np.allclose(np.asarray(actual_before.data), np.asarray(actual_after.data))
