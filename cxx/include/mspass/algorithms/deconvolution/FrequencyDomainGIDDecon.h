@@ -71,6 +71,7 @@ private:
   mspass::seismic::PowerSpectrum external_noise_spectrum;
   bool external_wavelet_loaded, external_noise_loaded,
       external_noise_spectrum_loaded, external_wavelet_allowed;
+  bool processed;
   std::vector<double> actual_o_fir;
   std::list<ThreeCSpike> spikes;
   double ns_peak_sigma_threshold, ns_peak_probability_threshold;
@@ -82,6 +83,7 @@ private:
   std::string ns_stop_reason;
 
   void initialize_inverse_operator();
+  void invalidate_processing_state();
   double compute_ns_peak_threshold();
   void rescale_spike(ThreeCSpike &spk);
   void update_residual_matrix(const ThreeCSpike &spk);

@@ -175,12 +175,7 @@ FrequencyDomainGIDDecon::FrequencyDomainGIDDecon(const AntelopePf &mdtoplevel)
     ns_refit_interval = get_int_default_fd_gid(mdgid, "ns_gid_refit_interval", 5);
     ns_ridge_beta =
         get_double_default_fd_gid(mdgid, "ns_gid_ridge_beta", 1.0e-10);
-    ns_peak_threshold = 0.0;
-    ns_last_peak_significance = 0.0;
-    ns_noise_l2 = 0.0;
-    ns_fractional_improvement_final = 0.0;
-    ns_converged = false;
-    ns_stop_reason = "not_started";
+    this->invalidate_processing_state();
   } catch (...) {
     throw;
   };
@@ -189,6 +184,26 @@ FrequencyDomainGIDDecon::FrequencyDomainGIDDecon(const AntelopePf &mdtoplevel)
 FrequencyDomainGIDDecon::~FrequencyDomainGIDDecon() {
   delete preprocessor;
   delete cnrprocessor;
+}
+
+void FrequencyDomainGIDDecon::invalidate_processing_state() {
+  result.clear();
+  spikes.clear();
+  actual_o_fir.clear();
+  iter_count = 0;
+  resid_l2_initial = 0.0;
+  resid_l2_prev = 0.0;
+  resid_l2_final = 0.0;
+  resid_linf_initial = 0.0;
+  resid_linf_final = 0.0;
+  actual_o_0 = 0;
+  ns_fractional_improvement_final = 0.0;
+  ns_last_peak_significance = 0.0;
+  ns_peak_threshold = 0.0;
+  ns_noise_l2 = 0.0;
+  ns_converged = false;
+  ns_stop_reason = "not_started";
+  processed = false;
 }
 
 void FrequencyDomainGIDDecon::changeparameter(const Metadata &md) {
@@ -200,6 +215,7 @@ void FrequencyDomainGIDDecon::changeparameter(const Metadata &md) {
     cnrprocessor->changeparameter(md);
   else
     preprocessor->changeparameter(md);
+  this->invalidate_processing_state();
 }
 
 int FrequencyDomainGIDDecon::load(const CoreSeismogram &draw,
@@ -211,6 +227,7 @@ int FrequencyDomainGIDDecon::load(const CoreSeismogram &draw,
   if (d_all.dead() || d_all.npts() <= 0)
     return 1;
   ndwin = d_all.npts();
+  this->invalidate_processing_state();
   return 0;
 }
 
@@ -221,6 +238,7 @@ int FrequencyDomainGIDDecon::loadnoise(const CoreSeismogram &draw,
   if (n.dead() || n.npts() <= 0)
     return 1;
   nnwin = n.npts();
+  this->invalidate_processing_state();
   return 0;
 }
 
@@ -242,6 +260,7 @@ int FrequencyDomainGIDDecon::loadwavelet(const TimeSeries &wavelet) {
       wavelet, target_dt, "FrequencyDomainGIDDecon::loadwavelet");
   external_wavelet = wavelet;
   external_wavelet_loaded = true;
+  this->invalidate_processing_state();
   return 0;
 }
 
@@ -272,6 +291,7 @@ int FrequencyDomainGIDDecon::loadnoise(const TimeSeries &noise_in) {
   for (int k = 0; k < 3; ++k)
     cblas_dcopy(noise_in.npts(), &(noise_in.s[0]), 1, n.u.get_address(k, 0), 3);
   nnwin = n.npts();
+  this->invalidate_processing_state();
   return 0;
 }
 
@@ -292,14 +312,17 @@ int FrequencyDomainGIDDecon::loadnoise(const PowerSpectrum &noise_spectrum_in) {
   external_noise_spectrum = noise_spectrum_in;
   external_noise_spectrum_loaded = true;
   external_noise_loaded = false;
+  this->invalidate_processing_state();
   return 0;
 }
 void FrequencyDomainGIDDecon::clear_external_wavelet() {
   external_wavelet_loaded = false;
+  this->invalidate_processing_state();
 }
 void FrequencyDomainGIDDecon::clear_external_noise() {
   external_noise_loaded = false;
   external_noise_spectrum_loaded = false;
+  this->invalidate_processing_state();
 }
 
 int FrequencyDomainGIDDecon::load(const CoreSeismogram &draw, TimeWindow dwin,
@@ -397,6 +420,10 @@ CoreTimeSeries FrequencyDomainGIDDecon::ideal_output() {
 }
 
 CoreTimeSeries FrequencyDomainGIDDecon::actual_output() {
+  if (!processed)
+    throw MsPASSError(
+        "FrequencyDomainGIDDecon::actual_output: process must be called first",
+        ErrorSeverity::Invalid);
   if (decon_type == CNR)
     return cnrprocessor->actual_output(current_wavelet);
   return preprocessor->actual_output();
@@ -407,6 +434,10 @@ CoreTimeSeries FrequencyDomainGIDDecon::inverse_wavelet() {
 }
 
 CoreTimeSeries FrequencyDomainGIDDecon::inverse_wavelet(double t0parent) {
+  if (!processed)
+    throw MsPASSError(
+        "FrequencyDomainGIDDecon::inverse_wavelet: process must be called first",
+        ErrorSeverity::Invalid);
   if (decon_type == CNR)
     return cnrprocessor->inverse_wavelet(current_wavelet, t0parent);
   return preprocessor->inverse_wavelet(t0parent);
@@ -487,6 +518,8 @@ void FrequencyDomainGIDDecon::update_residual_matrix(const ThreeCSpike &spk) {
 void FrequencyDomainGIDDecon::process() {
   const string base_error("FrequencyDomainGIDDecon::process: ");
   string process_stage("initialize inverse operator");
+  this->invalidate_processing_state();
+  ns_stop_reason = (decon_type == NS_GID) ? "running" : "not_enabled";
   try {
     this->initialize_inverse_operator();
     process_stage = "compute NS-GID peak threshold";
@@ -614,6 +647,7 @@ void FrequencyDomainGIDDecon::process() {
       this->update_residual_matrix(*sptr);
     resid_l2_final = matrix_l2(r.u);
     resid_linf_final = matrix_linf(r.u);
+    processed = true;
   } catch (const MsPASSError &err) {
     throw MsPASSError(base_error + "failed during " + process_stage + "\n" +
                           string(err.what()),
@@ -624,6 +658,10 @@ void FrequencyDomainGIDDecon::process() {
 }
 
 CoreSeismogram FrequencyDomainGIDDecon::sparse_output() {
+  if (!processed)
+    throw MsPASSError(
+        "FrequencyDomainGIDDecon::sparse_output: process must be called first",
+        ErrorSeverity::Invalid);
   CoreSeismogram result(d_all);
   result = WindowData(result, dwin);
   result.u.zero();
@@ -640,6 +678,10 @@ CoreSeismogram FrequencyDomainGIDDecon::sparse_output() {
 }
 
 CoreSeismogram FrequencyDomainGIDDecon::getresult() {
+  if (!processed)
+    throw MsPASSError(
+        "FrequencyDomainGIDDecon::getresult: process must be called first",
+        ErrorSeverity::Invalid);
   CoreSeismogram sparse(this->sparse_output());
   CoreTimeSeries shaping(this->output_shaping_wavelet());
   CoreSeismogram shaped(sparse_convolve(shaping, sparse));
@@ -648,6 +690,7 @@ CoreSeismogram FrequencyDomainGIDDecon::getresult() {
 
 Metadata FrequencyDomainGIDDecon::QCMetrics() {
   Metadata md;
+  md.put("gid_processed", processed);
   md.put("iteration_count", iter_count);
   md.put("residual_Linf_initial", resid_linf_initial);
   md.put("residual_Linf_final", resid_linf_final);

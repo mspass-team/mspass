@@ -105,8 +105,8 @@ int MultiTaperXcorDecon::read_metadata(const Metadata &md, bool refresh) {
     if we don't need to recompute the slepian functions */
     if ((!refresh) || parameters_changed) {
       vector<double> work(nseq * taperlen, 0.0);
-      /* This procedure allows selection of slepian tapers over a range
-      from seql to sequ.   We alway swan the first nseq values so
+      /* This procedure allows selection of Slepian tapers over a range
+      from seql to sequ.  We always want the first nseq values, so
       set them as follows */
       seql = 0;
       int sequ = nseq - 1;

@@ -96,11 +96,11 @@ private:
   ndwin is the number of samples in d_all and r.
   nnwin is the number of samples in n. */
   int ndwin, nnwin;
-  /* Save the TimeWindow objects hat define the extent of d_all, d_decon,
+  /* Save the TimeWindow objects that define the extent of d_all, d_decon,
   and n.   Some things need at least some of these downstream */
   mspass::algorithms::TimeWindow dwin, nwin, fftwin;
   double target_dt;
-  /*! For preprocessor algorithms that are scalare we specify which channel
+  /*! For preprocessor algorithms that are scalar we specify which channel
   is used to define the noise for regularization */
   int noise_component;
   /*! The algorithm accumulates spikes in this linked list.   To create
@@ -130,23 +130,24 @@ private:
   std::vector<std::vector<double>> ns_noise_components;
   bool external_wavelet_loaded, external_noise_loaded,
       external_noise_spectrum_loaded, external_wavelet_allowed;
+  bool processed;
 
   /* This parameter is set in the constructor.  It would normally be half the
   length of the fir representation of the inverse wavelet.*/
   int wavelet_pad;
-  /*! \brief Shorted inverse wavelet used for iteration.
+  /*! \brief Shortened inverse wavelet used for iteration.
 
   The iteration is done here in the time domain.  The wavelet returned by
   the preprocessor algorithm will commonly have lots of zeros or small numbers
-  outside a central area.  The constructor to needs to define how that
-  long wavelet is shortened to build this one. actual_o_fir is the ideal
-  output fir filter vector.
+  outside a central area.  The constructor defines how that long wavelet is
+  shortened to build this one. actual_o_fir is the resolution kernel vector.
   */
   std::vector<double> actual_o_fir;
   int actual_o_0; // offset from sample zero for zero lag position
   IterDeconType decon_type;
   /* This is called by the constructor to create the wtf penalty function */
   void construct_weight_penalty_function(const mspass::utility::Metadata &md);
+  void invalidate_processing_state();
   /*! Subtract current spike signal from data.
 
   \param spk - vector amplitude and lag of spike - subtract ideal
@@ -161,7 +162,7 @@ private:
   current spike. */
   void update_lag_weights(int col);
   /*! This private method is called after load noise to se the quantity
-  resid_linf_floor = convergence criteria on amplitude.  That paramters is
+  resid_linf_floor = convergence criteria on amplitude.  That parameter is
   computed from sorting the filtered, preevent noise and setting the
   threshold from a probability level.  Returns the computed floor but
   also sets resid_linf_floor in this base object */
@@ -178,7 +179,7 @@ private:
   double lw_l2_initial, lw_l2_prev;
   double resid_linf_initial, resid_linf_prev;
   double resid_l2_initial, resid_l2_prev;
-  /* These are convergence paramwters for the different tests */
+  /* These are convergence parameters for the different tests */
   int iter_count, iter_max; // actual iteration count and ceiling to break loop
   /*lw metrics are scaled with range of 0 to 1.  l2 gets scaled by number of
   points and so can use a similar absolute scale. */

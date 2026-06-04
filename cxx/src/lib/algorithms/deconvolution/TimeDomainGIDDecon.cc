@@ -252,12 +252,7 @@ TimeDomainGIDDecon::TimeDomainGIDDecon(const AntelopePf &mdtoplevel)
         get_double_default_gid(mdgiter, "ns_gid_ridge_beta", 1.0e-10);
     external_wavelet_allowed = get_bool_default_gid(
         mdgiter, "ns_gid_external_wavelet_allowed", true);
-    ns_peak_threshold = 0.0;
-    ns_last_peak_significance = 0.0;
-    ns_noise_l2 = 0.0;
-    ns_fractional_improvement_final = 0.0;
-    ns_converged = false;
-    ns_stop_reason = "not_started";
+    this->invalidate_processing_state();
   } catch (...) {
     throw;
   };
@@ -265,6 +260,31 @@ TimeDomainGIDDecon::TimeDomainGIDDecon(const AntelopePf &mdtoplevel)
 TimeDomainGIDDecon::~TimeDomainGIDDecon() {
   delete preprocessor;
   delete cnrprocessor;
+}
+
+void TimeDomainGIDDecon::invalidate_processing_state() {
+  result.clear();
+  spikes.clear();
+  lag_weights.clear();
+  actual_o_fir.clear();
+  actual_o_0 = 0;
+  wavelet_pad = 0;
+  iter_count = 0;
+  lw_linf_initial = 0.0;
+  lw_linf_prev = 0.0;
+  lw_l2_initial = 0.0;
+  lw_l2_prev = 0.0;
+  resid_linf_initial = 0.0;
+  resid_linf_prev = 0.0;
+  resid_l2_initial = 0.0;
+  resid_l2_prev = 0.0;
+  ns_fractional_improvement_final = 0.0;
+  ns_last_peak_significance = 0.0;
+  ns_peak_threshold = 0.0;
+  ns_noise_l2 = 0.0;
+  ns_converged = false;
+  ns_stop_reason = "not_started";
+  processed = false;
 }
 
 void TimeDomainGIDDecon::changeparameter(const Metadata &md) {
@@ -275,6 +295,7 @@ void TimeDomainGIDDecon::changeparameter(const Metadata &md) {
     this->cnrprocessor->changeparameter(md);
   else
     this->preprocessor->changeparameter(md);
+  this->invalidate_processing_state();
 }
 
 CoreTimeSeries TimeDomainGIDDecon::ideal_output() {
@@ -282,6 +303,10 @@ CoreTimeSeries TimeDomainGIDDecon::ideal_output() {
 }
 
 CoreTimeSeries TimeDomainGIDDecon::actual_output() {
+  if (!processed)
+    throw MsPASSError(
+        "TimeDomainGIDDecon::actual_output: process must be called first",
+        ErrorSeverity::Invalid);
   if (decon_type == CNR)
     return cnrprocessor->actual_output(current_wavelet);
   return preprocessor->actual_output();
@@ -292,6 +317,10 @@ CoreTimeSeries TimeDomainGIDDecon::inverse_wavelet() {
 }
 
 CoreTimeSeries TimeDomainGIDDecon::inverse_wavelet(double t0parent) {
+  if (!processed)
+    throw MsPASSError(
+        "TimeDomainGIDDecon::inverse_wavelet: process must be called first",
+        ErrorSeverity::Invalid);
   if (decon_type == CNR)
     return cnrprocessor->inverse_wavelet(current_wavelet, t0parent);
   return preprocessor->inverse_wavelet(t0parent);
@@ -407,6 +436,7 @@ int TimeDomainGIDDecon::load(const CoreSeismogram &draw, TimeWindow dwin_in) {
     if (d_all.dead() || d_all.npts() <= 0)
       return 1;
     ndwin = d_all.npts();
+    this->invalidate_processing_state();
     return 0;
   } catch (...) {
     throw;
@@ -428,9 +458,11 @@ int TimeDomainGIDDecon::loadnoise(const CoreSeismogram &draw,
         ncomp = WindowData(ncomp, nwin);
         ns_noise_components.push_back(ncomp.s);
       }
+      this->invalidate_processing_state();
       return 0;
     }
     this->compute_resid_linf_floor();
+    this->invalidate_processing_state();
     return 0;
   } catch (...) {
     throw;
@@ -453,6 +485,7 @@ int TimeDomainGIDDecon::loadwavelet(const TimeSeries &wavelet) {
       wavelet, target_dt, "TimeDomainGIDDecon::loadwavelet");
   external_wavelet = wavelet;
   external_wavelet_loaded = true;
+  this->invalidate_processing_state();
   return 0;
 }
 int TimeDomainGIDDecon::loadwavelet(const CoreTimeSeries &wavelet) {
@@ -481,6 +514,7 @@ int TimeDomainGIDDecon::loadnoise(const TimeSeries &noise_in) {
   for (int k = 0; k < 3; ++k)
     cblas_dcopy(noise_in.npts(), &(noise_in.s[0]), 1, n.u.get_address(k, 0), 3);
   nnwin = n.npts();
+  this->invalidate_processing_state();
   return 0;
 }
 int TimeDomainGIDDecon::loadnoise(const CoreTimeSeries &noise_in) {
@@ -500,15 +534,18 @@ int TimeDomainGIDDecon::loadnoise(const PowerSpectrum &noise_spectrum_in) {
   external_noise_spectrum_loaded = true;
   external_noise_loaded = false;
   ns_noise_components.clear();
+  this->invalidate_processing_state();
   return 0;
 }
 void TimeDomainGIDDecon::clear_external_wavelet() {
   external_wavelet_loaded = false;
+  this->invalidate_processing_state();
 }
 void TimeDomainGIDDecon::clear_external_noise() {
   external_noise_loaded = false;
   external_noise_spectrum_loaded = false;
   ns_noise_components.clear();
+  this->invalidate_processing_state();
 }
 int TimeDomainGIDDecon::load(const CoreSeismogram &draw, TimeWindow dwin,
                            TimeWindow nwin) {
@@ -680,6 +717,8 @@ CoreTimeSeries trim(const CoreTimeSeries &d, double floor = 0.005) {
 void TimeDomainGIDDecon::process() {
   const string base_error("TimeDomainGIDDecon::process method:  ");
   string process_stage("initialization");
+  this->invalidate_processing_state();
+  ns_stop_reason = (decon_type == NS_GID) ? "running" : "not_enabled";
   try {
     /* We first have to run the signal processing style deconvolution.
     This is defined by the base pointer available through the symbol
@@ -785,7 +824,10 @@ void TimeDomainGIDDecon::process() {
     CoreTimeSeries winv;
     if (decon_type != NS_GID) {
       process_stage = "compute inverse wavelet";
-      winv = this->inverse_wavelet(d_decon.t0());
+      if (decon_type == CNR)
+        winv = cnrprocessor->inverse_wavelet(current_wavelet, d_decon.t0());
+      else
+        winv = preprocessor->inverse_wavelet(d_decon.t0());
     }
     /* The actual output signal is used in the iterative
      * recursion of this algorithm.  For efficiency it is important
@@ -1028,6 +1070,7 @@ void TimeDomainGIDDecon::process() {
     if ((decon_type != NS_GID) && iter_count >= iter_max)
       throw MsPASSError("TimeDomainGIDDecon::process did not converge",
                         ErrorSeverity::Suspect);
+    processed = true;
   } catch (const MsPASSError &err) {
     throw MsPASSError(base_error + "failed during " + process_stage + "\n" +
                           string(err.what()),
@@ -1098,6 +1141,10 @@ bool TimeDomainGIDDecon::has_not_converged() {
 }
 CoreSeismogram TimeDomainGIDDecon::sparse_output() {
   try {
+    if (!processed)
+      throw MsPASSError(
+          "TimeDomainGIDDecon::sparse_output: process must be called first",
+          ErrorSeverity::Invalid);
     CoreSeismogram result(d_all);
     /* We will make the output the size of the processing window for the
     iteration.  May want to alter this to trim the large lag that would not
@@ -1129,6 +1176,10 @@ CoreSeismogram TimeDomainGIDDecon::sparse_output() {
 }
 CoreSeismogram TimeDomainGIDDecon::getresult() {
   try {
+    if (!processed)
+      throw MsPASSError(
+          "TimeDomainGIDDecon::getresult: process must be called first",
+          ErrorSeverity::Invalid);
     CoreSeismogram sparse(this->sparse_output());
     CoreTimeSeries shaping(this->output_shaping_wavelet());
     CoreSeismogram shaped(sparse_convolve(shaping, sparse));
@@ -1139,6 +1190,7 @@ CoreSeismogram TimeDomainGIDDecon::getresult() {
 }
 Metadata TimeDomainGIDDecon::QCMetrics() {
   Metadata md;
+  md.put("gid_processed", processed);
   md.put("iteration_count", iter_count);
   md.put("residual_Linf_initial", resid_linf_initial);
   md.put("residual_Linf_final", resid_linf_prev);

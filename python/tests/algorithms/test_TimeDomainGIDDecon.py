@@ -506,6 +506,68 @@ def test_TimeDomainGIDDecon_changeparameter_handles_cnr_mode(tmp_path):
     engine.changeparameter(cnr_md)
 
 
+def test_TimeDomainGIDDecon_preprocess_outputs_are_guarded():
+    pf = pfread("./data/pf/TimeDomainGIDDecon.pf")
+    engine = TimeDomainGIDDecon(pf)
+    qc = dict(engine.QCMetrics())
+
+    assert qc["gid_processed"] is False
+    assert qc["iteration_count"] == 0
+    assert qc["residual_Linf_final"] == 0.0
+    assert qc["residual_L2_final"] == 0.0
+    for method in (
+        engine.getresult,
+        engine.sparse_output,
+        engine.actual_output,
+        engine.inverse_wavelet,
+    ):
+        with pytest.raises(MsPASSError, match="process must be called first"):
+            method()
+
+
+def test_TimeDomainGIDDecon_changeparameter_invalidates_outer_state():
+    data = _make_single_spike_convolution_data()
+    pf = pfread("./data/pf/TimeDomainGIDDecon.pf")
+    engine = TimeDomainGIDDecon(pf)
+    TimeDomainGIDRFDecon(
+        data,
+        engine,
+        signal_window=TimeWindow(-10.0, 20.0),
+        noise_window=TimeWindow(-35.0, -5.0),
+    )
+    assert dict(engine.QCMetrics())["gid_processed"] is True
+
+    leaf_md = pf.get_branch("deconvolution_operator_type").get_branch("least_square")
+    engine.changeparameter(leaf_md)
+
+    qc = dict(engine.QCMetrics())
+    assert qc["gid_processed"] is False
+    assert qc["iteration_count"] == 0
+    with pytest.raises(MsPASSError, match="process must be called first"):
+        engine.getresult()
+    with pytest.raises(MsPASSError, match="process must be called first"):
+        engine.actual_output()
+
+
+def test_TimeDomainGIDDecon_load_invalidates_outer_state():
+    data = _make_single_spike_convolution_data()
+    pf = pfread("./data/pf/TimeDomainGIDDecon.pf")
+    engine = TimeDomainGIDDecon(pf)
+    TimeDomainGIDRFDecon(
+        data,
+        engine,
+        signal_window=TimeWindow(-10.0, 20.0),
+        noise_window=TimeWindow(-35.0, -5.0),
+    )
+    assert dict(engine.QCMetrics())["gid_processed"] is True
+
+    assert engine.load(data, TimeWindow(-10.0, 20.0)) == 0
+
+    assert dict(engine.QCMetrics())["gid_processed"] is False
+    with pytest.raises(MsPASSError, match="process must be called first"):
+        engine.getresult()
+
+
 def test_TimeDomainGIDDecon_changeparameter_rejects_leaf_window_drift(tmp_path):
     pf = pfread("./data/pf/TimeDomainGIDDecon.pf")
     engine = TimeDomainGIDDecon(pf)
