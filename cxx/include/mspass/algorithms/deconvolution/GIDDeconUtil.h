@@ -20,6 +20,12 @@ int GetIntDefault(const mspass::utility::Metadata &md, const std::string &key,
                   const int default_value);
 bool GetBoolDefault(const mspass::utility::Metadata &md,
                     const std::string &key, const bool default_value);
+void ValidateProbability(const double p, const std::string &key,
+                         const std::string &caller);
+void ValidatePositive(const double x, const std::string &key,
+                      const std::string &caller);
+void ValidateNonnegative(const double x, const std::string &key,
+                         const std::string &caller);
 std::string AntelopePfToText(const mspass::utility::AntelopePf &pf,
                              const int indent = 0);
 std::vector<double> ThreeCAmplitudes(mspass::utility::dmatrix &d);

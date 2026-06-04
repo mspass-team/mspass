@@ -233,11 +233,19 @@ def test_RFdeconProcessor_change_parameters_uses_public_engine_api():
         rf_changed = RFdecon(
             Seismogram(seis0), alg="GeneralizedIterative", engine=gid_processor
         )
+        assert rf_changed.live
+        assert rf_changed["RFdecon_properties"]["damping_factor"] == pytest.approx(
+            100.0
+        )
+        assert rf_changed["RFdecon_properties"]["gid_leaf_parameters_changed"]
         for restored in payloads:
             rf_restored = RFdecon(
                 Seismogram(seis0), alg="GeneralizedIterative", engine=restored
             )
             assert rf_restored.live
+            assert rf_restored["RFdecon_properties"]["damping_factor"] == pytest.approx(
+                100.0
+            )
             assert np.allclose(np.asarray(rf_changed.data), np.asarray(rf_restored.data))
     finally:
         if old_pfpath is None:
@@ -380,6 +388,8 @@ def test_RFdecon_enables_generalized_iterative():
         qc = rf["RFdecon_properties"]
         assert qc["algorithm"] == "GeneralizedIterative"
         assert qc["iteration_count"] > 0
+        assert qc["damping_factor"] == pytest.approx(1.0)
+        assert not qc["gid_leaf_parameters_changed"]
     finally:
         if old_pfpath is None:
             os.environ.pop("PFPATH", None)

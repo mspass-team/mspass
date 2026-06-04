@@ -16,6 +16,7 @@ int LeastSquareDecon::read_metadata(const Metadata &md) {
   try {
     const string base_error("SimpleLeastTaperDecon::read_metadata method: ");
     const int nfft_from_win = ComputeFFTLength(md);
+    const int new_sample_shift = ComputeDeconSampleShift(md);
     const double new_damp = md.get_double("damping_factor");
     if (new_damp <= 0.0) {
       throw MsPASSError(base_error +
@@ -23,11 +24,16 @@ int LeastSquareDecon::read_metadata(const Metadata &md) {
                             "is an unstable undamped spectral division.",
                         ErrorSeverity::Invalid);
     }
+    if (new_sample_shift < 0 || new_sample_shift > nfft_from_win)
+      throw MsPASSError(base_error +
+                            "computed sample_shift is outside fft buffer",
+                        ErrorSeverity::Invalid);
     ShapingWavelet new_shapingwavelet(md, nfft_from_win);
     // window based nfft always overrides that extracted directly from md */
     if (nfft_from_win != nfft) {
       this->change_size(nfft_from_win);
     }
+    sample_shift = new_sample_shift;
     damp = new_damp;
     /* Note this depends on nfft inheritance from FFTDeconOperator.
      * That is a bit error prone with changes*/

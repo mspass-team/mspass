@@ -305,6 +305,21 @@ PYBIND11_MODULE(deconvolution, m) {
       "Return actual output of inverse*wavelet")
     .def("inverse_wavelet",py::overload_cast<>(&MultiTaperSpecDivDecon::inverse_wavelet))
     .def("inverse_wavelet",py::overload_cast<double>(&MultiTaperSpecDivDecon::inverse_wavelet))
+    .def("all_inverse_wavelets",
+      &MultiTaperSpecDivDecon::all_inverse_wavelets,
+      py::arg("t0parent") = 0.0,
+      "Return retained inverse wavelet products.  The current implementation "
+      "normally returns one combined multitaper inverse.")
+    .def("all_rfestimates",
+      &MultiTaperSpecDivDecon::all_rfestimates,
+      py::arg("t0parent") = 0.0,
+      "Return retained RF estimates.  The current implementation normally "
+      "returns one combined estimate.")
+    .def("all_actual_outputs",
+      &MultiTaperSpecDivDecon::all_actual_outputs,
+      py::arg("t0parent") = 0.0,
+      "Return retained actual output products.  The current implementation "
+      "normally returns one combined resolution kernel.")
     .def("QCMetrics",&MultiTaperSpecDivDecon::QCMetrics,"Return QC metrics")
     .def("get_taperlen",&MultiTaperSpecDivDecon::get_taperlen,"Get length of the Slepian tapers used by the operator")
     .def("get_number_tapers",&MultiTaperSpecDivDecon::get_number_tapers,"Get number of Slepian tapers used by the operator")

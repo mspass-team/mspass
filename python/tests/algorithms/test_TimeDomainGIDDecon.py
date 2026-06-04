@@ -930,6 +930,37 @@ def test_TimeDomainGIDDecon_changeparameter_rejects_leaf_shaping_dt_drift():
         engine.changeparameter(leaf_md)
 
 
+@pytest.mark.parametrize(
+    "old,new,match",
+    [
+        (
+            "residual_noise_rms_probability_floor 0.95",
+            "residual_noise_rms_probability_floor -0.5",
+            "residual_noise_rms_probability_floor",
+        ),
+        (
+            "ns_gid_peak_probability_threshold 0.995",
+            "ns_gid_peak_probability_threshold 2.0",
+            "ns_gid_peak_probability_threshold",
+        ),
+        (
+            "lag_weight_function_width 5",
+            "lag_weight_function_width -3",
+            "lag_weight_function_width",
+        ),
+    ],
+)
+def test_TimeDomainGIDDecon_rejects_invalid_probability_and_lag_parameters(
+    tmp_path, old, new, match
+):
+    text = open("data/pf/TimeDomainGIDDecon.pf", encoding="utf-8").read()
+    pf = tmp_path / "TimeDomainGIDDecon.pf"
+    pf.write_text(text.replace(old, new))
+
+    with pytest.raises(MsPASSError, match=match):
+        TimeDomainGIDDecon(pfread(str(pf)))
+
+
 def test_TimeDomainGIDDecon_changeparameter_rejects_gid_level_metadata():
     pf = pfread("./data/pf/TimeDomainGIDDecon.pf")
     engine = TimeDomainGIDDecon(pf)

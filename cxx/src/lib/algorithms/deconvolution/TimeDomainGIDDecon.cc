@@ -150,6 +150,7 @@ TimeDomainGIDDecon::TimeDomainGIDDecon(const AntelopePf &mdtoplevel)
       preprocessor = std::make_unique<NoiseStableDecon>(mdleaf);
       break;
     };
+    changed_leaf_metadata = Metadata(mdleaf);
     /* Because this may evolve we make this a private method to
     make changes easier to implement. */
     this->construct_weight_penalty_function(mdgiter);
@@ -159,19 +160,34 @@ TimeDomainGIDDecon::TimeDomainGIDDecon(const AntelopePf &mdtoplevel)
     lw_l2_floor = mdgiter.get<double>("lag_weight_rms_floor");
     resid_linf_prob =
         mdgiter.get<double>("residual_noise_rms_probability_floor");
+    ValidateProbability(resid_linf_prob, "residual_noise_rms_probability_floor",
+                        base_error);
     resid_l2_tol = mdgiter.get<double>("residual_fractional_improvement_floor");
     ns_peak_sigma_threshold =
         GetDoubleDefault(mdgiter, "ns_gid_peak_sigma_threshold", 4.0);
+    ValidatePositive(ns_peak_sigma_threshold, "ns_gid_peak_sigma_threshold",
+                     base_error);
     ns_peak_probability_threshold = GetDoubleDefault(
         mdgiter, "ns_gid_peak_probability_threshold", 0.995);
+    ValidateProbability(ns_peak_probability_threshold,
+                        "ns_gid_peak_probability_threshold", base_error);
     ns_use_empirical_noise_threshold = GetBoolDefault(
         mdgiter, "ns_gid_use_empirical_noise_threshold", true);
     ns_residual_noise_ratio_floor = GetDoubleDefault(
         mdgiter, "ns_gid_residual_noise_ratio_floor", 1.0);
+    ValidateNonnegative(ns_residual_noise_ratio_floor,
+                        "ns_gid_residual_noise_ratio_floor", base_error);
     ns_max_spikes = GetIntDefault(mdgiter, "ns_gid_max_spikes", 0);
+    if (ns_max_spikes < 0)
+      throw MsPASSError(base_error + "ns_gid_max_spikes must be nonnegative",
+                        ErrorSeverity::Invalid);
     ns_refit_interval = GetIntDefault(mdgiter, "ns_gid_refit_interval", 5);
+    if (ns_refit_interval < 1)
+      throw MsPASSError(base_error + "ns_gid_refit_interval must be positive",
+                        ErrorSeverity::Invalid);
     ns_ridge_beta =
         GetDoubleDefault(mdgiter, "ns_gid_ridge_beta", 1.0e-10);
+    ValidateNonnegative(ns_ridge_beta, "ns_gid_ridge_beta", base_error);
     external_wavelet_allowed = GetBoolDefault(
         mdgiter, "ns_gid_external_wavelet_allowed", true);
     this->invalidate_processing_state();
@@ -267,6 +283,10 @@ void TimeDomainGIDDecon::construct_weight_penalty_function(const Metadata &md) {
     */
     wtf.clear();
     nwtf = md.get<int>("lag_weight_function_width");
+    if (nwtf <= 0)
+      throw MsPASSError(base_error +
+                            "lag_weight_function_width must be positive",
+                        ErrorSeverity::Invalid);
     /* nwtf must be forced to be an odd number to force the function to
     be symmetric. */
     if ((nwtf % 2) == 0)
@@ -685,13 +705,18 @@ void TimeDomainGIDDecon::process() {
     algorithm though. */
     if (decon_type == MULTI_TAPER) {
       process_stage = "load multitaper noise";
+      MultiTaperXcorDecon *mtop =
+          dynamic_cast<MultiTaperXcorDecon *>(preprocessor.get());
+      vector<double> mt_noise;
       if (external_noise_loaded) {
-        dynamic_cast<MultiTaperXcorDecon *>(preprocessor.get())
-            ->loadnoise(external_noise.s);
+        mt_noise = external_noise.s;
       } else {
         CoreTimeSeries nts(ExtractComponent(n, noise_component));
-        dynamic_cast<MultiTaperXcorDecon *>(preprocessor.get())->loadnoise(nts.s);
+        mt_noise = nts.s;
       }
+      if (mt_noise.size() > static_cast<size_t>(mtop->get_taperlen()))
+        mt_noise.resize(mtop->get_taperlen());
+      mtop->loadnoise(mt_noise);
     }
     CoreTimeSeries srcwavelet;
     process_stage = "load source wavelet";
@@ -1133,6 +1158,8 @@ CoreSeismogram TimeDomainGIDDecon::getresult() {
 }
 Metadata TimeDomainGIDDecon::QCMetrics() {
   Metadata md;
+  md += changed_leaf_metadata;
+  md.put("gid_leaf_parameters_changed", leaf_parameters_changed);
   md.put("gid_processed", processed);
   md.put("iteration_count", iter_count);
   md.put("residual_Linf_initial", resid_linf_initial);

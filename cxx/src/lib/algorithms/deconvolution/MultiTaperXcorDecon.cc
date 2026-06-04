@@ -131,6 +131,11 @@ int MultiTaperXcorDecon::loadnoise(const vector<double> &n) {
   if (n.empty())
     throw MsPASSError(base_error + "noise vector cannot be empty",
                       ErrorSeverity::Invalid);
+  if (n.size() > taperlen)
+    throw MsPASSError(base_error +
+                          "noise vector is longer than taperlen; multitaper "
+                          "inputs must not exceed the configured taper length",
+                      ErrorSeverity::Invalid);
   /* For this implementation we insist n be the same length
    * as d (assumed taperlen) to avoid constant recomputing slepians. */
   if (n.size() == taperlen)
@@ -139,12 +144,9 @@ int MultiTaperXcorDecon::loadnoise(const vector<double> &n) {
     int nn = n.size();
     int k;
     noise.clear();
-    for (k = 0; k < nfft; ++k)
+    for (k = 0; k < static_cast<int>(taperlen); ++k)
       noise.push_back(0.0);
-    /* This zero padds noise on right when input series length
-     * is short.   If ns is long we always take the leading portion */
-    if (nn > taperlen)
-      nn = taperlen;
+    /* This zero pads noise on the right when input series length is short. */
     for (k = 0; k < nn; ++k)
       noise[k] = n[k];
   }
@@ -153,6 +155,13 @@ int MultiTaperXcorDecon::loadnoise(const vector<double> &n) {
 int MultiTaperXcorDecon::load(const vector<double> &w, const vector<double> &d,
                               const vector<double> &n) {
   try {
+    const string base_error("MultiTaperXcorDecon::load: ");
+    if (w.size() > taperlen || d.size() > taperlen)
+      throw MsPASSError(
+          base_error +
+              "wavelet/data vectors are longer than taperlen; multitaper "
+              "inputs must not exceed the configured taper length",
+          ErrorSeverity::Invalid);
     int lnr = this->loadnoise(n);
     int ldr;
     ldr = this->ScalarDecon::load(w, d);
@@ -170,17 +179,16 @@ MultiTaperXcorDecon::MultiTaperXcorDecon(const Metadata &md,
   } catch (...) {
     throw;
   }
-  this->loadnoise(n);
-  this->ScalarDecon::load(w, d);
+  this->load(w, d, n);
 }
 vector<ComplexArray>
 MultiTaperXcorDecon::taper_data(const vector<double> &signal) {
   const string base_error("taper_data procedure:  ");
   /* We put in this sanity check */
-  if (signal.size() > nfft)
+  if (signal.size() > taperlen)
     throw MsPASSError(base_error +
                           "Illegal input parameters.  Vector of data received "
-                          "is larger than the fft buffer space allocated",
+                          "is longer than the configured taper length",
                       ErrorSeverity::Invalid);
   /* The tapered data are stored in this vector of arrays */
   int i, j;
@@ -220,6 +228,12 @@ void MultiTaperXcorDecon::process() {
     throw MsPASSError(base_error + "noise data is empty.",
                       ErrorSeverity::Invalid);
   }
+  if (wavelet.size() > taperlen || data.size() > taperlen ||
+      noise.size() > taperlen)
+    throw MsPASSError(base_error +
+                          "wavelet, data, and noise vectors must not exceed "
+                          "the configured taper length",
+                      ErrorSeverity::Invalid);
   int i, j;
   /* The final inverse is applied to the untapered wavelet/data spectra.  DPSS
   tapers are used only to estimate stable source and noise power terms. */

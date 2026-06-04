@@ -93,6 +93,7 @@ FrequencyDomainGIDDecon::FrequencyDomainGIDDecon(const AntelopePf &mdtoplevel)
       preprocessor = std::make_unique<NoiseStableDecon>(mdleaf);
       break;
     };
+    changed_leaf_metadata = Metadata(mdleaf);
     external_wavelet_loaded = false;
     external_noise_loaded = false;
     external_noise_spectrum_loaded = false;
@@ -102,16 +103,29 @@ FrequencyDomainGIDDecon::FrequencyDomainGIDDecon(const AntelopePf &mdtoplevel)
         mdgid, "ns_gid_external_wavelet_allowed", true);
     ns_peak_sigma_threshold =
         GetDoubleDefault(mdgid, "ns_gid_peak_sigma_threshold", 4.0);
+    ValidatePositive(ns_peak_sigma_threshold, "ns_gid_peak_sigma_threshold",
+                     base_error);
     ns_peak_probability_threshold = GetDoubleDefault(
         mdgid, "ns_gid_peak_probability_threshold", 0.995);
+    ValidateProbability(ns_peak_probability_threshold,
+                        "ns_gid_peak_probability_threshold", base_error);
     ns_use_empirical_noise_threshold = GetBoolDefault(
         mdgid, "ns_gid_use_empirical_noise_threshold", true);
     ns_residual_noise_ratio_floor = GetDoubleDefault(
         mdgid, "ns_gid_residual_noise_ratio_floor", 1.0);
+    ValidateNonnegative(ns_residual_noise_ratio_floor,
+                        "ns_gid_residual_noise_ratio_floor", base_error);
     ns_max_spikes = GetIntDefault(mdgid, "ns_gid_max_spikes", 0);
+    if (ns_max_spikes < 0)
+      throw MsPASSError(base_error + "ns_gid_max_spikes must be nonnegative",
+                        ErrorSeverity::Invalid);
     ns_refit_interval = GetIntDefault(mdgid, "ns_gid_refit_interval", 5);
+    if (ns_refit_interval < 1)
+      throw MsPASSError(base_error + "ns_gid_refit_interval must be positive",
+                        ErrorSeverity::Invalid);
     ns_ridge_beta =
         GetDoubleDefault(mdgid, "ns_gid_ridge_beta", 1.0e-10);
+    ValidateNonnegative(ns_ridge_beta, "ns_gid_ridge_beta", base_error);
     this->invalidate_processing_state();
   } catch (...) {
     throw;
@@ -326,13 +340,18 @@ void FrequencyDomainGIDDecon::initialize_inverse_operator() {
                   uwork.get_address(k, 0), 3);
   } else {
     if (decon_type == MULTI_TAPER) {
+      MultiTaperXcorDecon *mtop =
+          dynamic_cast<MultiTaperXcorDecon *>(preprocessor.get());
+      vector<double> mt_noise;
       if (external_noise_loaded) {
-        dynamic_cast<MultiTaperXcorDecon *>(preprocessor.get())
-            ->loadnoise(external_noise.s);
+        mt_noise = external_noise.s;
       } else {
         CoreTimeSeries nts(ExtractComponent(n, noise_component));
-        dynamic_cast<MultiTaperXcorDecon *>(preprocessor.get())->loadnoise(nts.s);
+        mt_noise = nts.s;
       }
+      if (mt_noise.size() > static_cast<size_t>(mtop->get_taperlen()))
+        mt_noise.resize(mtop->get_taperlen());
+      mtop->loadnoise(mt_noise);
     } else if (decon_type == NS_GID) {
       NoiseStableDecon *nsop = dynamic_cast<NoiseStableDecon *>(preprocessor.get());
       if (external_noise_spectrum_loaded)
@@ -663,6 +682,8 @@ CoreSeismogram FrequencyDomainGIDDecon::getresult() {
 
 Metadata FrequencyDomainGIDDecon::QCMetrics() {
   Metadata md;
+  md += changed_leaf_metadata;
+  md.put("gid_leaf_parameters_changed", leaf_parameters_changed);
   md.put("gid_processed", processed);
   md.put("iteration_count", iter_count);
   md.put("residual_Linf_initial", resid_linf_initial);

@@ -52,6 +52,26 @@ bool GetBoolDefault(const Metadata &md, const string &key,
   return default_value;
 }
 
+void ValidateProbability(const double p, const string &key,
+                         const string &caller) {
+  if (!std::isfinite(p) || p < 0.0 || p > 1.0)
+    throw MsPASSError(caller + ": " + key + " must be in [0, 1]",
+                      ErrorSeverity::Invalid);
+}
+
+void ValidatePositive(const double x, const string &key, const string &caller) {
+  if (!std::isfinite(x) || x <= 0.0)
+    throw MsPASSError(caller + ": " + key + " must be positive",
+                      ErrorSeverity::Invalid);
+}
+
+void ValidateNonnegative(const double x, const string &key,
+                         const string &caller) {
+  if (!std::isfinite(x) || x < 0.0)
+    throw MsPASSError(caller + ": " + key + " must be nonnegative",
+                      ErrorSeverity::Invalid);
+}
+
 namespace {
 string pf_value_to_text(const Metadata &md, const string &key) {
   boost::any val(md.get_any(key));

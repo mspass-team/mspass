@@ -15,6 +15,7 @@ int WaterLevelDecon::read_metadata(const Metadata &md) {
   try {
     const string base_error("SimpleLeastTaperDecon::read_metadata method: ");
     const int nfft_from_win = ComputeFFTLength(md);
+    const int new_sample_shift = ComputeDeconSampleShift(md);
     const double new_wlv = md.get_double("water_level");
     if (new_wlv <= 0.0) {
       throw MsPASSError(base_error +
@@ -22,11 +23,16 @@ int WaterLevelDecon::read_metadata(const Metadata &md) {
                             "an unstable bare spectral division.",
                         ErrorSeverity::Invalid);
     }
+    if (new_sample_shift < 0 || new_sample_shift > nfft_from_win)
+      throw MsPASSError(base_error +
+                            "computed sample_shift is outside fft buffer",
+                        ErrorSeverity::Invalid);
     ShapingWavelet new_shapingwavelet(md, nfft_from_win);
     // window based nfft always overrides that extracted directly from md */
     if (nfft_from_win != FFTDeconOperator::nfft) {
       this->change_size(nfft_from_win);
     }
+    sample_shift = new_sample_shift;
     wlv = new_wlv;
     shapingwavelet = new_shapingwavelet;
     return 0;

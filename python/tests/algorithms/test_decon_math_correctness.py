@@ -245,6 +245,41 @@ def test_scalar_fft_decon_process_is_idempotent_after_single_load(tmp_path):
     assert np.allclose(second, first, atol=1.0e-12)
 
 
+@pytest.mark.parametrize("engine_class", [LeastSquareDecon, WaterLevelDecon])
+def test_scalar_fft_changeparameter_recomputes_sample_shift(tmp_path, engine_class):
+    base_pf = _write_scalar_pf(
+        tmp_path,
+        damping=1.0e-12,
+        water_level=1.0e-12,
+        nfft=64,
+        window_start=0.0,
+        window_end=63.0,
+    )
+    shifted_pf = _write_scalar_pf(
+        tmp_path,
+        damping=1.0e-12,
+        water_level=1.0e-12,
+        nfft=128,
+        window_start=-8.0,
+        window_end=63.0,
+    )
+    wavelet = np.zeros(64)
+    wavelet[0] = 1.0
+    data = np.zeros(64)
+    data[0] = 1.0
+
+    engine = engine_class(base_pf)
+    engine.load(_double_vector(wavelet), _double_vector(data))
+    engine.process()
+    assert np.argmax(np.abs(np.asarray(engine.getresult(), dtype=np.float64))) == 0
+
+    engine.changeparameter(shifted_pf)
+    engine.process()
+    shifted = np.asarray(engine.getresult(), dtype=np.float64)
+
+    assert np.argmax(np.abs(shifted)) == 8
+
+
 @pytest.mark.parametrize(
     "engine_class, pf_factory",
     [
@@ -644,6 +679,38 @@ def test_multitaper_changeparameter_refreshes_lag_window(
 
 
 @pytest.mark.parametrize(
+    "engine_class", [MultiTaperXcorDecon, MultiTaperSpecDivDecon]
+)
+def test_multitaper_rejects_inputs_longer_than_taperlen(tmp_path, engine_class):
+    n = 80
+    pf = _write_multitaper_pf(
+        tmp_path,
+        window_start=0.0,
+        window_end=float(n - 1) * 0.05,
+        nfft=256,
+    )
+    t = np.arange(n) * 0.05
+    wavelet = np.exp(-0.5 * ((t - 0.8) / 0.15) ** 2)
+    data = 1.2 * wavelet
+    noise = 0.001 * np.sin(2.0 * np.pi * 3.0 * t)
+    overlong = np.r_[data, 0.0]
+
+    engine = engine_class(pf)
+    with pytest.raises(MsPASSError, match="taper"):
+        engine.load(_double_vector(wavelet), _double_vector(overlong), _double_vector(noise))
+
+    engine = engine_class(pf)
+    with pytest.raises(MsPASSError, match="taper"):
+        engine.load(_double_vector(wavelet), _double_vector(data), _double_vector(overlong))
+
+    engine = engine_class(pf)
+    engine.load(_double_vector(wavelet), _double_vector(data), _double_vector(noise))
+    engine.loadwavelet(_double_vector(np.r_[wavelet, 0.0]))
+    with pytest.raises(MsPASSError, match="taper"):
+        engine.process()
+
+
+@pytest.mark.parametrize(
     "engine_class,operator_type",
     [
         (MultiTaperXcorDecon, "xcor_power_stabilized"),
@@ -858,6 +925,29 @@ def test_multitaper_matches_closed_form_hybrid_reference(tmp_path, engine_class,
 
     assert np.corrcoef(cpp, ref)[0, 1] > 0.995
     assert np.max(np.abs(cpp - ref)) < 0.08 * np.max(np.abs(ref))
+
+
+def test_multitaper_specdiv_legacy_all_methods_are_bound(tmp_path):
+    n = 128
+    pf = _write_multitaper_pf(
+        tmp_path,
+        window_start=0.0,
+        window_end=float(n - 1) * 0.05,
+        nfft=512,
+        damping=0.05,
+    )
+    t = np.arange(n) * 0.05
+    wavelet = np.exp(-0.5 * ((t - 0.9) / 0.16) ** 2)
+    data = 1.3 * wavelet
+    noise = 0.001 * np.sin(2.0 * np.pi * 2.0 * t)
+
+    engine = MultiTaperSpecDivDecon(pf)
+    engine.load(_double_vector(wavelet), _double_vector(data), _double_vector(noise))
+    engine.process()
+
+    assert len(engine.all_inverse_wavelets()) == engine.get_number_outputs()
+    assert len(engine.all_rfestimates()) == engine.get_number_outputs()
+    assert len(engine.all_actual_outputs()) == engine.get_number_outputs()
 
 
 @pytest.mark.parametrize(

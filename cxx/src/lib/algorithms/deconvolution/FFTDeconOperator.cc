@@ -66,21 +66,31 @@ FFTDeconOperator &FFTDeconOperator::operator=(const FFTDeconOperator &parent) {
 }
 void FFTDeconOperator::changeparameter(const Metadata &md) {
   try {
-    size_t nfft_test = md.get_int("operator_nfft");
+    const int nfft_test = nextPowerOf2(md.get_int("operator_nfft"));
+    const int sample_shift_test = ComputeDeconSampleShift(md);
+    if (sample_shift_test < 0)
+      throw MsPASSError(string("FFTDeconOperator::changeparameter:  ") +
+                            "illegal sample_shift parameter - must be ge 0",
+                        ErrorSeverity::Invalid);
+    if (sample_shift_test > nfft_test)
+      throw MsPASSError(
+          string("FFTDeconOperator::changeparameter:  ") +
+              "computed sample_shift exceeds length of fft",
+          ErrorSeverity::Invalid);
     if (nfft_test != nfft) {
-      nfft = nfft_test;
+      gsl_fft_complex_wavetable *new_wavetable =
+          gsl_fft_complex_wavetable_alloc(nfft_test);
+      gsl_fft_complex_workspace *new_workspace =
+          gsl_fft_complex_workspace_alloc(nfft_test);
       if (wavetable != NULL)
         gsl_fft_complex_wavetable_free(wavetable);
       if (workspace != NULL)
         gsl_fft_complex_workspace_free(workspace);
-      wavetable = gsl_fft_complex_wavetable_alloc(nfft);
-      workspace = gsl_fft_complex_workspace_alloc(nfft);
+      wavetable = new_wavetable;
+      workspace = new_workspace;
+      nfft = nfft_test;
     }
-    sample_shift = md.get_int("sample_shift");
-    if (sample_shift < 0)
-      throw MsPASSError(string("FFTDeconOperator::changeparameter:  ") +
-                            "illegal sample_shift parameter - must be ge 0",
-                        ErrorSeverity::Invalid);
+    sample_shift = sample_shift_test;
   } catch (...) {
     throw;
   };
