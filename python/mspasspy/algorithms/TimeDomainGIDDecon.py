@@ -59,8 +59,11 @@ def TimeDomainGIDRFDecon(
     :param noise_window: optional `TimeWindow` defining pre-event noise.  When
         omitted the engine's parameter-file noise window is used.
     :param external_wavelet: optional prepared wavelet passed directly to the
-        GID engine.  When omitted, the engine preserves RF compatibility and
-        derives the wavelet from component 2 of the input seismogram.
+        GID engine.  If omitted, any external wavelet already loaded into
+        ``engine`` is preserved; otherwise the engine preserves RF
+        compatibility and derives the wavelet from component 2 of the input
+        seismogram.  Use ``engine.clear_external_wavelet()`` to force
+        component-derived wavelets after loading an external one.
     :param external_noise: optional scalar noise `TimeSeries`, `CoreTimeSeries`,
         or `PowerSpectrum` passed to NS-GID inverse stabilization.
         If omitted, any external noise already loaded into ``engine`` is
@@ -99,20 +102,32 @@ def TimeDomainGIDRFDecon(
             engine.noise_window_start(), engine.noise_window_end()
         )
 
+    d = Seismogram(seis)
     if (
         signal_window.start > engine.deconvolution_window_start()
         or signal_window.end < engine.deconvolution_window_end()
     ):
-        d = Seismogram()
+        message = (
+            "signal_window does not contain the engine deconvolution window "
+            "[{}, {}]".format(
+                engine.deconvolution_window_start(),
+                engine.deconvolution_window_end(),
+            )
+        )
+        d.elog.log_error(alg, message, ErrorSeverity.Invalid)
         d.kill()
         if return_wavelet:
             return [d, None, None]
         return d
 
-    d = Seismogram(seis)
     try:
         load_status = engine.load(d, signal_window, noise_window)
         if load_status:
+            d.elog.log_error(
+                alg,
+                "engine.load failed for the configured signal/noise windows",
+                ErrorSeverity.Invalid,
+            )
             d.kill()
             if return_wavelet:
                 return [d, None, None]

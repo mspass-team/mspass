@@ -801,6 +801,7 @@ def test_FrequencyDomainGIDRFDecon_error_return_and_optional_qc():
     assert bad_result[0].dead()
     assert bad_result[1] is None
     assert bad_result[2] is None
+    assert bad_result[0].elog.size() > 0
 
     engine = FrequencyDomainGIDDecon(pf)
     bad_window_result = FrequencyDomainGIDRFDecon(
@@ -813,6 +814,7 @@ def test_FrequencyDomainGIDRFDecon_error_return_and_optional_qc():
     assert bad_window_result[0].dead()
     assert bad_window_result[1] is None
     assert bad_window_result[2] is None
+    assert bad_window_result[0].elog.size() > 0
 
     engine = FrequencyDomainGIDDecon(pf)
     rf = FrequencyDomainGIDRFDecon(data, engine, QCdata_key=None)

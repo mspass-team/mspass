@@ -786,6 +786,22 @@ def test_RFdeconProcessor_apply_3c_uses_loaded_external_wavelet(tmp_path):
     assert qc["ns_gid_external_wavelet_used"]
 
 
+def test_RFdeconProcessor_clear_external_methods_are_gid_only():
+    os.environ["PFPATH"] = "./data/pf"
+    try:
+        processor = RFdeconProcessor(alg="LeastSquares")
+        seis_data = get_live_seismogram()
+        processor.loaddata(seis_data)
+        processor.loadwavelet(seis_data)
+        with pytest.raises(RuntimeError, match="only valid for GID"):
+            processor.clear_external_wavelet()
+        with pytest.raises(RuntimeError, match="only valid for GID"):
+            processor.clear_external_noise()
+        assert hasattr(processor, "wvector")
+    finally:
+        os.environ.pop("PFPATH", None)
+
+
 def test_RFdeconProcessor_gid_loadwavelet_is_transactional(tmp_path):
     text = open("data/pf/TimeDomainGIDDecon.pf", encoding="utf-8").read()
     text = text.replace(

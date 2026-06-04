@@ -1019,6 +1019,7 @@ def test_TimeDomainGIDRFDecon_error_return_and_optional_qc():
     assert bad_result[0].dead()
     assert bad_result[1] is None
     assert bad_result[2] is None
+    assert bad_result[0].elog.size() > 0
 
     engine = TimeDomainGIDDecon(pf)
     rf = TimeDomainGIDRFDecon(data, engine, QCdata_key=None)

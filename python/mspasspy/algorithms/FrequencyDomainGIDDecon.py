@@ -84,20 +84,32 @@ def FrequencyDomainGIDRFDecon(
             engine.noise_window_start(), engine.noise_window_end()
         )
 
+    d = Seismogram(seis)
     if (
         signal_window.start > engine.deconvolution_window_start()
         or signal_window.end < engine.deconvolution_window_end()
     ):
-        d = Seismogram()
+        message = (
+            "signal_window does not contain the engine deconvolution window "
+            "[{}, {}]".format(
+                engine.deconvolution_window_start(),
+                engine.deconvolution_window_end(),
+            )
+        )
+        d.elog.log_error(alg, message, ErrorSeverity.Invalid)
         d.kill()
         if return_wavelet:
             return [d, None, None]
         return d
 
-    d = Seismogram(seis)
     try:
         load_status = engine.load(d, signal_window, noise_window)
         if load_status:
+            d.elog.log_error(
+                alg,
+                "engine.load failed for the configured signal/noise windows",
+                ErrorSeverity.Invalid,
+            )
             d.kill()
             if return_wavelet:
                 return [d, None, None]

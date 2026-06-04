@@ -552,7 +552,7 @@ PYBIND11_MODULE(deconvolution, m) {
     */
     .def(py::init<const AntelopePf&>())
     /* This overloaded version is not currently used in python functions that
-    use this operator.   Left in the binding code for flexilitity but could be
+    use this operator.   Left in the binding code for flexibility but could be
     deleted*/
     .def("initialize_inverse_operator_TS",
         py::overload_cast<const TimeSeries&,const TimeSeries&>(&CNRDeconEngine::initialize_inverse_operator),

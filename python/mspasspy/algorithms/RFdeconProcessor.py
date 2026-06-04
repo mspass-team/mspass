@@ -177,11 +177,15 @@ class RFdeconProcessor:
         """
         Clear a preconfigured external GID wavelet from this wrapper and engine.
 
-        This is only meaningful for GID processors.  For scalar processors it
-        removes any cached scalar wavelet vector from this Python wrapper.
+        This is only valid for GID processors.  Scalar processors do not expose
+        a consistent external-state clear operation because their wrapped C++
+        engines may already hold the last loaded wavelet.
         """
-        if self.__is_3c_engine:
-            self.processor.clear_external_wavelet()
+        if not self.__is_3c_engine:
+            raise RuntimeError(
+                "clear_external_wavelet is only valid for GID processors"
+            )
+        self.processor.clear_external_wavelet()
         for attr in ("wvector", "wtimeseries"):
             if hasattr(self, attr):
                 delattr(self, attr)
@@ -190,11 +194,13 @@ class RFdeconProcessor:
         """
         Clear preconfigured external GID noise from this wrapper and engine.
 
-        This is only meaningful for GID processors.  For scalar processors it
-        removes any cached scalar noise vector from this Python wrapper.
+        This is only valid for GID processors.  Scalar processors do not expose
+        a consistent external-state clear operation because their wrapped C++
+        engines may already hold the last loaded noise estimate.
         """
-        if self.__is_3c_engine:
-            self.processor.clear_external_noise()
+        if not self.__is_3c_engine:
+            raise RuntimeError("clear_external_noise is only valid for GID processors")
+        self.processor.clear_external_noise()
         for attr in ("nvector", "ntimeseries", "external_noise_spectrum"):
             if hasattr(self, attr):
                 delattr(self, attr)
@@ -383,7 +389,7 @@ class RFdeconProcessor:
         :param window: boolean controlling internally
             defined windowing.  (see details above)
 
-        :return:  Nothing (not None nothing) is returned
+        :return:  Nothing is returned
         """
         # First basic sanity checks
         if dtype == "raw_vector" and window:
@@ -1001,7 +1007,7 @@ def RFdecon(
         return d
     # We window data before computing RF estimates for efficiency
     # Otherwise we would call the window operator 3 times below
-    # WindowData does will kill the output if the window doesn't match
+    # WindowData will kill the output if the window doesn't match,
     # which is reason for the test immediately after this call
     result = WindowData(d, processor.dwin.start, processor.dwin.end)
     if result.dead():
