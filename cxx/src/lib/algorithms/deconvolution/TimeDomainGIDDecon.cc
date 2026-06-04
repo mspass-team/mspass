@@ -465,6 +465,7 @@ void TimeDomainGIDDecon::clear_external_noise() {
 int TimeDomainGIDDecon::load(const CoreSeismogram &draw, TimeWindow dwin,
                            TimeWindow nwin) {
   try {
+    this->invalidate_processing_state();
     if ((dwin.start > fftwin.start) || (dwin.end < fftwin.end)) {
       return 1;
     }

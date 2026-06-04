@@ -425,6 +425,25 @@ def test_FrequencyDomainGIDDecon_failed_load_invalidates_and_clears_old_data():
         engine.process()
 
 
+def test_FrequencyDomainGIDDecon_failed_combined_load_invalidates_old_output():
+    data = _make_single_spike_convolution_data()
+    pf = pfread("./data/pf/FrequencyDomainGIDDecon.pf")
+    engine = FrequencyDomainGIDDecon(pf)
+    FrequencyDomainGIDRFDecon(
+        data,
+        engine,
+        signal_window=TimeWindow(-10.0, 20.0),
+        noise_window=TimeWindow(-35.0, -5.0),
+    )
+    assert dict(engine.QCMetrics())["gid_processed"] is True
+
+    assert engine.load(data, TimeWindow(30.0, 40.0), TimeWindow(-35.0, -5.0)) == 1
+
+    assert dict(engine.QCMetrics())["gid_processed"] is False
+    with pytest.raises(MsPASSError, match="process must be called first"):
+        engine.getresult()
+
+
 def test_FrequencyDomainGIDDecon_changeparameter_rejects_leaf_window_drift():
     pf = pfread("./data/pf/FrequencyDomainGIDDecon.pf")
     engine = FrequencyDomainGIDDecon(pf)
