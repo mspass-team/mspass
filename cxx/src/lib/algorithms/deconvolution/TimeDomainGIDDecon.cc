@@ -577,7 +577,7 @@ period near that of twice the sample interval.   Hence a simple smoother
 a few samples wide should create a pretty effective envelope estimate.
 
 \param d - fir filter to be trimmed
-\param floor - length will be determined from sample here the envelope
+\param floor - length will be determined from the sample where the envelope
  amplitude is peak amplitude times this value. (1/floor is a rough
  signal-to-noise floor).
 

@@ -16,6 +16,8 @@ Created on Fri Jul 31 06:24:10 2020
 """
 
 import numpy as np
+import os
+import tempfile
 import warnings
 
 from mspasspy.ccore.seismic import DoubleVector, PowerSpectrum, Seismogram, TimeSeries
@@ -77,6 +79,39 @@ def _get_pf_branch_with_legacy_fallback(pfhandle, preferred, legacy):
     return Metadata(pfhandle.get_branch(legacy))
 
 
+def _read_pf_text(pf):
+    search_paths = []
+    if os.path.isabs(pf):
+        search_paths.append(pf)
+    else:
+        search_paths.append(pf)
+        pfpath = os.environ.get("PFPATH")
+        if pfpath:
+            search_paths.extend(os.path.join(path, pf) for path in pfpath.split(":"))
+    parts = []
+    for path in search_paths:
+        try:
+            with open(path, encoding="utf-8") as fp:
+                parts.append(fp.read())
+        except OSError:
+            continue
+    if parts:
+        return "\n".join(parts)
+    return None
+
+
+def _write_pickled_pf_text(pf, text):
+    suffix = "_" + os.path.basename(pf) if pf else ".pf"
+    fp = tempfile.NamedTemporaryFile(
+        mode="w", encoding="utf-8", suffix=suffix, delete=False
+    )
+    try:
+        fp.write(text)
+        return fp.name
+    finally:
+        fp.close()
+
+
 class RFdeconProcessor:
     """
     This class is a wrapper for the suite of receiver function deconvolution
@@ -115,7 +150,7 @@ class RFdeconProcessor:
         )
         return processor_str
 
-    def __init__(self, alg="LeastSquares", pf="RFdeconProcessor.pf"):
+    def __init__(self, alg="LeastSquares", pf="RFdeconProcessor.pf", _pf_text=None):
         self.algorithm = alg
         self.__is_3c_engine = False
         if pf == "RFdeconProcessor.pf":
@@ -124,10 +159,21 @@ class RFdeconProcessor:
             elif alg == "FrequencyDomainGID":
                 pf = "FrequencyDomainGIDDecon.pf"
         self.pf = pf
+        self._pf_text = _pf_text if _pf_text is not None else _read_pf_text(pf)
+        pf_to_load = pf
+        if _pf_text is not None:
+            pf_to_load = _write_pickled_pf_text(pf, _pf_text)
         # use a copy in what is more or less a switch-case block
         # to be robust - I don't think any of the constructors below
         # alter pfhandle but the cost is tiny for this stability
-        pfhandle = AntelopePf(pf)
+        try:
+            pfhandle = AntelopePf(pf_to_load)
+        finally:
+            if _pf_text is not None:
+                try:
+                    os.unlink(pf_to_load)
+                except OSError:
+                    pass
         if self.algorithm == "LeastSquares":
             # In this and elif blocks below we convert
             # return of get_branch to a Metadata container
@@ -196,23 +242,29 @@ class RFdeconProcessor:
             raise RuntimeError("Illegal value for alg=" + alg)
 
     def __getstate__(self):
-        state = {"algorithm": self.algorithm, "pf": self.pf}
-        for attr in (
-            "dvector",
-            "wvector",
-            "nvector",
-            "wtimeseries",
-            "ntimeseries",
-            "external_noise_spectrum",
-        ):
+        state = {
+            "algorithm": self.algorithm,
+            "pf": self.pf,
+            "_pf_text": self._pf_text,
+        }
+        attrs = ["dvector", "wvector", "nvector"]
+        if self.__is_3c_engine:
+            if hasattr(self, "wtimeseries"):
+                attrs.remove("wvector")
+                attrs.append("wtimeseries")
+            if hasattr(self, "ntimeseries"):
+                attrs.remove("nvector")
+                attrs.append("ntimeseries")
+            attrs.append("external_noise_spectrum")
+        for attr in attrs:
             if hasattr(self, attr):
                 state[attr] = getattr(self, attr)
         return state
 
     def __setstate__(self, state):
-        self.__init__(state["algorithm"], state["pf"])
+        self.__init__(state["algorithm"], state["pf"], _pf_text=state.get("_pf_text"))
         for attr, value in state.items():
-            if attr not in ("algorithm", "pf"):
+            if attr not in ("algorithm", "pf", "_pf_text"):
                 setattr(self, attr, value)
 
     def loaddata(self, d, dtype="Seismogram", component=0, window=False):
@@ -224,13 +276,13 @@ class RFdeconProcessor:
         the setting.   It can be one of the following:
         Seismogram, TimeSeries, or raw_vector.   For the first
         two the data to process will be extracted in a
-        pf specfied window if window is True.  If window is
+        pf specified window if window is True.  If window is
         False TimeSeries data will be passed directly and
         Seismogram data will have the data defined by the
         component parameter copied to the internal data
         vector workspace.   If dtype is set to raw_vector
         d is assumed to be a raw numpy vector of doubles or
-        an the aliased std::vector used in ccore, for example,
+        the aliased std::vector used in ccore, for example,
         in the TimeSeries object s vector.  Setting dtype
         to raw_vector and window True will result in this
         method throwing a RuntimeError exception as the

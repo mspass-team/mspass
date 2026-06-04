@@ -154,6 +154,7 @@ def test_RFdeconProcessor_gid_pickle_supports_distributed_use(alg, pf):
         )
         processor = RFdeconProcessor(alg=alg, pf=pf)
         processor2 = pickle.loads(pickle.dumps(processor))
+        os.environ.pop("PFPATH", None)
 
         rf1 = RFdecon(Seismogram(seis0), alg=alg, engine=processor)
         rf2 = RFdecon(Seismogram(seis0), alg=alg, engine=processor2)
@@ -161,6 +162,28 @@ def test_RFdeconProcessor_gid_pickle_supports_distributed_use(alg, pf):
         assert rf1.live
         assert rf2.live
         assert np.allclose(np.asarray(rf1.data), np.asarray(rf2.data))
+    finally:
+        os.environ.pop("PFPATH", None)
+
+
+@pytest.mark.parametrize(
+    "alg",
+    [
+        "LeastSquares",
+        "MultiTaperPowerXcor",
+        "GeneralizedIterative",
+        "FrequencyDomainGID",
+    ],
+)
+def test_RFdeconProcessor_pickle_is_self_contained_without_pfpath(alg):
+    os.environ["PFPATH"] = "./data/pf"
+    try:
+        processor = RFdeconProcessor(alg=alg)
+        payload = pickle.dumps(processor)
+        os.environ.pop("PFPATH", None)
+        restored = pickle.loads(payload)
+        assert restored.algorithm == processor.algorithm
+        assert dict(restored.md) == dict(processor.md)
     finally:
         os.environ.pop("PFPATH", None)
 
