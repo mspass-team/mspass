@@ -15,6 +15,7 @@ from test_TimeDomainGIDDecon import (
     _assert_actual_and_output_shaping_are_distinct,
     _assert_single_spike_recovery,
     _assert_valid_rf,
+    _make_external_noise,
     _make_external_wavelet_3c_data,
     _make_gid_test_data,
     _make_single_spike_convolution_data,
@@ -82,14 +83,59 @@ def test_FrequencyDomainGIDDecon_engine_is_pickleable_for_wrapper_use():
     assert rf2.live
     assert np.allclose(np.asarray(rf1.data), np.asarray(rf2.data))
 
-    with pytest.raises(TypeError, match="configuration-only"):
+    with pytest.raises(TypeError, match="external wavelet/noise only"):
         pickle.dumps(engine)
 
     changed = FrequencyDomainGIDDecon(pf)
     leaf_md = pf.get_branch("deconvolution_operator_type").get_branch("least_square")
     changed.changeparameter(leaf_md)
-    with pytest.raises(TypeError, match="configuration-only"):
+    with pytest.raises(TypeError, match="external wavelet/noise only"):
         pickle.dumps(changed)
+
+
+def test_FrequencyDomainGIDDecon_pickle_preserves_external_wavelet_and_noise(tmp_path):
+    data, wavelet, _ = _make_external_wavelet_3c_data(noise_level=2.0e-4)
+    noise = _make_external_noise()
+    pf = _ns_gid_pf(
+        tmp_path,
+        "FrequencyDomainGIDDecon.pf",
+        "frequency_domain_gid_deconvolution",
+    )
+    engine = FrequencyDomainGIDDecon(pf)
+    engine.loadwavelet(wavelet)
+    engine.loadnoise(noise)
+    restored = pickle.loads(pickle.dumps(engine))
+
+    rf = FrequencyDomainGIDRFDecon(
+        data,
+        restored,
+        signal_window=TimeWindow(-8.0, 22.0),
+        noise_window=TimeWindow(-35.0, -8.0),
+    )
+
+    assert rf.live
+    qc = rf["FrequencyDomainGIDDecon_properties"]
+    assert qc["ns_gid_external_wavelet_used"]
+    assert qc["ns_gid_external_noise_used"]
+
+    spectrum_engine = FrequencyDomainGIDDecon(pf)
+    spectrum_engine.loadwavelet(wavelet)
+    spectrum_engine.loadnoise(
+        PowerSpectrum(
+            Metadata(), DoubleVector([1.0, 1.0, 1.0]), 1.0, "valid", -1.0, 1.0, 3
+        )
+    )
+    restored_spectrum = pickle.loads(pickle.dumps(spectrum_engine))
+    rf_spectrum = FrequencyDomainGIDRFDecon(
+        data,
+        restored_spectrum,
+        signal_window=TimeWindow(-8.0, 22.0),
+        noise_window=TimeWindow(-35.0, -8.0),
+    )
+    assert rf_spectrum.live
+    qc_spectrum = rf_spectrum["FrequencyDomainGIDDecon_properties"]
+    assert qc_spectrum["ns_gid_external_wavelet_used"]
+    assert qc_spectrum["ns_gid_external_noise_spectrum_used"]
 
 
 def test_FrequencyDomainGIDDecon_validates_single_spike_recovery():
@@ -156,7 +202,7 @@ def test_FrequencyDomainNSGID_uses_external_wavelet_and_gain_cap(tmp_path):
         assert min(abs(t - p) for p in picked_times) < 0.15
 
 
-def test_FrequencyDomainGIDRFDecon_clears_external_state_between_calls(tmp_path):
+def test_FrequencyDomainGIDRFDecon_preserves_engine_external_state_between_calls(tmp_path):
     data = _make_gid_test_data(noise_level=1.0e-4)
     from decon_data_generators import make_simulation_wavelet
 
@@ -187,7 +233,7 @@ def test_FrequencyDomainGIDRFDecon_clears_external_state_between_calls(tmp_path)
         noise_window=TimeWindow(-25.0, -8.0),
     )
     assert rf_internal.live
-    assert not rf_internal["FrequencyDomainGIDDecon_properties"][
+    assert rf_internal["FrequencyDomainGIDDecon_properties"][
         "ns_gid_external_wavelet_used"
     ]
 
@@ -480,7 +526,9 @@ def test_FrequencyDomainGIDDecon_failed_combined_load_invalidates_old_output():
         engine.process()
 
 
-def test_FrequencyDomainGIDDecon_combined_load_clears_stale_external_noise(tmp_path):
+def test_FrequencyDomainGIDDecon_combined_load_preserves_external_noise_until_clear(
+    tmp_path,
+):
     data = _make_single_spike_convolution_data()
     pf = _ns_gid_pf(
         tmp_path,
@@ -505,9 +553,16 @@ def test_FrequencyDomainGIDDecon_combined_load_clears_stale_external_noise(tmp_p
     switched_engine.loadnoise(external_noise)
     assert switched_engine.load(data, dwin, nwin) == 0
     switched_engine.process()
+    switched_qc = dict(switched_engine.QCMetrics())
+    assert switched_qc["ns_gid_external_noise_used"]
+
+    switched_engine.clear_external_noise()
+    assert switched_engine.load(data, dwin, nwin) == 0
+    switched_engine.process()
 
     windowed_qc = dict(windowed_engine.QCMetrics())
     switched_qc = dict(switched_engine.QCMetrics())
+    assert not switched_qc["ns_gid_external_noise_used"]
     assert np.isclose(
         switched_qc["ns_gid_noise_amplification"],
         windowed_qc["ns_gid_noise_amplification"],

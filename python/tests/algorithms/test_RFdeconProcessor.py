@@ -240,81 +240,93 @@ def test_RFdecon():
     need to extract data from a preevent noise window.  That is tested
     independently here.
     """
-    # needed to find pf file in engine constructor
+    old_pfpath = os.environ.get("PFPATH")
     os.environ["PFPATH"] = "./data/pf"
-    # note this definition of 3000 samples at 20 sps and setting t0 to
-    # -35 s must be consistent with data window parameters in the
-    # RFdeconProcessor.pf file stored data/pf.
-    seis0 = get_live_seismogram(3000, 20.0)
-    seis0.t0 = -35.0
-    # this is a list of algorithms supported by the RFdecon function
-    # They can be enabled by a parameter on the function or by
-    # passing an instance of the engine.  We test both below
-    alglist = [
-        "LeastSquares",
-        "TimeDomainLeastSquares",
-        "WaterLevel",
-        "MultiTaperPowerSpecDiv",
-        "MultiTaperPowerXcor",
-    ]
-    # first test case where the operator is instantiated on each call
-    # to RFdecon
-    for alg in alglist:
-        d = Seismogram(seis0)
-        # first verify it works without returning actual and ideal wavelets
-        d_decon = RFdecon(d, alg=alg)
-        assert d_decon.live
-        print(alg, d_decon.npts)
+    try:
+        # note this definition of 3000 samples at 20 sps and setting t0 to
+        # -35 s must be consistent with data window parameters in the
+        # RFdeconProcessor.pf file stored data/pf.
+        seis0 = get_live_seismogram(3000, 20.0)
+        seis0.t0 = -35.0
+        # this is a list of algorithms supported by the RFdecon function
+        # They can be enabled by a parameter on the function or by
+        # passing an instance of the engine.  We test both below
+        alglist = [
+            "LeastSquares",
+            "TimeDomainLeastSquares",
+            "WaterLevel",
+            "MultiTaperPowerSpecDiv",
+            "MultiTaperPowerXcor",
+        ]
+        # first test case where the operator is instantiated on each call
+        # to RFdecon
+        for alg in alglist:
+            d = Seismogram(seis0)
+            # first verify it works without returning actual and ideal wavelets
+            d_decon = RFdecon(d, alg=alg)
+            assert d_decon.live
+            print(alg, d_decon.npts)
 
-    # repeat the same loop as above but pass the engine as an argument
-    # Main difference here is we try before and after running the engine
-    # through pickle.  That simulates how dask/spark would handle this
-    # if RFdecon is used in a map operator
-    for alg in alglist:
-        print("Testing RFdecon with alg=", alg)
-        d = Seismogram(seis0)
-        deconengine = RFdeconProcessor(alg=alg)
-        d_decon = RFdecon(d, alg=alg, engine=deconengine)
-        assert d_decon.live
-        print_metadata(d_decon)
-        d = Seismogram(seis0)
-        engine2 = pickle.loads(pickle.dumps(deconengine))
-        d_decon2 = RFdecon(d, alg=alg, engine=engine2)
-        # d_decon2 = RFdecon(d, alg=alg, engine=deconengine)
-        assert d_decon2.live
-        assert np.isclose(d_decon.data, d_decon2.data).all()
-    # test variant of passing prewindowed data instead of v
-    for alg in alglist:
-        deconengine = RFdeconProcessor(alg=alg)
-        d = Seismogram(seis0)
-        n = WindowData(d, -30.0, -5.0)
-        n = ExtractComponent(n, 2)
-        w = WindowData(d, deconengine.dwin.start, deconengine.dwin.end)
-        w = ExtractComponent(w, 2)
-        d_decon = RFdecon(
-            d, alg=alg, engine=deconengine, noisedata=n.data, wavelet=w.data
-        )
-        assert d_decon.live
-    # this must be cleared to keep later pytest scripts from failing
-    os.environ.pop("PFPATH", None)
+        # repeat the same loop as above but pass the engine as an argument
+        # Main difference here is we try before and after running the engine
+        # through pickle.  That simulates how dask/spark would handle this
+        # if RFdecon is used in a map operator
+        for alg in alglist:
+            print("Testing RFdecon with alg=", alg)
+            d = Seismogram(seis0)
+            deconengine = RFdeconProcessor(alg=alg)
+            d_decon = RFdecon(d, alg=alg, engine=deconengine)
+            assert d_decon.live
+            print_metadata(d_decon)
+            d = Seismogram(seis0)
+            engine2 = pickle.loads(pickle.dumps(deconengine))
+            d_decon2 = RFdecon(d, alg=alg, engine=engine2)
+            # d_decon2 = RFdecon(d, alg=alg, engine=deconengine)
+            assert d_decon2.live
+            assert np.isclose(d_decon.data, d_decon2.data).all()
+        # test variant of passing prewindowed data instead of v
+        for alg in alglist:
+            deconengine = RFdeconProcessor(alg=alg)
+            d = Seismogram(seis0)
+            n = WindowData(d, -30.0, -5.0)
+            n = ExtractComponent(n, 2)
+            w = WindowData(d, deconengine.dwin.start, deconengine.dwin.end)
+            w = ExtractComponent(w, 2)
+            d_decon = RFdecon(
+                d, alg=alg, engine=deconengine, noisedata=n.data, wavelet=w.data
+            )
+            assert d_decon.live
+    finally:
+        if old_pfpath is None:
+            os.environ.pop("PFPATH", None)
+        else:
+            os.environ["PFPATH"] = old_pfpath
 
 
 def test_RFdecon_enables_generalized_iterative():
+    old_pfpath = os.environ.get("PFPATH")
     os.environ["PFPATH"] = "./data/pf"
-    wavelet = make_simulation_wavelet()
-    impulses = make_impulse_data()
-    seis0 = addnoise(convolve_wavelet(impulses, wavelet), nscale=0.0, padlength=800)
+    try:
+        wavelet = make_simulation_wavelet()
+        impulses = make_impulse_data()
+        seis0 = addnoise(
+            convolve_wavelet(impulses, wavelet), nscale=0.0, padlength=800
+        )
 
-    rf = RFdecon(seis0, alg="GeneralizedIterative", pf="TimeDomainGIDDecon.pf")
+        rf = RFdecon(seis0, alg="GeneralizedIterative", pf="TimeDomainGIDDecon.pf")
 
-    assert rf.live
-    assert rf.npts > 0
-    assert np.isfinite(rf.data).all()
-    assert rf.is_defined("RFdecon_properties")
-    qc = rf["RFdecon_properties"]
-    assert qc["algorithm"] == "GeneralizedIterative"
-    assert qc["iteration_count"] > 0
-    os.environ.pop("PFPATH", None)
+        assert rf.live
+        assert rf.npts > 0
+        assert np.isfinite(rf.data).all()
+        assert rf.is_defined("RFdecon_properties")
+        qc = rf["RFdecon_properties"]
+        assert qc["algorithm"] == "GeneralizedIterative"
+        assert qc["iteration_count"] > 0
+    finally:
+        if old_pfpath is None:
+            os.environ.pop("PFPATH", None)
+        else:
+            os.environ["PFPATH"] = old_pfpath
 
 
 @pytest.mark.parametrize("alg", ["GeneralizedIterative", "FrequencyDomainGID"])
@@ -329,24 +341,32 @@ def test_RFdeconProcessor_gid_default_pf_routes_to_gid_parameter_file(alg):
 
 
 def test_RFdecon_generalized_iterative_accepts_external_wavelet():
+    old_pfpath = os.environ.get("PFPATH")
     os.environ["PFPATH"] = "./data/pf"
-    wavelet = make_simulation_wavelet()
-    impulses = make_impulse_data()
-    seis0 = addnoise(convolve_wavelet(impulses, wavelet), nscale=0.0, padlength=800)
+    try:
+        wavelet = make_simulation_wavelet()
+        impulses = make_impulse_data()
+        seis0 = addnoise(
+            convolve_wavelet(impulses, wavelet), nscale=0.0, padlength=800
+        )
 
-    rf = RFdecon(
-        seis0,
-        alg="GeneralizedIterative",
-        pf="TimeDomainGIDDecon.pf",
-        wavelet=wavelet,
-    )
+        rf = RFdecon(
+            seis0,
+            alg="GeneralizedIterative",
+            pf="TimeDomainGIDDecon.pf",
+            wavelet=wavelet,
+        )
 
-    assert rf.live
-    assert rf.npts > 0
-    assert np.isfinite(rf.data).all()
-    assert rf.is_defined("RFdecon_properties")
-    assert rf["RFdecon_properties"]["iteration_count"] > 0
-    os.environ.pop("PFPATH", None)
+        assert rf.live
+        assert rf.npts > 0
+        assert np.isfinite(rf.data).all()
+        assert rf.is_defined("RFdecon_properties")
+        assert rf["RFdecon_properties"]["iteration_count"] > 0
+    finally:
+        if old_pfpath is None:
+            os.environ.pop("PFPATH", None)
+        else:
+            os.environ["PFPATH"] = old_pfpath
 
 
 @pytest.mark.parametrize(
@@ -357,28 +377,36 @@ def test_RFdecon_generalized_iterative_accepts_external_wavelet():
     ],
 )
 def test_RFdecon_gid_accepts_raw_vector_wavelet_and_noise(alg, pf):
+    old_pfpath = os.environ.get("PFPATH")
     os.environ["PFPATH"] = "./data/pf"
-    wavelet = make_simulation_wavelet()
-    impulses = make_impulse_data()
-    seis0 = addnoise(convolve_wavelet(impulses, wavelet), nscale=0.0, padlength=800)
-    processor = RFdeconProcessor(alg=alg, pf=pf)
-    noise = WindowData(seis0, processor.nwin.start, processor.nwin.end)
-    noise = ExtractComponent(noise, 2)
+    try:
+        wavelet = make_simulation_wavelet()
+        impulses = make_impulse_data()
+        seis0 = addnoise(
+            convolve_wavelet(impulses, wavelet), nscale=0.0, padlength=800
+        )
+        processor = RFdeconProcessor(alg=alg, pf=pf)
+        noise = WindowData(seis0, processor.nwin.start, processor.nwin.end)
+        noise = ExtractComponent(noise, 2)
 
-    rf = RFdecon(
-        seis0,
-        alg=alg,
-        pf=pf,
-        wavelet=np.asarray(wavelet.data),
-        noisedata=np.asarray(noise.data),
-    )
+        rf = RFdecon(
+            seis0,
+            alg=alg,
+            pf=pf,
+            wavelet=np.asarray(wavelet.data),
+            noisedata=np.asarray(noise.data),
+        )
 
-    assert rf.live
-    assert rf.npts > 0
-    assert np.isfinite(rf.data).all()
-    assert rf.is_defined("RFdecon_properties")
-    assert rf["RFdecon_properties"]["iteration_count"] > 0
-    os.environ.pop("PFPATH", None)
+        assert rf.live
+        assert rf.npts > 0
+        assert np.isfinite(rf.data).all()
+        assert rf.is_defined("RFdecon_properties")
+        assert rf["RFdecon_properties"]["iteration_count"] > 0
+    finally:
+        if old_pfpath is None:
+            os.environ.pop("PFPATH", None)
+        else:
+            os.environ["PFPATH"] = old_pfpath
 
 
 def test_RFdecon_clears_stale_gid_external_wavelet_when_wavelet_is_none(tmp_path):
@@ -444,47 +472,51 @@ def test_RFdecon_error_handlers():
     variations in what would be posted to elog are too difficult to cover
     so we only test generic handling as kills.
     """
-    # needed to find pf file in engine constructor
+    old_pfpath = os.environ.get("PFPATH")
     os.environ["PFPATH"] = "./data/pf"
-    # this starting point will work with defaults. We dither copies of it
-    # to test error handling of common issues
-    seis0 = get_live_seismogram(3000, 20.0)
-    seis0.t0 = -35.0
-    # which algorithm we used doesn't matter here - use defaults
-    engine = RFdeconProcessor()
-    # first a simple type test of arg0
-    with pytest.raises(TypeError, match="RFdecon:  arg0 is of type="):
-        foo = RFdecon("badarg0")
-    # test handling dead datum
-    d = Seismogram(seis0)
-    d.kill()
-    dret = RFdecon(d)
-    assert dret.dead()
-    # loose test for returning copy
-    assert dret.t0 == d.t0
-    assert dret.npts == d.npts
-    # test error in data window
-    # done here by dithering t0
-    d = Seismogram(seis0)
-    d.t0 += 1000.0
-    dret = RFdecon(d)
-    assert dret.dead()
-    assert dret.elog.size() > 0
-    # slight variant with invalid noise window but valid data window
-    # requires an algorithm that needs a noise window so use multitaper decon
-    d = Seismogram(seis0)
-    # assumes default data window start is -5
-    d.t0 = -1.0
-    dret = RFdecon(d, alg="MultiTaperPowerXcor")
-    assert dret.dead()
-    assert dret.elog.size() > 0
-    # minor variant passing engine
-    engine = RFdeconProcessor(alg="MultiTaperPowerXcor")
-    dret = RFdecon(d, engine=engine)
-    assert dret.dead()
-    assert dret.elog.size() > 0
-    # this must be cleared to keep later pytest scripts from failing
-    os.environ.pop("PFPATH", None)
+    try:
+        # this starting point will work with defaults. We dither copies of it
+        # to test error handling of common issues
+        seis0 = get_live_seismogram(3000, 20.0)
+        seis0.t0 = -35.0
+        # which algorithm we used doesn't matter here - use defaults
+        engine = RFdeconProcessor()
+        # first a simple type test of arg0
+        with pytest.raises(TypeError, match="RFdecon:  arg0 is of type="):
+            foo = RFdecon("badarg0")
+        # test handling dead datum
+        d = Seismogram(seis0)
+        d.kill()
+        dret = RFdecon(d)
+        assert dret.dead()
+        # loose test for returning copy
+        assert dret.t0 == d.t0
+        assert dret.npts == d.npts
+        # test error in data window
+        # done here by dithering t0
+        d = Seismogram(seis0)
+        d.t0 += 1000.0
+        dret = RFdecon(d)
+        assert dret.dead()
+        assert dret.elog.size() > 0
+        # slight variant with invalid noise window but valid data window
+        # requires an algorithm that needs a noise window so use multitaper decon
+        d = Seismogram(seis0)
+        # assumes default data window start is -5
+        d.t0 = -1.0
+        dret = RFdecon(d, alg="MultiTaperPowerXcor")
+        assert dret.dead()
+        assert dret.elog.size() > 0
+        # minor variant passing engine
+        engine = RFdeconProcessor(alg="MultiTaperPowerXcor")
+        dret = RFdecon(d, engine=engine)
+        assert dret.dead()
+        assert dret.elog.size() > 0
+    finally:
+        if old_pfpath is None:
+            os.environ.pop("PFPATH", None)
+        else:
+            os.environ["PFPATH"] = old_pfpath
 
 
 @pytest.mark.parametrize(

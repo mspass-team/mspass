@@ -265,6 +265,14 @@ Three-component and iterative operators
     segment externally and configure ``noise_window`` to the matching time
     interval.
 
+    Direct ``TimeDomainGIDDecon`` and ``FrequencyDomainGIDDecon`` engine
+    objects are pickleable for distributed wrapper use before data are loaded.
+    Their pickle state preserves the parameter-file configuration plus any
+    externally loaded wavelet, TimeSeries noise, or PowerSpectrum noise.  It
+    does not preserve loaded seismograms, processed receiver functions,
+    residuals, sparse spike trains, or runtime QC state; pickle those outputs
+    separately if they are needed on workers.
+
     The ``multi_taper`` inverse mode in both GID engines currently uses
     ``MultiTaperXcorDecon`` as the core C++ inverse operator, with the
     power-stabilized untapered-phase semantics described above.  In

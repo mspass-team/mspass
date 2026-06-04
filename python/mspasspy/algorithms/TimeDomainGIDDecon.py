@@ -63,6 +63,9 @@ def TimeDomainGIDRFDecon(
         derives the wavelet from component 2 of the input seismogram.
     :param external_noise: optional scalar noise `TimeSeries`, `CoreTimeSeries`,
         or `PowerSpectrum` passed to NS-GID inverse stabilization.
+        If omitted, any external noise already loaded into ``engine`` is
+        preserved.  Use ``engine.clear_external_noise()`` to force the
+        configured noise window only.
     :param QCdata_key: metadata key used to store the engine's QC metrics.
     :param return_wavelet: when True return
         `[rf, actual_output, output_shaping_wavelet]`.
@@ -108,20 +111,16 @@ def TimeDomainGIDRFDecon(
 
     d = Seismogram(seis)
     try:
-        if external_wavelet is not None:
-            engine.loadwavelet(external_wavelet)
-        else:
-            engine.clear_external_wavelet()
-        if external_noise is not None:
-            engine.loadnoise(external_noise)
-        else:
-            engine.clear_external_noise()
         load_status = engine.load(d, signal_window, noise_window)
         if load_status:
             d.kill()
             if return_wavelet:
                 return [d, None, None]
             return d
+        if external_wavelet is not None:
+            engine.loadwavelet(external_wavelet)
+        if external_noise is not None:
+            engine.loadnoise(external_noise)
         engine.process()
         rf = Seismogram(engine.getresult())
         qcmd = engine.QCMetrics()

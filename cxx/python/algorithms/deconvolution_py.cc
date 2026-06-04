@@ -438,10 +438,15 @@ PYBIND11_MODULE(deconvolution, m) {
       [](const TimeDomainGIDDecon &self) {
         if (!self.configuration_pickle_allowed())
           throw py::type_error(
-              "TimeDomainGIDDecon pickling is configuration-only.  Pickle a "
-              "fresh engine before load/loadnoise/loadwavelet/process/"
-              "changeparameter, or rebuild the engine from a parameter file.");
-        return py::make_tuple(self.configuration_pf_text());
+              "TimeDomainGIDDecon pickling preserves configuration and "
+              "external wavelet/noise only.  Pickle before loading data, "
+              "processing, or changeparameter, or rebuild the engine from a "
+              "parameter file.");
+        return py::make_tuple(
+            self.configuration_pf_text(), self.external_wavelet_is_loaded(),
+            self.loaded_external_wavelet(), self.external_noise_is_loaded(),
+            self.loaded_external_noise(), self.external_noise_spectrum_is_loaded(),
+            self.loaded_external_noise_spectrum());
       },
       [](py::tuple t) {
         stringstream sstm(t[0].cast<std::string>());
@@ -450,7 +455,14 @@ PYBIND11_MODULE(deconvolution, m) {
         while (getline(sstm, line))
           pflines.push_back(line);
         AntelopePf pf(pflines);
-        return new TimeDomainGIDDecon(pf);
+        auto *engine = new TimeDomainGIDDecon(pf);
+        if (t[1].cast<bool>())
+          engine->loadwavelet(t[2].cast<TimeSeries>());
+        if (t[3].cast<bool>())
+          engine->loadnoise(t[4].cast<TimeSeries>());
+        if (t[5].cast<bool>())
+          engine->loadnoise(t[6].cast<PowerSpectrum>());
+        return engine;
       }
     ))
   ;
@@ -508,11 +520,15 @@ PYBIND11_MODULE(deconvolution, m) {
       [](const FrequencyDomainGIDDecon &self) {
         if (!self.configuration_pickle_allowed())
           throw py::type_error(
-              "FrequencyDomainGIDDecon pickling is configuration-only.  "
-              "Pickle a fresh engine before load/loadnoise/loadwavelet/"
-              "process/changeparameter, or rebuild the engine from a "
+              "FrequencyDomainGIDDecon pickling preserves configuration and "
+              "external wavelet/noise only.  Pickle before loading data, "
+              "processing, or changeparameter, or rebuild the engine from a "
               "parameter file.");
-        return py::make_tuple(self.configuration_pf_text());
+        return py::make_tuple(
+            self.configuration_pf_text(), self.external_wavelet_is_loaded(),
+            self.loaded_external_wavelet(), self.external_noise_is_loaded(),
+            self.loaded_external_noise(), self.external_noise_spectrum_is_loaded(),
+            self.loaded_external_noise_spectrum());
       },
       [](py::tuple t) {
         stringstream sstm(t[0].cast<std::string>());
@@ -521,7 +537,14 @@ PYBIND11_MODULE(deconvolution, m) {
         while (getline(sstm, line))
           pflines.push_back(line);
         AntelopePf pf(pflines);
-        return new FrequencyDomainGIDDecon(pf);
+        auto *engine = new FrequencyDomainGIDDecon(pf);
+        if (t[1].cast<bool>())
+          engine->loadwavelet(t[2].cast<TimeSeries>());
+        if (t[3].cast<bool>())
+          engine->loadnoise(t[4].cast<TimeSeries>());
+        if (t[5].cast<bool>())
+          engine->loadnoise(t[6].cast<PowerSpectrum>());
+        return engine;
       }
     ))
   ;

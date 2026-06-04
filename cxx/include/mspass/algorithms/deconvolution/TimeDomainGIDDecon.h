@@ -65,6 +65,22 @@ public:
   bool configuration_pickle_allowed() const {
     return this->configuration_pickleable;
   };
+  bool external_wavelet_is_loaded() const {
+    return this->external_wavelet_loaded;
+  };
+  bool external_noise_is_loaded() const { return this->external_noise_loaded; };
+  bool external_noise_spectrum_is_loaded() const {
+    return this->external_noise_spectrum_loaded;
+  };
+  mspass::seismic::TimeSeries loaded_external_wavelet() const {
+    return this->external_wavelet;
+  };
+  mspass::seismic::TimeSeries loaded_external_noise() const {
+    return this->external_noise;
+  };
+  mspass::seismic::PowerSpectrum loaded_external_noise_spectrum() const {
+    return this->external_noise_spectrum;
+  };
   /*! \brief Load all needed data and process.
 
   This method is little more than a call to loadnoise followed

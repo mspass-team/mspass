@@ -51,7 +51,10 @@ def FrequencyDomainGIDRFDecon(
 
     When ``noise_window`` is omitted, the engine's configured parameter-file
     noise window is used.  ``signal_window`` must contain the configured
-    deconvolution window used to build the inverse operator.
+    deconvolution window used to build the inverse operator.  Omitted
+    ``external_wavelet`` or ``external_noise`` arguments leave any external
+    state already loaded into ``engine`` unchanged; call the engine's
+    ``clear_external_*`` methods to force internal wavelet/noise selection.
     """
     alg = "FrequencyDomainGIDRFDecon"
     if not isinstance(seis, Seismogram):
@@ -93,20 +96,16 @@ def FrequencyDomainGIDRFDecon(
 
     d = Seismogram(seis)
     try:
-        if external_wavelet is not None:
-            engine.loadwavelet(external_wavelet)
-        else:
-            engine.clear_external_wavelet()
-        if external_noise is not None:
-            engine.loadnoise(external_noise)
-        else:
-            engine.clear_external_noise()
         load_status = engine.load(d, signal_window, noise_window)
         if load_status:
             d.kill()
             if return_wavelet:
                 return [d, None, None]
             return d
+        if external_wavelet is not None:
+            engine.loadwavelet(external_wavelet)
+        if external_noise is not None:
+            engine.loadnoise(external_noise)
         engine.process()
         rf = Seismogram(engine.getresult())
         qcmd = engine.QCMetrics()

@@ -352,8 +352,6 @@ int TimeDomainGIDDecon::loadnoise(const CoreSeismogram &draw,
   try {
     configuration_pickleable = false;
     this->invalidate_processing_state();
-    external_noise_loaded = false;
-    external_noise_spectrum_loaded = false;
     n.kill();
     nnwin = 0;
     ns_noise_components.clear();
@@ -379,7 +377,6 @@ int TimeDomainGIDDecon::loadnoise(const CoreSeismogram &draw,
   };
 }
 int TimeDomainGIDDecon::loadwavelet(const TimeSeries &wavelet) {
-  configuration_pickleable = false;
   this->invalidate_processing_state();
   external_wavelet_loaded = false;
   if (!external_wavelet_allowed)
@@ -405,13 +402,10 @@ int TimeDomainGIDDecon::loadwavelet(const CoreTimeSeries &wavelet) {
   return this->loadwavelet(ts);
 }
 int TimeDomainGIDDecon::loadnoise(const TimeSeries &noise_in) {
-  configuration_pickleable = false;
   this->invalidate_processing_state();
   external_noise_loaded = false;
   external_noise_spectrum_loaded = false;
-  ns_noise_components.clear();
-  n.kill();
-  nnwin = 0;
+  const bool has_windowed_noise(n.live() && n.npts() > 0);
   if (noise_in.dead())
     throw MsPASSError("TimeDomainGIDDecon::loadnoise: external noise is "
                       "marked dead",
@@ -424,15 +418,19 @@ int TimeDomainGIDDecon::loadnoise(const TimeSeries &noise_in) {
   external_noise = noise_in;
   external_noise_loaded = true;
   external_noise_spectrum_loaded = false;
-  ns_noise_components.assign(3, noise_in.s);
-  n = CoreSeismogram(noise_in.npts());
-  n.set_t0(noise_in.t0());
-  n.set_dt(noise_in.dt());
-  n.set_live();
-  n.set_tref(noise_in.timetype());
-  for (int k = 0; k < 3; ++k)
-    cblas_dcopy(noise_in.npts(), &(noise_in.s[0]), 1, n.u.get_address(k, 0), 3);
-  nnwin = n.npts();
+  if (!has_windowed_noise) {
+    ns_noise_components.clear();
+    ns_noise_components.assign(3, noise_in.s);
+    n = CoreSeismogram(noise_in.npts());
+    n.set_t0(noise_in.t0());
+    n.set_dt(noise_in.dt());
+    n.set_live();
+    n.set_tref(noise_in.timetype());
+    for (int k = 0; k < 3; ++k)
+      cblas_dcopy(noise_in.npts(), &(noise_in.s[0]), 1, n.u.get_address(k, 0),
+                  3);
+    nnwin = n.npts();
+  }
   return 0;
 }
 int TimeDomainGIDDecon::loadnoise(const CoreTimeSeries &noise_in) {
@@ -440,11 +438,9 @@ int TimeDomainGIDDecon::loadnoise(const CoreTimeSeries &noise_in) {
   return this->loadnoise(ts);
 }
 int TimeDomainGIDDecon::loadnoise(const PowerSpectrum &noise_spectrum_in) {
-  configuration_pickleable = false;
   this->invalidate_processing_state();
   external_noise_loaded = false;
   external_noise_spectrum_loaded = false;
-  ns_noise_components.clear();
   if (decon_type != NS_GID)
     throw MsPASSError("TimeDomainGIDDecon::loadnoise: external PowerSpectrum "
                       "noise is only supported for ns_gid; pass a TimeSeries "
@@ -460,15 +456,12 @@ int TimeDomainGIDDecon::loadnoise(const PowerSpectrum &noise_spectrum_in) {
   return 0;
 }
 void TimeDomainGIDDecon::clear_external_wavelet() {
-  configuration_pickleable = false;
   external_wavelet_loaded = false;
   this->invalidate_processing_state();
 }
 void TimeDomainGIDDecon::clear_external_noise() {
-  configuration_pickleable = false;
   external_noise_loaded = false;
   external_noise_spectrum_loaded = false;
-  ns_noise_components.clear();
   this->invalidate_processing_state();
 }
 int TimeDomainGIDDecon::load(const CoreSeismogram &draw, TimeWindow dwin,
@@ -1144,6 +1137,9 @@ Metadata TimeDomainGIDDecon::QCMetrics() {
     md.put("ns_gid_peak_threshold", ns_peak_threshold);
     md.put("ns_gid_last_peak_significance", ns_last_peak_significance);
     md.put("ns_gid_external_wavelet_used", external_wavelet_loaded);
+    md.put("ns_gid_external_noise_used", external_noise_loaded);
+    md.put("ns_gid_external_noise_spectrum_used",
+           external_noise_spectrum_loaded);
     md.put("ns_gid_residual_l2_initial", resid_l2_initial);
     md.put("ns_gid_residual_l2_final", resid_l2_prev);
     md.put("ns_gid_residual_noise_ratio",
