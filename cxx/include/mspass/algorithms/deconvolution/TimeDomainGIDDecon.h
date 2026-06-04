@@ -83,12 +83,12 @@ private:
   /* These are data at different stages of process.  d_all is the
   largest signal window that is assumed to have been initialized by the
   load method for this object.  d_decon is the
-  result of apply the preprocessor (signal processing) deconvolution to
+  result of applying the preprocessor (signal processing) deconvolution to
   all three components. d_decon is computed from d, which is a windowed
   version of the input data received by the load method.  It have a
   time duration less than or at least equal to that of d_all.
   r is the residual, which is accumulated during the iterative method.
-  The time duraction of r is the same as d.   It is initalized by
+  The time duration of r is the same as d.  It is initialized by
   convolving the inverse filter with d_all.
   n is the noise data.  It should normally be at least as long a d_all*/
   mspass::seismic::CoreSeismogram d_all, d_decon, r, n;

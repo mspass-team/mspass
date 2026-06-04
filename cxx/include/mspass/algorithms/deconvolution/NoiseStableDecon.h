@@ -50,6 +50,7 @@ private:
   double snr_taper_low, snr_taper_high;
   bool use_reliability_taper;
   bool noise_vector_loaded, noise_spectrum_loaded;
+  bool processed;
   std::vector<double> noise;
   mspass::seismic::PowerSpectrum noise_spectrum;
   double max_gain_actual, noise_amplification, effective_bandwidth_fraction;

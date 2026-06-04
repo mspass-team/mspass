@@ -777,12 +777,16 @@ void TimeDomainGIDDecon::process() {
     current algorithms from srcwavelet.   Hence, what is now stored will work.
     If this is extended make sure that condition is satisfied.
 
-    We extract the inverse filter and use a time domain convolution with
-    data in the longer time window.   Note for efficiency may want to
-    convert this to a frequency domain convolution if it proves to be
-    a bottleneck */
-    process_stage = "compute inverse wavelet";
-    CoreTimeSeries winv = this->inverse_wavelet(d_decon.t0());
+    The actual output/resolution kernel is derived from the inverse operator
+    already applied above.  It is used for residual updates in the original
+    data domain.  Legacy GID stopping criteria also need the inverse wavelet
+    to map the noise window into the inverse domain; NS-GID uses a separate
+    noise-aware threshold and skips that extra inverse construction. */
+    CoreTimeSeries winv;
+    if (decon_type != NS_GID) {
+      process_stage = "compute inverse wavelet";
+      winv = this->inverse_wavelet(d_decon.t0());
+    }
     /* The actual output signal is used in the iterative
      * recursion of this algorithm.  For efficiency it is important
      * to trim the fir filter.  The call to trim does that.*/
@@ -973,7 +977,7 @@ void TimeDomainGIDDecon::process() {
       that would work to access amps[imax] so we can use the same index
       for the column of the data in d.u. */
       /* Save the 3c amplitude at this lag to the spike condensed
-      respresentation of the output*/
+      representation of the output*/
       bool accepted(false);
       while (!accepted && (*amax > 0.0)) {
         int imax = distance(wamps.begin(), amax);

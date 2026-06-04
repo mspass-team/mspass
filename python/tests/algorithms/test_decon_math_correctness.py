@@ -717,6 +717,58 @@ def test_noise_stable_rejects_invalid_power_spectrum(tmp_path):
         engine.loadnoise(dc_at_last_bin_spectrum)
 
 
+def test_noise_stable_metadata_constructor_can_process_without_explicit_noise(
+    tmp_path,
+):
+    pf = _write_noise_stable_pf(tmp_path, window_start=0.0, window_end=15.0, nfft=64)
+    engine = NoiseStableDecon(pf)
+    wavelet = np.zeros(16)
+    wavelet[0] = 1.0
+    data = np.zeros(16)
+    data[3] = 2.0
+
+    engine.load(_double_vector(wavelet), _double_vector(data))
+    engine.process()
+
+    result = np.asarray(engine.getresult(), dtype=np.float64)
+    assert result.size == data.size
+    assert np.isfinite(result).all()
+
+
+def test_noise_stable_changeparameter_invalidates_processed_state(tmp_path):
+    pf = _write_noise_stable_pf(tmp_path, window_start=0.0, window_end=15.0, nfft=64)
+    engine = NoiseStableDecon(pf)
+    wavelet = np.zeros(16)
+    wavelet[0] = 1.0
+    data = np.zeros(16)
+    data[4] = 1.0
+
+    engine.load(_double_vector(wavelet), _double_vector(data))
+    engine.process()
+    assert len(engine.getresult()) == data.size
+
+    pf_changed = _write_noise_stable_pf(
+        tmp_path, window_start=0.0, window_end=15.0, nfft=128
+    )
+    engine.changeparameter(pf_changed)
+
+    assert len(engine.getresult()) == 0
+    with pytest.raises(MsPASSError, match="process must be called first"):
+        engine.actual_output()
+    with pytest.raises(MsPASSError, match="process must be called first"):
+        engine.inverse_wavelet()
+
+
+def test_noise_stable_diagnostics_require_process_first(tmp_path):
+    pf = _write_noise_stable_pf(tmp_path, window_start=0.0, window_end=15.0, nfft=64)
+    engine = NoiseStableDecon(pf)
+
+    with pytest.raises(MsPASSError, match="process must be called first"):
+        engine.actual_output()
+    with pytest.raises(MsPASSError, match="process must be called first"):
+        engine.inverse_wavelet()
+
+
 def _run_multitaper_engine(engine_class, pf, wavelet, data, noise):
     engine = engine_class(pf)
     engine.load(_double_vector(wavelet), _double_vector(data), _double_vector(noise))

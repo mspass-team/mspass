@@ -34,16 +34,19 @@ NoiseStableDecon::NoiseStableDecon()
       noise_floor(1.0e-12), gain_max(1.0e3), snr_taper_low(1.0),
       snr_taper_high(3.0), use_reliability_taper(false),
       noise_vector_loaded(false), noise_spectrum_loaded(false),
-      max_gain_actual(0.0), noise_amplification(0.0),
+      processed(false), max_gain_actual(0.0), noise_amplification(0.0),
       effective_bandwidth_fraction(0.0) {}
 
-NoiseStableDecon::NoiseStableDecon(const Metadata &md) : FFTDeconOperator(md) {
+NoiseStableDecon::NoiseStableDecon(const Metadata &md)
+    : FFTDeconOperator(md), noise_vector_loaded(false),
+      noise_spectrum_loaded(false), processed(false) {
   this->read_metadata(md);
 }
 
 NoiseStableDecon::NoiseStableDecon(const Metadata &md, const vector<double> &w,
                                    const vector<double> &d)
-    : FFTDeconOperator(md) {
+    : FFTDeconOperator(md), noise_vector_loaded(false),
+      noise_spectrum_loaded(false), processed(false) {
   this->read_metadata(md);
   wavelet = w;
   data = d;
@@ -87,6 +90,9 @@ int NoiseStableDecon::read_metadata(const Metadata &md) {
 
 void NoiseStableDecon::changeparameter(const Metadata &md) {
   this->read_metadata(md);
+  result.clear();
+  winv = ComplexArray();
+  processed = false;
 }
 
 void NoiseStableDecon::loadnoise(const vector<double> &noise_in) {
@@ -97,6 +103,9 @@ void NoiseStableDecon::loadnoise(const vector<double> &noise_in) {
   noise = noise_in;
   noise_vector_loaded = true;
   noise_spectrum_loaded = false;
+  result.clear();
+  winv = ComplexArray();
+  processed = false;
 }
 
 void NoiseStableDecon::loadnoise(const CoreTimeSeries &noise_in) {
@@ -109,6 +118,9 @@ void NoiseStableDecon::loadnoise(const PowerSpectrum &noise_spectrum_in) {
   noise_spectrum = noise_spectrum_in;
   noise_spectrum_loaded = true;
   noise_vector_loaded = false;
+  result.clear();
+  winv = ComplexArray();
+  processed = false;
 }
 
 double NoiseStableDecon::reliability_taper(const double snr) const {
@@ -148,6 +160,8 @@ vector<double> NoiseStableDecon::noise_power_spectrum(const double dt) {
 void NoiseStableDecon::process() {
   const string base_error("NoiseStableDecon::process: ");
   result.clear();
+  winv = ComplexArray();
+  processed = false;
   const int output_length = data.size();
   if (output_length <= 0)
     throw MsPASSError(base_error + "no data loaded", ErrorSeverity::Invalid);
@@ -212,9 +226,14 @@ void NoiseStableDecon::process() {
   ComplexArray rf_fft = winv * d_fft;
   gsl_fft_complex_inverse(rf_fft.ptr(), 1, nfft, wavetable, workspace);
   result = ExtractLagWindow(rf_fft, output_length, sample_shift);
+  processed = true;
 }
 
 CoreTimeSeries NoiseStableDecon::actual_output() {
+  if (!processed || winv.size() <= 0)
+    throw MsPASSError(
+        "NoiseStableDecon::actual_output: process must be called first",
+        ErrorSeverity::Invalid);
   vector<double> wavelet_padded(wavelet);
   if (wavelet_padded.size() < nfft)
     wavelet_padded.resize(nfft, 0.0);
@@ -242,6 +261,10 @@ CoreTimeSeries NoiseStableDecon::actual_output() {
 }
 
 CoreTimeSeries NoiseStableDecon::inverse_wavelet(const double t0parent) {
+  if (!processed || winv.size() <= 0)
+    throw MsPASSError(
+        "NoiseStableDecon::inverse_wavelet: process must be called first",
+        ErrorSeverity::Invalid);
   double dt = shapingwavelet.sample_interval();
   ComplexArray no_shaping(nfft);
   for (int k = 0; k < nfft; ++k) {
