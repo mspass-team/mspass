@@ -188,27 +188,39 @@ def test_RFdeconProcessor_pickle_is_self_contained_without_pfpath(alg):
         os.environ.pop("PFPATH", None)
 
 
+@pytest.mark.parametrize(
+    "alg,metadata_key,replacement",
+    [
+        ("LeastSquares", "damping_factor", ("damping_factor 1.0", "damping_factor 0.123")),
+        ("GeneralizedIterative", "maximum_iterations", ("maximum_iterations 100", "maximum_iterations 7")),
+        ("FrequencyDomainGID", "maximum_iterations", ("maximum_iterations 100", "maximum_iterations 7")),
+    ],
+)
 def test_RFdeconProcessor_pickle_uses_same_pf_when_pfpath_has_multiple_matches(
-    tmp_path,
+    tmp_path, alg, metadata_key, replacement
 ):
     pf1 = tmp_path / "pf1"
     pf2 = tmp_path / "pf2"
     pf1.mkdir()
     pf2.mkdir()
-    text = open("data/pf/RFdeconProcessor.pf", encoding="utf-8").read()
-    (pf1 / "RFdeconProcessor.pf").write_text(text)
-    (pf2 / "RFdeconProcessor.pf").write_text(
-        text.replace("damping_factor 1.0", "damping_factor 0.123", 1)
-    )
+    if alg == "FrequencyDomainGID":
+        pf_name = "FrequencyDomainGIDDecon.pf"
+    elif alg == "GeneralizedIterative":
+        pf_name = "TimeDomainGIDDecon.pf"
+    else:
+        pf_name = "RFdeconProcessor.pf"
+    text = open(f"data/pf/{pf_name}", encoding="utf-8").read()
+    (pf1 / pf_name).write_text(text)
+    (pf2 / pf_name).write_text(text.replace(replacement[0], replacement[1], 1))
     old_pfpath = os.environ.get("PFPATH")
     os.environ["PFPATH"] = f"{pf1}:{pf2}"
     try:
-        processor = RFdeconProcessor(alg="LeastSquares")
-        original_damping = processor.md["damping_factor"]
+        processor = RFdeconProcessor(alg=alg, pf=pf_name)
+        original_value = processor.md[metadata_key]
         payload = pickle.dumps(processor)
         os.environ.pop("PFPATH", None)
         restored = pickle.loads(payload)
-        assert restored.md["damping_factor"] == original_damping
+        assert restored.md[metadata_key] == original_value
         assert dict(restored.md) == dict(processor.md)
     finally:
         if old_pfpath is None:
