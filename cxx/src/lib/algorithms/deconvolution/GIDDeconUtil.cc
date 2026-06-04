@@ -4,12 +4,83 @@
 #include "misc/blas.h"
 #include <algorithm>
 #include <cmath>
+#include <sstream>
 
 namespace mspass::algorithms::deconvolution {
 using namespace std;
 using namespace mspass::algorithms;
 using namespace mspass::seismic;
 using namespace mspass::utility;
+
+IterDeconType ParseGIDDeconType(const Metadata &md, const string &caller) {
+  string sval = md.get_string("deconvolution_type");
+  if (sval == "water_level")
+    return WATER_LEVEL;
+  if (sval == "least_square")
+    return LEAST_SQ;
+  if (sval == "multi_taper")
+    return MULTI_TAPER;
+  if ((sval == "cnr") || (sval == "cnr3c"))
+    return CNR;
+  if ((sval == "ns_gid") || (sval == "noise_stable") ||
+      (sval == "noise_aware_stable"))
+    return NS_GID;
+  throw MsPASSError(caller + ": unknown deconvolution_type=" + sval,
+                    ErrorSeverity::Invalid);
+}
+
+double GetDoubleDefault(const Metadata &md, const string &key,
+                        const double default_value) {
+  if (md.is_defined(key))
+    return md.get_double(key);
+  return default_value;
+}
+
+int GetIntDefault(const Metadata &md, const string &key,
+                  const int default_value) {
+  if (md.is_defined(key))
+    return md.get_int(key);
+  return default_value;
+}
+
+bool GetBoolDefault(const Metadata &md, const string &key,
+                    const bool default_value) {
+  if (md.is_defined(key))
+    return md.get_bool(key);
+  return default_value;
+}
+
+vector<double> ThreeCAmplitudes(dmatrix &d) {
+  vector<double> result;
+  result.reserve(d.columns());
+  for (int i = 0; i < d.columns(); ++i) {
+    double amp2(0.0);
+    for (int k = 0; k < 3; ++k)
+      amp2 += d(k, i) * d(k, i);
+    result.push_back(sqrt(amp2));
+  }
+  return result;
+}
+
+void ValidateGIDLeafWindow(const AntelopePf &mdleaf,
+                           const TimeWindow &fftwin,
+                           const string &leaf_name,
+                           const string &base_error) {
+  const double ts = mdleaf.get<double>("deconvolution_data_window_start");
+  const double te = mdleaf.get<double>("deconvolution_data_window_end");
+  if ((ts != fftwin.start) || (te != fftwin.end)) {
+    stringstream ss;
+    ss << base_error << leaf_name
+       << " method specification of processing window is not consistent "
+          "with GID parameters"
+       << endl
+       << leaf_name << " parameters: deconvolution_data_window_start=" << ts
+       << ", deconvolution_data_window_end=" << te << endl
+       << "GID parameters: deconvolution_data_window_start=" << fftwin.start
+       << ", deconvolution_data_window_end=" << fftwin.end << endl;
+    throw MsPASSError(ss.str(), ErrorSeverity::Invalid);
+  }
+}
 
 void ValidateGIDLeafOperatorMetadata(const Metadata &md,
                                      const TimeWindow &fftwin,

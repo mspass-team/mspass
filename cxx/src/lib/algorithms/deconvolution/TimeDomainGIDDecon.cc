@@ -15,6 +15,7 @@
 #include <cmath>
 #include <math.h>
 #include <list>
+#include <sstream>
 #include <vector>
 namespace mspass::algorithms::deconvolution {
 using namespace std;
@@ -22,25 +23,6 @@ using namespace mspass::seismic;
 using namespace mspass::utility;
 using namespace mspass::algorithms;
 
-IterDeconType parse_for_itertype(const AntelopePf &md) {
-  string sval = md.get_string("deconvolution_type");
-  if (sval == "water_level")
-    return WATER_LEVEL;
-  else if (sval == "least_square")
-    return LEAST_SQ;
-  else if (sval == "multi_taper")
-    return MULTI_TAPER;
-  else if ((sval == "cnr") || (sval == "cnr3c"))
-    return CNR;
-  else if ((sval == "ns_gid") || (sval == "noise_stable") ||
-           (sval == "noise_aware_stable"))
-    return NS_GID;
-  else
-    throw MsPASSError("TimeDomainGIDDecon: unknown or illegal value of "
-                      "deconvolution_type parameter=" +
-                          sval,
-                      ErrorSeverity::Invalid);
-}
 double Linf(dmatrix &d) {
   int nc, nr;
   nr = d.rows();
@@ -63,28 +45,9 @@ double L2(dmatrix &d) {
   dl2 = cblas_dnrm2(nd, d.get_address(0, 0), 1);
   return dl2;
 }
-double get_double_default_gid(const Metadata &md, const string &key,
-                              const double default_value) {
-  if (md.is_defined(key))
-    return md.get_double(key);
-  return default_value;
-}
-int get_int_default_gid(const Metadata &md, const string &key,
-                        const int default_value) {
-  if (md.is_defined(key))
-    return md.get_int(key);
-  return default_value;
-}
-bool get_bool_default_gid(const Metadata &md, const string &key,
-                          const bool default_value) {
-  if (md.is_defined(key))
-    return md.get_bool(key);
-  return default_value;
-}
 TimeDomainGIDDecon::TimeDomainGIDDecon(const AntelopePf &mdtoplevel)
     : ScalarDecon() {
   const string base_error("TimeDomainGIDDecon AntelopePf constructor:  ");
-  stringstream ss; // used for constructing error messages
   /* The pf used for initializing this object has Antelope Arr section
   for each algorithm.   Since the generalized iterative method is a
   two-stage algorithm we have a section for the iterative algorithm
@@ -94,7 +57,7 @@ TimeDomainGIDDecon::TimeDomainGIDDecon(const AntelopePf &mdtoplevel)
   try {
     AntelopePf md = mdtoplevel.get_branch("deconvolution_operator_type");
     AntelopePf mdgiter = md.get_branch("time_domain_gid_deconvolution");
-    IterDeconType dct = parse_for_itertype(mdgiter);
+    IterDeconType dct = ParseGIDDeconType(mdgiter, "TimeDomainGIDDecon");
     this->decon_type = dct;
     double ts, te;
     ts = mdgiter.get<double>("full_data_window_start");
@@ -128,12 +91,10 @@ TimeDomainGIDDecon::TimeDomainGIDDecon(const AntelopePf &mdtoplevel)
     this->ScalarDecon::changeparameter(mdgiter);
     this->shapingwavelet = ShapingWavelet(mdgiter, nfft);
     AntelopePf mdleaf;
-    /* We make sure the window parameters in each algorithm match what
-    is set for this algorithm.  Abort if they are not consistent.  The
-    test code is a bit repetitious but a necessary evil to allow the message
-    to be clearer. */
-    int n1, n2; // temporaries used below -  needed because declrations illegal
-                // inside case
+    /* Each leaf inverse operator must use the same deconvolution window as
+     * the outer GID engine. */
+    int n1, n2; // temporaries used below - declarations inside case labels are
+                // awkward with the switch structure
     preprocessor = nullptr;
     cnrprocessor = nullptr;
     external_wavelet_loaded = false;
@@ -142,53 +103,17 @@ TimeDomainGIDDecon::TimeDomainGIDDecon(const AntelopePf &mdtoplevel)
     switch (decon_type) {
     case WATER_LEVEL:
       mdleaf = md.get_branch("water_level");
-      ts = mdleaf.get<double>("deconvolution_data_window_start");
-      te = mdleaf.get<double>("deconvolution_data_window_end");
-      if ((ts != fftwin.start) || (te != fftwin.end)) {
-        ss << base_error
-           << "water level method specification of processing window is not"
-              " consistent with gid parameters"
-           << endl
-           << "water level parameters:  deconvolution_data_window_start=" << ts
-           << ", decon_window_end=" << te << endl
-           << "GID parameters: decon_window_start=" << fftwin.start
-           << ", decon_window_end=" << fftwin.end << endl;
-        throw MsPASSError(ss.str(), ErrorSeverity::Invalid);
-      }
+      ValidateGIDLeafWindow(mdleaf, fftwin, "water level", base_error);
       preprocessor = new WaterLevelDecon(mdleaf);
       break;
     case LEAST_SQ:
       mdleaf = md.get_branch("least_square");
-      ts = mdleaf.get<double>("deconvolution_data_window_start");
-      te = mdleaf.get<double>("deconvolution_data_window_end");
-      if ((ts != fftwin.start) || (te != fftwin.end)) {
-        ss << base_error
-           << "least square method specification of processing window is not"
-              " consistent with gid parameters"
-           << endl
-           << "least square parameters:  deconvolution_data_window_start=" << ts
-           << ", decon_window_end=" << te << endl
-           << "GID parameters: decon_window_start=" << fftwin.start
-           << ", decon_window_end=" << fftwin.end << endl;
-        throw MsPASSError(ss.str(), ErrorSeverity::Invalid);
-      }
+      ValidateGIDLeafWindow(mdleaf, fftwin, "least square", base_error);
       preprocessor = new LeastSquareDecon(mdleaf);
       break;
     case MULTI_TAPER:
       mdleaf = md.get_branch("multi_taper");
-      ts = mdleaf.get<double>("deconvolution_data_window_start");
-      te = mdleaf.get<double>("deconvolution_data_window_end");
-      if ((ts != fftwin.start) || (te != fftwin.end)) {
-        ss << base_error
-           << "multitaper method specification of processing window is not"
-              " consistent with gid parameters"
-           << endl
-           << "multitaper parameters:  deconvolution_data_window_start=" << ts
-           << ", decon_window_end=" << te << endl
-           << "GID parameters: decon_window_start=" << fftwin.start
-           << ", decon_window_end=" << fftwin.end << endl;
-        throw MsPASSError(ss.str(), ErrorSeverity::Invalid);
-      }
+      ValidateGIDLeafWindow(mdleaf, fftwin, "multi taper", base_error);
       /* Here we also have to test the noise parameters, but the gid
       window can be different from that passed to the multitaper method.
       Hence we test only that the multitaper noise window is within the bounds
@@ -196,6 +121,7 @@ TimeDomainGIDDecon::TimeDomainGIDDecon(const AntelopePf &mdtoplevel)
       n1 = static_cast<int>((fftwin.end - fftwin.start) / target_dt) + 1;
       n2 = static_cast<int>((nwin.end - nwin.start) / target_dt) + 1;
       if (n1 > n2) {
+        stringstream ss;
         ss << base_error << "inconsistent noise window specification" << endl
            << "multitaper parameters specify taper length=" << n1 << " samples"
            << endl
@@ -211,20 +137,13 @@ TimeDomainGIDDecon::TimeDomainGIDDecon(const AntelopePf &mdtoplevel)
       break;
     case CNR:
       mdleaf = md.get_branch("cnr");
+      ValidateGIDLeafWindow(mdleaf, fftwin, "CNR", base_error);
       cnrprocessor = new CNRDeconEngine(mdleaf);
       break;
     case NS_GID:
     default:
       mdleaf = md.get_branch("ns_gid");
-      ts = mdleaf.get<double>("deconvolution_data_window_start");
-      te = mdleaf.get<double>("deconvolution_data_window_end");
-      if ((ts != fftwin.start) || (te != fftwin.end)) {
-        ss << base_error
-           << "NS-GID inverse operator window is not consistent with gid "
-              "parameters"
-           << endl;
-        throw MsPASSError(ss.str(), ErrorSeverity::Invalid);
-      }
+      ValidateGIDLeafWindow(mdleaf, fftwin, "NS-GID", base_error);
       preprocessor = new NoiseStableDecon(mdleaf);
       break;
     };
@@ -239,18 +158,18 @@ TimeDomainGIDDecon::TimeDomainGIDDecon(const AntelopePf &mdtoplevel)
         mdgiter.get<double>("residual_noise_rms_probability_floor");
     resid_l2_tol = mdgiter.get<double>("residual_fractional_improvement_floor");
     ns_peak_sigma_threshold =
-        get_double_default_gid(mdgiter, "ns_gid_peak_sigma_threshold", 4.0);
-    ns_peak_probability_threshold = get_double_default_gid(
+        GetDoubleDefault(mdgiter, "ns_gid_peak_sigma_threshold", 4.0);
+    ns_peak_probability_threshold = GetDoubleDefault(
         mdgiter, "ns_gid_peak_probability_threshold", 0.995);
-    ns_use_empirical_noise_threshold = get_bool_default_gid(
+    ns_use_empirical_noise_threshold = GetBoolDefault(
         mdgiter, "ns_gid_use_empirical_noise_threshold", true);
-    ns_residual_noise_ratio_floor = get_double_default_gid(
+    ns_residual_noise_ratio_floor = GetDoubleDefault(
         mdgiter, "ns_gid_residual_noise_ratio_floor", 1.0);
-    ns_max_spikes = get_int_default_gid(mdgiter, "ns_gid_max_spikes", 0);
-    ns_refit_interval = get_int_default_gid(mdgiter, "ns_gid_refit_interval", 5);
+    ns_max_spikes = GetIntDefault(mdgiter, "ns_gid_max_spikes", 0);
+    ns_refit_interval = GetIntDefault(mdgiter, "ns_gid_refit_interval", 5);
     ns_ridge_beta =
-        get_double_default_gid(mdgiter, "ns_gid_ridge_beta", 1.0e-10);
-    external_wavelet_allowed = get_bool_default_gid(
+        GetDoubleDefault(mdgiter, "ns_gid_ridge_beta", 1.0e-10);
+    external_wavelet_allowed = GetBoolDefault(
         mdgiter, "ns_gid_external_wavelet_allowed", true);
     this->invalidate_processing_state();
   } catch (...) {
@@ -387,23 +306,6 @@ void TimeDomainGIDDecon::construct_weight_penalty_function(const Metadata &md) {
     throw;
   };
 }
-/* Some helpers for new implementation.*/
-/* This procedure returns a vector of 3c amplitudes from a dmatrix extracted
-from a Seismogram. */
-vector<double> amp3c(dmatrix &d) {
-  vector<double> result;
-  int ncol = d.columns();
-  int i, k;
-  for (i = 0; i < ncol; ++i) {
-    double mag;
-    for (k = 0, mag = 0.0; k < 3; ++k) {
-      mag += d(k, i) * d(k, i);
-    }
-    result.push_back(sqrt(mag));
-  }
-  return result;
-}
-
 void rescale_spike_amplitude(ThreeCSpike &spk, const CoreSeismogram &target,
                              const vector<double> &actual_o_fir,
                              const int actual_o_0) {
@@ -632,7 +534,7 @@ double TimeDomainGIDDecon::compute_resid_linf_floor() {
   try {
     /*Note - this needs an enhancement.   We should not include points
     in a padd region accounting for the inverse filter padding. */
-    vector<double> amps(amp3c(n.u));
+    vector<double> amps(ThreeCAmplitudes(n.u));
     sort(amps.begin(), amps.end());
     int floor_position;
     floor_position = static_cast<int>(resid_linf_prob * ((double)amps.size()));
@@ -940,7 +842,7 @@ void TimeDomainGIDDecon::process() {
       }
       preprocessor->ScalarDecon::load(srcwavelet.s, srcwavelet.s);
       preprocessor->process();
-      vector<double> noise_amps(amp3c(nfiltered));
+      vector<double> noise_amps(ThreeCAmplitudes(nfiltered));
       sort(noise_amps.begin(), noise_amps.end());
       if (!noise_amps.empty()) {
         int ip = static_cast<int>(ns_peak_probability_threshold *

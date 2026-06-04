@@ -4,12 +4,27 @@
 #include "mspass/algorithms/deconvolution/ThreeCSpike.h"
 #include "mspass/seismic/CoreSeismogram.h"
 #include "mspass/seismic/TimeSeries.h"
+#include "mspass/utility/AntelopePf.h"
 #include "mspass/utility/Metadata.h"
+#include "mspass/utility/dmatrix.h"
 #include <list>
 #include <string>
 #include <vector>
 
 namespace mspass::algorithms::deconvolution {
+IterDeconType ParseGIDDeconType(const mspass::utility::Metadata &md,
+                                const std::string &caller);
+double GetDoubleDefault(const mspass::utility::Metadata &md,
+                        const std::string &key, const double default_value);
+int GetIntDefault(const mspass::utility::Metadata &md, const std::string &key,
+                  const int default_value);
+bool GetBoolDefault(const mspass::utility::Metadata &md,
+                    const std::string &key, const bool default_value);
+std::vector<double> ThreeCAmplitudes(mspass::utility::dmatrix &d);
+void ValidateGIDLeafWindow(const mspass::utility::AntelopePf &mdleaf,
+                           const mspass::algorithms::TimeWindow &fftwin,
+                           const std::string &leaf_name,
+                           const std::string &base_error);
 void ValidateGIDLeafOperatorMetadata(
     const mspass::utility::Metadata &md,
     const mspass::algorithms::TimeWindow &fftwin, const double target_dt,

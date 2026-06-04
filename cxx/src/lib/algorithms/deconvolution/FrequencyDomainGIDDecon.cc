@@ -9,7 +9,6 @@
 #include "mspass/utility/MsPASSError.h"
 #include <algorithm>
 #include <cmath>
-#include <sstream>
 
 namespace mspass::algorithms::deconvolution {
 using namespace std;
@@ -18,24 +17,6 @@ using namespace mspass::seismic;
 using namespace mspass::utility;
 
 namespace {
-IterDeconType parse_frequency_gid_type(const AntelopePf &md) {
-  string sval = md.get_string("deconvolution_type");
-  if (sval == "water_level")
-    return WATER_LEVEL;
-  if (sval == "least_square")
-    return LEAST_SQ;
-  if (sval == "multi_taper")
-    return MULTI_TAPER;
-  if ((sval == "cnr") || (sval == "cnr3c"))
-    return CNR;
-  if ((sval == "ns_gid") || (sval == "noise_stable") ||
-      (sval == "noise_aware_stable"))
-    return NS_GID;
-  throw MsPASSError("FrequencyDomainGIDDecon: unknown deconvolution_type=" +
-                        sval,
-                    ErrorSeverity::Invalid);
-}
-
 double matrix_l2(dmatrix &d) {
   int nd = d.rows() * d.columns();
   return cblas_dnrm2(nd, d.get_address(0, 0), 1);
@@ -50,54 +31,6 @@ double matrix_linf(dmatrix &d) {
   return dmax;
 }
 
-vector<double> amp3c_fd(dmatrix &d) {
-  vector<double> result;
-  result.reserve(d.columns());
-  for (int i = 0; i < d.columns(); ++i) {
-    double amp2(0.0);
-    for (int k = 0; k < 3; ++k)
-      amp2 += d(k, i) * d(k, i);
-    result.push_back(sqrt(amp2));
-  }
-  return result;
-}
-double get_double_default_fd_gid(const Metadata &md, const string &key,
-                                 const double default_value) {
-  if (md.is_defined(key))
-    return md.get_double(key);
-  return default_value;
-}
-int get_int_default_fd_gid(const Metadata &md, const string &key,
-                           const int default_value) {
-  if (md.is_defined(key))
-    return md.get_int(key);
-  return default_value;
-}
-bool get_bool_default_fd_gid(const Metadata &md, const string &key,
-                             const bool default_value) {
-  if (md.is_defined(key))
-    return md.get_bool(key);
-  return default_value;
-}
-void validate_leaf_window_fd(const AntelopePf &mdleaf, const TimeWindow &fftwin,
-                             const string &leaf_name,
-                             const string &base_error) {
-  const double ts = mdleaf.get<double>("deconvolution_data_window_start");
-  const double te = mdleaf.get<double>("deconvolution_data_window_end");
-  if ((ts != fftwin.start) || (te != fftwin.end)) {
-    stringstream ss;
-    ss << base_error << leaf_name
-       << " method specification of processing window is not consistent "
-          "with GID parameters"
-       << endl
-       << leaf_name << " parameters: deconvolution_data_window_start=" << ts
-       << ", deconvolution_data_window_end=" << te << endl
-       << "GID parameters: deconvolution_data_window_start=" << fftwin.start
-       << ", deconvolution_data_window_end=" << fftwin.end << endl;
-    throw MsPASSError(ss.str(), ErrorSeverity::Invalid);
-  }
-}
-
 } // namespace
 
 FrequencyDomainGIDDecon::FrequencyDomainGIDDecon(const AntelopePf &mdtoplevel)
@@ -106,7 +39,7 @@ FrequencyDomainGIDDecon::FrequencyDomainGIDDecon(const AntelopePf &mdtoplevel)
   try {
     AntelopePf md = mdtoplevel.get_branch("deconvolution_operator_type");
     AntelopePf mdgid = md.get_branch("frequency_domain_gid_deconvolution");
-    decon_type = parse_frequency_gid_type(mdgid);
+    decon_type = ParseGIDDeconType(mdgid, "FrequencyDomainGIDDecon");
     dwin = TimeWindow(mdgid.get<double>("full_data_window_start"),
                       mdgid.get<double>("full_data_window_end"));
     fftwin = TimeWindow(mdgid.get<double>("deconvolution_data_window_start"),
@@ -133,48 +66,48 @@ FrequencyDomainGIDDecon::FrequencyDomainGIDDecon(const AntelopePf &mdtoplevel)
     switch (decon_type) {
     case WATER_LEVEL:
       mdleaf = md.get_branch("water_level");
-      validate_leaf_window_fd(mdleaf, fftwin, "water level", base_error);
+      ValidateGIDLeafWindow(mdleaf, fftwin, "water level", base_error);
       preprocessor = new WaterLevelDecon(mdleaf);
       break;
     case LEAST_SQ:
       mdleaf = md.get_branch("least_square");
-      validate_leaf_window_fd(mdleaf, fftwin, "least square", base_error);
+      ValidateGIDLeafWindow(mdleaf, fftwin, "least square", base_error);
       preprocessor = new LeastSquareDecon(mdleaf);
       break;
     case MULTI_TAPER:
       mdleaf = md.get_branch("multi_taper");
-      validate_leaf_window_fd(mdleaf, fftwin, "multi taper", base_error);
+      ValidateGIDLeafWindow(mdleaf, fftwin, "multi taper", base_error);
       preprocessor = new MultiTaperXcorDecon(mdleaf);
       break;
     case CNR:
       mdleaf = md.get_branch("cnr");
-      validate_leaf_window_fd(mdleaf, fftwin, "CNR", base_error);
+      ValidateGIDLeafWindow(mdleaf, fftwin, "CNR", base_error);
       cnrprocessor = new CNRDeconEngine(mdleaf);
       break;
     case NS_GID:
     default:
       mdleaf = md.get_branch("ns_gid");
-      validate_leaf_window_fd(mdleaf, fftwin, "NS-GID", base_error);
+      ValidateGIDLeafWindow(mdleaf, fftwin, "NS-GID", base_error);
       preprocessor = new NoiseStableDecon(mdleaf);
       break;
     };
     external_wavelet_loaded = false;
     external_noise_loaded = false;
     external_noise_spectrum_loaded = false;
-    external_wavelet_allowed = get_bool_default_fd_gid(
+    external_wavelet_allowed = GetBoolDefault(
         mdgid, "ns_gid_external_wavelet_allowed", true);
     ns_peak_sigma_threshold =
-        get_double_default_fd_gid(mdgid, "ns_gid_peak_sigma_threshold", 4.0);
-    ns_peak_probability_threshold = get_double_default_fd_gid(
+        GetDoubleDefault(mdgid, "ns_gid_peak_sigma_threshold", 4.0);
+    ns_peak_probability_threshold = GetDoubleDefault(
         mdgid, "ns_gid_peak_probability_threshold", 0.995);
-    ns_use_empirical_noise_threshold = get_bool_default_fd_gid(
+    ns_use_empirical_noise_threshold = GetBoolDefault(
         mdgid, "ns_gid_use_empirical_noise_threshold", true);
-    ns_residual_noise_ratio_floor = get_double_default_fd_gid(
+    ns_residual_noise_ratio_floor = GetDoubleDefault(
         mdgid, "ns_gid_residual_noise_ratio_floor", 1.0);
-    ns_max_spikes = get_int_default_fd_gid(mdgid, "ns_gid_max_spikes", 0);
-    ns_refit_interval = get_int_default_fd_gid(mdgid, "ns_gid_refit_interval", 5);
+    ns_max_spikes = GetIntDefault(mdgid, "ns_gid_max_spikes", 0);
+    ns_refit_interval = GetIntDefault(mdgid, "ns_gid_refit_interval", 5);
     ns_ridge_beta =
-        get_double_default_fd_gid(mdgid, "ns_gid_ridge_beta", 1.0e-10);
+        GetDoubleDefault(mdgid, "ns_gid_ridge_beta", 1.0e-10);
     this->invalidate_processing_state();
   } catch (...) {
     throw;
@@ -476,7 +409,7 @@ double FrequencyDomainGIDDecon::compute_ns_peak_threshold() {
   preprocessor->ScalarDecon::load(current_wavelet.s, current_wavelet.s);
   preprocessor->process();
   nwork.u = uwork;
-  vector<double> noise_amps(amp3c_fd(nwork.u));
+  vector<double> noise_amps(ThreeCAmplitudes(nwork.u));
   sort(noise_amps.begin(), noise_amps.end());
   if (noise_amps.empty())
     return 0.0;
