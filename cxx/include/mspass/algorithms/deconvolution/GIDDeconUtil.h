@@ -1,6 +1,7 @@
 #ifndef __GID_DECON_UTIL_H__
 #define __GID_DECON_UTIL_H__
 #include "mspass/algorithms/TimeWindow.h"
+#include "mspass/algorithms/deconvolution/ThreeCSpike.h"
 #include "mspass/seismic/CoreSeismogram.h"
 #include "mspass/seismic/TimeSeries.h"
 #include "mspass/utility/Metadata.h"
@@ -9,11 +10,10 @@
 #include <vector>
 
 namespace mspass::algorithms::deconvolution {
-class ThreeCSpike;
 void ValidateGIDLeafOperatorMetadata(
     const mspass::utility::Metadata &md,
     const mspass::algorithms::TimeWindow &fftwin, const double target_dt,
-    const std::string &caller);
+    const std::string &caller, const bool allow_noise_window_keys = false);
 void ValidateExternalTimeSeriesSampleInterval(
     const mspass::seismic::TimeSeries &d, const double target_dt,
     const std::string &caller);

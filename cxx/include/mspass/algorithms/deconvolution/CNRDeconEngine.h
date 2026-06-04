@@ -61,6 +61,7 @@ public:
   */
   CNRDeconEngine(const mspass::utility::AntelopePf &pf);
   CNRDeconEngine(const CNRDeconEngine &parent);
+  void changeparameter(const mspass::utility::Metadata &md);
   void
   initialize_inverse_operator(const mspass::seismic::TimeSeries &wavelet,
                               const mspass::seismic::TimeSeries &noise_data);

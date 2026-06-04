@@ -192,9 +192,11 @@ FrequencyDomainGIDDecon::~FrequencyDomainGIDDecon() {
 }
 
 void FrequencyDomainGIDDecon::changeparameter(const Metadata &md) {
+  const bool cnr_mode(decon_type == CNR);
   ValidateGIDLeafOperatorMetadata(
-      md, fftwin, target_dt, "FrequencyDomainGIDDecon::changeparameter");
-  if (decon_type == CNR)
+      md, fftwin, target_dt, "FrequencyDomainGIDDecon::changeparameter",
+      cnr_mode);
+  if (cnr_mode)
     cnrprocessor->changeparameter(md);
   else
     preprocessor->changeparameter(md);

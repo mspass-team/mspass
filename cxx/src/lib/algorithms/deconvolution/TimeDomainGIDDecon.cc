@@ -83,12 +83,12 @@ bool get_bool_default_gid(const Metadata &md, const string &key,
 }
 TimeDomainGIDDecon::TimeDomainGIDDecon(const AntelopePf &mdtoplevel)
     : ScalarDecon() {
-  const string base_error("TimeDomainGIDDecon AntelopePf contructor:  ");
+  const string base_error("TimeDomainGIDDecon AntelopePf constructor:  ");
   stringstream ss; // used for constructing error messages
   /* The pf used for initializing this object has Antelope Arr section
   for each algorithm.   Since the generalized iterative method is a
   two-stage algorithm we have a section for the iterative algorithm
-  and a (variable) sectin for the preprocessor algorithm.  We use
+  and a variable section for the preprocessor algorithm.  We use
   the AntelopePf to parse this instead of raw antelope pfget
   C calls. */
   try {
@@ -231,7 +231,7 @@ TimeDomainGIDDecon::TimeDomainGIDDecon(const AntelopePf &mdtoplevel)
     /* Because this may evolve we make this a private method to
     make changes easier to implement. */
     this->construct_weight_penalty_function(mdgiter);
-    /* Set convergencd parameters from md keys */
+    /* Set convergence parameters from md keys */
     iter_max = mdgiter.get<int>("maximum_iterations");
     lw_linf_floor = mdgiter.get<double>("lag_weight_Linf_floor");
     lw_l2_floor = mdgiter.get<double>("lag_weight_rms_floor");
@@ -268,9 +268,10 @@ TimeDomainGIDDecon::~TimeDomainGIDDecon() {
 }
 
 void TimeDomainGIDDecon::changeparameter(const Metadata &md) {
-  ValidateGIDLeafOperatorMetadata(md, fftwin, target_dt,
-                                  "TimeDomainGIDDecon::changeparameter");
-  if (this->decon_type == CNR)
+  const bool cnr_mode(this->decon_type == CNR);
+  ValidateGIDLeafOperatorMetadata(
+      md, fftwin, target_dt, "TimeDomainGIDDecon::changeparameter", cnr_mode);
+  if (cnr_mode)
     this->cnrprocessor->changeparameter(md);
   else
     this->preprocessor->changeparameter(md);
@@ -603,11 +604,11 @@ double TimeDomainGIDDecon::compute_resid_linf_floor() {
 
 This helper trims a fir filter signal to reduce the computational cost of
 time domain subtraction of the expected output signal in the generalized
-iterative method.   It first computes an envlope function.   It uses a cruder
+iterative method.   It first computes an envelope function.   It uses a cruder
 algorithm than the more conventional hilbert-transform based envelope using
 smoothing of the absolute values of the fir filter amplitudes.  This was
-done because the hilbert envelope is a complicated calculation and I (glp)
-didn't want debug the required combination of a hilbert transform code
+done because the Hilbert envelope is a complicated calculation and I (glp)
+didn't want to validate the required combination of a Hilbert transform code
 and the secondary problem of using that to compute an envelope function.
 May want to retrofit that eventually, but for the initial version I am
 assuming the smoothing method will work fine on deconvolution impulse
@@ -909,11 +910,6 @@ void TimeDomainGIDDecon::process() {
       nnwin = n.npts();
       this->compute_resid_linf_floor();
     }
-    // double nfloor;
-    // nfloor=compute_resid_linf_floor();
-    // DEBUG - for debug always print this.  Should be a verbose option
-    // cerr << "Computed noise floor="<<nfloor<<endl;
-
     /* d_all now contains the deconvolved data.  Now enter the
     generalized iterative method recursion */
     int i, k;

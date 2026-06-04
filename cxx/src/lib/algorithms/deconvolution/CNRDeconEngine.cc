@@ -150,6 +150,83 @@ CNRDeconEngine::CNRDeconEngine(const CNRDeconEngine &parent)
   }
   winv_t0_lag = parent.winv_t0_lag;
 }
+
+void CNRDeconEngine::changeparameter(const Metadata &md) {
+  try {
+    string stmp(md.get_string("algorithm"));
+    if (stmp == "generalized_water_level") {
+      this->algorithm = CNR3C_algorithms::generalized_water_level;
+    } else if (stmp == "colored_noise_damping") {
+      this->algorithm = CNR3C_algorithms::colored_noise_damping;
+    } else {
+      throw MsPASSError("CNRDeconEngine::changeparameter: invalid value for "
+                        "parameter algorithm=" +
+                            stmp,
+                        ErrorSeverity::Invalid);
+    }
+    this->damp = md.get_double("damping_factor");
+    if (this->damp <= 0.0)
+      throw MsPASSError("CNRDeconEngine::changeparameter: damping_factor must "
+                        "be positive for stable regularized deconvolution",
+                        ErrorSeverity::Invalid);
+    this->noise_floor = md.get_double("noise_floor");
+    this->snr_regularization_floor =
+        md.get_double("snr_regularization_floor");
+    this->band_snr_floor = md.get_double("snr_data_bandwidth_floor");
+    this->operator_dt = md.get_double("target_sample_interval");
+
+    double ts(md.get_double("deconvolution_data_window_start"));
+    double te(md.get_double("deconvolution_data_window_end"));
+    this->winlength = round((te - ts) / this->operator_dt) + 1;
+    int nfftneeded = nextPowerOf2(3 * this->winlength);
+    if (nfftneeded != this->get_size())
+      FFTDeconOperator::change_size(nfftneeded);
+    this->change_shift(ComputeDeconSampleShift(md));
+    if (this->get_shift() < 0 || this->get_shift() > this->get_size())
+      throw MsPASSError("CNRDeconEngine::changeparameter: computed sample "
+                        "shift is inconsistent with FFT length",
+                        ErrorSeverity::Invalid);
+
+    Metadata mdcopy(md);
+    mdcopy.put("operator_nfft", nfftneeded);
+    this->shapingwavelet = ShapingWavelet(mdcopy);
+    string swname(this->shapingwavelet.type());
+    if (!((swname == "ricker") || (swname == "butterworth"))) {
+      throw MsPASSError(
+          string("CNRDeconEngine::changeparameter: ") +
+              "Cannot use shaping wavelet type=" + swname +
+              "\nMust be either ricker or butterworth for this algorithm",
+          ErrorSeverity::Fatal);
+    }
+    if (swname == "butterworth") {
+      int npoles_lo(md.get_int("npoles_lo"));
+      int npoles_hi(md.get_int("npoles_hi"));
+      if (npoles_hi != npoles_lo) {
+        stringstream ss;
+        ss << "CNRDeconEngine::changeparameter: Butterworth filter high and "
+              "low number of poles must be equal"
+           << endl
+           << "Found npoles_lo=" << npoles_lo << " and npoles_hi=" << npoles_hi
+           << endl;
+        throw MsPASSError(ss.str(), ErrorSeverity::Fatal);
+      }
+      this->shaping_wavelet_number_poles = npoles_lo;
+    }
+
+    ts = md.get_double("noise_window_start");
+    te = md.get_double("noise_window_end");
+    int noise_winlength = round((te - ts) / operator_dt) + 1;
+    double tbp = md.get_double("time_bandwidth_product");
+    long ntapers = md.get_long("number_tapers");
+    this->noise_engine = MTPowerSpectrumEngine(
+        noise_winlength, tbp, ntapers, noise_winlength, this->operator_dt);
+    this->signal_engine = MTPowerSpectrumEngine(
+        this->winlength, tbp, ntapers, this->winlength, this->operator_dt);
+  } catch (...) {
+    throw;
+  };
+}
+
 CNRDeconEngine &CNRDeconEngine::operator=(const CNRDeconEngine &parent) {
   if (&parent != this) {
     this->shapingwavelet = parent.shapingwavelet;

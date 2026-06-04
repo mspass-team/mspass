@@ -4,7 +4,7 @@
 #include "mspass/algorithms/deconvolution/CNRDeconEngine.h"
 #include "mspass/algorithms/deconvolution/ScalarDecon.h"
 #include "mspass/algorithms/deconvolution/ShapingWavelet.h"
-#include "mspass/algorithms/deconvolution/TimeDomainGIDDecon.h"
+#include "mspass/algorithms/deconvolution/ThreeCSpike.h"
 #include "mspass/seismic/CoreSeismogram.h"
 #include "mspass/seismic/CoreTimeSeries.h"
 #include "mspass/seismic/PowerSpectrum.h"

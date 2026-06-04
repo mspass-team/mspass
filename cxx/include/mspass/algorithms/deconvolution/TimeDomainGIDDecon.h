@@ -5,6 +5,7 @@
 #include "mspass/algorithms/deconvolution/CNRDeconEngine.h"
 #include "mspass/algorithms/deconvolution/FFTDeconOperator.h"
 #include "mspass/algorithms/deconvolution/ScalarDecon.h"
+#include "mspass/algorithms/deconvolution/ThreeCSpike.h"
 #include "mspass/seismic/CoreTimeSeries.h"
 #include "mspass/seismic/PowerSpectrum.h"
 #include "mspass/seismic/Seismogram.h"
@@ -17,27 +18,6 @@
 #include <string>
 #include <vector>
 namespace mspass::algorithms::deconvolution {
-/* Wang's original version allowed XCORR here - dropped for now as this
-code assumes the inverse operator produces a zero-phase resolution kernel,
-while the original XCORR iterative method uses the raw wavelet and cross
-correlation. */
-
-enum IterDeconType { WATER_LEVEL, LEAST_SQ, MULTI_TAPER, CNR, NS_GID };
-class ThreeCSpike {
-public:
-  /*! Column index where this spike is placed in a three-component matrix. */
-  int col;
-  /*! Three-component spike amplitude. */
-  double u[3];
-  /*! Cached L2 norm of u. */
-  double amp;
-  /*! Construct a spike from the vector sample at column k. */
-  ThreeCSpike(mspass::utility::dmatrix &d, int k);
-  /*! Copy constructor. */
-  ThreeCSpike(const ThreeCSpike &parent);
-  /*! Assignment operator required for STL containers. */
-  ThreeCSpike &operator=(const ThreeCSpike &parent);
-};
 /*! \brief Three-component generalized iterative deconvolution in time.
 
 This class implements the Wang and Pavlis generalized iterative deconvolution

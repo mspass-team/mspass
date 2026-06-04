@@ -121,8 +121,6 @@ int MultiTaperXcorDecon::read_metadata(const Metadata &md, bool refresh) {
         }
       }
     }
-    // DEBUG
-    // cerr<< "Exiting constructor - damp="<<damp<<endl;
     return 0;
   } catch (...) {
     throw;
@@ -207,8 +205,6 @@ MultiTaperXcorDecon::taper_data(const vector<double> &signal) {
   return tdata;
 }
 void MultiTaperXcorDecon::process() {
-  // DEBUG
-  // cerr<< "Entering process method"<<endl;
   const string base_error("MultiTaperXcorDecon::process():  ");
   result.clear();
   winv = ComplexArray();

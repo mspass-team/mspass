@@ -38,7 +38,6 @@ deconvolution_operator_type &Arr{
         shaping_wavelet_dt 0.05
         shaping_wavelet_type ricker
         shaping_wavelet_frequency 1.0
-        shaping_wavelet_frequency_for_inverse 0.5
     }
     least_square &Arr{
         target_sample_interval 0.05
@@ -50,7 +49,6 @@ deconvolution_operator_type &Arr{
         shaping_wavelet_dt 0.05
         shaping_wavelet_type ricker
         shaping_wavelet_frequency 1.0
-        shaping_wavelet_frequency_for_inverse 0.5
     }
     water_level &Arr{
         target_sample_interval 0.05
@@ -62,7 +60,6 @@ deconvolution_operator_type &Arr{
         shaping_wavelet_dt 0.05
         shaping_wavelet_type ricker
         shaping_wavelet_frequency 1.0
-        shaping_wavelet_frequency_for_inverse 0.5
     }
     multi_taper &Arr{
         target_sample_interval 0.05
@@ -76,7 +73,6 @@ deconvolution_operator_type &Arr{
         shaping_wavelet_dt 0.05
         shaping_wavelet_type ricker
         shaping_wavelet_frequency 1.0
-        shaping_wavelet_frequency_for_inverse 0.5
     }
     cnr &Arr{
         target_sample_interval 0.05
@@ -118,6 +114,5 @@ deconvolution_operator_type &Arr{
         shaping_wavelet_dt 0.05
         shaping_wavelet_type ricker
         shaping_wavelet_frequency 1.0
-        shaping_wavelet_frequency_for_inverse 0.5
     }
 }

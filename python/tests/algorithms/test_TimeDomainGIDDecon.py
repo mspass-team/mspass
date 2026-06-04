@@ -502,7 +502,6 @@ def test_TimeDomainGIDDecon_changeparameter_handles_cnr_mode(tmp_path):
     )
     engine = TimeDomainGIDDecon(pf)
     cnr_md = pf.get_branch("deconvolution_operator_type").get_branch("cnr")
-    cnr_md["sample_shift"] = 100
 
     engine.changeparameter(cnr_md)
 
@@ -557,6 +556,8 @@ def test_TimeDomainGIDDecon_changeparameter_rejects_gid_level_metadata():
         ("ns_gid_refit_interval", 2),
         ("lag_weight_penalty_scale_factor", 0.5),
         ("lag_weight_function_width", 5),
+        ("noise_window_start", -30.0),
+        ("noise_window_end", -3.0),
     ],
 )
 def test_TimeDomainGIDDecon_changeparameter_rejects_gid_keys_on_leaf(key, value):

@@ -1,6 +1,5 @@
-/* This class is defined in this file because it is intimately linked to
-that operator.  We put the C++ code here to make it easier to find. */
-#include "mspass/algorithms/deconvolution/TimeDomainGIDDecon.h"
+#include "mspass/algorithms/deconvolution/ThreeCSpike.h"
+#include <cmath>
 namespace mspass::algorithms::deconvolution {
 using namespace std;
 using namespace mspass::utility;

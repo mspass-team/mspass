@@ -1,6 +1,5 @@
 #include "mspass/algorithms/deconvolution/GIDDeconUtil.h"
 #include "gsl/gsl_cblas.h"
-#include "mspass/algorithms/deconvolution/TimeDomainGIDDecon.h"
 #include "mspass/utility/MsPASSError.h"
 #include "misc/blas.h"
 #include <algorithm>
@@ -15,7 +14,8 @@ using namespace mspass::utility;
 void ValidateGIDLeafOperatorMetadata(const Metadata &md,
                                      const TimeWindow &fftwin,
                                      const double target_dt,
-                                     const string &caller) {
+                                     const string &caller,
+                                     const bool allow_noise_window_keys) {
   static const vector<string> gid_level_keys{
       "deconvolution_type",
       "full_data_window_start",
@@ -38,6 +38,8 @@ void ValidateGIDLeafOperatorMetadata(const Metadata &md,
       "ns_gid_refit_interval",
       "ns_gid_ridge_beta",
       "ns_gid_external_wavelet_allowed"};
+  static const vector<string> noise_window_keys{"noise_window_start",
+                                                "noise_window_end"};
   for (auto const &key : gid_level_keys) {
     if (md.is_defined(key))
       throw MsPASSError(caller + ": GID-level parameter " + key +
@@ -45,6 +47,16 @@ void ValidateGIDLeafOperatorMetadata(const Metadata &md,
                             "changeparameter only changes the current leaf "
                             "inverse operator",
                         ErrorSeverity::Invalid);
+  }
+  if (!allow_noise_window_keys) {
+    for (auto const &key : noise_window_keys) {
+      if (md.is_defined(key))
+        throw MsPASSError(caller + ": GID-level parameter " + key +
+                              " requires constructing a new GID engine; "
+                              "changeparameter only changes the current leaf "
+                              "inverse operator",
+                          ErrorSeverity::Invalid);
+    }
   }
   if (md.is_defined("deconvolution_data_window_start")) {
     const double ts = md.get_double("deconvolution_data_window_start");

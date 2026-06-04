@@ -305,6 +305,19 @@ def test_FrequencyDomainGIDDecon_changeparameter_rejects_gid_level_metadata():
         engine.changeparameter(gid_md)
 
 
+def test_FrequencyDomainGIDDecon_changeparameter_handles_cnr_mode(tmp_path):
+    pf = _pf_with_mode(
+        tmp_path,
+        "FrequencyDomainGIDDecon.pf",
+        "frequency_domain_gid_deconvolution",
+        "cnr",
+    )
+    engine = FrequencyDomainGIDDecon(pf)
+    cnr_md = pf.get_branch("deconvolution_operator_type").get_branch("cnr")
+
+    engine.changeparameter(cnr_md)
+
+
 def test_FrequencyDomainGIDDecon_changeparameter_rejects_leaf_window_drift():
     pf = pfread("./data/pf/FrequencyDomainGIDDecon.pf")
     engine = FrequencyDomainGIDDecon(pf)
@@ -344,6 +357,8 @@ def test_FrequencyDomainGIDDecon_changeparameter_rejects_leaf_shaping_dt_drift()
         ("ns_gid_refit_interval", 2),
         ("lag_weight_penalty_scale_factor", 0.5),
         ("lag_weight_function_width", 5),
+        ("noise_window_start", -30.0),
+        ("noise_window_end", -3.0),
     ],
 )
 def test_FrequencyDomainGIDDecon_changeparameter_rejects_gid_keys_on_leaf(
