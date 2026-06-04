@@ -111,6 +111,7 @@ FrequencyDomainGIDDecon::FrequencyDomainGIDDecon(const AntelopePf &mdtoplevel)
     ns_ridge_beta =
         GetDoubleDefault(mdgid, "ns_gid_ridge_beta", 1.0e-10);
     this->invalidate_processing_state();
+    configuration_pickleable = true;
   } catch (...) {
     throw;
   };
@@ -143,6 +144,7 @@ void FrequencyDomainGIDDecon::changeparameter(const Metadata &md) {
   ValidateGIDLeafOperatorMetadata(
       md, fftwin, target_dt, "FrequencyDomainGIDDecon::changeparameter",
       cnr_mode);
+  configuration_pickleable = false;
   this->invalidate_processing_state();
   if (cnr_mode)
     cnrprocessor->changeparameter(md);
@@ -152,6 +154,7 @@ void FrequencyDomainGIDDecon::changeparameter(const Metadata &md) {
 
 int FrequencyDomainGIDDecon::load(const CoreSeismogram &draw,
                                   TimeWindow dwin_in) {
+  configuration_pickleable = false;
   this->invalidate_processing_state();
   d_all.kill();
   ndwin = 0;
@@ -167,6 +170,7 @@ int FrequencyDomainGIDDecon::load(const CoreSeismogram &draw,
 
 int FrequencyDomainGIDDecon::loadnoise(const CoreSeismogram &draw,
                                        TimeWindow nwin_in) {
+  configuration_pickleable = false;
   this->invalidate_processing_state();
   external_noise_loaded = false;
   external_noise_spectrum_loaded = false;
@@ -181,6 +185,7 @@ int FrequencyDomainGIDDecon::loadnoise(const CoreSeismogram &draw,
 }
 
 int FrequencyDomainGIDDecon::loadwavelet(const TimeSeries &wavelet) {
+  configuration_pickleable = false;
   this->invalidate_processing_state();
   external_wavelet_loaded = false;
   if (!external_wavelet_allowed)
@@ -209,6 +214,7 @@ int FrequencyDomainGIDDecon::loadwavelet(const CoreTimeSeries &wavelet) {
 }
 
 int FrequencyDomainGIDDecon::loadnoise(const TimeSeries &noise_in) {
+  configuration_pickleable = false;
   this->invalidate_processing_state();
   external_noise_loaded = false;
   external_noise_spectrum_loaded = false;
@@ -244,6 +250,7 @@ int FrequencyDomainGIDDecon::loadnoise(const CoreTimeSeries &noise_in) {
 }
 
 int FrequencyDomainGIDDecon::loadnoise(const PowerSpectrum &noise_spectrum_in) {
+  configuration_pickleable = false;
   this->invalidate_processing_state();
   external_noise_loaded = false;
   external_noise_spectrum_loaded = false;
@@ -261,10 +268,12 @@ int FrequencyDomainGIDDecon::loadnoise(const PowerSpectrum &noise_spectrum_in) {
   return 0;
 }
 void FrequencyDomainGIDDecon::clear_external_wavelet() {
+  configuration_pickleable = false;
   external_wavelet_loaded = false;
   this->invalidate_processing_state();
 }
 void FrequencyDomainGIDDecon::clear_external_noise() {
+  configuration_pickleable = false;
   external_noise_loaded = false;
   external_noise_spectrum_loaded = false;
   this->invalidate_processing_state();
@@ -272,6 +281,7 @@ void FrequencyDomainGIDDecon::clear_external_noise() {
 
 int FrequencyDomainGIDDecon::load(const CoreSeismogram &draw, TimeWindow dwin,
                                   TimeWindow nwin) {
+  configuration_pickleable = false;
   this->invalidate_processing_state();
   d_all.kill();
   n.kill();

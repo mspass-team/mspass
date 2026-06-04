@@ -173,6 +173,7 @@ TimeDomainGIDDecon::TimeDomainGIDDecon(const AntelopePf &mdtoplevel)
     external_wavelet_allowed = GetBoolDefault(
         mdgiter, "ns_gid_external_wavelet_allowed", true);
     this->invalidate_processing_state();
+    configuration_pickleable = true;
   } catch (...) {
     throw;
   };
@@ -208,6 +209,7 @@ void TimeDomainGIDDecon::changeparameter(const Metadata &md) {
   const bool cnr_mode(this->decon_type == CNR);
   ValidateGIDLeafOperatorMetadata(
       md, fftwin, target_dt, "TimeDomainGIDDecon::changeparameter", cnr_mode);
+  configuration_pickleable = false;
   this->invalidate_processing_state();
   if (cnr_mode)
     this->cnrprocessor->changeparameter(md);
@@ -323,6 +325,7 @@ void rescale_spike_amplitude(ThreeCSpike &spk, const CoreSeismogram &target,
 
 int TimeDomainGIDDecon::load(const CoreSeismogram &draw, TimeWindow dwin_in) {
   try {
+    configuration_pickleable = false;
     this->invalidate_processing_state();
     d_all.kill();
     ndwin = 0;
@@ -347,6 +350,7 @@ int TimeDomainGIDDecon::load(const CoreSeismogram &draw, TimeWindow dwin_in) {
 int TimeDomainGIDDecon::loadnoise(const CoreSeismogram &draw,
                                 TimeWindow nwin_in) {
   try {
+    configuration_pickleable = false;
     this->invalidate_processing_state();
     external_noise_loaded = false;
     external_noise_spectrum_loaded = false;
@@ -375,6 +379,7 @@ int TimeDomainGIDDecon::loadnoise(const CoreSeismogram &draw,
   };
 }
 int TimeDomainGIDDecon::loadwavelet(const TimeSeries &wavelet) {
+  configuration_pickleable = false;
   this->invalidate_processing_state();
   external_wavelet_loaded = false;
   if (!external_wavelet_allowed)
@@ -400,6 +405,7 @@ int TimeDomainGIDDecon::loadwavelet(const CoreTimeSeries &wavelet) {
   return this->loadwavelet(ts);
 }
 int TimeDomainGIDDecon::loadnoise(const TimeSeries &noise_in) {
+  configuration_pickleable = false;
   this->invalidate_processing_state();
   external_noise_loaded = false;
   external_noise_spectrum_loaded = false;
@@ -434,6 +440,7 @@ int TimeDomainGIDDecon::loadnoise(const CoreTimeSeries &noise_in) {
   return this->loadnoise(ts);
 }
 int TimeDomainGIDDecon::loadnoise(const PowerSpectrum &noise_spectrum_in) {
+  configuration_pickleable = false;
   this->invalidate_processing_state();
   external_noise_loaded = false;
   external_noise_spectrum_loaded = false;
@@ -453,10 +460,12 @@ int TimeDomainGIDDecon::loadnoise(const PowerSpectrum &noise_spectrum_in) {
   return 0;
 }
 void TimeDomainGIDDecon::clear_external_wavelet() {
+  configuration_pickleable = false;
   external_wavelet_loaded = false;
   this->invalidate_processing_state();
 }
 void TimeDomainGIDDecon::clear_external_noise() {
+  configuration_pickleable = false;
   external_noise_loaded = false;
   external_noise_spectrum_loaded = false;
   ns_noise_components.clear();
@@ -465,6 +474,7 @@ void TimeDomainGIDDecon::clear_external_noise() {
 int TimeDomainGIDDecon::load(const CoreSeismogram &draw, TimeWindow dwin,
                            TimeWindow nwin) {
   try {
+    configuration_pickleable = false;
     this->invalidate_processing_state();
     d_all.kill();
     n.kill();

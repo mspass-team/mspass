@@ -42,6 +42,9 @@ public:
   double noise_window_start() const { return this->nwin.start; };
   double noise_window_end() const { return this->nwin.end; };
   std::string configuration_pf_text() const { return this->config_pf_text; };
+  bool configuration_pickle_allowed() const {
+    return this->configuration_pickleable;
+  };
   int load(const mspass::seismic::CoreSeismogram &d,
            mspass::algorithms::TimeWindow dwin,
            mspass::algorithms::TimeWindow nwin);
@@ -75,6 +78,7 @@ private:
   bool external_wavelet_loaded, external_noise_loaded,
       external_noise_spectrum_loaded, external_wavelet_allowed;
   bool processed;
+  bool configuration_pickleable;
   std::vector<double> actual_o_fir;
   std::list<ThreeCSpike> spikes;
   double ns_peak_sigma_threshold, ns_peak_probability_threshold;

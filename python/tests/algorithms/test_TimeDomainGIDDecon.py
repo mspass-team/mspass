@@ -445,6 +445,15 @@ def test_TimeDomainGIDDecon_engine_is_pickleable_for_wrapper_use():
     assert rf2.live
     assert np.allclose(np.asarray(rf1.data), np.asarray(rf2.data))
 
+    with pytest.raises(TypeError, match="configuration-only"):
+        pickle.dumps(engine)
+
+    changed = TimeDomainGIDDecon(pf)
+    leaf_md = pf.get_branch("deconvolution_operator_type").get_branch("least_square")
+    changed.changeparameter(leaf_md)
+    with pytest.raises(TypeError, match="configuration-only"):
+        pickle.dumps(changed)
+
 
 def test_TimeDomainGIDDecon_engine_reuse_is_stable():
     np.random.seed(13)

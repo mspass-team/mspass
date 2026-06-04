@@ -33,6 +33,7 @@ from mspasspy.ccore.algorithms.deconvolution import (
     MultiTaperSpecDivDecon,
     TimeDomainGIDDecon,
     FrequencyDomainGIDDecon,
+    _antelope_pf_to_text,
 )
 from mspasspy.util.decorators import mspass_func_wrapper
 
@@ -77,39 +78,6 @@ def _get_pf_branch_with_legacy_fallback(pfhandle, preferred, legacy):
             ErrorSeverity.Invalid,
         )
     return Metadata(pfhandle.get_branch(legacy))
-
-
-def _pf_value_to_text(value):
-    if isinstance(value, bool):
-        return "true" if value else "false"
-    if isinstance(value, float):
-        text = format(value, ".17g")
-        if "e" in text or "E" in text:
-            mantissa, exponent = text.replace("E", "e").split("e", 1)
-            if "." not in mantissa:
-                mantissa += ".0"
-            return f"{mantissa}e{exponent}"
-        if "." not in text:
-            text += ".0"
-        return text
-    return str(value)
-
-
-def _pf_to_text(pfhandle, indent=0):
-    pad = " " * indent
-    lines = []
-    for key in sorted(pfhandle.keys()):
-        lines.append(f"{pad}{key} {_pf_value_to_text(pfhandle[key])}")
-    for key in sorted(pfhandle.tbl_keys()):
-        lines.append(f"{pad}{key} &Tbl{{")
-        for item in pfhandle.get_tbl(key):
-            lines.append(f"{pad}    {item}")
-        lines.append(f"{pad}}}")
-    for key in sorted(pfhandle.arr_keys()):
-        lines.append(f"{pad}{key} &Arr{{")
-        lines.append(_pf_to_text(pfhandle.get_branch(key), indent + 4))
-        lines.append(f"{pad}}}")
-    return "\n".join(lines)
 
 
 def _write_pickled_pf_text(pf, text):
@@ -185,7 +153,9 @@ class RFdeconProcessor:
                     os.unlink(pf_to_load)
                 except OSError:
                     pass
-        self._pf_text = _pf_text if _pf_text is not None else _pf_to_text(pfhandle)
+        self._pf_text = (
+            _pf_text if _pf_text is not None else _antelope_pf_to_text(pfhandle)
+        )
         if self.algorithm == "LeastSquares":
             # In this and elif blocks below we convert
             # return of get_branch to a Metadata container

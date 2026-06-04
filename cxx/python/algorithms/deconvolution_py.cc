@@ -18,6 +18,7 @@
 #include <mspass/algorithms/deconvolution/TimeDomainGIDDecon.h>
 #include <mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h>
 #include <mspass/algorithms/deconvolution/CNRDeconEngine.h>
+#include <mspass/algorithms/deconvolution/GIDDeconUtil.h>
 PYBIND11_MAKE_OPAQUE(std::vector<double>);
 
 
@@ -95,6 +96,9 @@ PYBIND11_MODULE(deconvolution, m) {
   m.attr("__name__") = "mspasspy.ccore.algorithms.deconvolution";
   m.doc() = "A submodule for deconvolution namespace of ccore.algorithms";
   py::module_::import("mspasspy.ccore.seismic");
+  m.def("_antelope_pf_to_text", &AntelopePfToText, py::arg("pf"),
+        py::arg("indent") = 0,
+        "Serialize an AntelopePf object to stable pf text");
 
   /* Need this to support returns of std::vector in children of ScalarDecon*/
   py::bind_vector<std::vector<double>>(m, "DoubleVector");
@@ -432,6 +436,11 @@ PYBIND11_MODULE(deconvolution, m) {
     .def("QCMetrics",&TimeDomainGIDDecon::QCMetrics,"Return QC metrics")
     .def(py::pickle(
       [](const TimeDomainGIDDecon &self) {
+        if (!self.configuration_pickle_allowed())
+          throw py::type_error(
+              "TimeDomainGIDDecon pickling is configuration-only.  Pickle a "
+              "fresh engine before load/loadnoise/loadwavelet/process/"
+              "changeparameter, or rebuild the engine from a parameter file.");
         return py::make_tuple(self.configuration_pf_text());
       },
       [](py::tuple t) {
@@ -497,6 +506,12 @@ PYBIND11_MODULE(deconvolution, m) {
     .def("QCMetrics",&FrequencyDomainGIDDecon::QCMetrics,"Return QC metrics")
     .def(py::pickle(
       [](const FrequencyDomainGIDDecon &self) {
+        if (!self.configuration_pickle_allowed())
+          throw py::type_error(
+              "FrequencyDomainGIDDecon pickling is configuration-only.  "
+              "Pickle a fresh engine before load/loadnoise/loadwavelet/"
+              "process/changeparameter, or rebuild the engine from a "
+              "parameter file.");
         return py::make_tuple(self.configuration_pf_text());
       },
       [](py::tuple t) {

@@ -62,6 +62,9 @@ public:
   double noise_window_start() const { return this->nwin.start; };
   double noise_window_end() const { return this->nwin.end; };
   std::string configuration_pf_text() const { return this->config_pf_text; };
+  bool configuration_pickle_allowed() const {
+    return this->configuration_pickleable;
+  };
   /*! \brief Load all needed data and process.
 
   This method is little more than a call to loadnoise followed
@@ -134,6 +137,7 @@ private:
   bool external_wavelet_loaded, external_noise_loaded,
       external_noise_spectrum_loaded, external_wavelet_allowed;
   bool processed;
+  bool configuration_pickleable;
 
   /* This parameter is set in the constructor.  It would normally be half the
   length of the fir representation of the inverse wavelet.*/
