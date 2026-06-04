@@ -9,6 +9,7 @@
 #include "mspass/utility/MsPASSError.h"
 #include <algorithm>
 #include <cmath>
+#include <sstream>
 
 namespace mspass::algorithms::deconvolution {
 using namespace std;
@@ -37,6 +38,7 @@ FrequencyDomainGIDDecon::FrequencyDomainGIDDecon(const AntelopePf &mdtoplevel)
     : ScalarDecon(), preprocessor(nullptr), cnrprocessor(nullptr) {
   const string base_error("FrequencyDomainGIDDecon constructor: ");
   try {
+    config_pf_text = AntelopePfToText(mdtoplevel);
     AntelopePf md = mdtoplevel.get_branch("deconvolution_operator_type");
     AntelopePf mdgid = md.get_branch("frequency_domain_gid_deconvolution");
     decon_type = ParseGIDDeconType(mdgid, "FrequencyDomainGIDDecon");
@@ -67,28 +69,28 @@ FrequencyDomainGIDDecon::FrequencyDomainGIDDecon(const AntelopePf &mdtoplevel)
     case WATER_LEVEL:
       mdleaf = md.get_branch("water_level");
       ValidateGIDLeafWindow(mdleaf, fftwin, "water level", base_error);
-      preprocessor = new WaterLevelDecon(mdleaf);
+      preprocessor = std::make_unique<WaterLevelDecon>(mdleaf);
       break;
     case LEAST_SQ:
       mdleaf = md.get_branch("least_square");
       ValidateGIDLeafWindow(mdleaf, fftwin, "least square", base_error);
-      preprocessor = new LeastSquareDecon(mdleaf);
+      preprocessor = std::make_unique<LeastSquareDecon>(mdleaf);
       break;
     case MULTI_TAPER:
       mdleaf = md.get_branch("multi_taper");
       ValidateGIDLeafWindow(mdleaf, fftwin, "multi taper", base_error);
-      preprocessor = new MultiTaperXcorDecon(mdleaf);
+      preprocessor = std::make_unique<MultiTaperXcorDecon>(mdleaf);
       break;
     case CNR:
       mdleaf = md.get_branch("cnr");
       ValidateGIDLeafWindow(mdleaf, fftwin, "CNR", base_error);
-      cnrprocessor = new CNRDeconEngine(mdleaf);
+      cnrprocessor = std::make_unique<CNRDeconEngine>(mdleaf);
       break;
     case NS_GID:
     default:
       mdleaf = md.get_branch("ns_gid");
       ValidateGIDLeafWindow(mdleaf, fftwin, "NS-GID", base_error);
-      preprocessor = new NoiseStableDecon(mdleaf);
+      preprocessor = std::make_unique<NoiseStableDecon>(mdleaf);
       break;
     };
     external_wavelet_loaded = false;
@@ -114,10 +116,7 @@ FrequencyDomainGIDDecon::FrequencyDomainGIDDecon(const AntelopePf &mdtoplevel)
   };
 }
 
-FrequencyDomainGIDDecon::~FrequencyDomainGIDDecon() {
-  delete preprocessor;
-  delete cnrprocessor;
-}
+FrequencyDomainGIDDecon::~FrequencyDomainGIDDecon() {}
 
 void FrequencyDomainGIDDecon::invalidate_processing_state() {
   result.clear();
@@ -311,14 +310,14 @@ void FrequencyDomainGIDDecon::initialize_inverse_operator() {
   } else {
     if (decon_type == MULTI_TAPER) {
       if (external_noise_loaded) {
-        dynamic_cast<MultiTaperXcorDecon *>(preprocessor)
+        dynamic_cast<MultiTaperXcorDecon *>(preprocessor.get())
             ->loadnoise(external_noise.s);
       } else {
         CoreTimeSeries nts(ExtractComponent(n, noise_component));
-        dynamic_cast<MultiTaperXcorDecon *>(preprocessor)->loadnoise(nts.s);
+        dynamic_cast<MultiTaperXcorDecon *>(preprocessor.get())->loadnoise(nts.s);
       }
     } else if (decon_type == NS_GID) {
-      NoiseStableDecon *nsop = dynamic_cast<NoiseStableDecon *>(preprocessor);
+      NoiseStableDecon *nsop = dynamic_cast<NoiseStableDecon *>(preprocessor.get());
       if (external_noise_spectrum_loaded)
         nsop->loadnoise(external_noise_spectrum);
       else if (external_noise_loaded)
@@ -400,7 +399,7 @@ double FrequencyDomainGIDDecon::compute_ns_peak_threshold() {
   CoreSeismogram nwork(n);
   dmatrix uwork(nwork.u);
   uwork.zero();
-  NoiseStableDecon *nsop = dynamic_cast<NoiseStableDecon *>(preprocessor);
+  NoiseStableDecon *nsop = dynamic_cast<NoiseStableDecon *>(preprocessor.get());
   if (nsop == nullptr)
     return 0.0;
   for (int k = 0; k < 3; ++k) {
@@ -668,7 +667,7 @@ Metadata FrequencyDomainGIDDecon::QCMetrics() {
            (ns_noise_l2 > 0.0) ? resid_l2_final / ns_noise_l2 : 0.0);
     md.put("ns_gid_fractional_improvement_final",
            ns_fractional_improvement_final);
-    NoiseStableDecon *nsop = dynamic_cast<NoiseStableDecon *>(preprocessor);
+    NoiseStableDecon *nsop = dynamic_cast<NoiseStableDecon *>(preprocessor.get());
     if (nsop != nullptr) {
       Metadata nsmd(nsop->QCMetrics());
       md.put("ns_gid_gain_max_requested",

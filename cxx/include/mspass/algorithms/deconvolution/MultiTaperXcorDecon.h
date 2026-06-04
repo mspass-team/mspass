@@ -12,6 +12,13 @@
 #include <boost/serialization/vector.hpp>
 #include <vector>
 namespace mspass::algorithms::deconvolution {
+/*! \brief Multitaper source-power-stabilized deconvolution.
+
+This legacy class name is retained for source and ABI compatibility.  The
+current implementation is not a paper-faithful Park-Levin MTC estimator: it
+uses untapered source/data phase for the final inverse and uses multitaper
+source/noise spectra only to stabilize the power denominator.
+*/
 class MultiTaperXcorDecon : public FFTDeconOperator, public ScalarDecon {
 public:
   /*! Default constructor.  Do not use except for declarations. */

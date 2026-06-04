@@ -284,7 +284,11 @@ PYBIND11_MODULE(deconvolution, m) {
   py::class_<MultiTaperSpecDivDecon,ScalarDecon>(
     m,
     "MultiTaperSpecDivDecon",
-    "Multitaper power-stabilized spectral-division deconvolution operator")
+    "Compatibility name for the multitaper power-stabilized spectral-division "
+    "operator.  This is not a paper-faithful Park-Levin MTC estimator; the "
+    "current implementation applies an untapered source/data phase inverse "
+    "with a multitaper-stabilized power denominator.  Prefer the "
+    "MultiTaperPowerSpecDivDecon alias in new Python code.")
     .def(py::init<const Metadata>())
     .def("changeparameter",&MultiTaperSpecDivDecon::changeparameter,"Change operator parameters")
     .def("process",&MultiTaperSpecDivDecon::process,
@@ -335,7 +339,11 @@ PYBIND11_MODULE(deconvolution, m) {
   py::class_<MultiTaperXcorDecon,ScalarDecon>(
     m,
     "MultiTaperXcorDecon",
-    "Multitaper source-power-stabilized deconvolution operator")
+    "Compatibility name for the multitaper source-power-stabilized "
+    "deconvolution operator.  This is not a paper-faithful Park-Levin MTC "
+    "estimator; the current implementation applies an untapered source/data "
+    "phase inverse with a multitaper-stabilized source-power denominator.  "
+    "Prefer the MultiTaperPowerXcorDecon alias in new Python code.")
     .def(py::init<const Metadata>())
     .def("changeparameter",&MultiTaperXcorDecon::changeparameter,"Change operator parameters")
     .def("process",&MultiTaperXcorDecon::process,
@@ -422,6 +430,20 @@ PYBIND11_MODULE(deconvolution, m) {
     .def("inverse_wavelet",py::overload_cast<>(&TimeDomainGIDDecon::inverse_wavelet))
     .def("inverse_wavelet",py::overload_cast<double>(&TimeDomainGIDDecon::inverse_wavelet))
     .def("QCMetrics",&TimeDomainGIDDecon::QCMetrics,"Return QC metrics")
+    .def(py::pickle(
+      [](const TimeDomainGIDDecon &self) {
+        return py::make_tuple(self.configuration_pf_text());
+      },
+      [](py::tuple t) {
+        stringstream sstm(t[0].cast<std::string>());
+        string line;
+        list<string> pflines;
+        while (getline(sstm, line))
+          pflines.push_back(line);
+        AntelopePf pf(pflines);
+        return new TimeDomainGIDDecon(pf);
+      }
+    ))
   ;
 
   py::class_<FrequencyDomainGIDDecon,ScalarDecon>(m,"FrequencyDomainGIDDecon",
@@ -473,6 +495,20 @@ PYBIND11_MODULE(deconvolution, m) {
     .def("inverse_wavelet",py::overload_cast<>(&FrequencyDomainGIDDecon::inverse_wavelet))
     .def("inverse_wavelet",py::overload_cast<double>(&FrequencyDomainGIDDecon::inverse_wavelet))
     .def("QCMetrics",&FrequencyDomainGIDDecon::QCMetrics,"Return QC metrics")
+    .def(py::pickle(
+      [](const FrequencyDomainGIDDecon &self) {
+        return py::make_tuple(self.configuration_pf_text());
+      },
+      [](py::tuple t) {
+        stringstream sstm(t[0].cast<std::string>());
+        string line;
+        list<string> pflines;
+        while (getline(sstm, line))
+          pflines.push_back(line);
+        AntelopePf pf(pflines);
+        return new FrequencyDomainGIDDecon(pf);
+      }
+    ))
   ;
 
   py::class_<CNRDeconEngine,FFTDeconOperator>(m,"CNRDeconEngine",

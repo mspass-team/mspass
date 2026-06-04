@@ -55,6 +55,7 @@ TimeDomainGIDDecon::TimeDomainGIDDecon(const AntelopePf &mdtoplevel)
   the AntelopePf to parse this instead of raw antelope pfget
   C calls. */
   try {
+    config_pf_text = AntelopePfToText(mdtoplevel);
     AntelopePf md = mdtoplevel.get_branch("deconvolution_operator_type");
     AntelopePf mdgiter = md.get_branch("time_domain_gid_deconvolution");
     IterDeconType dct = ParseGIDDeconType(mdgiter, "TimeDomainGIDDecon");
@@ -104,12 +105,12 @@ TimeDomainGIDDecon::TimeDomainGIDDecon(const AntelopePf &mdtoplevel)
     case WATER_LEVEL:
       mdleaf = md.get_branch("water_level");
       ValidateGIDLeafWindow(mdleaf, fftwin, "water level", base_error);
-      preprocessor = new WaterLevelDecon(mdleaf);
+      preprocessor = std::make_unique<WaterLevelDecon>(mdleaf);
       break;
     case LEAST_SQ:
       mdleaf = md.get_branch("least_square");
       ValidateGIDLeafWindow(mdleaf, fftwin, "least square", base_error);
-      preprocessor = new LeastSquareDecon(mdleaf);
+      preprocessor = std::make_unique<LeastSquareDecon>(mdleaf);
       break;
     case MULTI_TAPER:
       mdleaf = md.get_branch("multi_taper");
@@ -133,18 +134,18 @@ TimeDomainGIDDecon::TimeDomainGIDDecon(const AntelopePf &mdtoplevel)
            << endl;
         throw MsPASSError(ss.str(), ErrorSeverity::Invalid);
       }
-      preprocessor = new MultiTaperXcorDecon(mdleaf);
+      preprocessor = std::make_unique<MultiTaperXcorDecon>(mdleaf);
       break;
     case CNR:
       mdleaf = md.get_branch("cnr");
       ValidateGIDLeafWindow(mdleaf, fftwin, "CNR", base_error);
-      cnrprocessor = new CNRDeconEngine(mdleaf);
+      cnrprocessor = std::make_unique<CNRDeconEngine>(mdleaf);
       break;
     case NS_GID:
     default:
       mdleaf = md.get_branch("ns_gid");
       ValidateGIDLeafWindow(mdleaf, fftwin, "NS-GID", base_error);
-      preprocessor = new NoiseStableDecon(mdleaf);
+      preprocessor = std::make_unique<NoiseStableDecon>(mdleaf);
       break;
     };
     /* Because this may evolve we make this a private method to
@@ -176,10 +177,7 @@ TimeDomainGIDDecon::TimeDomainGIDDecon(const AntelopePf &mdtoplevel)
     throw;
   };
 }
-TimeDomainGIDDecon::~TimeDomainGIDDecon() {
-  delete preprocessor;
-  delete cnrprocessor;
-}
+TimeDomainGIDDecon::~TimeDomainGIDDecon() {}
 
 void TimeDomainGIDDecon::invalidate_processing_state() {
   result.clear();
@@ -672,11 +670,11 @@ void TimeDomainGIDDecon::process() {
     if (decon_type == MULTI_TAPER) {
       process_stage = "load multitaper noise";
       if (external_noise_loaded) {
-        dynamic_cast<MultiTaperXcorDecon *>(preprocessor)
+        dynamic_cast<MultiTaperXcorDecon *>(preprocessor.get())
             ->loadnoise(external_noise.s);
       } else {
         CoreTimeSeries nts(ExtractComponent(n, noise_component));
-        dynamic_cast<MultiTaperXcorDecon *>(preprocessor)->loadnoise(nts.s);
+        dynamic_cast<MultiTaperXcorDecon *>(preprocessor.get())->loadnoise(nts.s);
       }
     }
     CoreTimeSeries srcwavelet;
@@ -703,7 +701,7 @@ void TimeDomainGIDDecon::process() {
     } else {
       if (decon_type == NS_GID) {
         process_stage = "NS-GID load inverse-operator noise";
-        NoiseStableDecon *nsop = dynamic_cast<NoiseStableDecon *>(preprocessor);
+        NoiseStableDecon *nsop = dynamic_cast<NoiseStableDecon *>(preprocessor.get());
         if (external_noise_spectrum_loaded)
           nsop->loadnoise(external_noise_spectrum);
         else if (external_noise_loaded)
@@ -1142,7 +1140,7 @@ Metadata TimeDomainGIDDecon::QCMetrics() {
            (ns_noise_l2 > 0.0) ? resid_l2_prev / ns_noise_l2 : 0.0);
     md.put("ns_gid_fractional_improvement_final",
            ns_fractional_improvement_final);
-    NoiseStableDecon *nsop = dynamic_cast<NoiseStableDecon *>(preprocessor);
+    NoiseStableDecon *nsop = dynamic_cast<NoiseStableDecon *>(preprocessor.get());
     if (nsop != nullptr) {
       Metadata nsmd(nsop->QCMetrics());
       md.put("ns_gid_gain_max_requested",

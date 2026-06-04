@@ -14,6 +14,7 @@
 #include "mspass/utility/Metadata.h"
 #include "mspass/utility/dmatrix.h"
 #include <list>
+#include <memory>
 #include <ostream>
 #include <string>
 #include <vector>
@@ -60,6 +61,7 @@ public:
   double deconvolution_window_end() const { return this->fftwin.end; };
   double noise_window_start() const { return this->nwin.start; };
   double noise_window_end() const { return this->nwin.end; };
+  std::string configuration_pf_text() const { return this->config_pf_text; };
   /*! \brief Load all needed data and process.
 
   This method is little more than a call to loadnoise followed
@@ -99,6 +101,7 @@ private:
   /* Save the TimeWindow objects that define the extent of d_all, d_decon,
   and n.   Some things need at least some of these downstream */
   mspass::algorithms::TimeWindow dwin, nwin, fftwin;
+  std::string config_pf_text;
   double target_dt;
   /*! For preprocessor algorithms that are scalar we specify which channel
   is used to define the noise for regularization */
@@ -121,8 +124,8 @@ private:
 
   /* This is a pointer to the BasicDeconOperator class used for preprocessing
   Classic use of inheritance to simplify the api. */
-  ScalarDecon *preprocessor;
-  CNRDeconEngine *cnrprocessor;
+  std::unique_ptr<ScalarDecon> preprocessor;
+  std::unique_ptr<CNRDeconEngine> cnrprocessor;
   mspass::seismic::TimeSeries current_wavelet;
   mspass::seismic::TimeSeries external_wavelet;
   mspass::seismic::TimeSeries external_noise;

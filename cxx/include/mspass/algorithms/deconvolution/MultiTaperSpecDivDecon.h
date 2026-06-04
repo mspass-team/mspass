@@ -13,6 +13,13 @@
 #include <boost/serialization/vector.hpp>
 #include <vector>
 namespace mspass::algorithms::deconvolution {
+/*! \brief Multitaper power-stabilized spectral-division deconvolution.
+
+This legacy class name is retained for source and ABI compatibility.  The
+current implementation is not a paper-faithful Park-Levin spectral-division
+estimator: it uses untapered source/data phase for the final inverse and uses
+multitaper source/noise spectra only to stabilize the power denominator.
+*/
 class MultiTaperSpecDivDecon : public FFTDeconOperator, public ScalarDecon {
 public:
   /*! Default constructor.   Do not use - only for declarations */

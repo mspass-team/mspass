@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
+import pickle
 import pytest
 from pathlib import Path
 
@@ -419,6 +420,30 @@ def test_TimeDomainGIDDecon_binding_and_wrapper():
         10.0 / 150.0,
         atol=1.0e-2,
     )
+
+
+def test_TimeDomainGIDDecon_engine_is_pickleable_for_wrapper_use():
+    data = _make_single_spike_convolution_data()
+    pf = pfread("./data/pf/TimeDomainGIDDecon.pf")
+    engine = TimeDomainGIDDecon(pf)
+    restored = pickle.loads(pickle.dumps(engine))
+
+    rf1 = TimeDomainGIDRFDecon(
+        Seismogram(data),
+        engine,
+        signal_window=TimeWindow(-10.0, 20.0),
+        noise_window=TimeWindow(-35.0, -5.0),
+    )
+    rf2 = TimeDomainGIDRFDecon(
+        Seismogram(data),
+        restored,
+        signal_window=TimeWindow(-10.0, 20.0),
+        noise_window=TimeWindow(-35.0, -5.0),
+    )
+
+    assert rf1.live
+    assert rf2.live
+    assert np.allclose(np.asarray(rf1.data), np.asarray(rf2.data))
 
 
 def test_TimeDomainGIDDecon_engine_reuse_is_stable():

@@ -13,6 +13,7 @@
 #include "mspass/utility/Metadata.h"
 #include "mspass/utility/dmatrix.h"
 #include <list>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -40,6 +41,7 @@ public:
   double deconvolution_window_end() const { return this->fftwin.end; };
   double noise_window_start() const { return this->nwin.start; };
   double noise_window_end() const { return this->nwin.end; };
+  std::string configuration_pf_text() const { return this->config_pf_text; };
   int load(const mspass::seismic::CoreSeismogram &d,
            mspass::algorithms::TimeWindow dwin,
            mspass::algorithms::TimeWindow nwin);
@@ -56,6 +58,7 @@ public:
 private:
   mspass::seismic::CoreSeismogram d_all, d_decon, r, n;
   mspass::algorithms::TimeWindow dwin, nwin, fftwin;
+  std::string config_pf_text;
   double target_dt;
   int ndwin, nnwin, noise_component;
   int actual_o_0, iter_count, iter_max;
@@ -63,8 +66,8 @@ private:
   double resid_l2_initial, resid_l2_prev, resid_l2_final;
   double resid_linf_initial, resid_linf_final;
   IterDeconType decon_type;
-  ScalarDecon *preprocessor;
-  CNRDeconEngine *cnrprocessor;
+  std::unique_ptr<ScalarDecon> preprocessor;
+  std::unique_ptr<CNRDeconEngine> cnrprocessor;
   mspass::seismic::TimeSeries current_wavelet;
   mspass::seismic::TimeSeries external_wavelet;
   mspass::seismic::TimeSeries external_noise;

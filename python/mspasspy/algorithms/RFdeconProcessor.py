@@ -257,9 +257,11 @@ class RFdeconProcessor:
         state = {
             "algorithm": self.algorithm,
             "pf": self.pf,
-            "_pf_text": self._pf_text,
-            "md": Metadata(self.md),
         }
+        if self.__is_3c_engine:
+            state["_pf_text"] = self._pf_text
+        else:
+            state["md"] = Metadata(self.md)
         attrs = ["dvector", "wvector", "nvector"]
         if self.__is_3c_engine:
             if hasattr(self, "wtimeseries"):

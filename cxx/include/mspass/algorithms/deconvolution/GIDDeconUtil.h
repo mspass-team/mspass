@@ -20,6 +20,8 @@ int GetIntDefault(const mspass::utility::Metadata &md, const std::string &key,
                   const int default_value);
 bool GetBoolDefault(const mspass::utility::Metadata &md,
                     const std::string &key, const bool default_value);
+std::string AntelopePfToText(const mspass::utility::AntelopePf &pf,
+                             const int indent = 0);
 std::vector<double> ThreeCAmplitudes(mspass::utility::dmatrix &d);
 void ValidateGIDLeafWindow(const mspass::utility::AntelopePf &mdleaf,
                            const mspass::algorithms::TimeWindow &fftwin,

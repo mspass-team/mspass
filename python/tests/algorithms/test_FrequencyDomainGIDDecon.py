@@ -3,6 +3,7 @@
 
 import pytest
 import numpy as np
+import pickle
 
 from mspasspy.ccore.algorithms.basic import TimeWindow
 from mspasspy.ccore.algorithms.deconvolution import FrequencyDomainGIDDecon
@@ -56,6 +57,30 @@ def test_FrequencyDomainGIDDecon_binding_and_wrapper():
     qc = rf["FrequencyDomainGIDDecon_properties"]
     assert qc["iteration_count"] > 0
     assert qc["residual_L2_final"] < qc["residual_L2_initial"]
+
+
+def test_FrequencyDomainGIDDecon_engine_is_pickleable_for_wrapper_use():
+    data = _make_single_spike_convolution_data()
+    pf = pfread("./data/pf/FrequencyDomainGIDDecon.pf")
+    engine = FrequencyDomainGIDDecon(pf)
+    restored = pickle.loads(pickle.dumps(engine))
+
+    rf1 = FrequencyDomainGIDRFDecon(
+        Seismogram(data),
+        engine,
+        signal_window=TimeWindow(-10.0, 20.0),
+        noise_window=TimeWindow(-35.0, -5.0),
+    )
+    rf2 = FrequencyDomainGIDRFDecon(
+        Seismogram(data),
+        restored,
+        signal_window=TimeWindow(-10.0, 20.0),
+        noise_window=TimeWindow(-35.0, -5.0),
+    )
+
+    assert rf1.live
+    assert rf2.live
+    assert np.allclose(np.asarray(rf1.data), np.asarray(rf2.data))
 
 
 def test_FrequencyDomainGIDDecon_validates_single_spike_recovery():

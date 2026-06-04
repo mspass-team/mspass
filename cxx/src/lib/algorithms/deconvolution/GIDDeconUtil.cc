@@ -3,8 +3,10 @@
 #include "mspass/utility/MsPASSError.h"
 #include "misc/blas.h"
 #include <algorithm>
+#include <boost/any.hpp>
 #include <cmath>
 #include <sstream>
+#include <typeinfo>
 
 namespace mspass::algorithms::deconvolution {
 using namespace std;
@@ -48,6 +50,79 @@ bool GetBoolDefault(const Metadata &md, const string &key,
   if (md.is_defined(key))
     return md.get_bool(key);
   return default_value;
+}
+
+namespace {
+string pf_value_to_text(const Metadata &md, const string &key) {
+  boost::any val(md.get_any(key));
+  if (val.type() == typeid(bool))
+    return boost::any_cast<bool>(val) ? "true" : "false";
+  if (val.type() == typeid(int))
+    return to_string(boost::any_cast<int>(val));
+  if (val.type() == typeid(long))
+    return to_string(boost::any_cast<long>(val));
+  if (val.type() == typeid(float)) {
+    ostringstream ss;
+    ss << static_cast<double>(boost::any_cast<float>(val));
+    string result(ss.str());
+    auto epos = result.find_first_of("eE");
+    if (epos != string::npos && result.find('.') == string::npos)
+      result.insert(epos, ".0");
+    else if (epos == string::npos && result.find('.') == string::npos)
+      result += ".0";
+    return result;
+  }
+  if (val.type() == typeid(double)) {
+    ostringstream ss;
+    ss.precision(17);
+    ss << boost::any_cast<double>(val);
+    string result(ss.str());
+    auto epos = result.find_first_of("eE");
+    if (epos != string::npos && result.find('.') == string::npos)
+      result.insert(epos, ".0");
+    else if (epos == string::npos && result.find('.') == string::npos)
+      result += ".0";
+    return result;
+  }
+  if (val.type() == typeid(string))
+    return boost::any_cast<string>(val);
+  throw MsPASSError("AntelopePfToText: unsupported Metadata type for key=" +
+                        key,
+                    ErrorSeverity::Invalid);
+}
+} // namespace
+
+string AntelopePfToText(const AntelopePf &pf, const int indent) {
+  const string pad(indent, ' ');
+  ostringstream ss;
+  vector<string> keys;
+  for (auto const &key : pf.keys())
+    keys.push_back(key);
+  sort(keys.begin(), keys.end());
+  for (auto const &key : keys)
+    ss << pad << key << " " << pf_value_to_text(pf, key) << "\n";
+
+  vector<string> tbl_keys;
+  for (auto const &key : pf.tbl_keys())
+    tbl_keys.push_back(key);
+  sort(tbl_keys.begin(), tbl_keys.end());
+  for (auto const &key : tbl_keys) {
+    ss << pad << key << " &Tbl{\n";
+    for (auto const &line : pf.get_tbl(key))
+      ss << pad << "    " << line << "\n";
+    ss << pad << "}\n";
+  }
+
+  vector<string> arr_keys;
+  for (auto const &key : pf.arr_keys())
+    arr_keys.push_back(key);
+  sort(arr_keys.begin(), arr_keys.end());
+  for (auto const &key : arr_keys) {
+    ss << pad << key << " &Arr{\n";
+    ss << AntelopePfToText(pf.get_branch(key), indent + 4);
+    ss << pad << "}\n";
+  }
+  return ss.str();
 }
 
 vector<double> ThreeCAmplitudes(dmatrix &d) {
