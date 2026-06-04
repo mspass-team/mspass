@@ -686,7 +686,9 @@ def RFdecon(
         is optional.   It can also be extracted from d depending on
         parameter file options.
         For GID algorithms, raw vectors are converted to a TimeSeries using
-        target_sample_interval and noise_window_start.
+        target_sample_interval and noise_window_start.  External PowerSpectrum
+        noise is supported only by the NS-GID inverse mode; other GID modes
+        require TimeSeries/vector noise or the configured noise window.
     :type noisedata:  None, TimeSeries, PowerSpectrum, or an iterable vector container
         (in MsPASS that means a python array, a numpy array, or a DoubleVector)
     :param wcomp:  When defined from Seismogram d the wavelet

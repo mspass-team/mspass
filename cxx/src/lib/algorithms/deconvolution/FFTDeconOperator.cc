@@ -214,6 +214,70 @@ void ValidatePowerSpectrumCoversDC(const PowerSpectrum &spectrum,
     throw MsPASSError(caller + ": noise PowerSpectrum must cover DC frequency",
                       ErrorSeverity::Invalid);
 }
+void ValidateGIDLeafOperatorMetadata(const Metadata &md,
+                                     const TimeWindow &fftwin,
+                                     const double target_dt,
+                                     const string &caller) {
+  static const vector<string> gid_level_keys{
+      "deconvolution_type",
+      "full_data_window_start",
+      "full_data_window_end",
+      "maximum_iterations",
+      "lag_weight_penalty_function",
+      "lag_weight_Linf_floor",
+      "lag_weight_rms_floor",
+      "residual_noise_rms_probability_floor",
+      "residual_fractional_improvement_floor",
+      "residual_ratio_floor",
+      "noise_component",
+      "ns_gid_peak_sigma_threshold",
+      "ns_gid_peak_probability_threshold",
+      "ns_gid_use_empirical_noise_threshold",
+      "ns_gid_residual_noise_ratio_floor",
+      "ns_gid_max_spikes",
+      "ns_gid_refit_interval",
+      "ns_gid_ridge_beta",
+      "ns_gid_external_wavelet_allowed"};
+  for (auto const &key : gid_level_keys) {
+    if (md.is_defined(key))
+      throw MsPASSError(caller + ": GID-level parameter " + key +
+                            " requires constructing a new GID engine; "
+                            "changeparameter only changes the current leaf "
+                            "inverse operator",
+                        ErrorSeverity::Invalid);
+  }
+  if (md.is_defined("deconvolution_data_window_start")) {
+    const double ts = md.get_double("deconvolution_data_window_start");
+    if (fabs(ts - fftwin.start) > 1.0e-10)
+      throw MsPASSError(caller + ": leaf deconvolution_data_window_start does "
+                                 "not match the GID deconvolution window",
+                        ErrorSeverity::Invalid);
+  }
+  if (md.is_defined("deconvolution_data_window_end")) {
+    const double te = md.get_double("deconvolution_data_window_end");
+    if (fabs(te - fftwin.end) > 1.0e-10)
+      throw MsPASSError(caller + ": leaf deconvolution_data_window_end does "
+                                 "not match the GID deconvolution window",
+                        ErrorSeverity::Invalid);
+  }
+  if (md.is_defined("target_sample_interval")) {
+    const double dt = md.get_double("target_sample_interval");
+    if (fabs(dt - target_dt) >
+        1.0e-6 * max(1.0, max(fabs(dt), fabs(target_dt))))
+      throw MsPASSError(caller + ": leaf target_sample_interval does not "
+                                 "match the GID target_sample_interval",
+                        ErrorSeverity::Invalid);
+  }
+}
+void ValidateExternalTimeSeriesSampleInterval(const TimeSeries &d,
+                                              const double target_dt,
+                                              const string &caller) {
+  if (fabs(d.dt() - target_dt) >
+      1.0e-6 * max(1.0, max(fabs(d.dt()), fabs(target_dt))))
+    throw MsPASSError(caller + ": external TimeSeries dt does not match "
+                               "target_sample_interval",
+                      ErrorSeverity::Invalid);
+}
 
 vector<double> ExtractLagWindow(ComplexArray &fft_buffer,
                                 const int output_length,

@@ -519,6 +519,16 @@ def test_TimeDomainGIDDecon_changeparameter_rejects_leaf_window_drift(tmp_path):
         engine.changeparameter(leaf_md)
 
 
+def test_TimeDomainGIDDecon_changeparameter_rejects_leaf_dt_drift():
+    pf = pfread("./data/pf/TimeDomainGIDDecon.pf")
+    engine = TimeDomainGIDDecon(pf)
+    leaf_md = pf.get_branch("deconvolution_operator_type").get_branch("least_square")
+    leaf_md["target_sample_interval"] = 0.1
+
+    with pytest.raises(MsPASSError, match="target_sample_interval"):
+        engine.changeparameter(leaf_md)
+
+
 def test_TimeDomainGIDDecon_changeparameter_rejects_gid_level_metadata():
     pf = pfread("./data/pf/TimeDomainGIDDecon.pf")
     engine = TimeDomainGIDDecon(pf)
@@ -528,6 +538,23 @@ def test_TimeDomainGIDDecon_changeparameter_rejects_gid_level_metadata():
 
     with pytest.raises(MsPASSError, match="GID-level"):
         engine.changeparameter(gid_md)
+
+
+@pytest.mark.parametrize(
+    "key,value",
+    [
+        ("residual_fractional_improvement_floor", 1.0e-3),
+        ("ns_gid_refit_interval", 2),
+    ],
+)
+def test_TimeDomainGIDDecon_changeparameter_rejects_gid_keys_on_leaf(key, value):
+    pf = pfread("./data/pf/TimeDomainGIDDecon.pf")
+    engine = TimeDomainGIDDecon(pf)
+    leaf_md = pf.get_branch("deconvolution_operator_type").get_branch("least_square")
+    leaf_md[key] = value
+
+    with pytest.raises(MsPASSError, match=key):
+        engine.changeparameter(leaf_md)
 
 
 def test_TimeDomainGIDDecon_accepts_legacy_cnr3c_mode_alias(tmp_path):

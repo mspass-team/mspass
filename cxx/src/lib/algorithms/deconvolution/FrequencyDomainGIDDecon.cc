@@ -79,40 +79,6 @@ bool get_bool_default_fd_gid(const Metadata &md, const string &key,
     return md.get_bool(key);
   return default_value;
 }
-bool has_frequency_gid_level_parameters(const Metadata &md) {
-  return md.is_defined("full_data_window_start") ||
-         md.is_defined("full_data_window_end") ||
-         md.is_defined("maximum_iterations") ||
-         md.is_defined("ns_gid_peak_sigma_threshold") ||
-         md.is_defined("residual_ratio_floor");
-}
-void validate_frequency_gid_leaf_window(const Metadata &md,
-                                        const TimeWindow &fftwin,
-                                        const string &caller) {
-  if (md.is_defined("deconvolution_data_window_start")) {
-    const double ts = md.get_double("deconvolution_data_window_start");
-    if (fabs(ts - fftwin.start) > 1.0e-10)
-      throw MsPASSError(caller + ": leaf deconvolution_data_window_start does "
-                                 "not match the GID deconvolution window",
-                        ErrorSeverity::Invalid);
-  }
-  if (md.is_defined("deconvolution_data_window_end")) {
-    const double te = md.get_double("deconvolution_data_window_end");
-    if (fabs(te - fftwin.end) > 1.0e-10)
-      throw MsPASSError(caller + ": leaf deconvolution_data_window_end does "
-                                 "not match the GID deconvolution window",
-                        ErrorSeverity::Invalid);
-  }
-}
-void validate_frequency_external_series_dt(const TimeSeries &d,
-                                           const double target_dt,
-                                           const string &caller) {
-  if (fabs(d.dt() - target_dt) >
-      1.0e-6 * max(1.0, max(fabs(d.dt()), fabs(target_dt))))
-    throw MsPASSError(caller + ": external TimeSeries dt does not match "
-                               "target_sample_interval",
-                      ErrorSeverity::Invalid);
-}
 void validate_leaf_window_fd(const AntelopePf &mdleaf, const TimeWindow &fftwin,
                              const string &leaf_name,
                              const string &base_error) {
@@ -338,14 +304,8 @@ FrequencyDomainGIDDecon::~FrequencyDomainGIDDecon() {
 }
 
 void FrequencyDomainGIDDecon::changeparameter(const Metadata &md) {
-  validate_frequency_gid_leaf_window(
-      md, fftwin, "FrequencyDomainGIDDecon::changeparameter");
-  if (has_frequency_gid_level_parameters(md))
-    throw MsPASSError("FrequencyDomainGIDDecon::changeparameter: GID-level "
-                      "window, iteration, and shaping parameters require "
-                      "constructing a new GID engine; this method only "
-                      "changes the current leaf inverse operator",
-                      ErrorSeverity::Invalid);
+  ValidateGIDLeafOperatorMetadata(
+      md, fftwin, target_dt, "FrequencyDomainGIDDecon::changeparameter");
   if (decon_type == CNR)
     cnrprocessor->changeparameter(md);
   else
@@ -388,7 +348,7 @@ int FrequencyDomainGIDDecon::loadwavelet(const TimeSeries &wavelet) {
     throw MsPASSError("FrequencyDomainGIDDecon::loadwavelet: external wavelet "
                       "is empty",
                       ErrorSeverity::Invalid);
-  validate_frequency_external_series_dt(
+  ValidateExternalTimeSeriesSampleInterval(
       wavelet, target_dt, "FrequencyDomainGIDDecon::loadwavelet");
   external_wavelet = wavelet;
   external_wavelet_loaded = true;
@@ -409,7 +369,7 @@ int FrequencyDomainGIDDecon::loadnoise(const TimeSeries &noise_in) {
     throw MsPASSError("FrequencyDomainGIDDecon::loadnoise: external noise is "
                       "empty",
                       ErrorSeverity::Invalid);
-  validate_frequency_external_series_dt(
+  ValidateExternalTimeSeriesSampleInterval(
       noise_in, target_dt, "FrequencyDomainGIDDecon::loadnoise");
   external_noise = noise_in;
   external_noise_loaded = true;

@@ -4,6 +4,7 @@
 #include "mspass/algorithms/deconvolution/ComplexArray.h"
 #include "mspass/seismic/CoreTimeSeries.h"
 #include "mspass/seismic/PowerSpectrum.h"
+#include "mspass/seismic/TimeSeries.h"
 #include "mspass/utility/Metadata.h"
 #include <boost/archive/text_iarchive.hpp>
 #include <boost/archive/text_oarchive.hpp>
@@ -126,6 +127,22 @@ int ComputeDeconSampleShift(const mspass::utility::Metadata &md);
  */
 void ValidatePowerSpectrumCoversDC(
     const mspass::seismic::PowerSpectrum &spectrum,
+    const std::string &caller);
+/*! Validate metadata passed through a GID engine to a leaf inverse operator.
+ *
+ * GID engines own the outer data/noise windows, target sample interval,
+ * iteration controls, and NS-GID stopping/refit controls.  A leaf inverse
+ * operator may be refreshed only if any supplied leaf window/sample-grid keys
+ * remain consistent with the parent GID engine and no GID-driver keys are
+ * included.
+ */
+void ValidateGIDLeafOperatorMetadata(
+    const mspass::utility::Metadata &md,
+    const mspass::algorithms::TimeWindow &fftwin, const double target_dt,
+    const std::string &caller);
+/*! Validate an external TimeSeries uses the configured deconvolution sample interval. */
+void ValidateExternalTimeSeriesSampleInterval(
+    const mspass::seismic::TimeSeries &d, const double target_dt,
     const std::string &caller);
 /*! Extract a non-circular output window from an inverse FFT work buffer.
  *
