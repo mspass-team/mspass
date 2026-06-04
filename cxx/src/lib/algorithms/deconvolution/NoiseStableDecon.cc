@@ -104,25 +104,8 @@ void NoiseStableDecon::loadnoise(const CoreTimeSeries &noise_in) {
 }
 
 void NoiseStableDecon::loadnoise(const PowerSpectrum &noise_spectrum_in) {
-  if (noise_spectrum_in.dead())
-    throw MsPASSError("NoiseStableDecon::loadnoise: noise PowerSpectrum is "
-                      "marked dead",
-                      ErrorSeverity::Invalid);
-  if (noise_spectrum_in.nf() < 2 || noise_spectrum_in.spectrum.size() < 2)
-    throw MsPASSError("NoiseStableDecon::loadnoise: noise PowerSpectrum is "
-                      "too short; at least two frequency bins are required",
-                      ErrorSeverity::Invalid);
-  if (noise_spectrum_in.df() <= 0.0)
-    throw MsPASSError("NoiseStableDecon::loadnoise: noise PowerSpectrum has "
-                      "nonpositive frequency spacing",
-                      ErrorSeverity::Invalid);
-  const double fmax =
-      noise_spectrum_in.f0() +
-      noise_spectrum_in.df() * static_cast<double>(noise_spectrum_in.nf() - 1);
-  if (noise_spectrum_in.f0() > 0.0 || fmax <= 0.0)
-    throw MsPASSError("NoiseStableDecon::loadnoise: noise PowerSpectrum must "
-                      "cover DC frequency",
-                      ErrorSeverity::Invalid);
+  ValidatePowerSpectrumCoversDC(noise_spectrum_in,
+                                "NoiseStableDecon::loadnoise");
   noise_spectrum = noise_spectrum_in;
   noise_spectrum_loaded = true;
   noise_vector_loaded = false;

@@ -215,6 +215,22 @@ def test_FrequencyDomainGIDDecon_rejects_invalid_external_noise_spectrum(tmp_pat
         engine.loadnoise(dc_at_last_bin_spectrum)
 
 
+def test_FrequencyDomainGIDDecon_rejects_multitaper_power_spectrum_noise(tmp_path):
+    pf = _pf_with_mode(
+        tmp_path,
+        "FrequencyDomainGIDDecon.pf",
+        "frequency_domain_gid_deconvolution",
+        "multi_taper",
+    )
+    engine = FrequencyDomainGIDDecon(pf)
+    spectrum = PowerSpectrum(
+        Metadata(), DoubleVector([1.0, 1.0, 1.0]), 1.0, "valid", -1.0, 1.0, 3
+    )
+
+    with pytest.raises(MsPASSError, match="not supported for multi_taper"):
+        engine.loadnoise(spectrum)
+
+
 def test_FrequencyDomainGIDDecon_rejects_dead_external_wavelet_and_noise(tmp_path):
     from mspasspy.ccore.seismic import TimeSeries
 
@@ -257,6 +273,17 @@ def test_FrequencyDomainGIDDecon_inverse_modes_are_valid(tmp_path, mode):
     assert qc["iteration_count"] > 0
     assert qc["residual_L2_final"] < qc["residual_L2_initial"]
     _assert_single_spike_recovery(rf, ratio_tolerance=5.0e-2)
+
+
+def test_FrequencyDomainGIDDecon_changeparameter_rejects_gid_level_metadata():
+    pf = pfread("./data/pf/FrequencyDomainGIDDecon.pf")
+    engine = FrequencyDomainGIDDecon(pf)
+    gid_md = pf.get_branch("deconvolution_operator_type").get_branch(
+        "frequency_domain_gid_deconvolution"
+    )
+
+    with pytest.raises(MsPASSError, match="GID-level"):
+        engine.changeparameter(gid_md)
 
 
 def test_FrequencyDomainGIDRFDecon_argument_validation():

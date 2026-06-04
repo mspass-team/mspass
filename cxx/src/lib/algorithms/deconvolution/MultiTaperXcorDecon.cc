@@ -61,10 +61,7 @@ int MultiTaperXcorDecon::read_metadata(const Metadata &md, bool refresh) {
     if (nfft_from_win != nfft) {
       this->change_size(nfft_from_win);
     }
-    const double dt_to_use = md.get_double("target_sample_interval");
-    const double dwinstart = md.get_double("deconvolution_data_window_start");
-    const int i0 = static_cast<int>(std::round(dwinstart / dt_to_use));
-    sample_shift = -i0;
+    sample_shift = ComputeDeconSampleShift(md);
     if (sample_shift < 0)
       throw MsPASSError(base_error +
                             "illegal sample_shift parameter - must be ge 0",

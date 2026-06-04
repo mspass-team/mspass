@@ -79,6 +79,13 @@ bool get_bool_default_fd_gid(const Metadata &md, const string &key,
     return md.get_bool(key);
   return default_value;
 }
+bool has_frequency_gid_level_parameters(const Metadata &md) {
+  return md.is_defined("full_data_window_start") ||
+         md.is_defined("full_data_window_end") ||
+         md.is_defined("maximum_iterations") ||
+         md.is_defined("ns_gid_peak_sigma_threshold") ||
+         md.is_defined("residual_ratio_floor");
+}
 void validate_leaf_window_fd(const AntelopePf &mdleaf, const TimeWindow &fftwin,
                              const string &leaf_name,
                              const string &base_error) {
@@ -304,6 +311,12 @@ FrequencyDomainGIDDecon::~FrequencyDomainGIDDecon() {
 }
 
 void FrequencyDomainGIDDecon::changeparameter(const Metadata &md) {
+  if (has_frequency_gid_level_parameters(md))
+    throw MsPASSError("FrequencyDomainGIDDecon::changeparameter: GID-level "
+                      "window, iteration, and shaping parameters require "
+                      "constructing a new GID engine; this method only "
+                      "changes the current leaf inverse operator",
+                      ErrorSeverity::Invalid);
   if (decon_type == CNR)
     cnrprocessor->changeparameter(md);
   else
@@ -385,28 +398,13 @@ int FrequencyDomainGIDDecon::loadnoise(const CoreTimeSeries &noise_in) {
 }
 
 int FrequencyDomainGIDDecon::loadnoise(const PowerSpectrum &noise_spectrum_in) {
-  if (noise_spectrum_in.dead())
-    throw MsPASSError(
-        "FrequencyDomainGIDDecon::loadnoise: noise PowerSpectrum is marked dead",
-        ErrorSeverity::Invalid);
-  if (noise_spectrum_in.nf() < 2 || noise_spectrum_in.spectrum.size() < 2)
-    throw MsPASSError(
-        "FrequencyDomainGIDDecon::loadnoise: noise PowerSpectrum is too short; "
-        "at least two frequency bins are required",
-        ErrorSeverity::Invalid);
-  if (noise_spectrum_in.df() <= 0.0)
-    throw MsPASSError(
-        "FrequencyDomainGIDDecon::loadnoise: noise PowerSpectrum has "
-        "nonpositive frequency spacing",
-        ErrorSeverity::Invalid);
-  const double fmax =
-      noise_spectrum_in.f0() +
-      noise_spectrum_in.df() * static_cast<double>(noise_spectrum_in.nf() - 1);
-  if (noise_spectrum_in.f0() > 0.0 || fmax <= 0.0)
-    throw MsPASSError(
-        "FrequencyDomainGIDDecon::loadnoise: noise PowerSpectrum must cover "
-        "DC frequency",
-        ErrorSeverity::Invalid);
+  if (decon_type == MULTI_TAPER)
+    throw MsPASSError("FrequencyDomainGIDDecon::loadnoise: external "
+                      "PowerSpectrum noise is not supported for multi_taper "
+                      "GID; pass a TimeSeries noise estimate",
+                      ErrorSeverity::Invalid);
+  ValidatePowerSpectrumCoversDC(noise_spectrum_in,
+                                "FrequencyDomainGIDDecon::loadnoise");
   external_noise_spectrum = noise_spectrum_in;
   external_noise_spectrum_loaded = true;
   external_noise_loaded = false;
@@ -454,8 +452,13 @@ void FrequencyDomainGIDDecon::initialize_inverse_operator() {
                   uwork.get_address(k, 0), 3);
   } else {
     if (decon_type == MULTI_TAPER) {
-      CoreTimeSeries nts(ExtractComponent(n, noise_component));
-      dynamic_cast<MultiTaperXcorDecon *>(preprocessor)->loadnoise(nts.s);
+      if (external_noise_loaded) {
+        dynamic_cast<MultiTaperXcorDecon *>(preprocessor)
+            ->loadnoise(external_noise.s);
+      } else {
+        CoreTimeSeries nts(ExtractComponent(n, noise_component));
+        dynamic_cast<MultiTaperXcorDecon *>(preprocessor)->loadnoise(nts.s);
+      }
     } else if (decon_type == NS_GID) {
       NoiseStableDecon *nsop = dynamic_cast<NoiseStableDecon *>(preprocessor);
       if (external_noise_spectrum_loaded)

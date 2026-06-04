@@ -298,6 +298,22 @@ def test_TimeDomainGIDDecon_rejects_invalid_external_noise_spectrum(tmp_path):
         engine.loadnoise(dc_at_last_bin_spectrum)
 
 
+def test_TimeDomainGIDDecon_rejects_multitaper_power_spectrum_noise(tmp_path):
+    pf = _pf_with_mode(
+        tmp_path,
+        "TimeDomainGIDDecon.pf",
+        "time_domain_gid_deconvolution",
+        "multi_taper",
+    )
+    engine = TimeDomainGIDDecon(pf)
+    spectrum = PowerSpectrum(
+        Metadata(), DoubleVector([1.0, 1.0, 1.0]), 1.0, "valid", -1.0, 1.0, 3
+    )
+
+    with pytest.raises(MsPASSError, match="not supported for multi_taper"):
+        engine.loadnoise(spectrum)
+
+
 def test_TimeDomainGIDDecon_rejects_dead_external_wavelet_and_noise(tmp_path):
     pf = _ns_gid_pf(
         tmp_path, "TimeDomainGIDDecon.pf", "time_domain_gid_deconvolution"
@@ -470,6 +486,17 @@ def test_TimeDomainGIDDecon_changeparameter_handles_cnr_mode(tmp_path):
     cnr_md["sample_shift"] = 100
 
     engine.changeparameter(cnr_md)
+
+
+def test_TimeDomainGIDDecon_changeparameter_rejects_gid_level_metadata():
+    pf = pfread("./data/pf/TimeDomainGIDDecon.pf")
+    engine = TimeDomainGIDDecon(pf)
+    gid_md = pf.get_branch("deconvolution_operator_type").get_branch(
+        "time_domain_gid_deconvolution"
+    )
+
+    with pytest.raises(MsPASSError, match="GID-level"):
+        engine.changeparameter(gid_md)
 
 
 def test_TimeDomainGIDDecon_accepts_legacy_cnr3c_mode_alias(tmp_path):

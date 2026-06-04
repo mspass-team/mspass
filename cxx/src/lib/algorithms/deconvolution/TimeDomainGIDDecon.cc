@@ -80,6 +80,13 @@ bool get_bool_default_gid(const Metadata &md, const string &key,
     return md.get_bool(key);
   return default_value;
 }
+bool has_gid_level_parameters(const Metadata &md) {
+  return md.is_defined("full_data_window_start") ||
+         md.is_defined("full_data_window_end") ||
+         md.is_defined("maximum_iterations") ||
+         md.is_defined("ns_gid_peak_sigma_threshold") ||
+         md.is_defined("lag_weight_penalty_function");
+}
 TimeDomainGIDDecon::TimeDomainGIDDecon(const AntelopePf &mdtoplevel)
     : ScalarDecon() {
   const string base_error("TimeDomainGIDDecon AntelopePf contructor:  ");
@@ -264,6 +271,19 @@ TimeDomainGIDDecon::TimeDomainGIDDecon(const AntelopePf &mdtoplevel)
 TimeDomainGIDDecon::~TimeDomainGIDDecon() {
   delete preprocessor;
   delete cnrprocessor;
+}
+
+void TimeDomainGIDDecon::changeparameter(const Metadata &md) {
+  if (has_gid_level_parameters(md))
+    throw MsPASSError("TimeDomainGIDDecon::changeparameter: GID-level "
+                      "window, iteration, and shaping parameters require "
+                      "constructing a new GID engine; this method only "
+                      "changes the current leaf inverse operator",
+                      ErrorSeverity::Invalid);
+  if (this->decon_type == CNR)
+    this->cnrprocessor->changeparameter(md);
+  else
+    this->preprocessor->changeparameter(md);
 }
 
 CoreTimeSeries TimeDomainGIDDecon::ideal_output() {
@@ -585,25 +605,13 @@ int TimeDomainGIDDecon::loadnoise(const CoreTimeSeries &noise_in) {
   return this->loadnoise(ts);
 }
 int TimeDomainGIDDecon::loadnoise(const PowerSpectrum &noise_spectrum_in) {
-  if (noise_spectrum_in.dead())
-    throw MsPASSError("TimeDomainGIDDecon::loadnoise: noise PowerSpectrum is "
-                      "marked dead",
+  if (decon_type == MULTI_TAPER)
+    throw MsPASSError("TimeDomainGIDDecon::loadnoise: external PowerSpectrum "
+                      "noise is not supported for multi_taper GID; pass a "
+                      "TimeSeries noise estimate",
                       ErrorSeverity::Invalid);
-  if (noise_spectrum_in.nf() < 2 || noise_spectrum_in.spectrum.size() < 2)
-    throw MsPASSError("TimeDomainGIDDecon::loadnoise: noise PowerSpectrum is "
-                      "too short; at least two frequency bins are required",
-                      ErrorSeverity::Invalid);
-  if (noise_spectrum_in.df() <= 0.0)
-    throw MsPASSError("TimeDomainGIDDecon::loadnoise: noise PowerSpectrum has "
-                      "nonpositive frequency spacing",
-                      ErrorSeverity::Invalid);
-  const double fmax =
-      noise_spectrum_in.f0() +
-      noise_spectrum_in.df() * static_cast<double>(noise_spectrum_in.nf() - 1);
-  if (noise_spectrum_in.f0() > 0.0 || fmax <= 0.0)
-    throw MsPASSError("TimeDomainGIDDecon::loadnoise: noise PowerSpectrum must "
-                      "cover DC frequency",
-                      ErrorSeverity::Invalid);
+  ValidatePowerSpectrumCoversDC(noise_spectrum_in,
+                                "TimeDomainGIDDecon::loadnoise");
   external_noise_spectrum = noise_spectrum_in;
   external_noise_spectrum_loaded = true;
   external_noise_loaded = false;
@@ -811,8 +819,13 @@ void TimeDomainGIDDecon::process() {
     algorithm though. */
     if (decon_type == MULTI_TAPER) {
       process_stage = "load multitaper noise";
-      CoreTimeSeries nts(ExtractComponent(n, noise_component));
-      dynamic_cast<MultiTaperXcorDecon *>(preprocessor)->loadnoise(nts.s);
+      if (external_noise_loaded) {
+        dynamic_cast<MultiTaperXcorDecon *>(preprocessor)
+            ->loadnoise(external_noise.s);
+      } else {
+        CoreTimeSeries nts(ExtractComponent(n, noise_component));
+        dynamic_cast<MultiTaperXcorDecon *>(preprocessor)->loadnoise(nts.s);
+      }
     }
     CoreTimeSeries srcwavelet;
     process_stage = "load source wavelet";

@@ -64,12 +64,7 @@ public:
   TimeDomainGIDDecon(const mspass::utility::AntelopePf &md);
   TimeDomainGIDDecon(const TimeDomainGIDDecon &parent) = delete;
   TimeDomainGIDDecon &operator=(const TimeDomainGIDDecon &parent) = delete;
-  void changeparameter(const mspass::utility::Metadata &md) {
-    if (this->decon_type == CNR)
-      this->cnrprocessor->changeparameter(md);
-    else
-      this->preprocessor->changeparameter(md);
-  };
+  void changeparameter(const mspass::utility::Metadata &md);
   int load(const mspass::seismic::CoreSeismogram &d,
            mspass::algorithms::TimeWindow dwin);
   int loadnoise(const mspass::seismic::CoreSeismogram &d,

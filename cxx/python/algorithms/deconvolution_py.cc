@@ -376,7 +376,8 @@ PYBIND11_MODULE(deconvolution, m) {
   py::class_<TimeDomainGIDDecon,ScalarDecon>(m,"TimeDomainGIDDecon",
       "Generalized iterative deconvolution operator for three-component receiver functions")
     .def(py::init<const AntelopePf&>())
-    .def("changeparameter",&TimeDomainGIDDecon::changeparameter,"Change operator parameters")
+    .def("changeparameter",&TimeDomainGIDDecon::changeparameter,
+      "Change leaf inverse-operator parameters")
     .def("process",&TimeDomainGIDDecon::process,"Process previously loaded data")
     .def("loadnoise",py::overload_cast<const CoreSeismogram&,mspass::algorithms::TimeWindow>(&TimeDomainGIDDecon::loadnoise),
       "Load noise data for regularization from a Seismogram window")
@@ -426,7 +427,8 @@ PYBIND11_MODULE(deconvolution, m) {
   py::class_<FrequencyDomainGIDDecon,ScalarDecon>(m,"FrequencyDomainGIDDecon",
       "Frequency-domain generalized iterative deconvolution operator for three-component receiver functions")
     .def(py::init<const AntelopePf&>())
-    .def("changeparameter",&FrequencyDomainGIDDecon::changeparameter,"Change operator parameters")
+    .def("changeparameter",&FrequencyDomainGIDDecon::changeparameter,
+      "Change leaf inverse-operator parameters")
     .def("process",&FrequencyDomainGIDDecon::process,"Process previously loaded data")
     .def("loadnoise",py::overload_cast<const CoreSeismogram&,mspass::algorithms::TimeWindow>(&FrequencyDomainGIDDecon::loadnoise),
       "Load noise data for regularization from a Seismogram window")

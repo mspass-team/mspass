@@ -25,11 +25,7 @@ FFTDeconOperator::FFTDeconOperator(const Metadata &md) {
      * position of the array.   Necessary because operators using this object
      * internally only return a raw vector of samples not a child of
      * BasicTimeSeries. */
-    double dt_to_use = md.get_double("target_sample_interval");
-    double dwinstart = md.get_double("deconvolution_data_window_start");
-    int i0 = round(dwinstart / dt_to_use);
-    /* sample shift is positive for a negative i0 */
-    this->sample_shift = (-i0);
+    this->sample_shift = ComputeDeconSampleShift(md);
     if (this->sample_shift < 0)
       throw MsPASSError(base_error +
                             "illegal sample_shift parameter - must be ge 0",
@@ -190,6 +186,33 @@ int ComputeFFTLength(const Metadata &md) {
   } catch (MetadataGetError &mde) {
     throw mde;
   };
+}
+int ComputeDeconSampleShift(const Metadata &md) {
+  double dt_to_use = md.get_double("target_sample_interval");
+  double dwinstart = md.get_double("deconvolution_data_window_start");
+  int i0 = round(dwinstart / dt_to_use);
+  return -i0;
+}
+void ValidatePowerSpectrumCoversDC(const PowerSpectrum &spectrum,
+                                   const string &caller) {
+  if (spectrum.dead())
+    throw MsPASSError(caller + ": noise PowerSpectrum is marked dead",
+                      ErrorSeverity::Invalid);
+  if (spectrum.nf() < 2 || spectrum.spectrum.size() < 2)
+    throw MsPASSError(caller +
+                          ": noise PowerSpectrum is too short; at least two "
+                          "frequency bins are required",
+                      ErrorSeverity::Invalid);
+  if (spectrum.df() <= 0.0)
+    throw MsPASSError(caller +
+                          ": noise PowerSpectrum has nonpositive frequency "
+                          "spacing",
+                      ErrorSeverity::Invalid);
+  const double fmax =
+      spectrum.f0() + spectrum.df() * static_cast<double>(spectrum.nf() - 1);
+  if (spectrum.f0() > 0.0 || fmax <= 0.0)
+    throw MsPASSError(caller + ": noise PowerSpectrum must cover DC frequency",
+                      ErrorSeverity::Invalid);
 }
 
 vector<double> ExtractLagWindow(ComplexArray &fft_buffer,
