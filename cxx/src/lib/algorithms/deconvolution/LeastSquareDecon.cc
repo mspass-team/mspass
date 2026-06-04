@@ -15,21 +15,23 @@ LeastSquareDecon::LeastSquareDecon(const LeastSquareDecon &parent)
 int LeastSquareDecon::read_metadata(const Metadata &md) {
   try {
     const string base_error("SimpleLeastTaperDecon::read_metadata method: ");
-    int nfft_from_win = ComputeFFTLength(md);
-    // window based nfft always overrides that extracted directly from md */
-    if (nfft_from_win != nfft) {
-      this->change_size(nfft_from_win);
-    }
-    damp = md.get_double("damping_factor");
-    if (damp <= 0.0) {
+    const int nfft_from_win = ComputeFFTLength(md);
+    const double new_damp = md.get_double("damping_factor");
+    if (new_damp <= 0.0) {
       throw MsPASSError(base_error +
                             "damping_factor must be positive.  A zero value "
                             "is an unstable undamped spectral division.",
                         ErrorSeverity::Invalid);
     }
+    ShapingWavelet new_shapingwavelet(md, nfft_from_win);
+    // window based nfft always overrides that extracted directly from md */
+    if (nfft_from_win != nfft) {
+      this->change_size(nfft_from_win);
+    }
+    damp = new_damp;
     /* Note this depends on nfft inheritance from FFTDeconOperator.
      * That is a bit error prone with changes*/
-    shapingwavelet = ShapingWavelet(md, nfft);
+    shapingwavelet = new_shapingwavelet;
     return 0;
   } catch (...) {
     throw;

@@ -85,7 +85,7 @@ private:
   load method for this object.  d_decon is the
   result of applying the preprocessor (signal processing) deconvolution to
   all three components. d_decon is computed from d, which is a windowed
-  version of the input data received by the load method.  It have a
+  version of the input data received by the load method.  It has a
   time duration less than or at least equal to that of d_all.
   r is the residual, which is accumulated during the iterative method.
   The time duration of r is the same as d.  It is initialized by
@@ -185,7 +185,7 @@ private:
   points and so can use a similar absolute scale. */
   double lw_linf_floor, lw_l2_floor;
   /* We use a probability level to define the floor Linf of the residual
-  matrix.   For L2 we use the conventional fractional improvment metric. */
+  matrix.   For L2 we use the conventional fractional improvement metric. */
   double resid_linf_prob, resid_linf_floor;
   double resid_l2_tol;
   double ns_peak_sigma_threshold, ns_peak_probability_threshold;

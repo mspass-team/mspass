@@ -14,19 +14,21 @@ WaterLevelDecon::WaterLevelDecon(const WaterLevelDecon &parent)
 int WaterLevelDecon::read_metadata(const Metadata &md) {
   try {
     const string base_error("SimpleLeastTaperDecon::read_metadata method: ");
-    int nfft_from_win = ComputeFFTLength(md);
-    // window based nfft always overrides that extracted directly from md */
-    if (nfft_from_win != FFTDeconOperator::nfft) {
-      this->change_size(nfft_from_win);
-    }
-    wlv = md.get_double("water_level");
-    if (wlv <= 0.0) {
+    const int nfft_from_win = ComputeFFTLength(md);
+    const double new_wlv = md.get_double("water_level");
+    if (new_wlv <= 0.0) {
       throw MsPASSError(base_error +
                             "water_level must be positive.  A zero value is "
                             "an unstable bare spectral division.",
                         ErrorSeverity::Invalid);
     }
-    shapingwavelet = ShapingWavelet(md, FFTDeconOperator::nfft);
+    ShapingWavelet new_shapingwavelet(md, nfft_from_win);
+    // window based nfft always overrides that extracted directly from md */
+    if (nfft_from_win != FFTDeconOperator::nfft) {
+      this->change_size(nfft_from_win);
+    }
+    wlv = new_wlv;
+    shapingwavelet = new_shapingwavelet;
     return 0;
   } catch (...) {
     throw;

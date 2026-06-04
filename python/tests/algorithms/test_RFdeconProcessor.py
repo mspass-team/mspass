@@ -122,6 +122,20 @@ def test_RFdeconProcessor():
     os.environ.pop("PFPATH", None)
 
 
+def test_RFdeconProcessor_gid_defaults_resolve_from_package_pf_path():
+    old_pfpath = os.environ.get("PFPATH")
+    os.environ["PFPATH"] = "python/mspasspy/data/pf"
+    try:
+        for alg in ("GeneralizedIterative", "TimeDomainGID", "FrequencyDomainGID"):
+            processor = RFdeconProcessor(alg=alg)
+            assert processor.is_3c_engine
+    finally:
+        if old_pfpath is None:
+            os.environ.pop("PFPATH", None)
+        else:
+            os.environ["PFPATH"] = old_pfpath
+
+
 def test_RFdecon():
     """
     Test program for RFdecon function.

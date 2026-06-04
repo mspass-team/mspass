@@ -291,11 +291,11 @@ void TimeDomainGIDDecon::changeparameter(const Metadata &md) {
   const bool cnr_mode(this->decon_type == CNR);
   ValidateGIDLeafOperatorMetadata(
       md, fftwin, target_dt, "TimeDomainGIDDecon::changeparameter", cnr_mode);
+  this->invalidate_processing_state();
   if (cnr_mode)
     this->cnrprocessor->changeparameter(md);
   else
     this->preprocessor->changeparameter(md);
-  this->invalidate_processing_state();
 }
 
 CoreTimeSeries TimeDomainGIDDecon::ideal_output() {
@@ -423,6 +423,9 @@ void rescale_spike_amplitude(ThreeCSpike &spk, const CoreSeismogram &target,
 
 int TimeDomainGIDDecon::load(const CoreSeismogram &draw, TimeWindow dwin_in) {
   try {
+    this->invalidate_processing_state();
+    d_all.kill();
+    ndwin = 0;
     if ((dwin_in.start > fftwin.start) || (dwin_in.end < fftwin.end)) {
       return 1;
     }
@@ -436,7 +439,6 @@ int TimeDomainGIDDecon::load(const CoreSeismogram &draw, TimeWindow dwin_in) {
     if (d_all.dead() || d_all.npts() <= 0)
       return 1;
     ndwin = d_all.npts();
-    this->invalidate_processing_state();
     return 0;
   } catch (...) {
     throw;
@@ -445,6 +447,10 @@ int TimeDomainGIDDecon::load(const CoreSeismogram &draw, TimeWindow dwin_in) {
 int TimeDomainGIDDecon::loadnoise(const CoreSeismogram &draw,
                                 TimeWindow nwin_in) {
   try {
+    this->invalidate_processing_state();
+    n.kill();
+    nnwin = 0;
+    ns_noise_components.clear();
     nwin = nwin_in;
     n = WindowData(draw, nwin);
     if (n.dead() || n.npts() <= 0)
@@ -458,17 +464,17 @@ int TimeDomainGIDDecon::loadnoise(const CoreSeismogram &draw,
         ncomp = WindowData(ncomp, nwin);
         ns_noise_components.push_back(ncomp.s);
       }
-      this->invalidate_processing_state();
       return 0;
     }
     this->compute_resid_linf_floor();
-    this->invalidate_processing_state();
     return 0;
   } catch (...) {
     throw;
   };
 }
 int TimeDomainGIDDecon::loadwavelet(const TimeSeries &wavelet) {
+  this->invalidate_processing_state();
+  external_wavelet_loaded = false;
   if (!external_wavelet_allowed)
     throw MsPASSError("TimeDomainGIDDecon::loadwavelet: external wavelets are "
                       "disabled by ns_gid_external_wavelet_allowed",
@@ -485,7 +491,6 @@ int TimeDomainGIDDecon::loadwavelet(const TimeSeries &wavelet) {
       wavelet, target_dt, "TimeDomainGIDDecon::loadwavelet");
   external_wavelet = wavelet;
   external_wavelet_loaded = true;
-  this->invalidate_processing_state();
   return 0;
 }
 int TimeDomainGIDDecon::loadwavelet(const CoreTimeSeries &wavelet) {
@@ -493,6 +498,12 @@ int TimeDomainGIDDecon::loadwavelet(const CoreTimeSeries &wavelet) {
   return this->loadwavelet(ts);
 }
 int TimeDomainGIDDecon::loadnoise(const TimeSeries &noise_in) {
+  this->invalidate_processing_state();
+  external_noise_loaded = false;
+  external_noise_spectrum_loaded = false;
+  ns_noise_components.clear();
+  n.kill();
+  nnwin = 0;
   if (noise_in.dead())
     throw MsPASSError("TimeDomainGIDDecon::loadnoise: external noise is "
                       "marked dead",
@@ -514,7 +525,6 @@ int TimeDomainGIDDecon::loadnoise(const TimeSeries &noise_in) {
   for (int k = 0; k < 3; ++k)
     cblas_dcopy(noise_in.npts(), &(noise_in.s[0]), 1, n.u.get_address(k, 0), 3);
   nnwin = n.npts();
-  this->invalidate_processing_state();
   return 0;
 }
 int TimeDomainGIDDecon::loadnoise(const CoreTimeSeries &noise_in) {
@@ -522,6 +532,10 @@ int TimeDomainGIDDecon::loadnoise(const CoreTimeSeries &noise_in) {
   return this->loadnoise(ts);
 }
 int TimeDomainGIDDecon::loadnoise(const PowerSpectrum &noise_spectrum_in) {
+  this->invalidate_processing_state();
+  external_noise_loaded = false;
+  external_noise_spectrum_loaded = false;
+  ns_noise_components.clear();
   if (decon_type != NS_GID)
     throw MsPASSError("TimeDomainGIDDecon::loadnoise: external PowerSpectrum "
                       "noise is only supported for ns_gid; pass a TimeSeries "
@@ -534,7 +548,6 @@ int TimeDomainGIDDecon::loadnoise(const PowerSpectrum &noise_spectrum_in) {
   external_noise_spectrum_loaded = true;
   external_noise_loaded = false;
   ns_noise_components.clear();
-  this->invalidate_processing_state();
   return 0;
 }
 void TimeDomainGIDDecon::clear_external_wavelet() {
@@ -720,10 +733,16 @@ void TimeDomainGIDDecon::process() {
   this->invalidate_processing_state();
   ns_stop_reason = (decon_type == NS_GID) ? "running" : "not_enabled";
   try {
+    if (d_all.dead() || d_all.npts() <= 0)
+      throw MsPASSError(base_error + "valid data window has not been loaded",
+                        ErrorSeverity::Invalid);
+    if (n.dead() || n.npts() <= 0)
+      throw MsPASSError(base_error + "valid noise window has not been loaded",
+                        ErrorSeverity::Invalid);
     /* We first have to run the signal processing style deconvolution.
     This is defined by the base pointer available through the symbol
-    preprocessor.   All those altorithms require load methods to be called
-    to initate the computation.  A complication is that the multitaper is
+    preprocessor.   All those algorithms require load methods to be called
+    to initiate the computation.  A complication is that the multitaper is
     different and requires a noise signal to also be loaded through loadnoise.
     That complicates this a bit below, but the flow of the algorithm should
     still be clear.   Outer loop is over the three components were we assemble
@@ -738,7 +757,7 @@ void TimeDomainGIDDecon::process() {
     dmatrix uwork(d_decon.u);
     uwork.zero();
     /* We assume loadnoise has been called previously to set put the
-    right data here. We need a scalar function to pass to the multtitaper
+    right data here. We need a scalar function to pass to the multitaper
     algorithm though. */
     if (decon_type == MULTI_TAPER) {
       process_stage = "load multitaper noise";

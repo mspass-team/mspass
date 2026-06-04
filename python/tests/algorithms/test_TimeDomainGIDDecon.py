@@ -549,6 +549,30 @@ def test_TimeDomainGIDDecon_changeparameter_invalidates_outer_state():
         engine.actual_output()
 
 
+def test_TimeDomainGIDDecon_failed_changeparameter_invalidates_without_poisoning_leaf():
+    data = _make_single_spike_convolution_data()
+    pf = pfread("./data/pf/TimeDomainGIDDecon.pf")
+    engine = TimeDomainGIDDecon(pf)
+    TimeDomainGIDRFDecon(
+        data,
+        engine,
+        signal_window=TimeWindow(-10.0, 20.0),
+        noise_window=TimeWindow(-35.0, -5.0),
+    )
+    assert dict(engine.QCMetrics())["gid_processed"] is True
+
+    leaf_md = pf.get_branch("deconvolution_operator_type").get_branch("least_square")
+    leaf_md["damping_factor"] = -1.0
+    with pytest.raises(MsPASSError, match="damping_factor"):
+        engine.changeparameter(leaf_md)
+
+    assert dict(engine.QCMetrics())["gid_processed"] is False
+    with pytest.raises(MsPASSError, match="process must be called first"):
+        engine.getresult()
+    engine.process()
+    assert dict(engine.QCMetrics())["gid_processed"] is True
+
+
 def test_TimeDomainGIDDecon_load_invalidates_outer_state():
     data = _make_single_spike_convolution_data()
     pf = pfread("./data/pf/TimeDomainGIDDecon.pf")
@@ -566,6 +590,27 @@ def test_TimeDomainGIDDecon_load_invalidates_outer_state():
     assert dict(engine.QCMetrics())["gid_processed"] is False
     with pytest.raises(MsPASSError, match="process must be called first"):
         engine.getresult()
+
+
+def test_TimeDomainGIDDecon_failed_load_invalidates_and_clears_old_data():
+    data = _make_single_spike_convolution_data()
+    pf = pfread("./data/pf/TimeDomainGIDDecon.pf")
+    engine = TimeDomainGIDDecon(pf)
+    TimeDomainGIDRFDecon(
+        data,
+        engine,
+        signal_window=TimeWindow(-10.0, 20.0),
+        noise_window=TimeWindow(-35.0, -5.0),
+    )
+    assert dict(engine.QCMetrics())["gid_processed"] is True
+
+    assert engine.load(data, TimeWindow(30.0, 40.0)) == 1
+
+    assert dict(engine.QCMetrics())["gid_processed"] is False
+    with pytest.raises(MsPASSError, match="process must be called first"):
+        engine.getresult()
+    with pytest.raises(MsPASSError, match="valid data window"):
+        engine.process()
 
 
 def test_TimeDomainGIDDecon_changeparameter_rejects_leaf_window_drift(tmp_path):

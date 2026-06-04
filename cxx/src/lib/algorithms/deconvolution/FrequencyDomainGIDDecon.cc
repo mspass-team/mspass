@@ -211,15 +211,18 @@ void FrequencyDomainGIDDecon::changeparameter(const Metadata &md) {
   ValidateGIDLeafOperatorMetadata(
       md, fftwin, target_dt, "FrequencyDomainGIDDecon::changeparameter",
       cnr_mode);
+  this->invalidate_processing_state();
   if (cnr_mode)
     cnrprocessor->changeparameter(md);
   else
     preprocessor->changeparameter(md);
-  this->invalidate_processing_state();
 }
 
 int FrequencyDomainGIDDecon::load(const CoreSeismogram &draw,
                                   TimeWindow dwin_in) {
+  this->invalidate_processing_state();
+  d_all.kill();
+  ndwin = 0;
   if ((dwin_in.start > fftwin.start) || (dwin_in.end < fftwin.end))
     return 1;
   dwin = dwin_in;
@@ -227,22 +230,25 @@ int FrequencyDomainGIDDecon::load(const CoreSeismogram &draw,
   if (d_all.dead() || d_all.npts() <= 0)
     return 1;
   ndwin = d_all.npts();
-  this->invalidate_processing_state();
   return 0;
 }
 
 int FrequencyDomainGIDDecon::loadnoise(const CoreSeismogram &draw,
                                        TimeWindow nwin_in) {
+  this->invalidate_processing_state();
+  n.kill();
+  nnwin = 0;
   nwin = nwin_in;
   n = WindowData(draw, nwin);
   if (n.dead() || n.npts() <= 0)
     return 1;
   nnwin = n.npts();
-  this->invalidate_processing_state();
   return 0;
 }
 
 int FrequencyDomainGIDDecon::loadwavelet(const TimeSeries &wavelet) {
+  this->invalidate_processing_state();
+  external_wavelet_loaded = false;
   if (!external_wavelet_allowed)
     throw MsPASSError("FrequencyDomainGIDDecon::loadwavelet: external "
                       "wavelets are disabled by "
@@ -260,7 +266,6 @@ int FrequencyDomainGIDDecon::loadwavelet(const TimeSeries &wavelet) {
       wavelet, target_dt, "FrequencyDomainGIDDecon::loadwavelet");
   external_wavelet = wavelet;
   external_wavelet_loaded = true;
-  this->invalidate_processing_state();
   return 0;
 }
 
@@ -270,6 +275,11 @@ int FrequencyDomainGIDDecon::loadwavelet(const CoreTimeSeries &wavelet) {
 }
 
 int FrequencyDomainGIDDecon::loadnoise(const TimeSeries &noise_in) {
+  this->invalidate_processing_state();
+  external_noise_loaded = false;
+  external_noise_spectrum_loaded = false;
+  n.kill();
+  nnwin = 0;
   if (noise_in.dead())
     throw MsPASSError("FrequencyDomainGIDDecon::loadnoise: external noise is "
                       "marked dead",
@@ -291,7 +301,6 @@ int FrequencyDomainGIDDecon::loadnoise(const TimeSeries &noise_in) {
   for (int k = 0; k < 3; ++k)
     cblas_dcopy(noise_in.npts(), &(noise_in.s[0]), 1, n.u.get_address(k, 0), 3);
   nnwin = n.npts();
-  this->invalidate_processing_state();
   return 0;
 }
 
@@ -301,6 +310,9 @@ int FrequencyDomainGIDDecon::loadnoise(const CoreTimeSeries &noise_in) {
 }
 
 int FrequencyDomainGIDDecon::loadnoise(const PowerSpectrum &noise_spectrum_in) {
+  this->invalidate_processing_state();
+  external_noise_loaded = false;
+  external_noise_spectrum_loaded = false;
   if (decon_type != NS_GID)
     throw MsPASSError("FrequencyDomainGIDDecon::loadnoise: external "
                       "PowerSpectrum noise is only supported for ns_gid; pass "
@@ -312,7 +324,6 @@ int FrequencyDomainGIDDecon::loadnoise(const PowerSpectrum &noise_spectrum_in) {
   external_noise_spectrum = noise_spectrum_in;
   external_noise_spectrum_loaded = true;
   external_noise_loaded = false;
-  this->invalidate_processing_state();
   return 0;
 }
 void FrequencyDomainGIDDecon::clear_external_wavelet() {
@@ -521,6 +532,12 @@ void FrequencyDomainGIDDecon::process() {
   this->invalidate_processing_state();
   ns_stop_reason = (decon_type == NS_GID) ? "running" : "not_enabled";
   try {
+    if (d_all.dead() || d_all.npts() <= 0)
+      throw MsPASSError(base_error + "valid data window has not been loaded",
+                        ErrorSeverity::Invalid);
+    if (n.dead() || n.npts() <= 0)
+      throw MsPASSError(base_error + "valid noise window has not been loaded",
+                        ErrorSeverity::Invalid);
     this->initialize_inverse_operator();
     process_stage = "compute NS-GID peak threshold";
     ns_peak_threshold = this->compute_ns_peak_threshold();
