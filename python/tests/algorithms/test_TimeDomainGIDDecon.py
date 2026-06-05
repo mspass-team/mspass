@@ -422,6 +422,10 @@ def test_TimeDomainGIDDecon_binding_and_wrapper():
     assert rf.is_defined("TimeDomainGIDDecon_properties")
     qc = rf["TimeDomainGIDDecon_properties"]
     assert qc["iteration_count"] > 0
+    assert qc["gid_actual_o_fir_npts"] > 0
+    assert 0 <= qc["gid_actual_o_fir_zero_lag_index"] < qc["gid_actual_o_fir_npts"]
+    assert qc["gid_actual_o_fir_peak_normalized"]
+    assert qc["gid_actual_o_fir_npts"] <= actual_output.npts
 
     # This broad multi-arrival synthetic is a wrapper smoke test.  Strict
     # vector-ratio validation is done below with the isolated single-spike

@@ -1189,6 +1189,10 @@ Metadata TimeDomainGIDDecon::QCMetrics() {
   md.put("residual_L2_final", resid_l2_prev);
   md.put("lag_weight_Linf_final", lw_linf_prev);
   md.put("lag_weight_L2_final", lw_l2_prev);
+  md.put("gid_actual_o_fir_npts", static_cast<int>(actual_o_fir.size()));
+  md.put("gid_actual_o_fir_zero_lag_index", actual_o_0);
+  md.put("gid_actual_o_fir_peak_normalized",
+         processed && !actual_o_fir.empty());
   md.put("ns_gid_enabled", decon_type == NS_GID);
   if (decon_type == NS_GID) {
     md.put("ns_gid_stop_reason", ns_stop_reason);

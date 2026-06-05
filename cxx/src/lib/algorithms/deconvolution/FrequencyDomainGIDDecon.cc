@@ -713,6 +713,10 @@ Metadata FrequencyDomainGIDDecon::QCMetrics() {
   md.put("residual_Linf_final", resid_linf_final);
   md.put("residual_L2_initial", resid_l2_initial);
   md.put("residual_L2_final", resid_l2_final);
+  md.put("gid_actual_o_fir_npts", static_cast<int>(actual_o_fir.size()));
+  md.put("gid_actual_o_fir_zero_lag_index", actual_o_0);
+  md.put("gid_actual_o_fir_peak_normalized",
+         processed && !actual_o_fir.empty());
   md.put("ns_gid_enabled", decon_type == NS_GID);
   if (decon_type == NS_GID) {
     md.put("ns_gid_stop_reason", ns_stop_reason);

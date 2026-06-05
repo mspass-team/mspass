@@ -65,6 +65,10 @@ def test_FrequencyDomainGIDDecon_binding_and_wrapper():
     qc = rf["FrequencyDomainGIDDecon_properties"]
     assert qc["iteration_count"] > 0
     assert qc["residual_L2_final"] < qc["residual_L2_initial"]
+    assert qc["gid_actual_o_fir_npts"] > 0
+    assert 0 <= qc["gid_actual_o_fir_zero_lag_index"] < qc["gid_actual_o_fir_npts"]
+    assert qc["gid_actual_o_fir_peak_normalized"]
+    assert qc["gid_actual_o_fir_npts"] <= actual_output.npts
 
 
 def test_FrequencyDomainGIDDecon_engine_is_pickleable_for_wrapper_use():
