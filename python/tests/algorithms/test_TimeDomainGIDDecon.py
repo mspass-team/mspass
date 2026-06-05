@@ -443,6 +443,23 @@ def test_TimeDomainGIDDecon_binding_and_wrapper():
     )
 
 
+def test_TimeDomainGIDRFDecon_uses_custom_algorithm_name_in_qc():
+    data = _make_single_spike_convolution_data()
+    pf = pfread("./data/pf/TimeDomainGIDDecon.pf")
+    engine = TimeDomainGIDDecon(pf)
+
+    rf = TimeDomainGIDRFDecon(
+        data,
+        engine,
+        signal_window=TimeWindow(-10.0, 20.0),
+        noise_window=TimeWindow(-35.0, -5.0),
+        alg_name="CustomTimeGID",
+    )
+
+    assert rf.live
+    assert rf["TimeDomainGIDDecon_properties"]["algorithm"] == "CustomTimeGID"
+
+
 def test_TimeDomainGIDDecon_engine_is_pickleable_for_wrapper_use():
     data = _make_single_spike_convolution_data()
     pf = pfread("./data/pf/TimeDomainGIDDecon.pf")

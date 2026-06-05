@@ -76,7 +76,7 @@ def TimeDomainGIDRFDecon(
         seis,
         engine,
         TimeDomainGIDDecon,
-        "TimeDomainGIDRFDecon",
+        alg_name,
         signal_window=signal_window,
         noise_window=noise_window,
         external_wavelet=external_wavelet,

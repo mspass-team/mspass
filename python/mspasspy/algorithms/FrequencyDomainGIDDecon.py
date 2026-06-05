@@ -58,7 +58,7 @@ def FrequencyDomainGIDRFDecon(
         seis,
         engine,
         FrequencyDomainGIDDecon,
-        "FrequencyDomainGIDRFDecon",
+        alg_name,
         signal_window=signal_window,
         noise_window=noise_window,
         external_wavelet=external_wavelet,

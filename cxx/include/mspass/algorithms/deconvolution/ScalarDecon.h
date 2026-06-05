@@ -48,7 +48,7 @@ public:
   /*! Load only the wavelet estimate.*/
   int loadwavelet(const std::vector<double> &wavelet);
   virtual void process() = 0;
-  ~ScalarDecon() {};
+  virtual ~ScalarDecon() {};
   ScalarDecon &operator=(const ScalarDecon &parent);
   std::vector<double> getresult() { return result; };
   /* This method does nothing, but needs to be defined to avoid

@@ -71,6 +71,26 @@ def test_FrequencyDomainGIDDecon_binding_and_wrapper():
     assert qc["gid_actual_o_fir_npts"] <= actual_output.npts
 
 
+def test_FrequencyDomainGIDRFDecon_uses_custom_algorithm_name_in_qc():
+    data = _make_single_spike_convolution_data()
+    pf = pfread("./data/pf/FrequencyDomainGIDDecon.pf")
+    engine = FrequencyDomainGIDDecon(pf)
+
+    rf = FrequencyDomainGIDRFDecon(
+        data,
+        engine,
+        signal_window=TimeWindow(-10.0, 20.0),
+        noise_window=TimeWindow(-35.0, -5.0),
+        alg_name="CustomFrequencyGID",
+    )
+
+    assert rf.live
+    assert (
+        rf["FrequencyDomainGIDDecon_properties"]["algorithm"]
+        == "CustomFrequencyGID"
+    )
+
+
 def test_FrequencyDomainGIDDecon_engine_is_pickleable_for_wrapper_use():
     data = _make_single_spike_convolution_data()
     pf = pfread("./data/pf/FrequencyDomainGIDDecon.pf")
