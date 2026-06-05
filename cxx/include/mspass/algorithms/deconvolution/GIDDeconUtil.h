@@ -26,6 +26,13 @@ void ValidatePositive(const double x, const std::string &key,
                       const std::string &caller);
 void ValidateNonnegative(const double x, const std::string &key,
                          const std::string &caller);
+void ValidatePositiveInteger(const int x, const std::string &key,
+                             const std::string &caller);
+void ValidateThreeComponentIndex(const int component, const std::string &key,
+                                 const std::string &caller);
+void PutPrefixedMetadata(mspass::utility::Metadata &target,
+                         const mspass::utility::Metadata &source,
+                         const std::string &prefix);
 std::string AntelopePfToText(const mspass::utility::AntelopePf &pf,
                              const int indent = 0);
 std::vector<double> ThreeCAmplitudes(mspass::utility::dmatrix &d);

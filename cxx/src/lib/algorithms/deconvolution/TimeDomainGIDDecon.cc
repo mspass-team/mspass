@@ -83,7 +83,9 @@ TimeDomainGIDDecon::TimeDomainGIDDecon(const AntelopePf &mdtoplevel)
       throw MsPASSError(ss.str(), ErrorSeverity::Invalid);
     }
     noise_component = mdgiter.get<int>("noise_component");
+    ValidateThreeComponentIndex(noise_component, "noise_component", base_error);
     target_dt = mdgiter.get<double>("target_sample_interval");
+    ValidatePositive(target_dt, "target_sample_interval", base_error);
     int maxns = static_cast<int>((fftwin.end - fftwin.start) / target_dt);
     ++maxns; // Add one - points not intervals
     int nfft = nextPowerOf2(maxns);
@@ -156,13 +158,18 @@ TimeDomainGIDDecon::TimeDomainGIDDecon(const AntelopePf &mdtoplevel)
     this->construct_weight_penalty_function(mdgiter);
     /* Set convergence parameters from md keys */
     iter_max = mdgiter.get<int>("maximum_iterations");
+    ValidatePositiveInteger(iter_max, "maximum_iterations", base_error);
     lw_linf_floor = mdgiter.get<double>("lag_weight_Linf_floor");
+    ValidateNonnegative(lw_linf_floor, "lag_weight_Linf_floor", base_error);
     lw_l2_floor = mdgiter.get<double>("lag_weight_rms_floor");
+    ValidateNonnegative(lw_l2_floor, "lag_weight_rms_floor", base_error);
     resid_linf_prob =
         mdgiter.get<double>("residual_noise_rms_probability_floor");
     ValidateProbability(resid_linf_prob, "residual_noise_rms_probability_floor",
                         base_error);
     resid_l2_tol = mdgiter.get<double>("residual_fractional_improvement_floor");
+    ValidateNonnegative(resid_l2_tol,
+                        "residual_fractional_improvement_floor", base_error);
     ns_peak_sigma_threshold =
         GetDoubleDefault(mdgiter, "ns_gid_peak_sigma_threshold", 4.0);
     ValidatePositive(ns_peak_sigma_threshold, "ns_gid_peak_sigma_threshold",
@@ -1158,7 +1165,7 @@ CoreSeismogram TimeDomainGIDDecon::getresult() {
 }
 Metadata TimeDomainGIDDecon::QCMetrics() {
   Metadata md;
-  md += changed_leaf_metadata;
+  PutPrefixedMetadata(md, changed_leaf_metadata, "gid_leaf_");
   md.put("gid_leaf_parameters_changed", leaf_parameters_changed);
   md.put("gid_processed", processed);
   md.put("iteration_count", iter_count);

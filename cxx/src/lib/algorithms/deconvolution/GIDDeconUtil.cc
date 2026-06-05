@@ -72,6 +72,45 @@ void ValidateNonnegative(const double x, const string &key,
                       ErrorSeverity::Invalid);
 }
 
+void ValidatePositiveInteger(const int x, const string &key,
+                             const string &caller) {
+  if (x <= 0)
+    throw MsPASSError(caller + ": " + key + " must be positive",
+                      ErrorSeverity::Invalid);
+}
+
+void ValidateThreeComponentIndex(const int component, const string &key,
+                                 const string &caller) {
+  if (component < 0 || component > 2)
+    throw MsPASSError(caller + ": " + key + " must be 0, 1, or 2",
+                      ErrorSeverity::Invalid);
+}
+
+void PutPrefixedMetadata(Metadata &target, const Metadata &source,
+                         const string &prefix) {
+  for (auto const &key : source.keys()) {
+    boost::any val(source.get_any(key));
+    const string prefixed_key(prefix + key);
+    if (val.type() == typeid(bool))
+      target.put(prefixed_key, boost::any_cast<bool>(val));
+    else if (val.type() == typeid(int))
+      target.put(prefixed_key, boost::any_cast<int>(val));
+    else if (val.type() == typeid(long))
+      target.put<long>(prefixed_key, boost::any_cast<long>(val));
+    else if (val.type() == typeid(float))
+      target.put<float>(prefixed_key, boost::any_cast<float>(val));
+    else if (val.type() == typeid(double))
+      target.put(prefixed_key, boost::any_cast<double>(val));
+    else if (val.type() == typeid(string))
+      target.put(prefixed_key, boost::any_cast<string>(val));
+    else
+      throw MsPASSError("PutPrefixedMetadata: unsupported Metadata type for "
+                            "key=" +
+                            key,
+                        ErrorSeverity::Invalid);
+  }
+}
+
 namespace {
 string pf_value_to_text(const Metadata &md, const string &key) {
   boost::any val(md.get_any(key));

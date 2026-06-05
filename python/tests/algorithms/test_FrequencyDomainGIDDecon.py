@@ -737,17 +737,44 @@ def test_FrequencyDomainGIDDecon_changeparameter_rejects_leaf_shaping_dt_drift()
         engine.changeparameter(leaf_md)
 
 
-def test_FrequencyDomainGIDDecon_rejects_invalid_ns_probability(tmp_path):
-    text = open("data/pf/FrequencyDomainGIDDecon.pf", encoding="utf-8").read()
-    pf = tmp_path / "FrequencyDomainGIDDecon.pf"
-    pf.write_text(
-        text.replace(
+@pytest.mark.parametrize(
+    "old,new,match",
+    [
+        (
             "ns_gid_peak_probability_threshold 0.995",
             "ns_gid_peak_probability_threshold 2.0",
-        )
-    )
+            "ns_gid_peak_probability_threshold",
+        ),
+        (
+            "maximum_iterations 100",
+            "maximum_iterations 0",
+            "maximum_iterations",
+        ),
+        (
+            "maximum_iterations 100",
+            "maximum_iterations -1",
+            "maximum_iterations",
+        ),
+        (
+            "noise_component 2",
+            "noise_component 3",
+            "noise_component",
+        ),
+        (
+            "noise_component 2",
+            "noise_component -1",
+            "noise_component",
+        ),
+    ],
+)
+def test_FrequencyDomainGIDDecon_rejects_invalid_top_level_parameters(
+    tmp_path, old, new, match
+):
+    text = open("data/pf/FrequencyDomainGIDDecon.pf", encoding="utf-8").read()
+    pf = tmp_path / "FrequencyDomainGIDDecon.pf"
+    pf.write_text(text.replace(old, new))
 
-    with pytest.raises(MsPASSError, match="ns_gid_peak_probability_threshold"):
+    with pytest.raises(MsPASSError, match=match):
         FrequencyDomainGIDDecon(pfread(str(pf)))
 
 

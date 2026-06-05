@@ -53,16 +53,23 @@ FrequencyDomainGIDDecon::FrequencyDomainGIDDecon(const AntelopePf &mdtoplevel)
                             "deconvolution window must be inside full window",
                         ErrorSeverity::Invalid);
     noise_component = mdgid.get<int>("noise_component");
+    ValidateThreeComponentIndex(noise_component, "noise_component", base_error);
     target_dt = mdgid.get<double>("target_sample_interval");
+    ValidatePositive(target_dt, "target_sample_interval", base_error);
     int maxns = static_cast<int>((fftwin.end - fftwin.start) / target_dt) + 1;
     int nfft = nextPowerOf2(maxns);
     mdgid.put("operator_nfft", nfft);
     this->ScalarDecon::changeparameter(mdgid);
     this->shapingwavelet = ShapingWavelet(mdgid, nfft);
     iter_max = mdgid.get<int>("maximum_iterations");
+    ValidatePositiveInteger(iter_max, "maximum_iterations", base_error);
     residual_ratio_floor = mdgid.get<double>("residual_ratio_floor");
+    ValidateNonnegative(residual_ratio_floor, "residual_ratio_floor",
+                        base_error);
     residual_improvement_floor =
         mdgid.get<double>("residual_fractional_improvement_floor");
+    ValidateNonnegative(residual_improvement_floor,
+                        "residual_fractional_improvement_floor", base_error);
 
     AntelopePf mdleaf;
     switch (decon_type) {
@@ -682,7 +689,7 @@ CoreSeismogram FrequencyDomainGIDDecon::getresult() {
 
 Metadata FrequencyDomainGIDDecon::QCMetrics() {
   Metadata md;
-  md += changed_leaf_metadata;
+  PutPrefixedMetadata(md, changed_leaf_metadata, "gid_leaf_");
   md.put("gid_leaf_parameters_changed", leaf_parameters_changed);
   md.put("gid_processed", processed);
   md.put("iteration_count", iter_count);

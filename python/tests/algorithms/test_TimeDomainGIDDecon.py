@@ -948,6 +948,26 @@ def test_TimeDomainGIDDecon_changeparameter_rejects_leaf_shaping_dt_drift():
             "lag_weight_function_width -3",
             "lag_weight_function_width",
         ),
+        (
+            "maximum_iterations 100",
+            "maximum_iterations 0",
+            "maximum_iterations",
+        ),
+        (
+            "maximum_iterations 100",
+            "maximum_iterations -1",
+            "maximum_iterations",
+        ),
+        (
+            "noise_component 2",
+            "noise_component 3",
+            "noise_component",
+        ),
+        (
+            "noise_component 2",
+            "noise_component -1",
+            "noise_component",
+        ),
     ],
 )
 def test_TimeDomainGIDDecon_rejects_invalid_probability_and_lag_parameters(
