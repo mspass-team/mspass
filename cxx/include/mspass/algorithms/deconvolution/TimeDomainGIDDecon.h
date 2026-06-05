@@ -82,12 +82,18 @@ public:
     return this->external_noise_spectrum_loaded;
   };
   mspass::seismic::TimeSeries loaded_external_wavelet() const {
+    if (!this->external_wavelet_loaded)
+      return mspass::seismic::TimeSeries();
     return this->external_wavelet;
   };
   mspass::seismic::TimeSeries loaded_external_noise() const {
+    if (!this->external_noise_loaded)
+      return mspass::seismic::TimeSeries();
     return this->external_noise;
   };
   mspass::seismic::PowerSpectrum loaded_external_noise_spectrum() const {
+    if (!this->external_noise_spectrum_loaded)
+      return mspass::seismic::PowerSpectrum();
     return this->external_noise_spectrum;
   };
   /*! \brief Load signal and residual-noise windows.

@@ -255,6 +255,7 @@ int FrequencyDomainGIDDecon::loadnoise(const TimeSeries &noise_in) {
   this->invalidate_processing_state();
   external_noise_loaded = false;
   external_noise_spectrum_loaded = false;
+  external_noise_spectrum = PowerSpectrum();
   external_noise = noise_in;
   external_noise_loaded = true;
   external_noise_spectrum_loaded = false;
@@ -290,6 +291,7 @@ int FrequencyDomainGIDDecon::loadnoise(const PowerSpectrum &noise_spectrum_in) {
   this->invalidate_processing_state();
   external_noise_loaded = false;
   external_noise_spectrum_loaded = false;
+  external_noise = TimeSeries();
   external_noise_spectrum = noise_spectrum_in;
   external_noise_spectrum_loaded = true;
   external_noise_loaded = false;
@@ -302,11 +304,14 @@ int FrequencyDomainGIDDecon::loadnoise(const PowerSpectrum &noise_spectrum_in) {
 }
 void FrequencyDomainGIDDecon::clear_external_wavelet() {
   external_wavelet_loaded = false;
+  external_wavelet = TimeSeries();
   this->invalidate_processing_state();
 }
 void FrequencyDomainGIDDecon::clear_external_noise() {
   external_noise_loaded = false;
   external_noise_spectrum_loaded = false;
+  external_noise = TimeSeries();
+  external_noise_spectrum = PowerSpectrum();
   if (residual_noise_from_external) {
     n.kill();
     nnwin = 0;

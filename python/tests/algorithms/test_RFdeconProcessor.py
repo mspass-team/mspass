@@ -927,6 +927,47 @@ def test_RFdeconProcessor_apply_3c_external_wavelet_is_dask_serializable(tmp_pat
     )
 
 
+def test_RFdeconProcessor_clear_external_state_drops_pickle_payload(tmp_path):
+    text = open("data/pf/TimeDomainGIDDecon.pf", encoding="utf-8").read()
+    text = text.replace(
+        "time_domain_gid_deconvolution &Arr{\n        deconvolution_type least_square",
+        "time_domain_gid_deconvolution &Arr{\n        deconvolution_type ns_gid",
+    )
+    pf = tmp_path / "TimeDomainGIDDecon.pf"
+    pf.write_text(text)
+
+    processor = RFdeconProcessor(alg="GeneralizedIterative", pf=str(pf))
+    baseline_size = len(pickle.dumps(processor))
+
+    large_wavelet = TimeSeries(50000)
+    large_wavelet.set_t0(-10.0)
+    large_wavelet.set_dt(0.05)
+    large_wavelet.set_live()
+    for i in range(large_wavelet.npts):
+        large_wavelet.data[i] = np.sin(0.01 * i)
+    processor.loadwavelet(large_wavelet, dtype="TimeSeries")
+    loaded_wavelet_size = len(pickle.dumps(processor))
+    assert loaded_wavelet_size > baseline_size + 100000
+
+    processor.clear_external_wavelet()
+    cleared_wavelet_size = len(pickle.dumps(processor))
+    assert cleared_wavelet_size < baseline_size * 2
+
+    large_noise = TimeSeries(50000)
+    large_noise.set_t0(-35.0)
+    large_noise.set_dt(0.05)
+    large_noise.set_live()
+    for i in range(large_noise.npts):
+        large_noise.data[i] = 0.01 * np.cos(0.02 * i)
+    processor.loadnoise(large_noise, dtype="TimeSeries")
+    loaded_noise_size = len(pickle.dumps(processor))
+    assert loaded_noise_size > baseline_size + 100000
+
+    processor.clear_external_noise()
+    cleared_noise_size = len(pickle.dumps(processor))
+    assert cleared_noise_size < baseline_size * 2
+
+
 def test_RFdeconProcessor_clear_external_methods_are_gid_only():
     os.environ["PFPATH"] = "./data/pf"
     try:

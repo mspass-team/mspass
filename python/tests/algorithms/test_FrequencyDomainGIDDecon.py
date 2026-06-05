@@ -223,6 +223,60 @@ def test_FrequencyDomainGIDDecon_pickle_preserves_external_wavelet_and_noise(tmp
     assert qc_spectrum["ns_gid_external_noise_spectrum_used"]
 
 
+def test_FrequencyDomainGIDDecon_clear_external_state_drops_pickle_payload(
+    tmp_path,
+):
+    pf = _ns_gid_pf(
+        tmp_path,
+        "FrequencyDomainGIDDecon.pf",
+        "frequency_domain_gid_deconvolution",
+    )
+    engine = FrequencyDomainGIDDecon(pf)
+    baseline_size = len(pickle.dumps(engine))
+
+    large_wavelet = _make_external_noise(npts=50000)
+    engine.loadwavelet(large_wavelet)
+    loaded_wavelet_size = len(pickle.dumps(engine))
+    assert loaded_wavelet_size > baseline_size + 100000
+
+    engine.clear_external_wavelet()
+    cleared_wavelet_size = len(pickle.dumps(engine))
+    assert cleared_wavelet_size < baseline_size * 2
+
+    large_noise = _make_external_noise(npts=50000)
+    engine.loadnoise(large_noise)
+    loaded_noise_size = len(pickle.dumps(engine))
+    assert loaded_noise_size > baseline_size + 100000
+
+    engine.clear_external_noise()
+    cleared_noise_size = len(pickle.dumps(engine))
+    assert cleared_noise_size < baseline_size * 2
+
+
+def test_FrequencyDomainGIDDecon_switching_external_noise_drops_inactive_payload(
+    tmp_path,
+):
+    pf = _ns_gid_pf(
+        tmp_path,
+        "FrequencyDomainGIDDecon.pf",
+        "frequency_domain_gid_deconvolution",
+    )
+    engine = FrequencyDomainGIDDecon(pf)
+    baseline_size = len(pickle.dumps(engine))
+
+    engine.loadnoise(_make_external_noise(npts=50000))
+    loaded_timeseries_size = len(pickle.dumps(engine))
+    assert loaded_timeseries_size > baseline_size + 100000
+
+    engine.loadnoise(
+        PowerSpectrum(
+            Metadata(), DoubleVector([1.0, 1.0, 1.0]), 1.0, "valid", -1.0, 1.0, 3
+        )
+    )
+    spectrum_size = len(pickle.dumps(engine))
+    assert spectrum_size < baseline_size * 2
+
+
 def test_FrequencyDomainGIDDecon_powerspectrum_noise_still_requires_residual_noise(
     tmp_path,
 ):
