@@ -349,8 +349,13 @@ void FrequencyDomainGIDDecon::initialize_inverse_operator() {
     srcwavelet = CoreTimeSeries(ExtractComponent(d_decon, 2));
   current_wavelet = TimeSeries(srcwavelet, "FrequencyDomainGIDDecon");
   if (decon_type == CNR) {
-    TimeSeries nwavelet(ExtractComponent(n, noise_component),
-                        "FrequencyDomainGIDDecon");
+    TimeSeries nwavelet;
+    if (external_noise_loaded)
+      nwavelet = TimeSeries(external_noise);
+    else
+      nwavelet =
+          TimeSeries(ExtractComponent(n, noise_component),
+                     "FrequencyDomainGIDDecon");
     cnrprocessor->initialize_inverse_operator(current_wavelet, nwavelet);
     PowerSpectrum psnoise(cnrprocessor->compute_noise_spectrum(nwavelet));
     Seismogram dwork(d_decon);

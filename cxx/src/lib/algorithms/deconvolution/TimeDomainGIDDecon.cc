@@ -748,8 +748,13 @@ void TimeDomainGIDDecon::process() {
     current_wavelet = TimeSeries(srcwavelet, "TimeDomainGIDDecon");
     if (decon_type == CNR) {
       process_stage = "CNR preprocessing";
-      TimeSeries nwavelet(ExtractComponent(n, noise_component),
-                          "TimeDomainGIDDecon");
+      TimeSeries nwavelet;
+      if (external_noise_loaded)
+        nwavelet = TimeSeries(external_noise);
+      else
+        nwavelet =
+            TimeSeries(ExtractComponent(n, noise_component),
+                       "TimeDomainGIDDecon");
       cnrprocessor->initialize_inverse_operator(current_wavelet, nwavelet);
       Seismogram dwork(d_decon);
       PowerSpectrum psnoise(cnrprocessor->compute_noise_spectrum(nwavelet));

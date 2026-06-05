@@ -557,6 +557,32 @@ def test_FrequencyDomainGIDDecon_inverse_modes_are_valid(tmp_path, mode):
     _assert_single_spike_recovery(rf, ratio_tolerance=5.0e-2)
 
 
+def test_FrequencyDomainGIDDecon_cnr_honors_external_noise(tmp_path):
+    data = _make_single_spike_convolution_data()
+    pf = _pf_with_mode(
+        tmp_path,
+        "FrequencyDomainGIDDecon.pf",
+        "frequency_domain_gid_deconvolution",
+        "cnr",
+    )
+
+    outputs = []
+    for scale in (0.1, 100.0):
+        engine = FrequencyDomainGIDDecon(pf)
+        rf = FrequencyDomainGIDRFDecon(
+            Seismogram(data),
+            engine,
+            signal_window=TimeWindow(-10.0, 20.0),
+            noise_window=TimeWindow(-35.0, -5.0),
+            external_noise=_make_external_noise(npts=600, scale=scale),
+        )
+        _assert_valid_rf(rf)
+        outputs.append(np.asarray(rf.data, dtype=np.float64))
+
+    difference_norm = np.linalg.norm(outputs[0] - outputs[1])
+    assert difference_norm / np.linalg.norm(outputs[0]) > 1.0e-3
+
+
 def test_FrequencyDomainGIDDecon_changeparameter_rejects_gid_level_metadata():
     pf = pfread("./data/pf/FrequencyDomainGIDDecon.pf")
     engine = FrequencyDomainGIDDecon(pf)
