@@ -7,7 +7,10 @@ import pickle
 import cloudpickle
 import numpy as np
 import pytest
-from distributed.protocol import deserialize, serialize
+
+distributed_protocol = pytest.importorskip("distributed.protocol")
+deserialize = distributed_protocol.deserialize
+serialize = distributed_protocol.serialize
 
 # needed to access the helper module
 sys.path.append("python/tests")
@@ -28,7 +31,7 @@ from decon_data_generators import (
 from mspasspy.algorithms.window import WindowData
 from mspasspy.algorithms.RFdeconProcessor import RFdeconProcessor, RFdecon
 from mspasspy.ccore.seismic import Seismogram, TimeSeries
-from mspasspy.ccore.utility import AntelopePf, Metadata, MsPASSError
+from mspasspy.ccore.utility import AntelopePf, ErrorSeverity, Metadata, MsPASSError
 from mspasspy.algorithms.basic import ExtractComponent
 from mspasspy.util.seismic import print_metadata
 
@@ -744,8 +747,9 @@ def test_RFdeconProcessor_malformed_preferred_multitaper_branch_does_not_fallbac
     pf = tmp_path / "RFdeconProcessor_bad_preferred.pf"
     pf.write_text(pf_text)
 
-    with pytest.raises(MsPASSError, match=expected_message):
+    with pytest.raises(MsPASSError, match=expected_message) as excinfo:
         RFdeconProcessor(alg=preferred_alg, pf=str(pf))
+    assert excinfo.value.severity == ErrorSeverity.Fatal
 
 
 @pytest.mark.parametrize(

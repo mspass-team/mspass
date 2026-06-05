@@ -88,6 +88,38 @@ window is used.  The analysis window must contain the configured
 deconvolution/inverse-operator window; otherwise the wrapper returns a killed
 datum instead of processing a partial window.
 
+Noise Semantics
+---------------
+
+The word "noise" appears in several deconvolution APIs, but it does not always
+mean the same mathematical object.  Keeping these roles separate is important
+when building reusable processors for Dask or Spark jobs:
+
+``source/wavelet noise``
+    Noise used to stabilize the inverse operator denominator.  Multitaper,
+    CNR, and NS-GID use this information to avoid excessive inverse gain in
+    weak or noisy source-wavelet bands.  This noise controls the inverse
+    operator, not the target trace itself.
+
+``target/data noise``
+    Noise already present in the component being deconvolved.  Any inverse
+    filter can amplify this noise.  Stable scalar operators reduce that
+    amplification indirectly by regularizing the source-wavelet inverse, but
+    they do not explicitly separate every target-trace noise component.
+
+``residual-domain noise``
+    Noise used by iterative methods to decide whether another sparse spike is
+    significant and when iteration should stop.  In GID/NS-GID this is a
+    stopping and candidate-acceptance quantity.  It is conceptually separate
+    from the frequency-domain noise spectrum used to build the inverse
+    operator.
+
+For NS-GID, an external ``TimeSeries`` noise estimate can serve both as the
+inverse-operator noise estimate and, when explicitly loaded as residual noise,
+the residual-domain stopping estimate.  An external ``PowerSpectrum`` noise
+estimate can only regularize the inverse operator; a residual-domain noise
+window is still required for spike significance and residual-noise stopping.
+
 Scalar inverse operators
 ------------------------
 

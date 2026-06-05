@@ -65,17 +65,17 @@ int MultiTaperXcorDecon::read_metadata(const Metadata &md, bool refresh) {
     if (sample_shift < 0)
       throw MsPASSError(base_error +
                             "illegal sample_shift parameter - must be ge 0",
-                        ErrorSeverity::Invalid);
+                        ErrorSeverity::Fatal);
     if (sample_shift > nfft)
       throw MsPASSError(base_error +
                             "computed sample_shift exceeds length of fft",
-                        ErrorSeverity::Invalid);
+                        ErrorSeverity::Fatal);
     damp = md.get_double("damping_factor");
     if (damp <= 0.0) {
       throw MsPASSError(base_error +
                             "damping_factor must be positive to regularize "
                             "multitaper spectral division.",
-                        ErrorSeverity::Invalid);
+                        ErrorSeverity::Fatal);
     }
     nw = md.get_double("time_bandwidth_product");
     /* Wang originally had this as nw*2-2 but Park and Levin say
@@ -88,7 +88,7 @@ int MultiTaperXcorDecon::read_metadata(const Metadata &md, bool refresh) {
       throw MsPASSError(base_error +
                             "number_tapers must be between 1 and "
                             "2*time_bandwidth_product",
-                        ErrorSeverity::Invalid);
+                        ErrorSeverity::Fatal);
     }
     int seql = nseq - 1;
     bool parameters_changed(false);

@@ -75,7 +75,7 @@ def _get_pf_branch_with_legacy_fallback(pfhandle, preferred, legacy):
     if preferred in pfhandle.tbl_keys() or pfhandle.is_defined(preferred):
         raise MsPASSError(
             f"{preferred} is defined but is not an &Arr parameter branch",
-            ErrorSeverity.Invalid,
+            ErrorSeverity.Fatal,
         )
     return Metadata(pfhandle.get_branch(legacy))
 
@@ -580,6 +580,8 @@ class RFdeconProcessor:
         try:
             load_status = self.processor.load(d, self.full_dwin, self.nwin)
         except MsPASSError as err:
+            if err.severity == ErrorSeverity.Fatal:
+                raise
             raise MsPASSError(
                 "RFdeconProcessor.apply_3c: configured signal/noise windows "
                 "could not be loaded from input data: {}".format(str(err)),
@@ -910,7 +912,7 @@ def RFdecon(
         implemented via the mspass_func_wrapper decorator.
     :param alg_name:   When history is enabled this is the algorithm name
         assigned to the stamp for applying this algorithm.
-        Default ("WindowData") should normally be just used.
+        Default ("RFdecon") should normally be used.
         Note this functionality is implemented via the mspass_func_wrapper decorator.
     :param alg_id:  algorithm id to assign to history record (used only if
         object_history is set True.)
@@ -976,6 +978,8 @@ def RFdecon(
             result[QCdocument_key] = subdoc
             return result
         except MsPASSError as err:
+            if err.severity == ErrorSeverity.Fatal:
+                raise
             d.kill()
             d.elog.log_error(err)
             return d
@@ -996,6 +1000,8 @@ def RFdecon(
             else:
                 processor.loadnoise(d, window=True, component=ncomp)
     except MsPASSError as err:
+        if err.severity == ErrorSeverity.Fatal:
+            raise
         d.kill()
         d.elog.log_error(err)
         return d
@@ -1032,6 +1038,8 @@ def RFdecon(
                 )
                 result.elog.log_error("RFdecon", message, ErrorSeverity.Complaint)
     except MsPASSError as err:
+        if err.severity == ErrorSeverity.Fatal:
+            raise
         result.kill()
         result.elog.log_error(err)
     except Exception as err:

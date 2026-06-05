@@ -48,6 +48,9 @@ FrequencyDomainGIDDecon::FrequencyDomainGIDDecon(const AntelopePf &mdtoplevel)
                         mdgid.get<double>("deconvolution_data_window_end"));
     nwin = TimeWindow(mdgid.get<double>("noise_window_start"),
                       mdgid.get<double>("noise_window_end"));
+    ValidateWindowDuration(dwin, "full_data_window", base_error);
+    ValidateWindowDuration(fftwin, "deconvolution_data_window", base_error);
+    ValidateWindowDuration(nwin, "noise_window", base_error);
     if (fftwin.start < dwin.start || fftwin.end > dwin.end)
       throw MsPASSError(base_error +
                             "deconvolution window must be inside full window",
@@ -125,11 +128,11 @@ FrequencyDomainGIDDecon::FrequencyDomainGIDDecon(const AntelopePf &mdtoplevel)
     ns_max_spikes = GetIntDefault(mdgid, "ns_gid_max_spikes", 0);
     if (ns_max_spikes < 0)
       throw MsPASSError(base_error + "ns_gid_max_spikes must be nonnegative",
-                        ErrorSeverity::Invalid);
+                        ErrorSeverity::Fatal);
     ns_refit_interval = GetIntDefault(mdgid, "ns_gid_refit_interval", 5);
     if (ns_refit_interval < 1)
       throw MsPASSError(base_error + "ns_gid_refit_interval must be positive",
-                        ErrorSeverity::Invalid);
+                        ErrorSeverity::Fatal);
     ns_ridge_beta =
         GetDoubleDefault(mdgid, "ns_gid_ridge_beta", 1.0e-10);
     ValidateNonnegative(ns_ridge_beta, "ns_gid_ridge_beta", base_error);

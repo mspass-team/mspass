@@ -70,6 +70,9 @@ TimeDomainGIDDecon::TimeDomainGIDDecon(const AntelopePf &mdtoplevel)
     ts = mdgiter.get<double>("noise_window_start");
     te = mdgiter.get<double>("noise_window_end");
     nwin = TimeWindow(ts, te);
+    ValidateWindowDuration(dwin, "full_data_window", base_error);
+    ValidateWindowDuration(fftwin, "deconvolution_data_window", base_error);
+    ValidateWindowDuration(nwin, "noise_window", base_error);
     /* We need to make sure the noise and decon windows are inside the
      * full_data_window*/
     if (fftwin.start < dwin.start || fftwin.end > dwin.end) {
@@ -187,11 +190,11 @@ TimeDomainGIDDecon::TimeDomainGIDDecon(const AntelopePf &mdtoplevel)
     ns_max_spikes = GetIntDefault(mdgiter, "ns_gid_max_spikes", 0);
     if (ns_max_spikes < 0)
       throw MsPASSError(base_error + "ns_gid_max_spikes must be nonnegative",
-                        ErrorSeverity::Invalid);
+                        ErrorSeverity::Fatal);
     ns_refit_interval = GetIntDefault(mdgiter, "ns_gid_refit_interval", 5);
     if (ns_refit_interval < 1)
       throw MsPASSError(base_error + "ns_gid_refit_interval must be positive",
-                        ErrorSeverity::Invalid);
+                        ErrorSeverity::Fatal);
     ns_ridge_beta =
         GetDoubleDefault(mdgiter, "ns_gid_ridge_beta", 1.0e-10);
     ValidateNonnegative(ns_ridge_beta, "ns_gid_ridge_beta", base_error);
@@ -282,7 +285,7 @@ void TimeDomainGIDDecon::construct_weight_penalty_function(const Metadata &md) {
           base_error +
               "Illegal value for parameter lag_weight_penalty_scale_factor\n" +
               "Must be a number in the interval (0,1]",
-          ErrorSeverity::Invalid);
+          ErrorSeverity::Fatal);
     /* This keyword defines the options for defining the penalty function */
     string wtf_type = md.get_string("lag_weight_penalty_function");
     /* Most options use this parameter so we set it outside the
@@ -293,7 +296,7 @@ void TimeDomainGIDDecon::construct_weight_penalty_function(const Metadata &md) {
     if (nwtf <= 0)
       throw MsPASSError(base_error +
                             "lag_weight_function_width must be positive",
-                        ErrorSeverity::Invalid);
+                        ErrorSeverity::Fatal);
     /* nwtf must be forced to be an odd number to force the function to
     be symmetric. */
     if ((nwtf % 2) == 0)
@@ -323,13 +326,13 @@ void TimeDomainGIDDecon::construct_weight_penalty_function(const Metadata &md) {
               "lag_weight_penalty_function=shaping_wavelet is disabled.  "
               "The actual output/resolution kernel is data dependent and is "
               "not available during construction; use cosine_taper or boxcar.",
-          ErrorSeverity::Invalid);
+          ErrorSeverity::Fatal);
     } else {
       throw MsPASSError(
           base_error +
               "illegal value for parameter lag_weight_penalty_function=" +
               wtf_type,
-          ErrorSeverity::Invalid);
+          ErrorSeverity::Fatal);
     }
   } catch (...) {
     throw;

@@ -5,11 +5,14 @@ import pytest
 import numpy as np
 import pickle
 import cloudpickle
-from distributed.protocol import deserialize, serialize
+
+distributed_protocol = pytest.importorskip("distributed.protocol")
+deserialize = distributed_protocol.deserialize
+serialize = distributed_protocol.serialize
 
 from mspasspy.ccore.algorithms.basic import TimeWindow
 from mspasspy.ccore.algorithms.deconvolution import FrequencyDomainGIDDecon
-from mspasspy.ccore.utility import Metadata, MsPASSError, pfread
+from mspasspy.ccore.utility import ErrorSeverity, Metadata, MsPASSError, pfread
 from mspasspy.ccore.seismic import DoubleVector, PowerSpectrum, Seismogram, TimeSeries
 from mspasspy.algorithms.FrequencyDomainGIDDecon import FrequencyDomainGIDRFDecon
 
@@ -449,8 +452,9 @@ def test_FrequencyDomainGIDDecon_changeparameter_rejects_gid_level_metadata():
         "frequency_domain_gid_deconvolution"
     )
 
-    with pytest.raises(MsPASSError, match="GID-level"):
+    with pytest.raises(MsPASSError, match="GID-level") as excinfo:
         engine.changeparameter(gid_md)
+    assert excinfo.value.severity == ErrorSeverity.Fatal
 
 
 def test_FrequencyDomainGIDDecon_changeparameter_handles_cnr_mode(tmp_path):
@@ -765,6 +769,21 @@ def test_FrequencyDomainGIDDecon_changeparameter_rejects_leaf_shaping_dt_drift()
             "noise_component -1",
             "noise_component",
         ),
+        (
+            "full_data_window_start -8.0\n        full_data_window_end 20.0",
+            "full_data_window_start 20.0\n        full_data_window_end -8.0",
+            "full_data_window",
+        ),
+        (
+            "deconvolution_data_window_start -5.0\n        deconvolution_data_window_end 20.0",
+            "deconvolution_data_window_start 10.0\n        deconvolution_data_window_end 0.0",
+            "deconvolution_data_window",
+        ),
+        (
+            "noise_window_start -35.0\n        noise_window_end -5.0",
+            "noise_window_start 0.0\n        noise_window_end -10.0",
+            "noise_window",
+        ),
     ],
 )
 def test_FrequencyDomainGIDDecon_rejects_invalid_top_level_parameters(
@@ -774,8 +793,9 @@ def test_FrequencyDomainGIDDecon_rejects_invalid_top_level_parameters(
     pf = tmp_path / "FrequencyDomainGIDDecon.pf"
     pf.write_text(text.replace(old, new))
 
-    with pytest.raises(MsPASSError, match=match):
+    with pytest.raises(MsPASSError, match=match) as excinfo:
         FrequencyDomainGIDDecon(pfread(str(pf)))
+    assert excinfo.value.severity == ErrorSeverity.Fatal
 
 
 @pytest.mark.parametrize(
@@ -797,8 +817,9 @@ def test_FrequencyDomainGIDDecon_changeparameter_rejects_gid_keys_on_leaf(
     leaf_md = pf.get_branch("deconvolution_operator_type").get_branch("least_square")
     leaf_md[key] = value
 
-    with pytest.raises(MsPASSError, match=key):
+    with pytest.raises(MsPASSError, match=key) as excinfo:
         engine.changeparameter(leaf_md)
+    assert excinfo.value.severity == ErrorSeverity.Fatal
 
 
 def test_FrequencyDomainGIDRFDecon_argument_validation():

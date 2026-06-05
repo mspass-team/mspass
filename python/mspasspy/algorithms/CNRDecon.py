@@ -497,6 +497,8 @@ def CNRRFDecon(
         engine.initialize_inverse_operator(w, psnoise)
         d = engine.process(d, psnoise, flow, fhigh)
     except MsPASSError as err:
+        if err.severity == ErrorSeverity.Fatal:
+            raise
         d.elog.log_error(err)
         d.kill()
     except Exception as generr:
@@ -758,6 +760,8 @@ def CNRArrayDecon(
     try:
         engine.initialize_inverse_operator(beam, psnoise)
     except MsPASSError as err:
+        if err.severity == ErrorSeverity.Fatal:
+            raise
         ensout.elog.log_error(err)
         ensout.kill()
     except Exception as generr:
@@ -804,6 +808,8 @@ def CNRArrayDecon(
                 try:
                     ensout.member[i] = engine.process(d, psnoise, flow, fhigh)
                 except MsPASSError as err:
+                    if err.severity == ErrorSeverity.Fatal:
+                        raise
                     ensout.member[i].elog.log_error(err)
                     ensout.member[i].kill()
     if return_wavelet:

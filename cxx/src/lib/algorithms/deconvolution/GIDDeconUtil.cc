@@ -28,7 +28,7 @@ IterDeconType ParseGIDDeconType(const Metadata &md, const string &caller) {
       (sval == "noise_aware_stable"))
     return NS_GID;
   throw MsPASSError(caller + ": unknown deconvolution_type=" + sval,
-                    ErrorSeverity::Invalid);
+                    ErrorSeverity::Fatal);
 }
 
 double GetDoubleDefault(const Metadata &md, const string &key,
@@ -56,34 +56,34 @@ void ValidateProbability(const double p, const string &key,
                          const string &caller) {
   if (!std::isfinite(p) || p < 0.0 || p > 1.0)
     throw MsPASSError(caller + ": " + key + " must be in [0, 1]",
-                      ErrorSeverity::Invalid);
+                      ErrorSeverity::Fatal);
 }
 
 void ValidatePositive(const double x, const string &key, const string &caller) {
   if (!std::isfinite(x) || x <= 0.0)
     throw MsPASSError(caller + ": " + key + " must be positive",
-                      ErrorSeverity::Invalid);
+                      ErrorSeverity::Fatal);
 }
 
 void ValidateNonnegative(const double x, const string &key,
                          const string &caller) {
   if (!std::isfinite(x) || x < 0.0)
     throw MsPASSError(caller + ": " + key + " must be nonnegative",
-                      ErrorSeverity::Invalid);
+                      ErrorSeverity::Fatal);
 }
 
 void ValidatePositiveInteger(const int x, const string &key,
                              const string &caller) {
   if (x <= 0)
     throw MsPASSError(caller + ": " + key + " must be positive",
-                      ErrorSeverity::Invalid);
+                      ErrorSeverity::Fatal);
 }
 
 void ValidateThreeComponentIndex(const int component, const string &key,
                                  const string &caller) {
   if (component < 0 || component > 2)
     throw MsPASSError(caller + ": " + key + " must be 0, 1, or 2",
-                      ErrorSeverity::Invalid);
+                      ErrorSeverity::Fatal);
 }
 
 void PutPrefixedMetadata(Metadata &target, const Metadata &source,
@@ -212,7 +212,7 @@ void ValidateGIDLeafWindow(const AntelopePf &mdleaf,
        << ", deconvolution_data_window_end=" << te << endl
        << "GID parameters: deconvolution_data_window_start=" << fftwin.start
        << ", deconvolution_data_window_end=" << fftwin.end << endl;
-    throw MsPASSError(ss.str(), ErrorSeverity::Invalid);
+    throw MsPASSError(ss.str(), ErrorSeverity::Fatal);
   }
 }
 
@@ -251,7 +251,7 @@ void ValidateGIDLeafOperatorMetadata(const Metadata &md,
                             " requires constructing a new GID engine; "
                             "changeparameter only changes the current leaf "
                             "inverse operator",
-                        ErrorSeverity::Invalid);
+                        ErrorSeverity::Fatal);
   }
   if (!allow_noise_window_keys) {
     for (auto const &key : noise_window_keys) {
@@ -260,7 +260,7 @@ void ValidateGIDLeafOperatorMetadata(const Metadata &md,
                               " requires constructing a new GID engine; "
                               "changeparameter only changes the current leaf "
                               "inverse operator",
-                          ErrorSeverity::Invalid);
+                          ErrorSeverity::Fatal);
     }
   }
   if (md.is_defined("deconvolution_data_window_start")) {
@@ -268,14 +268,14 @@ void ValidateGIDLeafOperatorMetadata(const Metadata &md,
     if (fabs(ts - fftwin.start) > 1.0e-10)
       throw MsPASSError(caller + ": leaf deconvolution_data_window_start does "
                                  "not match the GID deconvolution window",
-                        ErrorSeverity::Invalid);
+                        ErrorSeverity::Fatal);
   }
   if (md.is_defined("deconvolution_data_window_end")) {
     const double te = md.get_double("deconvolution_data_window_end");
     if (fabs(te - fftwin.end) > 1.0e-10)
       throw MsPASSError(caller + ": leaf deconvolution_data_window_end does "
                                  "not match the GID deconvolution window",
-                        ErrorSeverity::Invalid);
+                        ErrorSeverity::Fatal);
   }
   if (md.is_defined("target_sample_interval")) {
     const double dt = md.get_double("target_sample_interval");
@@ -283,7 +283,7 @@ void ValidateGIDLeafOperatorMetadata(const Metadata &md,
         1.0e-6 * max(1.0, max(fabs(dt), fabs(target_dt))))
       throw MsPASSError(caller + ": leaf target_sample_interval does not "
                                  "match the GID target_sample_interval",
-                        ErrorSeverity::Invalid);
+                        ErrorSeverity::Fatal);
   }
   if (md.is_defined("shaping_wavelet_dt")) {
     const double dt = md.get_double("shaping_wavelet_dt");
@@ -291,7 +291,7 @@ void ValidateGIDLeafOperatorMetadata(const Metadata &md,
         1.0e-6 * max(1.0, max(fabs(dt), fabs(target_dt))))
       throw MsPASSError(caller + ": leaf shaping_wavelet_dt does not match "
                                  "the GID target_sample_interval",
-                        ErrorSeverity::Invalid);
+                        ErrorSeverity::Fatal);
   }
 }
 

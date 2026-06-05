@@ -19,7 +19,7 @@ from mspasspy.ccore.algorithms.deconvolution import (
     WaterLevelDecon,
 )
 from mspasspy.ccore.seismic import PowerSpectrum
-from mspasspy.ccore.utility import Metadata, MsPASSError, pfread
+from mspasspy.ccore.utility import ErrorSeverity, Metadata, MsPASSError, pfread
 
 
 def _write_scalar_pf(
@@ -278,6 +278,27 @@ def test_scalar_fft_changeparameter_recomputes_sample_shift(tmp_path, engine_cla
     shifted = np.asarray(engine.getresult(), dtype=np.float64)
 
     assert np.argmax(np.abs(shifted)) == 8
+
+
+@pytest.mark.parametrize(
+    "engine_class,pf_factory",
+    [
+        (LeastSquareDecon, _write_scalar_pf),
+        (WaterLevelDecon, _write_scalar_pf),
+        (NoiseStableDecon, _write_noise_stable_pf),
+        (TimeDomainLeastSquareDecon, _write_time_domain_ls_pf),
+        (MultiTaperXcorDecon, _write_multitaper_pf),
+        (MultiTaperSpecDivDecon, _write_multitaper_pf),
+    ],
+)
+def test_decon_operators_reject_reversed_deconvolution_windows(
+    tmp_path, engine_class, pf_factory
+):
+    pf = pf_factory(tmp_path, window_start=10.0, window_end=0.0)
+
+    with pytest.raises(MsPASSError, match="window") as excinfo:
+        engine_class(pf)
+    assert excinfo.value.severity == ErrorSeverity.Fatal
 
 
 @pytest.mark.parametrize(
@@ -708,6 +729,32 @@ def test_multitaper_rejects_inputs_longer_than_taperlen(tmp_path, engine_class):
     engine.loadwavelet(_double_vector(np.r_[wavelet, 0.0]))
     with pytest.raises(MsPASSError, match="taper"):
         engine.process()
+
+
+@pytest.mark.parametrize(
+    "engine_class", [MultiTaperXcorDecon, MultiTaperSpecDivDecon]
+)
+def test_multitaper_accepts_short_noise_by_right_padding(tmp_path, engine_class):
+    n = 80
+    pf = _write_multitaper_pf(
+        tmp_path,
+        window_start=0.0,
+        window_end=float(n - 1) * 0.05,
+        nfft=256,
+        damping=0.05,
+    )
+    t = np.arange(n) * 0.05
+    wavelet = np.exp(-0.5 * ((t - 0.8) / 0.15) ** 2)
+    data = 1.2 * wavelet
+    short_noise = 0.001 * np.ones(16)
+
+    engine = engine_class(pf)
+    engine.load(_double_vector(wavelet), _double_vector(data), _double_vector(short_noise))
+    engine.process()
+    result = np.asarray(engine.getresult(), dtype=np.float64)
+
+    assert np.isfinite(result).all()
+    assert np.linalg.norm(result) > 0.0
 
 
 @pytest.mark.parametrize(

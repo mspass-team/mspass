@@ -22,12 +22,12 @@ int LeastSquareDecon::read_metadata(const Metadata &md) {
       throw MsPASSError(base_error +
                             "damping_factor must be positive.  A zero value "
                             "is an unstable undamped spectral division.",
-                        ErrorSeverity::Invalid);
+                        ErrorSeverity::Fatal);
     }
     if (new_sample_shift < 0 || new_sample_shift > nfft_from_win)
       throw MsPASSError(base_error +
                             "computed sample_shift is outside fft buffer",
-                        ErrorSeverity::Invalid);
+                        ErrorSeverity::Fatal);
     ShapingWavelet new_shapingwavelet(md, nfft_from_win);
     // window based nfft always overrides that extracted directly from md */
     if (nfft_from_win != nfft) {

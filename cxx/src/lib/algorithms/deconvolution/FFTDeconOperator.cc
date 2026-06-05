@@ -2,6 +2,7 @@
 #include "mspass/seismic/CoreTimeSeries.h"
 #include "mspass/utility/MsPASSError.h"
 #include <algorithm>
+#include <cmath>
 #include <math.h>
 namespace mspass::algorithms::deconvolution {
 using namespace std;
@@ -17,6 +18,15 @@ FFTDeconOperator::FFTDeconOperator() {
 FFTDeconOperator::FFTDeconOperator(const Metadata &md) {
   try {
     const string base_error("FFTDeconOperator Metadata constructor:  ");
+    const double ts = md.get_double("deconvolution_data_window_start");
+    const double te = md.get_double("deconvolution_data_window_end");
+    const double dt = md.get_double("target_sample_interval");
+    ValidateWindowDuration(TimeWindow(ts, te), "deconvolution_data_window",
+                           base_error);
+    if (!std::isfinite(dt) || dt <= 0.0)
+      throw MsPASSError(base_error +
+                            "target_sample_interval must be positive",
+                        ErrorSeverity::Fatal);
     int nfftpf = md.get_int("operator_nfft");
     /* We force a power of 2 algorithm for efficiency and always round up*/
     this->nfft = nextPowerOf2(nfftpf);
@@ -29,12 +39,12 @@ FFTDeconOperator::FFTDeconOperator(const Metadata &md) {
     if (this->sample_shift < 0)
       throw MsPASSError(base_error +
                             "illegal sample_shift parameter - must be ge 0",
-                        ErrorSeverity::Invalid);
+                        ErrorSeverity::Fatal);
     if ((this->sample_shift) > nfft)
       throw MsPASSError(
           base_error + "Computed shift parameter exceeds length of fft\n" +
               "Deconvolution data window parameters are probably nonsense",
-          ErrorSeverity::Invalid);
+          ErrorSeverity::Fatal);
     wavetable = gsl_fft_complex_wavetable_alloc(nfft);
     workspace = gsl_fft_complex_workspace_alloc(nfft);
   } catch (...) {
@@ -66,17 +76,26 @@ FFTDeconOperator &FFTDeconOperator::operator=(const FFTDeconOperator &parent) {
 }
 void FFTDeconOperator::changeparameter(const Metadata &md) {
   try {
+    const string base_error("FFTDeconOperator::changeparameter:  ");
+    const double ts = md.get_double("deconvolution_data_window_start");
+    const double te = md.get_double("deconvolution_data_window_end");
+    const double dt = md.get_double("target_sample_interval");
+    ValidateWindowDuration(TimeWindow(ts, te), "deconvolution_data_window",
+                           base_error);
+    if (!std::isfinite(dt) || dt <= 0.0)
+      throw MsPASSError(base_error +
+                            "target_sample_interval must be positive",
+                        ErrorSeverity::Fatal);
     const int nfft_test = nextPowerOf2(md.get_int("operator_nfft"));
     const int sample_shift_test = ComputeDeconSampleShift(md);
     if (sample_shift_test < 0)
-      throw MsPASSError(string("FFTDeconOperator::changeparameter:  ") +
+      throw MsPASSError(base_error +
                             "illegal sample_shift parameter - must be ge 0",
-                        ErrorSeverity::Invalid);
+                        ErrorSeverity::Fatal);
     if (sample_shift_test > nfft_test)
       throw MsPASSError(
-          string("FFTDeconOperator::changeparameter:  ") +
-              "computed sample_shift exceeds length of fft",
-          ErrorSeverity::Invalid);
+          base_error + "computed sample_shift exceeds length of fft",
+          ErrorSeverity::Fatal);
     if (nfft_test != nfft) {
       gsl_fft_complex_wavetable *new_wavetable =
           gsl_fft_complex_wavetable_alloc(nfft_test);
@@ -164,9 +183,31 @@ CoreTimeSeries FFTDeconOperator::FourierInverse(const ComplexArray &winv,
 }
 
 /* helpers*/
+void ValidateWindowDuration(const TimeWindow w, const string &window_name,
+                            const string &caller) {
+  if (!std::isfinite(w.start) || !std::isfinite(w.end))
+    throw MsPASSError(caller + ": " + window_name +
+                          " start and end must be finite",
+                      ErrorSeverity::Fatal);
+  if (w.end <= w.start)
+    throw MsPASSError(caller + ": " + window_name +
+                          " end must be greater than start",
+                      ErrorSeverity::Fatal);
+}
+
 int ComputeFFTLength(const TimeWindow w, const double dt) {
   int nsamples, nfft;
+  const string caller("FFTDeconOperator::ComputeFFTLength");
+  ValidateWindowDuration(w, "deconvolution window", caller);
+  if (!std::isfinite(dt) || dt <= 0.0)
+    throw MsPASSError(caller + ": target_sample_interval must be positive",
+                      ErrorSeverity::Fatal);
   nsamples = static_cast<int>(((w.end - w.start) / dt)) + 1;
+  if (nsamples < 2)
+    throw MsPASSError(caller +
+                          ": deconvolution window must contain at least two "
+                      "samples",
+                      ErrorSeverity::Fatal);
   /* Use a padded work buffer by default.  The scalar FFT decon operators are
    * intended for linear seismic time windows, not circular convolution of the
    * finite window.  For two loaded windows of length N, 2*N-1 samples is the
@@ -191,7 +232,7 @@ int ComputeFFTLength(const Metadata &md) {
       throw MsPASSError(
           string("FFTDeconOperator ComputeFFTLength procedure:  ") +
               "Computed fft length is less than 2 - check window parameters",
-          ErrorSeverity::Invalid);
+          ErrorSeverity::Fatal);
     return nfft;
   } catch (MetadataGetError &mde) {
     throw mde;
@@ -200,6 +241,15 @@ int ComputeFFTLength(const Metadata &md) {
 int ComputeDeconSampleShift(const Metadata &md) {
   double dt_to_use = md.get_double("target_sample_interval");
   double dwinstart = md.get_double("deconvolution_data_window_start");
+  if (!std::isfinite(dt_to_use) || dt_to_use <= 0.0)
+    throw MsPASSError(
+        "ComputeDeconSampleShift: target_sample_interval must be positive",
+        ErrorSeverity::Fatal);
+  if (!std::isfinite(dwinstart))
+    throw MsPASSError(
+        "ComputeDeconSampleShift: deconvolution_data_window_start must be "
+        "finite",
+        ErrorSeverity::Fatal);
   int i0 = round(dwinstart / dt_to_use);
   return -i0;
 }

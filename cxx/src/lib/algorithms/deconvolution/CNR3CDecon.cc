@@ -71,13 +71,13 @@ void CNR3CDecon::read_parameters(const AntelopePf &pf) {
       throw MsPASSError("CNR3CDecon::read_parameters:  invalid value for "
                         "parameter algorithm=" +
                             stmp,
-                        ErrorSeverity::Invalid);
+                        ErrorSeverity::Fatal);
     }
     this->damp = pf.get_double("damping_factor");
     if (this->damp <= 0.0) {
       throw MsPASSError("CNR3CDecon::read_parameters: damping_factor must be "
                         "positive for stable regularized deconvolution",
-                        ErrorSeverity::Invalid);
+                        ErrorSeverity::Fatal);
     }
     /* Note this paramter is used for both the damping method and the
     generalized_water_level */
@@ -85,11 +85,18 @@ void CNR3CDecon::read_parameters(const AntelopePf &pf) {
     this->snr_regularization_floor = pf.get_double("snr_regularization_floor");
     this->snr_bandwidth = pf.get_double("snr_for_bandwidth_estimator");
     this->operator_dt = pf.get_double("target_sample_interval");
+    if (this->operator_dt <= 0.0)
+      throw MsPASSError("CNR3CDecon::read_parameters: "
+                        "target_sample_interval must be positive",
+                        ErrorSeverity::Fatal);
     this->fhs = pf.get_double("high_frequency_search_start");
     double ts, te;
     ts = pf.get_double("deconvolution_data_window_start");
     te = pf.get_double("deconvolution_data_window_end");
     this->processing_window = TimeWindow(ts, te);
+    ValidateWindowDuration(this->processing_window,
+                           "deconvolution_data_window",
+                           "CNR3CDecon::read_parameters");
     this->winlength = round((te - ts) / operator_dt) + 1;
     /* In this algorithm we are very careful to avoid circular convolution
     artifacts that I (glp) suspect may be a problem in some frequency domain
@@ -123,6 +130,8 @@ void CNR3CDecon::read_parameters(const AntelopePf &pf) {
     ts = pf.get_double("noise_window_start");
     te = pf.get_double("noise_window_end");
     this->noise_window = TimeWindow(ts, te);
+    ValidateWindowDuration(this->noise_window, "noise_window",
+                           "CNR3CDecon::read_parameters");
     int noise_winlength = round((te - ts) / operator_dt) + 1;
     double tbp = pf.get_double("time_bandwidth_product");
     long ntapers = pf.get_long("number_tapers");

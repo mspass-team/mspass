@@ -6,9 +6,12 @@ import pickle
 import pytest
 import cloudpickle
 from pathlib import Path
-from distributed.protocol import deserialize, serialize
 
-from mspasspy.ccore.utility import Metadata, MsPASSError, pfread
+distributed_protocol = pytest.importorskip("distributed.protocol")
+deserialize = distributed_protocol.deserialize
+serialize = distributed_protocol.serialize
+
+from mspasspy.ccore.utility import ErrorSeverity, Metadata, MsPASSError, pfread
 from mspasspy.ccore.seismic import PowerSpectrum, Seismogram, TimeSeries
 from mspasspy.ccore.seismic import TimeReferenceType, DoubleVector
 from mspasspy.ccore.algorithms.basic import TimeWindow
@@ -968,6 +971,21 @@ def test_TimeDomainGIDDecon_changeparameter_rejects_leaf_shaping_dt_drift():
             "noise_component -1",
             "noise_component",
         ),
+        (
+            "full_data_window_start -8.0\n        full_data_window_end 20.0",
+            "full_data_window_start 20.0\n        full_data_window_end -8.0",
+            "full_data_window",
+        ),
+        (
+            "deconvolution_data_window_start -5.0\n        deconvolution_data_window_end 20.0",
+            "deconvolution_data_window_start 10.0\n        deconvolution_data_window_end 0.0",
+            "deconvolution_data_window",
+        ),
+        (
+            "noise_window_start -35.0\n        noise_window_end -5.0",
+            "noise_window_start 0.0\n        noise_window_end -10.0",
+            "noise_window",
+        ),
     ],
 )
 def test_TimeDomainGIDDecon_rejects_invalid_probability_and_lag_parameters(
@@ -977,8 +995,9 @@ def test_TimeDomainGIDDecon_rejects_invalid_probability_and_lag_parameters(
     pf = tmp_path / "TimeDomainGIDDecon.pf"
     pf.write_text(text.replace(old, new))
 
-    with pytest.raises(MsPASSError, match=match):
+    with pytest.raises(MsPASSError, match=match) as excinfo:
         TimeDomainGIDDecon(pfread(str(pf)))
+    assert excinfo.value.severity == ErrorSeverity.Fatal
 
 
 def test_TimeDomainGIDDecon_changeparameter_rejects_gid_level_metadata():
@@ -988,8 +1007,9 @@ def test_TimeDomainGIDDecon_changeparameter_rejects_gid_level_metadata():
         "time_domain_gid_deconvolution"
     )
 
-    with pytest.raises(MsPASSError, match="GID-level"):
+    with pytest.raises(MsPASSError, match="GID-level") as excinfo:
         engine.changeparameter(gid_md)
+    assert excinfo.value.severity == ErrorSeverity.Fatal
 
 
 @pytest.mark.parametrize(
@@ -1009,8 +1029,9 @@ def test_TimeDomainGIDDecon_changeparameter_rejects_gid_keys_on_leaf(key, value)
     leaf_md = pf.get_branch("deconvolution_operator_type").get_branch("least_square")
     leaf_md[key] = value
 
-    with pytest.raises(MsPASSError, match=key):
+    with pytest.raises(MsPASSError, match=key) as excinfo:
         engine.changeparameter(leaf_md)
+    assert excinfo.value.severity == ErrorSeverity.Fatal
 
 
 def test_TimeDomainGIDDecon_accepts_legacy_cnr3c_mode_alias(tmp_path):

@@ -91,24 +91,30 @@ void TimeDomainLeastSquareDecon::read_metadata(const Metadata &md) {
     if (damp <= 0.0)
       throw MsPASSError(base_error +
                             "damping_factor must be positive for stable "
-                            "time-domain least-squares deconvolution",
-                        ErrorSeverity::Invalid);
+                        "time-domain least-squares deconvolution",
+                        ErrorSeverity::Fatal);
     dt = md.get_double("target_sample_interval");
     if (dt <= 0.0)
       throw MsPASSError(base_error + "target_sample_interval must be positive",
-                        ErrorSeverity::Invalid);
+                        ErrorSeverity::Fatal);
     const double dwinstart = md.get_double("deconvolution_data_window_start");
+    const double dwinend = md.get_double("deconvolution_data_window_end");
+    if (dwinend <= dwinstart)
+      throw MsPASSError(base_error +
+                            "deconvolution_data_window_end must be greater "
+                        "than deconvolution_data_window_start",
+                        ErrorSeverity::Fatal);
     sample_shift = static_cast<int>(round(-dwinstart / dt));
     if (sample_shift < 0)
       throw MsPASSError(base_error +
                             "deconvolution_data_window_start cannot be "
                             "positive for this lag convention",
-                        ErrorSeverity::Invalid);
+                        ErrorSeverity::Fatal);
     if (md.is_defined("model_length")) {
       output_length = md.get_int("model_length");
       if (output_length <= 0)
         throw MsPASSError(base_error + "model_length must be positive",
-                          ErrorSeverity::Invalid);
+                          ErrorSeverity::Fatal);
     } else {
       output_length = 0;
     }

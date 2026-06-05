@@ -22,7 +22,7 @@ import numpy as np
 from scipy import signal
 from numpy.random import randn
 
-from mspasspy.ccore.utility import pfread
+from mspasspy.ccore.utility import ErrorSeverity, MsPASSError, pfread
 from mspasspy.ccore.seismic import (
     Seismogram,
     TimeSeries,
@@ -260,6 +260,33 @@ def verify_decon_output(d_decon, engine, wavelet):
         enrm = np.linalg.norm(e.data)
         print("Data component {} prediction error={}".format(k, enrm / denrm))
         assert enrm < 0.2
+
+
+@pytest.mark.parametrize(
+    "old,new,match",
+    [
+        (
+            "deconvolution_data_window_start -5.0\n"
+            "deconvolution_data_window_end 30.0",
+            "deconvolution_data_window_start 10.0\n"
+            "deconvolution_data_window_end 0.0",
+            "deconvolution_data_window",
+        ),
+        (
+            "noise_window_start -105.0\nnoise_window_end -5.0",
+            "noise_window_start 0.0\nnoise_window_end -10.0",
+            "noise_window",
+        ),
+    ],
+)
+def test_CNRDeconEngine_rejects_invalid_windows(tmp_path, old, new, match):
+    text = open("data/pf/CNRDeconEngine.pf", encoding="utf-8").read()
+    pf = tmp_path / "CNRDeconEngine.pf"
+    pf.write_text(text.replace(old, new))
+
+    with pytest.raises(MsPASSError, match=match) as excinfo:
+        CNRDeconEngine(pfread(str(pf)))
+    assert excinfo.value.severity == ErrorSeverity.Fatal
 
 
 def test_CNRRFDecon():

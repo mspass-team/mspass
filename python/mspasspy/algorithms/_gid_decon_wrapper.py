@@ -94,6 +94,8 @@ def _run_gid_rf_decon(
             qcmd["algorithm"] = alg
             rf[QCdata_key] = qcmd
     except MsPASSError as err:
+        if err.severity == ErrorSeverity.Fatal:
+            raise
         d.elog.log_error(err)
         d.kill()
         if return_wavelet:

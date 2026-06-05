@@ -67,20 +67,20 @@ int NoiseStableDecon::read_metadata(const Metadata &md) {
       get_bool_default(md, "ns_gid_use_reliability_taper", false);
   if (mu_min <= 0.0)
     throw MsPASSError(base_error + "ns_gid_mu_min must be positive",
-                      ErrorSeverity::Invalid);
+                      ErrorSeverity::Fatal);
   if (alpha < 0.0)
     throw MsPASSError(base_error + "ns_gid_alpha cannot be negative",
-                      ErrorSeverity::Invalid);
+                      ErrorSeverity::Fatal);
   if (noise_floor <= 0.0)
     throw MsPASSError(base_error + "ns_gid_noise_floor must be positive",
-                      ErrorSeverity::Invalid);
+                      ErrorSeverity::Fatal);
   if (gain_max <= 0.0)
     throw MsPASSError(base_error + "ns_gid_gain_max must be positive",
-                      ErrorSeverity::Invalid);
+                      ErrorSeverity::Fatal);
   if (snr_taper_high <= snr_taper_low)
     throw MsPASSError(base_error +
                           "ns_gid_snr_taper_high must exceed taper_low",
-                      ErrorSeverity::Invalid);
+                      ErrorSeverity::Fatal);
   shapingwavelet = ShapingWavelet(md, nfft);
   max_gain_actual = 0.0;
   noise_amplification = 0.0;

@@ -102,6 +102,10 @@ All deconvlution methods using an fft need to define nfft based on the
 length of the working time series.   This procedure returns the size from
 an input window and sample interval. */
 int ComputeFFTLength(const mspass::algorithms::TimeWindow w, const double dt);
+/*! Validate a time window has finite endpoints and positive duration. */
+void ValidateWindowDuration(const mspass::algorithms::TimeWindow w,
+                            const std::string &window_name,
+                            const std::string &caller);
 /*! Derive fft length using parameters in a metadata object.
 
 This procedure is basically a higher level version of the function of
