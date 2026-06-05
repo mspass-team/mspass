@@ -68,7 +68,7 @@ public:
    * Wang and Pavlis (2016) call this wavelet ws(t).  GID methods convolve the
    * sparse impulse response with this wavelet to form the finite-duration
    * receiver-function representation used for stacking and imaging. */
-  mspass::seismic::CoreTimeSeries output_shaping_wavelet() {
+  virtual mspass::seismic::CoreTimeSeries output_shaping_wavelet() {
     return this->shapingwavelet.impulse_response();
   };
   /*! \brief Legacy alias for output_shaping_wavelet.

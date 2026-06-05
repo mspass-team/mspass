@@ -132,6 +132,16 @@ void TimeDomainLeastSquareDecon::changeparameter(const Metadata &md) {
   this->read_metadata(md);
 }
 
+int TimeDomainLeastSquareDecon::diagnostic_length() const {
+  if (output_length > 0)
+    return output_length;
+  if (!data.empty())
+    return static_cast<int>(data.size());
+  if (!wavelet.empty())
+    return static_cast<int>(wavelet.size());
+  return 0;
+}
+
 vector<double> TimeDomainLeastSquareDecon::solve_for(
     const vector<double> &rhs_data) const {
   const string base_error("TimeDomainLeastSquareDecon::solve_for:  ");
@@ -215,6 +225,31 @@ vector<double> TimeDomainLeastSquareDecon::apply_shaping_wavelet(
   return shaped;
 }
 
+CoreTimeSeries TimeDomainLeastSquareDecon::output_shaping_wavelet() {
+  const string base_error(
+      "TimeDomainLeastSquareDecon::output_shaping_wavelet: ");
+  const int nlag(this->diagnostic_length());
+  if (nlag <= 0)
+    return this->ScalarDecon::output_shaping_wavelet();
+  if (sample_shift < 0 || sample_shift >= nlag)
+    throw MsPASSError(base_error +
+                          "zero-lag sample is outside extracted lag window",
+                      ErrorSeverity::Invalid);
+  vector<double> delta(nlag, 0.0);
+  delta[sample_shift] = 1.0;
+  vector<double> ws(this->apply_shaping_wavelet(delta));
+  if (l2_norm(ws) > 0.0)
+    ws = normalize<double>(ws);
+
+  CoreTimeSeries result(ws.size());
+  result.set_dt(dt);
+  result.set_t0(-dt * static_cast<double>(sample_shift));
+  result.set_tref(TimeReferenceType::Relative);
+  result.set_live();
+  result.s = ws;
+  return result;
+}
+
 void TimeDomainLeastSquareDecon::process() {
   const string base_error("TimeDomainLeastSquareDecon::process:  ");
   result.clear();
@@ -239,10 +274,7 @@ CoreTimeSeries TimeDomainLeastSquareDecon::actual_output() {
                       "not been loaded",
                       ErrorSeverity::Invalid);
   const string base_error("TimeDomainLeastSquareDecon::actual_output: ");
-  const int nlag(output_length > 0
-                     ? output_length
-                     : (!data.empty() ? static_cast<int>(data.size())
-                                      : static_cast<int>(wavelet.size())));
+  const int nlag(this->diagnostic_length());
   if (sample_shift < 0 || sample_shift >= nlag)
     throw MsPASSError(base_error +
                           "zero-lag sample is outside extracted lag window",
@@ -277,10 +309,7 @@ TimeDomainLeastSquareDecon::inverse_wavelet(const double t0parent) {
                       "has not been loaded",
                       ErrorSeverity::Invalid);
   const string base_error("TimeDomainLeastSquareDecon::inverse_wavelet: ");
-  const int nlag(output_length > 0
-                     ? output_length
-                     : (!data.empty() ? static_cast<int>(data.size())
-                                      : static_cast<int>(wavelet.size())));
+  const int nlag(this->diagnostic_length());
   if (sample_shift < 0 || sample_shift >= nlag)
     throw MsPASSError(base_error +
                           "zero-lag sample is outside extracted lag window",

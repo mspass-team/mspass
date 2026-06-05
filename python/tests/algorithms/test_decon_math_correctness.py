@@ -54,8 +54,11 @@ def _write_time_domain_ls_pf(
     *,
     damping=1.0e-12,
     model_length=None,
+    nfft=64,
     window_start=0.0,
     window_end=63.0,
+    shaping_wavelet_type="none",
+    shaping_frequency=1.0,
 ):
     model_length_line = ""
     if model_length is not None:
@@ -64,12 +67,13 @@ def _write_time_domain_ls_pf(
     pf.write_text(
         f"""
 target_sample_interval 1.0
-operator_nfft 64
+operator_nfft {nfft}
 deconvolution_data_window_start {window_start:.12f}
 deconvolution_data_window_end {window_end:.12f}
 damping_factor {damping:.12f}
 {model_length_line}shaping_wavelet_dt 1.0
-shaping_wavelet_type none
+shaping_wavelet_type {shaping_wavelet_type}
+shaping_wavelet_frequency {shaping_frequency:.12f}
 """
     )
     return pfread(str(pf))
@@ -366,6 +370,38 @@ def test_scalar_decon_methods_share_nonzero_lag_convention(
 
     assert len(recovered) == len(model)
     assert np.allclose(recovered, model, atol=1.0e-5)
+
+
+def test_time_domain_ls_diagnostics_use_model_lag_window(tmp_path):
+    ndata = 37
+    zero_lag_sample = 8
+    pf = _write_time_domain_ls_pf(
+        tmp_path,
+        nfft=128,
+        window_start=-float(zero_lag_sample),
+        window_end=float(ndata - zero_lag_sample - 1),
+        shaping_wavelet_type="ricker",
+        shaping_frequency=0.08,
+    )
+    wavelet = np.zeros(ndata)
+    wavelet[zero_lag_sample] = 1.0
+    data = np.zeros(ndata)
+    data[zero_lag_sample] = 1.0
+
+    engine = TimeDomainLeastSquareDecon(pf)
+    engine.load(_double_vector(wavelet), _double_vector(data))
+    engine.process()
+
+    actual = engine.actual_output()
+    shaping = engine.output_shaping_wavelet()
+
+    assert actual.npts == ndata
+    assert shaping.npts == ndata
+    assert actual.dt == shaping.dt
+    assert actual.t0 == shaping.t0
+    assert actual.sample_number(0.0) == shaping.sample_number(0.0)
+    prediction_error = np.asarray(actual.data) - np.asarray(shaping.data)
+    assert np.isfinite(prediction_error).all()
 
 
 @pytest.mark.parametrize("engine_class", [LeastSquareDecon, WaterLevelDecon])

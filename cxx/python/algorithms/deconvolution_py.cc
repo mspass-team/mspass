@@ -260,6 +260,9 @@ PYBIND11_MODULE(deconvolution, m) {
       "Process previously loaded data")
     .def("actual_output",&TimeDomainLeastSquareDecon::actual_output,
       "Return actual output of inverse*wavelet")
+    .def("output_shaping_wavelet",
+      &TimeDomainLeastSquareDecon::output_shaping_wavelet,
+      "Return the output shaping wavelet on the same lag window as actual_output")
     .def("inverse_wavelet",py::overload_cast<>(&TimeDomainLeastSquareDecon::inverse_wavelet))
     .def("inverse_wavelet",py::overload_cast<double>(&TimeDomainLeastSquareDecon::inverse_wavelet))
     .def("QCMetrics",&TimeDomainLeastSquareDecon::QCMetrics,

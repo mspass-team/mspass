@@ -42,6 +42,7 @@ public:
                              const std::vector<double> &data);
   void changeparameter(const mspass::utility::Metadata &md);
   void process();
+  mspass::seismic::CoreTimeSeries output_shaping_wavelet();
   mspass::seismic::CoreTimeSeries actual_output();
   mspass::seismic::CoreTimeSeries inverse_wavelet(const double t0parent);
   mspass::seismic::CoreTimeSeries inverse_wavelet();
@@ -49,6 +50,7 @@ public:
 
 private:
   void read_metadata(const mspass::utility::Metadata &md);
+  int diagnostic_length() const;
   std::vector<double> solve_for(const std::vector<double> &rhs_data) const;
   std::vector<double> apply_wavelet(const std::vector<double> &model) const;
   std::vector<double> apply_shaping_wavelet(
