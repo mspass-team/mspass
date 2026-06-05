@@ -13,7 +13,7 @@ WaterLevelDecon::WaterLevelDecon(const WaterLevelDecon &parent)
 }
 int WaterLevelDecon::read_metadata(const Metadata &md) {
   try {
-    const string base_error("SimpleLeastTaperDecon::read_metadata method: ");
+    const string base_error("WaterLevelDecon::read_metadata method: ");
     const int nfft_from_win = ComputeFFTLength(md);
     const int new_sample_shift = ComputeDeconSampleShift(md);
     const double new_wlv = md.get_double("water_level");

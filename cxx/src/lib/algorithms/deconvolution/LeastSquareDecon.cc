@@ -14,7 +14,7 @@ LeastSquareDecon::LeastSquareDecon(const LeastSquareDecon &parent)
 }
 int LeastSquareDecon::read_metadata(const Metadata &md) {
   try {
-    const string base_error("SimpleLeastTaperDecon::read_metadata method: ");
+    const string base_error("LeastSquareDecon::read_metadata method: ");
     const int nfft_from_win = ComputeFFTLength(md);
     const int new_sample_shift = ComputeDeconSampleShift(md);
     const double new_damp = md.get_double("damping_factor");

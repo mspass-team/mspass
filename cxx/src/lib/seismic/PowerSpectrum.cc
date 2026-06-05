@@ -38,7 +38,7 @@ PowerSpectrum &PowerSpectrum::operator+=(const PowerSpectrum &other) {
       ss << "operator+=(accumulation) size mismatch of spectrum arrays" << endl
          << "right hand side spectrum size=" << other.nf() << endl
          << "left hand side spectrum size=" << this->nf() << endl;
-      this->elog.log_error("PowerSpectrum::operator+-", ss.str(),
+      this->elog.log_error("PowerSpectrum::operator+=", ss.str(),
                            ErrorSeverity::Invalid);
       this->kill();
     } else if (this->f0() != other.f0()) {
@@ -46,7 +46,7 @@ PowerSpectrum &PowerSpectrum::operator+=(const PowerSpectrum &other) {
       ss << "operator+=(accumulation) f0 mismatch of spectrum estimates" << endl
          << "right hand side spectrum f0=" << other.f0() << endl
          << "left hand side spectrum f0=" << this->f0() << endl;
-      this->elog.log_error("PowerSpectrum::operator+-", ss.str(),
+      this->elog.log_error("PowerSpectrum::operator+=", ss.str(),
                            ErrorSeverity::Invalid);
       this->kill();
     } else if (this->df() != other.df()) {
@@ -54,7 +54,7 @@ PowerSpectrum &PowerSpectrum::operator+=(const PowerSpectrum &other) {
       ss << "operator+=(accumulation) df mismatch of spectrum estimates" << endl
          << "right hand side spectrum df=" << other.df() << endl
          << "left hand side spectrum df=" << this->df() << endl;
-      this->elog.log_error("PowerSpectrum::operator+-", ss.str(),
+      this->elog.log_error("PowerSpectrum::operator+=", ss.str(),
                            ErrorSeverity::Invalid);
       this->kill();
     } else {
