@@ -411,9 +411,21 @@ void FrequencyDomainGIDDecon::initialize_inverse_operator() {
     actual_out = cnrprocessor->actual_output(current_wavelet);
   else
     actual_out = preprocessor->actual_output();
-  if (actual_out.npts() > d_decon.npts() / 2) {
-    TimeWindow compact_kernel(-2.0, 2.0);
-    actual_out = WindowData(actual_out, compact_kernel);
+  int prezero_available =
+      static_cast<int>(round((-fftwin.start) / d_decon.dt()));
+  int postzero_available = d_decon.npts() - prezero_available - 1;
+  int actual_zero = actual_out.sample_number(0.0);
+  int actual_postzero = actual_out.npts() - actual_zero - 1;
+  if ((actual_out.npts() > d_decon.npts() / 2) ||
+      (actual_zero > prezero_available) ||
+      (actual_postzero > postzero_available)) {
+    TimeWindow compact_kernel(
+        max(-2.0, -static_cast<double>(prezero_available) * d_decon.dt()),
+        min(2.0, static_cast<double>(postzero_available) * d_decon.dt()));
+    actual_out = WindowData(
+        actual_out,
+        ClipTimeWindowToSeries(actual_out, compact_kernel,
+                               "FrequencyDomainGIDDecon"));
   }
   actual_o_fir = actual_out.s;
   actual_o_0 = actual_out.sample_number(0.0);

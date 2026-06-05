@@ -3,6 +3,7 @@
 #include "mspass/algorithms/TimeWindow.h"
 #include "mspass/algorithms/deconvolution/ThreeCSpike.h"
 #include "mspass/seismic/CoreSeismogram.h"
+#include "mspass/seismic/CoreTimeSeries.h"
 #include "mspass/seismic/TimeSeries.h"
 #include "mspass/utility/AntelopePf.h"
 #include "mspass/utility/Metadata.h"
@@ -46,6 +47,10 @@ void ValidateGIDLeafOperatorMetadata(
     const std::string &caller, const bool allow_noise_window_keys = false);
 void ValidateExternalTimeSeriesSampleInterval(
     const mspass::seismic::TimeSeries &d, const double target_dt,
+    const std::string &caller);
+mspass::algorithms::TimeWindow ClipTimeWindowToSeries(
+    const mspass::seismic::CoreTimeSeries &d,
+    const mspass::algorithms::TimeWindow &requested,
     const std::string &caller);
 double FIRSelfOverlap(const std::vector<double> &fir, const int col0_i,
                       const int col0_j, const int ncols);

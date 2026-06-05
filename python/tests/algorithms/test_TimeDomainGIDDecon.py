@@ -121,6 +121,22 @@ def _pf_with_mode(tmp_path, pf_name, branch_name, mode):
     return pfread(str(dst))
 
 
+def _pf_with_short_decon_window(tmp_path, pf_name):
+    src = Path("./data/pf") / pf_name
+    text = src.read_text()
+    text = text.replace(
+        "deconvolution_data_window_start -5.0",
+        "deconvolution_data_window_start -0.5",
+    )
+    text = text.replace(
+        "deconvolution_data_window_end 20.0",
+        "deconvolution_data_window_end 0.5",
+    )
+    dst = tmp_path / pf_name
+    dst.write_text(text)
+    return pfread(str(dst))
+
+
 def _make_external_wavelet_3c_data(noise_level=1.0e-4):
     n = 1400
     dt = 0.05
@@ -778,6 +794,23 @@ def test_TimeDomainGIDDecon_cnr_honors_external_noise(tmp_path):
 
     difference_norm = np.linalg.norm(outputs[0] - outputs[1])
     assert difference_norm / np.linalg.norm(outputs[0]) > 1.0e-3
+
+
+def test_TimeDomainGIDDecon_short_kernel_crop_is_bounded(tmp_path):
+    data = _make_single_spike_convolution_data()
+    pf = _pf_with_short_decon_window(tmp_path, "TimeDomainGIDDecon.pf")
+    engine = TimeDomainGIDDecon(pf)
+
+    rf = TimeDomainGIDRFDecon(
+        data,
+        engine,
+        signal_window=TimeWindow(-1.5, 1.5),
+        noise_window=TimeWindow(-35.0, -5.0),
+    )
+
+    _assert_valid_rf(rf)
+    qc = rf["TimeDomainGIDDecon_properties"]
+    assert qc["gid_actual_o_fir_npts"] <= rf.npts
 
 
 def test_TimeDomainGIDDecon_changeparameter_handles_cnr_mode(tmp_path):

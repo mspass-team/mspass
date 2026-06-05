@@ -305,6 +305,26 @@ void ValidateExternalTimeSeriesSampleInterval(const TimeSeries &d,
                       ErrorSeverity::Invalid);
 }
 
+TimeWindow ClipTimeWindowToSeries(const CoreTimeSeries &d,
+                                  const TimeWindow &requested,
+                                  const string &caller) {
+  if (d.dead() || d.npts() <= 0)
+    throw MsPASSError(caller + ": cannot clip a window to a dead or empty "
+                                  "time series",
+                      ErrorSeverity::Invalid);
+  if (!std::isfinite(requested.start) || !std::isfinite(requested.end) ||
+      requested.end <= requested.start)
+    throw MsPASSError(caller + ": requested clip window is invalid",
+                      ErrorSeverity::Invalid);
+  const double clipped_start = max(requested.start, d.t0());
+  const double clipped_end = min(requested.end, d.endtime());
+  if (clipped_end <= clipped_start)
+    throw MsPASSError(caller + ": requested clip window does not overlap "
+                                  "time series",
+                      ErrorSeverity::Invalid);
+  return TimeWindow(clipped_start, clipped_end);
+}
+
 double FIRSelfOverlap(const vector<double> &fir, const int col0_i,
                       const int col0_j, const int ncols) {
   const int nf = static_cast<int>(fir.size());

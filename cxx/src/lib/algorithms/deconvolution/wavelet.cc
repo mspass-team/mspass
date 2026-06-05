@@ -8,39 +8,20 @@ using namespace std;
  * rational.   IMPORTANT to note output is circular shifted to zero phase
  * so fft of result will not produce a time shift. */
 double *rickerwavelet(float fpeak, float dt, int n) {
-  // modified from http://toto-share.com/2011/05/cc-ricker-wavelets-code/
-  int i, k;
-  int nw;
-  int nc;
-  double nw1, alpha, beta;
-
-  nw1 = 2.2 / fpeak / dt;
-  nw = 2 * floor(nw1 / 2) + 1;
-  nc = floor(nw / 2);
-  double *wricker = new double[n];
-
-  for (i = 0; i < nw; i++) {
-    k = i + 1;
-    alpha = (nc - k + 1) * fpeak * dt * M_PI;
-    beta = pow(alpha, 2.0);
-    wricker[i] = (1 - (beta * 2)) * exp(-beta);
-  }
-  for (i = nw; i < n; i++)
-    wricker[i] = 0;
   double *ricker = new double[n];
   if (fpeak == 0) {
     ricker[0] = 1.0;
     for (int i = 1; i < n; i++)
       ricker[i] = 0.0;
   } else {
-    for (i = 0; i < nc; i++)
-      ricker[n - nc + i] = wricker[i];
-    for (i = nc; i < nw; i++)
-      ricker[i - nc] = wricker[i];
-    for (i = nw - nc; i < n - nc; i++)
-      ricker[i] = 0;
+    for (int i = 0; i < n; i++) {
+      const double t = (i <= n / 2) ? static_cast<double>(i) * dt
+                                    : -static_cast<double>(n - i) * dt;
+      const double alpha = M_PI * static_cast<double>(fpeak) * t;
+      const double beta = alpha * alpha;
+      ricker[i] = (1.0 - 2.0 * beta) * exp(-beta);
+    }
   }
-  delete[] wricker;
   return (ricker);
 }
 

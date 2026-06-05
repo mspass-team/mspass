@@ -21,6 +21,7 @@ from test_TimeDomainGIDDecon import (
     _make_gid_test_data,
     _make_single_spike_convolution_data,
     _ns_gid_pf,
+    _pf_with_short_decon_window,
     _pf_with_mode,
 )
 
@@ -581,6 +582,19 @@ def test_FrequencyDomainGIDDecon_cnr_honors_external_noise(tmp_path):
 
     difference_norm = np.linalg.norm(outputs[0] - outputs[1])
     assert difference_norm / np.linalg.norm(outputs[0]) > 1.0e-3
+
+
+def test_FrequencyDomainGIDDecon_short_kernel_crop_is_bounded(tmp_path):
+    data = _make_single_spike_convolution_data()
+    pf = _pf_with_short_decon_window(tmp_path, "FrequencyDomainGIDDecon.pf")
+
+    rf, actual_output, output_shaping_wavelet = _run_frequency_gid(data, pf)
+
+    _assert_valid_rf(rf)
+    assert actual_output.live
+    assert output_shaping_wavelet.live
+    qc = rf["FrequencyDomainGIDDecon_properties"]
+    assert qc["gid_actual_o_fir_npts"] <= rf.npts
 
 
 def test_FrequencyDomainGIDDecon_changeparameter_rejects_gid_level_metadata():
