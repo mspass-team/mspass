@@ -711,8 +711,6 @@ class RFdeconProcessor:
             for the alternative algorithm.
         """
         parameter_md = Metadata(md)
-        if not self.__is_3c_engine:
-            self.md = parameter_md
         if hasattr(self.processor, "changeparameter"):
             self.processor.changeparameter(parameter_md)
         elif hasattr(self.processor, "change_parameter"):
@@ -722,6 +720,8 @@ class RFdeconProcessor:
                 "wrapped deconvolution processor does not expose a parameter "
                 "change method"
             )
+        if not self.__is_3c_engine:
+            self.md = parameter_md
 
     @property
     def uses_noise(self):

@@ -1131,3 +1131,31 @@ def test_TimeDomainGIDRFDecon_error_return_and_optional_qc():
     rf = TimeDomainGIDRFDecon(data, engine, QCdata_key=None)
     _assert_valid_rf(rf)
     assert not rf.is_defined("TimeDomainGIDDecon_properties")
+
+
+def test_TimeDomainGIDDecon_rejects_invalid_runtime_noise_window():
+    data = _make_gid_test_data(noise_level=None)
+    pf = pfread("./data/pf/TimeDomainGIDDecon.pf")
+    engine = TimeDomainGIDDecon(pf)
+
+    with pytest.raises(MsPASSError, match="noise_window") as excinfo:
+        engine.load(data, TimeWindow(-10.0, 20.0), TimeWindow(0.0, -10.0))
+
+    assert excinfo.value.severity == ErrorSeverity.Fatal
+
+    engine = TimeDomainGIDDecon(pf)
+    with pytest.raises(MsPASSError, match="noise_window") as excinfo:
+        engine.loadnoise(data, TimeWindow(0.0, -10.0))
+
+    assert excinfo.value.severity == ErrorSeverity.Fatal
+
+
+def test_TimeDomainGIDDecon_rejects_invalid_runtime_signal_window():
+    data = _make_gid_test_data(noise_level=None)
+    pf = pfread("./data/pf/TimeDomainGIDDecon.pf")
+    engine = TimeDomainGIDDecon(pf)
+
+    with pytest.raises(MsPASSError, match="signal_window") as excinfo:
+        engine.load(data, TimeWindow(20.0, -10.0), TimeWindow(-35.0, -5.0))
+
+    assert excinfo.value.severity == ErrorSeverity.Fatal

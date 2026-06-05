@@ -189,6 +189,39 @@ def test_scalar_fft_decon_uses_minimal_linear_padding(tmp_path):
     assert np.allclose(np.asarray(engine.getresult()), model, atol=1.0e-5)
 
 
+def test_fft_window_sample_count_uses_rounding_near_integer_boundary(tmp_path):
+    dt = 0.1
+    n = 33
+    # One ulp below 3.2 gives duration/dt just below 32.  Truncating that
+    # value yields 32 samples, while rounding preserves the intended 33.
+    window_end = np.nextafter((n - 1) * dt, 0.0)
+    pf_file = tmp_path / "rounding_fft_length.pf"
+    pf_file.write_text(
+        f"""
+target_sample_interval {dt:.17g}
+operator_nfft {n}
+deconvolution_data_window_start 0.0
+deconvolution_data_window_end {window_end:.17g}
+damping_factor 1.0e-12
+water_level 1.0e-12
+shaping_wavelet_dt {dt:.17g}
+shaping_wavelet_type none
+"""
+    )
+    pf = pfread(str(pf_file))
+    engine = LeastSquareDecon(pf)
+    wavelet = np.zeros(n)
+    wavelet[0] = 1.0
+    data = np.zeros(n)
+    data[-1] = 1.0
+
+    engine.load(_double_vector(wavelet), _double_vector(data))
+    engine.process()
+
+    assert engine.actual_output().npts == 128
+    assert len(engine.getresult()) == n
+
+
 def test_direct_and_fft_padded_linear_convolution_agree():
     wavelet = np.array([0.25, -0.5, 1.0, 0.5, -0.125])
     model = np.zeros(17)

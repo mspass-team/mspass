@@ -176,6 +176,11 @@ wavelet used to represent sparse spikes.
        G(f) = \frac{\overline{W_0(f)}}{\operatorname{Den}_{mt}(f)},\quad
        RF(f)=G(f)D_0(f),\quad AO(f)=G(f)W_0(f).
 
+    In RF workflows the multitaper noise vector should normally be a pre-event
+    noise segment from the source/wavelet component, commonly the vertical or
+    P component, not the radial or transverse target component being
+    deconvolved.
+
     ``MultiTaperPowerXcor`` uses the mean multitaper source power plus a
     damped mean multitaper noise power as ``Den_mt``.
     ``MultiTaperPowerSpecDiv`` is the multitaper power-stabilized

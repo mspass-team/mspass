@@ -360,6 +360,8 @@ int TimeDomainGIDDecon::load(const CoreSeismogram &draw, TimeWindow dwin_in) {
     this->invalidate_processing_state();
     d_all.kill();
     ndwin = 0;
+    ValidateWindowDuration(dwin_in, "signal_window",
+                           "TimeDomainGIDDecon::load");
     if ((dwin_in.start > fftwin.start) || (dwin_in.end < fftwin.end)) {
       return 1;
     }
@@ -386,6 +388,8 @@ int TimeDomainGIDDecon::loadnoise(const CoreSeismogram &draw,
     nnwin = 0;
     ns_noise_components.clear();
     residual_noise_from_external = false;
+    ValidateWindowDuration(nwin_in, "noise_window",
+                           "TimeDomainGIDDecon::loadnoise");
     nwin = nwin_in;
     n = WindowData(draw, nwin);
     if (n.dead() || n.npts() <= 0)
@@ -517,6 +521,8 @@ int TimeDomainGIDDecon::load(const CoreSeismogram &draw, TimeWindow dwin,
     ndwin = 0;
     nnwin = 0;
     ns_noise_components.clear();
+    ValidateWindowDuration(dwin, "signal_window", "TimeDomainGIDDecon::load");
+    ValidateWindowDuration(nwin, "noise_window", "TimeDomainGIDDecon::load");
     if ((dwin.start > fftwin.start) || (dwin.end < fftwin.end)) {
       return 1;
     }
@@ -585,7 +591,7 @@ void TimeDomainGIDDecon::update_lag_weights(int col) {
 double TimeDomainGIDDecon::compute_resid_linf_floor() {
   try {
     /*Note - this needs an enhancement.   We should not include points
-    in a padd region accounting for the inverse filter padding. */
+    in a padded region accounting for the inverse filter padding. */
     vector<double> amps(ThreeCAmplitudes(n.u));
     sort(amps.begin(), amps.end());
     int floor_position;

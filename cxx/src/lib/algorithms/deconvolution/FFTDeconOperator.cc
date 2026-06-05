@@ -202,7 +202,7 @@ int ComputeFFTLength(const TimeWindow w, const double dt) {
   if (!std::isfinite(dt) || dt <= 0.0)
     throw MsPASSError(caller + ": target_sample_interval must be positive",
                       ErrorSeverity::Fatal);
-  nsamples = static_cast<int>(((w.end - w.start) / dt)) + 1;
+  nsamples = static_cast<int>(round((w.end - w.start) / dt)) + 1;
   if (nsamples < 2)
     throw MsPASSError(caller +
                           ": deconvolution window must contain at least two "

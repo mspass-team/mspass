@@ -916,3 +916,31 @@ def test_FrequencyDomainGIDRFDecon_error_return_and_optional_qc():
     rf = FrequencyDomainGIDRFDecon(data, engine, QCdata_key=None)
     _assert_valid_rf(rf)
     assert not rf.is_defined("FrequencyDomainGIDDecon_properties")
+
+
+def test_FrequencyDomainGIDDecon_rejects_invalid_runtime_noise_window():
+    data = _make_single_spike_convolution_data()
+    pf = pfread("./data/pf/FrequencyDomainGIDDecon.pf")
+    engine = FrequencyDomainGIDDecon(pf)
+
+    with pytest.raises(MsPASSError, match="noise_window") as excinfo:
+        engine.load(data, TimeWindow(-10.0, 20.0), TimeWindow(0.0, -10.0))
+
+    assert excinfo.value.severity == ErrorSeverity.Fatal
+
+    engine = FrequencyDomainGIDDecon(pf)
+    with pytest.raises(MsPASSError, match="noise_window") as excinfo:
+        engine.loadnoise(data, TimeWindow(0.0, -10.0))
+
+    assert excinfo.value.severity == ErrorSeverity.Fatal
+
+
+def test_FrequencyDomainGIDDecon_rejects_invalid_runtime_signal_window():
+    data = _make_single_spike_convolution_data()
+    pf = pfread("./data/pf/FrequencyDomainGIDDecon.pf")
+    engine = FrequencyDomainGIDDecon(pf)
+
+    with pytest.raises(MsPASSError, match="signal_window") as excinfo:
+        engine.load(data, TimeWindow(20.0, -10.0), TimeWindow(-35.0, -5.0))
+
+    assert excinfo.value.severity == ErrorSeverity.Fatal
