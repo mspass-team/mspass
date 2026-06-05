@@ -146,9 +146,7 @@ def _make_external_wavelet_3c_data(noise_level=1.0e-4):
     w.set_dt(dt)
     w.set_live()
     x = np.arange(w.npts) * dt + w.t0
-    wv = np.exp(-0.5 * (x / 0.16) ** 2) - 0.35 * np.exp(
-        -0.5 * ((x - 0.35) / 0.22) ** 2
-    )
+    wv = np.exp(-0.5 * (x / 0.16) ** 2) - 0.35 * np.exp(-0.5 * ((x - 0.35) / 0.22) ** 2)
     wv /= np.max(np.abs(wv))
     for i, v in enumerate(wv):
         w.data[i] = v
@@ -216,9 +214,7 @@ def test_NoiseStableDecon_enforces_gain_cap_on_notched_wavelet():
 
 def test_TimeDomainNSGID_uses_external_wavelet_and_rejects_noise_spikes(tmp_path):
     data, wavelet, spike_times = _make_external_wavelet_3c_data(noise_level=2.0e-4)
-    pf = _ns_gid_pf(
-        tmp_path, "TimeDomainGIDDecon.pf", "time_domain_gid_deconvolution"
-    )
+    pf = _ns_gid_pf(tmp_path, "TimeDomainGIDDecon.pf", "time_domain_gid_deconvolution")
     engine = TimeDomainGIDDecon(pf)
     rf = TimeDomainGIDRFDecon(
         data,
@@ -252,9 +248,7 @@ def test_TimeDomainNSGID_uses_external_wavelet_and_rejects_noise_spikes(tmp_path
 def test_TimeDomainGIDRFDecon_preserves_engine_external_state_between_calls(tmp_path):
     data = _make_gid_test_data(noise_level=1.0e-4)
     external_wavelet = make_simulation_wavelet()
-    pf = _ns_gid_pf(
-        tmp_path, "TimeDomainGIDDecon.pf", "time_domain_gid_deconvolution"
-    )
+    pf = _ns_gid_pf(tmp_path, "TimeDomainGIDDecon.pf", "time_domain_gid_deconvolution")
     engine = TimeDomainGIDDecon(pf)
 
     rf_external = TimeDomainGIDRFDecon(
@@ -265,9 +259,7 @@ def test_TimeDomainGIDRFDecon_preserves_engine_external_state_between_calls(tmp_
         external_wavelet=external_wavelet,
     )
     assert rf_external.live
-    assert rf_external["TimeDomainGIDDecon_properties"][
-        "ns_gid_external_wavelet_used"
-    ]
+    assert rf_external["TimeDomainGIDDecon_properties"]["ns_gid_external_wavelet_used"]
 
     rf_internal = TimeDomainGIDRFDecon(
         data,
@@ -276,15 +268,11 @@ def test_TimeDomainGIDRFDecon_preserves_engine_external_state_between_calls(tmp_
         noise_window=TimeWindow(-25.0, -8.0),
     )
     assert rf_internal.live
-    assert rf_internal["TimeDomainGIDDecon_properties"][
-        "ns_gid_external_wavelet_used"
-    ]
+    assert rf_internal["TimeDomainGIDDecon_properties"]["ns_gid_external_wavelet_used"]
 
 
 def test_TimeDomainGIDDecon_rejects_empty_external_noise(tmp_path):
-    pf = _ns_gid_pf(
-        tmp_path, "TimeDomainGIDDecon.pf", "time_domain_gid_deconvolution"
-    )
+    pf = _ns_gid_pf(tmp_path, "TimeDomainGIDDecon.pf", "time_domain_gid_deconvolution")
     engine = TimeDomainGIDDecon(pf)
     empty_noise = TimeSeries(0)
     empty_noise.set_live()
@@ -294,9 +282,7 @@ def test_TimeDomainGIDDecon_rejects_empty_external_noise(tmp_path):
 
 
 def test_TimeDomainGIDDecon_rejects_invalid_external_noise_spectrum(tmp_path):
-    pf = _ns_gid_pf(
-        tmp_path, "TimeDomainGIDDecon.pf", "time_domain_gid_deconvolution"
-    )
+    pf = _ns_gid_pf(tmp_path, "TimeDomainGIDDecon.pf", "time_domain_gid_deconvolution")
     engine = TimeDomainGIDDecon(pf)
     dead_spectrum = PowerSpectrum(
         Metadata(), DoubleVector([1.0]), 1.0, "dead", 0.0, 1.0, 1
@@ -350,9 +336,7 @@ def test_TimeDomainGIDDecon_rejects_non_ns_power_spectrum_noise(tmp_path, mode):
 
 
 def test_TimeDomainGIDDecon_rejects_dead_external_wavelet_and_noise(tmp_path):
-    pf = _ns_gid_pf(
-        tmp_path, "TimeDomainGIDDecon.pf", "time_domain_gid_deconvolution"
-    )
+    pf = _ns_gid_pf(tmp_path, "TimeDomainGIDDecon.pf", "time_domain_gid_deconvolution")
     engine = TimeDomainGIDDecon(pf)
     dead_wavelet = TimeSeries(8)
     dead_wavelet.kill()
@@ -366,9 +350,7 @@ def test_TimeDomainGIDDecon_rejects_dead_external_wavelet_and_noise(tmp_path):
 
 
 def test_TimeDomainGIDDecon_rejects_external_timeseries_dt_mismatch(tmp_path):
-    pf = _ns_gid_pf(
-        tmp_path, "TimeDomainGIDDecon.pf", "time_domain_gid_deconvolution"
-    )
+    pf = _ns_gid_pf(tmp_path, "TimeDomainGIDDecon.pf", "time_domain_gid_deconvolution")
     engine = TimeDomainGIDDecon(pf)
     wavelet = TimeSeries(8)
     wavelet.set_live()
@@ -590,9 +572,7 @@ def test_TimeDomainGIDDecon_engine_is_dask_serializable_for_wrapper_use():
 def test_TimeDomainGIDDecon_pickle_preserves_external_wavelet_and_noise(tmp_path):
     data, wavelet, _ = _make_external_wavelet_3c_data(noise_level=2.0e-4)
     noise = _make_external_noise()
-    pf = _ns_gid_pf(
-        tmp_path, "TimeDomainGIDDecon.pf", "time_domain_gid_deconvolution"
-    )
+    pf = _ns_gid_pf(tmp_path, "TimeDomainGIDDecon.pf", "time_domain_gid_deconvolution")
     engine = TimeDomainGIDDecon(pf)
     engine.loadwavelet(wavelet)
     engine.loadnoise(noise)
@@ -631,9 +611,7 @@ def test_TimeDomainGIDDecon_pickle_preserves_external_wavelet_and_noise(tmp_path
 
 
 def test_TimeDomainGIDDecon_clear_external_state_drops_pickle_payload(tmp_path):
-    pf = _ns_gid_pf(
-        tmp_path, "TimeDomainGIDDecon.pf", "time_domain_gid_deconvolution"
-    )
+    pf = _ns_gid_pf(tmp_path, "TimeDomainGIDDecon.pf", "time_domain_gid_deconvolution")
     engine = TimeDomainGIDDecon(pf)
     baseline_size = len(pickle.dumps(engine))
 
@@ -659,9 +637,7 @@ def test_TimeDomainGIDDecon_clear_external_state_drops_pickle_payload(tmp_path):
 def test_TimeDomainGIDDecon_switching_external_noise_drops_inactive_payload(
     tmp_path,
 ):
-    pf = _ns_gid_pf(
-        tmp_path, "TimeDomainGIDDecon.pf", "time_domain_gid_deconvolution"
-    )
+    pf = _ns_gid_pf(tmp_path, "TimeDomainGIDDecon.pf", "time_domain_gid_deconvolution")
     engine = TimeDomainGIDDecon(pf)
     baseline_size = len(pickle.dumps(engine))
 

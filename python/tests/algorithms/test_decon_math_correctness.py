@@ -34,8 +34,7 @@ def _write_scalar_pf(
     if window_end is None:
         window_end = float(nfft - 1)
     pf = tmp_path / "scalar_decon.pf"
-    pf.write_text(
-        f"""
+    pf.write_text(f"""
 target_sample_interval 1.0
 operator_nfft {nfft}
 deconvolution_data_window_start {window_start:.12f}
@@ -44,8 +43,7 @@ damping_factor {damping:.12f}
 water_level {water_level:.12f}
 shaping_wavelet_dt 1.0
 shaping_wavelet_type none
-"""
-    )
+""")
     return pfread(str(pf))
 
 
@@ -64,8 +62,7 @@ def _write_time_domain_ls_pf(
     if model_length is not None:
         model_length_line = f"model_length {model_length}\n"
     pf = tmp_path / "time_domain_ls.pf"
-    pf.write_text(
-        f"""
+    pf.write_text(f"""
 target_sample_interval 1.0
 operator_nfft {nfft}
 deconvolution_data_window_start {window_start:.12f}
@@ -74,8 +71,7 @@ damping_factor {damping:.12f}
 {model_length_line}shaping_wavelet_dt 1.0
 shaping_wavelet_type {shaping_wavelet_type}
 shaping_wavelet_frequency {shaping_frequency:.12f}
-"""
-    )
+""")
     return pfread(str(pf))
 
 
@@ -90,8 +86,7 @@ def _write_multitaper_pf(
     shaping_frequency=1.0,
 ):
     pf = tmp_path / "multitaper_decon.pf"
-    pf.write_text(
-        f"""
+    pf.write_text(f"""
 target_sample_interval 0.05
 operator_nfft {nfft}
 deconvolution_data_window_start {window_start:.12f}
@@ -102,15 +97,13 @@ number_tapers 4
 shaping_wavelet_dt 0.05
 shaping_wavelet_type {shaping_wavelet_type}
 shaping_wavelet_frequency {shaping_frequency:.12f}
-"""
-    )
+""")
     return pfread(str(pf))
 
 
 def _write_noise_stable_pf(tmp_path, *, window_start=0.0, window_end=63.0, nfft=128):
     pf = tmp_path / "noise_stable_decon.pf"
-    pf.write_text(
-        f"""
+    pf.write_text(f"""
 target_sample_interval 1.0
 operator_nfft {nfft}
 deconvolution_data_window_start {window_start:.12f}
@@ -124,8 +117,7 @@ ns_gid_snr_taper_low 1.0
 ns_gid_snr_taper_high 3.0
 shaping_wavelet_dt 1.0
 shaping_wavelet_type none
-"""
-    )
+""")
     return pfread(str(pf))
 
 
@@ -169,9 +161,7 @@ assert op.inverse_wavelet().npts > 0
 def _fft_linear_convolution(wavelet, model):
     nout = len(wavelet) + len(model) - 1
     nfft = 1 << (nout - 1).bit_length()
-    return np.fft.ifft(np.fft.fft(wavelet, nfft) * np.fft.fft(model, nfft)).real[
-        :nout
-    ]
+    return np.fft.ifft(np.fft.fft(wavelet, nfft) * np.fft.fft(model, nfft)).real[:nout]
 
 
 def test_scalar_fft_decon_uses_minimal_linear_padding(tmp_path):
@@ -200,8 +190,7 @@ def test_fft_window_sample_count_uses_rounding_near_integer_boundary(tmp_path):
     # value yields 32 samples, while rounding preserves the intended 33.
     window_end = np.nextafter((n - 1) * dt, 0.0)
     pf_file = tmp_path / "rounding_fft_length.pf"
-    pf_file.write_text(
-        f"""
+    pf_file.write_text(f"""
 target_sample_interval {dt:.17g}
 operator_nfft {n}
 deconvolution_data_window_start 0.0
@@ -210,8 +199,7 @@ damping_factor 1.0e-12
 water_level 1.0e-12
 shaping_wavelet_dt {dt:.17g}
 shaping_wavelet_type none
-"""
-    )
+""")
     pf = pfread(str(pf_file))
     engine = LeastSquareDecon(pf)
     wavelet = np.zeros(n)
@@ -354,16 +342,20 @@ def test_scalar_decon_methods_share_nonzero_lag_convention(
     wavelet = np.zeros(16)
     zero_lag_sample = 4
     wavelet[zero_lag_sample] = 1.0
-    pf = pf_factory(
-        tmp_path,
-        window_start=-float(zero_lag_sample),
-        window_end=float(model.size - zero_lag_sample - 1),
-        model_length=model.size,
-    ) if engine_class is TimeDomainLeastSquareDecon else pf_factory(
-        tmp_path,
-        nfft=model.size,
-        window_start=-float(zero_lag_sample),
-        window_end=float(model.size - zero_lag_sample - 1),
+    pf = (
+        pf_factory(
+            tmp_path,
+            window_start=-float(zero_lag_sample),
+            window_end=float(model.size - zero_lag_sample - 1),
+            model_length=model.size,
+        )
+        if engine_class is TimeDomainLeastSquareDecon
+        else pf_factory(
+            tmp_path,
+            nfft=model.size,
+            window_start=-float(zero_lag_sample),
+            window_end=float(model.size - zero_lag_sample - 1),
+        )
     )
 
     recovered = _run_scalar_engine(engine_class, pf, wavelet, model)
@@ -619,9 +611,7 @@ def test_time_domain_least_squares_regularizes_ill_conditioned_problem(tmp_path)
     assert np.linalg.norm(recovered) < 10.0 * np.linalg.norm(model)
 
 
-@pytest.mark.parametrize(
-    "engine_class", [MultiTaperXcorDecon, MultiTaperSpecDivDecon]
-)
+@pytest.mark.parametrize("engine_class", [MultiTaperXcorDecon, MultiTaperSpecDivDecon])
 def test_multitaper_rejects_zero_lag_outside_output_window(tmp_path, engine_class):
     pf = _write_multitaper_pf(tmp_path, window_start=-11.0, window_end=-1.0)
     wavelet = np.zeros(201)
@@ -637,9 +627,7 @@ def test_multitaper_rejects_zero_lag_outside_output_window(tmp_path, engine_clas
         engine.process()
 
 
-@pytest.mark.parametrize(
-    "engine_class", [MultiTaperXcorDecon, MultiTaperSpecDivDecon]
-)
+@pytest.mark.parametrize("engine_class", [MultiTaperXcorDecon, MultiTaperSpecDivDecon])
 def test_multitaper_rejects_empty_noise_vector(tmp_path, engine_class):
     n = 64
     pf = _write_multitaper_pf(
@@ -654,9 +642,7 @@ def test_multitaper_rejects_empty_noise_vector(tmp_path, engine_class):
         engine.loadnoise(_double_vector([]))
 
 
-@pytest.mark.parametrize(
-    "engine_class", [MultiTaperXcorDecon, MultiTaperSpecDivDecon]
-)
+@pytest.mark.parametrize("engine_class", [MultiTaperXcorDecon, MultiTaperSpecDivDecon])
 def test_multitaper_actual_output_requires_process(tmp_path, engine_class):
     n = 64
     pf = _write_multitaper_pf(
@@ -671,9 +657,7 @@ def test_multitaper_actual_output_requires_process(tmp_path, engine_class):
         engine.actual_output()
 
 
-@pytest.mark.parametrize(
-    "engine_class", [MultiTaperXcorDecon, MultiTaperSpecDivDecon]
-)
+@pytest.mark.parametrize("engine_class", [MultiTaperXcorDecon, MultiTaperSpecDivDecon])
 def test_multitaper_failed_process_does_not_leave_processed_state(
     tmp_path, engine_class
 ):
@@ -701,9 +685,7 @@ def test_multitaper_failed_process_does_not_leave_processed_state(
         engine.actual_output()
 
 
-@pytest.mark.parametrize(
-    "engine_class", [MultiTaperXcorDecon, MultiTaperSpecDivDecon]
-)
+@pytest.mark.parametrize("engine_class", [MultiTaperXcorDecon, MultiTaperSpecDivDecon])
 def test_multitaper_safely_pads_vectors_shorter_than_taper_length(
     tmp_path, engine_class
 ):
@@ -725,9 +707,7 @@ def test_multitaper_safely_pads_vectors_shorter_than_taper_length(
     assert np.isfinite(recovered).all()
 
 
-@pytest.mark.parametrize(
-    "engine_class", [MultiTaperXcorDecon, MultiTaperSpecDivDecon]
-)
+@pytest.mark.parametrize("engine_class", [MultiTaperXcorDecon, MultiTaperSpecDivDecon])
 @pytest.mark.parametrize("amplitude", [0.5, -1.25, 2.0])
 def test_multitaper_direct_ratio_matches_scalar_amplitude(
     tmp_path, engine_class, amplitude
@@ -750,14 +730,10 @@ def test_multitaper_direct_ratio_matches_scalar_amplitude(
 
     assert recovered[0] == pytest.approx(amplitude, abs=2.0e-3)
     assert np.sign(recovered[0]) == np.sign(amplitude)
-    assert np.max(np.abs(recovered)) == pytest.approx(
-        abs(amplitude), rel=1.0e-2
-    )
+    assert np.max(np.abs(recovered)) == pytest.approx(abs(amplitude), rel=1.0e-2)
 
 
-@pytest.mark.parametrize(
-    "engine_class", [MultiTaperXcorDecon, MultiTaperSpecDivDecon]
-)
+@pytest.mark.parametrize("engine_class", [MultiTaperXcorDecon, MultiTaperSpecDivDecon])
 def test_multitaper_process_and_actual_output_are_idempotent(tmp_path, engine_class):
     n = 160
     pf = _write_multitaper_pf(
@@ -787,9 +763,7 @@ def test_multitaper_process_and_actual_output_are_idempotent(tmp_path, engine_cl
     assert np.allclose(first_result, second_result, atol=1.0e-12)
 
 
-@pytest.mark.parametrize(
-    "engine_class", [MultiTaperXcorDecon, MultiTaperSpecDivDecon]
-)
+@pytest.mark.parametrize("engine_class", [MultiTaperXcorDecon, MultiTaperSpecDivDecon])
 def test_multitaper_changeparameter_refreshes_shaping_wavelet_only(
     tmp_path, engine_class
 ):
@@ -831,12 +805,8 @@ def test_multitaper_changeparameter_refreshes_shaping_wavelet_only(
     assert np.isfinite(actual_ricker).all()
 
 
-@pytest.mark.parametrize(
-    "engine_class", [MultiTaperXcorDecon, MultiTaperSpecDivDecon]
-)
-def test_multitaper_changeparameter_refreshes_lag_window(
-    tmp_path, engine_class
-):
+@pytest.mark.parametrize("engine_class", [MultiTaperXcorDecon, MultiTaperSpecDivDecon])
+def test_multitaper_changeparameter_refreshes_lag_window(tmp_path, engine_class):
     n = 160
     dt = 0.05
     base_pf = _write_multitaper_pf(
@@ -873,9 +843,7 @@ def test_multitaper_changeparameter_refreshes_lag_window(
     assert result_shifted[zero_lag_index] == pytest.approx(1.5, abs=2.0e-3)
 
 
-@pytest.mark.parametrize(
-    "engine_class", [MultiTaperXcorDecon, MultiTaperSpecDivDecon]
-)
+@pytest.mark.parametrize("engine_class", [MultiTaperXcorDecon, MultiTaperSpecDivDecon])
 def test_multitaper_rejects_inputs_longer_than_taperlen(tmp_path, engine_class):
     n = 80
     pf = _write_multitaper_pf(
@@ -892,11 +860,15 @@ def test_multitaper_rejects_inputs_longer_than_taperlen(tmp_path, engine_class):
 
     engine = engine_class(pf)
     with pytest.raises(MsPASSError, match="taper"):
-        engine.load(_double_vector(wavelet), _double_vector(overlong), _double_vector(noise))
+        engine.load(
+            _double_vector(wavelet), _double_vector(overlong), _double_vector(noise)
+        )
 
     engine = engine_class(pf)
     with pytest.raises(MsPASSError, match="taper"):
-        engine.load(_double_vector(wavelet), _double_vector(data), _double_vector(overlong))
+        engine.load(
+            _double_vector(wavelet), _double_vector(data), _double_vector(overlong)
+        )
 
     engine = engine_class(pf)
     engine.load(_double_vector(wavelet), _double_vector(data), _double_vector(noise))
@@ -905,9 +877,7 @@ def test_multitaper_rejects_inputs_longer_than_taperlen(tmp_path, engine_class):
         engine.process()
 
 
-@pytest.mark.parametrize(
-    "engine_class", [MultiTaperXcorDecon, MultiTaperSpecDivDecon]
-)
+@pytest.mark.parametrize("engine_class", [MultiTaperXcorDecon, MultiTaperSpecDivDecon])
 def test_multitaper_accepts_short_noise_by_right_padding(tmp_path, engine_class):
     n = 80
     pf = _write_multitaper_pf(
@@ -923,7 +893,9 @@ def test_multitaper_accepts_short_noise_by_right_padding(tmp_path, engine_class)
     short_noise = 0.001 * np.ones(16)
 
     engine = engine_class(pf)
-    engine.load(_double_vector(wavelet), _double_vector(data), _double_vector(short_noise))
+    engine.load(
+        _double_vector(wavelet), _double_vector(data), _double_vector(short_noise)
+    )
     engine.process()
     result = np.asarray(engine.getresult(), dtype=np.float64)
 
@@ -1077,7 +1049,10 @@ def _multitaper_reference(
     W0 = np.fft.fft(np.pad(wavelet, (0, nfft - len(wavelet))))
     D0 = np.fft.fft(np.pad(data, (0, nfft - len(data))))
     Wk = np.asarray(
-        [np.fft.fft(np.pad(taper * wavelet, (0, nfft - len(wavelet)))) for taper in tapers]
+        [
+            np.fft.fft(np.pad(taper * wavelet, (0, nfft - len(wavelet))))
+            for taper in tapers
+        ]
     )
     Nk = np.asarray(
         [np.fft.fft(np.pad(taper * noise, (0, nfft - len(noise)))) for taper in tapers]
@@ -1092,9 +1067,7 @@ def _multitaper_reference(
         den = mean_source_power + damping * np.mean(noise_power, axis=0)
         den += relative_floor
     elif method == "specdiv":
-        relative_floor = max(
-            np.finfo(float).eps, 1.0e-12 * float(np.max(source_power))
-        )
+        relative_floor = max(np.finfo(float).eps, 1.0e-12 * float(np.max(source_power)))
         den = np.mean(
             np.maximum.reduce(
                 [
@@ -1120,7 +1093,9 @@ def _multitaper_reference(
     "engine_class,method",
     [(MultiTaperXcorDecon, "xcor"), (MultiTaperSpecDivDecon, "specdiv")],
 )
-def test_multitaper_matches_closed_form_hybrid_reference(tmp_path, engine_class, method):
+def test_multitaper_matches_closed_form_hybrid_reference(
+    tmp_path, engine_class, method
+):
     n = 192
     nfft = 512
     damping = 0.07
@@ -1171,9 +1146,7 @@ def test_multitaper_specdiv_legacy_all_methods_are_bound(tmp_path):
     assert len(engine.all_actual_outputs()) == engine.get_number_outputs()
 
 
-@pytest.mark.parametrize(
-    "engine_class", [MultiTaperXcorDecon, MultiTaperSpecDivDecon]
-)
+@pytest.mark.parametrize("engine_class", [MultiTaperXcorDecon, MultiTaperSpecDivDecon])
 def test_multitaper_recovers_late_sparse_arrivals_without_taper_phase_bias(
     tmp_path, engine_class
 ):

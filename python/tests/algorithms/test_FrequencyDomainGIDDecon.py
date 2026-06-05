@@ -86,10 +86,7 @@ def test_FrequencyDomainGIDRFDecon_uses_custom_algorithm_name_in_qc():
     )
 
     assert rf.live
-    assert (
-        rf["FrequencyDomainGIDDecon_properties"]["algorithm"]
-        == "CustomFrequencyGID"
-    )
+    assert rf["FrequencyDomainGIDDecon_properties"]["algorithm"] == "CustomFrequencyGID"
 
 
 def test_FrequencyDomainGIDDecon_engine_is_pickleable_for_wrapper_use():
@@ -386,7 +383,9 @@ def test_FrequencyDomainNSGID_uses_external_wavelet_and_gain_cap(tmp_path):
         assert min(abs(t - p) for p in picked_times) < 0.15
 
 
-def test_FrequencyDomainGIDRFDecon_preserves_engine_external_state_between_calls(tmp_path):
+def test_FrequencyDomainGIDRFDecon_preserves_engine_external_state_between_calls(
+    tmp_path,
+):
     data = _make_gid_test_data(noise_level=1.0e-4)
     from decon_data_generators import make_simulation_wavelet
 
@@ -961,9 +960,7 @@ def test_FrequencyDomainGIDDecon_rejects_invalid_top_level_parameters(
         ("noise_window_end", -3.0),
     ],
 )
-def test_FrequencyDomainGIDDecon_changeparameter_rejects_gid_keys_on_leaf(
-    key, value
-):
+def test_FrequencyDomainGIDDecon_changeparameter_rejects_gid_keys_on_leaf(key, value):
     pf = pfread("./data/pf/FrequencyDomainGIDDecon.pf")
     engine = FrequencyDomainGIDDecon(pf)
     leaf_md = pf.get_branch("deconvolution_operator_type").get_branch("least_square")

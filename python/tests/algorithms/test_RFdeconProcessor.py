@@ -156,9 +156,7 @@ def test_RFdeconProcessor_gid_pickle_supports_distributed_use(alg, pf):
     try:
         wavelet = make_simulation_wavelet()
         impulses = make_impulse_data()
-        seis0 = addnoise(
-            convolve_wavelet(impulses, wavelet), nscale=0.0, padlength=800
-        )
+        seis0 = addnoise(convolve_wavelet(impulses, wavelet), nscale=0.0, padlength=800)
         processor = RFdeconProcessor(alg=alg, pf=pf)
         processor2 = pickle.loads(pickle.dumps(processor))
         os.environ.pop("PFPATH", None)
@@ -185,16 +183,12 @@ def test_RFdeconProcessor_gid_pickle_supports_distributed_use(alg, pf):
         ("FrequencyDomainGID", "FrequencyDomainGIDDecon.pf"),
     ],
 )
-def test_RFdeconProcessor_gid_dask_serialization_supports_distributed_use(
-    alg, pf
-):
+def test_RFdeconProcessor_gid_dask_serialization_supports_distributed_use(alg, pf):
     os.environ["PFPATH"] = "./data/pf"
     try:
         wavelet = make_simulation_wavelet()
         impulses = make_impulse_data()
-        seis0 = addnoise(
-            convolve_wavelet(impulses, wavelet), nscale=0.0, padlength=800
-        )
+        seis0 = addnoise(convolve_wavelet(impulses, wavelet), nscale=0.0, padlength=800)
         processor = RFdeconProcessor(alg=alg, pf=pf)
         os.environ.pop("PFPATH", None)
 
@@ -257,9 +251,7 @@ def test_RFdeconProcessor_change_parameters_uses_public_engine_api():
 
         wavelet = make_simulation_wavelet()
         impulses = make_impulse_data()
-        seis0 = addnoise(
-            convolve_wavelet(impulses, wavelet), nscale=0.0, padlength=800
-        )
+        seis0 = addnoise(convolve_wavelet(impulses, wavelet), nscale=0.0, padlength=800)
         rf_changed = RFdecon(
             Seismogram(seis0), alg="GeneralizedIterative", engine=gid_processor
         )
@@ -276,7 +268,9 @@ def test_RFdeconProcessor_change_parameters_uses_public_engine_api():
             assert rf_restored["RFdecon_properties"][
                 "gid_leaf_damping_factor"
             ] == pytest.approx(100.0)
-            assert np.allclose(np.asarray(rf_changed.data), np.asarray(rf_restored.data))
+            assert np.allclose(
+                np.asarray(rf_changed.data), np.asarray(rf_restored.data)
+            )
     finally:
         if old_pfpath is None:
             os.environ.pop("PFPATH", None)
@@ -302,9 +296,7 @@ def test_RFdeconProcessor_change_parameters_preserved_by_dask_serialization():
 
         wavelet = make_simulation_wavelet()
         impulses = make_impulse_data()
-        seis0 = addnoise(
-            convolve_wavelet(impulses, wavelet), nscale=0.0, padlength=800
-        )
+        seis0 = addnoise(convolve_wavelet(impulses, wavelet), nscale=0.0, padlength=800)
         rf_changed = RFdecon(
             Seismogram(seis0), alg="GeneralizedIterative", engine=gid_processor
         )
@@ -326,9 +318,21 @@ def test_RFdeconProcessor_change_parameters_preserved_by_dask_serialization():
 @pytest.mark.parametrize(
     "alg,metadata_key,replacement",
     [
-        ("LeastSquares", "damping_factor", ("damping_factor 1.0", "damping_factor 0.123")),
-        ("GeneralizedIterative", "maximum_iterations", ("maximum_iterations 100", "maximum_iterations 7")),
-        ("FrequencyDomainGID", "maximum_iterations", ("maximum_iterations 100", "maximum_iterations 7")),
+        (
+            "LeastSquares",
+            "damping_factor",
+            ("damping_factor 1.0", "damping_factor 0.123"),
+        ),
+        (
+            "GeneralizedIterative",
+            "maximum_iterations",
+            ("maximum_iterations 100", "maximum_iterations 7"),
+        ),
+        (
+            "FrequencyDomainGID",
+            "maximum_iterations",
+            ("maximum_iterations 100", "maximum_iterations 7"),
+        ),
     ],
 )
 def test_RFdeconProcessor_pickle_uses_same_pf_when_pfpath_has_multiple_matches(
@@ -444,9 +448,7 @@ def test_RFdecon_enables_generalized_iterative():
     try:
         wavelet = make_simulation_wavelet()
         impulses = make_impulse_data()
-        seis0 = addnoise(
-            convolve_wavelet(impulses, wavelet), nscale=0.0, padlength=800
-        )
+        seis0 = addnoise(convolve_wavelet(impulses, wavelet), nscale=0.0, padlength=800)
 
         rf = RFdecon(seis0, alg="GeneralizedIterative", pf="TimeDomainGIDDecon.pf")
 
@@ -510,9 +512,7 @@ def test_RFdecon_generalized_iterative_accepts_external_wavelet():
     try:
         wavelet = make_simulation_wavelet()
         impulses = make_impulse_data()
-        seis0 = addnoise(
-            convolve_wavelet(impulses, wavelet), nscale=0.0, padlength=800
-        )
+        seis0 = addnoise(convolve_wavelet(impulses, wavelet), nscale=0.0, padlength=800)
 
         rf = RFdecon(
             seis0,
@@ -551,9 +551,7 @@ def test_RFdecon_gid_accepts_raw_vector_wavelet_and_noise(alg, pf):
     try:
         wavelet = make_simulation_wavelet()
         impulses = make_impulse_data()
-        seis0 = addnoise(
-            convolve_wavelet(impulses, wavelet), nscale=0.0, padlength=800
-        )
+        seis0 = addnoise(convolve_wavelet(impulses, wavelet), nscale=0.0, padlength=800)
         processor = RFdeconProcessor(alg=alg, pf=pf)
         noise = WindowData(seis0, processor.nwin.start, processor.nwin.end)
         noise = ExtractComponent(noise, 2)
@@ -590,12 +588,8 @@ def test_RFdecon_preserves_preconfigured_gid_external_wavelet_when_omitted(tmp_p
         pf.write_text(text)
         wavelet = make_simulation_wavelet()
         impulses = make_impulse_data()
-        seis0 = addnoise(
-            convolve_wavelet(impulses, wavelet), nscale=0.0, padlength=800
-        )
-        processor = RFdeconProcessor(
-            alg="GeneralizedIterative", pf=str(pf)
-        )
+        seis0 = addnoise(convolve_wavelet(impulses, wavelet), nscale=0.0, padlength=800)
+        processor = RFdeconProcessor(alg="GeneralizedIterative", pf=str(pf))
 
         rf_external = RFdecon(
             Seismogram(seis0),
@@ -922,9 +916,7 @@ def test_RFdeconProcessor_apply_3c_external_wavelet_is_dask_serializable(tmp_pat
 
     assert result.live
     assert restored_dask_result.live
-    assert np.allclose(
-        np.asarray(result.data), np.asarray(restored_dask_result.data)
-    )
+    assert np.allclose(np.asarray(result.data), np.asarray(restored_dask_result.data))
 
 
 def test_RFdeconProcessor_clear_external_state_drops_pickle_payload(tmp_path):

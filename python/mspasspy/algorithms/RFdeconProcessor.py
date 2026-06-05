@@ -349,7 +349,9 @@ class RFdeconProcessor:
         self.md = Metadata(state["md"])
         self.processor = state.get("processor")
         if self.processor is None:
-            self.__init__(state["algorithm"], state["pf"], _pf_text=state.get("_pf_text"))
+            self.__init__(
+                state["algorithm"], state["pf"], _pf_text=state.get("_pf_text")
+            )
         else:
             self.__uses_noise = True
             self.__is_3c_engine = True
