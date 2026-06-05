@@ -6,10 +6,6 @@ import numpy as np
 import pickle
 import cloudpickle
 
-distributed_protocol = pytest.importorskip("distributed.protocol")
-deserialize = distributed_protocol.deserialize
-serialize = distributed_protocol.serialize
-
 from mspasspy.ccore.algorithms.basic import TimeWindow
 from mspasspy.ccore.algorithms.deconvolution import FrequencyDomainGIDDecon
 from mspasspy.ccore.utility import ErrorSeverity, Metadata, MsPASSError, pfread
@@ -27,6 +23,12 @@ from test_TimeDomainGIDDecon import (
     _ns_gid_pf,
     _pf_with_mode,
 )
+
+
+def _distributed_roundtrip(obj):
+    distributed_protocol = pytest.importorskip("distributed.protocol")
+    header, frames = distributed_protocol.serialize(obj)
+    return distributed_protocol.deserialize(header, frames)
 
 
 def _run_frequency_gid(data, pf):
@@ -108,17 +110,6 @@ def test_FrequencyDomainGIDDecon_engine_is_pickleable_for_wrapper_use():
     assert rf4.live
     assert np.allclose(np.asarray(rf1.data), np.asarray(rf4.data))
 
-    header, frames = serialize(engine)
-    restored_dask = deserialize(header, frames)
-    rf5 = FrequencyDomainGIDRFDecon(
-        Seismogram(data),
-        restored_dask,
-        signal_window=TimeWindow(-10.0, 20.0),
-        noise_window=TimeWindow(-35.0, -5.0),
-    )
-    assert rf5.live
-    assert np.allclose(np.asarray(rf1.data), np.asarray(rf5.data))
-
     changed = FrequencyDomainGIDDecon(pf)
     leaf_md = pf.get_branch("deconvolution_operator_type").get_branch("least_square")
     leaf_md["damping_factor"] = 100.0
@@ -132,7 +123,6 @@ def test_FrequencyDomainGIDDecon_engine_is_pickleable_for_wrapper_use():
     for restored_changed in (
         pickle.loads(pickle.dumps(changed)),
         cloudpickle.loads(cloudpickle.dumps(changed)),
-        deserialize(*serialize(changed)),
     ):
         rf_restored = FrequencyDomainGIDRFDecon(
             Seismogram(data),
@@ -142,6 +132,50 @@ def test_FrequencyDomainGIDDecon_engine_is_pickleable_for_wrapper_use():
         )
         assert rf_restored.live
         assert np.allclose(np.asarray(rf_changed.data), np.asarray(rf_restored.data))
+
+
+def test_FrequencyDomainGIDDecon_engine_is_dask_serializable_for_wrapper_use():
+    data = _make_single_spike_convolution_data()
+    pf = pfread("./data/pf/FrequencyDomainGIDDecon.pf")
+    engine = FrequencyDomainGIDDecon(pf)
+
+    rf1 = FrequencyDomainGIDRFDecon(
+        Seismogram(data),
+        engine,
+        signal_window=TimeWindow(-10.0, 20.0),
+        noise_window=TimeWindow(-35.0, -5.0),
+    )
+    restored_dask = _distributed_roundtrip(engine)
+    rf2 = FrequencyDomainGIDRFDecon(
+        Seismogram(data),
+        restored_dask,
+        signal_window=TimeWindow(-10.0, 20.0),
+        noise_window=TimeWindow(-35.0, -5.0),
+    )
+
+    assert rf1.live
+    assert rf2.live
+    assert np.allclose(np.asarray(rf1.data), np.asarray(rf2.data))
+
+    changed = FrequencyDomainGIDDecon(pf)
+    leaf_md = pf.get_branch("deconvolution_operator_type").get_branch("least_square")
+    leaf_md["damping_factor"] = 100.0
+    changed.changeparameter(leaf_md)
+    rf_changed = FrequencyDomainGIDRFDecon(
+        Seismogram(data),
+        changed,
+        signal_window=TimeWindow(-10.0, 20.0),
+        noise_window=TimeWindow(-35.0, -5.0),
+    )
+    restored_changed = _distributed_roundtrip(changed)
+    rf_restored = FrequencyDomainGIDRFDecon(
+        Seismogram(data),
+        restored_changed,
+        signal_window=TimeWindow(-10.0, 20.0),
+        noise_window=TimeWindow(-35.0, -5.0),
+    )
+    assert rf_restored.live
+    assert np.allclose(np.asarray(rf_changed.data), np.asarray(rf_restored.data))
 
 
 def test_FrequencyDomainGIDDecon_pickle_preserves_external_wavelet_and_noise(tmp_path):

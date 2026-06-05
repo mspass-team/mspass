@@ -8,10 +8,6 @@ import cloudpickle
 import numpy as np
 import pytest
 
-distributed_protocol = pytest.importorskip("distributed.protocol")
-deserialize = distributed_protocol.deserialize
-serialize = distributed_protocol.serialize
-
 # needed to access the helper module
 sys.path.append("python/tests")
 sys.path.append("python/tests/algorithms")
@@ -34,6 +30,12 @@ from mspasspy.ccore.seismic import Seismogram, TimeSeries
 from mspasspy.ccore.utility import AntelopePf, ErrorSeverity, Metadata, MsPASSError
 from mspasspy.algorithms.basic import ExtractComponent
 from mspasspy.util.seismic import print_metadata
+
+
+def _distributed_roundtrip(obj):
+    distributed_protocol = pytest.importorskip("distributed.protocol")
+    header, frames = distributed_protocol.serialize(obj)
+    return distributed_protocol.deserialize(header, frames)
 
 
 def prediction_error_norm(ao, io):
@@ -164,18 +166,45 @@ def test_RFdeconProcessor_gid_pickle_supports_distributed_use(alg, pf):
         rf1 = RFdecon(Seismogram(seis0), alg=alg, engine=processor)
         rf2 = RFdecon(Seismogram(seis0), alg=alg, engine=processor2)
         processor3 = cloudpickle.loads(cloudpickle.dumps(processor))
-        header, frames = serialize(processor)
-        processor4 = deserialize(header, frames)
         rf3 = RFdecon(Seismogram(seis0), alg=alg, engine=processor3)
-        rf4 = RFdecon(Seismogram(seis0), alg=alg, engine=processor4)
 
         assert rf1.live
         assert rf2.live
         assert rf3.live
-        assert rf4.live
         assert np.allclose(np.asarray(rf1.data), np.asarray(rf2.data))
         assert np.allclose(np.asarray(rf1.data), np.asarray(rf3.data))
-        assert np.allclose(np.asarray(rf1.data), np.asarray(rf4.data))
+    finally:
+        os.environ.pop("PFPATH", None)
+
+
+@pytest.mark.parametrize(
+    "alg,pf",
+    [
+        ("GeneralizedIterative", "TimeDomainGIDDecon.pf"),
+        ("TimeDomainGID", "TimeDomainGIDDecon.pf"),
+        ("FrequencyDomainGID", "FrequencyDomainGIDDecon.pf"),
+    ],
+)
+def test_RFdeconProcessor_gid_dask_serialization_supports_distributed_use(
+    alg, pf
+):
+    os.environ["PFPATH"] = "./data/pf"
+    try:
+        wavelet = make_simulation_wavelet()
+        impulses = make_impulse_data()
+        seis0 = addnoise(
+            convolve_wavelet(impulses, wavelet), nscale=0.0, padlength=800
+        )
+        processor = RFdeconProcessor(alg=alg, pf=pf)
+        os.environ.pop("PFPATH", None)
+
+        rf1 = RFdecon(Seismogram(seis0), alg=alg, engine=processor)
+        processor2 = _distributed_roundtrip(processor)
+        rf2 = RFdecon(Seismogram(seis0), alg=alg, engine=processor2)
+
+        assert rf1.live
+        assert rf2.live
+        assert np.allclose(np.asarray(rf1.data), np.asarray(rf2.data))
     finally:
         os.environ.pop("PFPATH", None)
 
@@ -225,8 +254,6 @@ def test_RFdeconProcessor_change_parameters_uses_public_engine_api():
             pickle.loads(pickle.dumps(gid_processor)),
             cloudpickle.loads(cloudpickle.dumps(gid_processor)),
         ]
-        header, frames = serialize(gid_processor)
-        payloads.append(deserialize(header, frames))
 
         wavelet = make_simulation_wavelet()
         impulses = make_impulse_data()
@@ -250,6 +277,45 @@ def test_RFdeconProcessor_change_parameters_uses_public_engine_api():
                 "gid_leaf_damping_factor"
             ] == pytest.approx(100.0)
             assert np.allclose(np.asarray(rf_changed.data), np.asarray(rf_restored.data))
+    finally:
+        if old_pfpath is None:
+            os.environ.pop("PFPATH", None)
+        else:
+            os.environ["PFPATH"] = old_pfpath
+
+
+def test_RFdeconProcessor_change_parameters_preserved_by_dask_serialization():
+    old_pfpath = os.environ.get("PFPATH")
+    os.environ["PFPATH"] = "./data/pf"
+    try:
+        gid_processor = RFdeconProcessor(
+            alg="GeneralizedIterative", pf="TimeDomainGIDDecon.pf"
+        )
+        leaf_md = Metadata(
+            AntelopePf("TimeDomainGIDDecon.pf")
+            .get_branch("deconvolution_operator_type")
+            .get_branch("least_square")
+        )
+        leaf_md["damping_factor"] = 100.0
+        gid_processor.change_parameters(leaf_md)
+        restored = _distributed_roundtrip(gid_processor)
+
+        wavelet = make_simulation_wavelet()
+        impulses = make_impulse_data()
+        seis0 = addnoise(
+            convolve_wavelet(impulses, wavelet), nscale=0.0, padlength=800
+        )
+        rf_changed = RFdecon(
+            Seismogram(seis0), alg="GeneralizedIterative", engine=gid_processor
+        )
+        rf_restored = RFdecon(
+            Seismogram(seis0), alg="GeneralizedIterative", engine=restored
+        )
+        assert rf_restored.live
+        assert rf_restored["RFdecon_properties"][
+            "gid_leaf_damping_factor"
+        ] == pytest.approx(100.0)
+        assert np.allclose(np.asarray(rf_changed.data), np.asarray(rf_restored.data))
     finally:
         if old_pfpath is None:
             os.environ.pop("PFPATH", None)
@@ -811,25 +877,54 @@ def test_RFdeconProcessor_apply_3c_uses_loaded_external_wavelet(tmp_path):
     os.environ.pop("PFPATH", None)
     try:
         restored = cloudpickle.loads(payload)
-        header, frames = serialize(processor)
-        restored_dask = deserialize(header, frames)
     finally:
         if old_pfpath is not None:
             os.environ["PFPATH"] = old_pfpath
     result = processor.apply_3c(data)
     restored_result = restored.apply_3c(Seismogram(data))
-    restored_dask_result = restored_dask.apply_3c(Seismogram(data))
 
     assert result.live
     assert restored_result.live
-    assert restored_dask_result.live
     assert np.allclose(np.asarray(result.data), np.asarray(restored_result.data))
-    assert np.allclose(
-        np.asarray(result.data), np.asarray(restored_dask_result.data)
-    )
     qc = dict(processor.processor.QCMetrics())
     assert qc["ns_gid_enabled"]
     assert qc["ns_gid_external_wavelet_used"]
+
+
+def test_RFdeconProcessor_apply_3c_external_wavelet_is_dask_serializable(tmp_path):
+    text = open("data/pf/TimeDomainGIDDecon.pf", encoding="utf-8").read()
+    text = text.replace(
+        "time_domain_gid_deconvolution &Arr{\n        deconvolution_type least_square",
+        "time_domain_gid_deconvolution &Arr{\n        deconvolution_type ns_gid",
+    )
+    pf = tmp_path / "TimeDomainGIDDecon.pf"
+    pf.write_text(text)
+
+    wavelet = make_simulation_wavelet()
+    truth = make_impulse_data()
+    data = convolve_wavelet(truth, wavelet)
+    data = addnoise(data, nscale=1.0e-4, padlength=800)
+    data["low_f_band_edge"] = 0.02
+    data["high_f_band_edge"] = 2.0
+
+    processor = RFdeconProcessor(alg="GeneralizedIterative", pf=str(pf))
+    processor.loadwavelet(wavelet, dtype="TimeSeries")
+    processor.loadnoise(data, dtype="Seismogram", component=2, window=True)
+    old_pfpath = os.environ.get("PFPATH")
+    os.environ.pop("PFPATH", None)
+    try:
+        restored_dask = _distributed_roundtrip(processor)
+    finally:
+        if old_pfpath is not None:
+            os.environ["PFPATH"] = old_pfpath
+    result = processor.apply_3c(data)
+    restored_dask_result = restored_dask.apply_3c(Seismogram(data))
+
+    assert result.live
+    assert restored_dask_result.live
+    assert np.allclose(
+        np.asarray(result.data), np.asarray(restored_dask_result.data)
+    )
 
 
 def test_RFdeconProcessor_clear_external_methods_are_gid_only():
@@ -944,8 +1039,34 @@ def test_RFdeconProcessor_gid_getstate_does_not_invalidate_processed_state(tmp_p
     actual_before = processor.processor.actual_output()
 
     cloudpickle.dumps(processor)
-    header, frames = serialize(processor)
-    deserialize(header, frames)
+
+    assert dict(processor.processor.QCMetrics())["gid_processed"]
+    actual_after = processor.processor.actual_output()
+    assert np.allclose(np.asarray(actual_before.data), np.asarray(actual_after.data))
+
+
+def test_RFdeconProcessor_gid_dask_roundtrip_does_not_invalidate_state(tmp_path):
+    text = open("data/pf/TimeDomainGIDDecon.pf", encoding="utf-8").read()
+    text = text.replace(
+        "time_domain_gid_deconvolution &Arr{\n        deconvolution_type least_square",
+        "time_domain_gid_deconvolution &Arr{\n        deconvolution_type ns_gid",
+    )
+    pf = tmp_path / "TimeDomainGIDDecon.pf"
+    pf.write_text(text)
+
+    wavelet = make_simulation_wavelet()
+    truth = make_impulse_data()
+    data = addnoise(convolve_wavelet(truth, wavelet), nscale=1.0e-4, padlength=800)
+
+    processor = RFdeconProcessor(alg="GeneralizedIterative", pf=str(pf))
+    processor.loadwavelet(wavelet, dtype="TimeSeries")
+    processor.loadnoise(data, dtype="Seismogram", component=2, window=True)
+    result = processor.apply_3c(data)
+    assert result.live
+    assert dict(processor.processor.QCMetrics())["gid_processed"]
+    actual_before = processor.processor.actual_output()
+
+    _distributed_roundtrip(processor)
 
     assert dict(processor.processor.QCMetrics())["gid_processed"]
     actual_after = processor.processor.actual_output()
