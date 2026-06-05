@@ -28,7 +28,6 @@ from decon_data_generators import (
     make_simulation_wavelet,
 )
 
-
 SIGNAL_WINDOW = TimeWindow(-5.0, 30.0)
 NOISE_WINDOW = TimeWindow(-45.0, -5.0)
 DIRECT_SAMPLE = 100
@@ -93,7 +92,9 @@ def _make_complex_colored_validation_data(return_truth=False):
     for component, scale, phase in [(0, 0.010, 0.2), (1, 0.014, 1.1), (2, 0.008, 2.0)]:
         data.data[component, :] += scale * np.sin(2.0 * np.pi * 0.18 * t + phase)
     sos = signal.butter(3, [2.5, 6.0], btype="bandpass", output="sos", fs=1.0 / data.dt)
-    hf_noise = signal.sosfilt(sos, np.random.default_rng(24680).standard_normal(data.npts))
+    hf_noise = signal.sosfilt(
+        sos, np.random.default_rng(24680).standard_normal(data.npts)
+    )
     data.data[0, :] += 0.006 * hf_noise
     data.data[1, :] -= 0.004 * hf_noise
     data["low_f_band_edge"] = 0.02
@@ -133,7 +134,9 @@ def _make_stress_colored_validation_data(noise_scale=0.025, return_truth=False):
     for component, scale, phase in [(0, 0.012, 0.4), (1, 0.016, 1.7), (2, 0.009, 2.4)]:
         data.data[component, :] += scale * np.sin(2.0 * np.pi * 0.16 * t + phase)
     sos = signal.butter(3, [2.2, 6.5], btype="bandpass", output="sos", fs=1.0 / data.dt)
-    hf_noise = signal.sosfilt(sos, np.random.default_rng(97531).standard_normal(data.npts))
+    hf_noise = signal.sosfilt(
+        sos, np.random.default_rng(97531).standard_normal(data.npts)
+    )
     data.data[0, :] += 0.006 * hf_noise
     data.data[1, :] -= 0.005 * hf_noise
     data["low_f_band_edge"] = 0.02
@@ -188,7 +191,9 @@ def _noise_stable_metadata():
 
 
 def _noise_stable_rf_matrix(data, external_wavelet=None):
-    wavelet = external_wavelet if external_wavelet is not None else ExtractComponent(data, 2)
+    wavelet = (
+        external_wavelet if external_wavelet is not None else ExtractComponent(data, 2)
+    )
     if external_wavelet is None:
         wavelet = WindowData(wavelet, SIGNAL_WINDOW.start, SIGNAL_WINDOW.end)
     noise = ExtractComponent(data, 2)
@@ -337,9 +342,7 @@ def _assert_stress_arrivals_recovered(matrix, t0, dt, ratio_tol=9.0e-2):
             )
 
 
-def _assert_shifted_stress_arrivals_recovered(
-    matrix, t0, dt, shift, ratio_tol=1.8e-1
-):
+def _assert_shifted_stress_arrivals_recovered(matrix, t0, dt, shift, ratio_tol=1.8e-1):
     z0_sample = int(round((shift - t0) / dt))
     z0 = matrix[2, z0_sample]
     assert abs(z0) > 1.0e-8
@@ -440,11 +443,7 @@ def _classify_spike_detections_against_times(
     false_negative = len(truth_times) - true_positive
     precision = true_positive / detections if detections else 0.0
     recall = true_positive / len(truth_times)
-    f1 = (
-        2.0 * precision * recall / (precision + recall)
-        if precision + recall
-        else 0.0
-    )
+    f1 = 2.0 * precision * recall / (precision + recall) if precision + recall else 0.0
     return {
         "detections": detections,
         "true_positive": true_positive,
@@ -660,10 +659,7 @@ def _apply_common_display_filter(results, dt, frequency=1.0):
     filtered = {}
     for name, matrix in results.items():
         filtered[name] = np.vstack(
-            [
-                signal.fftconvolve(component, kernel, mode="same")
-                for component in matrix
-            ]
+            [signal.fftconvolve(component, kernel, mode="same") for component in matrix]
         )
     return filtered
 
@@ -706,24 +702,47 @@ def test_existing_decon_methods_are_consistent_for_noise_free_input():
         "CNR": _cnr_rf_matrix(data),
     }
 
-    assert _normalized_correlation(results["LeastSquares"], results["WaterLevel"]) > 0.97
+    assert (
+        _normalized_correlation(results["LeastSquares"], results["WaterLevel"]) > 0.97
+    )
     assert (
         _normalized_correlation(
             results["LeastSquares"], results["TimeDomainLeastSquares"]
         )
         > 0.93
     )
-    assert _normalized_correlation(results["LeastSquares"], results["MultiTaperPowerXcor"]) > 0.88
-    assert _normalized_correlation(results["LeastSquares"], results["MultiTaperPowerSpecDiv"]) > 0.88
+    assert (
+        _normalized_correlation(results["LeastSquares"], results["MultiTaperPowerXcor"])
+        > 0.88
+    )
+    assert (
+        _normalized_correlation(
+            results["LeastSquares"], results["MultiTaperPowerSpecDiv"]
+        )
+        > 0.88
+    )
     assert (
         _normalized_correlation(
             results["TimeDomainLeastSquares"], results["MultiTaperPowerXcor"]
         )
         > 0.86
     )
-    assert _normalized_correlation(results["WaterLevel"], results["MultiTaperPowerXcor"]) > 0.93
-    assert _normalized_correlation(results["WaterLevel"], results["MultiTaperPowerSpecDiv"]) > 0.90
-    assert _normalized_correlation(results["MultiTaperPowerXcor"], results["MultiTaperPowerSpecDiv"]) > 0.93
+    assert (
+        _normalized_correlation(results["WaterLevel"], results["MultiTaperPowerXcor"])
+        > 0.93
+    )
+    assert (
+        _normalized_correlation(
+            results["WaterLevel"], results["MultiTaperPowerSpecDiv"]
+        )
+        > 0.90
+    )
+    assert (
+        _normalized_correlation(
+            results["MultiTaperPowerXcor"], results["MultiTaperPowerSpecDiv"]
+        )
+        > 0.93
+    )
 
 
 def test_scalar_methods_are_consistent_for_complex_colored_3c_synthetic(
@@ -746,16 +765,31 @@ def test_scalar_methods_are_consistent_for_complex_colored_3c_synthetic(
         _assert_direct_arrival_is_recovered(result, ratio_tol=1.0e-1)
         _assert_colored_transverse_arrivals_are_recovered(result)
 
-    assert _normalized_correlation(results["LeastSquares"], results["WaterLevel"]) > 0.95
+    assert (
+        _normalized_correlation(results["LeastSquares"], results["WaterLevel"]) > 0.95
+    )
     assert (
         _normalized_correlation(
             results["LeastSquares"], results["TimeDomainLeastSquares"]
         )
         > 0.92
     )
-    assert _normalized_correlation(results["LeastSquares"], results["MultiTaperPowerXcor"]) > 0.84
-    assert _normalized_correlation(results["LeastSquares"], results["MultiTaperPowerSpecDiv"]) > 0.84
-    assert _normalized_correlation(results["MultiTaperPowerXcor"], results["MultiTaperPowerSpecDiv"]) > 0.90
+    assert (
+        _normalized_correlation(results["LeastSquares"], results["MultiTaperPowerXcor"])
+        > 0.84
+    )
+    assert (
+        _normalized_correlation(
+            results["LeastSquares"], results["MultiTaperPowerSpecDiv"]
+        )
+        > 0.84
+    )
+    assert (
+        _normalized_correlation(
+            results["MultiTaperPowerXcor"], results["MultiTaperPowerSpecDiv"]
+        )
+        > 0.90
+    )
     _plot_complex_colored_results(decon_validation_plot_dir, results, truth, wavelet)
 
 
@@ -782,16 +816,31 @@ def test_scalar_methods_recover_stress_spikes_with_colored_noise(
         _assert_scalar_result_is_not_discrete_sparse_output(result, name)
         _assert_stress_arrivals_recovered(result, SIGNAL_WINDOW.start, truth.dt)
 
-    assert _normalized_correlation(results["LeastSquares"], results["WaterLevel"]) > 0.93
+    assert (
+        _normalized_correlation(results["LeastSquares"], results["WaterLevel"]) > 0.93
+    )
     assert (
         _normalized_correlation(
             results["LeastSquares"], results["TimeDomainLeastSquares"]
         )
         > 0.90
     )
-    assert _normalized_correlation(results["LeastSquares"], results["MultiTaperPowerXcor"]) > 0.82
-    assert _normalized_correlation(results["LeastSquares"], results["MultiTaperPowerSpecDiv"]) > 0.82
-    assert _normalized_correlation(results["MultiTaperPowerXcor"], results["MultiTaperPowerSpecDiv"]) > 0.90
+    assert (
+        _normalized_correlation(results["LeastSquares"], results["MultiTaperPowerXcor"])
+        > 0.82
+    )
+    assert (
+        _normalized_correlation(
+            results["LeastSquares"], results["MultiTaperPowerSpecDiv"]
+        )
+        > 0.82
+    )
+    assert (
+        _normalized_correlation(
+            results["MultiTaperPowerXcor"], results["MultiTaperPowerSpecDiv"]
+        )
+        > 0.90
+    )
     plot_results = results
     plot_truth = truth
     plot_wavelet = wavelet
@@ -807,7 +856,9 @@ def test_scalar_methods_recover_stress_spikes_with_colored_noise(
             ),
             "WaterLevel": _scalar_rf_matrix("WaterLevel", plot_data),
             "MultiTaperPowerXcor": _scalar_rf_matrix("MultiTaperPowerXcor", plot_data),
-            "MultiTaperPowerSpecDiv": _scalar_rf_matrix("MultiTaperPowerSpecDiv", plot_data),
+            "MultiTaperPowerSpecDiv": _scalar_rf_matrix(
+                "MultiTaperPowerSpecDiv", plot_data
+            ),
             "NoiseStable": _noise_stable_rf_matrix(plot_data),
             "CNR": _cnr_rf_matrix(plot_data),
         }
@@ -895,15 +946,25 @@ def test_external_wavelet_validation_across_deconvolution_methods(
                 name=name,
             )
 
-    assert _normalized_correlation(results["LeastSquares"], results["WaterLevel"]) > 0.95
+    assert (
+        _normalized_correlation(results["LeastSquares"], results["WaterLevel"]) > 0.95
+    )
     assert (
         _normalized_correlation(
             results["LeastSquares"], results["TimeDomainLeastSquares"]
         )
         > 0.90
     )
-    assert _normalized_correlation(results["LeastSquares"], results["MultiTaperPowerXcor"]) > 0.84
-    assert _normalized_correlation(results["MultiTaperPowerXcor"], results["MultiTaperPowerSpecDiv"]) > 0.95
+    assert (
+        _normalized_correlation(results["LeastSquares"], results["MultiTaperPowerXcor"])
+        > 0.84
+    )
+    assert (
+        _normalized_correlation(
+            results["MultiTaperPowerXcor"], results["MultiTaperPowerSpecDiv"]
+        )
+        > 0.95
+    )
 
     shifted_truth_times = (
         np.asarray(sorted(STRESS_SPIKES.keys()), dtype=np.float64)
@@ -1251,8 +1312,7 @@ def test_legacy_gid_modes_continue_with_elevated_noise_floor(
             "data/pf/TimeDomainGIDDecon.pf",
             "time_domain_gid_deconvolution",
             {
-                "residual_fractional_improvement_floor 0.0001":
-                    "residual_fractional_improvement_floor 0.01"
+                "residual_fractional_improvement_floor 0.0001": "residual_fractional_improvement_floor 0.01"
             },
         ),
         (

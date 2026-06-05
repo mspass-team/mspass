@@ -354,7 +354,7 @@ def test_TimeSeriesEnsemble_as_Stream():
     assert teststr == "bar"
     assert tse_c["fake_lat"] == 22.4
     assert tse_c["fake_evid"] == 9999
-    
+
     # check handling of all ensembles containing only bodies
     tse = get_live_timeseries_ensemble(3)
     for i in range(len(tse.member)):
@@ -398,7 +398,7 @@ def test_SeismogramEnsemble_as_Stream():
     assert seis_e_c["foo"] == "bar"
     assert seis_e_c["fake_lat"] == 22.4
     assert seis_e_c["fake_evid"] == 9999
-    
+
     # check handling of all ensembles containing only bodies
     seis_e = get_live_seismogram_ensemble(3)
     for i in range(len(seis_e.member)):
