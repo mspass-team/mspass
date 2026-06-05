@@ -55,8 +55,14 @@ NoiseStableDecon::NoiseStableDecon(const Metadata &md, const vector<double> &w,
 int NoiseStableDecon::read_metadata(const Metadata &md) {
   const string base_error("NoiseStableDecon::read_metadata: ");
   int nfft_from_win = ComputeFFTLength(md);
+  int new_sample_shift = ComputeDeconSampleShift(md);
+  if (new_sample_shift < 0 || new_sample_shift > nfft_from_win)
+    throw MsPASSError(base_error +
+                          "computed sample_shift is outside fft buffer",
+                      ErrorSeverity::Fatal);
   if (nfft_from_win != nfft)
     this->change_size(nfft_from_win);
+  sample_shift = new_sample_shift;
   mu_min = get_double_default(md, "ns_gid_mu_min", 3.0e-3);
   alpha = get_double_default(md, "ns_gid_alpha", 1.0);
   noise_floor = get_double_default(md, "ns_gid_noise_floor", 1.0e-12);

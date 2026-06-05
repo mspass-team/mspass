@@ -404,6 +404,111 @@ def test_time_domain_ls_diagnostics_use_model_lag_window(tmp_path):
     assert np.isfinite(prediction_error).all()
 
 
+def _processed_scalar_engine_for_diagnostics(tmp_path, engine_class):
+    ndata = 37
+    wavelet = np.zeros(ndata)
+    wavelet[5] = 1.0
+    data = np.zeros(ndata)
+    data[8] = 1.0
+    if engine_class is TimeDomainLeastSquareDecon:
+        pf = _write_time_domain_ls_pf(
+            tmp_path,
+            nfft=128,
+            window_start=-5.0,
+            window_end=float(ndata - 6),
+            shaping_wavelet_type="ricker",
+            shaping_frequency=0.08,
+        )
+        engine = engine_class(pf)
+        engine.load(_double_vector(wavelet), _double_vector(data))
+    elif engine_class in (MultiTaperXcorDecon, MultiTaperSpecDivDecon):
+        pf = _write_multitaper_pf(
+            tmp_path,
+            window_start=-5.0 * 0.05,
+            window_end=float(ndata - 6) * 0.05,
+            shaping_wavelet_type="ricker",
+            shaping_frequency=1.0,
+        )
+        noise = 0.001 * np.ones(ndata)
+        engine = engine_class(pf)
+        engine.load(
+            _double_vector(wavelet), _double_vector(data), _double_vector(noise)
+        )
+    elif engine_class is NoiseStableDecon:
+        pf = _write_noise_stable_pf(
+            tmp_path,
+            window_start=-5.0,
+            window_end=float(ndata - 6),
+            nfft=128,
+        )
+        engine = engine_class(pf)
+        engine.load(_double_vector(wavelet), _double_vector(data))
+    else:
+        pf = _write_scalar_pf(
+            tmp_path,
+            window_start=-5.0,
+            window_end=float(ndata - 6),
+        )
+        engine = engine_class(pf)
+        engine.load(_double_vector(wavelet), _double_vector(data))
+    engine.process()
+    return engine
+
+
+@pytest.mark.parametrize(
+    "engine_class",
+    [
+        LeastSquareDecon,
+        WaterLevelDecon,
+        TimeDomainLeastSquareDecon,
+        MultiTaperXcorDecon,
+        MultiTaperSpecDivDecon,
+        NoiseStableDecon,
+    ],
+)
+def test_scalar_decon_diagnostic_windows_are_consistent(tmp_path, engine_class):
+    engine = _processed_scalar_engine_for_diagnostics(tmp_path, engine_class)
+
+    actual = engine.actual_output()
+    shaping = engine.output_shaping_wavelet()
+
+    assert actual.npts == shaping.npts
+    assert actual.dt == shaping.dt
+    assert actual.t0 == shaping.t0
+    assert actual.sample_number(0.0) == shaping.sample_number(0.0)
+    assert np.isfinite(np.asarray(actual.data)).all()
+    assert np.isfinite(np.asarray(shaping.data)).all()
+
+
+def test_noise_stable_changeparameter_recomputes_lag_shift(tmp_path):
+    base_pf = _write_noise_stable_pf(
+        tmp_path,
+        window_start=0.0,
+        window_end=15.0,
+        nfft=64,
+    )
+    shifted_pf = _write_noise_stable_pf(
+        tmp_path,
+        window_start=-4.0,
+        window_end=11.0,
+        nfft=64,
+    )
+    wavelet = np.zeros(16)
+    wavelet[4] = 1.0
+    data = np.zeros(16)
+    data[4] = 1.0
+
+    engine = NoiseStableDecon(base_pf)
+    engine.load(_double_vector(wavelet), _double_vector(data))
+    engine.process()
+
+    engine.changeparameter(shifted_pf)
+    engine.process()
+    recovered = np.asarray(engine.getresult(), dtype=np.float64)
+
+    assert np.argmax(np.abs(recovered)) == 4
+
+
 @pytest.mark.parametrize("engine_class", [LeastSquareDecon, WaterLevelDecon])
 def test_scalar_fft_decon_reduced_padding_does_not_wrap_boundary_lags(
     tmp_path, engine_class
