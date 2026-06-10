@@ -24,12 +24,10 @@ public:
   virtual void loaddata(mspass::Seismogram& d,const int comp)=0;
   virtual void loadwavelet(const mspass::TimeSeries& w)=0;
   */
-  /* \brief Return the ideal output of the deconvolution operator.
+  /* \brief Apply the loaded 3C deconvolution operator.
 
-  All deconvolution operators have a implicit or explicit ideal output
-  signal. e.g. for a spiking Wiener filter it is a delta function with or
-  without a lag.  For a shaping wavelt it is the time domain version of the
-  wavelet. */
+  Implementations process the currently loaded data and return the
+  deconvolved three-component result. */
   virtual mspass::seismic::Seismogram process() = 0;
   /*! \brif Return the actual output of the deconvolution operator.
 
@@ -242,12 +240,14 @@ public:
   with the ScalarDecon api because of it.  */
   mspass::seismic::Seismogram process();
 
-  /* \brief Return the ideal output of the deconvolution operator.
+  /* \brief Return the output shaping wavelet.
 
-  All deconvolution operators have a implicit or explicit ideal output
-  signal. e.g. for a spiking Wiener filter it is a delta function with or
-  without a lag.  For a shaping wavelt it is the time domain version of the
-  wavelet. */
+  This is the target finite-bandwidth wavelet used to represent the
+  deconvolved result.  The historical name ideal_output is retained for
+  compatibility, but new code should prefer output_shaping_wavelet. */
+  mspass::seismic::TimeSeries output_shaping_wavelet() {
+    return this->ideal_output();
+  }
   mspass::seismic::TimeSeries ideal_output();
   /*! \brif Return the actual output of the deconvolution operator.
 
@@ -256,6 +256,10 @@ public:
   normally expect this function to be peaked at 0.   Offsets from 0
   would imply a bias. */
   mspass::seismic::TimeSeries actual_output();
+  /*! \brief Alias for actual_output using inverse-theory terminology. */
+  mspass::seismic::TimeSeries resolution_kernel() {
+    return this->actual_output();
+  }
 
   /*! \brief Return a FIR represention of the inverse filter.
 

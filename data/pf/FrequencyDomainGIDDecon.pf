@@ -1,0 +1,107 @@
+# Parameter file for FrequencyDomainGIDDecon.
+
+deconvolution_operator_type &Arr{
+    frequency_domain_gid_deconvolution &Arr{
+        deconvolution_type least_square
+        target_sample_interval 0.05
+        full_data_window_start -8.0
+        full_data_window_end 20.0
+        deconvolution_data_window_start -5.0
+        deconvolution_data_window_end 20.0
+        noise_window_start -35.0
+        noise_window_end -5.0
+        noise_component 2
+
+        maximum_iterations 100
+        residual_ratio_floor 0.01
+        residual_fractional_improvement_floor 0.0001
+        ns_gid_peak_sigma_threshold 4.0
+        ns_gid_peak_probability_threshold 0.995
+        ns_gid_use_empirical_noise_threshold true
+        ns_gid_residual_noise_ratio_floor 1.0
+        ns_gid_max_spikes 0
+        ns_gid_refit_interval 5
+        ns_gid_ridge_beta 1.0e-10
+        ns_gid_external_wavelet_allowed true
+
+        shaping_wavelet_dt 0.05
+        shaping_wavelet_type ricker
+        shaping_wavelet_frequency 1.0
+    }
+    least_square &Arr{
+        target_sample_interval 0.05
+        operator_nfft 512
+        deconvolution_data_window_start -5.0
+        deconvolution_data_window_end 20.0
+        damping_factor 1.0
+
+        shaping_wavelet_dt 0.05
+        shaping_wavelet_type ricker
+        shaping_wavelet_frequency 1.0
+    }
+    water_level &Arr{
+        target_sample_interval 0.05
+        operator_nfft 512
+        deconvolution_data_window_start -5.0
+        deconvolution_data_window_end 20.0
+        water_level 0.1
+
+        shaping_wavelet_dt 0.05
+        shaping_wavelet_type ricker
+        shaping_wavelet_frequency 1.0
+    }
+    multi_taper &Arr{
+        target_sample_interval 0.05
+        operator_nfft 512
+        deconvolution_data_window_start -5.0
+        deconvolution_data_window_end 20.0
+        damping_factor 1.0
+        time_bandwidth_product 2.5
+        number_tapers 4
+
+        shaping_wavelet_dt 0.05
+        shaping_wavelet_type ricker
+        shaping_wavelet_frequency 1.0
+    }
+    cnr &Arr{
+        target_sample_interval 0.05
+        operator_nfft 512
+        deconvolution_data_window_start -5.0
+        deconvolution_data_window_end 20.0
+        algorithm colored_noise_damping
+        damping_factor 1.0
+        noise_floor 0.01
+        snr_regularization_floor 2.0
+        snr_data_bandwidth_floor 1.5
+        noise_window_start -35.0
+        noise_window_end -5.0
+        time_bandwidth_product 2.5
+        number_tapers 4
+        taper_type none
+
+        shaping_wavelet_dt 0.05
+        shaping_wavelet_type butterworth
+        npoles_lo 3
+        npoles_hi 3
+        f3db_lo 0.02
+        f3db_hi 2.0
+    }
+    ns_gid &Arr{
+        target_sample_interval 0.05
+        operator_nfft 512
+        deconvolution_data_window_start -5.0
+        deconvolution_data_window_end 20.0
+
+        ns_gid_mu_min 3.0e-3
+        ns_gid_alpha 1.0
+        ns_gid_noise_floor 1.0e-12
+        ns_gid_gain_max 1.0e3
+        ns_gid_snr_taper_low 1.0
+        ns_gid_snr_taper_high 3.0
+        ns_gid_use_reliability_taper false
+
+        shaping_wavelet_dt 0.05
+        shaping_wavelet_type ricker
+        shaping_wavelet_frequency 1.0
+    }
+}

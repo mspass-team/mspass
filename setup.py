@@ -93,6 +93,9 @@ setup(
     packages=find_namespace_packages(
         where="python", include=["mspasspy", "mspasspy.*"]
     ),
-    package_data={"": ["*.yaml", "*.pf"]},
+    package_data={
+        "": ["*.yaml", "*.pf"],
+        "mspasspy": ["data/pf/*.pf", "data/yaml/*"],
+    },
     include_package_data=True,
 )

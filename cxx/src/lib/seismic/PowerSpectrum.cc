@@ -36,25 +36,25 @@ PowerSpectrum &PowerSpectrum::operator+=(const PowerSpectrum &other) {
     if (this->nf() != other.nf()) {
       stringstream ss;
       ss << "operator+=(accumulation) size mismatch of spectrum arrays" << endl
-         << "right hade side spectrum size=" << other.nf() << endl
-         << "left had side spectrum size=" << this->nf() << endl;
-      this->elog.log_error("PowerSpectrum::operator+-", ss.str(),
+         << "right hand side spectrum size=" << other.nf() << endl
+         << "left hand side spectrum size=" << this->nf() << endl;
+      this->elog.log_error("PowerSpectrum::operator+=", ss.str(),
                            ErrorSeverity::Invalid);
       this->kill();
     } else if (this->f0() != other.f0()) {
       stringstream ss;
       ss << "operator+=(accumulation) f0 mismatch of spectrum estimates" << endl
-         << "right hade side spectrum f0=" << other.f0() << endl
-         << "left had side spectrum f0=" << this->f0() << endl;
-      this->elog.log_error("PowerSpectrum::operator+-", ss.str(),
+         << "right hand side spectrum f0=" << other.f0() << endl
+         << "left hand side spectrum f0=" << this->f0() << endl;
+      this->elog.log_error("PowerSpectrum::operator+=", ss.str(),
                            ErrorSeverity::Invalid);
       this->kill();
     } else if (this->df() != other.df()) {
       stringstream ss;
       ss << "operator+=(accumulation) df mismatch of spectrum estimates" << endl
-         << "right hade side spectrum df=" << other.df() << endl
-         << "left had side spectrum df=" << this->df() << endl;
-      this->elog.log_error("PowerSpectrum::operator+-", ss.str(),
+         << "right hand side spectrum df=" << other.df() << endl
+         << "left hand side spectrum df=" << this->df() << endl;
+      this->elog.log_error("PowerSpectrum::operator+=", ss.str(),
                            ErrorSeverity::Invalid);
       this->kill();
     } else {
@@ -73,11 +73,15 @@ vector<double> PowerSpectrum::amplitude() const {
 }
 double PowerSpectrum::power(const double f) const {
   if (f < 0.0)
-    throw MsPASSError("PowerSpectrum::amplitude:  requested amplitude for a "
-                      "negative frequency which is assumed to be an erorr",
+    throw MsPASSError("PowerSpectrum::power:  requested power for a "
+                      "negative frequency",
                       ErrorSeverity::Invalid);
+  if (f < this->f0val)
+    return 0.0;
   int filow;
   filow = static_cast<int>((f - this->f0val) / this->dfval);
+  if (filow < 0)
+    return 0.0;
   /* Force 0 at Nyquist and above - this allows simple interpolation in else */
   if (filow >= (spectrum.size() - 1))
     return 0.0;

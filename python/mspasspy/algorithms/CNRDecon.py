@@ -164,9 +164,9 @@ def fetch_and_validate_bandwidth_data(
 def prediction_error(engine, wavelet) -> float:
     """
     Computes prediction error of deconvolution operator defined as
-    norm(ao-io)/norm(io) where ao is the return from the
-    actual_output method of engine and io is the return from
-    the ideal_output of engine.  The computed norm is L2
+    norm(ao-ws)/norm(ws) where ao is the return from the
+    actual_output method of engine and ws is the output shaping
+    wavelet.  The computed norm is L2
     :param engine:   assumed valid instance of a CNRDeconEngine
        class
     :param wavelet:   wavelet TimeSeries object used in deconvolution.
@@ -174,12 +174,12 @@ def prediction_error(engine, wavelet) -> float:
        required for actual_output method.
     """
 
-    # with internal use can assume ao and io are the same length
+    # with internal use can assume ao and ws are the same length
     # and time aligned - caution
     ao = engine.actual_output(wavelet)
-    io = engine.ideal_output()
-    err = ao - io
-    return np.linalg.norm(err.data) / np.linalg.norm(io.data)
+    ws = engine.output_shaping_wavelet()
+    err = ao - ws
+    return np.linalg.norm(err.data) / np.linalg.norm(ws.data)
 
 
 @mspass_func_wrapper
@@ -188,6 +188,7 @@ def CNRRFDecon(
     engine,
     *args,
     component=2,
+    external_wavelet=None,
     noise_spectrum=None,
     signal_window=None,
     noise_window=None,
@@ -314,7 +315,10 @@ def CNRRFDecon(
         should defined the component number of seis to assume is an
         estimate of the source wavelet.
     :type component: integer (default 2)
-    :param wavelet:   Alternative way to specify wavelet to use for deconvolution, f
+    :param external_wavelet: optional prepared `TimeSeries` wavelet to use for
+        all components.  When None, the wrapper preserves receiver-function
+        compatibility and extracts the wavelet from `component` of the signal
+        window.
     :param noise_spectrum:   Alternative way to define data to be used
         to regularize the deconvolution operator.  See above for
         usage restrictions.
@@ -368,7 +372,7 @@ def CNRRFDecon(
     :param return_wavelet:  When False (default) only the estimated
         receiver function is returned.  When True the return is a tuple
         with 0 containing the RF estimate, 1 containing the actual_output
-        of the operator and 1 containing the ideal outpu wavelet.
+        of the operator, and 2 containing the output shaping wavelet.
     :param window_output:  boolean that when True (default) causes the
         output to be windowed in the range defined by signal_window.
         When False the output will normally be longer with the number of
@@ -481,13 +485,20 @@ def CNRRFDecon(
             return [d, None, None]
         else:
             return d
-    # for an RF a data component is used as a wavelet
-    w = ExtractComponent(d, component)
+    if external_wavelet is not None:
+        if not isinstance(external_wavelet, TimeSeries):
+            raise TypeError("external_wavelet must be a TimeSeries or None")
+        w = external_wavelet
+    else:
+        # for an RF a data component is used as a wavelet
+        w = ExtractComponent(d, component)
     # the engine can throw an exception we need to handle
     try:
         engine.initialize_inverse_operator(w, psnoise)
         d = engine.process(d, psnoise, flow, fhigh)
     except MsPASSError as err:
+        if err.severity == ErrorSeverity.Fatal:
+            raise
         d.elog.log_error(err)
         d.kill()
     except Exception as generr:
@@ -535,8 +546,8 @@ def CNRRFDecon(
         retval.append(d)
         ao = engine.actual_output(w)
         retval.append(ao)
-        ideal_out = engine.ideal_output()
-        retval.append(ideal_out)
+        output_shaping_wavelet = engine.output_shaping_wavelet()
+        retval.append(output_shaping_wavelet)
         return retval
     else:
         return d
@@ -749,6 +760,8 @@ def CNRArrayDecon(
     try:
         engine.initialize_inverse_operator(beam, psnoise)
     except MsPASSError as err:
+        if err.severity == ErrorSeverity.Fatal:
+            raise
         ensout.elog.log_error(err)
         ensout.kill()
     except Exception as generr:
@@ -795,6 +808,8 @@ def CNRArrayDecon(
                 try:
                     ensout.member[i] = engine.process(d, psnoise, flow, fhigh)
                 except MsPASSError as err:
+                    if err.severity == ErrorSeverity.Fatal:
+                        raise
                     ensout.member[i].elog.log_error(err)
                     ensout.member[i].kill()
     if return_wavelet:
@@ -802,8 +817,8 @@ def CNRArrayDecon(
         retval.append(ensout)
         ao = engine.actual_output(beam)
         retval.append(ao)
-        ideal_out = engine.ideal_output()
-        retval.append(ideal_out)
+        output_shaping_wavelet = engine.output_shaping_wavelet()
+        retval.append(output_shaping_wavelet)
     else:
         retval = ensout
 

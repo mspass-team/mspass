@@ -11,11 +11,14 @@
 #include <mspass/algorithms/deconvolution/ShapingWavelet.h>
 #include <mspass/algorithms/deconvolution/WaterLevelDecon.h>
 #include <mspass/algorithms/deconvolution/LeastSquareDecon.h>
+#include <mspass/algorithms/deconvolution/TimeDomainLeastSquareDecon.h>
 #include <mspass/algorithms/deconvolution/MultiTaperXcorDecon.h>
 #include <mspass/algorithms/deconvolution/MultiTaperSpecDivDecon.h>
-//Disable until repaired
-//#include <mspass/algorithms/deconvolution/GeneralIterDecon.h>
+#include <mspass/algorithms/deconvolution/NoiseStableDecon.h>
+#include <mspass/algorithms/deconvolution/TimeDomainGIDDecon.h>
+#include <mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h>
 #include <mspass/algorithms/deconvolution/CNRDeconEngine.h>
+#include <mspass/algorithms/deconvolution/GIDDeconUtil.h>
 PYBIND11_MAKE_OPAQUE(std::vector<double>);
 
 
@@ -92,6 +95,10 @@ public:
 PYBIND11_MODULE(deconvolution, m) {
   m.attr("__name__") = "mspasspy.ccore.algorithms.deconvolution";
   m.doc() = "A submodule for deconvolution namespace of ccore.algorithms";
+  py::module_::import("mspasspy.ccore.seismic");
+  m.def("_antelope_pf_to_text", &AntelopePfToText, py::arg("pf"),
+        py::arg("indent") = 0,
+        "Serialize an AntelopePf object to stable pf text");
 
   /* Need this to support returns of std::vector in children of ScalarDecon*/
   py::bind_vector<std::vector<double>>(m, "DoubleVector");
@@ -142,14 +149,20 @@ PYBIND11_MODULE(deconvolution, m) {
     .def("get_shaping_wavelet",&ScalarDecon::get_shaping_wavelet,
 	    "Get the shaping wavelet used by this operator")
     .def("actual_output",&ScalarDecon::actual_output,
-      "Return actual output of inverse*wavelet"
+      "Return actual output/resolution kernel of inverse*wavelet"
+      )
+    .def("resolution_kernel",&ScalarDecon::resolution_kernel,
+      "Return actual output/resolution kernel of inverse*wavelet"
+      )
+    .def("output_shaping_wavelet",&ScalarDecon::output_shaping_wavelet,
+      "Return the output shaping wavelet ws(t)"
       )
     .def("ideal_output",&ScalarDecon::ideal_output,
-      "Return ideal output of for inverse"
+      "Legacy alias for output_shaping_wavelet"
       )
     .def("inverse_wavelet",py::overload_cast<>(&ScalarDecon::inverse_wavelet))
     .def("inverse_wavelet",py::overload_cast<double>(&ScalarDecon::inverse_wavelet))
-    .def("QCMetrics",&ScalarDecon::QCMetrics,"Return ideal output of for inverse")
+    .def("QCMetrics",&ScalarDecon::QCMetrics,"Return QC metrics")
   ;
   py::class_<WaterLevelDecon,ScalarDecon>(m,"WaterLevelDecon","Water level frequency domain operator")
     .def(py::init<const Metadata>())
@@ -160,7 +173,7 @@ PYBIND11_MODULE(deconvolution, m) {
       "Return actual output of inverse*wavelet")
     .def("inverse_wavelet",py::overload_cast<>(&WaterLevelDecon::inverse_wavelet))
     .def("inverse_wavelet",py::overload_cast<double>(&WaterLevelDecon::inverse_wavelet))
-    .def("QCMetrics",&WaterLevelDecon::QCMetrics,"Return ideal output of for inverse")
+    .def("QCMetrics",&WaterLevelDecon::QCMetrics,"Return QC metrics")
     .def(py::pickle(
       [](const WaterLevelDecon &self) {
         pybind11::gil_scoped_acquire acquire;
@@ -192,7 +205,7 @@ PYBIND11_MODULE(deconvolution, m) {
     .def("inverse_wavelet",py::overload_cast<>(&LeastSquareDecon::inverse_wavelet))
     .def("inverse_wavelet",py::overload_cast<double>(&LeastSquareDecon::inverse_wavelet))
     .def("QCMetrics",&LeastSquareDecon::QCMetrics,
-      "Return ideal output of for inverse")
+      "Return QC metrics")
     .def(py::pickle(
       [](const LeastSquareDecon &self) {
         pybind11::gil_scoped_acquire acquire;
@@ -216,7 +229,73 @@ PYBIND11_MODULE(deconvolution, m) {
       }
     ))
   ;
-  py::class_<MultiTaperSpecDivDecon,ScalarDecon>(m,"MultiTaperSpecDivDecon","Water level frequency domain operator")
+  py::class_<NoiseStableDecon,ScalarDecon>(m,"NoiseStableDecon",
+      "Noise-aware stable frequency-domain inverse operator used by NS-GID")
+    .def(py::init<const Metadata>())
+    .def("changeparameter",&NoiseStableDecon::changeparameter,
+      "Change operator parameters")
+    .def("process",&NoiseStableDecon::process,
+      "Process previously loaded data")
+    .def("loadnoise",py::overload_cast<const std::vector<double>&>(&NoiseStableDecon::loadnoise),
+      "Load a noise time series vector used to estimate inverse-gain stability")
+    .def("loadnoise",py::overload_cast<const CoreTimeSeries&>(&NoiseStableDecon::loadnoise),
+      "Load a noise CoreTimeSeries used to estimate inverse-gain stability")
+    .def("loadnoise",py::overload_cast<const PowerSpectrum&>(&NoiseStableDecon::loadnoise),
+      "Load a noise PowerSpectrum used to estimate inverse-gain stability")
+    .def("actual_output",&NoiseStableDecon::actual_output,
+      "Return actual output of inverse*wavelet")
+    .def("inverse_wavelet",py::overload_cast<>(&NoiseStableDecon::inverse_wavelet))
+    .def("inverse_wavelet",py::overload_cast<double>(&NoiseStableDecon::inverse_wavelet))
+    .def("QCMetrics",&NoiseStableDecon::QCMetrics,
+      "Return NS-GID inverse operator QC metrics")
+    .def("max_gain",&NoiseStableDecon::max_gain)
+    .def("gain_cap",&NoiseStableDecon::gain_cap)
+  ;
+  py::class_<TimeDomainLeastSquareDecon,ScalarDecon>(m,"TimeDomainLeastSquareDecon",
+      "Damped least-squares time-domain operator for cropped linear convolution")
+    .def(py::init<const Metadata>())
+    .def("changeparameter",&TimeDomainLeastSquareDecon::changeparameter,
+      "Change operator parameters")
+    .def("process",&TimeDomainLeastSquareDecon::process,
+      "Process previously loaded data")
+    .def("actual_output",&TimeDomainLeastSquareDecon::actual_output,
+      "Return actual output of inverse*wavelet")
+    .def("output_shaping_wavelet",
+      &TimeDomainLeastSquareDecon::output_shaping_wavelet,
+      "Return the output shaping wavelet on the same lag window as actual_output")
+    .def("inverse_wavelet",py::overload_cast<>(&TimeDomainLeastSquareDecon::inverse_wavelet))
+    .def("inverse_wavelet",py::overload_cast<double>(&TimeDomainLeastSquareDecon::inverse_wavelet))
+    .def("QCMetrics",&TimeDomainLeastSquareDecon::QCMetrics,
+      "Return quality metrics for the time-domain least-squares solve")
+    .def(py::pickle(
+      [](const TimeDomainLeastSquareDecon &self) {
+        pybind11::gil_scoped_acquire acquire;
+        stringstream sstm;
+        boost::archive::text_oarchive artm(sstm);
+        artm<<self;
+        pybind11::tuple r_tuple = py::make_tuple(sstm.str());
+        pybind11::gil_scoped_release release;
+        return r_tuple;
+      },
+      [](py::tuple t) {
+        pybind11::gil_scoped_acquire acquire;
+        stringstream sstm(t[0].cast<std::string>());
+        boost::archive::text_iarchive artm(sstm);
+        TimeDomainLeastSquareDecon lsd;
+        artm >> lsd;
+        pybind11::gil_scoped_release release;
+        return lsd;
+      }
+    ))
+  ;
+  py::class_<MultiTaperSpecDivDecon,ScalarDecon>(
+    m,
+    "MultiTaperSpecDivDecon",
+    "Compatibility name for the multitaper power-stabilized spectral-division "
+    "operator.  This is not a paper-faithful Park-Levin MTC estimator; the "
+    "current implementation applies an untapered source/data phase inverse "
+    "with a multitaper-stabilized power denominator.  Prefer the "
+    "MultiTaperPowerSpecDivDecon alias in new Python code.")
     .def(py::init<const Metadata>())
     .def("changeparameter",&MultiTaperSpecDivDecon::changeparameter,"Change operator parameters")
     .def("process",&MultiTaperSpecDivDecon::process,
@@ -229,10 +308,26 @@ PYBIND11_MODULE(deconvolution, m) {
       "Return actual output of inverse*wavelet")
     .def("inverse_wavelet",py::overload_cast<>(&MultiTaperSpecDivDecon::inverse_wavelet))
     .def("inverse_wavelet",py::overload_cast<double>(&MultiTaperSpecDivDecon::inverse_wavelet))
-    .def("QCMetrics",&MultiTaperSpecDivDecon::QCMetrics,"Return ideal output of for inverse")
+    .def("all_inverse_wavelets",
+      &MultiTaperSpecDivDecon::all_inverse_wavelets,
+      py::arg("t0parent") = 0.0,
+      "Return retained inverse wavelet products.  The current implementation "
+      "normally returns one combined multitaper inverse.")
+    .def("all_rfestimates",
+      &MultiTaperSpecDivDecon::all_rfestimates,
+      py::arg("t0parent") = 0.0,
+      "Return retained RF estimates.  The current implementation normally "
+      "returns one combined estimate.")
+    .def("all_actual_outputs",
+      &MultiTaperSpecDivDecon::all_actual_outputs,
+      py::arg("t0parent") = 0.0,
+      "Return retained actual output products.  The current implementation "
+      "normally returns one combined resolution kernel.")
+    .def("QCMetrics",&MultiTaperSpecDivDecon::QCMetrics,"Return QC metrics")
     .def("get_taperlen",&MultiTaperSpecDivDecon::get_taperlen,"Get length of the Slepian tapers used by the operator")
     .def("get_number_tapers",&MultiTaperSpecDivDecon::get_number_tapers,"Get number of Slepian tapers used by the operator")
-    .def("get_time_bandwidth_product",&MultiTaperSpecDivDecon::get_time_bandwidth_product,"Get time bandwidt product of Slepian tapers used by the operator")
+    .def("get_number_outputs",&MultiTaperSpecDivDecon::get_number_outputs,"Get number of combined output products retained by the operator")
+    .def("get_time_bandwidth_product",&MultiTaperSpecDivDecon::get_time_bandwidth_product,"Get time-bandwidth product of Slepian tapers used by the operator")
     .def(py::pickle(
       [](const MultiTaperSpecDivDecon &self) {
         pybind11::gil_scoped_acquire acquire;
@@ -254,6 +349,7 @@ PYBIND11_MODULE(deconvolution, m) {
       }
     ))
   ;
+  m.attr("MultiTaperPowerSpecDivDecon") = m.attr("MultiTaperSpecDivDecon");
   py::class_<FFTDeconOperator>(m,"FFTDeconOperator","Base class used by frequency domain deconvolution methods")
     .def(py::init<>())
     .def("change_size",&FFTDeconOperator::change_size,"Change fft buffer size")
@@ -262,7 +358,14 @@ PYBIND11_MODULE(deconvolution, m) {
     .def("get_shift",&FFTDeconOperator::get_shift,"Get current reference time shift")
     .def("df",&FFTDeconOperator::df,"Get frequency bin size")
   ;
-  py::class_<MultiTaperXcorDecon,ScalarDecon>(m,"MultiTaperXcorDecon","Water level frequency domain operator")
+  py::class_<MultiTaperXcorDecon,ScalarDecon>(
+    m,
+    "MultiTaperXcorDecon",
+    "Compatibility name for the multitaper source-power-stabilized "
+    "deconvolution operator.  This is not a paper-faithful Park-Levin MTC "
+    "estimator; the current implementation applies an untapered source/data "
+    "phase inverse with a multitaper-stabilized source-power denominator.  "
+    "Prefer the MultiTaperPowerXcorDecon alias in new Python code.")
     .def(py::init<const Metadata>())
     .def("changeparameter",&MultiTaperXcorDecon::changeparameter,"Change operator parameters")
     .def("process",&MultiTaperXcorDecon::process,
@@ -274,10 +377,10 @@ PYBIND11_MODULE(deconvolution, m) {
       "Return actual output of inverse*wavelet")
     .def("inverse_wavelet",py::overload_cast<>(&MultiTaperXcorDecon::inverse_wavelet))
     .def("inverse_wavelet",py::overload_cast<double>(&MultiTaperXcorDecon::inverse_wavelet))
-    .def("QCMetrics",&MultiTaperXcorDecon::QCMetrics,"Return ideal output of for inverse")
+    .def("QCMetrics",&MultiTaperXcorDecon::QCMetrics,"Return QC metrics")
     .def("get_taperlen",&MultiTaperXcorDecon::get_taperlen,"Get length of the Slepian tapers used by the operator")
     .def("get_number_tapers",&MultiTaperXcorDecon::get_number_tapers,"Get number of Slepian tapers used by the operator")
-    .def("get_time_bandwidth_product",&MultiTaperXcorDecon::get_time_bandwidth_product,"Get time bandwidt product of Slepian tapers used by the operator")
+    .def("get_time_bandwidth_product",&MultiTaperXcorDecon::get_time_bandwidth_product,"Get time-bandwidth product of Slepian tapers used by the operator")
     .def(py::pickle(
       [](const MultiTaperXcorDecon &self) {
         pybind11::gil_scoped_acquire acquire;
@@ -299,22 +402,166 @@ PYBIND11_MODULE(deconvolution, m) {
       }
     ))
   ;
-  /* this binding code is properly constructed, but for now we disable it
-   * because it has known bugs that need to be squashed.  It should be
-   * turned back on if and when those bugs are squashed.
-  py::class_<GeneralIterDecon,ScalarDecon>(m,"GeneralIterDecon","Water level frequency domain operator")
-    .def(py::init<AntelopePf&>())
-    .def("changeparameter",&GeneralIterDecon::changeparameter,"Change operator parameters")
-    .def("process",&GeneralIterDecon::process,"Process previously loaded data")
-    .def("loadnoise",&GeneralIterDecon::loadnoise,"Load noise data for regularization")
-    .def("load",py::overload_cast<const CoreSeismogram&,const TimeWindow>
-            (&GeneralIterDecon::load),"Load data")
-    .def("actual_output",&GeneralIterDecon::actual_output,"Return actual output of inverse*wavelet")
-    .def("inverse_wavelet",py::overload_cast<>(&GeneralIterDecon::inverse_wavelet))
-    .def("inverse_wavelet",py::overload_cast<double>(&GeneralIterDecon::inverse_wavelet))
-    .def("QCMetrics",&GeneralIterDecon::QCMetrics,"Return ideal output of for inverse")
+  m.attr("MultiTaperPowerXcorDecon") = m.attr("MultiTaperXcorDecon");
+  py::class_<TimeDomainGIDDecon,ScalarDecon>(m,"TimeDomainGIDDecon",
+      "Generalized iterative deconvolution operator for three-component receiver functions")
+    .def(py::init<const AntelopePf&>())
+    .def("changeparameter",&TimeDomainGIDDecon::changeparameter,
+      "Change leaf inverse-operator parameters")
+    .def("process",&TimeDomainGIDDecon::process,"Process previously loaded data")
+    .def("loadnoise",py::overload_cast<const CoreSeismogram&,mspass::algorithms::TimeWindow>(&TimeDomainGIDDecon::loadnoise),
+      "Load noise data for regularization from a Seismogram window")
+    .def("loadnoise",py::overload_cast<const TimeSeries&>(&TimeDomainGIDDecon::loadnoise),
+      "Load externally supplied scalar noise")
+    .def("loadnoise",py::overload_cast<const CoreTimeSeries&>(&TimeDomainGIDDecon::loadnoise),
+      "Load externally supplied scalar noise")
+    .def("loadnoise",py::overload_cast<const PowerSpectrum&>(&TimeDomainGIDDecon::loadnoise),
+      "Load externally supplied ns_gid inverse-operator noise spectrum; a residual noise window must still be loaded")
+    .def("loadwavelet",py::overload_cast<const TimeSeries&>(&TimeDomainGIDDecon::loadwavelet),
+      "Load an externally supplied wavelet used for all components")
+    .def("loadwavelet",py::overload_cast<const CoreTimeSeries&>(&TimeDomainGIDDecon::loadwavelet),
+      "Load an externally supplied wavelet used for all components")
+    .def("clear_external_wavelet",&TimeDomainGIDDecon::clear_external_wavelet,
+      "Clear any previously loaded external wavelet")
+    .def("clear_external_noise",&TimeDomainGIDDecon::clear_external_noise,
+      "Clear any previously loaded external noise or noise spectrum")
+    .def("deconvolution_window_start",
+      &TimeDomainGIDDecon::deconvolution_window_start,
+      "Return start time of the configured deconvolution window")
+    .def("deconvolution_window_end",
+      &TimeDomainGIDDecon::deconvolution_window_end,
+      "Return end time of the configured deconvolution window")
+    .def("noise_window_start",
+      &TimeDomainGIDDecon::noise_window_start,
+      "Return start time of the configured noise window")
+    .def("noise_window_end",
+      &TimeDomainGIDDecon::noise_window_end,
+      "Return end time of the configured noise window")
+    .def("load",py::overload_cast<const CoreSeismogram&,mspass::algorithms::TimeWindow>
+            (&TimeDomainGIDDecon::load),"Load data")
+    .def("load",py::overload_cast<const CoreSeismogram&,mspass::algorithms::TimeWindow,mspass::algorithms::TimeWindow>
+            (&TimeDomainGIDDecon::load),"Load data and noise windows")
+    .def("getresult",&TimeDomainGIDDecon::getresult,
+            "Return the deconvolved three-component receiver function")
+    .def("sparse_output",&TimeDomainGIDDecon::sparse_output,
+            "Return the raw sparse impulse response from the GID iteration")
+    .def("ideal_output",&TimeDomainGIDDecon::ideal_output,
+            "Legacy alias for output_shaping_wavelet")
+    .def("actual_output",&TimeDomainGIDDecon::actual_output,
+            "Return actual output/resolution kernel of the inverse operator")
+    .def("inverse_wavelet",py::overload_cast<>(&TimeDomainGIDDecon::inverse_wavelet))
+    .def("inverse_wavelet",py::overload_cast<double>(&TimeDomainGIDDecon::inverse_wavelet))
+    .def("QCMetrics",&TimeDomainGIDDecon::QCMetrics,"Return QC metrics")
+    .def(py::pickle(
+      [](const TimeDomainGIDDecon &self) {
+        return py::make_tuple(
+            self.configuration_pf_text(), self.external_wavelet_is_loaded(),
+            self.loaded_external_wavelet(), self.external_noise_is_loaded(),
+            self.loaded_external_noise(), self.external_noise_spectrum_is_loaded(),
+            self.loaded_external_noise_spectrum(),
+            self.leaf_parameters_have_changed(),
+            self.changed_leaf_parameters());
+      },
+      [](py::tuple t) {
+        stringstream sstm(t[0].cast<std::string>());
+        string line;
+        list<string> pflines;
+        while (getline(sstm, line))
+          pflines.push_back(line);
+        AntelopePf pf(pflines);
+        auto *engine = new TimeDomainGIDDecon(pf);
+        if (t[1].cast<bool>())
+          engine->loadwavelet(t[2].cast<TimeSeries>());
+        if (t[3].cast<bool>())
+          engine->loadnoise(t[4].cast<TimeSeries>());
+        if (t[5].cast<bool>())
+          engine->loadnoise(t[6].cast<PowerSpectrum>());
+        if (t.size() > 8 && t[7].cast<bool>())
+          engine->changeparameter(t[8].cast<Metadata>());
+        return engine;
+      }
+    ))
   ;
-  */
+
+  py::class_<FrequencyDomainGIDDecon,ScalarDecon>(m,"FrequencyDomainGIDDecon",
+      "Frequency-domain generalized iterative deconvolution operator for three-component receiver functions")
+    .def(py::init<const AntelopePf&>())
+    .def("changeparameter",&FrequencyDomainGIDDecon::changeparameter,
+      "Change leaf inverse-operator parameters")
+    .def("process",&FrequencyDomainGIDDecon::process,"Process previously loaded data")
+    .def("loadnoise",py::overload_cast<const CoreSeismogram&,mspass::algorithms::TimeWindow>(&FrequencyDomainGIDDecon::loadnoise),
+      "Load noise data for regularization from a Seismogram window")
+    .def("loadnoise",py::overload_cast<const TimeSeries&>(&FrequencyDomainGIDDecon::loadnoise),
+      "Load externally supplied scalar noise")
+    .def("loadnoise",py::overload_cast<const CoreTimeSeries&>(&FrequencyDomainGIDDecon::loadnoise),
+      "Load externally supplied scalar noise")
+    .def("loadnoise",py::overload_cast<const PowerSpectrum&>(&FrequencyDomainGIDDecon::loadnoise),
+      "Load externally supplied ns_gid inverse-operator noise spectrum; a residual noise window must still be loaded")
+    .def("loadwavelet",py::overload_cast<const TimeSeries&>(&FrequencyDomainGIDDecon::loadwavelet),
+      "Load an externally supplied wavelet used for all components")
+    .def("loadwavelet",py::overload_cast<const CoreTimeSeries&>(&FrequencyDomainGIDDecon::loadwavelet),
+      "Load an externally supplied wavelet used for all components")
+    .def("clear_external_wavelet",&FrequencyDomainGIDDecon::clear_external_wavelet,
+      "Clear any previously loaded external wavelet")
+    .def("clear_external_noise",&FrequencyDomainGIDDecon::clear_external_noise,
+      "Clear any previously loaded external noise or noise spectrum")
+    .def("deconvolution_window_start",
+      &FrequencyDomainGIDDecon::deconvolution_window_start,
+      "Return start time of the configured deconvolution window")
+    .def("deconvolution_window_end",
+      &FrequencyDomainGIDDecon::deconvolution_window_end,
+      "Return end time of the configured deconvolution window")
+    .def("noise_window_start",
+      &FrequencyDomainGIDDecon::noise_window_start,
+      "Return start time of the configured noise window")
+    .def("noise_window_end",
+      &FrequencyDomainGIDDecon::noise_window_end,
+      "Return end time of the configured noise window")
+    .def("load",py::overload_cast<const CoreSeismogram&,mspass::algorithms::TimeWindow>
+            (&FrequencyDomainGIDDecon::load),"Load data")
+    .def("load",py::overload_cast<const CoreSeismogram&,mspass::algorithms::TimeWindow,mspass::algorithms::TimeWindow>
+            (&FrequencyDomainGIDDecon::load),"Load data and noise windows")
+    .def("getresult",&FrequencyDomainGIDDecon::getresult,
+            "Return the deconvolved three-component receiver function")
+    .def("sparse_output",&FrequencyDomainGIDDecon::sparse_output,
+            "Return the raw sparse impulse response from the GID iteration")
+    .def("ideal_output",&FrequencyDomainGIDDecon::ideal_output,
+            "Legacy alias for output_shaping_wavelet")
+    .def("actual_output",&FrequencyDomainGIDDecon::actual_output,
+            "Return actual output/resolution kernel of the inverse operator")
+    .def("inverse_wavelet",py::overload_cast<>(&FrequencyDomainGIDDecon::inverse_wavelet))
+    .def("inverse_wavelet",py::overload_cast<double>(&FrequencyDomainGIDDecon::inverse_wavelet))
+    .def("QCMetrics",&FrequencyDomainGIDDecon::QCMetrics,"Return QC metrics")
+    .def(py::pickle(
+      [](const FrequencyDomainGIDDecon &self) {
+        return py::make_tuple(
+            self.configuration_pf_text(), self.external_wavelet_is_loaded(),
+            self.loaded_external_wavelet(), self.external_noise_is_loaded(),
+            self.loaded_external_noise(), self.external_noise_spectrum_is_loaded(),
+            self.loaded_external_noise_spectrum(),
+            self.leaf_parameters_have_changed(),
+            self.changed_leaf_parameters());
+      },
+      [](py::tuple t) {
+        stringstream sstm(t[0].cast<std::string>());
+        string line;
+        list<string> pflines;
+        while (getline(sstm, line))
+          pflines.push_back(line);
+        AntelopePf pf(pflines);
+        auto *engine = new FrequencyDomainGIDDecon(pf);
+        if (t[1].cast<bool>())
+          engine->loadwavelet(t[2].cast<TimeSeries>());
+        if (t[3].cast<bool>())
+          engine->loadnoise(t[4].cast<TimeSeries>());
+        if (t[5].cast<bool>())
+          engine->loadnoise(t[6].cast<PowerSpectrum>());
+        if (t.size() > 8 && t[7].cast<bool>())
+          engine->changeparameter(t[8].cast<Metadata>());
+        return engine;
+      }
+    ))
+  ;
 
   py::class_<CNRDeconEngine,FFTDeconOperator>(m,"CNRDeconEngine",
        "Colored noise regularized deconvolution engine - used for single station and array data")
@@ -323,7 +570,7 @@ PYBIND11_MODULE(deconvolution, m) {
     */
     .def(py::init<const AntelopePf&>())
     /* This overloaded version is not currently used in python functions that
-    use this operator.   Left in the binding code for flexilitity but could be
+    use this operator.   Left in the binding code for flexibility but could be
     deleted*/
     .def("initialize_inverse_operator_TS",
         py::overload_cast<const TimeSeries&,const TimeSeries&>(&CNRDeconEngine::initialize_inverse_operator),
@@ -343,9 +590,13 @@ PYBIND11_MODULE(deconvolution, m) {
         py::overload_cast<const Seismogram&>(&CNRDeconEngine::compute_noise_spectrum),
         "Computes a noise spectrum from a Seismogram object using the same multitaper parameters as the inverse operator with average of three components")
     .def("ideal_output",&CNRDeconEngine::ideal_output,
-      "Return the ideal output of the currently loaded operator")
+      "Legacy alias for output_shaping_wavelet")
+    .def("output_shaping_wavelet",&CNRDeconEngine::output_shaping_wavelet,
+      "Return the output shaping wavelet ws(t)")
     .def("actual_output",&CNRDeconEngine::actual_output,
-      "Return the actual output of the currently loaded operator")
+      "Return actual output/resolution kernel for the supplied wavelet")
+    .def("resolution_kernel",&CNRDeconEngine::resolution_kernel,
+      "Return actual output/resolution kernel for the supplied wavelet")
     .def("inverse_wavelet",&CNRDeconEngine::inverse_wavelet,
         "Return the time-domain inverse operator computed form current frequency domain operator")
     .def("QCMetrics",&CNRDeconEngine::QCMetrics,"Return a Metadata container of QC metrics computed by this algorithm")
@@ -405,8 +656,13 @@ PYBIND11_MODULE(deconvolution, m) {
         "Load an externally determined wavelet for deconvolution")
     .def("process",&CNR3CDecon::process,"Process data previously loaded")
     .def("ideal_output",&CNR3CDecon::ideal_output,
-        "Return ideal output for this operator")
-    .def("actual_output",&CNR3CDecon::actual_output,"Return actual output computed for current wavelet")
+        "Legacy alias for output_shaping_wavelet")
+    .def("output_shaping_wavelet",&CNR3CDecon::output_shaping_wavelet,
+        "Return the output shaping wavelet ws(t)")
+    .def("actual_output",&CNR3CDecon::actual_output,
+        "Return actual output/resolution kernel computed for current wavelet")
+    .def("resolution_kernel",&CNR3CDecon::resolution_kernel,
+        "Return actual output/resolution kernel computed for current wavelet")
     .def("inverse_wavelet",&CNR3CDecon::inverse_wavelet,
         "Return time domain form of inverse wavelet")
     .def("QCMetrics",&CNR3CDecon::QCMetrics,

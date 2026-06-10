@@ -12,9 +12,16 @@
 #include <boost/serialization/vector.hpp>
 #include <vector>
 namespace mspass::algorithms::deconvolution {
+/*! \brief Multitaper source-power-stabilized deconvolution.
+
+This legacy class name is retained for source and ABI compatibility.  The
+current implementation is not a paper-faithful Park-Levin MTC estimator: it
+uses untapered source/data phase for the final inverse and uses multitaper
+source/noise spectra only to stabilize the power denominator.
+*/
 class MultiTaperXcorDecon : public FFTDeconOperator, public ScalarDecon {
 public:
-  /*! Default constructor.   Do not use - only for declarations */
+  /*! Default constructor.  Do not use except for declarations. */
   MultiTaperXcorDecon() : FFTDeconOperator(), ScalarDecon() {};
   MultiTaperXcorDecon(const mspass::utility::Metadata &md,
                       const std::vector<double> &noise,
@@ -25,43 +32,41 @@ public:
   ~MultiTaperXcorDecon() {};
   void changeparameter(const mspass::utility::Metadata &md) {
     this->read_metadata(md, true);
+    this->result.clear();
+    this->winv = ComplexArray();
+    this->ao_fft = ComplexArray();
   };
-  /*! \brief Load a section of preevent noise.
+  /*! \brief Load a section of pre-event noise.
 
-  The multitaper algorithm requires a preevent noise it uses to compute a
-  frequency dependent regularization.   This method loads the noise data
-  but does not initiate a computation.  It should be called before calling
-  the ScalarDecon::load method which will initiate a computation of the
-  result. */
+  The multitaper algorithm uses pre-event noise to compute frequency-dependent
+  power-domain regularization.  This method loads the noise data but does not
+  initiate computation. */
   int loadnoise(const std::vector<double> &noise);
-  /*! \brief load all data components.
+  /*! \brief Load wavelet, data, and noise vectors.
 
-  This method should be called immediately befor process.  It loads the
-  wavelet and data to which teh deconvolution is to be applied.
-
-  \param w is expected to contain the wavelet data
-  \paarm e is the data to be deconvolved with w.
-  \param n is the vector of noise used for regularization in this method..*/
+  \param w wavelet/source data
+  \param d data to be deconvolved with w
+  \param n noise vector used for regularization */
   int load(const std::vector<double> &w, const std::vector<double> &d,
            const std::vector<double> &n);
   void process();
-  /*! \brif Return the actual output of the deconvolution operator.
+  /*! \brief Return the actual output of the deconvolution operator.
 
-  The actual output is defined as w^-1*w and is compable to resolution
-  kernels in linear inverse theory.   Although not required we would
-  normally expect this function to be peaked at 0.   Offsets from 0
-  would imply a bias. */
+  The actual output/resolution kernel is defined as G(f)W0(f), where G is the
+  untapered-phase inverse and W0 is the untapered wavelet spectrum.  The
+  denominator of G is stabilized by multitaper source power and damped
+  multitaper noise power. */
   mspass::seismic::CoreTimeSeries actual_output();
-  /*! \brief Return a FIR respresentation of the inverse filter.
+  /*! \brief Return a FIR representation of the inverse filter.
 
   An inverse filter has an impulse response.  For some wavelets this
-  can be respresented by a FIR filter with finite numbers of coefficients.
-  Since this is a Fourier method the best we can do is return the inverse
-  fft of the regularized operator.   The output usually needs to be
-  phase shifted to be most useful.   For typical seismic source wavelets
+  can be represented by a FIR filter with finite numbers of coefficients.
+  Since this is a Fourier method this method returns the inverse FFT of the
+  regularized operator.  The output usually needs to be
+  phase shifted to be most useful.  For typical seismic source wavelets
   that are approximately minimum phase the shift can be small, but for
   zero phase input it should be approximately half the window size.
-  This method also has an optional argument for t0parent.   Because
+  This method also has an optional argument for t0parent.  Because
   this processor was written to be agnostic about a time standard
   it implicitly assumes time 0 is sample 0 of the input waveforms.
   If the original data have a nonzero start time this should be
@@ -78,15 +83,15 @@ public:
 
   */
   mspass::seismic::CoreTimeSeries inverse_wavelet(const double t0parent = 0.0);
-  /*! \brief Return default FIR represesentation of the inverse filter.
+  /*! \brief Return default FIR representation of the inverse filter.
 
-  This is an overloaded version of the parameterized method.   It is
-  equivalent to this->inverse_wavelet(0.0,0.0);
+  This is an overloaded version of the parameterized method.  It is
+  equivalent to this->inverse_wavelet(0.0);
   */
   mspass::seismic::CoreTimeSeries inverse_wavelet();
   /*! \brief Return appropriate quality measures.
 
-  Each operator commonly has different was to measure the quality of the
+  Each operator commonly has different ways to measure the quality of the
   result.  This method should return these in a generic Metadata object. */
   mspass::utility::Metadata QCMetrics();
   int get_taperlen() { return taperlen; };
@@ -109,7 +114,6 @@ private:
   int read_metadata(const mspass::utility::Metadata &md, bool refresh);
   /* Returns a tapered data in container of ComplexArray objects*/
   std::vector<ComplexArray> taper_data(const std::vector<double> &signal);
-  int apply();
   friend boost::serialization::access;
   template <class Archive>
   void serialize(Archive &ar, const unsigned int version) {

@@ -1,8 +1,9 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-
-#include <boost/archive/tmpdir.hpp>
+#include <cstdio>
+#include <cstdlib>
+#include <unistd.h>
 
 #include <boost/archive/text_iarchive.hpp>
 #include <boost/archive/text_oarchive.hpp>
@@ -19,9 +20,22 @@
 using namespace std;
 using namespace mspass::algorithms::deconvolution;
 using mspass::utility::AntelopePf;
+using mspass::utility::MsPASSError;
 using mspass::utility::pfread;
 
-const std::string test_fname("serialization_output");
+const std::string test_fname([]() {
+  const char *tmpdir_env = std::getenv("TMPDIR");
+  std::string tmpdir((tmpdir_env == nullptr) ? "/tmp" : tmpdir_env);
+  if (tmpdir.empty())
+    tmpdir = "/tmp";
+  if (tmpdir.back() != '/')
+    tmpdir += "/";
+  return tmpdir + "mspass_decon_serialization_" +
+         std::to_string(static_cast<long>(getpid())) + ".txt";
+}());
+struct SerializationTempFileCleanup {
+  ~SerializationTempFileCleanup() { std::remove(test_fname.c_str()); }
+};
 template <class T> void save_data(const T& d)
 {
     std::ofstream ofs(test_fname);
@@ -55,6 +69,7 @@ bool shaping_wavelets_match(ShapingWavelet& s1,
 
 int main(int argc, char **argv)
 {
+    SerializationTempFileCleanup cleanup;
     cout << "Testing serialization of ComplexArray" <<endl;
     ComplexArray z(10);
     std::vector<double> x;
@@ -100,6 +115,25 @@ int main(int argc, char **argv)
     assert(mtd3.get_taperlen() == mtd4.get_taperlen());
     assert(mtd3.get_number_tapers() == mtd4.get_number_tapers());
     assert(mtd3.get_time_bandwidth_product() == mtd4.get_time_bandwidth_product());
+    cout << "Testing multitaper direct constructor input length validation" << endl;
+    vector<double> mt_valid(mtd.get_taperlen(), 1.0);
+    vector<double> mt_overlong(mtd.get_taperlen() + 1, 1.0);
+    bool constructor_rejected_overlong_data(false);
+    try {
+      MultiTaperXcorDecon bad_xcor_data(pf.get_branch("MultiTaperXcor"),
+                                        mt_valid, mt_valid, mt_overlong);
+    } catch (MsPASSError &err) {
+      constructor_rejected_overlong_data = true;
+    }
+    assert(constructor_rejected_overlong_data);
+    bool constructor_rejected_overlong_noise(false);
+    try {
+      MultiTaperSpecDivDecon bad_specdiv_noise(
+          pf.get_branch("MultiTaperSpecDiv"), mt_overlong, mt_valid, mt_valid);
+    } catch (MsPASSError &err) {
+      constructor_rejected_overlong_noise = true;
+    }
+    assert(constructor_rejected_overlong_noise);
     cout << "Testing serialization of MTPowerSpectrumEngine" <<endl;
     /* The power spectrum engine is a bit different but the tests are similar.  
        Main thing is has more methods to verify the serialization */

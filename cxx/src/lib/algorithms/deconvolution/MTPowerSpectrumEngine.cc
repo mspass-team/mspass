@@ -3,6 +3,7 @@
 #include "mspass/algorithms/deconvolution/dpss.h"
 #include "mspass/utility/utility.h"
 #include <sstream>
+#include <vector>
 /* This C function is defined in FFTDeconOperator.h but it has a lot of
 other baggage that could create mysterious problems so we just define it
 again here.  Maintenanc issue if the api changes.*/
@@ -50,8 +51,8 @@ MTPowerSpectrumEngine::MTPowerSpectrumEngine(const int winsize,
   }
   int seql(0);
   int sequ = ntapers - 1;
-  double *work = new double[ntapers * taperlen];
-  dpss_calc(taperlen, tbp, seql, sequ, work);
+  std::vector<double> work(ntapers * taperlen, 0.0);
+  dpss_calc(taperlen, tbp, seql, sequ, &(work[0]));
   tapers = dmatrix(ntapers, taperlen);
   int i, ii, j;
   for (i = 0, ii = 0; i < ntapers; ++i) {
@@ -60,7 +61,6 @@ MTPowerSpectrumEngine::MTPowerSpectrumEngine(const int winsize,
       ++ii;
     }
   }
-  delete[] work;
   /* To be consistent with Prieto we use this algorithm to convert to
   what he calls the "positive standard".   That means we assure the
   center point is positive.

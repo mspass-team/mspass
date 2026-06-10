@@ -13,14 +13,28 @@ WaterLevelDecon::WaterLevelDecon(const WaterLevelDecon &parent)
 }
 int WaterLevelDecon::read_metadata(const Metadata &md) {
   try {
-    const string base_error("SimpleLeastTaperDecon::read_metadata method: ");
-    int nfft_from_win = ComputeFFTLength(md);
+    const string base_error("WaterLevelDecon::read_metadata method: ");
+    const int nfft_from_win = ComputeFFTLength(md);
+    const int new_sample_shift = ComputeDeconSampleShift(md);
+    const double new_wlv = md.get_double("water_level");
+    if (new_wlv <= 0.0) {
+      throw MsPASSError(base_error +
+                            "water_level must be positive.  A zero value is "
+                            "an unstable bare spectral division.",
+                        ErrorSeverity::Fatal);
+    }
+    if (new_sample_shift < 0 || new_sample_shift > nfft_from_win)
+      throw MsPASSError(base_error +
+                            "computed sample_shift is outside fft buffer",
+                        ErrorSeverity::Fatal);
+    ShapingWavelet new_shapingwavelet(md, nfft_from_win);
     // window based nfft always overrides that extracted directly from md */
     if (nfft_from_win != FFTDeconOperator::nfft) {
       this->change_size(nfft_from_win);
     }
-    wlv = md.get_double("water_level");
-    shapingwavelet = ShapingWavelet(md, FFTDeconOperator::nfft);
+    sample_shift = new_sample_shift;
+    wlv = new_wlv;
+    shapingwavelet = new_shapingwavelet;
     return 0;
   } catch (...) {
     throw;
@@ -55,19 +69,28 @@ WaterLevelDecon::WaterLevelDecon(const Metadata &md, const vector<double> &w,
 }
 void WaterLevelDecon::process() {
 
+  result.clear();
+  const string base_error("WaterLevelDecon::process():  ");
+  const int output_length = data.size();
+  if (output_length > nfft)
+    throw MsPASSError(base_error + "data vector exceeds padded fft length",
+                      ErrorSeverity::Invalid);
   // apply fft to the input trace data
   //  data and wavelet sizes need to be zero padded if the are short
-  if (data.size() < nfft)
-    for (int i = data.size(); i < nfft; ++i)
-      data.push_back(0.0);
-  ComplexArray d_fft(nfft, &(data[0]));
+  vector<double> data_padded(data);
+  if (data_padded.size() < nfft)
+    data_padded.resize(nfft, 0.0);
+  ComplexArray d_fft(nfft, &(data_padded[0]));
   gsl_fft_complex_forward(d_fft.ptr(), 1, nfft, wavetable, workspace);
 
   // apply fft to wavelet
-  if (wavelet.size() < nfft)
-    for (int i = wavelet.size(); i < nfft; ++i)
-      wavelet.push_back(0.0);
-  ComplexArray b_fft(nfft, &(wavelet[0]));
+  if (wavelet.size() > nfft)
+    throw MsPASSError(base_error + "wavelet vector exceeds padded fft length",
+                      ErrorSeverity::Invalid);
+  vector<double> wavelet_padded(wavelet);
+  if (wavelet_padded.size() < nfft)
+    wavelet_padded.resize(nfft, 0.0);
+  ComplexArray b_fft(nfft, &(wavelet_padded[0]));
   gsl_fft_complex_forward(b_fft.ptr(), 1, nfft, wavetable, workspace);
 
   double b_rms = b_fft.rms();
@@ -103,12 +126,9 @@ void WaterLevelDecon::process() {
   ComplexArray rf_fft;
   rf_fft = d_fft / b_fft;
   /* Make numerator for inverse from zero lag spike */
-  double *d0 = new double[nfft];
-  for (int k = 0; k < nfft; ++k)
-    d0[k] = 0.0;
+  vector<double> d0(nfft, 0.0);
   d0[0] = 1.0;
   ComplexArray delta0(nfft, d0);
-  delete[] d0;
   gsl_fft_complex_forward(delta0.ptr(), 1, nfft, wavetable, workspace);
   winv = delta0 / b_fft;
 
@@ -117,19 +137,14 @@ void WaterLevelDecon::process() {
 
   // ifft gets result
   gsl_fft_complex_inverse(rf_fft.ptr(), 1, nfft, wavetable, workspace);
-  if (sample_shift > 0) {
-    for (int k = sample_shift; k > 0; k--)
-      result.push_back(rf_fft[nfft - k].real());
-    for (unsigned int k = 0; k < data.size() - sample_shift; k++)
-      result.push_back(rf_fft[k].real());
-  } else {
-    for (unsigned int k = 0; k < data.size(); k++)
-      result.push_back(rf_fft[k].real());
-  }
+  result = ExtractLagWindow(rf_fft, output_length, sample_shift);
 }
 CoreTimeSeries WaterLevelDecon::actual_output() {
   try {
-    ComplexArray W(nfft, &(wavelet[0]));
+    vector<double> wavelet_padded(wavelet);
+    if (wavelet_padded.size() < nfft)
+      wavelet_padded.resize(nfft, 0.0);
+    ComplexArray W(nfft, &(wavelet_padded[0]));
     gsl_fft_complex_forward(W.ptr(), 1, nfft, wavetable, workspace);
     ComplexArray ao_fft;
     ao_fft = winv * W;

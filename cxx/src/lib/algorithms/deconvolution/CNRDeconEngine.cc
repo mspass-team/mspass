@@ -40,15 +40,24 @@ CNRDeconEngine::CNRDeconEngine(const AntelopePf &pf)
       throw MsPASSError("CNRDeconEngine(constructor):  invalid value for "
                         "parameter algorithm=" +
                             stmp,
-                        ErrorSeverity::Invalid);
+                        ErrorSeverity::Fatal);
     }
     this->damp = pf.get_double("damping_factor");
+    if (this->damp <= 0.0) {
+      throw MsPASSError("CNRDeconEngine(constructor): damping_factor must be "
+                        "positive for stable regularized deconvolution",
+                        ErrorSeverity::Fatal);
+    }
     /* Note this paramter is used for both the damping method and the
     generalized_water_level */
     this->noise_floor = pf.get_double("noise_floor");
     this->snr_regularization_floor = pf.get_double("snr_regularization_floor");
     this->band_snr_floor = pf.get_double("snr_data_bandwidth_floor");
     this->operator_dt = pf.get_double("target_sample_interval");
+    if (this->operator_dt <= 0.0)
+      throw MsPASSError("CNRDeconEngine(constructor): "
+                        "target_sample_interval must be positive",
+                        ErrorSeverity::Fatal);
     /* These parameters are not cached to the object directly but
     are used to initialize the multitaper engines.   A window is used
     instead of number of samples as it is less error prone to a user than
@@ -56,6 +65,8 @@ CNRDeconEngine::CNRDeconEngine(const AntelopePf &pf)
     double ts, te;
     ts = pf.get_double("deconvolution_data_window_start");
     te = pf.get_double("deconvolution_data_window_end");
+    ValidateWindowDuration(TimeWindow(ts, te), "deconvolution_data_window",
+                           "CNRDeconEngine(constructor)");
     this->winlength = round((te - ts) / this->operator_dt) + 1;
     /* In this algorithm we are very careful to avoid circular convolution
     artifacts that I (glp) suspect may be a problem in some frequency domain
@@ -113,6 +124,8 @@ CNRDeconEngine::CNRDeconEngine(const AntelopePf &pf)
     rather than the number of points, which is all the engine cares about. */
     ts = pf.get_double("noise_window_start");
     te = pf.get_double("noise_window_end");
+    ValidateWindowDuration(TimeWindow(ts, te), "noise_window",
+                           "CNRDeconEngine(constructor)");
     int noise_winlength = round((te - ts) / operator_dt) + 1;
     double tbp = pf.get_double("time_bandwidth_product");
     long ntapers = pf.get_long("number_tapers");
@@ -145,6 +158,91 @@ CNRDeconEngine::CNRDeconEngine(const CNRDeconEngine &parent)
   }
   winv_t0_lag = parent.winv_t0_lag;
 }
+
+void CNRDeconEngine::changeparameter(const Metadata &md) {
+  try {
+    string stmp(md.get_string("algorithm"));
+    if (stmp == "generalized_water_level") {
+      this->algorithm = CNR3C_algorithms::generalized_water_level;
+    } else if (stmp == "colored_noise_damping") {
+      this->algorithm = CNR3C_algorithms::colored_noise_damping;
+    } else {
+      throw MsPASSError("CNRDeconEngine::changeparameter: invalid value for "
+                        "parameter algorithm=" +
+                            stmp,
+                        ErrorSeverity::Fatal);
+    }
+    this->damp = md.get_double("damping_factor");
+    if (this->damp <= 0.0)
+      throw MsPASSError("CNRDeconEngine::changeparameter: damping_factor must "
+                        "be positive for stable regularized deconvolution",
+                        ErrorSeverity::Fatal);
+    this->noise_floor = md.get_double("noise_floor");
+    this->snr_regularization_floor =
+        md.get_double("snr_regularization_floor");
+    this->band_snr_floor = md.get_double("snr_data_bandwidth_floor");
+    this->operator_dt = md.get_double("target_sample_interval");
+    if (this->operator_dt <= 0.0)
+      throw MsPASSError("CNRDeconEngine::changeparameter: "
+                        "target_sample_interval must be positive",
+                        ErrorSeverity::Fatal);
+
+    double ts(md.get_double("deconvolution_data_window_start"));
+    double te(md.get_double("deconvolution_data_window_end"));
+    ValidateWindowDuration(TimeWindow(ts, te), "deconvolution_data_window",
+                           "CNRDeconEngine::changeparameter");
+    this->winlength = round((te - ts) / this->operator_dt) + 1;
+    int nfftneeded = nextPowerOf2(3 * this->winlength);
+    if (nfftneeded != this->get_size())
+      FFTDeconOperator::change_size(nfftneeded);
+    this->change_shift(ComputeDeconSampleShift(md));
+    if (this->get_shift() < 0 || this->get_shift() > this->get_size())
+      throw MsPASSError("CNRDeconEngine::changeparameter: computed sample "
+                        "shift is inconsistent with FFT length",
+                        ErrorSeverity::Fatal);
+
+    Metadata mdcopy(md);
+    mdcopy.put("operator_nfft", nfftneeded);
+    this->shapingwavelet = ShapingWavelet(mdcopy);
+    string swname(this->shapingwavelet.type());
+    if (!((swname == "ricker") || (swname == "butterworth"))) {
+      throw MsPASSError(
+          string("CNRDeconEngine::changeparameter: ") +
+              "Cannot use shaping wavelet type=" + swname +
+              "\nMust be either ricker or butterworth for this algorithm",
+          ErrorSeverity::Fatal);
+    }
+    if (swname == "butterworth") {
+      int npoles_lo(md.get_int("npoles_lo"));
+      int npoles_hi(md.get_int("npoles_hi"));
+      if (npoles_hi != npoles_lo) {
+        stringstream ss;
+        ss << "CNRDeconEngine::changeparameter: Butterworth filter high and "
+              "low number of poles must be equal"
+           << endl
+           << "Found npoles_lo=" << npoles_lo << " and npoles_hi=" << npoles_hi
+           << endl;
+        throw MsPASSError(ss.str(), ErrorSeverity::Fatal);
+      }
+      this->shaping_wavelet_number_poles = npoles_lo;
+    }
+
+    ts = md.get_double("noise_window_start");
+    te = md.get_double("noise_window_end");
+    ValidateWindowDuration(TimeWindow(ts, te), "noise_window",
+                           "CNRDeconEngine::changeparameter");
+    int noise_winlength = round((te - ts) / operator_dt) + 1;
+    double tbp = md.get_double("time_bandwidth_product");
+    long ntapers = md.get_long("number_tapers");
+    this->noise_engine = MTPowerSpectrumEngine(
+        noise_winlength, tbp, ntapers, noise_winlength, this->operator_dt);
+    this->signal_engine = MTPowerSpectrumEngine(
+        this->winlength, tbp, ntapers, this->winlength, this->operator_dt);
+  } catch (...) {
+    throw;
+  };
+}
+
 CNRDeconEngine &CNRDeconEngine::operator=(const CNRDeconEngine &parent) {
   if (&parent != this) {
     this->shapingwavelet = parent.shapingwavelet;
@@ -392,12 +490,9 @@ void CNRDeconEngine::compute_gwl_inverse(const TimeSeries &wavelet,
     /* This is used in QCMetric */
     this->regularization_bandwidth_fraction =
         static_cast<double>(nreg) / static_cast<double>(FFTDeconOperator::nfft);
-    double *d0 = new double[FFTDeconOperator::nfft];
-    for (int k = 0; k < FFTDeconOperator::nfft; ++k)
-      d0[k] = 0.0;
+    vector<double> d0(FFTDeconOperator::nfft, 0.0);
     d0[0] = 1.0;
     ComplexArray delta0(FFTDeconOperator::nfft, d0);
-    delete[] d0;
     gsl_fft_complex_forward(delta0.ptr(), 1, FFTDeconOperator::nfft, wavetable,
                             workspace);
     winv = delta0 / cwvec;

@@ -14,16 +14,30 @@ LeastSquareDecon::LeastSquareDecon(const LeastSquareDecon &parent)
 }
 int LeastSquareDecon::read_metadata(const Metadata &md) {
   try {
-    const string base_error("SimpleLeastTaperDecon::read_metadata method: ");
-    int nfft_from_win = ComputeFFTLength(md);
+    const string base_error("LeastSquareDecon::read_metadata method: ");
+    const int nfft_from_win = ComputeFFTLength(md);
+    const int new_sample_shift = ComputeDeconSampleShift(md);
+    const double new_damp = md.get_double("damping_factor");
+    if (new_damp <= 0.0) {
+      throw MsPASSError(base_error +
+                            "damping_factor must be positive.  A zero value "
+                            "is an unstable undamped spectral division.",
+                        ErrorSeverity::Fatal);
+    }
+    if (new_sample_shift < 0 || new_sample_shift > nfft_from_win)
+      throw MsPASSError(base_error +
+                            "computed sample_shift is outside fft buffer",
+                        ErrorSeverity::Fatal);
+    ShapingWavelet new_shapingwavelet(md, nfft_from_win);
     // window based nfft always overrides that extracted directly from md */
     if (nfft_from_win != nfft) {
       this->change_size(nfft_from_win);
     }
-    damp = md.get_double("damping_factor");
+    sample_shift = new_sample_shift;
+    damp = new_damp;
     /* Note this depends on nfft inheritance from FFTDeconOperator.
      * That is a bit error prone with changes*/
-    shapingwavelet = ShapingWavelet(md, nfft);
+    shapingwavelet = new_shapingwavelet;
     return 0;
   } catch (...) {
     throw;
@@ -59,18 +73,26 @@ LeastSquareDecon::LeastSquareDecon(const Metadata &md, const vector<double> &w,
 void LeastSquareDecon::process() {
 
   const string base_error("LeastSquareDecon::process:  ");
+  result.clear();
+  const int output_length = data.size();
+  if (output_length > nfft)
+    throw MsPASSError(base_error + "data vector exceeds padded fft length",
+                      ErrorSeverity::Invalid);
   // apply fft to the input trace data
-  if (data.size() < nfft)
-    for (int i = data.size(); i < nfft; ++i)
-      data.push_back(0.0);
-  ComplexArray d_fft(nfft, &(data[0]));
+  vector<double> data_padded(data);
+  if (data_padded.size() < nfft)
+    data_padded.resize(nfft, 0.0);
+  ComplexArray d_fft(nfft, &(data_padded[0]));
   gsl_fft_complex_forward(d_fft.ptr(), 1, nfft, wavetable, workspace);
 
   // apply fft to wavelet
-  if (wavelet.size() < nfft)
-    for (int i = wavelet.size(); i < nfft; ++i)
-      wavelet.push_back(0.0);
-  ComplexArray b_fft(nfft, &(wavelet[0]));
+  if (wavelet.size() > nfft)
+    throw MsPASSError(base_error + "wavelet vector exceeds padded fft length",
+                      ErrorSeverity::Invalid);
+  vector<double> wavelet_padded(wavelet);
+  if (wavelet_padded.size() < nfft)
+    wavelet_padded.resize(nfft, 0.0);
+  ComplexArray b_fft(nfft, &(wavelet_padded[0]));
   gsl_fft_complex_forward(b_fft.ptr(), 1, nfft, wavetable, workspace);
 
   // deconvolution: RF=conj(B).*D./(conj(B).*B+damp)
@@ -79,6 +101,9 @@ void LeastSquareDecon::process() {
   b_fft.conj();
 
   double b_rms = b_fft.rms();
+  if (b_rms == 0.0)
+    throw MsPASSError(base_error + "wavelet data vector is all zeros",
+                      ErrorSeverity::Invalid);
   ComplexArray denom(conj_b_fft * b_fft);
   double theta(b_rms * damp);
   /* This is like normal equation form for damped inverse so theta as computed
@@ -104,23 +129,14 @@ void LeastSquareDecon::process() {
 
   // ifft gets result
   gsl_fft_complex_inverse(rf_fft.ptr(), 1, nfft, wavetable, workspace);
-  if (sample_shift > 0) {
-    for (int k = sample_shift; k > 0; k--)
-      result.push_back(rf_fft[nfft - k].real());
-    for (int k = 0; k < data.size() - sample_shift; k++)
-      result.push_back(rf_fft[k].real());
-  } else if (sample_shift == 0) {
-    for (int k = 0; k < data.size(); k++)
-      result.push_back(rf_fft[k].real());
-  } else {
-    throw MsPASSError(base_error + "Coding error - trying to use an illegal "
-                                   "negative time shift parameter",
-                      ErrorSeverity::Fatal);
-  }
+  result = ExtractLagWindow(rf_fft, output_length, sample_shift);
 }
 CoreTimeSeries LeastSquareDecon::actual_output() {
   try {
-    ComplexArray W(nfft, &(wavelet[0]));
+    vector<double> wavelet_padded(wavelet);
+    if (wavelet_padded.size() < nfft)
+      wavelet_padded.resize(nfft, 0.0);
+    ComplexArray W(nfft, &(wavelet_padded[0]));
     gsl_fft_complex_forward(W.ptr(), 1, nfft, wavetable, workspace);
     ComplexArray ao_fft;
     ao_fft = winv * W;

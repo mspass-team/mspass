@@ -71,20 +71,32 @@ void CNR3CDecon::read_parameters(const AntelopePf &pf) {
       throw MsPASSError("CNR3CDecon::read_parameters:  invalid value for "
                         "parameter algorithm=" +
                             stmp,
-                        ErrorSeverity::Invalid);
+                        ErrorSeverity::Fatal);
     }
     this->damp = pf.get_double("damping_factor");
+    if (this->damp <= 0.0) {
+      throw MsPASSError("CNR3CDecon::read_parameters: damping_factor must be "
+                        "positive for stable regularized deconvolution",
+                        ErrorSeverity::Fatal);
+    }
     /* Note this paramter is used for both the damping method and the
     generalized_water_level */
     this->noise_floor = pf.get_double("noise_floor");
     this->snr_regularization_floor = pf.get_double("snr_regularization_floor");
     this->snr_bandwidth = pf.get_double("snr_for_bandwidth_estimator");
     this->operator_dt = pf.get_double("target_sample_interval");
+    if (this->operator_dt <= 0.0)
+      throw MsPASSError("CNR3CDecon::read_parameters: "
+                        "target_sample_interval must be positive",
+                        ErrorSeverity::Fatal);
     this->fhs = pf.get_double("high_frequency_search_start");
     double ts, te;
     ts = pf.get_double("deconvolution_data_window_start");
     te = pf.get_double("deconvolution_data_window_end");
     this->processing_window = TimeWindow(ts, te);
+    ValidateWindowDuration(this->processing_window,
+                           "deconvolution_data_window",
+                           "CNR3CDecon::read_parameters");
     this->winlength = round((te - ts) / operator_dt) + 1;
     /* In this algorithm we are very careful to avoid circular convolution
     artifacts that I (glp) suspect may be a problem in some frequency domain
@@ -118,6 +130,8 @@ void CNR3CDecon::read_parameters(const AntelopePf &pf) {
     ts = pf.get_double("noise_window_start");
     te = pf.get_double("noise_window_end");
     this->noise_window = TimeWindow(ts, te);
+    ValidateWindowDuration(this->noise_window, "noise_window",
+                           "CNR3CDecon::read_parameters");
     int noise_winlength = round((te - ts) / operator_dt) + 1;
     double tbp = pf.get_double("time_bandwidth_product");
     long ntapers = pf.get_long("number_tapers");
@@ -650,12 +664,9 @@ void CNR3CDecon::compute_gwl_inverse() {
     /* This is used in QCMetric */
     regularization_bandwidth_fraction =
         static_cast<double>(nreg) / static_cast<double>(FFTDeconOperator::nfft);
-    double *d0 = new double[FFTDeconOperator::nfft];
-    for (int k = 0; k < FFTDeconOperator::nfft; ++k)
-      d0[k] = 0.0;
+    vector<double> d0(FFTDeconOperator::nfft, 0.0);
     d0[0] = 1.0;
     ComplexArray delta0(FFTDeconOperator::nfft, d0);
-    delete[] d0;
     gsl_fft_complex_forward(delta0.ptr(), 1, FFTDeconOperator::nfft, wavetable,
                             workspace);
     winv = delta0 / cwvec;
@@ -760,14 +771,6 @@ void post_bandwidth_data(Seismogram &d, const BandwidthData &bwd) {
   d.put("CNR3CDecon_low_f_snr", bwd.low_edge_snr);
   d.put("CNR3CDecon_high_f_snr", bwd.high_edge_snr);
 }
-/*  DEBUG Temporary for debug - remove or comment out for release */
-void print_bwdata(const BandwidthData &bwd) {
-  cout << "low edge frequency=" << bwd.low_edge_f << endl
-       << "low edge snr=" << bwd.low_edge_snr << endl
-       << "high edge frequency=" << bwd.high_edge_f << endl
-       << "high edge snr=" << bwd.high_edge_snr << endl
-       << "Computed bandwidth (db)=" << bwd.bandwidth() << endl;
-}
 Seismogram CNR3CDecon::process() {
   // DEBUG
   // cout << "Entering process method"<<endl;
@@ -783,13 +786,6 @@ Seismogram CNR3CDecon::process() {
     functions should catch useless data before getting this far. */
     BandwidthData bo;
     bo = band_overlap(wavelet_bwd, signal_bwd);
-    // DEBUG
-    cout << "Bandwidth data from wavelet" << endl;
-    print_bwdata(wavelet_bwd);
-    cout << "Bandwidth data from 3D data" << endl;
-    print_bwdata(signal_bwd);
-    cout << "Bandwidth data overlap " << endl;
-    print_bwdata(bo);
     /* Note both of the quantities in this test must be in consistent
     untis of dB */
     if (bo.bandwidth() < (this->decon_bandwidth_cutoff)) {

@@ -3,6 +3,7 @@
 #include "mspass/algorithms/TimeWindow.h"
 #include "mspass/algorithms/deconvolution/ComplexArray.h"
 #include "mspass/seismic/CoreTimeSeries.h"
+#include "mspass/seismic/PowerSpectrum.h"
 #include "mspass/utility/Metadata.h"
 #include <boost/archive/text_iarchive.hpp>
 #include <boost/archive/text_oarchive.hpp>
@@ -101,14 +102,48 @@ All deconvlution methods using an fft need to define nfft based on the
 length of the working time series.   This procedure returns the size from
 an input window and sample interval. */
 int ComputeFFTLength(const mspass::algorithms::TimeWindow w, const double dt);
+/*! Validate a time window has finite endpoints and positive duration. */
+void ValidateWindowDuration(const mspass::algorithms::TimeWindow w,
+                            const std::string &window_name,
+                            const std::string &caller);
 /*! Derive fft length using parameters in a metadata object.
 
 This procedure is basically a higher level version of the function of
 the same name with a time window and sample interval argument.
 This procedure extracts these using three parameter keys to extract
-the real numbers form md:  deconvolution_data_window_start,
-decon_window_end, and target dt. */
+the real numbers from md:  deconvolution_data_window_start,
+deconvolution_data_window_end, and target_sample_interval. */
 int ComputeFFTLength(const mspass::utility::Metadata &md);
+/*! Derive the standard deconvolution lag-window sample shift.
+ *
+ * MsPASS deconvolution windows define zero lag at
+ * -deconvolution_data_window_start / target_sample_interval.  This helper
+ * centralizes that convention for FFT operators and operators that extract
+ * lag windows from FFT work buffers.
+ */
+int ComputeDeconSampleShift(const mspass::utility::Metadata &md);
+/*! Validate that a PowerSpectrum can be safely sampled at DC.
+ *
+ * Noise-aware deconvolution operators query spectra at folded FFT frequencies
+ * including zero.  This helper rejects dead, too-short, malformed, or
+ * non-covering spectra before PowerSpectrum::power is called.
+ */
+void ValidatePowerSpectrumCoversDC(
+    const mspass::seismic::PowerSpectrum &spectrum,
+    const std::string &caller);
+/*! Extract a non-circular output window from an inverse FFT work buffer.
+ *
+ * Fourier deconvolution is computed in a padded FFT buffer.  This helper
+ * applies the standard MsPASS lag convention, where negative lags requested by
+ * a negative deconvolution window start are stored at the end of the padded
+ * FFT buffer, but returns only the requested output window length.  The caller
+ * must provide an FFT size large enough to hold guard samples; the default
+ * ComputeFFTLength helper pads to the exact linear convolution/correlation
+ * length of two loaded windows, rounded up to a power of two.
+ */
+std::vector<double> ExtractLagWindow(ComplexArray &fft_buffer,
+                                     const int output_length,
+                                     const int sample_shift);
 /*! Returns next power of 2 larger than n.
  *
  * Some FFT implementations require the size of the input data vector be a power

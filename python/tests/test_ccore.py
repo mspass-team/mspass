@@ -1491,6 +1491,9 @@ def test_PowerSpectrum():
     # test setters
     spec.set_f0(1.0)
     assert spec.f0() == 1.0
+    assert spec.power(0.25) == 0.0
+    assert spec.power(0.5) == 0.0
+    assert spec.power(0.999999) == 0.0
     spec = PowerSpectrum(spec_copy)
     spec.set_dt(2.0)
     assert spec.dt() == 2.0

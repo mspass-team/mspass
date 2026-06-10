@@ -1,11 +1,12 @@
 #include "mspass/algorithms/deconvolution/MultiTaperSpecDivDecon.h"
-#include "misc/blas.h"
 #include "mspass/algorithms/amplitudes.h"
 #include "mspass/algorithms/deconvolution/dpss.h"
 #include "mspass/utility/Metadata.h"
 #include "mspass/utility/MsPASSError.h"
 #include "mspass/utility/utility.h"
+#include <algorithm>
 #include <cfloat>
+#include <cmath>
 #include <string>
 #include <vector>
 /* this include is local to this directory*/
@@ -33,9 +34,9 @@ MultiTaperSpecDivDecon::MultiTaperSpecDivDecon(const Metadata &md)
 
 MultiTaperSpecDivDecon::MultiTaperSpecDivDecon(
     const MultiTaperSpecDivDecon &parent)
-    : FFTDeconOperator(parent), ScalarDecon(parent), tapers(parent.tapers),
-      noise(parent.noise), ao_fft(parent.ao_fft),
-      rfestimates(parent.rfestimates), winv_taper(parent.winv_taper) {
+    : FFTDeconOperator(parent), ScalarDecon(parent), noise(parent.noise),
+      tapers(parent.tapers), winv_taper(parent.winv_taper),
+      ao_fft(parent.ao_fft), rfestimates(parent.rfestimates) {
   nw = parent.nw;
   nseq = parent.nseq;
   damp = parent.damp;
@@ -61,7 +62,22 @@ int MultiTaperSpecDivDecon::read_metadata(const Metadata &md, bool refresh) {
     if (nfft_from_win != nfft) {
       this->change_size(nfft_from_win);
     }
+    sample_shift = ComputeDeconSampleShift(md);
+    if (sample_shift < 0)
+      throw MsPASSError(base_error +
+                            "illegal sample_shift parameter - must be ge 0",
+                        ErrorSeverity::Fatal);
+    if (sample_shift > nfft)
+      throw MsPASSError(base_error +
+                            "computed sample_shift exceeds length of fft",
+                        ErrorSeverity::Fatal);
     damp = md.get_double("damping_factor");
+    if (damp <= 0.0) {
+      throw MsPASSError(base_error +
+                            "damping_factor must be positive to regularize "
+                            "multitaper spectral division.",
+                        ErrorSeverity::Fatal);
+    }
     nw = md.get_double("time_bandwidth_product");
     /* Wang originally had this as nw*2-2 but Park and Levin say
     the maximum is nw*2-1 which we use here.  P&L papers all use mw=2.5
@@ -70,42 +86,32 @@ int MultiTaperSpecDivDecon::read_metadata(const Metadata &md, bool refresh) {
     nseq = md.get_int("number_tapers");
     int nseqtest = static_cast<int>(2.0 * nw);
     if (nseq > nseqtest || (nseq < 1)) {
-      cerr << base_error
-           << "(WARNING) Illegal value for number_tapers parameter=" << nseq
-           << endl
-           << "Resetting to maximum of 2*(time_bandwidth_product)=" << nseqtest
-           << endl;
-      nseq = nseqtest;
-      cerr << nseq << endl;
+      throw MsPASSError(base_error +
+                            "number_tapers must be between 1 and "
+                            "2*time_bandwidth_product",
+                        ErrorSeverity::Fatal);
     }
     int seql = nseq - 1;
-    /* taperlen must be less than or equal nfft */
-    /* old - this can not happen with algorithm change
-    if(taperlen>nfft)
-        throw MsPASSError(base_error
-                            +"illegal taper_length parameter.\ntaper_length must
-    be less than or equal nfft computed from decon time window");
-                                  */
-    /* This is a bit ugly, but the finite set of parameters that change make
-    this the best approach I (glp) can see */
     bool parameters_changed(false);
     if (refresh) {
       if ((nfft != nfft_old) || (nseq != nseq_old) || (taperlen != tl_old) ||
           (nw != nw_old))
         parameters_changed = true;
     }
+    /* The shaping wavelet can change independently of the DPSS parameters, so
+     * rebuild it on every parameter refresh. */
+    shapingwavelet = ShapingWavelet(md, nfft);
     /* Odd negative logic here.   Idea is to always call this section
     with a constructor, but bypass it when called in refresh mode
     if we don't need to recompute the slepian functions */
     if ((!refresh) || parameters_changed) {
-      double *work(NULL);
-      work = new double[nseq * taperlen];
-      /* This procedure allows selection of slepian tapers over a range
-      from seql to sequ.   We alway swan the first nseq values so
+      vector<double> work(nseq * taperlen, 0.0);
+      /* This procedure allows selection of Slepian tapers over a range
+      from seql to sequ.  We always want the first nseq values, so
       set them as follows */
       seql = 0;
       int sequ = nseq - 1;
-      dpss_calc(taperlen, nw, seql, sequ, work);
+      dpss_calc(taperlen, nw, seql, sequ, &(work[0]));
       /* The tapers are stored in row order in work.  We preserve that
       here but use the dmatrix to store the values as transpose*/
       tapers = dmatrix(nseq, taperlen);
@@ -116,8 +122,6 @@ int MultiTaperSpecDivDecon::read_metadata(const Metadata &md, bool refresh) {
           ++ii;
         }
       }
-      delete[] work;
-      shapingwavelet = ShapingWavelet(md, nfft);
     }
     return 0;
   } catch (...) {
@@ -125,6 +129,15 @@ int MultiTaperSpecDivDecon::read_metadata(const Metadata &md, bool refresh) {
   };
 }
 int MultiTaperSpecDivDecon::loadnoise(const vector<double> &n) {
+  const string base_error("MultiTaperSpecDivDecon::loadnoise: ");
+  if (n.empty())
+    throw MsPASSError(base_error + "noise vector cannot be empty",
+                      ErrorSeverity::Invalid);
+  if (n.size() > taperlen)
+    throw MsPASSError(base_error +
+                          "noise vector is longer than taperlen; multitaper "
+                          "inputs must not exceed the configured taper length",
+                      ErrorSeverity::Invalid);
   /* For this implementation we insist n be the same length
    * as d (assumed taperlen) to avoid constant recomputing slepians. */
   if (n.size() == taperlen)
@@ -133,12 +146,9 @@ int MultiTaperSpecDivDecon::loadnoise(const vector<double> &n) {
     int nn = n.size();
     int k;
     noise.clear();
-    for (k = 0; k < nfft; ++k)
+    for (k = 0; k < static_cast<int>(taperlen); ++k)
       noise.push_back(0.0);
-    /* This zero padds noise on right when input series length
-     * is short.   If ns is long we always take the leading portion */
-    if (nn > taperlen)
-      nn = taperlen;
+    /* This zero pads noise on the right when input series length is short. */
     for (k = 0; k < nn; ++k)
       noise[k] = n[k];
   }
@@ -148,6 +158,13 @@ int MultiTaperSpecDivDecon::load(const vector<double> &w,
                                  const vector<double> &d,
                                  const vector<double> &n) {
   try {
+    const string base_error("MultiTaperSpecDivDecon::load: ");
+    if (w.size() > taperlen || d.size() > taperlen)
+      throw MsPASSError(
+          base_error +
+              "wavelet/data vectors are longer than taperlen; multitaper "
+              "inputs must not exceed the configured taper length",
+          ErrorSeverity::Invalid);
     int lnr = this->loadnoise(n);
     int ldr;
     ldr = this->ScalarDecon::load(w, d);
@@ -165,18 +182,16 @@ MultiTaperSpecDivDecon::MultiTaperSpecDivDecon(const Metadata &md,
   } catch (...) {
     throw;
   }
-  wavelet = w;
-  data = d;
-  noise = n;
+  this->load(w, d, n);
 }
 vector<ComplexArray>
 MultiTaperSpecDivDecon::taper_data(const vector<double> &signal) {
   const string base_error("taper_data procedure:  ");
   /* We put in this sanity check */
-  if (signal.size() > nfft)
+  if (signal.size() > taperlen)
     throw MsPASSError(base_error +
                           "Illegal input parameters.  Vector of data received "
-                          "is larger than the fft buffer space allocated",
+                          "is longer than the configured taper length",
                       ErrorSeverity::Invalid);
   /* The tapered data are stored in this vector of arrays */
   int i, j;
@@ -190,7 +205,11 @@ MultiTaperSpecDivDecon::taper_data(const vector<double> &signal) {
   for (i = 0; i < ntapers; ++i) {
     /* This will assure part of vector between end of
      * data and nfft is zero padded */
-    for (j = 0; j < this->tapers.columns(); ++j) {
+    std::fill(work.begin(), work.end(), 0.0);
+    const int ncopy =
+        std::min(static_cast<int>(signal.size()),
+                 static_cast<int>(this->tapers.columns()));
+    for (j = 0; j < ncopy; ++j) {
       work[j] = tapers(i, j) * signal[j];
     }
     /* Force zero pads always */
@@ -201,7 +220,16 @@ MultiTaperSpecDivDecon::taper_data(const vector<double> &signal) {
 }
 void MultiTaperSpecDivDecon::process() {
   const string base_error("MultiTaperSpecDivDecon::process():  ");
+  result.clear();
+  winv = ComplexArray();
+  rfestimates.clear();
+  winv_taper.clear();
+  ao_fft.clear();
   try {
+    const int output_length = data.size();
+    if (output_length > nfft)
+      throw MsPASSError(base_error + "data vector exceeds padded fft length",
+                        ErrorSeverity::Invalid);
     /* WARNING about this algorithm. At present there is nothing to stop
     a coding error of calling the algorithm with inconsistent signal and
     noise data vectors. */
@@ -209,158 +237,165 @@ void MultiTaperSpecDivDecon::process() {
       throw MsPASSError(base_error + "noise data is empty.",
                         ErrorSeverity::Invalid);
     }
-
-    /* The tapered data are stored in this vector of arrays */
+    if (wavelet.size() > taperlen || data.size() > taperlen ||
+        noise.size() > taperlen)
+      throw MsPASSError(base_error +
+                            "wavelet, data, and noise vectors must not exceed "
+                            "the configured taper length",
+                        ErrorSeverity::Invalid);
+    /* Tapered wavelet/noise spectra are used only to estimate a stable
+    source-power denominator.  The final inverse uses the untapered source
+    phase and is applied to the untapered, zero-padded data window. */
     int i, j;
-    vector<ComplexArray> tdata;
-    tdata = taper_data(data);
-    /* Apply fft to each tapered data vector */
-    for (i = 0; i < nseq; ++i) {
-      gsl_fft_complex_forward(tdata[i].ptr(), 1, nfft, wavetable, workspace);
-    }
-
-    /* Now we need to do the same for the wavelet data */
     vector<ComplexArray> wdata;
     wdata = taper_data(wavelet);
     for (i = 0; i < nseq; ++i) {
       gsl_fft_complex_forward(wdata[i].ptr(), 1, nfft, wavetable, workspace);
     }
-    /* And the noise data - although with noise we quickly turn to power
-     * spectrum */
     vector<ComplexArray> ndata;
     ndata = taper_data(noise);
     for (i = 0; i < nseq; ++i) {
       gsl_fft_complex_forward(ndata[i].ptr(), 1, nfft, wavetable, workspace);
     }
-    vector<double> noise_spectrum(ndata[0].abs());
-    for (i = 1; i < nseq; ++i) {
-      vector<double> nwork(ndata[i].abs());
-      for (j = 0; j < noise_spectrum.size(); ++j) {
-        noise_spectrum[j] += nwork[j];
-      }
-    }
-    /* normalize and add damping */
-    vector<double>::iterator nptr;
-    /* This makes the scaling indepndent of the choise for tiem bandwidth
-     * product*/
-    double scale = damp / (static_cast<double>(nseq));
-    for (nptr = noise_spectrum.begin(); nptr != noise_spectrum.end(); ++nptr) {
-      (*nptr) *= scale;
-    }
-    /* We compute a RF estimate for each taper independently usinga  variant of
-    the water level method.  The variant is that the level is frequency
-    dependent defined by sacled noise level.
-    */
-    /* We need this for amplitude scaling - depend on Parseval's theorem*/
-    double wnrm = dnrm2(wavelet.size(), &(wavelet[0]), 1);
-    vector<ComplexArray> denominator;
+    double max_source_power(0.0);
     for (i = 0; i < nseq; ++i) {
-      ComplexArray work(wdata[i]);
-      /* This is kind of messy as the noise_spectrum is a vector of real
-      numbers while the wdata vector is a complex fft outputs in fortran
-      style.  We use two different indices, but that is a tad dangerous
-      UNLESS constructor guarantees nfft is ndata.size()*2 doubles*/
-      int number_regularized(0);
       for (j = 0; j < nfft; ++j) {
-        /* We do this with pointers.  It makes the code more obscure, but
-        works efficiently.  Note this assumes the ComplexArray implementation
-        uses FortranComplex64*/
-        double *z = work.ptr(j);
-        double re = (*z);
-        double im = (*(z + 1));
-        double amp = sqrt(re * re + im * im);
-        /* this normalization assumes noise_spectrum is amplitude NOT
-         * power spectrum values */
-        if (amp < noise_spectrum[j]) {
-          double wlscal;
-          /* Avoid divide by zero if amp is tiny */
-          if (fabs(amp) / wnrm < DBL_EPSILON) {
-            (*z) = noise_spectrum[j];
-            (*(z + 1)) = noise_spectrum[j];
-          } else {
-            wlscal = noise_spectrum[j] / amp;
-            (*z) *= wlscal;
-            (*(z + 1)) *= wlscal;
-          }
-          ++number_regularized;
-        }
+        double *zw = wdata[i].ptr(j);
+        double swp = (*zw) * (*zw) + (*(zw + 1)) * (*(zw + 1));
+        if (swp > max_source_power)
+          max_source_power = swp;
       }
-      denominator.push_back(work);
     }
-    /* Probably should save these in private area for this estimator*/
-    // vector<ComplexArray> rfestimates;
-    /* Must clear rfestimate and winv_taper containers or they accumulate */
-    rfestimates.clear();
+    const double relative_floor = max(DBL_EPSILON, 1.0e-12 * max_source_power);
+    vector<double> source_power_denominator(nfft, 0.0);
     for (i = 0; i < nseq; ++i) {
-      ComplexArray work(tdata[i]);
-      work = work / denominator[i];
-      rfestimates.push_back(work);
+      for (j = 0; j < nfft; ++j) {
+        double *zw = wdata[i].ptr(j);
+        const double source_power =
+            (*zw) * (*zw) + (*(zw + 1)) * (*(zw + 1));
+        double *zn = ndata[i].ptr(j);
+        const double noise_power =
+            (*zn) * (*zn) + (*(zn + 1)) * (*(zn + 1));
+        double regularized_power = max(source_power, damp * noise_power);
+        regularized_power = max(regularized_power, relative_floor);
+        source_power_denominator[j] +=
+            regularized_power / static_cast<double>(nseq);
+      }
     }
-    /* Now we want to compute the inverse filter.
-    For consistency with related methods we'll store the frequency domain
-    values, BUT these now become essentially a matrix - actually stored
-    as a vector of vectors */
-    winv_taper.clear();
-    ao_fft.clear();
-    double *d0 = new double[nfft];
-    for (int k = 0; k < nfft; ++k)
-      d0[k] = 0.0;
-    d0[0] = 1.0;
-    ComplexArray delta0(nfft, d0);
-    delete[] d0;
-    gsl_fft_complex_forward(delta0.ptr(), 1, nfft, wavetable, workspace);
-    for (i = 0; i < nseq; ++i) {
-      ComplexArray work(delta0);
-      work = work / denominator[i];
-      winv_taper.push_back(work);
+    vector<double> padded_data(nfft, 0.0);
+    vector<double> padded_wavelet(nfft, 0.0);
+    int ndcopy = std::min(static_cast<int>(data.size()), nfft);
+    int nwcopy = std::min(static_cast<int>(wavelet.size()), nfft);
+    for (i = 0; i < ndcopy; ++i)
+      padded_data[i] = data[i];
+    for (i = 0; i < nwcopy; ++i)
+      padded_wavelet[i] = wavelet[i];
+    ComplexArray untapered_data(nfft, padded_data);
+    ComplexArray untapered_wavelet(nfft, padded_wavelet);
+    gsl_fft_complex_forward(untapered_data.ptr(), 1, nfft, wavetable,
+                            workspace);
+    gsl_fft_complex_forward(untapered_wavelet.ptr(), 1, nfft, wavetable,
+                            workspace);
+
+    ComplexArray inv(untapered_wavelet);
+    inv.conj();
+    for (j = 0; j < nfft; ++j) {
+      double *zinv = inv.ptr(j);
+      (*zinv) /= source_power_denominator[j];
+      (*(zinv + 1)) /= source_power_denominator[j];
     }
-    for (i = 0; i < nseq; ++i) {
-      ComplexArray work(wdata[i]);
-      work = work / denominator[i];
-      ao_fft.push_back(work);
+    vector<ComplexArray> winv_taper_work;
+    vector<ComplexArray> rfestimates_work;
+    vector<ComplexArray> ao_fft_work;
+    winv_taper_work.push_back(inv);
+    ComplexArray rfwork(inv);
+    rfwork = rfwork * untapered_data;
+    rfestimates_work.push_back(rfwork);
+    ComplexArray aowork(inv);
+    aowork = aowork * untapered_wavelet;
+    ao_fft_work.push_back(aowork);
+    vector<double> ao_scale(nfft, 0.0);
+    for (i = 0; i < static_cast<int>(ao_fft_work.size()); ++i) {
+      ComplexArray work(ao_fft_work[i]);
+      work = (*shapingwavelet.wavelet()) * work;
+      gsl_fft_complex_inverse(work.ptr(), 1, nfft, wavetable, workspace);
+      for (j = 0; j < nfft; ++j)
+        ao_scale[j] += work[j].real();
+    }
+    double ao_nrmscl = 1.0 / static_cast<double>(ao_fft_work.size());
+    for (j = 0; j < nfft; ++j)
+      ao_scale[j] *= ao_nrmscl;
+    ComplexArray ao_work(nfft, ao_scale);
+    vector<double> ao_lag = ExtractLagWindow(ao_work, output_length, sample_shift);
+    if (sample_shift < 0 || sample_shift >= static_cast<int>(ao_lag.size()))
+      throw MsPASSError(base_error +
+                            "zero-lag sample is outside extracted lag window",
+                        ErrorSeverity::Invalid);
+    double ao_peak = ao_lag[sample_shift];
+    if (fabs(ao_peak) <= 0.0)
+      throw MsPASSError(base_error + "actual output has zero peak",
+                        ErrorSeverity::Invalid);
+    for (i = 0; i < static_cast<int>(rfestimates_work.size()); ++i) {
+      for (j = 0; j < nfft; ++j) {
+        double *zrf = rfestimates_work[i].ptr(j);
+        (*zrf) /= ao_peak;
+        (*(zrf + 1)) /= ao_peak;
+        double *zw = winv_taper_work[i].ptr(j);
+        (*zw) /= ao_peak;
+        (*(zw + 1)) /= ao_peak;
+        double *zao = ao_fft_work[i].ptr(j);
+        (*zao) /= ao_peak;
+        (*(zao + 1)) /= ao_peak;
+      }
     }
 
     /* To mesh with the API of other methods we now compute the average
-    rf estimate.  We compute this as a simple average. */
-    result.clear();
-    for (j = 0; j < nfft; ++j)
-      result.push_back(0.0);
+    rf estimate.  We compute this as a simple average in the padded work
+    buffer, then extract the requested lag window. */
+    vector<double> padded_result(nfft, 0.0);
     vector<double> wtmp;
-    for (i = 0; i < nseq; ++i) {
-      ComplexArray work(rfestimates[i]);
+    for (i = 0; i < static_cast<int>(rfestimates_work.size()); ++i) {
+      ComplexArray work(rfestimates_work[i]);
       /* We always apply the shaping wavelet to the rf estimate.  We do it
       here before averaging. */
       work = (*shapingwavelet.wavelet()) * work;
       gsl_fft_complex_inverse(work.ptr(), 1, nfft, wavetable, workspace);
       for (j = 0; j < nfft; ++j) {
-        result[j] += work[j].real();
+        padded_result[j] += work[j].real();
       }
     }
-    double nrmscl = 1.0 / ((double)nseq);
+    double nrmscl = 1.0 / static_cast<double>(rfestimates_work.size());
     for (j = 0; j < nfft; ++j)
-      result[j] *= nrmscl;
-    /* Finally do a circular shift if requested. */
-    if (sample_shift > 0)
-      result = circular_shift(result, -sample_shift);
+      padded_result[j] *= nrmscl;
+    ComplexArray rf_work(nfft, padded_result);
+    result = ExtractLagWindow(rf_work, output_length, sample_shift);
+    winv = winv_taper_work[0];
+    winv_taper = winv_taper_work;
+    rfestimates = rfestimates_work;
+    ao_fft = ao_fft_work;
   } catch (...) {
     throw;
   };
 }
 CoreTimeSeries MultiTaperSpecDivDecon::actual_output() {
   try {
+    if (ao_fft.empty())
+      throw MsPASSError("MultiTaperSpecDivDecon::actual_output: process must "
+                        "be called before actual_output",
+                        ErrorSeverity::Invalid);
     int i, k;
     vector<double> ao;
     ao.reserve(nfft);
     for (k = 0; k < nfft; ++k)
       ao.push_back(0.0);
-    for (i = 0; i < nseq; ++i) {
+    for (i = 0; i < static_cast<int>(ao_fft.size()); ++i) {
       ComplexArray work(ao_fft[i]);
       work = (*shapingwavelet.wavelet()) * work;
       gsl_fft_complex_inverse(work.ptr(), 1, nfft, wavetable, workspace);
       for (k = 0; k < nfft; ++k)
         ao[k] += work[k].real();
     }
-    double nrmscl = 1.0 / ((double)nseq);
+    double nrmscl = 1.0 / static_cast<double>(ao_fft.size());
     for (k = 0; k < nfft; ++k)
       ao[k] *= nrmscl;
     /* We always shift this wavelet to the center of the data vector.
@@ -401,10 +436,14 @@ CoreTimeSeries MultiTaperSpecDivDecon::inverse_wavelet(const double t0parent) {
      *         retain for now.   Perhaps should a copy of dt in the ScalarDecon
      * object. */
     double dt = this->shapingwavelet.sample_interval();
-    /*algorithm assumes this data vector in result is initialized to nfft zeos
+    /* algorithm assumes this data vector in result is initialized to nfft zeros
      */
     CoreTimeSeries result(this->nfft);
-    for (int i = 0; i < nseq; ++i) {
+    if (winv_taper.empty())
+      throw MsPASSError("MultiTaperSpecDivDecon::inverse_wavelet: process must "
+                        "be called before inverse_wavelet",
+                        ErrorSeverity::Invalid);
+    for (int i = 0; i < static_cast<int>(winv_taper.size()); ++i) {
       CoreTimeSeries work(this->FFTDeconOperator::FourierInverse(
           this->winv_taper[i], *shapingwavelet.wavelet(), dt, t0parent));
       if (i == 0)
@@ -412,7 +451,7 @@ CoreTimeSeries MultiTaperSpecDivDecon::inverse_wavelet(const double t0parent) {
       else
         result += work;
     }
-    double nrmscal = 1.0 / ((double)nseq);
+    double nrmscal = 1.0 / static_cast<double>(winv_taper.size());
     for (int k = 0; k < result.s.size(); ++k)
       result.s[k] *= nrmscal;
     return result;
@@ -430,10 +469,14 @@ CoreTimeSeries MultiTaperSpecDivDecon::inverse_wavelet() {
 std::vector<CoreTimeSeries>
 MultiTaperSpecDivDecon::all_inverse_wavelets(const double t0parent) {
   try {
+    if (winv_taper.empty())
+      throw MsPASSError("MultiTaperSpecDivDecon::all_inverse_wavelets: "
+                        "process must be called before all_inverse_wavelets",
+                        ErrorSeverity::Invalid);
     std::vector<CoreTimeSeries> all;
-    all.reserve(nseq);
+    all.reserve(winv_taper.size());
     double dt = this->shapingwavelet.sample_interval();
-    for (int i = 0; i < nseq; ++i) {
+    for (int i = 0; i < static_cast<int>(winv_taper.size()); ++i) {
       CoreTimeSeries work(this->FFTDeconOperator::FourierInverse(
           this->winv_taper[i], *shapingwavelet.wavelet(), dt, t0parent));
       all.push_back(work);
@@ -446,13 +489,17 @@ MultiTaperSpecDivDecon::all_inverse_wavelets(const double t0parent) {
 std::vector<CoreTimeSeries>
 MultiTaperSpecDivDecon::all_rfestimates(const double t0parent) {
   try {
+    if (rfestimates.empty())
+      throw MsPASSError("MultiTaperSpecDivDecon::all_rfestimates: process "
+                        "must be called before all_rfestimates",
+                        ErrorSeverity::Invalid);
     std::vector<CoreTimeSeries> all;
-    all.reserve(nseq);
+    all.reserve(rfestimates.size());
     double dt = this->shapingwavelet.sample_interval();
-    for (int i = 0; i < nseq; ++i) {
-      /* Althought this method of FFTDeconOperator was originally
+    for (int i = 0; i < static_cast<int>(rfestimates.size()); ++i) {
+      /* Although this method of FFTDeconOperator was originally
        * written to return inverse wavelet, it can work in this
-       * contest too*/
+       * context too */
       CoreTimeSeries work(this->FFTDeconOperator::FourierInverse(
           this->rfestimates[i], *shapingwavelet.wavelet(), dt, t0parent));
       all.push_back(work);
@@ -465,13 +512,17 @@ MultiTaperSpecDivDecon::all_rfestimates(const double t0parent) {
 std::vector<CoreTimeSeries>
 MultiTaperSpecDivDecon::all_actual_outputs(const double t0parent) {
   try {
+    if (ao_fft.empty())
+      throw MsPASSError("MultiTaperSpecDivDecon::all_actual_outputs: process "
+                        "must be called before all_actual_outputs",
+                        ErrorSeverity::Invalid);
     std::vector<CoreTimeSeries> all;
-    all.reserve(nseq);
+    all.reserve(ao_fft.size());
     double dt = this->shapingwavelet.sample_interval();
-    for (int i = 0; i < nseq; ++i) {
-      /* Althought this method of FFTDeconOperator was originally
+    for (int i = 0; i < static_cast<int>(ao_fft.size()); ++i) {
+      /* Although this method of FFTDeconOperator was originally
        * written to return inverse wavelet, it can work in this
-       * contest too*/
+       * context too */
       CoreTimeSeries work(this->FFTDeconOperator::FourierInverse(
           this->ao_fft[i], *shapingwavelet.wavelet(), dt, t0parent));
       all.push_back(work);
@@ -483,11 +534,15 @@ MultiTaperSpecDivDecon::all_actual_outputs(const double t0parent) {
 }
 
 Metadata MultiTaperSpecDivDecon::QCMetrics() {
-  /* Return only an empty Metadata container.  Done as it is
-  easier to maintain the code letting python do this work.
-  This also anticipates new metrics being added which would be
-  easier in python.*/
   Metadata md;
+  md.put("multitaper_operator_type", string("specdiv_power_stabilized"));
+  md.put("multitaper_operator_nfft", nfft);
+  md.put("multitaper_taper_length", static_cast<int>(taperlen));
+  md.put("multitaper_number_tapers", nseq);
+  md.put("multitaper_time_bandwidth_product", nw);
+  md.put("multitaper_damping_factor", damp);
+  md.put("multitaper_processed", !winv_taper.empty());
+  md.put("multitaper_number_outputs", static_cast<int>(winv_taper.size()));
   return md;
 }
 } // namespace mspass::algorithms::deconvolution

@@ -61,6 +61,7 @@ public:
   */
   CNRDeconEngine(const mspass::utility::AntelopePf &pf);
   CNRDeconEngine(const CNRDeconEngine &parent);
+  void changeparameter(const mspass::utility::Metadata &md);
   void
   initialize_inverse_operator(const mspass::seismic::TimeSeries &wavelet,
                               const mspass::seismic::TimeSeries &noise_data);
@@ -88,9 +89,23 @@ public:
   with the highest noise level*/
   mspass::seismic::PowerSpectrum
   compute_noise_spectrum(const mspass::seismic::Seismogram &d2use);
+  /*! \brief Return the output shaping wavelet.
+
+  This is the wavelet used as the target finite-bandwidth representation of
+  the deconvolved result.  The historical method name ideal_output is retained
+  as a legacy alias.
+  */
+  mspass::seismic::TimeSeries output_shaping_wavelet() {
+    return this->ideal_output();
+  }
   mspass::seismic::TimeSeries ideal_output();
   mspass::seismic::TimeSeries
   actual_output(const mspass::seismic::TimeSeries &wavelet);
+  /*! \brief Alias for actual_output using inverse-theory terminology. */
+  mspass::seismic::TimeSeries
+  resolution_kernel(const mspass::seismic::TimeSeries &wavelet) {
+    return this->actual_output(wavelet);
+  }
   mspass::seismic::TimeSeries
   inverse_wavelet(const mspass::seismic::TimeSeries &wavelet,
                   const double t0shift);

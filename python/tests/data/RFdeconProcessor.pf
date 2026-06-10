@@ -6,9 +6,7 @@ shaping_wavelet_dt 0.05
 deconvolution_data_window_start -5.0
 deconvolution_data_window_end 30.0
 target_sample_interval 0.05
-shaping_wavelet_type ricker
-shaping_wavelet_frequency 1.0
-shaping_wavelet_frequency_for_inverse 1.0
+shaping_wavelet_type none
 }
 LeastSquare &Arr{
 damping_factor 1.0
@@ -18,16 +16,24 @@ shaping_wavelet_dt 0.05
 deconvolution_data_window_start -5.0
 deconvolution_data_window_end 30.0
 target_sample_interval 0.05
-shaping_wavelet_type ricker
-shaping_wavelet_frequency 1.0
-shaping_wavelet_frequency_for_inverse 0.5
+shaping_wavelet_type none
 }
+TimeDomainLeastSquare &Arr{
+damping_factor 1.0e-6
+operator_nfft 1024
+shaping_wavelet_dt 0.05
+deconvolution_data_window_start -5.0
+deconvolution_data_window_end 30.0
+target_sample_interval 0.05
+shaping_wavelet_type none
+}
+# MultiTaperPowerSpecDiv uses this branch unless a pf defines an explicit
+# MultiTaperPowerSpecDiv branch.  MultiTaperSpecDiv remains a deprecated
+# compatibility RF algorithm name for the same operator.
 MultiTaperSpecDiv &Arr{
 damping_factor 0.1
 shaping_wavelet_dt 0.05
-shaping_wavelet_type ricker
-shaping_wavelet_frequency 1.0
-shaping_wavelet_frequency_for_inverse 0.5
+shaping_wavelet_type none
 target_sample_interval 0.05
 operator_nfft 1024
 #time_bandwidth_product 4.0
@@ -39,12 +45,13 @@ deconvolution_data_window_end 30.0
 noise_window_start -35.0
 noise_window_end -5.0
 }
+# MultiTaperPowerXcor uses this branch unless a pf defines an explicit
+# MultiTaperPowerXcor branch.  MultiTaperXcor remains a deprecated
+# compatibility RF algorithm name for the same operator.
 MultiTaperXcor &Arr{
 damping_factor 0.05
 shaping_wavelet_dt 0.05
-shaping_wavelet_type ricker
-shaping_wavelet_frequency 1.0
-shaping_wavelet_frequency_for_inverse 0.5
+shaping_wavelet_type none
 target_sample_interval 0.05
 operator_nfft 1024
 #time_bandwidth_product 4.0

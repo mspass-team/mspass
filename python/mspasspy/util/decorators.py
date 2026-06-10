@@ -22,6 +22,27 @@ _MSPASS_WRAPPER_DATA_TYPES = (
 )
 
 
+def _function_accepts_argument(func, name):
+    """
+    Return True if func explicitly declares argument name.
+
+    This uses the code object instead of inspect.signature because these
+    decorators are used in tight Dask map loops.
+    """
+    cache_key = "_mspass_accepts_" + name
+    cached = getattr(func, cache_key, None)
+    if cached is not None:
+        return cached
+    code = getattr(func, "__code__", None)
+    if code is None:
+        accepts = False
+    else:
+        narguments = code.co_argcount + code.co_kwonlyargcount
+        accepts = name in code.co_varnames[:narguments]
+    setattr(func, cache_key, accepts)
+    return accepts
+
+
 @decorator
 def mspass_func_wrapper(
     func,
@@ -205,6 +226,9 @@ def mspass_func_wrapper(
         # type is bad - with this logic func will be called and
         # we assume it throws an exception
         run_only_once = True
+    if _function_accepts_argument(func, "alg_name") and "alg_name" not in kwargs:
+        kwargs = dict(kwargs)
+        kwargs["alg_name"] = alg_name
     try:
         if run_only_once:
             res = func(data, *args, **kwargs)
