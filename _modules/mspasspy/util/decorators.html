@@ -87,6 +87,7 @@
 <p class="caption" role="heading"><span class="caption-text">Data Processing</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/algorithms.html">Algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/deconvolution.html">Deconvolution Operators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/importing_data.html">Importing Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/handling_errors.html">Handling Errors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/data_editing.html">Data Editing</a></li>
@@ -165,6 +166,27 @@
     <span class="n">TimeSeriesEnsemble</span><span class="p">,</span>
     <span class="n">SeismogramEnsemble</span><span class="p">,</span>
 <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_function_accepts_argument</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return True if func explicitly declares argument name.</span>
+
+<span class="sd">    This uses the code object instead of inspect.signature because these</span>
+<span class="sd">    decorators are used in tight Dask map loops.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">cache_key</span> <span class="o">=</span> <span class="s2">&quot;_mspass_accepts_&quot;</span> <span class="o">+</span> <span class="n">name</span>
+    <span class="n">cached</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">cache_key</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">cached</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">cached</span>
+    <span class="n">code</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="s2">&quot;__code__&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">code</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">accepts</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">narguments</span> <span class="o">=</span> <span class="n">code</span><span class="o">.</span><span class="n">co_argcount</span> <span class="o">+</span> <span class="n">code</span><span class="o">.</span><span class="n">co_kwonlyargcount</span>
+        <span class="n">accepts</span> <span class="o">=</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">code</span><span class="o">.</span><span class="n">co_varnames</span><span class="p">[:</span><span class="n">narguments</span><span class="p">]</span>
+    <span class="nb">setattr</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">cache_key</span><span class="p">,</span> <span class="n">accepts</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">accepts</span>
 
 
 <span class="nd">@decorator</span>
@@ -350,6 +372,9 @@
         <span class="c1"># type is bad - with this logic func will be called and</span>
         <span class="c1"># we assume it throws an exception</span>
         <span class="n">run_only_once</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">if</span> <span class="n">_function_accepts_argument</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="s2">&quot;alg_name&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="s2">&quot;alg_name&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+        <span class="n">kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;alg_name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">alg_name</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">run_only_once</span><span class="p">:</span>
             <span class="n">res</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>

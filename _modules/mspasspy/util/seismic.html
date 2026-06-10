@@ -87,6 +87,7 @@
 <p class="caption" role="heading"><span class="caption-text">Data Processing</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/algorithms.html">Algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/deconvolution.html">Deconvolution Operators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/importing_data.html">Importing Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/handling_errors.html">Handling Errors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/data_editing.html">Data Editing</a></li>
@@ -149,7 +150,7 @@
     <span class="n">TimeSeriesEnsemble</span><span class="p">,</span>
     <span class="n">SeismogramEnsemble</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.ccore.utility</span><span class="w"> </span><span class="kn">import</span> <span class="n">Metadata</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="p">,</span><span class="n">MsPASSError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.ccore.utility</span><span class="w"> </span><span class="kn">import</span> <span class="n">Metadata</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="p">,</span> <span class="n">MsPASSError</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.ccore.algorithms.basic</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeWindow</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">bson</span><span class="w"> </span><span class="kn">import</span> <span class="n">json_util</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
@@ -217,28 +218,30 @@
             <span class="n">nlive</span> <span class="o">+=</span> <span class="mi">1</span>
     <span class="k">return</span> <span class="n">nlive</span></div>
 
+
+
 <div class="viewcode-block" id="has_live_data">
 <a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.seismic.has_live_data">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">has_live_data</span><span class="p">(</span><span class="n">ensemble</span><span class="p">)</span><span class="o">-&gt;</span><span class="nb">bool</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">has_live_data</span><span class="p">(</span><span class="n">ensemble</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Check if an ensemble has any live data and return True if it does.</span>
-<span class="sd">    </span>
-<span class="sd">    This function simply scans the member vector of ensemble and returns </span>
-<span class="sd">    True the first time if finds a datum marked live.   That is much </span>
-<span class="sd">    faster with large ensembles than an alternative os using `number_live` </span>
-<span class="sd">    and using the result to set an ensemble  live or dead.   The normal </span>
-<span class="sd">    use of this function is to call it after accumulating a set of atomic </span>
-<span class="sd">    data into an ensemble.  An empty ensemble container is always marked </span>
-<span class="sd">    dead until explicitly set live.   Hence, after adding data to such </span>
+
+<span class="sd">    This function simply scans the member vector of ensemble and returns</span>
+<span class="sd">    True the first time if finds a datum marked live.   That is much</span>
+<span class="sd">    faster with large ensembles than an alternative os using `number_live`</span>
+<span class="sd">    and using the result to set an ensemble  live or dead.   The normal</span>
+<span class="sd">    use of this function is to call it after accumulating a set of atomic</span>
+<span class="sd">    data into an ensemble.  An empty ensemble container is always marked</span>
+<span class="sd">    dead until explicitly set live.   Hence, after adding data to such</span>
 <span class="sd">    a container run this with a construct like this:</span>
-<span class="sd">    ```    </span>
+<span class="sd">    ```</span>
 <span class="sd">        if has_live_data(ensemble):</span>
 <span class="sd">            ensemble.set_live()</span>
 <span class="sd">    ```</span>
-<span class="sd">    Note this function will throw a ValueError exception if ensemble is </span>
-<span class="sd">    anything but a TimeSeriesEnsemble or SeismogramEnsemble.  </span>
-<span class="sd">    </span>
-<span class="sd">    :param enemble:   input ensemble to be scanned </span>
+<span class="sd">    Note this function will throw a ValueError exception if ensemble is</span>
+<span class="sd">    anything but a TimeSeriesEnsemble or SeismogramEnsemble.</span>
+
+<span class="sd">    :param enemble:   input ensemble to be scanned</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ensemble</span><span class="p">,</span> <span class="p">(</span><span class="n">TimeSeriesEnsemble</span><span class="p">,</span> <span class="n">SeismogramEnsemble</span><span class="p">)):</span>
         <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;has_live_data:  arg0 must be a TimeSeriesEnsemble or SeismogramEnsemble object</span><span class="se">\n</span><span class="s2">&quot;</span>
@@ -248,6 +251,7 @@
         <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">live</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">True</span>
     <span class="k">return</span> <span class="kc">False</span></div>
+
 
 
 <div class="viewcode-block" id="regularize_sampling">

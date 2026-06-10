@@ -1,0 +1,1790 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon" kind="class" language="C++" prot="public">
+    <compoundname>mspass::algorithms::deconvolution::TimeDomainGIDDecon</compoundname>
+    <basecompoundref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon" prot="public" virt="non-virtual">mspass::algorithms::deconvolution::ScalarDecon</basecompoundref>
+    <includes refid="_time_domain_g_i_d_decon_8h" local="no">TimeDomainGIDDecon.h</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1aa69dcc32c70bf39cdab073b6aabbd74b" prot="private" static="no" mutable="no">
+        <type><ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">mspass::seismic::CoreSeismogram</ref></type>
+        <definition>mspass::seismic::CoreSeismogram mspass::algorithms::deconvolution::TimeDomainGIDDecon::d_all</definition>
+        <argsstring></argsstring>
+        <name>d_all</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::d_all</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="130" column="35" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" bodystart="130" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a233fde771e0cd48f6c559352ee3bf796" prot="private" static="no" mutable="no">
+        <type><ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">mspass::seismic::CoreSeismogram</ref></type>
+        <definition>mspass::seismic::CoreSeismogram mspass::algorithms::deconvolution::TimeDomainGIDDecon::d_decon</definition>
+        <argsstring></argsstring>
+        <name>d_decon</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::d_decon</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="130" column="41" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" bodystart="130" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a0a270c12041d1a397f8029c743cecf36" prot="private" static="no" mutable="no">
+        <type><ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">mspass::seismic::CoreSeismogram</ref></type>
+        <definition>mspass::seismic::CoreSeismogram mspass::algorithms::deconvolution::TimeDomainGIDDecon::r</definition>
+        <argsstring></argsstring>
+        <name>r</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::r</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="130" column="49" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" bodystart="130" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1abca2bcc4201a2a5d812de25e018c18a8" prot="private" static="no" mutable="no">
+        <type><ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">mspass::seismic::CoreSeismogram</ref></type>
+        <definition>mspass::seismic::CoreSeismogram mspass::algorithms::deconvolution::TimeDomainGIDDecon::n</definition>
+        <argsstring></argsstring>
+        <name>n</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::n</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="130" column="51" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" bodystart="130" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a055393d00d6438603657e0fd7e576798" prot="private" static="no" mutable="no">
+        <type>int</type>
+        <definition>int mspass::algorithms::deconvolution::TimeDomainGIDDecon::ndwin</definition>
+        <argsstring></argsstring>
+        <name>ndwin</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::ndwin</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="134" column="7" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" bodystart="134" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a10de638e0a2aba927d6e48dbc28800da" prot="private" static="no" mutable="no">
+        <type>int</type>
+        <definition>int mspass::algorithms::deconvolution::TimeDomainGIDDecon::nnwin</definition>
+        <argsstring></argsstring>
+        <name>nnwin</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::nnwin</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="134" column="13" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" bodystart="134" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a1bbd04a7209a499ff4bece71cedef1ce" prot="private" static="no" mutable="no">
+        <type><ref refid="classmspass_1_1algorithms_1_1_time_window" kindref="compound">mspass::algorithms::TimeWindow</ref></type>
+        <definition>mspass::algorithms::TimeWindow mspass::algorithms::deconvolution::TimeDomainGIDDecon::dwin</definition>
+        <argsstring></argsstring>
+        <name>dwin</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::dwin</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="137" column="34" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" bodystart="137" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a15406e51b749648afbf7240fb9a9e51b" prot="private" static="no" mutable="no">
+        <type><ref refid="classmspass_1_1algorithms_1_1_time_window" kindref="compound">mspass::algorithms::TimeWindow</ref></type>
+        <definition>mspass::algorithms::TimeWindow mspass::algorithms::deconvolution::TimeDomainGIDDecon::nwin</definition>
+        <argsstring></argsstring>
+        <name>nwin</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::nwin</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="137" column="39" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" bodystart="137" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a3b7002a242207f91d5b5d7f5736be449" prot="private" static="no" mutable="no">
+        <type><ref refid="classmspass_1_1algorithms_1_1_time_window" kindref="compound">mspass::algorithms::TimeWindow</ref></type>
+        <definition>mspass::algorithms::TimeWindow mspass::algorithms::deconvolution::TimeDomainGIDDecon::fftwin</definition>
+        <argsstring></argsstring>
+        <name>fftwin</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::fftwin</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="137" column="44" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" bodystart="137" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a4d389e5a57350d2e8cb80b80e0cdaa12" prot="private" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string mspass::algorithms::deconvolution::TimeDomainGIDDecon::config_pf_text</definition>
+        <argsstring></argsstring>
+        <name>config_pf_text</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::config_pf_text</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="138" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" bodystart="138" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a11be90cb0ca1ab6abeb8feaf2e61b4c1" prot="private" static="no" mutable="no">
+        <type>double</type>
+        <definition>double mspass::algorithms::deconvolution::TimeDomainGIDDecon::target_dt</definition>
+        <argsstring></argsstring>
+        <name>target_dt</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::target_dt</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="139" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" bodystart="139" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a5c1abf7af05b0600194fd85689b5f074" prot="private" static="no" mutable="no">
+        <type>int</type>
+        <definition>int mspass::algorithms::deconvolution::TimeDomainGIDDecon::noise_component</definition>
+        <argsstring></argsstring>
+        <name>noise_component</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::noise_component</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>For preprocessor algorithms that are scalar we specify which channel is used to define the noise for regularization </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="142" column="7" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" bodystart="142" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1aa47a8f67bf3d05edf8a69a48f139bf2f" prot="private" static="no" mutable="no">
+        <type>std::list&lt; <ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike" kindref="compound">ThreeCSpike</ref> &gt;</type>
+        <definition>std::list&lt;ThreeCSpike&gt; mspass::algorithms::deconvolution::TimeDomainGIDDecon::spikes</definition>
+        <argsstring></argsstring>
+        <name>spikes</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::spikes</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>The algorithm accumulates spikes in this linked list. To create the result as a normal time series this is converted to a conventional form in the getresult method </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="146" column="13" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" bodystart="146" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a4ef53d88ad259c2dbfee4d4c07a414b8" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; double &gt;</type>
+        <definition>std::vector&lt;double&gt; mspass::algorithms::deconvolution::TimeDomainGIDDecon::lag_weights</definition>
+        <argsstring></argsstring>
+        <name>lag_weights</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::lag_weights</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Penalty function weights.</para>
+<para>This algorithm uses a penalty function that downweights a range of lags around the time of each spike subtracted in the iteration. This stl vector contains the accumulated weighting function at the end of the iteration. It is used for QC </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="153" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" bodystart="153" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a7362bed3a834a865fc646860d737bc57" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; double &gt;</type>
+        <definition>std::vector&lt;double&gt; mspass::algorithms::deconvolution::TimeDomainGIDDecon::wtf</definition>
+        <argsstring></argsstring>
+        <name>wtf</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::wtf</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="156" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" bodystart="156" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a7b938e9517efbd13c5e975a2e93b4d08" prot="private" static="no" mutable="no">
+        <type>int</type>
+        <definition>int mspass::algorithms::deconvolution::TimeDomainGIDDecon::nwtf</definition>
+        <argsstring></argsstring>
+        <name>nwtf</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::nwtf</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="157" column="7" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" bodystart="157" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1abe4c9662ac5e09a51b0e46e38a7157bb" prot="private" static="no" mutable="no">
+        <type>std::unique_ptr&lt; <ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon" kindref="compound">ScalarDecon</ref> &gt;</type>
+        <definition>std::unique_ptr&lt;ScalarDecon&gt; mspass::algorithms::deconvolution::TimeDomainGIDDecon::preprocessor</definition>
+        <argsstring></argsstring>
+        <name>preprocessor</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::preprocessor</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="161" column="19" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" bodystart="161" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1ad8771fff56adf8b779d043284922244c" prot="private" static="no" mutable="no">
+        <type>std::unique_ptr&lt; <ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r_decon_engine" kindref="compound">CNRDeconEngine</ref> &gt;</type>
+        <definition>std::unique_ptr&lt;CNRDeconEngine&gt; mspass::algorithms::deconvolution::TimeDomainGIDDecon::cnrprocessor</definition>
+        <argsstring></argsstring>
+        <name>cnrprocessor</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::cnrprocessor</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="162" column="19" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" bodystart="162" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1ab66c3ef699d2d05bb454ff494a690302" prot="private" static="no" mutable="no">
+        <type><ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref></type>
+        <definition>mspass::seismic::TimeSeries mspass::algorithms::deconvolution::TimeDomainGIDDecon::current_wavelet</definition>
+        <argsstring></argsstring>
+        <name>current_wavelet</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::current_wavelet</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="163" column="31" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" bodystart="163" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1acb57ca2cf227ba11e68d9c72147f5e11" prot="private" static="no" mutable="no">
+        <type><ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref></type>
+        <definition>mspass::seismic::TimeSeries mspass::algorithms::deconvolution::TimeDomainGIDDecon::external_wavelet</definition>
+        <argsstring></argsstring>
+        <name>external_wavelet</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::external_wavelet</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="164" column="31" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" bodystart="164" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a831b5de21cc0b894afe1591f02f7d7f2" prot="private" static="no" mutable="no">
+        <type><ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref></type>
+        <definition>mspass::seismic::TimeSeries mspass::algorithms::deconvolution::TimeDomainGIDDecon::external_noise</definition>
+        <argsstring></argsstring>
+        <name>external_noise</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::external_noise</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="165" column="31" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" bodystart="165" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a77f5763d34d77ea5c2c90baa39179ce1" prot="private" static="no" mutable="no">
+        <type><ref refid="classmspass_1_1seismic_1_1_power_spectrum" kindref="compound">mspass::seismic::PowerSpectrum</ref></type>
+        <definition>mspass::seismic::PowerSpectrum mspass::algorithms::deconvolution::TimeDomainGIDDecon::external_noise_spectrum</definition>
+        <argsstring></argsstring>
+        <name>external_noise_spectrum</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::external_noise_spectrum</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="166" column="34" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" bodystart="166" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1ac4c2e6aba23ef5c6eb4370d33c4f5f64" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; std::vector&lt; double &gt; &gt;</type>
+        <definition>std::vector&lt;std::vector&lt;double&gt; &gt; mspass::algorithms::deconvolution::TimeDomainGIDDecon::ns_noise_components</definition>
+        <argsstring></argsstring>
+        <name>ns_noise_components</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::ns_noise_components</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="167" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" bodystart="167" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a4e420c606732c8490f1427a7962fc38a" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool mspass::algorithms::deconvolution::TimeDomainGIDDecon::external_wavelet_loaded</definition>
+        <argsstring></argsstring>
+        <name>external_wavelet_loaded</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::external_wavelet_loaded</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="168" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" bodystart="168" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1aa4343781a87ffd3eaf6871e8b041802b" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool mspass::algorithms::deconvolution::TimeDomainGIDDecon::external_noise_loaded</definition>
+        <argsstring></argsstring>
+        <name>external_noise_loaded</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::external_noise_loaded</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="168" column="32" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" bodystart="168" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a8c25095a67d09372ac52bb99128cd7f2" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool mspass::algorithms::deconvolution::TimeDomainGIDDecon::external_noise_spectrum_loaded</definition>
+        <argsstring></argsstring>
+        <name>external_noise_spectrum_loaded</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::external_noise_spectrum_loaded</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="169" column="7" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" bodystart="169" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1aab18719b1001e15a2a8c0593a84e67be" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool mspass::algorithms::deconvolution::TimeDomainGIDDecon::external_wavelet_allowed</definition>
+        <argsstring></argsstring>
+        <name>external_wavelet_allowed</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::external_wavelet_allowed</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="169" column="38" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" bodystart="169" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1ac83b83e95ccbe627a175f78c815498bc" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool mspass::algorithms::deconvolution::TimeDomainGIDDecon::processed</definition>
+        <argsstring></argsstring>
+        <name>processed</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::processed</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="170" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" bodystart="170" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1affbd624e42a7a98559ac1679ab16ba70" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool mspass::algorithms::deconvolution::TimeDomainGIDDecon::residual_noise_from_external</definition>
+        <argsstring></argsstring>
+        <name>residual_noise_from_external</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::residual_noise_from_external</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="171" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" bodystart="171" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a3633ab8f2de2e727a8f6a5e071299907" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool mspass::algorithms::deconvolution::TimeDomainGIDDecon::leaf_parameters_changed</definition>
+        <argsstring></argsstring>
+        <name>leaf_parameters_changed</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::leaf_parameters_changed</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="172" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" bodystart="172" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1ad95ed990f9968eb58272000e055e05b4" prot="private" static="no" mutable="no">
+        <type><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">mspass::utility::Metadata</ref></type>
+        <definition>mspass::utility::Metadata mspass::algorithms::deconvolution::TimeDomainGIDDecon::changed_leaf_metadata</definition>
+        <argsstring></argsstring>
+        <name>changed_leaf_metadata</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::changed_leaf_metadata</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="173" column="29" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" bodystart="173" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a6148e9a923f390f83ca45718e326a769" prot="private" static="no" mutable="no">
+        <type>int</type>
+        <definition>int mspass::algorithms::deconvolution::TimeDomainGIDDecon::wavelet_pad</definition>
+        <argsstring></argsstring>
+        <name>wavelet_pad</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::wavelet_pad</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="177" column="7" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" bodystart="177" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1afc9fc76f71174c6040fd1fbddf97444f" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; double &gt;</type>
+        <definition>std::vector&lt;double&gt; mspass::algorithms::deconvolution::TimeDomainGIDDecon::actual_o_fir</definition>
+        <argsstring></argsstring>
+        <name>actual_o_fir</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::actual_o_fir</qualifiedname>
+        <briefdescription>
+<para>Shortened inverse wavelet used for iteration. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The iteration is done here in the time domain. The wavelet returned by the preprocessor algorithm will commonly have lots of zeros or small numbers outside a central area. The constructor defines how that long wavelet is shortened to build this one. actual_o_fir is the resolution kernel vector. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="185" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" bodystart="185" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a14af4d0bc2c9ae4093addf04587fc750" prot="private" static="no" mutable="no">
+        <type>int</type>
+        <definition>int mspass::algorithms::deconvolution::TimeDomainGIDDecon::actual_o_0</definition>
+        <argsstring></argsstring>
+        <name>actual_o_0</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::actual_o_0</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="186" column="7" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" bodystart="186" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a9cae4920d68ffb9e0445ff845d2a585b" prot="private" static="no" mutable="no">
+        <type>IterDeconType</type>
+        <definition>IterDeconType mspass::algorithms::deconvolution::TimeDomainGIDDecon::decon_type</definition>
+        <argsstring></argsstring>
+        <name>decon_type</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::decon_type</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="187" column="17" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" bodystart="187" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a939393bbe3cf9532115a7f6cf749d119" prot="private" static="no" mutable="no">
+        <type>double</type>
+        <definition>double mspass::algorithms::deconvolution::TimeDomainGIDDecon::lw_linf_initial</definition>
+        <argsstring></argsstring>
+        <name>lw_linf_initial</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::lw_linf_initial</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="218" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" bodystart="218" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a7bc8dc0ebf24e831e1f017b79c1118d4" prot="private" static="no" mutable="no">
+        <type>double</type>
+        <definition>double mspass::algorithms::deconvolution::TimeDomainGIDDecon::lw_linf_prev</definition>
+        <argsstring></argsstring>
+        <name>lw_linf_prev</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::lw_linf_prev</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="218" column="26" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" bodystart="218" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a1c107a06f12ac0fd9c5e4a2c227e8b33" prot="private" static="no" mutable="no">
+        <type>double</type>
+        <definition>double mspass::algorithms::deconvolution::TimeDomainGIDDecon::lw_l2_initial</definition>
+        <argsstring></argsstring>
+        <name>lw_l2_initial</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::lw_l2_initial</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="219" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" bodystart="219" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1af6ec88d761b23425b30d16d27b0816a4" prot="private" static="no" mutable="no">
+        <type>double</type>
+        <definition>double mspass::algorithms::deconvolution::TimeDomainGIDDecon::lw_l2_prev</definition>
+        <argsstring></argsstring>
+        <name>lw_l2_prev</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::lw_l2_prev</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="219" column="24" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" bodystart="219" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1af8986f594c5be9b9f9b77ea6cf33f99d" prot="private" static="no" mutable="no">
+        <type>double</type>
+        <definition>double mspass::algorithms::deconvolution::TimeDomainGIDDecon::resid_linf_initial</definition>
+        <argsstring></argsstring>
+        <name>resid_linf_initial</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::resid_linf_initial</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="220" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" bodystart="220" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a93aada3a3a1c91a65423f6d4b5200938" prot="private" static="no" mutable="no">
+        <type>double</type>
+        <definition>double mspass::algorithms::deconvolution::TimeDomainGIDDecon::resid_linf_prev</definition>
+        <argsstring></argsstring>
+        <name>resid_linf_prev</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::resid_linf_prev</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="220" column="29" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" bodystart="220" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a68a7cb1a45ca72d3849c9f182253faf1" prot="private" static="no" mutable="no">
+        <type>double</type>
+        <definition>double mspass::algorithms::deconvolution::TimeDomainGIDDecon::resid_l2_initial</definition>
+        <argsstring></argsstring>
+        <name>resid_l2_initial</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::resid_l2_initial</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="221" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" bodystart="221" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1ad0cc1fc20b680253f746775f3f225dcd" prot="private" static="no" mutable="no">
+        <type>double</type>
+        <definition>double mspass::algorithms::deconvolution::TimeDomainGIDDecon::resid_l2_prev</definition>
+        <argsstring></argsstring>
+        <name>resid_l2_prev</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::resid_l2_prev</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="221" column="27" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" bodystart="221" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1ad6d9ce2b0de85ea9164029bac4a972e6" prot="private" static="no" mutable="no">
+        <type>int</type>
+        <definition>int mspass::algorithms::deconvolution::TimeDomainGIDDecon::iter_count</definition>
+        <argsstring></argsstring>
+        <name>iter_count</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::iter_count</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="223" column="7" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" bodystart="223" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a3b55b13d019b3e15bef4ed6f419a9e1a" prot="private" static="no" mutable="no">
+        <type>int</type>
+        <definition>int mspass::algorithms::deconvolution::TimeDomainGIDDecon::iter_max</definition>
+        <argsstring></argsstring>
+        <name>iter_max</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::iter_max</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="223" column="18" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" bodystart="223" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a0f584fece62a9c3b29704a52641ca0af" prot="private" static="no" mutable="no">
+        <type>double</type>
+        <definition>double mspass::algorithms::deconvolution::TimeDomainGIDDecon::lw_linf_floor</definition>
+        <argsstring></argsstring>
+        <name>lw_linf_floor</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::lw_linf_floor</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="226" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" bodystart="226" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1ac8e83ca0240e2342db772e7405865c25" prot="private" static="no" mutable="no">
+        <type>double</type>
+        <definition>double mspass::algorithms::deconvolution::TimeDomainGIDDecon::lw_l2_floor</definition>
+        <argsstring></argsstring>
+        <name>lw_l2_floor</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::lw_l2_floor</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="226" column="24" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" bodystart="226" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1ad363f1209536fcd85d96c637992a04d7" prot="private" static="no" mutable="no">
+        <type>double</type>
+        <definition>double mspass::algorithms::deconvolution::TimeDomainGIDDecon::resid_linf_prob</definition>
+        <argsstring></argsstring>
+        <name>resid_linf_prob</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::resid_linf_prob</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="229" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" bodystart="229" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a8e6806bf7a4d3688fb3942e4af82a2e1" prot="private" static="no" mutable="no">
+        <type>double</type>
+        <definition>double mspass::algorithms::deconvolution::TimeDomainGIDDecon::resid_linf_floor</definition>
+        <argsstring></argsstring>
+        <name>resid_linf_floor</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::resid_linf_floor</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="229" column="26" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" bodystart="229" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a6fae057cca8ef3ec85f5af5b5033db35" prot="private" static="no" mutable="no">
+        <type>double</type>
+        <definition>double mspass::algorithms::deconvolution::TimeDomainGIDDecon::resid_l2_tol</definition>
+        <argsstring></argsstring>
+        <name>resid_l2_tol</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::resid_l2_tol</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="230" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" bodystart="230" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a622aa0888ba481897b934219b905b9d8" prot="private" static="no" mutable="no">
+        <type>double</type>
+        <definition>double mspass::algorithms::deconvolution::TimeDomainGIDDecon::ns_peak_sigma_threshold</definition>
+        <argsstring></argsstring>
+        <name>ns_peak_sigma_threshold</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::ns_peak_sigma_threshold</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="231" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" bodystart="231" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1adba23b73843fac2d6c70e9e365c11cb1" prot="private" static="no" mutable="no">
+        <type>double</type>
+        <definition>double mspass::algorithms::deconvolution::TimeDomainGIDDecon::ns_peak_probability_threshold</definition>
+        <argsstring></argsstring>
+        <name>ns_peak_probability_threshold</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::ns_peak_probability_threshold</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="231" column="34" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" bodystart="231" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1aea432198b18159300802acd63554ce12" prot="private" static="no" mutable="no">
+        <type>double</type>
+        <definition>double mspass::algorithms::deconvolution::TimeDomainGIDDecon::ns_residual_noise_ratio_floor</definition>
+        <argsstring></argsstring>
+        <name>ns_residual_noise_ratio_floor</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::ns_residual_noise_ratio_floor</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="232" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" bodystart="232" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a7f12e43a9505f3fbc2f21b822294e4e3" prot="private" static="no" mutable="no">
+        <type>double</type>
+        <definition>double mspass::algorithms::deconvolution::TimeDomainGIDDecon::ns_peak_threshold</definition>
+        <argsstring></argsstring>
+        <name>ns_peak_threshold</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::ns_peak_threshold</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="232" column="40" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" bodystart="232" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a06ce4a8b571c3e3598143442d8946235" prot="private" static="no" mutable="no">
+        <type>double</type>
+        <definition>double mspass::algorithms::deconvolution::TimeDomainGIDDecon::ns_last_peak_significance</definition>
+        <argsstring></argsstring>
+        <name>ns_last_peak_significance</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::ns_last_peak_significance</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="233" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" bodystart="233" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1aff863a198c3cdab592a3a32e63b59ac7" prot="private" static="no" mutable="no">
+        <type>double</type>
+        <definition>double mspass::algorithms::deconvolution::TimeDomainGIDDecon::ns_noise_l2</definition>
+        <argsstring></argsstring>
+        <name>ns_noise_l2</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::ns_noise_l2</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="233" column="36" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" bodystart="233" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a3b1fa6152f05ac68012b6e01653d3529" prot="private" static="no" mutable="no">
+        <type>int</type>
+        <definition>int mspass::algorithms::deconvolution::TimeDomainGIDDecon::ns_max_spikes</definition>
+        <argsstring></argsstring>
+        <name>ns_max_spikes</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::ns_max_spikes</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="234" column="7" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" bodystart="234" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a8909d409fb8ead0589e0f7e5fe34a9c8" prot="private" static="no" mutable="no">
+        <type>int</type>
+        <definition>int mspass::algorithms::deconvolution::TimeDomainGIDDecon::ns_refit_interval</definition>
+        <argsstring></argsstring>
+        <name>ns_refit_interval</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::ns_refit_interval</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="234" column="21" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" bodystart="234" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a0b38a13165c8bc2c209d68cedf722de3" prot="private" static="no" mutable="no">
+        <type>double</type>
+        <definition>double mspass::algorithms::deconvolution::TimeDomainGIDDecon::ns_ridge_beta</definition>
+        <argsstring></argsstring>
+        <name>ns_ridge_beta</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::ns_ridge_beta</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="235" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" bodystart="235" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a65db3890949450705273eb396dc11e11" prot="private" static="no" mutable="no">
+        <type>double</type>
+        <definition>double mspass::algorithms::deconvolution::TimeDomainGIDDecon::ns_fractional_improvement_final</definition>
+        <argsstring></argsstring>
+        <name>ns_fractional_improvement_final</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::ns_fractional_improvement_final</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="235" column="24" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" bodystart="235" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a2b90964275afbf6e5a9f181672436a1d" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool mspass::algorithms::deconvolution::TimeDomainGIDDecon::ns_use_empirical_noise_threshold</definition>
+        <argsstring></argsstring>
+        <name>ns_use_empirical_noise_threshold</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::ns_use_empirical_noise_threshold</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="236" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" bodystart="236" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1aeef8d9af130b696890d9055a6e24f363" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool mspass::algorithms::deconvolution::TimeDomainGIDDecon::ns_converged</definition>
+        <argsstring></argsstring>
+        <name>ns_converged</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::ns_converged</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="236" column="41" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" bodystart="236" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1ac15ede0cad5c6d9dcacc8475e446f909" prot="private" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string mspass::algorithms::deconvolution::TimeDomainGIDDecon::ns_stop_reason</definition>
+        <argsstring></argsstring>
+        <name>ns_stop_reason</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::ns_stop_reason</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="237" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" bodystart="237" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1aa83262f4e7ae78ba6d45e98f5fe7e9e1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>mspass::algorithms::deconvolution::TimeDomainGIDDecon::TimeDomainGIDDecon</definition>
+        <argsstring>(const mspass::utility::AntelopePf &amp;md)</argsstring>
+        <name>TimeDomainGIDDecon</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::TimeDomainGIDDecon</qualifiedname>
+        <param>
+          <type>const <ref refid="classmspass_1_1utility_1_1_antelope_pf" kindref="compound">mspass::utility::AntelopePf</ref> &amp;</type>
+          <declname>md</declname>
+        </param>
+        <briefdescription>
+<para>Create and initialize an operator for repeated processing. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The parameter file defines the inverse-operator mode, iteration controls, output shaping wavelet, signal/noise windows, and optional NS-GID stability parameters. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="51" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/TimeDomainGIDDecon.cc" bodystart="48" bodyend="207"/>
+        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="445" endline="460">mspass::utility::Metadata::get</references>
+        <references refid="classmspass_1_1utility_1_1_antelope_pf_1a7853329ba52cc91460a435057e6a8e85" compoundref="_antelope_pf_8cc" startline="392" endline="399">mspass::utility::AntelopePf::get_branch</references>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1ae1f42cec8bb0a16381e4ba48f81e27e7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>mspass::algorithms::deconvolution::TimeDomainGIDDecon::TimeDomainGIDDecon</definition>
+        <argsstring>(const TimeDomainGIDDecon &amp;parent)=delete</argsstring>
+        <name>TimeDomainGIDDecon</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::TimeDomainGIDDecon</qualifiedname>
+        <param>
+          <type>const <ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon" kindref="compound">TimeDomainGIDDecon</ref> &amp;</type>
+          <declname>parent</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="52" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1aa51f877acc727489eabda6117d628a3e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon" kindref="compound">TimeDomainGIDDecon</ref> &amp;</type>
+        <definition>TimeDomainGIDDecon &amp; mspass::algorithms::deconvolution::TimeDomainGIDDecon::operator=</definition>
+        <argsstring>(const TimeDomainGIDDecon &amp;parent)=delete</argsstring>
+        <name>operator=</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon" kindref="compound">TimeDomainGIDDecon</ref> &amp;</type>
+          <declname>parent</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="53" column="22"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1aec73707c1062cb14a7d0226ef045a4cb" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void mspass::algorithms::deconvolution::TimeDomainGIDDecon::changeparameter</definition>
+        <argsstring>(const mspass::utility::Metadata &amp;md)</argsstring>
+        <name>changeparameter</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::changeparameter</qualifiedname>
+        <reimplements refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a8cf90914fa1571e88978b0b810fad805">changeparameter</reimplements>
+        <param>
+          <type>const <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">mspass::utility::Metadata</ref> &amp;</type>
+          <declname>md</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="54" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/TimeDomainGIDDecon.cc" bodystart="235" bodyend="246"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a4715b8829be1c0944ed1f549abd7709a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int mspass::algorithms::deconvolution::TimeDomainGIDDecon::load</definition>
+        <argsstring>(const mspass::seismic::CoreSeismogram &amp;d, mspass::algorithms::TimeWindow dwin)</argsstring>
+        <name>load</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::load</qualifiedname>
+        <param>
+          <type>const <ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">mspass::seismic::CoreSeismogram</ref> &amp;</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type><ref refid="classmspass_1_1algorithms_1_1_time_window" kindref="compound">mspass::algorithms::TimeWindow</ref></type>
+          <declname>dwin</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="55" column="7" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/TimeDomainGIDDecon.cc" bodystart="358" bodyend="382"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a3bedcda6410eac950f7ded71a5190002" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int mspass::algorithms::deconvolution::TimeDomainGIDDecon::loadnoise</definition>
+        <argsstring>(const mspass::seismic::CoreSeismogram &amp;d, mspass::algorithms::TimeWindow nwin)</argsstring>
+        <name>loadnoise</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::loadnoise</qualifiedname>
+        <param>
+          <type>const <ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">mspass::seismic::CoreSeismogram</ref> &amp;</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type><ref refid="classmspass_1_1algorithms_1_1_time_window" kindref="compound">mspass::algorithms::TimeWindow</ref></type>
+          <declname>nwin</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="57" column="7" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/TimeDomainGIDDecon.cc" bodystart="383" bodyend="413"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1aeb4a3290f76e94584e6886807249daed" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int mspass::algorithms::deconvolution::TimeDomainGIDDecon::loadwavelet</definition>
+        <argsstring>(const mspass::seismic::TimeSeries &amp;wavelet)</argsstring>
+        <name>loadwavelet</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::loadwavelet</qualifiedname>
+        <param>
+          <type>const <ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref> &amp;</type>
+          <declname>wavelet</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="59" column="7" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/TimeDomainGIDDecon.cc" bodystart="414" bodyend="434"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a71d31df5570c46921205980656057420" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int mspass::algorithms::deconvolution::TimeDomainGIDDecon::loadwavelet</definition>
+        <argsstring>(const mspass::seismic::CoreTimeSeries &amp;wavelet)</argsstring>
+        <name>loadwavelet</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::loadwavelet</qualifiedname>
+        <param>
+          <type>const <ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">mspass::seismic::CoreTimeSeries</ref> &amp;</type>
+          <declname>wavelet</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="60" column="7" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/TimeDomainGIDDecon.cc" bodystart="435" bodyend="438"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a185ea20dc8d7326cb728713358de7335" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int mspass::algorithms::deconvolution::TimeDomainGIDDecon::loadnoise</definition>
+        <argsstring>(const mspass::seismic::TimeSeries &amp;noise)</argsstring>
+        <name>loadnoise</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::loadnoise</qualifiedname>
+        <param>
+          <type>const <ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref> &amp;</type>
+          <declname>noise</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="61" column="7" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/TimeDomainGIDDecon.cc" bodystart="439" bodyend="473"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1aa1af041a8b8d993fd6b1fc3806fd01b2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int mspass::algorithms::deconvolution::TimeDomainGIDDecon::loadnoise</definition>
+        <argsstring>(const mspass::seismic::CoreTimeSeries &amp;noise)</argsstring>
+        <name>loadnoise</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::loadnoise</qualifiedname>
+        <param>
+          <type>const <ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">mspass::seismic::CoreTimeSeries</ref> &amp;</type>
+          <declname>noise</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="62" column="7" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/TimeDomainGIDDecon.cc" bodystart="474" bodyend="477"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a09eb520557158b028d549058f481d231" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int mspass::algorithms::deconvolution::TimeDomainGIDDecon::loadnoise</definition>
+        <argsstring>(const mspass::seismic::PowerSpectrum &amp;noise_spectrum)</argsstring>
+        <name>loadnoise</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::loadnoise</qualifiedname>
+        <param>
+          <type>const <ref refid="classmspass_1_1seismic_1_1_power_spectrum" kindref="compound">mspass::seismic::PowerSpectrum</ref> &amp;</type>
+          <declname>noise_spectrum</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="63" column="7" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/TimeDomainGIDDecon.cc" bodystart="478" bodyend="501"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1af6edbdb89005e58bcd268e001f2398ed" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void mspass::algorithms::deconvolution::TimeDomainGIDDecon::clear_external_wavelet</definition>
+        <argsstring>()</argsstring>
+        <name>clear_external_wavelet</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::clear_external_wavelet</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="64" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/TimeDomainGIDDecon.cc" bodystart="502" bodyend="506"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a09975dccf48852333361291f77b40310" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void mspass::algorithms::deconvolution::TimeDomainGIDDecon::clear_external_noise</definition>
+        <argsstring>()</argsstring>
+        <name>clear_external_noise</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::clear_external_noise</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="65" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/TimeDomainGIDDecon.cc" bodystart="507" bodyend="519"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1aa85a33291c6a08a2c57157d6862c66b6" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>double</type>
+        <definition>double mspass::algorithms::deconvolution::TimeDomainGIDDecon::deconvolution_window_start</definition>
+        <argsstring>() const</argsstring>
+        <name>deconvolution_window_start</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::deconvolution_window_start</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="66" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" bodystart="66" bodyend="66"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1aed5a307783ab929077f6f63abf800e90" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>double</type>
+        <definition>double mspass::algorithms::deconvolution::TimeDomainGIDDecon::deconvolution_window_end</definition>
+        <argsstring>() const</argsstring>
+        <name>deconvolution_window_end</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::deconvolution_window_end</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="67" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" bodystart="67" bodyend="67"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a60d1ca6c7544a4006cba29e05405b30e" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>double</type>
+        <definition>double mspass::algorithms::deconvolution::TimeDomainGIDDecon::noise_window_start</definition>
+        <argsstring>() const</argsstring>
+        <name>noise_window_start</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::noise_window_start</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="68" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" bodystart="68" bodyend="68"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a3e52170e7a6c6ac5a54d995f674d0838" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>double</type>
+        <definition>double mspass::algorithms::deconvolution::TimeDomainGIDDecon::noise_window_end</definition>
+        <argsstring>() const</argsstring>
+        <name>noise_window_end</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::noise_window_end</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="69" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" bodystart="69" bodyend="69"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a62be8fd2b02948777b993aaf4fbbf9ed" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::string</type>
+        <definition>std::string mspass::algorithms::deconvolution::TimeDomainGIDDecon::configuration_pf_text</definition>
+        <argsstring>() const</argsstring>
+        <name>configuration_pf_text</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::configuration_pf_text</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="70" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" bodystart="70" bodyend="70"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1ad43e29c3bf4546c33ae44239dcab0a85" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool mspass::algorithms::deconvolution::TimeDomainGIDDecon::leaf_parameters_have_changed</definition>
+        <argsstring>() const</argsstring>
+        <name>leaf_parameters_have_changed</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::leaf_parameters_have_changed</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="71" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" bodystart="71" bodyend="73"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1ab2b76954720239d06f654a8affaed759" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">mspass::utility::Metadata</ref></type>
+        <definition>mspass::utility::Metadata mspass::algorithms::deconvolution::TimeDomainGIDDecon::changed_leaf_parameters</definition>
+        <argsstring>() const</argsstring>
+        <name>changed_leaf_parameters</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::changed_leaf_parameters</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="74" column="29" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" bodystart="74" bodyend="76"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a2672bc01d330b51c726aa53ffc5b5a31" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool mspass::algorithms::deconvolution::TimeDomainGIDDecon::external_wavelet_is_loaded</definition>
+        <argsstring>() const</argsstring>
+        <name>external_wavelet_is_loaded</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::external_wavelet_is_loaded</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="77" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" bodystart="77" bodyend="79"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a5db5cc7bd64c6b4f22c3c9dcff23cd0c" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool mspass::algorithms::deconvolution::TimeDomainGIDDecon::external_noise_is_loaded</definition>
+        <argsstring>() const</argsstring>
+        <name>external_noise_is_loaded</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::external_noise_is_loaded</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="80" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" bodystart="80" bodyend="80"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a876cb0f23adf278930589fd268658ee3" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool mspass::algorithms::deconvolution::TimeDomainGIDDecon::external_noise_spectrum_is_loaded</definition>
+        <argsstring>() const</argsstring>
+        <name>external_noise_spectrum_is_loaded</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::external_noise_spectrum_is_loaded</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="81" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" bodystart="81" bodyend="83"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1ae687b2cf70e6757b3619127d60dc5a6d" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref></type>
+        <definition>mspass::seismic::TimeSeries mspass::algorithms::deconvolution::TimeDomainGIDDecon::loaded_external_wavelet</definition>
+        <argsstring>() const</argsstring>
+        <name>loaded_external_wavelet</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::loaded_external_wavelet</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="84" column="31" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" bodystart="84" bodyend="88"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a0a0b4958bf334bbedab54d5672a93bbe" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref></type>
+        <definition>mspass::seismic::TimeSeries mspass::algorithms::deconvolution::TimeDomainGIDDecon::loaded_external_noise</definition>
+        <argsstring>() const</argsstring>
+        <name>loaded_external_noise</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::loaded_external_noise</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="89" column="31" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" bodystart="89" bodyend="93"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1aaa14adc3b6a460e0907e1cc5754f4772" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classmspass_1_1seismic_1_1_power_spectrum" kindref="compound">mspass::seismic::PowerSpectrum</ref></type>
+        <definition>mspass::seismic::PowerSpectrum mspass::algorithms::deconvolution::TimeDomainGIDDecon::loaded_external_noise_spectrum</definition>
+        <argsstring>() const</argsstring>
+        <name>loaded_external_noise_spectrum</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::loaded_external_noise_spectrum</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="94" column="34" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" bodystart="94" bodyend="98"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a7d023643e04c507556d260a652909053" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int mspass::algorithms::deconvolution::TimeDomainGIDDecon::load</definition>
+        <argsstring>(const mspass::seismic::CoreSeismogram &amp;d, mspass::algorithms::TimeWindow dwin, mspass::algorithms::TimeWindow nwin)</argsstring>
+        <name>load</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::load</qualifiedname>
+        <param>
+          <type>const <ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">mspass::seismic::CoreSeismogram</ref> &amp;</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type><ref refid="classmspass_1_1algorithms_1_1_time_window" kindref="compound">mspass::algorithms::TimeWindow</ref></type>
+          <declname>dwin</declname>
+        </param>
+        <param>
+          <type><ref refid="classmspass_1_1algorithms_1_1_time_window" kindref="compound">mspass::algorithms::TimeWindow</ref></type>
+          <declname>nwin</declname>
+        </param>
+        <briefdescription>
+<para>Load signal and residual-noise windows. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This method is little more than a call to loadnoise followed immediately by a call to load. Call process after this method returns zero. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="104" column="7" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/TimeDomainGIDDecon.cc" bodystart="520" bodyend="541"/>
+        <references refid="classmspass_1_1algorithms_1_1_time_window_1a916901f8d5d1dbb2bf38300bf28a2ec3" compoundref="_time_window_8h" startline="21">mspass::algorithms::TimeWindow::end</references>
+        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1acc56784b2aaadf8223a9e189830ae3dc" compoundref="_basic_time_series_8h" startline="147" endline="147">mspass::seismic::BasicTimeSeries::kill</references>
+        <references refid="classmspass_1_1algorithms_1_1_time_window_1a2277a3ea634dfe6ba5bc71296d93e76a" compoundref="_time_window_8h" startline="17">mspass::algorithms::TimeWindow::start</references>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1ad0ef3934174fee06a2a9f10f2bbe6455" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void mspass::algorithms::deconvolution::TimeDomainGIDDecon::process</definition>
+        <argsstring>()</argsstring>
+        <name>process</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::process</qualifiedname>
+        <reimplements refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a71988c8a42788bd966945d78d5fdb6b3">process</reimplements>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="107" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/TimeDomainGIDDecon.cc" bodystart="695" bodyend="1081"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1ad065ce4c486fd712ec8796f47e613683" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>mspass::algorithms::deconvolution::TimeDomainGIDDecon::~TimeDomainGIDDecon</definition>
+        <argsstring>()</argsstring>
+        <name>~TimeDomainGIDDecon</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::~TimeDomainGIDDecon</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="108" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/TimeDomainGIDDecon.cc" bodystart="208" bodyend="208"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a526d0670fa3ada5f6c5ef1991f79acae" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">mspass::seismic::CoreSeismogram</ref></type>
+        <definition>CoreSeismogram mspass::algorithms::deconvolution::TimeDomainGIDDecon::getresult</definition>
+        <argsstring>()</argsstring>
+        <name>getresult</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::getresult</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="109" column="35" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/TimeDomainGIDDecon.cc" bodystart="1177" bodyend="1190"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1ae1cfe52e97d7a98e858f1e4ff0678b58" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">mspass::seismic::CoreSeismogram</ref></type>
+        <definition>CoreSeismogram mspass::algorithms::deconvolution::TimeDomainGIDDecon::sparse_output</definition>
+        <argsstring>()</argsstring>
+        <name>sparse_output</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::sparse_output</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="110" column="35" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/TimeDomainGIDDecon.cc" bodystart="1142" bodyend="1176"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1ac50e92ad2e83aa7c2ecd882d0b24ede8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">mspass::seismic::CoreTimeSeries</ref></type>
+        <definition>CoreTimeSeries mspass::algorithms::deconvolution::TimeDomainGIDDecon::ideal_output</definition>
+        <argsstring>()</argsstring>
+        <name>ideal_output</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::ideal_output</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Legacy alias for output_shaping_wavelet inherited from <ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon" kindref="compound">ScalarDecon</ref>. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="112" column="35" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/TimeDomainGIDDecon.cc" bodystart="248" bodyend="250"/>
+        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1afdf74a0ef7db252ae472d5c21b6a4cc7" compoundref="_scalar_decon_8h" startline="71" endline="73">mspass::algorithms::deconvolution::ScalarDecon::output_shaping_wavelet</references>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a259568b5e501e3ef792016c5b9fb3014" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type><ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">mspass::seismic::CoreTimeSeries</ref></type>
+        <definition>CoreTimeSeries mspass::algorithms::deconvolution::TimeDomainGIDDecon::actual_output</definition>
+        <argsstring>()</argsstring>
+        <name>actual_output</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::actual_output</qualifiedname>
+        <reimplements refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a84f320ad48e8bfc9c292f8dde33c0593">actual_output</reimplements>
+        <briefdescription>
+<para>Return the actual output of the deconvolution operator. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The actual output is defined as w^-1*w and is compable to resolution kernels in linear inverse theory. Although not required we would normally expect this function to be peaked at 0. Offsets from 0 would imply a bias. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="113" column="35" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/TimeDomainGIDDecon.cc" bodystart="252" bodyend="260"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a97f8189b48b4b5136ca94192454b7c50" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type><ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">mspass::seismic::CoreTimeSeries</ref></type>
+        <definition>CoreTimeSeries mspass::algorithms::deconvolution::TimeDomainGIDDecon::inverse_wavelet</definition>
+        <argsstring>()</argsstring>
+        <name>inverse_wavelet</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::inverse_wavelet</qualifiedname>
+        <reimplements refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a078d038467a3be52d1e91e0d080d503e">inverse_wavelet</reimplements>
+        <briefdescription>
+<para>Return a FIR represention of the inverse filter. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>After any deconvolution is computed one can sometimes produce a finite impulse response (FIR) respresentation of the inverse filter. <linebreak/>
+ </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="114" column="35" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/TimeDomainGIDDecon.cc" bodystart="262" bodyend="264"/>
+        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a97f8189b48b4b5136ca94192454b7c50" compoundref="_time_domain_g_i_d_decon_8cc" startline="262" endline="264">inverse_wavelet</references>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a8da5b3486666d0ac326a7d23dddf0d5c" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type><ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">mspass::seismic::CoreTimeSeries</ref></type>
+        <definition>CoreTimeSeries mspass::algorithms::deconvolution::TimeDomainGIDDecon::inverse_wavelet</definition>
+        <argsstring>(double t0parent)</argsstring>
+        <name>inverse_wavelet</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::inverse_wavelet</qualifiedname>
+        <reimplements refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a9adc0519d5435d686edb32066f9f697a">inverse_wavelet</reimplements>
+        <param>
+          <type>double</type>
+          <declname>t0parent</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="115" column="35" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/TimeDomainGIDDecon.cc" bodystart="266" bodyend="274"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a08fb15f476e429b2a93801c61ce581a3" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">mspass::utility::Metadata</ref></type>
+        <definition>Metadata mspass::algorithms::deconvolution::TimeDomainGIDDecon::QCMetrics</definition>
+        <argsstring>()</argsstring>
+        <name>QCMetrics</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::QCMetrics</qualifiedname>
+        <reimplements refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1af683c2f25e91155c2bc1f81f9b62bbb1">QCMetrics</reimplements>
+        <briefdescription>
+<para>Return appropriate quality measures. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Each operator commonly has different was to measure the quality of the result. This method should return these in a generic Metadata object. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="116" column="29" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/TimeDomainGIDDecon.cc" bodystart="1191" bodyend="1242"/>
+        <references refid="classmspass_1_1utility_1_1_metadata_1ad69a5786d997104df560775f4f688b02" compoundref="_metadata_8h" startline="131" endline="146">mspass::utility::Metadata::get_double</references>
+        <references refid="classmspass_1_1utility_1_1_metadata_1a78f3a01e1b1deccd84a0833bea4ef462" compoundref="_metadata_8h" startline="154" endline="168">mspass::utility::Metadata::get_int</references>
+        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_noise_stable_decon_1a026a23ca70213ae84f7a189b3e18985a" compoundref="_noise_stable_decon_8cc" startline="288" endline="300">mspass::algorithms::deconvolution::NoiseStableDecon::QCMetrics</references>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a9adf9de16e149fcdcb96a80df8de7f0f" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void mspass::algorithms::deconvolution::TimeDomainGIDDecon::construct_weight_penalty_function</definition>
+        <argsstring>(const mspass::utility::Metadata &amp;md)</argsstring>
+        <name>construct_weight_penalty_function</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::construct_weight_penalty_function</qualifiedname>
+        <param>
+          <type>const <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">mspass::utility::Metadata</ref> &amp;</type>
+          <declname>md</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="189" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/TimeDomainGIDDecon.cc" bodystart="276" bodyend="340"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a922c68181cb0f4a2593c077fd8d43a55" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void mspass::algorithms::deconvolution::TimeDomainGIDDecon::invalidate_processing_state</definition>
+        <argsstring>()</argsstring>
+        <name>invalidate_processing_state</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::invalidate_processing_state</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="190" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/TimeDomainGIDDecon.cc" bodystart="210" bodyend="233"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1ac1fa16b56631f3bb8bc1c7a5fd7cdf36" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void mspass::algorithms::deconvolution::TimeDomainGIDDecon::update_residual_matrix</definition>
+        <argsstring>(ThreeCSpike spk)</argsstring>
+        <name>update_residual_matrix</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::update_residual_matrix</qualifiedname>
+        <param>
+          <type><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike" kindref="compound">ThreeCSpike</ref></type>
+          <declname>spk</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Subtract current spike signal from data.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>spk</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>- vector amplitude and lag of spike - subtract ideal output at this lag. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="196" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/TimeDomainGIDDecon.cc" bodystart="543" bodyend="573"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a0cd2ec52483681de471c3b5ef0c16add" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void mspass::algorithms::deconvolution::TimeDomainGIDDecon::update_lag_weights</definition>
+        <argsstring>(int col)</argsstring>
+        <name>update_lag_weights</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::update_lag_weights</qualifiedname>
+        <param>
+          <type>int</type>
+          <declname>col</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Updates the lag weight vector.</para>
+<para>This implementation has an enhanced time weighting function beyond that given in Wang and Pavlis&apos;s paper. This private method updates the weight vector using the lag position (in samples) of the current spike. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="203" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/TimeDomainGIDDecon.cc" bodystart="581" bodyend="595"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a4d42020cfb1599b97df7d16c0384442a" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>double</type>
+        <definition>double mspass::algorithms::deconvolution::TimeDomainGIDDecon::compute_resid_linf_floor</definition>
+        <argsstring>()</argsstring>
+        <name>compute_resid_linf_floor</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::compute_resid_linf_floor</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>This private method is called after loading noise to set the quantity resid_linf_floor = convergence criteria on amplitude. That parameter is computed from sorting the filtered, preevent noise and setting the threshold from a probability level. Returns the computed floor but also sets resid_linf_floor in this base object </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="209" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/TimeDomainGIDDecon.cc" bodystart="596" bodyend="617"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a6ed2973855962e23e1d488ecdf21ae8b" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool mspass::algorithms::deconvolution::TimeDomainGIDDecon::has_not_converged</definition>
+        <argsstring>()</argsstring>
+        <name>has_not_converged</name>
+        <qualifiedname>mspass::algorithms::deconvolution::TimeDomainGIDDecon::has_not_converged</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Apply all convergence tests. Returns false to terminate the iteration loop. This puts all such calculations in one place. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="212" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/TimeDomainGIDDecon.cc" bodystart="1083" bodyend="1141"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Three-component generalized iterative deconvolution in time. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>This class implements the Wang and Pavlis generalized iterative deconvolution idea for a three-component seismogram. Each iteration selects a vector spike from an inverse-filtered residual, subtracts the inverse operator&apos;s actual-output/resolution kernel in the original data domain, and stores the accepted sparse spike train internally. The public receiver-function output is the sparse train convolved with the configured output shaping wavelet.</para>
+<para>The constructor reads parameters and allocates reusable operators. A datum is processed only after loading signal and noise windows, either with load(d, dwin, nwin) or with loadnoise followed by load. External prepared wavelets and noise estimates can be supplied explicitly; otherwise the engine uses the configured receiver-function compatibility behavior.</para>
+<para>External TimeSeries noise can supply both the inverse-operator noise estimate and, when no windowed residual noise has been loaded, the residual-domain stopping threshold. External PowerSpectrum noise is only an inverse-operator regularization estimate for ns_gid; callers must still load residual-domain noise with load(d, dwin, nwin) or loadnoise(d, nwin) before process(). </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="3">
+        <label>mspass::algorithms::deconvolution::BasicDeconOperator</label>
+        <link refid="classmspass_1_1algorithms_1_1deconvolution_1_1_basic_decon_operator"/>
+      </node>
+      <node id="2">
+        <label>mspass::algorithms::deconvolution::ScalarDecon</label>
+        <link refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>mspass::algorithms::deconvolution::TimeDomainGIDDecon</label>
+        <link refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="3">
+        <label>mspass::algorithms::deconvolution::BasicDeconOperator</label>
+        <link refid="classmspass_1_1algorithms_1_1deconvolution_1_1_basic_decon_operator"/>
+      </node>
+      <node id="2">
+        <label>mspass::algorithms::deconvolution::ScalarDecon</label>
+        <link refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>shapingwavelet</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>mspass::algorithms::deconvolution::ShapingWavelet</label>
+        <link refid="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet"/>
+      </node>
+      <node id="1">
+        <label>mspass::algorithms::deconvolution::TimeDomainGIDDecon</label>
+        <link refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" line="44" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h" bodystart="44" bodyend="239"/>
+    <listofallmembers>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a14af4d0bc2c9ae4093addf04587fc750" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>actual_o_0</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1afc9fc76f71174c6040fd1fbddf97444f" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>actual_o_fir</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a259568b5e501e3ef792016c5b9fb3014" prot="public" virt="virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>actual_output</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a94a28202041cf426f01ef1e10032c744" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>change_shaping_wavelet</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1ad95ed990f9968eb58272000e055e05b4" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>changed_leaf_metadata</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1ab2b76954720239d06f654a8affaed759" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>changed_leaf_parameters</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1aec73707c1062cb14a7d0226ef045a4cb" prot="public" virt="virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>changeparameter</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a09975dccf48852333361291f77b40310" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>clear_external_noise</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1af6edbdb89005e58bcd268e001f2398ed" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>clear_external_wavelet</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1ad8771fff56adf8b779d043284922244c" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>cnrprocessor</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a4d42020cfb1599b97df7d16c0384442a" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>compute_resid_linf_floor</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a4d389e5a57350d2e8cb80b80e0cdaa12" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>config_pf_text</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a62be8fd2b02948777b993aaf4fbbf9ed" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>configuration_pf_text</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a9adf9de16e149fcdcb96a80df8de7f0f" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>construct_weight_penalty_function</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1ab66c3ef699d2d05bb454ff494a690302" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>current_wavelet</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1aa69dcc32c70bf39cdab073b6aabbd74b" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>d_all</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a233fde771e0cd48f6c559352ee3bf796" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>d_decon</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a3352f80170606ad4b543493a9168bc9d" prot="protected" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>data</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a9cae4920d68ffb9e0445ff845d2a585b" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>decon_type</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1aed5a307783ab929077f6f63abf800e90" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>deconvolution_window_end</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1aa85a33291c6a08a2c57157d6862c66b6" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>deconvolution_window_start</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a1bbd04a7209a499ff4bece71cedef1ce" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>dwin</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a831b5de21cc0b894afe1591f02f7d7f2" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>external_noise</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a5db5cc7bd64c6b4f22c3c9dcff23cd0c" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>external_noise_is_loaded</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1aa4343781a87ffd3eaf6871e8b041802b" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>external_noise_loaded</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a77f5763d34d77ea5c2c90baa39179ce1" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>external_noise_spectrum</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a876cb0f23adf278930589fd268658ee3" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>external_noise_spectrum_is_loaded</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a8c25095a67d09372ac52bb99128cd7f2" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>external_noise_spectrum_loaded</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1acb57ca2cf227ba11e68d9c72147f5e11" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>external_wavelet</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1aab18719b1001e15a2a8c0593a84e67be" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>external_wavelet_allowed</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a2672bc01d330b51c726aa53ffc5b5a31" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>external_wavelet_is_loaded</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a4e420c606732c8490f1427a7962fc38a" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>external_wavelet_loaded</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a3b7002a242207f91d5b5d7f5736be449" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>fftwin</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a051ad1d54899f0d64beb0249220c3405" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>get_shaping_wavelet</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a526d0670fa3ada5f6c5ef1991f79acae" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>getresult</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a6ed2973855962e23e1d488ecdf21ae8b" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>has_not_converged</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1ac50e92ad2e83aa7c2ecd882d0b24ede8" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>ideal_output</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a922c68181cb0f4a2593c077fd8d43a55" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>invalidate_processing_state</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a97f8189b48b4b5136ca94192454b7c50" prot="public" virt="virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>inverse_wavelet</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a8da5b3486666d0ac326a7d23dddf0d5c" prot="public" virt="virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>inverse_wavelet</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1ad6d9ce2b0de85ea9164029bac4a972e6" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>iter_count</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a3b55b13d019b3e15bef4ed6f419a9e1a" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>iter_max</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a4ef53d88ad259c2dbfee4d4c07a414b8" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>lag_weights</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a3633ab8f2de2e727a8f6a5e071299907" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>leaf_parameters_changed</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1ad43e29c3bf4546c33ae44239dcab0a85" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>leaf_parameters_have_changed</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a4715b8829be1c0944ed1f549abd7709a" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>load</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a7d023643e04c507556d260a652909053" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>load</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a9478e366652c54b4331e14b5a0eb85ea" prot="public" virt="non-virtual" ambiguityscope="mspass::algorithms::deconvolution::ScalarDecon::"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>load</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1ac358e4143a01c4f979f3f09e401b8e7c" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>loaddata</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a0a0b4958bf334bbedab54d5672a93bbe" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>loaded_external_noise</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1aaa14adc3b6a460e0907e1cc5754f4772" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>loaded_external_noise_spectrum</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1ae687b2cf70e6757b3619127d60dc5a6d" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>loaded_external_wavelet</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a3bedcda6410eac950f7ded71a5190002" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>loadnoise</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a185ea20dc8d7326cb728713358de7335" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>loadnoise</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1aa1af041a8b8d993fd6b1fc3806fd01b2" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>loadnoise</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a09eb520557158b028d549058f481d231" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>loadnoise</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1aeb4a3290f76e94584e6886807249daed" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>loadwavelet</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a71d31df5570c46921205980656057420" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>loadwavelet</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1abfb57cb76746708723cac9a860221f2e" prot="public" virt="non-virtual" ambiguityscope="mspass::algorithms::deconvolution::ScalarDecon::"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>loadwavelet</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1ac8e83ca0240e2342db772e7405865c25" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>lw_l2_floor</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a1c107a06f12ac0fd9c5e4a2c227e8b33" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>lw_l2_initial</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1af6ec88d761b23425b30d16d27b0816a4" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>lw_l2_prev</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a0f584fece62a9c3b29704a52641ca0af" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>lw_linf_floor</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a939393bbe3cf9532115a7f6cf749d119" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>lw_linf_initial</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a7bc8dc0ebf24e831e1f017b79c1118d4" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>lw_linf_prev</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1abca2bcc4201a2a5d812de25e018c18a8" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>n</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a055393d00d6438603657e0fd7e576798" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>ndwin</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a10de638e0a2aba927d6e48dbc28800da" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>nnwin</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a5c1abf7af05b0600194fd85689b5f074" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>noise_component</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a3e52170e7a6c6ac5a54d995f674d0838" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>noise_window_end</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a60d1ca6c7544a4006cba29e05405b30e" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>noise_window_start</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1aeef8d9af130b696890d9055a6e24f363" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>ns_converged</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a65db3890949450705273eb396dc11e11" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>ns_fractional_improvement_final</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a06ce4a8b571c3e3598143442d8946235" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>ns_last_peak_significance</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a3b1fa6152f05ac68012b6e01653d3529" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>ns_max_spikes</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1ac4c2e6aba23ef5c6eb4370d33c4f5f64" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>ns_noise_components</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1aff863a198c3cdab592a3a32e63b59ac7" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>ns_noise_l2</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1adba23b73843fac2d6c70e9e365c11cb1" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>ns_peak_probability_threshold</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a622aa0888ba481897b934219b905b9d8" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>ns_peak_sigma_threshold</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a7f12e43a9505f3fbc2f21b822294e4e3" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>ns_peak_threshold</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a8909d409fb8ead0589e0f7e5fe34a9c8" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>ns_refit_interval</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1aea432198b18159300802acd63554ce12" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>ns_residual_noise_ratio_floor</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a0b38a13165c8bc2c209d68cedf722de3" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>ns_ridge_beta</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1ac15ede0cad5c6d9dcacc8475e446f909" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>ns_stop_reason</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a2b90964275afbf6e5a9f181672436a1d" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>ns_use_empirical_noise_threshold</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a15406e51b749648afbf7240fb9a9e51b" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>nwin</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a7b938e9517efbd13c5e975a2e93b4d08" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>nwtf</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1aa51f877acc727489eabda6117d628a3e" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>operator=</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a87e82a9c95e7d55501e24e1cc95508f1" prot="public" virt="non-virtual" ambiguityscope="mspass::algorithms::deconvolution::ScalarDecon::"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>operator=</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1afdf74a0ef7db252ae472d5c21b6a4cc7" prot="public" virt="virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>output_shaping_wavelet</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1abe4c9662ac5e09a51b0e46e38a7157bb" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>preprocessor</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1ad0ef3934174fee06a2a9f10f2bbe6455" prot="public" virt="virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>process</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1ac83b83e95ccbe627a175f78c815498bc" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>processed</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a08fb15f476e429b2a93801c61ce581a3" prot="public" virt="virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>QCMetrics</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a0a270c12041d1a397f8029c743cecf36" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>r</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a68a7cb1a45ca72d3849c9f182253faf1" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>resid_l2_initial</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1ad0cc1fc20b680253f746775f3f225dcd" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>resid_l2_prev</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a6fae057cca8ef3ec85f5af5b5033db35" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>resid_l2_tol</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a8e6806bf7a4d3688fb3942e4af82a2e1" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>resid_linf_floor</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1af8986f594c5be9b9f9b77ea6cf33f99d" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>resid_linf_initial</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a93aada3a3a1c91a65423f6d4b5200938" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>resid_linf_prev</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1ad363f1209536fcd85d96c637992a04d7" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>resid_linf_prob</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1affbd624e42a7a98559ac1679ab16ba70" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>residual_noise_from_external</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a9e854bd78790f3df4114f53331b27853" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>resolution_kernel</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a0be7fa5b5fcf4928874f0e4c3c6a2022" prot="protected" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>result</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a2127063af2e8d0c3b4ab56dd73e81cdd" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>ScalarDecon</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1ab7e5ecd4bce2d9da9cb7724cf0c50690" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>ScalarDecon</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a5e500a76366d00c1b1d6ebc03084668e" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>ScalarDecon</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1ae2488963949a1161f7a3b4f908a78807" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>ScalarDecon</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1ae0fe50f72e9cea048e1fa13061c26010" prot="protected" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>shapingwavelet</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1ae1cfe52e97d7a98e858f1e4ff0678b58" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>sparse_output</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1aa47a8f67bf3d05edf8a69a48f139bf2f" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>spikes</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a11be90cb0ca1ab6abeb8feaf2e61b4c1" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>target_dt</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1aa83262f4e7ae78ba6d45e98f5fe7e9e1" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>TimeDomainGIDDecon</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1ae1f42cec8bb0a16381e4ba48f81e27e7" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>TimeDomainGIDDecon</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a0cd2ec52483681de471c3b5ef0c16add" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>update_lag_weights</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1ac1fa16b56631f3bb8bc1c7a5fd7cdf36" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>update_residual_matrix</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1aa48f2182a7e7b1c7d63011a9c53c4ee1" prot="protected" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>wavelet</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a6148e9a923f390f83ca45718e326a769" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>wavelet_pad</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a7362bed3a834a865fc646860d737bc57" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>wtf</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_basic_decon_operator_1aaf5d01a101bc30f52cd0a54509417ac9" prot="public" virt="virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>~BasicDeconOperator</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1aef21d9897d3c427bbb70d3d795b11cb3" prot="public" virt="virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>~ScalarDecon</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1ad065ce4c486fd712ec8796f47e613683" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::TimeDomainGIDDecon</scope><name>~TimeDomainGIDDecon</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

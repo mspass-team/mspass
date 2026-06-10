@@ -93,6 +93,10 @@
         </childnode>
       </node>
       <node id="3">
+        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h</label>
+        <link refid="_frequency_domain_g_i_d_decon_8h_source"/>
+      </node>
+      <node id="9">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h</label>
         <link refid="_general_iter_decon_8h_source"/>
       </node>
@@ -108,6 +112,10 @@
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MultiTaperXcorDecon.h</label>
         <link refid="_multi_taper_xcor_decon_8h_source"/>
       </node>
+      <node id="7">
+        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/NoiseStableDecon.h</label>
+        <link refid="_noise_stable_decon_8h_source"/>
+      </node>
       <node id="2">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h</label>
         <link refid="_scalar_decon_8h_source"/>
@@ -121,8 +129,24 @@
         </childnode>
         <childnode refid="7" relation="include">
         </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
       </node>
-      <node id="7">
+      <node id="8">
+        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h</label>
+        <link refid="_time_domain_g_i_d_decon_8h_source"/>
+        <childnode refid="9" relation="include">
+        </childnode>
+      </node>
+      <node id="10">
+        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainLeastSquareDecon.h</label>
+        <link refid="_time_domain_least_square_decon_8h_source"/>
+      </node>
+      <node id="11">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/WaterLevelDecon.h</label>
         <link refid="_water_level_decon_8h_source"/>
       </node>

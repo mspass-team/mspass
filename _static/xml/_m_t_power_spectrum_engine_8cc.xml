@@ -7,6 +7,7 @@
     <includes refid="dpss_8h" local="yes">mspass/algorithms/deconvolution/dpss.h</includes>
     <includes refid="utility_8h" local="yes">mspass/utility/utility.h</includes>
     <includes local="no">sstream</includes>
+    <includes local="no">vector</includes>
     <incdepgraph>
       <node id="44">
         <label>mspass/algorithms/deconvolution/ComplexArray.h</label>
@@ -245,6 +246,8 @@
         </childnode>
         <childnode refid="26" relation="include">
         </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
       </node>
       <node id="21">
         <label>boost/any.hpp</label>
@@ -368,7 +371,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/MTPowerSpectrumEngine.cc" line="10" column="14" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/nextPowerOf2.c" bodystart="3" bodyend="13" declfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/MTPowerSpectrumEngine.cc" declline="10" declcolumn="14"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/MTPowerSpectrumEngine.cc" line="11" column="14" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/nextPowerOf2.c" bodystart="3" bodyend="13" declfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/MTPowerSpectrumEngine.cc" declline="11" declcolumn="14"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -381,64 +384,64 @@
 <codeline lineno="3"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/algorithms/deconvolution/dpss.h&quot;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="4"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/utility/utility.h&quot;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;sstream&gt;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="6"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>This<sp/>C<sp/>function<sp/>is<sp/>defined<sp/>in<sp/>FFTDeconOperator.h<sp/>but<sp/>it<sp/>has<sp/>a<sp/>lot<sp/>of</highlight></codeline>
-<codeline lineno="7"><highlight class="comment">other<sp/>baggage<sp/>that<sp/>could<sp/>create<sp/>mysterious<sp/>problems<sp/>so<sp/>we<sp/>just<sp/>define<sp/>it</highlight></codeline>
-<codeline lineno="8"><highlight class="comment">again<sp/>here.<sp/><sp/>Maintenanc<sp/>issue<sp/>if<sp/>the<sp/>api<sp/>changes.*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="9"><highlight class="normal"></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/></highlight><highlight class="stringliteral">&quot;C&quot;</highlight><highlight class="normal"><sp/>{</highlight></codeline>
-<codeline lineno="10"><highlight class="normal"></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>nextPowerOf2(</highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>n);</highlight></codeline>
-<codeline lineno="11"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="12"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">mspass::algorithms::deconvolution<sp/>{</highlight></codeline>
-<codeline lineno="13"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal">std;</highlight></codeline>
-<codeline lineno="14"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal"><ref refid="namespacemspass_1_1seismic" kindref="compound">mspass::seismic</ref>;</highlight></codeline>
-<codeline lineno="15"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal">mspass::utility;</highlight></codeline>
-<codeline lineno="16"><highlight class="normal"></highlight></codeline>
-<codeline lineno="17" refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a509f3db8c91ae8e97b241bd5da67cd61" refkind="member"><highlight class="normal"><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a509f3db8c91ae8e97b241bd5da67cd61" kindref="member">MTPowerSpectrumEngine::MTPowerSpectrumEngine</ref>()<sp/>{</highlight></codeline>
-<codeline lineno="18"><highlight class="normal"><sp/><sp/>taperlen<sp/>=<sp/>0;</highlight></codeline>
-<codeline lineno="19"><highlight class="normal"><sp/><sp/>ntapers<sp/>=<sp/>0;</highlight></codeline>
-<codeline lineno="20"><highlight class="normal"><sp/><sp/>nfft<sp/>=<sp/>0;</highlight></codeline>
-<codeline lineno="21"><highlight class="normal"><sp/><sp/>tbp<sp/>=<sp/>0.0;</highlight></codeline>
-<codeline lineno="22"><highlight class="normal"><sp/><sp/>deltaf<sp/>=<sp/>1.0;</highlight></codeline>
-<codeline lineno="23"><highlight class="normal"><sp/><sp/>operator_dt<sp/>=<sp/>1.0;</highlight></codeline>
-<codeline lineno="24"><highlight class="normal"><sp/><sp/>wavetable<sp/>=<sp/>NULL;</highlight></codeline>
-<codeline lineno="25"><highlight class="normal"><sp/><sp/>workspace<sp/>=<sp/>NULL;</highlight></codeline>
-<codeline lineno="26"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="27" refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1afa0ce9c1b2c9248d46ab794bf01d42b0" refkind="member"><highlight class="normal"><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a509f3db8c91ae8e97b241bd5da67cd61" kindref="member">MTPowerSpectrumEngine::MTPowerSpectrumEngine</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>winsize,</highlight></codeline>
-<codeline lineno="28"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>tbpin,</highlight></codeline>
-<codeline lineno="29"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>ntpin,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>nfftin,</highlight></codeline>
-<codeline lineno="30"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>dtin)<sp/>{</highlight></codeline>
-<codeline lineno="31"><highlight class="normal"><sp/><sp/>taperlen<sp/>=<sp/>winsize;</highlight></codeline>
-<codeline lineno="32"><highlight class="normal"><sp/><sp/>tbp<sp/>=<sp/>tbpin;</highlight></codeline>
-<codeline lineno="33"><highlight class="normal"><sp/><sp/>ntapers<sp/>=<sp/>ntpin;</highlight></codeline>
-<codeline lineno="34"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(nfftin<sp/>&lt;<sp/>winsize)<sp/>{</highlight></codeline>
-<codeline lineno="35"><highlight class="normal"><sp/><sp/><sp/><sp/>nfft<sp/>=<sp/>nextPowerOf2(winsize);</highlight></codeline>
-<codeline lineno="36"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(nfft<sp/>==<sp/>winsize)</highlight></codeline>
-<codeline lineno="37"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>nfft<sp/>=<sp/>2<sp/>*<sp/>winsize;</highlight></codeline>
-<codeline lineno="38"><highlight class="normal"><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="39"><highlight class="normal"><sp/><sp/><sp/><sp/>nfft<sp/>=<sp/>nfftin;</highlight></codeline>
-<codeline lineno="40"><highlight class="normal"><sp/><sp/>operator_dt<sp/>=<sp/>dtin;</highlight></codeline>
-<codeline lineno="41"><highlight class="normal"><sp/><sp/>this-&gt;<ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a1dadcf9ec587fa2d48d04066ba1d55b4" kindref="member">set_df</ref>(dtin);</highlight></codeline>
-<codeline lineno="42"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>nseq<sp/>=<sp/></highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keywordtype">int</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(2.0<sp/>*<sp/>tbp);</highlight></codeline>
-<codeline lineno="43"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(ntapers<sp/>&gt;<sp/>nseq)<sp/>{</highlight></codeline>
-<codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/>cerr<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;MTPowerSpectrumEngine<sp/>(WARNING):<sp/><sp/>requested<sp/>number<sp/>of<sp/>tapers=&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&lt;&lt;<sp/>ntpin<sp/>&lt;&lt;<sp/>endl</highlight></codeline>
-<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;is<sp/>inconsistent<sp/>with<sp/>requested<sp/>time<sp/>time<sp/>bandwidth<sp/>product<sp/>=&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&lt;&lt;<sp/>tbp<sp/>&lt;&lt;<sp/>endl</highlight></codeline>
-<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;Automatically<sp/>reset<sp/>number<sp/>tapers<sp/>to<sp/>max<sp/>allowed=&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/>nseq<sp/>&lt;&lt;<sp/>endl;</highlight></codeline>
-<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/>ntapers<sp/>=<sp/>nseq;</highlight></codeline>
-<codeline lineno="50"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
-<codeline lineno="51"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>seql(0);</highlight></codeline>
-<codeline lineno="52"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>sequ<sp/>=<sp/>ntapers<sp/>-<sp/>1;</highlight></codeline>
-<codeline lineno="53"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*work<sp/>=<sp/></highlight><highlight class="keyword">new</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal">[ntapers<sp/>*<sp/>taperlen];</highlight></codeline>
-<codeline lineno="54"><highlight class="normal"><sp/><sp/>dpss_calc(taperlen,<sp/>tbp,<sp/>seql,<sp/>sequ,<sp/>work);</highlight></codeline>
-<codeline lineno="55"><highlight class="normal"><sp/><sp/>tapers<sp/>=<sp/><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref>(ntapers,<sp/>taperlen);</highlight></codeline>
-<codeline lineno="56"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>i,<sp/>ii,<sp/>j;</highlight></codeline>
-<codeline lineno="57"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(i<sp/>=<sp/>0,<sp/>ii<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>ntapers;<sp/>++i)<sp/>{</highlight></codeline>
-<codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(j<sp/>=<sp/>0;<sp/>j<sp/>&lt;<sp/>taperlen;<sp/>++j)<sp/>{</highlight></codeline>
-<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>tapers(i,<sp/>j)<sp/>=<sp/>work[ii];</highlight></codeline>
-<codeline lineno="60"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>++ii;</highlight></codeline>
-<codeline lineno="61"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="62"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
-<codeline lineno="63"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">delete</highlight><highlight class="normal">[]<sp/>work;</highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;vector&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>This<sp/>C<sp/>function<sp/>is<sp/>defined<sp/>in<sp/>FFTDeconOperator.h<sp/>but<sp/>it<sp/>has<sp/>a<sp/>lot<sp/>of</highlight></codeline>
+<codeline lineno="8"><highlight class="comment">other<sp/>baggage<sp/>that<sp/>could<sp/>create<sp/>mysterious<sp/>problems<sp/>so<sp/>we<sp/>just<sp/>define<sp/>it</highlight></codeline>
+<codeline lineno="9"><highlight class="comment">again<sp/>here.<sp/><sp/>Maintenanc<sp/>issue<sp/>if<sp/>the<sp/>api<sp/>changes.*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/></highlight><highlight class="stringliteral">&quot;C&quot;</highlight><highlight class="normal"><sp/>{</highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>nextPowerOf2(</highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>n);</highlight></codeline>
+<codeline lineno="12"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">mspass::algorithms::deconvolution<sp/>{</highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal">std;</highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal"><ref refid="namespacemspass_1_1seismic" kindref="compound">mspass::seismic</ref>;</highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal">mspass::utility;</highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight></codeline>
+<codeline lineno="18" refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a509f3db8c91ae8e97b241bd5da67cd61" refkind="member"><highlight class="normal"><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a509f3db8c91ae8e97b241bd5da67cd61" kindref="member">MTPowerSpectrumEngine::MTPowerSpectrumEngine</ref>()<sp/>{</highlight></codeline>
+<codeline lineno="19"><highlight class="normal"><sp/><sp/>taperlen<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="20"><highlight class="normal"><sp/><sp/>ntapers<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="21"><highlight class="normal"><sp/><sp/>nfft<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="22"><highlight class="normal"><sp/><sp/>tbp<sp/>=<sp/>0.0;</highlight></codeline>
+<codeline lineno="23"><highlight class="normal"><sp/><sp/>deltaf<sp/>=<sp/>1.0;</highlight></codeline>
+<codeline lineno="24"><highlight class="normal"><sp/><sp/>operator_dt<sp/>=<sp/>1.0;</highlight></codeline>
+<codeline lineno="25"><highlight class="normal"><sp/><sp/>wavetable<sp/>=<sp/>NULL;</highlight></codeline>
+<codeline lineno="26"><highlight class="normal"><sp/><sp/>workspace<sp/>=<sp/>NULL;</highlight></codeline>
+<codeline lineno="27"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="28" refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1afa0ce9c1b2c9248d46ab794bf01d42b0" refkind="member"><highlight class="normal"><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a509f3db8c91ae8e97b241bd5da67cd61" kindref="member">MTPowerSpectrumEngine::MTPowerSpectrumEngine</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>winsize,</highlight></codeline>
+<codeline lineno="29"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>tbpin,</highlight></codeline>
+<codeline lineno="30"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>ntpin,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>nfftin,</highlight></codeline>
+<codeline lineno="31"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>dtin)<sp/>{</highlight></codeline>
+<codeline lineno="32"><highlight class="normal"><sp/><sp/>taperlen<sp/>=<sp/>winsize;</highlight></codeline>
+<codeline lineno="33"><highlight class="normal"><sp/><sp/>tbp<sp/>=<sp/>tbpin;</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"><sp/><sp/>ntapers<sp/>=<sp/>ntpin;</highlight></codeline>
+<codeline lineno="35"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(nfftin<sp/>&lt;<sp/>winsize)<sp/>{</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"><sp/><sp/><sp/><sp/>nfft<sp/>=<sp/>nextPowerOf2(winsize);</highlight></codeline>
+<codeline lineno="37"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(nfft<sp/>==<sp/>winsize)</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>nfft<sp/>=<sp/>2<sp/>*<sp/>winsize;</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><sp/><sp/><sp/><sp/>nfft<sp/>=<sp/>nfftin;</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/>operator_dt<sp/>=<sp/>dtin;</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><sp/><sp/>this-&gt;<ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a1dadcf9ec587fa2d48d04066ba1d55b4" kindref="member">set_df</ref>(dtin);</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>nseq<sp/>=<sp/></highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keywordtype">int</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(2.0<sp/>*<sp/>tbp);</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(ntapers<sp/>&gt;<sp/>nseq)<sp/>{</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/>cerr<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;MTPowerSpectrumEngine<sp/>(WARNING):<sp/><sp/>requested<sp/>number<sp/>of<sp/>tapers=&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&lt;&lt;<sp/>ntpin<sp/>&lt;&lt;<sp/>endl</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;is<sp/>inconsistent<sp/>with<sp/>requested<sp/>time<sp/>time<sp/>bandwidth<sp/>product<sp/>=&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&lt;&lt;<sp/>tbp<sp/>&lt;&lt;<sp/>endl</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;Automatically<sp/>reset<sp/>number<sp/>tapers<sp/>to<sp/>max<sp/>allowed=&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/>nseq<sp/>&lt;&lt;<sp/>endl;</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/>ntapers<sp/>=<sp/>nseq;</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>seql(0);</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>sequ<sp/>=<sp/>ntapers<sp/>-<sp/>1;</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/>std::vector&lt;double&gt;<sp/>work(ntapers<sp/>*<sp/>taperlen,<sp/>0.0);</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/>dpss_calc(taperlen,<sp/>tbp,<sp/>seql,<sp/>sequ,<sp/>&amp;(work[0]));</highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/>tapers<sp/>=<sp/><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref>(ntapers,<sp/>taperlen);</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>i,<sp/>ii,<sp/>j;</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(i<sp/>=<sp/>0,<sp/>ii<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>ntapers;<sp/>++i)<sp/>{</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(j<sp/>=<sp/>0;<sp/>j<sp/>&lt;<sp/>taperlen;<sp/>++j)<sp/>{</highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>tapers(i,<sp/>j)<sp/>=<sp/>work[ii];</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>++ii;</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
 <codeline lineno="64"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>To<sp/>be<sp/>consistent<sp/>with<sp/>Prieto<sp/>we<sp/>use<sp/>this<sp/>algorithm<sp/>to<sp/>convert<sp/>to</highlight></codeline>
 <codeline lineno="65"><highlight class="comment"><sp/><sp/>what<sp/>he<sp/>calls<sp/>the<sp/>&quot;positive<sp/>standard&quot;.<sp/><sp/><sp/>That<sp/>means<sp/>we<sp/>assure<sp/>the</highlight></codeline>
 <codeline lineno="66"><highlight class="comment"><sp/><sp/>center<sp/>point<sp/>is<sp/>positive.</highlight></codeline>

@@ -136,23 +136,26 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">    8</span>                                          {</div>
-<div class="line"><span class="lineno">    9</span>  <span class="keywordflow">try</span> {</div>
-<div class="line"><span class="lineno">   10</span>    <span class="keywordtype">int</span> i;</div>
-<div class="line"><span class="lineno">   11</span>    <span class="keywordflow">for</span> (i = 0; i &lt; 3; ++i)</div>
-<div class="line"><span class="lineno">   12</span>      <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike.html#aa4b4869936d07d25a3078cdd52cb41e4">u</a>[i] = d(i, k);</div>
-<div class="line"><span class="lineno">   13</span>    <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike.html#aec8775250f7d5d81b914cd1c1c4ebeec">col</a> = k;</div>
-<div class="line"><span class="lineno">   14</span>    <span class="keywordflow">for</span> (i = 0, <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike.html#a33bc82ddbebf5be8781c4833bd46b44d">amp</a> = 0.0; i &lt; 3; ++i)</div>
-<div class="line"><span class="lineno">   15</span>      <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike.html#a33bc82ddbebf5be8781c4833bd46b44d">amp</a> += <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike.html#aa4b4869936d07d25a3078cdd52cb41e4">u</a>[i] * <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike.html#aa4b4869936d07d25a3078cdd52cb41e4">u</a>[i];</div>
-<div class="line"><span class="lineno">   16</span>    <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike.html#a33bc82ddbebf5be8781c4833bd46b44d">amp</a> = sqrt(<a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike.html#a33bc82ddbebf5be8781c4833bd46b44d">amp</a>);</div>
-<div class="line"><span class="lineno">   17</span>  } <span class="keywordflow">catch</span> (...) {</div>
-<div class="line"><span class="lineno">   18</span>    <span class="keywordflow">throw</span>;</div>
-<div class="line"><span class="lineno">   19</span>  };</div>
-<div class="line"><span class="lineno">   20</span>}</div>
-<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike_html_a33bc82ddbebf5be8781c4833bd46b44d"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike.html#a33bc82ddbebf5be8781c4833bd46b44d">mspass::algorithms::deconvolution::ThreeCSpike::amp</a></div><div class="ttdeci">double amp</div><div class="ttdef"><b>Definition</b> GeneralIterDecon.h:28</div></div>
-<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike_html_aa4b4869936d07d25a3078cdd52cb41e4"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike.html#aa4b4869936d07d25a3078cdd52cb41e4">mspass::algorithms::deconvolution::ThreeCSpike::u</a></div><div class="ttdeci">double u[3]</div><div class="ttdef"><b>Definition</b> GeneralIterDecon.h:26</div></div>
-<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike_html_aec8775250f7d5d81b914cd1c1c4ebeec"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike.html#aec8775250f7d5d81b914cd1c1c4ebeec">mspass::algorithms::deconvolution::ThreeCSpike::col</a></div><div class="ttdeci">int col</div><div class="ttdef"><b>Definition</b> GeneralIterDecon.h:24</div></div>
+<p>Construct a spike from the vector sample at column k. </p>
+<div class="fragment"><div class="line"><span class="lineno">    7</span>                                          {</div>
+<div class="line"><span class="lineno">    8</span>  <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">    9</span>    <span class="keywordtype">int</span> i;</div>
+<div class="line"><span class="lineno">   10</span>    <span class="keywordflow">for</span> (i = 0; i &lt; 3; ++i)</div>
+<div class="line"><span class="lineno">   11</span>      <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike.html#aa4b4869936d07d25a3078cdd52cb41e4">u</a>[i] = d(i, k);</div>
+<div class="line"><span class="lineno">   12</span>    <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike.html#aec8775250f7d5d81b914cd1c1c4ebeec">col</a> = k;</div>
+<div class="line"><span class="lineno">   13</span>    <span class="keywordflow">for</span> (i = 0, <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike.html#a33bc82ddbebf5be8781c4833bd46b44d">amp</a> = 0.0; i &lt; 3; ++i)</div>
+<div class="line"><span class="lineno">   14</span>      <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike.html#a33bc82ddbebf5be8781c4833bd46b44d">amp</a> += <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike.html#aa4b4869936d07d25a3078cdd52cb41e4">u</a>[i] * <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike.html#aa4b4869936d07d25a3078cdd52cb41e4">u</a>[i];</div>
+<div class="line"><span class="lineno">   15</span>    <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike.html#a33bc82ddbebf5be8781c4833bd46b44d">amp</a> = sqrt(<a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike.html#a33bc82ddbebf5be8781c4833bd46b44d">amp</a>);</div>
+<div class="line"><span class="lineno">   16</span>  } <span class="keywordflow">catch</span> (...) {</div>
+<div class="line"><span class="lineno">   17</span>    <span class="keywordflow">throw</span>;</div>
+<div class="line"><span class="lineno">   18</span>  };</div>
+<div class="line"><span class="lineno">   19</span>}</div>
+<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike_html_a33bc82ddbebf5be8781c4833bd46b44d"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike.html#a33bc82ddbebf5be8781c4833bd46b44d">mspass::algorithms::deconvolution::ThreeCSpike::amp</a></div><div class="ttdeci">double amp</div><div class="ttdef"><b>Definition</b> ThreeCSpike.h:15</div></div>
+<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike_html_aa4b4869936d07d25a3078cdd52cb41e4"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike.html#aa4b4869936d07d25a3078cdd52cb41e4">mspass::algorithms::deconvolution::ThreeCSpike::u</a></div><div class="ttdeci">double u[3]</div><div class="ttdef"><b>Definition</b> ThreeCSpike.h:13</div></div>
+<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike_html_aec8775250f7d5d81b914cd1c1c4ebeec"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike.html#aec8775250f7d5d81b914cd1c1c4ebeec">mspass::algorithms::deconvolution::ThreeCSpike::col</a></div><div class="ttdeci">int col</div><div class="ttdef"><b>Definition</b> ThreeCSpike.h:11</div></div>
 </div><!-- fragment -->
+<p class="reference">References <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike.html#a33bc82ddbebf5be8781c4833bd46b44d">amp</a>, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike.html#aec8775250f7d5d81b914cd1c1c4ebeec">col</a>, and <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike.html#aa4b4869936d07d25a3078cdd52cb41e4">u</a>.</p>
+
 </div>
 </div>
 <a id="a06623d666c1d41e52dbbfa4b539d803d" name="a06623d666c1d41e52dbbfa4b539d803d"></a>
@@ -170,13 +173,13 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Copy consructor. Could be defaulted, I think, but best to create it explicitly. </p>
-<div class="fragment"><div class="line"><span class="lineno">   21</span>                                                  {</div>
-<div class="line"><span class="lineno">   22</span>  <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike.html#aec8775250f7d5d81b914cd1c1c4ebeec">col</a> = parent.col;</div>
-<div class="line"><span class="lineno">   23</span>  <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike.html#a33bc82ddbebf5be8781c4833bd46b44d">amp</a> = parent.amp;</div>
-<div class="line"><span class="lineno">   24</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> k = 0; k &lt; 3; ++k)</div>
-<div class="line"><span class="lineno">   25</span>    <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike.html#aa4b4869936d07d25a3078cdd52cb41e4">u</a>[k] = parent.u[k];</div>
-<div class="line"><span class="lineno">   26</span>}</div>
+<p>Copy constructor. </p>
+<div class="fragment"><div class="line"><span class="lineno">   20</span>                                                  {</div>
+<div class="line"><span class="lineno">   21</span>  <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike.html#aec8775250f7d5d81b914cd1c1c4ebeec">col</a> = parent.col;</div>
+<div class="line"><span class="lineno">   22</span>  <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike.html#a33bc82ddbebf5be8781c4833bd46b44d">amp</a> = parent.amp;</div>
+<div class="line"><span class="lineno">   23</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> k = 0; k &lt; 3; ++k)</div>
+<div class="line"><span class="lineno">   24</span>    <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike.html#aa4b4869936d07d25a3078cdd52cb41e4">u</a>[k] = parent.u[k];</div>
+<div class="line"><span class="lineno">   25</span>}</div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike.html#a33bc82ddbebf5be8781c4833bd46b44d">amp</a>, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike.html#aec8775250f7d5d81b914cd1c1c4ebeec">col</a>, and <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike.html#aa4b4869936d07d25a3078cdd52cb41e4">u</a>.</p>
 
@@ -198,16 +201,16 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Makign sure operator= is also essential be sure STL containers work correctly </p>
-<div class="fragment"><div class="line"><span class="lineno">   27</span>                                                             {</div>
-<div class="line"><span class="lineno">   28</span>  <span class="keywordflow">if</span> (<span class="keyword">this</span> != (&amp;parent)) {</div>
-<div class="line"><span class="lineno">   29</span>    <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike.html#aec8775250f7d5d81b914cd1c1c4ebeec">col</a> = parent.col;</div>
-<div class="line"><span class="lineno">   30</span>    <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike.html#a33bc82ddbebf5be8781c4833bd46b44d">amp</a> = parent.amp;</div>
-<div class="line"><span class="lineno">   31</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> k = 0; k &lt; 3; ++k)</div>
-<div class="line"><span class="lineno">   32</span>      <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike.html#aa4b4869936d07d25a3078cdd52cb41e4">u</a>[k] = parent.u[k];</div>
-<div class="line"><span class="lineno">   33</span>  }</div>
-<div class="line"><span class="lineno">   34</span>  <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
-<div class="line"><span class="lineno">   35</span>}</div>
+<p>Assignment operator required for STL containers. </p>
+<div class="fragment"><div class="line"><span class="lineno">   26</span>                                                             {</div>
+<div class="line"><span class="lineno">   27</span>  <span class="keywordflow">if</span> (<span class="keyword">this</span> != (&amp;parent)) {</div>
+<div class="line"><span class="lineno">   28</span>    <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike.html#aec8775250f7d5d81b914cd1c1c4ebeec">col</a> = parent.col;</div>
+<div class="line"><span class="lineno">   29</span>    <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike.html#a33bc82ddbebf5be8781c4833bd46b44d">amp</a> = parent.amp;</div>
+<div class="line"><span class="lineno">   30</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> k = 0; k &lt; 3; ++k)</div>
+<div class="line"><span class="lineno">   31</span>      <a class="code hl_variable" href="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike.html#aa4b4869936d07d25a3078cdd52cb41e4">u</a>[k] = parent.u[k];</div>
+<div class="line"><span class="lineno">   32</span>  }</div>
+<div class="line"><span class="lineno">   33</span>  <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
+<div class="line"><span class="lineno">   34</span>}</div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike.html#a33bc82ddbebf5be8781c4833bd46b44d">amp</a>, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike.html#aec8775250f7d5d81b914cd1c1c4ebeec">col</a>, and <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike.html#aa4b4869936d07d25a3078cdd52cb41e4">u</a>.</p>
 
@@ -225,7 +228,7 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>L2 norm of u savd for efficiency to avoid repeated calculations </p>
+<p>Cached L2 norm of u. </p>
 
 </div>
 </div>
@@ -240,7 +243,7 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>The column position where this spike should be placed in parent three component dmatrix where time is the column field </p>
+<p>Column index where this spike is placed in a three-component matrix. </p>
 
 </div>
 </div>
@@ -255,12 +258,12 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>This holds the amplitude of this spike as three components </p>
+<p>Three-component spike amplitude. </p>
 
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/<a class="el" href="_general_iter_decon_8h_source.html">GeneralIterDecon.h</a></li>
+<li>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/<a class="el" href="_three_c_spike_8h_source.html">ThreeCSpike.h</a></li>
 <li>/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/<b>ThreeCSpike.cc</b></li>
 </ul>
 </div><!-- contents -->

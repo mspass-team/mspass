@@ -1,0 +1,1572 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon" kind="class" language="C++" prot="public">
+    <compoundname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</compoundname>
+    <basecompoundref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon" prot="public" virt="non-virtual">mspass::algorithms::deconvolution::ScalarDecon</basecompoundref>
+    <includes refid="_frequency_domain_g_i_d_decon_8h" local="no">FrequencyDomainGIDDecon.h</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a9c455c875245e17588752ae320643151" prot="private" static="no" mutable="no">
+        <type><ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">mspass::seismic::CoreSeismogram</ref></type>
+        <definition>mspass::seismic::CoreSeismogram mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::d_all</definition>
+        <argsstring></argsstring>
+        <name>d_all</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::d_all</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="95" column="35" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" bodystart="95" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1afe50d74ed438e3a85e76e62c74cbebe5" prot="private" static="no" mutable="no">
+        <type><ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">mspass::seismic::CoreSeismogram</ref></type>
+        <definition>mspass::seismic::CoreSeismogram mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::d_decon</definition>
+        <argsstring></argsstring>
+        <name>d_decon</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::d_decon</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="95" column="41" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" bodystart="95" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a203f46c44c9d1bf6fe0a628b166631e6" prot="private" static="no" mutable="no">
+        <type><ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">mspass::seismic::CoreSeismogram</ref></type>
+        <definition>mspass::seismic::CoreSeismogram mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::r</definition>
+        <argsstring></argsstring>
+        <name>r</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::r</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="95" column="49" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" bodystart="95" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1abc64fcb1d07c4fca90cb4119f3bbf8c0" prot="private" static="no" mutable="no">
+        <type><ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">mspass::seismic::CoreSeismogram</ref></type>
+        <definition>mspass::seismic::CoreSeismogram mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::n</definition>
+        <argsstring></argsstring>
+        <name>n</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::n</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="95" column="51" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" bodystart="95" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1ad647ac801869336336c80f1ca9162efe" prot="private" static="no" mutable="no">
+        <type><ref refid="classmspass_1_1algorithms_1_1_time_window" kindref="compound">mspass::algorithms::TimeWindow</ref></type>
+        <definition>mspass::algorithms::TimeWindow mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::dwin</definition>
+        <argsstring></argsstring>
+        <name>dwin</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::dwin</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="96" column="34" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" bodystart="96" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a6ceaacc5120a888703904433ef35f74c" prot="private" static="no" mutable="no">
+        <type><ref refid="classmspass_1_1algorithms_1_1_time_window" kindref="compound">mspass::algorithms::TimeWindow</ref></type>
+        <definition>mspass::algorithms::TimeWindow mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::nwin</definition>
+        <argsstring></argsstring>
+        <name>nwin</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::nwin</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="96" column="39" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" bodystart="96" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1af8b0d98317e1269352c12f14e3141862" prot="private" static="no" mutable="no">
+        <type><ref refid="classmspass_1_1algorithms_1_1_time_window" kindref="compound">mspass::algorithms::TimeWindow</ref></type>
+        <definition>mspass::algorithms::TimeWindow mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::fftwin</definition>
+        <argsstring></argsstring>
+        <name>fftwin</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::fftwin</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="96" column="44" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" bodystart="96" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a9aa52659418bfd2368a2028d0dc1db03" prot="private" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::config_pf_text</definition>
+        <argsstring></argsstring>
+        <name>config_pf_text</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::config_pf_text</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="97" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" bodystart="97" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a06bbdb4d6fce7310e2231bb0658f8699" prot="private" static="no" mutable="no">
+        <type>double</type>
+        <definition>double mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::target_dt</definition>
+        <argsstring></argsstring>
+        <name>target_dt</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::target_dt</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="98" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" bodystart="98" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a79344b18990ff43de153c6ebda0a53e3" prot="private" static="no" mutable="no">
+        <type>int</type>
+        <definition>int mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::ndwin</definition>
+        <argsstring></argsstring>
+        <name>ndwin</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::ndwin</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="99" column="7" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" bodystart="99" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a20a6975b1d543792af1c5051a1cb165c" prot="private" static="no" mutable="no">
+        <type>int</type>
+        <definition>int mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::nnwin</definition>
+        <argsstring></argsstring>
+        <name>nnwin</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::nnwin</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="99" column="13" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" bodystart="99" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1ad12bafa5e26c603c87655679938b21d5" prot="private" static="no" mutable="no">
+        <type>int</type>
+        <definition>int mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::noise_component</definition>
+        <argsstring></argsstring>
+        <name>noise_component</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::noise_component</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="99" column="19" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" bodystart="99" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a00d7046e179e56a0426724681bb79522" prot="private" static="no" mutable="no">
+        <type>int</type>
+        <definition>int mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::actual_o_0</definition>
+        <argsstring></argsstring>
+        <name>actual_o_0</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::actual_o_0</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="100" column="7" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" bodystart="100" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a7e10403afe1c6bc8a0590c5f88a98eb7" prot="private" static="no" mutable="no">
+        <type>int</type>
+        <definition>int mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::iter_count</definition>
+        <argsstring></argsstring>
+        <name>iter_count</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::iter_count</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="100" column="18" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" bodystart="100" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1af5c6fffc4459ac05058a59ec278e9eb2" prot="private" static="no" mutable="no">
+        <type>int</type>
+        <definition>int mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::iter_max</definition>
+        <argsstring></argsstring>
+        <name>iter_max</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::iter_max</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="100" column="29" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" bodystart="100" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1ab4b68e9382fbc39d1fc92f81f2acf539" prot="private" static="no" mutable="no">
+        <type>double</type>
+        <definition>double mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::residual_ratio_floor</definition>
+        <argsstring></argsstring>
+        <name>residual_ratio_floor</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::residual_ratio_floor</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="101" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" bodystart="101" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a4924405b6676018c36ea39d611efead9" prot="private" static="no" mutable="no">
+        <type>double</type>
+        <definition>double mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::residual_improvement_floor</definition>
+        <argsstring></argsstring>
+        <name>residual_improvement_floor</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::residual_improvement_floor</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="101" column="31" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" bodystart="101" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a6b5b9475242f43c73419e83d0d014ff9" prot="private" static="no" mutable="no">
+        <type>double</type>
+        <definition>double mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::resid_l2_initial</definition>
+        <argsstring></argsstring>
+        <name>resid_l2_initial</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::resid_l2_initial</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="102" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" bodystart="102" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1ad3462588999e58e8ba16b915222cb23c" prot="private" static="no" mutable="no">
+        <type>double</type>
+        <definition>double mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::resid_l2_prev</definition>
+        <argsstring></argsstring>
+        <name>resid_l2_prev</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::resid_l2_prev</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="102" column="27" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" bodystart="102" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a78d687fc0eff40ab3301263eecf660fd" prot="private" static="no" mutable="no">
+        <type>double</type>
+        <definition>double mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::resid_l2_final</definition>
+        <argsstring></argsstring>
+        <name>resid_l2_final</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::resid_l2_final</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="102" column="41" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" bodystart="102" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1ac6c2ed4f3e61c0b376635c09af844f61" prot="private" static="no" mutable="no">
+        <type>double</type>
+        <definition>double mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::resid_linf_initial</definition>
+        <argsstring></argsstring>
+        <name>resid_linf_initial</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::resid_linf_initial</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="103" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" bodystart="103" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1aa2fc396833e7bce568b7e6ad1d56b82b" prot="private" static="no" mutable="no">
+        <type>double</type>
+        <definition>double mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::resid_linf_final</definition>
+        <argsstring></argsstring>
+        <name>resid_linf_final</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::resid_linf_final</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="103" column="29" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" bodystart="103" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a0f071ab3dad22a1f3635c7965a37560d" prot="private" static="no" mutable="no">
+        <type>IterDeconType</type>
+        <definition>IterDeconType mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::decon_type</definition>
+        <argsstring></argsstring>
+        <name>decon_type</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::decon_type</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="104" column="17" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" bodystart="104" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1ad0531663f0eb76c0ed473f9ac697c8ff" prot="private" static="no" mutable="no">
+        <type>std::unique_ptr&lt; <ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon" kindref="compound">ScalarDecon</ref> &gt;</type>
+        <definition>std::unique_ptr&lt;ScalarDecon&gt; mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::preprocessor</definition>
+        <argsstring></argsstring>
+        <name>preprocessor</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::preprocessor</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="105" column="19" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" bodystart="105" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a071eddb5e72172461f2cc8fb61a5dc4a" prot="private" static="no" mutable="no">
+        <type>std::unique_ptr&lt; <ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r_decon_engine" kindref="compound">CNRDeconEngine</ref> &gt;</type>
+        <definition>std::unique_ptr&lt;CNRDeconEngine&gt; mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::cnrprocessor</definition>
+        <argsstring></argsstring>
+        <name>cnrprocessor</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::cnrprocessor</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="106" column="19" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" bodystart="106" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a4c5f9c7da309ac671600b40e035102d1" prot="private" static="no" mutable="no">
+        <type><ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref></type>
+        <definition>mspass::seismic::TimeSeries mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::current_wavelet</definition>
+        <argsstring></argsstring>
+        <name>current_wavelet</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::current_wavelet</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="107" column="31" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" bodystart="107" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1acaadd54081a76019335c92c1bfd70159" prot="private" static="no" mutable="no">
+        <type><ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref></type>
+        <definition>mspass::seismic::TimeSeries mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::external_wavelet</definition>
+        <argsstring></argsstring>
+        <name>external_wavelet</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::external_wavelet</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="108" column="31" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" bodystart="108" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1af897c4df68943d5312daac4fbd865738" prot="private" static="no" mutable="no">
+        <type><ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref></type>
+        <definition>mspass::seismic::TimeSeries mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::external_noise</definition>
+        <argsstring></argsstring>
+        <name>external_noise</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::external_noise</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="109" column="31" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" bodystart="109" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a2413abd26037d31ef78e64976407b188" prot="private" static="no" mutable="no">
+        <type><ref refid="classmspass_1_1seismic_1_1_power_spectrum" kindref="compound">mspass::seismic::PowerSpectrum</ref></type>
+        <definition>mspass::seismic::PowerSpectrum mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::external_noise_spectrum</definition>
+        <argsstring></argsstring>
+        <name>external_noise_spectrum</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::external_noise_spectrum</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="110" column="34" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" bodystart="110" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a70bd38c9f1ad92eb9f4ac9e524771400" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::external_wavelet_loaded</definition>
+        <argsstring></argsstring>
+        <name>external_wavelet_loaded</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::external_wavelet_loaded</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="111" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" bodystart="111" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1abd0b052441c3de4b9a89785b3d0e6489" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::external_noise_loaded</definition>
+        <argsstring></argsstring>
+        <name>external_noise_loaded</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::external_noise_loaded</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="111" column="32" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" bodystart="111" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a8235c89e4d762f03eaf4348cc2ddfe41" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::external_noise_spectrum_loaded</definition>
+        <argsstring></argsstring>
+        <name>external_noise_spectrum_loaded</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::external_noise_spectrum_loaded</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="112" column="7" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" bodystart="112" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a4661acabac11baefeceb774032495c61" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::external_wavelet_allowed</definition>
+        <argsstring></argsstring>
+        <name>external_wavelet_allowed</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::external_wavelet_allowed</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="112" column="38" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" bodystart="112" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1aa47f41566c1e5a1eaa9e6ad882d04c20" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::processed</definition>
+        <argsstring></argsstring>
+        <name>processed</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::processed</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="113" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" bodystart="113" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1af4be06b1dc14b8465d7d8df71d86ae32" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::residual_noise_from_external</definition>
+        <argsstring></argsstring>
+        <name>residual_noise_from_external</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::residual_noise_from_external</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="114" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" bodystart="114" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1acf23010780bf9433b299f5fa49b8d8a5" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::leaf_parameters_changed</definition>
+        <argsstring></argsstring>
+        <name>leaf_parameters_changed</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::leaf_parameters_changed</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="115" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" bodystart="115" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a95affc26f90df26a8fe55b4211280641" prot="private" static="no" mutable="no">
+        <type><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">mspass::utility::Metadata</ref></type>
+        <definition>mspass::utility::Metadata mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::changed_leaf_metadata</definition>
+        <argsstring></argsstring>
+        <name>changed_leaf_metadata</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::changed_leaf_metadata</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="116" column="29" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" bodystart="116" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a89806305551f9808ccfcb71365d1d9eb" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; double &gt;</type>
+        <definition>std::vector&lt;double&gt; mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::actual_o_fir</definition>
+        <argsstring></argsstring>
+        <name>actual_o_fir</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::actual_o_fir</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="117" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" bodystart="117" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1acd16513868a303f1e87fd667032bdd6c" prot="private" static="no" mutable="no">
+        <type>std::list&lt; <ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike" kindref="compound">ThreeCSpike</ref> &gt;</type>
+        <definition>std::list&lt;ThreeCSpike&gt; mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::spikes</definition>
+        <argsstring></argsstring>
+        <name>spikes</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::spikes</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="118" column="13" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" bodystart="118" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a8dfd963e5a9df9d1b9c5fc231f129ec2" prot="private" static="no" mutable="no">
+        <type>double</type>
+        <definition>double mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::ns_peak_sigma_threshold</definition>
+        <argsstring></argsstring>
+        <name>ns_peak_sigma_threshold</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::ns_peak_sigma_threshold</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="119" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" bodystart="119" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1af6f70d80a5d1b2c843431c6627384b44" prot="private" static="no" mutable="no">
+        <type>double</type>
+        <definition>double mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::ns_peak_probability_threshold</definition>
+        <argsstring></argsstring>
+        <name>ns_peak_probability_threshold</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::ns_peak_probability_threshold</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="119" column="34" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" bodystart="119" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a5bbdb6244f7dd4f64485613fe9ffe2e5" prot="private" static="no" mutable="no">
+        <type>double</type>
+        <definition>double mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::ns_residual_noise_ratio_floor</definition>
+        <argsstring></argsstring>
+        <name>ns_residual_noise_ratio_floor</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::ns_residual_noise_ratio_floor</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="120" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" bodystart="120" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a17f2cdfde136cc782f0113ecfa6fc487" prot="private" static="no" mutable="no">
+        <type>double</type>
+        <definition>double mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::ns_peak_threshold</definition>
+        <argsstring></argsstring>
+        <name>ns_peak_threshold</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::ns_peak_threshold</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="120" column="40" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" bodystart="120" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1abb8b2419b4810105a7a95015496b85ed" prot="private" static="no" mutable="no">
+        <type>double</type>
+        <definition>double mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::ns_last_peak_significance</definition>
+        <argsstring></argsstring>
+        <name>ns_last_peak_significance</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::ns_last_peak_significance</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="121" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" bodystart="121" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1afaeb74dd75b7c72afa29d4b13b3b0603" prot="private" static="no" mutable="no">
+        <type>double</type>
+        <definition>double mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::ns_noise_l2</definition>
+        <argsstring></argsstring>
+        <name>ns_noise_l2</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::ns_noise_l2</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="121" column="36" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" bodystart="121" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1aa55a55b33b26621f97caad64f7dce97a" prot="private" static="no" mutable="no">
+        <type>double</type>
+        <definition>double mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::ns_fractional_improvement_final</definition>
+        <argsstring></argsstring>
+        <name>ns_fractional_improvement_final</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::ns_fractional_improvement_final</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="122" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" bodystart="122" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a150bd470c8a47e539e529f190e83b636" prot="private" static="no" mutable="no">
+        <type>double</type>
+        <definition>double mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::ns_ridge_beta</definition>
+        <argsstring></argsstring>
+        <name>ns_ridge_beta</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::ns_ridge_beta</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="122" column="42" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" bodystart="122" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a8b9e7579aeeeae9a2d4b710bdfd7e6fc" prot="private" static="no" mutable="no">
+        <type>int</type>
+        <definition>int mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::ns_max_spikes</definition>
+        <argsstring></argsstring>
+        <name>ns_max_spikes</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::ns_max_spikes</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="123" column="7" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" bodystart="123" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a09bf3aa11102394cc6d4770313aac59c" prot="private" static="no" mutable="no">
+        <type>int</type>
+        <definition>int mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::ns_refit_interval</definition>
+        <argsstring></argsstring>
+        <name>ns_refit_interval</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::ns_refit_interval</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="123" column="21" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" bodystart="123" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1ac597048374658f8af32b1c235bac7715" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::ns_use_empirical_noise_threshold</definition>
+        <argsstring></argsstring>
+        <name>ns_use_empirical_noise_threshold</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::ns_use_empirical_noise_threshold</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="124" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" bodystart="124" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a7cfd35259b4c05469c6204d63d195c68" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::ns_converged</definition>
+        <argsstring></argsstring>
+        <name>ns_converged</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::ns_converged</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="124" column="41" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" bodystart="124" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1ab6e47a19b5ac81233d6550d11109250e" prot="private" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::ns_stop_reason</definition>
+        <argsstring></argsstring>
+        <name>ns_stop_reason</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::ns_stop_reason</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="125" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" bodystart="125" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a6e6b9438e8f3dbbfb90eb6ccbd6b0ae3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::FrequencyDomainGIDDecon</definition>
+        <argsstring>(const mspass::utility::AntelopePf &amp;md)</argsstring>
+        <name>FrequencyDomainGIDDecon</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::FrequencyDomainGIDDecon</qualifiedname>
+        <param>
+          <type>const <ref refid="classmspass_1_1utility_1_1_antelope_pf" kindref="compound">mspass::utility::AntelopePf</ref> &amp;</type>
+          <declname>md</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="31" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/FrequencyDomainGIDDecon.cc" bodystart="37" bodyend="143"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1ad95404c43160c186963ecef1f52dc1e7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::FrequencyDomainGIDDecon</definition>
+        <argsstring>(const FrequencyDomainGIDDecon &amp;parent)=delete</argsstring>
+        <name>FrequencyDomainGIDDecon</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::FrequencyDomainGIDDecon</qualifiedname>
+        <param>
+          <type>const <ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon" kindref="compound">FrequencyDomainGIDDecon</ref> &amp;</type>
+          <declname>parent</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="32" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1aaa20a6c5b90063c21cad2cc433267063" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon" kindref="compound">FrequencyDomainGIDDecon</ref> &amp;</type>
+        <definition>FrequencyDomainGIDDecon &amp; mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::operator=</definition>
+        <argsstring>(const FrequencyDomainGIDDecon &amp;parent)=delete</argsstring>
+        <name>operator=</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon" kindref="compound">FrequencyDomainGIDDecon</ref> &amp;</type>
+          <declname>parent</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="33" column="27"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a9930526f2133c1c4b5ef6ee81de89eae" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::~FrequencyDomainGIDDecon</definition>
+        <argsstring>()</argsstring>
+        <name>~FrequencyDomainGIDDecon</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::~FrequencyDomainGIDDecon</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="35" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/FrequencyDomainGIDDecon.cc" bodystart="145" bodyend="145"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a94e40750a8f60dfdcb6695fb74fec1ee" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::changeparameter</definition>
+        <argsstring>(const mspass::utility::Metadata &amp;md)</argsstring>
+        <name>changeparameter</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::changeparameter</qualifiedname>
+        <reimplements refid="classmspass_1_1algorithms_1_1deconvolution_1_1_basic_decon_operator_1a84111e230a365037569b17b2ca693100">changeparameter</reimplements>
+        <param>
+          <type>const <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">mspass::utility::Metadata</ref> &amp;</type>
+          <declname>md</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="36" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/FrequencyDomainGIDDecon.cc" bodystart="167" bodyend="179"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a19864a0f707e634ed34681f958e69a6d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::load</definition>
+        <argsstring>(const mspass::seismic::CoreSeismogram &amp;d, mspass::algorithms::TimeWindow dwin)</argsstring>
+        <name>load</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::load</qualifiedname>
+        <param>
+          <type>const <ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">mspass::seismic::CoreSeismogram</ref> &amp;</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type><ref refid="classmspass_1_1algorithms_1_1_time_window" kindref="compound">mspass::algorithms::TimeWindow</ref></type>
+          <declname>dwin</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="37" column="7" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/FrequencyDomainGIDDecon.cc" bodystart="181" bodyend="196"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a3a3db37d48b38f496ff94b6892c54924" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::loadnoise</definition>
+        <argsstring>(const mspass::seismic::CoreSeismogram &amp;d, mspass::algorithms::TimeWindow nwin)</argsstring>
+        <name>loadnoise</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::loadnoise</qualifiedname>
+        <param>
+          <type>const <ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">mspass::seismic::CoreSeismogram</ref> &amp;</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type><ref refid="classmspass_1_1algorithms_1_1_time_window" kindref="compound">mspass::algorithms::TimeWindow</ref></type>
+          <declname>nwin</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="39" column="7" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/FrequencyDomainGIDDecon.cc" bodystart="198" bodyend="212"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1af41b1a9083c9aabcc9a37d48f1497bf4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::loadwavelet</definition>
+        <argsstring>(const mspass::seismic::TimeSeries &amp;wavelet)</argsstring>
+        <name>loadwavelet</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::loadwavelet</qualifiedname>
+        <param>
+          <type>const <ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref> &amp;</type>
+          <declname>wavelet</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="41" column="7" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/FrequencyDomainGIDDecon.cc" bodystart="214" bodyend="235"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a16ae42c689661244af33393b7569e079" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::loadwavelet</definition>
+        <argsstring>(const mspass::seismic::CoreTimeSeries &amp;wavelet)</argsstring>
+        <name>loadwavelet</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::loadwavelet</qualifiedname>
+        <param>
+          <type>const <ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">mspass::seismic::CoreTimeSeries</ref> &amp;</type>
+          <declname>wavelet</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="42" column="7" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/FrequencyDomainGIDDecon.cc" bodystart="237" bodyend="240"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a2f4a97f5d621886b709578e13a809b73" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::loadnoise</definition>
+        <argsstring>(const mspass::seismic::TimeSeries &amp;noise)</argsstring>
+        <name>loadnoise</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::loadnoise</qualifiedname>
+        <param>
+          <type>const <ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref> &amp;</type>
+          <declname>noise</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="43" column="7" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/FrequencyDomainGIDDecon.cc" bodystart="242" bodyend="275"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1ae43d810838110f19da2a5144a13fb7ee" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::loadnoise</definition>
+        <argsstring>(const mspass::seismic::CoreTimeSeries &amp;noise)</argsstring>
+        <name>loadnoise</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::loadnoise</qualifiedname>
+        <param>
+          <type>const <ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">mspass::seismic::CoreTimeSeries</ref> &amp;</type>
+          <declname>noise</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="44" column="7" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/FrequencyDomainGIDDecon.cc" bodystart="277" bodyend="280"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1aaf2cc164435b68fd65c8dc8a25fdde30" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::loadnoise</definition>
+        <argsstring>(const mspass::seismic::PowerSpectrum &amp;noise_spectrum)</argsstring>
+        <name>loadnoise</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::loadnoise</qualifiedname>
+        <param>
+          <type>const <ref refid="classmspass_1_1seismic_1_1_power_spectrum" kindref="compound">mspass::seismic::PowerSpectrum</ref> &amp;</type>
+          <declname>noise_spectrum</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="45" column="7" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/FrequencyDomainGIDDecon.cc" bodystart="282" bodyend="304"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a2b0da5ef2a6c963da13ac57a1d885eef" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::clear_external_wavelet</definition>
+        <argsstring>()</argsstring>
+        <name>clear_external_wavelet</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::clear_external_wavelet</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="46" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/FrequencyDomainGIDDecon.cc" bodystart="305" bodyend="309"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1ab8dc1b5af0db70092cc1a0f9ce93e1bc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::clear_external_noise</definition>
+        <argsstring>()</argsstring>
+        <name>clear_external_noise</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::clear_external_noise</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="47" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/FrequencyDomainGIDDecon.cc" bodystart="310" bodyend="321"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1ae066e5e8248fb19bd1bdf0f58952646d" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>double</type>
+        <definition>double mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::deconvolution_window_start</definition>
+        <argsstring>() const</argsstring>
+        <name>deconvolution_window_start</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::deconvolution_window_start</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="48" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" bodystart="48" bodyend="48"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1acfa7e4562906c6250b7b7b740aa25b18" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>double</type>
+        <definition>double mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::deconvolution_window_end</definition>
+        <argsstring>() const</argsstring>
+        <name>deconvolution_window_end</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::deconvolution_window_end</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="49" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" bodystart="49" bodyend="49"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1aa9352c030b00b668025ba2d43db9fc4b" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>double</type>
+        <definition>double mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::noise_window_start</definition>
+        <argsstring>() const</argsstring>
+        <name>noise_window_start</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::noise_window_start</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="50" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" bodystart="50" bodyend="50"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a41246f7c433cb2f17340298a3aa111c2" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>double</type>
+        <definition>double mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::noise_window_end</definition>
+        <argsstring>() const</argsstring>
+        <name>noise_window_end</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::noise_window_end</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="51" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" bodystart="51" bodyend="51"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a889e1cf105cc96ed6b125f0c51c3c3f3" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::string</type>
+        <definition>std::string mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::configuration_pf_text</definition>
+        <argsstring>() const</argsstring>
+        <name>configuration_pf_text</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::configuration_pf_text</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="52" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" bodystart="52" bodyend="52"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a90b53ea274a3f44aa1e6c609b7812f9e" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::leaf_parameters_have_changed</definition>
+        <argsstring>() const</argsstring>
+        <name>leaf_parameters_have_changed</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::leaf_parameters_have_changed</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="53" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" bodystart="53" bodyend="55"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a1746589790f24bf51a7e2517131475e4" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">mspass::utility::Metadata</ref></type>
+        <definition>mspass::utility::Metadata mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::changed_leaf_parameters</definition>
+        <argsstring>() const</argsstring>
+        <name>changed_leaf_parameters</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::changed_leaf_parameters</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="56" column="29" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" bodystart="56" bodyend="58"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a0fb466ff3cc5bff84d549b847a886046" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::external_wavelet_is_loaded</definition>
+        <argsstring>() const</argsstring>
+        <name>external_wavelet_is_loaded</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::external_wavelet_is_loaded</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="59" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" bodystart="59" bodyend="61"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a0fe66402898a3ae41ca78843719f608d" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::external_noise_is_loaded</definition>
+        <argsstring>() const</argsstring>
+        <name>external_noise_is_loaded</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::external_noise_is_loaded</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="62" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" bodystart="62" bodyend="62"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a7796f6224d064b8359a8dd780e3fca44" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::external_noise_spectrum_is_loaded</definition>
+        <argsstring>() const</argsstring>
+        <name>external_noise_spectrum_is_loaded</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::external_noise_spectrum_is_loaded</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="63" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" bodystart="63" bodyend="65"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1ad5f8928b73d76c7c6f6cc0b53682d22d" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref></type>
+        <definition>mspass::seismic::TimeSeries mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::loaded_external_wavelet</definition>
+        <argsstring>() const</argsstring>
+        <name>loaded_external_wavelet</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::loaded_external_wavelet</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="66" column="31" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" bodystart="66" bodyend="70"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1aba3b6da246d9f57239ad81c21d73243b" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref></type>
+        <definition>mspass::seismic::TimeSeries mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::loaded_external_noise</definition>
+        <argsstring>() const</argsstring>
+        <name>loaded_external_noise</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::loaded_external_noise</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="71" column="31" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" bodystart="71" bodyend="75"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1ac960ad666221edbe11a9e76e9096a05b" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classmspass_1_1seismic_1_1_power_spectrum" kindref="compound">mspass::seismic::PowerSpectrum</ref></type>
+        <definition>mspass::seismic::PowerSpectrum mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::loaded_external_noise_spectrum</definition>
+        <argsstring>() const</argsstring>
+        <name>loaded_external_noise_spectrum</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::loaded_external_noise_spectrum</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="76" column="34" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" bodystart="76" bodyend="80"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a9d916aee452610b477d76a7264b8a9a1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::load</definition>
+        <argsstring>(const mspass::seismic::CoreSeismogram &amp;d, mspass::algorithms::TimeWindow dwin, mspass::algorithms::TimeWindow nwin)</argsstring>
+        <name>load</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::load</qualifiedname>
+        <param>
+          <type>const <ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">mspass::seismic::CoreSeismogram</ref> &amp;</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type><ref refid="classmspass_1_1algorithms_1_1_time_window" kindref="compound">mspass::algorithms::TimeWindow</ref></type>
+          <declname>dwin</declname>
+        </param>
+        <param>
+          <type><ref refid="classmspass_1_1algorithms_1_1_time_window" kindref="compound">mspass::algorithms::TimeWindow</ref></type>
+          <declname>nwin</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="81" column="7" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/FrequencyDomainGIDDecon.cc" bodystart="323" bodyend="339"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a0ba726fca54819bc138cf9e813e494ca" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::process</definition>
+        <argsstring>()</argsstring>
+        <name>process</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::process</qualifiedname>
+        <reimplements refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a71988c8a42788bd966945d78d5fdb6b3">process</reimplements>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="84" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/FrequencyDomainGIDDecon.cc" bodystart="544" bodyend="690"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a01c41a1013413bd61a292dbc45ff0223" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">mspass::seismic::CoreSeismogram</ref></type>
+        <definition>CoreSeismogram mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::getresult</definition>
+        <argsstring>()</argsstring>
+        <name>getresult</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::getresult</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="85" column="35" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/FrequencyDomainGIDDecon.cc" bodystart="712" bodyend="721"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1aa899d1a59eb354c45163f13df443161d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">mspass::seismic::CoreSeismogram</ref></type>
+        <definition>CoreSeismogram mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::sparse_output</definition>
+        <argsstring>()</argsstring>
+        <name>sparse_output</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::sparse_output</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="86" column="35" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/FrequencyDomainGIDDecon.cc" bodystart="692" bodyend="710"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a1924f802a4b618198b8cf8d048a7a62d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">mspass::seismic::CoreTimeSeries</ref></type>
+        <definition>CoreTimeSeries mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::ideal_output</definition>
+        <argsstring>()</argsstring>
+        <name>ideal_output</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::ideal_output</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Legacy alias for output_shaping_wavelet inherited from <ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon" kindref="compound">ScalarDecon</ref>. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="88" column="35" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/FrequencyDomainGIDDecon.cc" bodystart="444" bodyend="446"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1ab333caa0eee28f7a0a832a06ea816571" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type><ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">mspass::seismic::CoreTimeSeries</ref></type>
+        <definition>CoreTimeSeries mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::actual_output</definition>
+        <argsstring>()</argsstring>
+        <name>actual_output</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::actual_output</qualifiedname>
+        <reimplements refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a84f320ad48e8bfc9c292f8dde33c0593">actual_output</reimplements>
+        <briefdescription>
+<para>Return the actual output of the deconvolution operator. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The actual output is defined as w^-1*w and is compable to resolution kernels in linear inverse theory. Although not required we would normally expect this function to be peaked at 0. Offsets from 0 would imply a bias. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="89" column="35" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/FrequencyDomainGIDDecon.cc" bodystart="448" bodyend="456"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a39aa03d6f45f63f97e4c171bd2d2e8d2" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type><ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">mspass::seismic::CoreTimeSeries</ref></type>
+        <definition>CoreTimeSeries mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::inverse_wavelet</definition>
+        <argsstring>()</argsstring>
+        <name>inverse_wavelet</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::inverse_wavelet</qualifiedname>
+        <reimplements refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a078d038467a3be52d1e91e0d080d503e">inverse_wavelet</reimplements>
+        <briefdescription>
+<para>Return a FIR represention of the inverse filter. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>After any deconvolution is computed one can sometimes produce a finite impulse response (FIR) respresentation of the inverse filter. <linebreak/>
+ </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="90" column="35" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/FrequencyDomainGIDDecon.cc" bodystart="458" bodyend="460"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1ae514b8b1c85f391458d4285a5ca2457e" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type><ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">mspass::seismic::CoreTimeSeries</ref></type>
+        <definition>CoreTimeSeries mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::inverse_wavelet</definition>
+        <argsstring>(double t0parent)</argsstring>
+        <name>inverse_wavelet</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::inverse_wavelet</qualifiedname>
+        <reimplements refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a9adc0519d5435d686edb32066f9f697a">inverse_wavelet</reimplements>
+        <param>
+          <type>double</type>
+          <declname>t0parent</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="91" column="35" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/FrequencyDomainGIDDecon.cc" bodystart="462" bodyend="470"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1abe3eeab14e58abf1385eeca173cb1730" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">mspass::utility::Metadata</ref></type>
+        <definition>Metadata mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::QCMetrics</definition>
+        <argsstring>()</argsstring>
+        <name>QCMetrics</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::QCMetrics</qualifiedname>
+        <reimplements refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1af683c2f25e91155c2bc1f81f9b62bbb1">QCMetrics</reimplements>
+        <briefdescription>
+<para>Return appropriate quality measures. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Each operator commonly has different was to measure the quality of the result. This method should return these in a generic Metadata object. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="92" column="29" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/FrequencyDomainGIDDecon.cc" bodystart="723" bodyend="772"/>
+        <references refid="classmspass_1_1utility_1_1_metadata_1ad69a5786d997104df560775f4f688b02" compoundref="_metadata_8h" startline="131" endline="146">mspass::utility::Metadata::get_double</references>
+        <references refid="classmspass_1_1utility_1_1_metadata_1a78f3a01e1b1deccd84a0833bea4ef462" compoundref="_metadata_8h" startline="154" endline="168">mspass::utility::Metadata::get_int</references>
+        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_noise_stable_decon_1a026a23ca70213ae84f7a189b3e18985a" compoundref="_noise_stable_decon_8cc" startline="288" endline="300">mspass::algorithms::deconvolution::NoiseStableDecon::QCMetrics</references>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1ac8793f0afabaa4c9b1b3f066ec5291db" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::initialize_inverse_operator</definition>
+        <argsstring>()</argsstring>
+        <name>initialize_inverse_operator</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::initialize_inverse_operator</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="127" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/FrequencyDomainGIDDecon.cc" bodystart="341" bodyend="442"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a685dbe851501b3ce02bde1ca69cfa336" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::invalidate_processing_state</definition>
+        <argsstring>()</argsstring>
+        <name>invalidate_processing_state</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::invalidate_processing_state</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="128" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/FrequencyDomainGIDDecon.cc" bodystart="147" bodyend="165"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a39e5f971d750596b5b0da0202e334ded" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>double</type>
+        <definition>double mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::compute_ns_peak_threshold</definition>
+        <argsstring>()</argsstring>
+        <name>compute_ns_peak_threshold</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::compute_ns_peak_threshold</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="129" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/FrequencyDomainGIDDecon.cc" bodystart="472" bodyend="513"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1aa01e18e98af070b51c566a450ff0484b" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::rescale_spike</definition>
+        <argsstring>(ThreeCSpike &amp;spk)</argsstring>
+        <name>rescale_spike</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::rescale_spike</qualifiedname>
+        <param>
+          <type><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike" kindref="compound">ThreeCSpike</ref> &amp;</type>
+          <declname>spk</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="130" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/FrequencyDomainGIDDecon.cc" bodystart="515" bodyend="528"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1aa37d5d5e29e81a3d1a106920bb6721c4" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::update_residual_matrix</definition>
+        <argsstring>(const ThreeCSpike &amp;spk)</argsstring>
+        <name>update_residual_matrix</name>
+        <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::update_residual_matrix</qualifiedname>
+        <param>
+          <type>const <ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike" kindref="compound">ThreeCSpike</ref> &amp;</type>
+          <declname>spk</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="131" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/FrequencyDomainGIDDecon.cc" bodystart="530" bodyend="542"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Frequency-domain generalized iterative deconvolution. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>This engine shares the sparse GID iteration semantics of <ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon" kindref="compound">TimeDomainGIDDecon</ref> but applies the candidate inverse operator in the frequency domain. Processing requires both a loaded signal window and residual-domain noise window. External PowerSpectrum noise is only an ns_gid inverse-operator regularization estimate; it does not replace load(d, dwin, nwin) or loadnoise(d, nwin). </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="3">
+        <label>mspass::algorithms::deconvolution::BasicDeconOperator</label>
+        <link refid="classmspass_1_1algorithms_1_1deconvolution_1_1_basic_decon_operator"/>
+      </node>
+      <node id="1">
+        <label>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</label>
+        <link refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>mspass::algorithms::deconvolution::ScalarDecon</label>
+        <link refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="3">
+        <label>mspass::algorithms::deconvolution::BasicDeconOperator</label>
+        <link refid="classmspass_1_1algorithms_1_1deconvolution_1_1_basic_decon_operator"/>
+      </node>
+      <node id="1">
+        <label>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</label>
+        <link refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>mspass::algorithms::deconvolution::ScalarDecon</label>
+        <link refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>shapingwavelet</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>mspass::algorithms::deconvolution::ShapingWavelet</label>
+        <link refid="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet"/>
+      </node>
+    </collaborationgraph>
+    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="29" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" bodystart="29" bodyend="132"/>
+    <listofallmembers>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a00d7046e179e56a0426724681bb79522" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>actual_o_0</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a89806305551f9808ccfcb71365d1d9eb" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>actual_o_fir</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1ab333caa0eee28f7a0a832a06ea816571" prot="public" virt="virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>actual_output</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a94a28202041cf426f01ef1e10032c744" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>change_shaping_wavelet</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a95affc26f90df26a8fe55b4211280641" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>changed_leaf_metadata</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a1746589790f24bf51a7e2517131475e4" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>changed_leaf_parameters</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a94e40750a8f60dfdcb6695fb74fec1ee" prot="public" virt="virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>changeparameter</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1ab8dc1b5af0db70092cc1a0f9ce93e1bc" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>clear_external_noise</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a2b0da5ef2a6c963da13ac57a1d885eef" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>clear_external_wavelet</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a071eddb5e72172461f2cc8fb61a5dc4a" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>cnrprocessor</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a39e5f971d750596b5b0da0202e334ded" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>compute_ns_peak_threshold</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a9aa52659418bfd2368a2028d0dc1db03" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>config_pf_text</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a889e1cf105cc96ed6b125f0c51c3c3f3" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>configuration_pf_text</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a4c5f9c7da309ac671600b40e035102d1" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>current_wavelet</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a9c455c875245e17588752ae320643151" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>d_all</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1afe50d74ed438e3a85e76e62c74cbebe5" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>d_decon</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a3352f80170606ad4b543493a9168bc9d" prot="protected" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>data</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a0f071ab3dad22a1f3635c7965a37560d" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>decon_type</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1acfa7e4562906c6250b7b7b740aa25b18" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>deconvolution_window_end</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1ae066e5e8248fb19bd1bdf0f58952646d" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>deconvolution_window_start</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1ad647ac801869336336c80f1ca9162efe" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>dwin</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1af897c4df68943d5312daac4fbd865738" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>external_noise</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a0fe66402898a3ae41ca78843719f608d" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>external_noise_is_loaded</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1abd0b052441c3de4b9a89785b3d0e6489" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>external_noise_loaded</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a2413abd26037d31ef78e64976407b188" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>external_noise_spectrum</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a7796f6224d064b8359a8dd780e3fca44" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>external_noise_spectrum_is_loaded</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a8235c89e4d762f03eaf4348cc2ddfe41" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>external_noise_spectrum_loaded</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1acaadd54081a76019335c92c1bfd70159" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>external_wavelet</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a4661acabac11baefeceb774032495c61" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>external_wavelet_allowed</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a0fb466ff3cc5bff84d549b847a886046" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>external_wavelet_is_loaded</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a70bd38c9f1ad92eb9f4ac9e524771400" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>external_wavelet_loaded</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1af8b0d98317e1269352c12f14e3141862" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>fftwin</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a6e6b9438e8f3dbbfb90eb6ccbd6b0ae3" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>FrequencyDomainGIDDecon</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1ad95404c43160c186963ecef1f52dc1e7" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>FrequencyDomainGIDDecon</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a051ad1d54899f0d64beb0249220c3405" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>get_shaping_wavelet</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a01c41a1013413bd61a292dbc45ff0223" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>getresult</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a1924f802a4b618198b8cf8d048a7a62d" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>ideal_output</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1ac8793f0afabaa4c9b1b3f066ec5291db" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>initialize_inverse_operator</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a685dbe851501b3ce02bde1ca69cfa336" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>invalidate_processing_state</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a39aa03d6f45f63f97e4c171bd2d2e8d2" prot="public" virt="virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>inverse_wavelet</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1ae514b8b1c85f391458d4285a5ca2457e" prot="public" virt="virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>inverse_wavelet</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a7e10403afe1c6bc8a0590c5f88a98eb7" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>iter_count</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1af5c6fffc4459ac05058a59ec278e9eb2" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>iter_max</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1acf23010780bf9433b299f5fa49b8d8a5" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>leaf_parameters_changed</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a90b53ea274a3f44aa1e6c609b7812f9e" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>leaf_parameters_have_changed</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a19864a0f707e634ed34681f958e69a6d" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>load</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a9d916aee452610b477d76a7264b8a9a1" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>load</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a9478e366652c54b4331e14b5a0eb85ea" prot="public" virt="non-virtual" ambiguityscope="mspass::algorithms::deconvolution::ScalarDecon::"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>load</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1ac358e4143a01c4f979f3f09e401b8e7c" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>loaddata</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1aba3b6da246d9f57239ad81c21d73243b" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>loaded_external_noise</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1ac960ad666221edbe11a9e76e9096a05b" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>loaded_external_noise_spectrum</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1ad5f8928b73d76c7c6f6cc0b53682d22d" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>loaded_external_wavelet</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a3a3db37d48b38f496ff94b6892c54924" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>loadnoise</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a2f4a97f5d621886b709578e13a809b73" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>loadnoise</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1ae43d810838110f19da2a5144a13fb7ee" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>loadnoise</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1aaf2cc164435b68fd65c8dc8a25fdde30" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>loadnoise</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1af41b1a9083c9aabcc9a37d48f1497bf4" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>loadwavelet</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a16ae42c689661244af33393b7569e079" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>loadwavelet</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1abfb57cb76746708723cac9a860221f2e" prot="public" virt="non-virtual" ambiguityscope="mspass::algorithms::deconvolution::ScalarDecon::"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>loadwavelet</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1abc64fcb1d07c4fca90cb4119f3bbf8c0" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>n</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a79344b18990ff43de153c6ebda0a53e3" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>ndwin</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a20a6975b1d543792af1c5051a1cb165c" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>nnwin</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1ad12bafa5e26c603c87655679938b21d5" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>noise_component</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a41246f7c433cb2f17340298a3aa111c2" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>noise_window_end</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1aa9352c030b00b668025ba2d43db9fc4b" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>noise_window_start</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a7cfd35259b4c05469c6204d63d195c68" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>ns_converged</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1aa55a55b33b26621f97caad64f7dce97a" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>ns_fractional_improvement_final</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1abb8b2419b4810105a7a95015496b85ed" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>ns_last_peak_significance</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a8b9e7579aeeeae9a2d4b710bdfd7e6fc" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>ns_max_spikes</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1afaeb74dd75b7c72afa29d4b13b3b0603" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>ns_noise_l2</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1af6f70d80a5d1b2c843431c6627384b44" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>ns_peak_probability_threshold</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a8dfd963e5a9df9d1b9c5fc231f129ec2" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>ns_peak_sigma_threshold</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a17f2cdfde136cc782f0113ecfa6fc487" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>ns_peak_threshold</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a09bf3aa11102394cc6d4770313aac59c" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>ns_refit_interval</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a5bbdb6244f7dd4f64485613fe9ffe2e5" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>ns_residual_noise_ratio_floor</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a150bd470c8a47e539e529f190e83b636" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>ns_ridge_beta</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1ab6e47a19b5ac81233d6550d11109250e" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>ns_stop_reason</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1ac597048374658f8af32b1c235bac7715" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>ns_use_empirical_noise_threshold</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a6ceaacc5120a888703904433ef35f74c" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>nwin</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1aaa20a6c5b90063c21cad2cc433267063" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>operator=</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a87e82a9c95e7d55501e24e1cc95508f1" prot="public" virt="non-virtual" ambiguityscope="mspass::algorithms::deconvolution::ScalarDecon::"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>operator=</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1afdf74a0ef7db252ae472d5c21b6a4cc7" prot="public" virt="virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>output_shaping_wavelet</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1ad0531663f0eb76c0ed473f9ac697c8ff" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>preprocessor</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a0ba726fca54819bc138cf9e813e494ca" prot="public" virt="virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>process</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1aa47f41566c1e5a1eaa9e6ad882d04c20" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>processed</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1abe3eeab14e58abf1385eeca173cb1730" prot="public" virt="virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>QCMetrics</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a203f46c44c9d1bf6fe0a628b166631e6" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>r</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1aa01e18e98af070b51c566a450ff0484b" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>rescale_spike</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a78d687fc0eff40ab3301263eecf660fd" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>resid_l2_final</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a6b5b9475242f43c73419e83d0d014ff9" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>resid_l2_initial</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1ad3462588999e58e8ba16b915222cb23c" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>resid_l2_prev</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1aa2fc396833e7bce568b7e6ad1d56b82b" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>resid_linf_final</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1ac6c2ed4f3e61c0b376635c09af844f61" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>resid_linf_initial</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a4924405b6676018c36ea39d611efead9" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>residual_improvement_floor</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1af4be06b1dc14b8465d7d8df71d86ae32" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>residual_noise_from_external</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1ab4b68e9382fbc39d1fc92f81f2acf539" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>residual_ratio_floor</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a9e854bd78790f3df4114f53331b27853" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>resolution_kernel</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a0be7fa5b5fcf4928874f0e4c3c6a2022" prot="protected" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>result</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a2127063af2e8d0c3b4ab56dd73e81cdd" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>ScalarDecon</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1ab7e5ecd4bce2d9da9cb7724cf0c50690" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>ScalarDecon</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a5e500a76366d00c1b1d6ebc03084668e" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>ScalarDecon</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1ae2488963949a1161f7a3b4f908a78807" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>ScalarDecon</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1ae0fe50f72e9cea048e1fa13061c26010" prot="protected" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>shapingwavelet</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1aa899d1a59eb354c45163f13df443161d" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>sparse_output</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1acd16513868a303f1e87fd667032bdd6c" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>spikes</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a06bbdb4d6fce7310e2231bb0658f8699" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>target_dt</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1aa37d5d5e29e81a3d1a106920bb6721c4" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>update_residual_matrix</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1aa48f2182a7e7b1c7d63011a9c53c4ee1" prot="protected" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>wavelet</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_basic_decon_operator_1aaf5d01a101bc30f52cd0a54509417ac9" prot="public" virt="virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>~BasicDeconOperator</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a9930526f2133c1c4b5ef6ee81de89eae" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>~FrequencyDomainGIDDecon</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1aef21d9897d3c427bbb70d3d795b11cb3" prot="public" virt="virtual"><scope>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</scope><name>~ScalarDecon</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

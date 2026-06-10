@@ -10,11 +10,14 @@
         <argsstring>(const mspass::utility::Metadata &amp;md)=0</argsstring>
         <name>changeparameter</name>
         <qualifiedname>mspass::algorithms::deconvolution::BasicDeconOperator::changeparameter</qualifiedname>
-        <reimplementedby refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1ae8231338852f209b1008e2af52b25857">changeparameter</reimplementedby>
+        <reimplementedby refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a94e40750a8f60dfdcb6695fb74fec1ee">changeparameter</reimplementedby>
         <reimplementedby refid="classmspass_1_1algorithms_1_1deconvolution_1_1_least_square_decon_1aa67cf7c3d4fee9b6a59c3bde54efceb5">changeparameter</reimplementedby>
         <reimplementedby refid="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_spec_div_decon_1a86b91406f4bd73b8da5b6d66ac85930a">changeparameter</reimplementedby>
         <reimplementedby refid="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_xcor_decon_1a9bff7dc7ae52a16530537b02a63c5c57">changeparameter</reimplementedby>
+        <reimplementedby refid="classmspass_1_1algorithms_1_1deconvolution_1_1_noise_stable_decon_1ae578cc62d08ce8c629999db6cccf4d76">changeparameter</reimplementedby>
         <reimplementedby refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a8cf90914fa1571e88978b0b810fad805">changeparameter</reimplementedby>
+        <reimplementedby refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1aec73707c1062cb14a7d0226ef045a4cb">changeparameter</reimplementedby>
+        <reimplementedby refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_least_square_decon_1a4c359d9b0db253b3e31e57d42e53ebcd">changeparameter</reimplementedby>
         <reimplementedby refid="classmspass_1_1algorithms_1_1deconvolution_1_1_water_level_decon_1ad6c091c6aed8b1c774ea40819ec30373">changeparameter</reimplementedby>
         <param>
           <type>const <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">mspass::utility::Metadata</ref> &amp;</type>
@@ -53,8 +56,8 @@
         <link refid="classmspass_1_1algorithms_1_1deconvolution_1_1_basic_decon_operator"/>
       </node>
       <node id="3">
-        <label>mspass::algorithms::deconvolution::GeneralIterDecon</label>
-        <link refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon"/>
+        <label>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</label>
+        <link refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
       </node>
@@ -76,13 +79,31 @@
         <childnode refid="2" relation="public-inheritance">
         </childnode>
       </node>
+      <node id="7">
+        <label>mspass::algorithms::deconvolution::NoiseStableDecon</label>
+        <link refid="classmspass_1_1algorithms_1_1deconvolution_1_1_noise_stable_decon"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
       <node id="2">
         <label>mspass::algorithms::deconvolution::ScalarDecon</label>
         <link refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="7">
+      <node id="8">
+        <label>mspass::algorithms::deconvolution::TimeDomainGIDDecon</label>
+        <link refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>mspass::algorithms::deconvolution::TimeDomainLeastSquareDecon</label>
+        <link refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_least_square_decon"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="10">
         <label>mspass::algorithms::deconvolution::WaterLevelDecon</label>
         <link refid="classmspass_1_1algorithms_1_1deconvolution_1_1_water_level_decon"/>
         <childnode refid="2" relation="public-inheritance">

@@ -87,6 +87,7 @@
 <p class="caption" role="heading"><span class="caption-text">Data Processing</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/algorithms.html">Algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual/deconvolution.html">Deconvolution Operators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/importing_data.html">Importing Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/handling_errors.html">Handling Errors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../user_manual/data_editing.html">Data Editing</a></li>
@@ -320,9 +321,9 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">prediction_error</span><span class="p">(</span><span class="n">engine</span><span class="p">,</span> <span class="n">wavelet</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Computes prediction error of deconvolution operator defined as</span>
-<span class="sd">    norm(ao-io)/norm(io) where ao is the return from the</span>
-<span class="sd">    actual_output method of engine and io is the return from</span>
-<span class="sd">    the ideal_output of engine.  The computed norm is L2</span>
+<span class="sd">    norm(ao-ws)/norm(ws) where ao is the return from the</span>
+<span class="sd">    actual_output method of engine and ws is the output shaping</span>
+<span class="sd">    wavelet.  The computed norm is L2</span>
 <span class="sd">    :param engine:   assumed valid instance of a CNRDeconEngine</span>
 <span class="sd">       class</span>
 <span class="sd">    :param wavelet:   wavelet TimeSeries object used in deconvolution.</span>
@@ -330,12 +331,12 @@
 <span class="sd">       required for actual_output method.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="c1"># with internal use can assume ao and io are the same length</span>
+    <span class="c1"># with internal use can assume ao and ws are the same length</span>
     <span class="c1"># and time aligned - caution</span>
     <span class="n">ao</span> <span class="o">=</span> <span class="n">engine</span><span class="o">.</span><span class="n">actual_output</span><span class="p">(</span><span class="n">wavelet</span><span class="p">)</span>
-    <span class="n">io</span> <span class="o">=</span> <span class="n">engine</span><span class="o">.</span><span class="n">ideal_output</span><span class="p">()</span>
-    <span class="n">err</span> <span class="o">=</span> <span class="n">ao</span> <span class="o">-</span> <span class="n">io</span>
-    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">err</span><span class="o">.</span><span class="n">data</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">io</span><span class="o">.</span><span class="n">data</span><span class="p">)</span></div>
+    <span class="n">ws</span> <span class="o">=</span> <span class="n">engine</span><span class="o">.</span><span class="n">output_shaping_wavelet</span><span class="p">()</span>
+    <span class="n">err</span> <span class="o">=</span> <span class="n">ao</span> <span class="o">-</span> <span class="n">ws</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">err</span><span class="o">.</span><span class="n">data</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">ws</span><span class="o">.</span><span class="n">data</span><span class="p">)</span></div>
 
 
 
@@ -347,6 +348,7 @@
     <span class="n">engine</span><span class="p">,</span>
     <span class="o">*</span><span class="n">args</span><span class="p">,</span>
     <span class="n">component</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">external_wavelet</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">noise_spectrum</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">signal_window</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">noise_window</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -473,7 +475,10 @@
 <span class="sd">        should defined the component number of seis to assume is an</span>
 <span class="sd">        estimate of the source wavelet.</span>
 <span class="sd">    :type component: integer (default 2)</span>
-<span class="sd">    :param wavelet:   Alternative way to specify wavelet to use for deconvolution, f</span>
+<span class="sd">    :param external_wavelet: optional prepared `TimeSeries` wavelet to use for</span>
+<span class="sd">        all components.  When None, the wrapper preserves receiver-function</span>
+<span class="sd">        compatibility and extracts the wavelet from `component` of the signal</span>
+<span class="sd">        window.</span>
 <span class="sd">    :param noise_spectrum:   Alternative way to define data to be used</span>
 <span class="sd">        to regularize the deconvolution operator.  See above for</span>
 <span class="sd">        usage restrictions.</span>
@@ -527,7 +532,7 @@
 <span class="sd">    :param return_wavelet:  When False (default) only the estimated</span>
 <span class="sd">        receiver function is returned.  When True the return is a tuple</span>
 <span class="sd">        with 0 containing the RF estimate, 1 containing the actual_output</span>
-<span class="sd">        of the operator and 1 containing the ideal outpu wavelet.</span>
+<span class="sd">        of the operator, and 2 containing the output shaping wavelet.</span>
 <span class="sd">    :param window_output:  boolean that when True (default) causes the</span>
 <span class="sd">        output to be windowed in the range defined by signal_window.</span>
 <span class="sd">        When False the output will normally be longer with the number of</span>
@@ -640,13 +645,20 @@
             <span class="k">return</span> <span class="p">[</span><span class="n">d</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">d</span>
-    <span class="c1"># for an RF a data component is used as a wavelet</span>
-    <span class="n">w</span> <span class="o">=</span> <span class="n">ExtractComponent</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">component</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">external_wavelet</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">external_wavelet</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;external_wavelet must be a TimeSeries or None&quot;</span><span class="p">)</span>
+        <span class="n">w</span> <span class="o">=</span> <span class="n">external_wavelet</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># for an RF a data component is used as a wavelet</span>
+        <span class="n">w</span> <span class="o">=</span> <span class="n">ExtractComponent</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">component</span><span class="p">)</span>
     <span class="c1"># the engine can throw an exception we need to handle</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">engine</span><span class="o">.</span><span class="n">initialize_inverse_operator</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">psnoise</span><span class="p">)</span>
         <span class="n">d</span> <span class="o">=</span> <span class="n">engine</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">psnoise</span><span class="p">,</span> <span class="n">flow</span><span class="p">,</span> <span class="n">fhigh</span><span class="p">)</span>
     <span class="k">except</span> <span class="n">MsPASSError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">err</span><span class="o">.</span><span class="n">severity</span> <span class="o">==</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Fatal</span><span class="p">:</span>
+            <span class="k">raise</span>
         <span class="n">d</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
         <span class="n">d</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">generr</span><span class="p">:</span>
@@ -694,8 +706,8 @@
         <span class="n">retval</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
         <span class="n">ao</span> <span class="o">=</span> <span class="n">engine</span><span class="o">.</span><span class="n">actual_output</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
         <span class="n">retval</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ao</span><span class="p">)</span>
-        <span class="n">ideal_out</span> <span class="o">=</span> <span class="n">engine</span><span class="o">.</span><span class="n">ideal_output</span><span class="p">()</span>
-        <span class="n">retval</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ideal_out</span><span class="p">)</span>
+        <span class="n">output_shaping_wavelet</span> <span class="o">=</span> <span class="n">engine</span><span class="o">.</span><span class="n">output_shaping_wavelet</span><span class="p">()</span>
+        <span class="n">retval</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">output_shaping_wavelet</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">retval</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">d</span></div>
@@ -911,6 +923,8 @@
     <span class="k">try</span><span class="p">:</span>
         <span class="n">engine</span><span class="o">.</span><span class="n">initialize_inverse_operator</span><span class="p">(</span><span class="n">beam</span><span class="p">,</span> <span class="n">psnoise</span><span class="p">)</span>
     <span class="k">except</span> <span class="n">MsPASSError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">err</span><span class="o">.</span><span class="n">severity</span> <span class="o">==</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Fatal</span><span class="p">:</span>
+            <span class="k">raise</span>
         <span class="n">ensout</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
         <span class="n">ensout</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">generr</span><span class="p">:</span>
@@ -957,6 +971,8 @@
                 <span class="k">try</span><span class="p">:</span>
                     <span class="n">ensout</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">engine</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">psnoise</span><span class="p">,</span> <span class="n">flow</span><span class="p">,</span> <span class="n">fhigh</span><span class="p">)</span>
                 <span class="k">except</span> <span class="n">MsPASSError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">err</span><span class="o">.</span><span class="n">severity</span> <span class="o">==</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Fatal</span><span class="p">:</span>
+                        <span class="k">raise</span>
                     <span class="n">ensout</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
                     <span class="n">ensout</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">return_wavelet</span><span class="p">:</span>
@@ -964,8 +980,8 @@
         <span class="n">retval</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ensout</span><span class="p">)</span>
         <span class="n">ao</span> <span class="o">=</span> <span class="n">engine</span><span class="o">.</span><span class="n">actual_output</span><span class="p">(</span><span class="n">beam</span><span class="p">)</span>
         <span class="n">retval</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ao</span><span class="p">)</span>
-        <span class="n">ideal_out</span> <span class="o">=</span> <span class="n">engine</span><span class="o">.</span><span class="n">ideal_output</span><span class="p">()</span>
-        <span class="n">retval</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ideal_out</span><span class="p">)</span>
+        <span class="n">output_shaping_wavelet</span> <span class="o">=</span> <span class="n">engine</span><span class="o">.</span><span class="n">output_shaping_wavelet</span><span class="p">()</span>
+        <span class="n">retval</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">output_shaping_wavelet</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">retval</span> <span class="o">=</span> <span class="n">ensout</span>
 

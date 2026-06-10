@@ -90,6 +90,7 @@
 <p class="caption" role="heading"><span class="caption-text">Data Processing</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/algorithms.html">Algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/deconvolution.html">Deconvolution Operators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/importing_data.html">Importing Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/handling_errors.html">Handling Errors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/data_editing.html">Data Editing</a></li>
@@ -2417,7 +2418,7 @@ those safeties the code would throw an error if net or loc were null.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.CNRDeconEngine.actual_output">
 <span class="sig-name descname"><span class="pre">actual_output</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.CNRDeconEngine" title="mspasspy.ccore.algorithms.deconvolution.CNRDeconEngine"><span class="pre">mspasspy.ccore.algorithms.deconvolution.CNRDeconEngine</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><span class="pre">mspasspy.ccore.seismic.TimeSeries</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><span class="pre">mspasspy.ccore.seismic.TimeSeries</span></a></span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.CNRDeconEngine.actual_output" title="Link to this definition"></a></dt>
-<dd><p>Return the actual output of the currently loaded operator</p>
+<dd><p>Return actual output/resolution kernel for the supplied wavelet</p>
 </dd></dl>
 
 <dl class="py method">
@@ -2441,7 +2442,7 @@ those safeties the code would throw an error if net or loc were null.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.CNRDeconEngine.ideal_output">
 <span class="sig-name descname"><span class="pre">ideal_output</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.CNRDeconEngine" title="mspasspy.ccore.algorithms.deconvolution.CNRDeconEngine"><span class="pre">mspasspy.ccore.algorithms.deconvolution.CNRDeconEngine</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><span class="pre">mspasspy.ccore.seismic.TimeSeries</span></a></span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.CNRDeconEngine.ideal_output" title="Link to this definition"></a></dt>
-<dd><p>Return the ideal output of the currently loaded operator</p>
+<dd><p>Legacy alias for output_shaping_wavelet</p>
 </dd></dl>
 
 <dl class="py method">
@@ -2463,9 +2464,21 @@ those safeties the code would throw an error if net or loc were null.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.CNRDeconEngine.output_shaping_wavelet">
+<span class="sig-name descname"><span class="pre">output_shaping_wavelet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.CNRDeconEngine" title="mspasspy.ccore.algorithms.deconvolution.CNRDeconEngine"><span class="pre">mspasspy.ccore.algorithms.deconvolution.CNRDeconEngine</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><span class="pre">mspasspy.ccore.seismic.TimeSeries</span></a></span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.CNRDeconEngine.output_shaping_wavelet" title="Link to this definition"></a></dt>
+<dd><p>Return the output shaping wavelet ws(t)</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.CNRDeconEngine.process">
 <span class="sig-name descname"><span class="pre">process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.CNRDeconEngine" title="mspasspy.ccore.algorithms.deconvolution.CNRDeconEngine"><span class="pre">mspasspy.ccore.algorithms.deconvolution.CNRDeconEngine</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><span class="pre">mspasspy.ccore.seismic.Seismogram</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.seismic.PowerSpectrum" title="mspasspy.ccore.seismic.PowerSpectrum"><span class="pre">mspasspy.ccore.seismic.PowerSpectrum</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg3</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><span class="pre">mspasspy.ccore.seismic.Seismogram</span></a></span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.CNRDeconEngine.process" title="Link to this definition"></a></dt>
 <dd><p>Deconvolve Seismogram data using inverse operator loaded previously - shape to specified bandwidth arg1 to arg2 frequency</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.CNRDeconEngine.resolution_kernel">
+<span class="sig-name descname"><span class="pre">resolution_kernel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.CNRDeconEngine" title="mspasspy.ccore.algorithms.deconvolution.CNRDeconEngine"><span class="pre">mspasspy.ccore.algorithms.deconvolution.CNRDeconEngine</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><span class="pre">mspasspy.ccore.seismic.TimeSeries</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><span class="pre">mspasspy.ccore.seismic.TimeSeries</span></a></span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.CNRDeconEngine.resolution_kernel" title="Link to this definition"></a></dt>
+<dd><p>Return actual output/resolution kernel for the supplied wavelet</p>
 </dd></dl>
 
 </dd></dl>
@@ -2615,6 +2628,151 @@ those safeties the code would throw an error if net or loc were null.</p>
 </dd></dl>
 
 <dl class="py class">
+<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.ccore.algorithms.deconvolution.</span></span><span class="sig-name descname"><span class="pre">FrequencyDomainGIDDecon</span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.ScalarDecon" title="mspasspy.ccore.algorithms.deconvolution.ScalarDecon"><code class="xref py py-class docutils literal notranslate"><span class="pre">ScalarDecon</span></code></a></p>
+<p>Frequency-domain generalized iterative deconvolution operator for three-component receiver functions</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon.QCMetrics">
+<span class="sig-name descname"><span class="pre">QCMetrics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon" title="mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon"><span class="pre">mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mspasspy.ccore.utility.Metadata" title="mspasspy.ccore.utility.Metadata"><span class="pre">mspasspy.ccore.utility.Metadata</span></a></span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon.QCMetrics" title="Link to this definition"></a></dt>
+<dd><p>Return QC metrics</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon.actual_output">
+<span class="sig-name descname"><span class="pre">actual_output</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon" title="mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon"><span class="pre">mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">mspasspy.ccore.seismic._CoreTimeSeries</span></span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon.actual_output" title="Link to this definition"></a></dt>
+<dd><p>Return actual output/resolution kernel of the inverse operator</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon.changeparameter">
+<span class="sig-name descname"><span class="pre">changeparameter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon" title="mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon"><span class="pre">mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.utility.Metadata" title="mspasspy.ccore.utility.Metadata"><span class="pre">mspasspy.ccore.utility.Metadata</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon.changeparameter" title="Link to this definition"></a></dt>
+<dd><p>Change leaf inverse-operator parameters</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon.clear_external_noise">
+<span class="sig-name descname"><span class="pre">clear_external_noise</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon" title="mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon"><span class="pre">mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon.clear_external_noise" title="Link to this definition"></a></dt>
+<dd><p>Clear any previously loaded external noise or noise spectrum</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon.clear_external_wavelet">
+<span class="sig-name descname"><span class="pre">clear_external_wavelet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon" title="mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon"><span class="pre">mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon.clear_external_wavelet" title="Link to this definition"></a></dt>
+<dd><p>Clear any previously loaded external wavelet</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon.deconvolution_window_end">
+<span class="sig-name descname"><span class="pre">deconvolution_window_end</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon" title="mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon"><span class="pre">mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon.deconvolution_window_end" title="Link to this definition"></a></dt>
+<dd><p>Return end time of the configured deconvolution window</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon.deconvolution_window_start">
+<span class="sig-name descname"><span class="pre">deconvolution_window_start</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon" title="mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon"><span class="pre">mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon.deconvolution_window_start" title="Link to this definition"></a></dt>
+<dd><p>Return start time of the configured deconvolution window</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon.getresult">
+<span class="sig-name descname"><span class="pre">getresult</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon" title="mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon"><span class="pre">mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">mspasspy.ccore.seismic._CoreSeismogram</span></span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon.getresult" title="Link to this definition"></a></dt>
+<dd><p>Return the deconvolved three-component receiver function</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon.ideal_output">
+<span class="sig-name descname"><span class="pre">ideal_output</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon" title="mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon"><span class="pre">mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">mspasspy.ccore.seismic._CoreTimeSeries</span></span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon.ideal_output" title="Link to this definition"></a></dt>
+<dd><p>Legacy alias for output_shaping_wavelet</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon.inverse_wavelet">
+<span class="sig-name descname"><span class="pre">inverse_wavelet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon.inverse_wavelet" title="Link to this definition"></a></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic simple">
+<li><p>inverse_wavelet(self: mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon) -&gt; mspasspy.ccore.seismic._CoreTimeSeries</p></li>
+<li><p>inverse_wavelet(self: mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon, arg0: float) -&gt; mspasspy.ccore.seismic._CoreTimeSeries</p></li>
+</ol>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon.load">
+<span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon.load" title="Link to this definition"></a></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic simple">
+<li><p>load(self: mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon, arg0: mspasspy.ccore.seismic._CoreSeismogram, arg1: mspasspy.ccore.algorithms.basic.TimeWindow) -&gt; int</p></li>
+</ol>
+<p>Load data</p>
+<ol class="arabic simple" start="2">
+<li><p>load(self: mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon, arg0: mspasspy.ccore.seismic._CoreSeismogram, arg1: mspasspy.ccore.algorithms.basic.TimeWindow, arg2: mspasspy.ccore.algorithms.basic.TimeWindow) -&gt; int</p></li>
+</ol>
+<p>Load data and noise windows</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon.loadnoise">
+<span class="sig-name descname"><span class="pre">loadnoise</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon.loadnoise" title="Link to this definition"></a></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic simple">
+<li><p>loadnoise(self: mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon, arg0: mspasspy.ccore.seismic._CoreSeismogram, arg1: mspasspy.ccore.algorithms.basic.TimeWindow) -&gt; int</p></li>
+</ol>
+<p>Load noise data for regularization from a Seismogram window</p>
+<ol class="arabic simple" start="2">
+<li><p>loadnoise(self: mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon, arg0: mspasspy.ccore.seismic.TimeSeries) -&gt; int</p></li>
+</ol>
+<p>Load externally supplied scalar noise</p>
+<ol class="arabic simple" start="3">
+<li><p>loadnoise(self: mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon, arg0: mspasspy.ccore.seismic._CoreTimeSeries) -&gt; int</p></li>
+</ol>
+<p>Load externally supplied scalar noise</p>
+<ol class="arabic simple" start="4">
+<li><p>loadnoise(self: mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon, arg0: mspasspy.ccore.seismic.PowerSpectrum) -&gt; int</p></li>
+</ol>
+<p>Load externally supplied ns_gid inverse-operator noise spectrum; a residual noise window must still be loaded</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon.loadwavelet">
+<span class="sig-name descname"><span class="pre">loadwavelet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon.loadwavelet" title="Link to this definition"></a></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic simple">
+<li><p>loadwavelet(self: mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon, arg0: mspasspy.ccore.seismic.TimeSeries) -&gt; int</p></li>
+</ol>
+<p>Load an externally supplied wavelet used for all components</p>
+<ol class="arabic simple" start="2">
+<li><p>loadwavelet(self: mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon, arg0: mspasspy.ccore.seismic._CoreTimeSeries) -&gt; int</p></li>
+</ol>
+<p>Load an externally supplied wavelet used for all components</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon.noise_window_end">
+<span class="sig-name descname"><span class="pre">noise_window_end</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon" title="mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon"><span class="pre">mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon.noise_window_end" title="Link to this definition"></a></dt>
+<dd><p>Return end time of the configured noise window</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon.noise_window_start">
+<span class="sig-name descname"><span class="pre">noise_window_start</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon" title="mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon"><span class="pre">mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon.noise_window_start" title="Link to this definition"></a></dt>
+<dd><p>Return start time of the configured noise window</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon.process">
+<span class="sig-name descname"><span class="pre">process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon" title="mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon"><span class="pre">mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon.process" title="Link to this definition"></a></dt>
+<dd><p>Process previously loaded data</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon.sparse_output">
+<span class="sig-name descname"><span class="pre">sparse_output</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon" title="mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon"><span class="pre">mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">mspasspy.ccore.seismic._CoreSeismogram</span></span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon.sparse_output" title="Link to this definition"></a></dt>
+<dd><p>Return the raw sparse impulse response from the GID iteration</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.LeastSquareDecon">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.ccore.algorithms.deconvolution.</span></span><span class="sig-name descname"><span class="pre">LeastSquareDecon</span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.LeastSquareDecon" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.ScalarDecon" title="mspasspy.ccore.algorithms.deconvolution.ScalarDecon"><code class="xref py py-class docutils literal notranslate"><span class="pre">ScalarDecon</span></code></a></p>
@@ -2622,7 +2780,7 @@ those safeties the code would throw an error if net or loc were null.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.LeastSquareDecon.QCMetrics">
 <span class="sig-name descname"><span class="pre">QCMetrics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.LeastSquareDecon" title="mspasspy.ccore.algorithms.deconvolution.LeastSquareDecon"><span class="pre">mspasspy.ccore.algorithms.deconvolution.LeastSquareDecon</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mspasspy.ccore.utility.Metadata" title="mspasspy.ccore.utility.Metadata"><span class="pre">mspasspy.ccore.utility.Metadata</span></a></span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.LeastSquareDecon.QCMetrics" title="Link to this definition"></a></dt>
-<dd><p>Return ideal output of for inverse</p>
+<dd><p>Return QC metrics</p>
 </dd></dl>
 
 <dl class="py method">
@@ -2718,15 +2876,27 @@ those safeties the code would throw an error if net or loc were null.</p>
 
 </dd></dl>
 
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.MultiTaperPowerSpecDivDecon">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.ccore.algorithms.deconvolution.</span></span><span class="sig-name descname"><span class="pre">MultiTaperPowerSpecDivDecon</span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.MultiTaperPowerSpecDivDecon" title="Link to this definition"></a></dt>
+<dd><p>alias of <a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.MultiTaperSpecDivDecon" title="mspasspy.ccore.algorithms.deconvolution.MultiTaperSpecDivDecon"><code class="xref py py-class docutils literal notranslate"><span class="pre">MultiTaperSpecDivDecon</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.MultiTaperPowerXcorDecon">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.ccore.algorithms.deconvolution.</span></span><span class="sig-name descname"><span class="pre">MultiTaperPowerXcorDecon</span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.MultiTaperPowerXcorDecon" title="Link to this definition"></a></dt>
+<dd><p>alias of <a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.MultiTaperXcorDecon" title="mspasspy.ccore.algorithms.deconvolution.MultiTaperXcorDecon"><code class="xref py py-class docutils literal notranslate"><span class="pre">MultiTaperXcorDecon</span></code></a></p>
+</dd></dl>
+
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.MultiTaperSpecDivDecon">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.ccore.algorithms.deconvolution.</span></span><span class="sig-name descname"><span class="pre">MultiTaperSpecDivDecon</span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.MultiTaperSpecDivDecon" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.ScalarDecon" title="mspasspy.ccore.algorithms.deconvolution.ScalarDecon"><code class="xref py py-class docutils literal notranslate"><span class="pre">ScalarDecon</span></code></a></p>
-<p>Water level frequency domain operator</p>
+<p>Compatibility name for the multitaper power-stabilized spectral-division operator.  This is not a paper-faithful Park-Levin MTC estimator; the current implementation applies an untapered source/data phase inverse with a multitaper-stabilized power denominator.  Prefer the MultiTaperPowerSpecDivDecon alias in new Python code.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.MultiTaperSpecDivDecon.QCMetrics">
 <span class="sig-name descname"><span class="pre">QCMetrics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.MultiTaperSpecDivDecon" title="mspasspy.ccore.algorithms.deconvolution.MultiTaperSpecDivDecon"><span class="pre">mspasspy.ccore.algorithms.deconvolution.MultiTaperSpecDivDecon</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mspasspy.ccore.utility.Metadata" title="mspasspy.ccore.utility.Metadata"><span class="pre">mspasspy.ccore.utility.Metadata</span></a></span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.MultiTaperSpecDivDecon.QCMetrics" title="Link to this definition"></a></dt>
-<dd><p>Return ideal output of for inverse</p>
+<dd><p>Return QC metrics</p>
 </dd></dl>
 
 <dl class="py method">
@@ -2736,9 +2906,33 @@ those safeties the code would throw an error if net or loc were null.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.MultiTaperSpecDivDecon.all_actual_outputs">
+<span class="sig-name descname"><span class="pre">all_actual_outputs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.MultiTaperSpecDivDecon" title="mspasspy.ccore.algorithms.deconvolution.MultiTaperSpecDivDecon"><span class="pre">mspasspy.ccore.algorithms.deconvolution.MultiTaperSpecDivDecon</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">t0parent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">mspasspy.ccore.seismic._CoreTimeSeries</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.MultiTaperSpecDivDecon.all_actual_outputs" title="Link to this definition"></a></dt>
+<dd><p>Return retained actual output products.  The current implementation normally returns one combined resolution kernel.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.MultiTaperSpecDivDecon.all_inverse_wavelets">
+<span class="sig-name descname"><span class="pre">all_inverse_wavelets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.MultiTaperSpecDivDecon" title="mspasspy.ccore.algorithms.deconvolution.MultiTaperSpecDivDecon"><span class="pre">mspasspy.ccore.algorithms.deconvolution.MultiTaperSpecDivDecon</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">t0parent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">mspasspy.ccore.seismic._CoreTimeSeries</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.MultiTaperSpecDivDecon.all_inverse_wavelets" title="Link to this definition"></a></dt>
+<dd><p>Return retained inverse wavelet products.  The current implementation normally returns one combined multitaper inverse.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.MultiTaperSpecDivDecon.all_rfestimates">
+<span class="sig-name descname"><span class="pre">all_rfestimates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.MultiTaperSpecDivDecon" title="mspasspy.ccore.algorithms.deconvolution.MultiTaperSpecDivDecon"><span class="pre">mspasspy.ccore.algorithms.deconvolution.MultiTaperSpecDivDecon</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">t0parent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">mspasspy.ccore.seismic._CoreTimeSeries</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.MultiTaperSpecDivDecon.all_rfestimates" title="Link to this definition"></a></dt>
+<dd><p>Return retained RF estimates.  The current implementation normally returns one combined estimate.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.MultiTaperSpecDivDecon.changeparameter">
 <span class="sig-name descname"><span class="pre">changeparameter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.MultiTaperSpecDivDecon" title="mspasspy.ccore.algorithms.deconvolution.MultiTaperSpecDivDecon"><span class="pre">mspasspy.ccore.algorithms.deconvolution.MultiTaperSpecDivDecon</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.utility.Metadata" title="mspasspy.ccore.utility.Metadata"><span class="pre">mspasspy.ccore.utility.Metadata</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.MultiTaperSpecDivDecon.changeparameter" title="Link to this definition"></a></dt>
 <dd><p>Change operator parameters</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.MultiTaperSpecDivDecon.get_number_outputs">
+<span class="sig-name descname"><span class="pre">get_number_outputs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.MultiTaperSpecDivDecon" title="mspasspy.ccore.algorithms.deconvolution.MultiTaperSpecDivDecon"><span class="pre">mspasspy.ccore.algorithms.deconvolution.MultiTaperSpecDivDecon</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.MultiTaperSpecDivDecon.get_number_outputs" title="Link to this definition"></a></dt>
+<dd><p>Get number of combined output products retained by the operator</p>
 </dd></dl>
 
 <dl class="py method">
@@ -2756,7 +2950,7 @@ those safeties the code would throw an error if net or loc were null.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.MultiTaperSpecDivDecon.get_time_bandwidth_product">
 <span class="sig-name descname"><span class="pre">get_time_bandwidth_product</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.MultiTaperSpecDivDecon" title="mspasspy.ccore.algorithms.deconvolution.MultiTaperSpecDivDecon"><span class="pre">mspasspy.ccore.algorithms.deconvolution.MultiTaperSpecDivDecon</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.MultiTaperSpecDivDecon.get_time_bandwidth_product" title="Link to this definition"></a></dt>
-<dd><p>Get time bandwidt product of Slepian tapers used by the operator</p>
+<dd><p>Get time-bandwidth product of Slepian tapers used by the operator</p>
 </dd></dl>
 
 <dl class="py method">
@@ -2793,11 +2987,11 @@ those safeties the code would throw an error if net or loc were null.</p>
 <dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.MultiTaperXcorDecon">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.ccore.algorithms.deconvolution.</span></span><span class="sig-name descname"><span class="pre">MultiTaperXcorDecon</span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.MultiTaperXcorDecon" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.ScalarDecon" title="mspasspy.ccore.algorithms.deconvolution.ScalarDecon"><code class="xref py py-class docutils literal notranslate"><span class="pre">ScalarDecon</span></code></a></p>
-<p>Water level frequency domain operator</p>
+<p>Compatibility name for the multitaper source-power-stabilized deconvolution operator.  This is not a paper-faithful Park-Levin MTC estimator; the current implementation applies an untapered source/data phase inverse with a multitaper-stabilized source-power denominator.  Prefer the MultiTaperPowerXcorDecon alias in new Python code.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.MultiTaperXcorDecon.QCMetrics">
 <span class="sig-name descname"><span class="pre">QCMetrics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.MultiTaperXcorDecon" title="mspasspy.ccore.algorithms.deconvolution.MultiTaperXcorDecon"><span class="pre">mspasspy.ccore.algorithms.deconvolution.MultiTaperXcorDecon</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mspasspy.ccore.utility.Metadata" title="mspasspy.ccore.utility.Metadata"><span class="pre">mspasspy.ccore.utility.Metadata</span></a></span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.MultiTaperXcorDecon.QCMetrics" title="Link to this definition"></a></dt>
-<dd><p>Return ideal output of for inverse</p>
+<dd><p>Return QC metrics</p>
 </dd></dl>
 
 <dl class="py method">
@@ -2827,7 +3021,7 @@ those safeties the code would throw an error if net or loc were null.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.MultiTaperXcorDecon.get_time_bandwidth_product">
 <span class="sig-name descname"><span class="pre">get_time_bandwidth_product</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.MultiTaperXcorDecon" title="mspasspy.ccore.algorithms.deconvolution.MultiTaperXcorDecon"><span class="pre">mspasspy.ccore.algorithms.deconvolution.MultiTaperXcorDecon</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.MultiTaperXcorDecon.get_time_bandwidth_product" title="Link to this definition"></a></dt>
-<dd><p>Get time bandwidt product of Slepian tapers used by the operator</p>
+<dd><p>Get time-bandwidth product of Slepian tapers used by the operator</p>
 </dd></dl>
 
 <dl class="py method">
@@ -2861,6 +3055,75 @@ those safeties the code would throw an error if net or loc were null.</p>
 </dd></dl>
 
 <dl class="py class">
+<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.NoiseStableDecon">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.ccore.algorithms.deconvolution.</span></span><span class="sig-name descname"><span class="pre">NoiseStableDecon</span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.NoiseStableDecon" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.ScalarDecon" title="mspasspy.ccore.algorithms.deconvolution.ScalarDecon"><code class="xref py py-class docutils literal notranslate"><span class="pre">ScalarDecon</span></code></a></p>
+<p>Noise-aware stable frequency-domain inverse operator used by NS-GID</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.NoiseStableDecon.QCMetrics">
+<span class="sig-name descname"><span class="pre">QCMetrics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.NoiseStableDecon" title="mspasspy.ccore.algorithms.deconvolution.NoiseStableDecon"><span class="pre">mspasspy.ccore.algorithms.deconvolution.NoiseStableDecon</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mspasspy.ccore.utility.Metadata" title="mspasspy.ccore.utility.Metadata"><span class="pre">mspasspy.ccore.utility.Metadata</span></a></span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.NoiseStableDecon.QCMetrics" title="Link to this definition"></a></dt>
+<dd><p>Return NS-GID inverse operator QC metrics</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.NoiseStableDecon.actual_output">
+<span class="sig-name descname"><span class="pre">actual_output</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.NoiseStableDecon" title="mspasspy.ccore.algorithms.deconvolution.NoiseStableDecon"><span class="pre">mspasspy.ccore.algorithms.deconvolution.NoiseStableDecon</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">mspasspy.ccore.seismic._CoreTimeSeries</span></span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.NoiseStableDecon.actual_output" title="Link to this definition"></a></dt>
+<dd><p>Return actual output of inverse*wavelet</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.NoiseStableDecon.changeparameter">
+<span class="sig-name descname"><span class="pre">changeparameter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.NoiseStableDecon" title="mspasspy.ccore.algorithms.deconvolution.NoiseStableDecon"><span class="pre">mspasspy.ccore.algorithms.deconvolution.NoiseStableDecon</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.utility.Metadata" title="mspasspy.ccore.utility.Metadata"><span class="pre">mspasspy.ccore.utility.Metadata</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.NoiseStableDecon.changeparameter" title="Link to this definition"></a></dt>
+<dd><p>Change operator parameters</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.NoiseStableDecon.gain_cap">
+<span class="sig-name descname"><span class="pre">gain_cap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.NoiseStableDecon" title="mspasspy.ccore.algorithms.deconvolution.NoiseStableDecon"><span class="pre">mspasspy.ccore.algorithms.deconvolution.NoiseStableDecon</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.NoiseStableDecon.gain_cap" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.NoiseStableDecon.inverse_wavelet">
+<span class="sig-name descname"><span class="pre">inverse_wavelet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.NoiseStableDecon.inverse_wavelet" title="Link to this definition"></a></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic simple">
+<li><p>inverse_wavelet(self: mspasspy.ccore.algorithms.deconvolution.NoiseStableDecon) -&gt; mspasspy.ccore.seismic._CoreTimeSeries</p></li>
+<li><p>inverse_wavelet(self: mspasspy.ccore.algorithms.deconvolution.NoiseStableDecon, arg0: float) -&gt; mspasspy.ccore.seismic._CoreTimeSeries</p></li>
+</ol>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.NoiseStableDecon.loadnoise">
+<span class="sig-name descname"><span class="pre">loadnoise</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.NoiseStableDecon.loadnoise" title="Link to this definition"></a></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic simple">
+<li><p>loadnoise(self: mspasspy.ccore.algorithms.deconvolution.NoiseStableDecon, arg0: mspasspy.ccore.algorithms.deconvolution.DoubleVector) -&gt; None</p></li>
+</ol>
+<p>Load a noise time series vector used to estimate inverse-gain stability</p>
+<ol class="arabic simple" start="2">
+<li><p>loadnoise(self: mspasspy.ccore.algorithms.deconvolution.NoiseStableDecon, arg0: mspasspy.ccore.seismic._CoreTimeSeries) -&gt; None</p></li>
+</ol>
+<p>Load a noise CoreTimeSeries used to estimate inverse-gain stability</p>
+<ol class="arabic simple" start="3">
+<li><p>loadnoise(self: mspasspy.ccore.algorithms.deconvolution.NoiseStableDecon, arg0: mspasspy.ccore.seismic.PowerSpectrum) -&gt; None</p></li>
+</ol>
+<p>Load a noise PowerSpectrum used to estimate inverse-gain stability</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.NoiseStableDecon.max_gain">
+<span class="sig-name descname"><span class="pre">max_gain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.NoiseStableDecon" title="mspasspy.ccore.algorithms.deconvolution.NoiseStableDecon"><span class="pre">mspasspy.ccore.algorithms.deconvolution.NoiseStableDecon</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.NoiseStableDecon.max_gain" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.NoiseStableDecon.process">
+<span class="sig-name descname"><span class="pre">process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.NoiseStableDecon" title="mspasspy.ccore.algorithms.deconvolution.NoiseStableDecon"><span class="pre">mspasspy.ccore.algorithms.deconvolution.NoiseStableDecon</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.NoiseStableDecon.process" title="Link to this definition"></a></dt>
+<dd><p>Process previously loaded data</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.ScalarDecon">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.ccore.algorithms.deconvolution.</span></span><span class="sig-name descname"><span class="pre">ScalarDecon</span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.ScalarDecon" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_object</span></code></p>
@@ -2868,13 +3131,13 @@ those safeties the code would throw an error if net or loc were null.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.ScalarDecon.QCMetrics">
 <span class="sig-name descname"><span class="pre">QCMetrics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.ScalarDecon" title="mspasspy.ccore.algorithms.deconvolution.ScalarDecon"><span class="pre">mspasspy.ccore.algorithms.deconvolution.ScalarDecon</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mspasspy.ccore.utility.Metadata" title="mspasspy.ccore.utility.Metadata"><span class="pre">mspasspy.ccore.utility.Metadata</span></a></span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.ScalarDecon.QCMetrics" title="Link to this definition"></a></dt>
-<dd><p>Return ideal output of for inverse</p>
+<dd><p>Return QC metrics</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.ScalarDecon.actual_output">
 <span class="sig-name descname"><span class="pre">actual_output</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.ScalarDecon" title="mspasspy.ccore.algorithms.deconvolution.ScalarDecon"><span class="pre">mspasspy.ccore.algorithms.deconvolution.ScalarDecon</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">mspasspy.ccore.seismic._CoreTimeSeries</span></span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.ScalarDecon.actual_output" title="Link to this definition"></a></dt>
-<dd><p>Return actual output of inverse*wavelet</p>
+<dd><p>Return actual output/resolution kernel of inverse*wavelet</p>
 </dd></dl>
 
 <dl class="py method">
@@ -2904,7 +3167,7 @@ those safeties the code would throw an error if net or loc were null.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.ScalarDecon.ideal_output">
 <span class="sig-name descname"><span class="pre">ideal_output</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.ScalarDecon" title="mspasspy.ccore.algorithms.deconvolution.ScalarDecon"><span class="pre">mspasspy.ccore.algorithms.deconvolution.ScalarDecon</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">mspasspy.ccore.seismic._CoreTimeSeries</span></span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.ScalarDecon.ideal_output" title="Link to this definition"></a></dt>
-<dd><p>Return ideal output of for inverse</p>
+<dd><p>Legacy alias for output_shaping_wavelet</p>
 </dd></dl>
 
 <dl class="py method">
@@ -2934,9 +3197,21 @@ those safeties the code would throw an error if net or loc were null.</p>
 <dd></dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.ScalarDecon.output_shaping_wavelet">
+<span class="sig-name descname"><span class="pre">output_shaping_wavelet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.ScalarDecon" title="mspasspy.ccore.algorithms.deconvolution.ScalarDecon"><span class="pre">mspasspy.ccore.algorithms.deconvolution.ScalarDecon</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">mspasspy.ccore.seismic._CoreTimeSeries</span></span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.ScalarDecon.output_shaping_wavelet" title="Link to this definition"></a></dt>
+<dd><p>Return the output shaping wavelet ws(t)</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.ScalarDecon.process">
 <span class="sig-name descname"><span class="pre">process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.ScalarDecon" title="mspasspy.ccore.algorithms.deconvolution.ScalarDecon"><span class="pre">mspasspy.ccore.algorithms.deconvolution.ScalarDecon</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.ScalarDecon.process" title="Link to this definition"></a></dt>
 <dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.ScalarDecon.resolution_kernel">
+<span class="sig-name descname"><span class="pre">resolution_kernel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.ScalarDecon" title="mspasspy.ccore.algorithms.deconvolution.ScalarDecon"><span class="pre">mspasspy.ccore.algorithms.deconvolution.ScalarDecon</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">mspasspy.ccore.seismic._CoreTimeSeries</span></span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.ScalarDecon.resolution_kernel" title="Link to this definition"></a></dt>
+<dd><p>Return actual output/resolution kernel of inverse*wavelet</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -2978,6 +3253,198 @@ those safeties the code would throw an error if net or loc were null.</p>
 </dd></dl>
 
 <dl class="py class">
+<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.ccore.algorithms.deconvolution.</span></span><span class="sig-name descname"><span class="pre">TimeDomainGIDDecon</span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.ScalarDecon" title="mspasspy.ccore.algorithms.deconvolution.ScalarDecon"><code class="xref py py-class docutils literal notranslate"><span class="pre">ScalarDecon</span></code></a></p>
+<p>Generalized iterative deconvolution operator for three-component receiver functions</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon.QCMetrics">
+<span class="sig-name descname"><span class="pre">QCMetrics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon" title="mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon"><span class="pre">mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mspasspy.ccore.utility.Metadata" title="mspasspy.ccore.utility.Metadata"><span class="pre">mspasspy.ccore.utility.Metadata</span></a></span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon.QCMetrics" title="Link to this definition"></a></dt>
+<dd><p>Return QC metrics</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon.actual_output">
+<span class="sig-name descname"><span class="pre">actual_output</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon" title="mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon"><span class="pre">mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">mspasspy.ccore.seismic._CoreTimeSeries</span></span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon.actual_output" title="Link to this definition"></a></dt>
+<dd><p>Return actual output/resolution kernel of the inverse operator</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon.changeparameter">
+<span class="sig-name descname"><span class="pre">changeparameter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon" title="mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon"><span class="pre">mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.utility.Metadata" title="mspasspy.ccore.utility.Metadata"><span class="pre">mspasspy.ccore.utility.Metadata</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon.changeparameter" title="Link to this definition"></a></dt>
+<dd><p>Change leaf inverse-operator parameters</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon.clear_external_noise">
+<span class="sig-name descname"><span class="pre">clear_external_noise</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon" title="mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon"><span class="pre">mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon.clear_external_noise" title="Link to this definition"></a></dt>
+<dd><p>Clear any previously loaded external noise or noise spectrum</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon.clear_external_wavelet">
+<span class="sig-name descname"><span class="pre">clear_external_wavelet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon" title="mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon"><span class="pre">mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon.clear_external_wavelet" title="Link to this definition"></a></dt>
+<dd><p>Clear any previously loaded external wavelet</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon.deconvolution_window_end">
+<span class="sig-name descname"><span class="pre">deconvolution_window_end</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon" title="mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon"><span class="pre">mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon.deconvolution_window_end" title="Link to this definition"></a></dt>
+<dd><p>Return end time of the configured deconvolution window</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon.deconvolution_window_start">
+<span class="sig-name descname"><span class="pre">deconvolution_window_start</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon" title="mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon"><span class="pre">mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon.deconvolution_window_start" title="Link to this definition"></a></dt>
+<dd><p>Return start time of the configured deconvolution window</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon.getresult">
+<span class="sig-name descname"><span class="pre">getresult</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon" title="mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon"><span class="pre">mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">mspasspy.ccore.seismic._CoreSeismogram</span></span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon.getresult" title="Link to this definition"></a></dt>
+<dd><p>Return the deconvolved three-component receiver function</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon.ideal_output">
+<span class="sig-name descname"><span class="pre">ideal_output</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon" title="mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon"><span class="pre">mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">mspasspy.ccore.seismic._CoreTimeSeries</span></span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon.ideal_output" title="Link to this definition"></a></dt>
+<dd><p>Legacy alias for output_shaping_wavelet</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon.inverse_wavelet">
+<span class="sig-name descname"><span class="pre">inverse_wavelet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon.inverse_wavelet" title="Link to this definition"></a></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic simple">
+<li><p>inverse_wavelet(self: mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon) -&gt; mspasspy.ccore.seismic._CoreTimeSeries</p></li>
+<li><p>inverse_wavelet(self: mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon, arg0: float) -&gt; mspasspy.ccore.seismic._CoreTimeSeries</p></li>
+</ol>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon.load">
+<span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon.load" title="Link to this definition"></a></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic simple">
+<li><p>load(self: mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon, arg0: mspasspy.ccore.seismic._CoreSeismogram, arg1: mspasspy.ccore.algorithms.basic.TimeWindow) -&gt; int</p></li>
+</ol>
+<p>Load data</p>
+<ol class="arabic simple" start="2">
+<li><p>load(self: mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon, arg0: mspasspy.ccore.seismic._CoreSeismogram, arg1: mspasspy.ccore.algorithms.basic.TimeWindow, arg2: mspasspy.ccore.algorithms.basic.TimeWindow) -&gt; int</p></li>
+</ol>
+<p>Load data and noise windows</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon.loadnoise">
+<span class="sig-name descname"><span class="pre">loadnoise</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon.loadnoise" title="Link to this definition"></a></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic simple">
+<li><p>loadnoise(self: mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon, arg0: mspasspy.ccore.seismic._CoreSeismogram, arg1: mspasspy.ccore.algorithms.basic.TimeWindow) -&gt; int</p></li>
+</ol>
+<p>Load noise data for regularization from a Seismogram window</p>
+<ol class="arabic simple" start="2">
+<li><p>loadnoise(self: mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon, arg0: mspasspy.ccore.seismic.TimeSeries) -&gt; int</p></li>
+</ol>
+<p>Load externally supplied scalar noise</p>
+<ol class="arabic simple" start="3">
+<li><p>loadnoise(self: mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon, arg0: mspasspy.ccore.seismic._CoreTimeSeries) -&gt; int</p></li>
+</ol>
+<p>Load externally supplied scalar noise</p>
+<ol class="arabic simple" start="4">
+<li><p>loadnoise(self: mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon, arg0: mspasspy.ccore.seismic.PowerSpectrum) -&gt; int</p></li>
+</ol>
+<p>Load externally supplied ns_gid inverse-operator noise spectrum; a residual noise window must still be loaded</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon.loadwavelet">
+<span class="sig-name descname"><span class="pre">loadwavelet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon.loadwavelet" title="Link to this definition"></a></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic simple">
+<li><p>loadwavelet(self: mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon, arg0: mspasspy.ccore.seismic.TimeSeries) -&gt; int</p></li>
+</ol>
+<p>Load an externally supplied wavelet used for all components</p>
+<ol class="arabic simple" start="2">
+<li><p>loadwavelet(self: mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon, arg0: mspasspy.ccore.seismic._CoreTimeSeries) -&gt; int</p></li>
+</ol>
+<p>Load an externally supplied wavelet used for all components</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon.noise_window_end">
+<span class="sig-name descname"><span class="pre">noise_window_end</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon" title="mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon"><span class="pre">mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon.noise_window_end" title="Link to this definition"></a></dt>
+<dd><p>Return end time of the configured noise window</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon.noise_window_start">
+<span class="sig-name descname"><span class="pre">noise_window_start</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon" title="mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon"><span class="pre">mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon.noise_window_start" title="Link to this definition"></a></dt>
+<dd><p>Return start time of the configured noise window</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon.process">
+<span class="sig-name descname"><span class="pre">process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon" title="mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon"><span class="pre">mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon.process" title="Link to this definition"></a></dt>
+<dd><p>Process previously loaded data</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon.sparse_output">
+<span class="sig-name descname"><span class="pre">sparse_output</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon" title="mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon"><span class="pre">mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">mspasspy.ccore.seismic._CoreSeismogram</span></span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon.sparse_output" title="Link to this definition"></a></dt>
+<dd><p>Return the raw sparse impulse response from the GID iteration</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.TimeDomainLeastSquareDecon">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.ccore.algorithms.deconvolution.</span></span><span class="sig-name descname"><span class="pre">TimeDomainLeastSquareDecon</span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.TimeDomainLeastSquareDecon" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.ScalarDecon" title="mspasspy.ccore.algorithms.deconvolution.ScalarDecon"><code class="xref py py-class docutils literal notranslate"><span class="pre">ScalarDecon</span></code></a></p>
+<p>Damped least-squares time-domain operator for cropped linear convolution</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.TimeDomainLeastSquareDecon.QCMetrics">
+<span class="sig-name descname"><span class="pre">QCMetrics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.TimeDomainLeastSquareDecon" title="mspasspy.ccore.algorithms.deconvolution.TimeDomainLeastSquareDecon"><span class="pre">mspasspy.ccore.algorithms.deconvolution.TimeDomainLeastSquareDecon</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mspasspy.ccore.utility.Metadata" title="mspasspy.ccore.utility.Metadata"><span class="pre">mspasspy.ccore.utility.Metadata</span></a></span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.TimeDomainLeastSquareDecon.QCMetrics" title="Link to this definition"></a></dt>
+<dd><p>Return quality metrics for the time-domain least-squares solve</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.TimeDomainLeastSquareDecon.actual_output">
+<span class="sig-name descname"><span class="pre">actual_output</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.TimeDomainLeastSquareDecon" title="mspasspy.ccore.algorithms.deconvolution.TimeDomainLeastSquareDecon"><span class="pre">mspasspy.ccore.algorithms.deconvolution.TimeDomainLeastSquareDecon</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">mspasspy.ccore.seismic._CoreTimeSeries</span></span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.TimeDomainLeastSquareDecon.actual_output" title="Link to this definition"></a></dt>
+<dd><p>Return actual output of inverse*wavelet</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.TimeDomainLeastSquareDecon.changeparameter">
+<span class="sig-name descname"><span class="pre">changeparameter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.TimeDomainLeastSquareDecon" title="mspasspy.ccore.algorithms.deconvolution.TimeDomainLeastSquareDecon"><span class="pre">mspasspy.ccore.algorithms.deconvolution.TimeDomainLeastSquareDecon</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.utility.Metadata" title="mspasspy.ccore.utility.Metadata"><span class="pre">mspasspy.ccore.utility.Metadata</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.TimeDomainLeastSquareDecon.changeparameter" title="Link to this definition"></a></dt>
+<dd><p>Change operator parameters</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.TimeDomainLeastSquareDecon.inverse_wavelet">
+<span class="sig-name descname"><span class="pre">inverse_wavelet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.TimeDomainLeastSquareDecon.inverse_wavelet" title="Link to this definition"></a></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic simple">
+<li><p>inverse_wavelet(self: mspasspy.ccore.algorithms.deconvolution.TimeDomainLeastSquareDecon) -&gt; mspasspy.ccore.seismic._CoreTimeSeries</p></li>
+<li><p>inverse_wavelet(self: mspasspy.ccore.algorithms.deconvolution.TimeDomainLeastSquareDecon, arg0: float) -&gt; mspasspy.ccore.seismic._CoreTimeSeries</p></li>
+</ol>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.TimeDomainLeastSquareDecon.output_shaping_wavelet">
+<span class="sig-name descname"><span class="pre">output_shaping_wavelet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.TimeDomainLeastSquareDecon" title="mspasspy.ccore.algorithms.deconvolution.TimeDomainLeastSquareDecon"><span class="pre">mspasspy.ccore.algorithms.deconvolution.TimeDomainLeastSquareDecon</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">mspasspy.ccore.seismic._CoreTimeSeries</span></span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.TimeDomainLeastSquareDecon.output_shaping_wavelet" title="Link to this definition"></a></dt>
+<dd><p>Return the output shaping wavelet on the same lag window as actual_output</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.TimeDomainLeastSquareDecon.process">
+<span class="sig-name descname"><span class="pre">process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.TimeDomainLeastSquareDecon" title="mspasspy.ccore.algorithms.deconvolution.TimeDomainLeastSquareDecon"><span class="pre">mspasspy.ccore.algorithms.deconvolution.TimeDomainLeastSquareDecon</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.TimeDomainLeastSquareDecon.process" title="Link to this definition"></a></dt>
+<dd><p>Process previously loaded data</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.WaterLevelDecon">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.ccore.algorithms.deconvolution.</span></span><span class="sig-name descname"><span class="pre">WaterLevelDecon</span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.WaterLevelDecon" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.ScalarDecon" title="mspasspy.ccore.algorithms.deconvolution.ScalarDecon"><code class="xref py py-class docutils literal notranslate"><span class="pre">ScalarDecon</span></code></a></p>
@@ -2985,7 +3452,7 @@ those safeties the code would throw an error if net or loc were null.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.ccore.algorithms.deconvolution.WaterLevelDecon.QCMetrics">
 <span class="sig-name descname"><span class="pre">QCMetrics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.deconvolution.WaterLevelDecon" title="mspasspy.ccore.algorithms.deconvolution.WaterLevelDecon"><span class="pre">mspasspy.ccore.algorithms.deconvolution.WaterLevelDecon</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mspasspy.ccore.utility.Metadata" title="mspasspy.ccore.utility.Metadata"><span class="pre">mspasspy.ccore.utility.Metadata</span></a></span></span><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.WaterLevelDecon.QCMetrics" title="Link to this definition"></a></dt>
-<dd><p>Return ideal output of for inverse</p>
+<dd><p>Return QC metrics</p>
 </dd></dl>
 
 <dl class="py method">

@@ -1,0 +1,566 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Deconvolution Operators &mdash; MsPASS 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=f281be69"></script>
+      <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Importing Data" href="importing_data.html" />
+    <link rel="prev" title="Algorithms" href="algorithms.html" />  
+
+  <style>
+    .wy-nav-content { max-width: 1600px; }
+  </style>
+
+  
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            MsPASS
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Desktop Operation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/mspass_desktop.html">Running MsPASS on a Desktop Computer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/command_line_desktop.html">Command Line Docker Desktop Operation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda.html">Deploy MsPASS with Conda</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/advanced_setup_considerations.html">Advanced Setup Considerations</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Cluster Operations</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_on_HPC.html">Deploying MsPASS on an HPC cluster</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_conda_and_coiled.html">Deploy MsPASS with Conda and Coiled</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/getting_started_overview.html">MsPASS Virtual Cluster Concepts</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Data Management</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="database_concepts.html">Database Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mongodb_and_mspass.html">Using MongoDB with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="normalization.html">Normalization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="importing_tabular_data.html">Importing Tabular Data</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Seismic Data Objects</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="data_object_design_concepts.html">Data Object Design Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="numpy_scipy_interface.html">Using numpy/scipy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="obspy_interface.html">Using ObsPy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="time_standard_constraints.html">Time Standard Constraints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="processing_history_concepts.html">Processing History Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="continuous_data.html">Continuous Data Handling with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="schema_choices.html">What database schema should I use?</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Data Processing</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="algorithms.html">Algorithms</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Deconvolution Operators</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#common-convention">Common convention</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#terminology">Terminology</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#wrapper-data-handling">Wrapper Data Handling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#noise-semantics">Noise Semantics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#scalar-inverse-operators">Scalar inverse operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#three-component-and-iterative-operators">Three-component and iterative operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#validation-plots">Validation plots</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="importing_data.html">Importing Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="handling_errors.html">Handling Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_editing.html">Data Editing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cleaning_metadata.html">Cleaning Inconsistent Metadata</a></li>
+<li class="toctree-l1"><a class="reference internal" href="header_math.html">Header (Metadata) Math</a></li>
+<li class="toctree-l1"><a class="reference internal" href="graphics.html">Graphics in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="signal_to_noise.html">Signal to Noise Ratio Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="arrival_time_measurement.html">Arrival Time Measurement Techniques in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">System Tuning</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="parallel_processing.html">Parallel Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="memory_management.html">Memory Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="io.html">I/O in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parallel_io.html">Parallel IO in MsPASS</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">FAQ</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="FAQ.html">Frequency Asked Questions (FAQ)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development_strategies.html">How do I develop a new workflow from scratch?</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../python_api/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cxx_api/index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mspass_schema/mspass_schema.html">MsPASS Schema</a></li>
+</ul>
+
+    <a href= "../genindex.html">Index</a>
+  
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">MsPASS</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Deconvolution Operators</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/mspass-team/mspass/blob/master/docs/source/user_manual/deconvolution.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="deconvolution-operators">
+<h1>Deconvolution Operators<a class="headerlink" href="#deconvolution-operators" title="Link to this heading"></a></h1>
+<p>This page summarizes the mathematical conventions used by the receiver
+function deconvolution operators in MsPASS.  The defaults are intended for
+seismic time series and solve linear convolution problems.  Circular
+convolution is used only internally as an FFT implementation detail after
+zero padding, or in explicitly diagnostic quantities.</p>
+<section id="common-convention">
+<h2>Common convention<a class="headerlink" href="#common-convention" title="Link to this heading"></a></h2>
+<p>The deconvolution operators model a signal as</p>
+<div class="math notranslate nohighlight">
+\[d(t) = s(t) * m(t) + n(t),\]</div>
+<p>where <code class="docutils literal notranslate"><span class="pre">d</span></code> is the observed component, <code class="docutils literal notranslate"><span class="pre">s</span></code> is the source or vertical
+component wavelet, <code class="docutils literal notranslate"><span class="pre">m</span></code> is the receiver-function estimate, and <code class="docutils literal notranslate"><span class="pre">n</span></code> is
+noise.  For discrete data, the implementation treats this as a linear
+convolution problem.  FFT-based scalar operators pad the working arrays
+before transforming, then extract the requested lag window from the padded
+linear-convolution result.  The default result is therefore not the wrapped
+output of a circular convolution.  For a requested output window of <code class="docutils literal notranslate"><span class="pre">N</span></code>
+samples, scalar FFT operators use an FFT length of at least <code class="docutils literal notranslate"><span class="pre">2*N</span> <span class="pre">-</span> <span class="pre">1</span></code>,
+rounded up to the next power of two.  That is the linear
+convolution/correlation length for the loaded source and data windows and
+avoids the unnecessary computation and diagnostic spectral over-sampling of a
+larger guard buffer.</p>
+<p>The receiver-function output window is controlled by the operator parameter
+file, normally through <code class="docutils literal notranslate"><span class="pre">deconvolution_data_window_start</span></code> and
+<code class="docutils literal notranslate"><span class="pre">deconvolution_data_window_end</span></code>.  The zero-lag convention is the sample of
+the output window whose time is 0.0 relative to the source-wavelet reference
+time.  If an operator reports <code class="docutils literal notranslate"><span class="pre">actual_output</span></code> or <code class="docutils literal notranslate"><span class="pre">inverse_wavelet</span></code>, that
+diagnostic object may be the full padded operator response; use the returned
+receiver function for the cropped seismic result.</p>
+</section>
+<section id="terminology">
+<h2>Terminology<a class="headerlink" href="#terminology" title="Link to this heading"></a></h2>
+<p>This page follows the terminology of Wang &amp; Pavlis (2016) for generalized
+iterative deconvolution:</p>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">sparse</span> <span class="pre">impulse</span> <span class="pre">response</span></code></dt><dd><p>The finite spike series <span class="math notranslate nohighlight">\(\hat{i}(t)\)</span> selected by the iterative loop.
+In code this is returned by <code class="docutils literal notranslate"><span class="pre">sparse_output</span></code>.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">output</span> <span class="pre">shaping</span> <span class="pre">wavelet</span></code></dt><dd><p>The wavelet <span class="math notranslate nohighlight">\(w_s(t)\)</span> convolved with <span class="math notranslate nohighlight">\(\hat{i}(t)\)</span> to form the
+finite-duration receiver-function representation
+<span class="math notranslate nohighlight">\(\hat{m}_{id}(t)=w_s(t)*\hat{i}(t)\)</span>.  In code the preferred method
+name is <code class="docutils literal notranslate"><span class="pre">output_shaping_wavelet</span></code>.  The older method name
+<code class="docutils literal notranslate"><span class="pre">ideal_output</span></code> is retained only as a legacy alias.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">actual</span> <span class="pre">output</span></code> or <code class="docutils literal notranslate"><span class="pre">resolution</span> <span class="pre">kernel</span></code></dt><dd><p>The inverse operator applied to the estimated source wavelet,
+<span class="math notranslate nohighlight">\(\hat{R}(\omega)=\hat{s}^{-g}(\omega)\hat{s}(\omega)\)</span>.  This is the
+paper’s actual output of the inverse filter and is returned by
+<code class="docutils literal notranslate"><span class="pre">actual_output</span></code> or the alias <code class="docutils literal notranslate"><span class="pre">resolution_kernel</span></code>.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">inverse</span> <span class="pre">operator</span></code></dt><dd><p>The operator <span class="math notranslate nohighlight">\(\hat{s}^{-g}\)</span> used to transform the residual into the
+GID detection function.  It is not the output shaping wavelet.</p>
+</dd>
+</dl>
+</section>
+<section id="wrapper-data-handling">
+<h2>Wrapper Data Handling<a class="headerlink" href="#wrapper-data-handling" title="Link to this heading"></a></h2>
+<p>The low-level scalar C++ operators load raw vectors and do not carry absolute
+time windows.  <code class="docutils literal notranslate"><span class="pre">RFdeconProcessor</span></code> and <code class="docutils literal notranslate"><span class="pre">RFdecon</span></code> own scalar data handling:
+they extract the configured deconvolution, wavelet, and noise windows before
+calling the scalar engines.  If a configured window is not present in the
+input datum, the wrapper returns a killed datum and does not attach a QC
+subdocument.</p>
+<p><code class="docutils literal notranslate"><span class="pre">CNRRFDecon</span></code> and <code class="docutils literal notranslate"><span class="pre">CNRArrayDecon</span></code> have a stricter explicit contract.  A
+caller must either provide both <code class="docutils literal notranslate"><span class="pre">signal_window</span></code> and <code class="docutils literal notranslate"><span class="pre">noise_window</span></code> or
+provide a precomputed <code class="docutils literal notranslate"><span class="pre">PowerSpectrum</span></code> noise estimate.  If a signal window is
+provided it is applied to the output data.  If an external wavelet is provided,
+that wavelet is used for all components; otherwise the configured component of
+the signal window is used as the source wavelet.</p>
+<p>The GID wrappers share a common convention.  If <code class="docutils literal notranslate"><span class="pre">signal_window</span></code> is omitted,
+the input datum’s full time range is used as the analysis/output window.  If
+<code class="docutils literal notranslate"><span class="pre">noise_window</span></code> is omitted, the engine’s configured parameter-file noise
+window is used.  The analysis window must contain the configured
+deconvolution/inverse-operator window; otherwise the wrapper returns a killed
+datum instead of processing a partial window.</p>
+</section>
+<section id="noise-semantics">
+<h2>Noise Semantics<a class="headerlink" href="#noise-semantics" title="Link to this heading"></a></h2>
+<p>The word “noise” appears in several deconvolution APIs, but it does not always
+mean the same mathematical object.  Keeping these roles separate is important
+when building reusable processors for Dask or Spark jobs:</p>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">source/wavelet</span> <span class="pre">noise</span></code></dt><dd><p>Noise used to stabilize the inverse operator denominator.  Multitaper,
+CNR, and NS-GID use this information to avoid excessive inverse gain in
+weak or noisy source-wavelet bands.  This noise controls the inverse
+operator, not the target trace itself.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">target/data</span> <span class="pre">noise</span></code></dt><dd><p>Noise already present in the component being deconvolved.  Any inverse
+filter can amplify this noise.  Stable scalar operators reduce that
+amplification indirectly by regularizing the source-wavelet inverse, but
+they do not explicitly separate every target-trace noise component.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">residual-domain</span> <span class="pre">noise</span></code></dt><dd><p>Noise used by iterative methods to decide whether another sparse spike is
+significant and when iteration should stop.  In GID/NS-GID this is a
+stopping and candidate-acceptance quantity.  It is conceptually separate
+from the frequency-domain noise spectrum used to build the inverse
+operator.</p>
+</dd>
+</dl>
+<p>For NS-GID, an external <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> noise estimate can serve both as the
+inverse-operator noise estimate and, when explicitly loaded as residual noise,
+the residual-domain stopping estimate.  An external <code class="docutils literal notranslate"><span class="pre">PowerSpectrum</span></code> noise
+estimate can only regularize the inverse operator; a residual-domain noise
+window is still required for spike significance and residual-noise stopping.</p>
+</section>
+<section id="scalar-inverse-operators">
+<h2>Scalar inverse operators<a class="headerlink" href="#scalar-inverse-operators" title="Link to this heading"></a></h2>
+<p>Scalar operators load one source wavelet and one data trace at a time.  They
+return a regularized inverse-filter receiver-function trace, not a sparse
+impulse response.  The scalar parameter files default to
+<code class="docutils literal notranslate"><span class="pre">shaping_wavelet_type</span> <span class="pre">none</span></code>.  Scalar operators can still apply an optional
+legacy target-pulse filter if a shaping wavelet is configured, but that is a
+post-deconvolution display/bandlimiting filter and is not the GID shaping
+wavelet used to represent sparse spikes.</p>
+<dl>
+<dt><code class="docutils literal notranslate"><span class="pre">LeastSquareDecon</span></code></dt><dd><p>Frequency-domain damped least-squares deconvolution.  The inverse
+operator has the form</p>
+<div class="math notranslate nohighlight">
+\[S_g^{-1}(\omega) =
+\frac{\overline{S(\omega)}}{|S(\omega)|^2 + \mu},\]</div>
+<p>where <code class="docutils literal notranslate"><span class="pre">mu</span></code> is the damping term.  Smaller damping improves resolution
+for clean data but amplifies noise and spectral notches.  Larger damping
+produces a smoother, more stable estimate.  In the implementation
+<code class="docutils literal notranslate"><span class="pre">mu</span></code> is <code class="docutils literal notranslate"><span class="pre">(rms(S)</span> <span class="pre">*</span> <span class="pre">damping_factor)^2</span></code> in the normal-equation
+denominator.  The data and wavelet are zero padded to the linear
+convolution length before the FFT, <code class="docutils literal notranslate"><span class="pre">winv</span></code> stores the stabilized inverse,
+and <code class="docutils literal notranslate"><span class="pre">getresult</span></code> returns the cropped lag window of
+<code class="docutils literal notranslate"><span class="pre">S_g^{-1}(omega)</span> <span class="pre">D(omega)</span></code> unless an optional scalar output filter is
+configured.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">WaterLevelDecon</span></code></dt><dd><p>Frequency-domain deconvolution with a water-level floor on the source
+power spectrum.  The water level protects the result from division by
+near-zero spectral amplitudes.  The implementation raises
+<code class="docutils literal notranslate"><span class="pre">|S(omega)|</span></code> to at least <code class="docutils literal notranslate"><span class="pre">water_level</span> <span class="pre">*</span> <span class="pre">rms(S)</span></code> before division and
+extracts the linear lag window.  Raising the floor improves stability at
+the cost of reduced resolution.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">MultiTaperPowerXcor</span></code> and <code class="docutils literal notranslate"><span class="pre">MultiTaperPowerSpecDiv</span></code></dt><dd><p>Multitaper frequency-domain operators.  Both use DPSS tapers to stabilize
+spectral estimates, but the final receiver-function estimate is produced
+by applying the inverse operator to the untapered, zero-padded data
+window.  This avoids biasing delayed converted phases by the taper value
+at their arrival time.</p>
+<p>These MsPASS operators are not paper-faithful Park and Levin (2000)
+multitaper correlation estimators.  Park and Levin use tapered data/source
+cross spectra in both numerator and denominator.  The current operators
+instead use the untapered wavelet phase and untapered data spectrum in the
+final inverse, while DPSS spectra stabilize the source-power denominator:</p>
+<div class="math notranslate nohighlight">
+\[G(f) = \frac{\overline{W_0(f)}}{\operatorname{Den}_{mt}(f)},\quad
+RF(f)=G(f)D_0(f),\quad AO(f)=G(f)W_0(f).\]</div>
+<p>In RF workflows the multitaper noise vector should normally come from the
+source/wavelet component, commonly the vertical or P component or the
+uncertainty estimate of an external stacked wavelet, not from the radial or
+transverse target component being deconvolved.</p>
+<p><code class="docutils literal notranslate"><span class="pre">MultiTaperPowerXcor</span></code> uses the mean multitaper source power plus a
+damped mean multitaper noise power as <code class="docutils literal notranslate"><span class="pre">Den_mt</span></code>.
+<code class="docutils literal notranslate"><span class="pre">MultiTaperPowerSpecDiv</span></code> is the multitaper power-stabilized
+spectral-division variant: it regularizes each tapered source power by the
+corresponding noise power and a small relative floor, combines those
+powers, and then forms the same untapered-phase inverse.  The two methods
+should be close on clean data; large differences normally indicate
+instability or a configuration problem.  Both return a linear-convolution
+lag window.  The C++/pybind classes are still registered as
+<code class="docutils literal notranslate"><span class="pre">MultiTaperXcorDecon</span></code> and <code class="docutils literal notranslate"><span class="pre">MultiTaperSpecDivDecon</span></code> for ABI and pickle
+compatibility; <code class="docutils literal notranslate"><span class="pre">MultiTaperPowerXcorDecon</span></code> and
+<code class="docutils literal notranslate"><span class="pre">MultiTaperPowerSpecDivDecon</span></code> are Python module aliases to those classes,
+not distinct runtime types.  The old RF processor algorithm names
+<code class="docutils literal notranslate"><span class="pre">MultiTaperXcor</span></code> and <code class="docutils literal notranslate"><span class="pre">MultiTaperSpecDiv</span></code> remain available as
+deprecated compatibility aliases for the power-stabilized operators.
+<code class="docutils literal notranslate"><span class="pre">MultiTaperSpecDivDecon</span></code> still exposes legacy <code class="docutils literal notranslate"><span class="pre">all_inverse_wavelets</span></code>,
+<code class="docutils literal notranslate"><span class="pre">all_rfestimates</span></code>, and <code class="docutils literal notranslate"><span class="pre">all_actual_outputs</span></code> methods, but in the current
+implementation those compatibility methods normally contain one combined
+multitaper estimate rather than one independent product per taper.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This is a migration point.  New code should use the explicit
+<code class="docutils literal notranslate"><span class="pre">MultiTaperPowerXcor</span></code> and <code class="docutils literal notranslate"><span class="pre">MultiTaperPowerSpecDiv</span></code> RF algorithm
+names.  <code class="docutils literal notranslate"><span class="pre">damping_factor</span></code> is now interpreted in the power-domain
+denominator, and parameter files
+tuned against older tapered-numerator behavior should be retuned and
+revalidated.  Values should not be assumed numerically equivalent to the
+historical Park-Levin-style implementation.</p>
+</div>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">NoiseStableDecon</span></code></dt><dd><p>Noise-aware stable scalar inverse used by the <code class="docutils literal notranslate"><span class="pre">ns_gid</span></code> GID mode and also
+exposed as a standalone scalar operator for validation.  It applies one
+inverse operator,</p>
+<div class="math notranslate nohighlight">
+\[G(f)=B(f)\frac{\overline{S(f)}}{|S(f)|^2+\mu(f)},\]</div>
+<p>directly to the data spectrum and returns the finite-bandwidth inverse
+result.  It does not run spike picking, does not expose a sparse output,
+and does not apply the GID output shaping wavelet.  <code class="docutils literal notranslate"><span class="pre">mu(f)</span></code> is the
+maximum of a relative minimum floor scaled by peak <code class="docutils literal notranslate"><span class="pre">|S|^2</span></code>, a
+noise-spectrum damping term, and a term required to enforce
+<code class="docutils literal notranslate"><span class="pre">|G(f)|</span> <span class="pre">&lt;=</span> <span class="pre">ns_gid_gain_max</span></code>.  An optional SNR reliability taper can
+reduce or zero low-SNR bands before inverse filtering.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">TimeDomainLeastSquareDecon</span></code></dt><dd><p>Time-domain least-squares deconvolution.  This operator builds the
+Toeplitz linear-convolution matrix for the requested output lag window
+and solves the regularized normal equations with a stable linear solver.
+It does not build a circular convolution matrix.  The damping parameter
+controls the same resolution/noise trade-off as the frequency-domain
+least-squares operator.  The implementation forms <code class="docutils literal notranslate"><span class="pre">S^T</span> <span class="pre">S</span></code> and
+<code class="docutils literal notranslate"><span class="pre">S^T</span> <span class="pre">d</span></code> directly from the cropped linear convolution operator, adds
+<code class="docutils literal notranslate"><span class="pre">damping_factor</span> <span class="pre">*</span> <span class="pre">max(diag(S^T</span> <span class="pre">S))</span></code> to the diagonal, and solves with
+LAPACK Cholesky.  If Cholesky fails, it falls back to LAPACK LU and raises
+an error if the regularized system is still singular.  No explicit matrix
+inverse is constructed.  <code class="docutils literal notranslate"><span class="pre">getresult</span></code> returns the solved Toeplitz model by
+default.  If a scalar output filter is explicitly configured it is applied
+after solving, but this is not part of the least-squares inverse itself.</p>
+</dd>
+</dl>
+</section>
+<section id="three-component-and-iterative-operators">
+<h2>Three-component and iterative operators<a class="headerlink" href="#three-component-and-iterative-operators" title="Link to this heading"></a></h2>
+<dl>
+<dt><code class="docutils literal notranslate"><span class="pre">CNRDeconEngine</span></code> and <code class="docutils literal notranslate"><span class="pre">CNR3CDecon</span></code></dt><dd><p>Three-component correlation-noise-ratio receiver-function deconvolution.
+These operators estimate a noise spectrum from a configured noise window
+and regularize the source spectrum as a function of colored noise level
+and SNR.  <code class="docutils literal notranslate"><span class="pre">colored_noise_damping</span></code> adds a frequency-dependent damping term
+to the normal-equation denominator.  <code class="docutils literal notranslate"><span class="pre">generalized_water_level</span></code> raises
+low-SNR source amplitudes before division.  Both produce scalar
+finite-bandwidth component traces after the configured output shaping
+wavelet is applied.  <code class="docutils literal notranslate"><span class="pre">CNRDeconEngine</span></code> is the current engine used by the
+Python wrappers and GID inverse mode.  <code class="docutils literal notranslate"><span class="pre">CNR3CDecon</span></code> is the older 3C
+prototype kept for compatibility.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">TimeDomainGIDDecon</span></code> and <code class="docutils literal notranslate"><span class="pre">FrequencyDomainGIDDecon</span></code></dt><dd><p>Generalized iterative deconvolution following Wang and Pavlis (2016).
+The method maintains a sparse impulse response during iteration.  At each
+step it computes a detection function</p>
+<div class="math notranslate nohighlight">
+\[a(t) = s_g^{-1}(t) * r(t),\]</div>
+<p>where <code class="docutils literal notranslate"><span class="pre">r</span></code> is the current residual and <code class="docutils literal notranslate"><span class="pre">s_g^{-1}</span></code> is a configurable
+inverse operator.  Supported inverse modes include damped least squares,
+water level, multitaper, and the three-component CNR inverse where
+available.  The represented receiver function is the sparse impulse
+response convolved with the output shaping wavelet; the raw sparse impulse
+response is not the finite-bandwidth receiver function.</p>
+<p>The GID engines maintain residuals in the original data domain.  The
+inverse operator is used only to form the detection function for candidate
+spike selection.  Residual subtraction uses a compact copy of the inverse
+operator’s actual output/resolution kernel.  That internal residual-update
+kernel is trimmed, may be shortened to a small window around zero lag, and
+is peak-normalized before use.  By contrast, public <code class="docutils literal notranslate"><span class="pre">actual_output()</span></code>
+returns the underlying inverse operator’s full resolution kernel.  QC fields
+<code class="docutils literal notranslate"><span class="pre">gid_actual_o_fir_npts</span></code>, <code class="docutils literal notranslate"><span class="pre">gid_actual_o_fir_zero_lag_index</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">gid_actual_o_fir_peak_normalized</span></code> describe the compact internal kernel.
+Optional joint refitting of accepted spike amplitudes solves a small dense
+system with LAPACK Cholesky and LU fallback.  The sparse impulse response is
+exposed by <code class="docutils literal notranslate"><span class="pre">sparse_output</span></code>.</p>
+<p>Both GID Python wrappers use the same window convention.  If
+<code class="docutils literal notranslate"><span class="pre">signal_window</span></code> is omitted, the input datum’s full time range is used as
+the analysis/output window.  If <code class="docutils literal notranslate"><span class="pre">noise_window</span></code> is omitted, the engine’s
+configured parameter-file noise window is used.  The analysis window must
+contain the configured deconvolution/inverse-operator window; otherwise
+the wrappers return a killed datum instead of processing a partial window.
+Internally, the loaded noise window is transformed into the same domain as
+the sparse iteration before legacy residual-noise stopping thresholds are
+evaluated.</p>
+<p>For <code class="docutils literal notranslate"><span class="pre">ns_gid</span></code>, externally supplied noise and the configured noise window
+serve different roles.  External TimeSeries noise passed to <code class="docutils literal notranslate"><span class="pre">loadnoise</span></code> or
+the Python wrappers is used by the stable inverse operator to estimate
+frequency-dependent regularization and gain limits.  When a windowed noise
+segment has already been loaded, that window remains the residual-domain
+noise estimate for spike significance and residual-noise stopping.  External
+PowerSpectrum noise is only an inverse-operator regularization estimate; a
+direct engine call sequence such as <code class="docutils literal notranslate"><span class="pre">loadnoise(power_spectrum);</span> <span class="pre">load(d,</span>
+<span class="pre">dwin);</span> <span class="pre">process()</span></code> is incomplete because no residual-domain noise window has
+been loaded.  Use <code class="docutils literal notranslate"><span class="pre">load(d,</span> <span class="pre">dwin,</span> <span class="pre">nwin)</span></code> or <code class="docutils literal notranslate"><span class="pre">loadnoise(d,</span> <span class="pre">nwin)</span></code> as well.</p>
+<p>Direct <code class="docutils literal notranslate"><span class="pre">TimeDomainGIDDecon</span></code> and <code class="docutils literal notranslate"><span class="pre">FrequencyDomainGIDDecon</span></code> engine
+objects are pickleable for distributed wrapper use.  Their pickle state
+preserves the parameter-file configuration, successful leaf-operator
+changes made through <code class="docutils literal notranslate"><span class="pre">changeparameter()</span></code>, and any externally loaded
+wavelet, TimeSeries noise, or PowerSpectrum noise.  It does not preserve
+loaded seismograms, processed receiver functions, residuals, sparse spike
+trains, or runtime QC state; a restored engine is a reusable configured
+operator, not a copy of the last processed datum.</p>
+<p>For Dask or Spark jobs, build and configure the reusable deconvolution
+processor on the driver, then scatter or close over that configured object.
+Avoid loading per-datum scalar data into an <code class="docutils literal notranslate"><span class="pre">RFdeconProcessor</span></code> before
+scattering it, because scalar compatibility mode intentionally preserves
+cached input vectors for post-processing diagnostics.  For GID processors,
+externally loaded reusable wavelets/noise are synchronized into the C++
+engine before serialization and are not duplicated as separate Python
+arrays in the pickle payload.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">multi_taper</span></code> inverse mode in both GID engines currently uses
+<code class="docutils literal notranslate"><span class="pre">MultiTaperXcorDecon</span></code> as the core C++ inverse operator, with the
+power-stabilized untapered-phase semantics described above.  In
+<code class="docutils literal notranslate"><span class="pre">TimeDomainGIDDecon</span></code> the term “time domain” describes the iterative
+residual subtraction and sparse-spike update.  The multitaper inverse
+operator itself is still estimated in the frequency domain.</p>
+<p>The iterative operators expose separate convergence controls for
+fractional residual improvement and normalized residual energy.  The
+residual-energy threshold is a noise-level stopping rule: increasing it
+suppresses noise-generated spikes, while decreasing it can recover weak
+arrivals at the risk of fitting noise.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">NS-GID</span></code> inverse mode</dt><dd><p>Noise-aware stable generalized iterative deconvolution is selected with
+<code class="docutils literal notranslate"><span class="pre">deconvolution_type</span> <span class="pre">ns_gid</span></code> in either GID engine.  It is a stable
+inverse-operator variant of GID, not a separate receiver-function
+preprocessing workflow.  The core inverse operator is</p>
+<div class="math notranslate nohighlight">
+\[G(f) = B(f)\frac{\overline{S(f)}}{|S(f)|^2 + \mu(f)},\]</div>
+<p>with frequency-dependent damping from the wavelet and noise spectra, an
+explicit maximum gain cap, and an optional smooth SNR reliability taper.
+The implementation enforces <code class="docutils literal notranslate"><span class="pre">|G(f)|</span> <span class="pre">&lt;=</span> <span class="pre">ns_gid_gain_max</span></code> within floating
+point tolerance.  <code class="docutils literal notranslate"><span class="pre">ns_gid_mu_min</span></code> is interpreted as a relative floor
+scaled by the peak wavelet spectral power, so the same parameter remains
+meaningful for externally supplied wavelets with different amplitudes.
+Stability comes from <code class="docutils literal notranslate"><span class="pre">G(f)</span></code>, <code class="docutils literal notranslate"><span class="pre">mu(f)</span></code>, the gain cap, and noise-aware
+stopping; it does not come from the output shaping wavelet.</p>
+<p>NS-GID supports externally supplied wavelets through the GID
+<code class="docutils literal notranslate"><span class="pre">loadwavelet</span></code> APIs and the Python wrappers’ <code class="docutils literal notranslate"><span class="pre">external_wavelet</span></code>
+argument.  This is the intended path when the source wavelet is a prepared
+P-wave stack from a network, subarray, or other caller-managed procedure.
+Constructing that stack, selecting events, rotating components, and array
+stacking are outside this operator.  If no external wavelet is loaded, the
+engines preserve the existing receiver-function compatibility behavior and
+estimate the wavelet from the configured component/window.</p>
+<p>The sparse impulse response is kept conceptually separate from the shaped
+receiver-function representation.  The inverse operator is used only for
+candidate spike detection and stabilization.  The residual update remains
+in the GID data domain, and <code class="docutils literal notranslate"><span class="pre">getresult</span></code> returns the accepted sparse
+support convolved with the configured output shaping wavelet.  The sparse
+impulse response is available through <code class="docutils literal notranslate"><span class="pre">sparse_output</span></code> for QC and
+validation.
+The underlying <code class="docutils literal notranslate"><span class="pre">NoiseStableDecon</span></code> scalar operator is a single stable
+inverse operation.  It is not a sparse picker and does not apply the GID
+output shaping wavelet; finite bandwidth comes from the stable inverse
+operator itself.
+Candidate acceptance can use an empirical inverse-filtered noise threshold,
+a sigma threshold, residual-to-noise stopping, maximum spike count, and
+the existing fractional-improvement limit.  Higher thresholds suppress
+noise-generated spikes; lower thresholds may recover weaker arrivals but
+can overfit noise.  <code class="docutils literal notranslate"><span class="pre">ns_gid_refit_interval</span></code> controls how often accepted
+spike amplitudes are jointly refit during iteration; the engines always
+run a final refit, so values larger than one reduce repeated dense solves
+without disabling final amplitude correction.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">RFdeconProcessor</span></code></dt><dd><p>High-level scalar receiver-function wrapper.  It exposes the scalar
+frequency-domain methods, time-domain least squares, conventional
+iterative deconvolution, and both generalized iterative variants through
+a consistent <code class="docutils literal notranslate"><span class="pre">alg</span></code> selector.  The processor loads the wavelet, noise,
+and data windows once and returns the cropped receiver-function estimate
+for the configured output lag window.</p>
+</dd>
+</dl>
+</section>
+<section id="validation-plots">
+<h2>Validation plots<a class="headerlink" href="#validation-plots" title="Link to this heading"></a></h2>
+<p>The deconvolution validation tests can optionally write diagnostic plots for
+manual inspection.  Normal test runs do not create figures.  To write the full
+set of scalar, GID, sparse-output, and external-wavelet validation plots, run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>pytest<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>python/tests/algorithms/test_decon_algorithm_validation.py<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--decon-validation-plots<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--decon-validation-plot-dir<span class="w"> </span>/tmp/mspass-decon-validation-plots<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--decon-validation-noise-scale<span class="w"> </span><span class="m">0</span>.03
+</pre></div>
+</div>
+<p>The output directory contains overlays for scalar/CNR methods, shaped GID
+receiver functions, raw GID sparse impulse responses, external-wavelet runs,
+and the source wavelets used in the synthetic cases.  The sparse GID plots are
+the most direct visual comparison against the known sparse truth; shaped GID
+and CNR plots intentionally have more limited bandwidth.  The external-wavelet
+overlay uses raw scalar inverse results and raw GID sparse outputs so spike
+support can be checked visually.  The same plot run also writes a
+<code class="docutils literal notranslate"><span class="pre">external_wavelet_all_methods_display_filtered.png</span></code> overlay with a common
+plotting-only Ricker filter so different methods can be compared at a similar
+visual bandwidth.  That display filter is not part of the scalar algorithms
+and is not used by the pass/fail assertions.</p>
+<p>These figures are intended as an audit aid.  The numerical assertions in the
+test remain the source of pass/fail behavior and use a fixed reproducible
+noise level.  The command-line noise scale is for the optional stress plots so
+you can visually compare behavior as noise increases.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="algorithms.html" class="btn btn-neutral float-left" title="Algorithms" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="importing_data.html" class="btn btn-neutral float-right" title="Importing Data" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020-2021, Ian Wang.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

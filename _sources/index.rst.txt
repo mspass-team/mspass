@@ -72,6 +72,7 @@ package.
    :caption: Data Processing
 
    user_manual/algorithms
+   user_manual/deconvolution
    user_manual/importing_data
    user_manual/handling_errors
    user_manual/data_editing

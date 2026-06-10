@@ -154,16 +154,16 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Default constructor. Do not use as it produces a null object that is no functional. </p>
-<div class="fragment"><div class="line"><span class="lineno">   17</span>                                             {</div>
-<div class="line"><span class="lineno">   18</span>  taperlen = 0;</div>
-<div class="line"><span class="lineno">   19</span>  ntapers = 0;</div>
-<div class="line"><span class="lineno">   20</span>  nfft = 0;</div>
-<div class="line"><span class="lineno">   21</span>  tbp = 0.0;</div>
-<div class="line"><span class="lineno">   22</span>  deltaf = 1.0;</div>
-<div class="line"><span class="lineno">   23</span>  operator_dt = 1.0;</div>
-<div class="line"><span class="lineno">   24</span>  wavetable = NULL;</div>
-<div class="line"><span class="lineno">   25</span>  workspace = NULL;</div>
-<div class="line"><span class="lineno">   26</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">   18</span>                                             {</div>
+<div class="line"><span class="lineno">   19</span>  taperlen = 0;</div>
+<div class="line"><span class="lineno">   20</span>  ntapers = 0;</div>
+<div class="line"><span class="lineno">   21</span>  nfft = 0;</div>
+<div class="line"><span class="lineno">   22</span>  tbp = 0.0;</div>
+<div class="line"><span class="lineno">   23</span>  deltaf = 1.0;</div>
+<div class="line"><span class="lineno">   24</span>  operator_dt = 1.0;</div>
+<div class="line"><span class="lineno">   25</span>  wavetable = NULL;</div>
+<div class="line"><span class="lineno">   26</span>  workspace = NULL;</div>
+<div class="line"><span class="lineno">   27</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -223,40 +223,39 @@ Public Member Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<div class="fragment"><div class="line"><span class="lineno">   30</span>                                                                {</div>
-<div class="line"><span class="lineno">   31</span>  taperlen = winsize;</div>
-<div class="line"><span class="lineno">   32</span>  tbp = tbpin;</div>
-<div class="line"><span class="lineno">   33</span>  ntapers = ntpin;</div>
-<div class="line"><span class="lineno">   34</span>  <span class="keywordflow">if</span> (nfftin &lt; winsize) {</div>
-<div class="line"><span class="lineno">   35</span>    nfft = nextPowerOf2(winsize);</div>
-<div class="line"><span class="lineno">   36</span>    <span class="keywordflow">if</span> (nfft == winsize)</div>
-<div class="line"><span class="lineno">   37</span>      nfft = 2 * winsize;</div>
-<div class="line"><span class="lineno">   38</span>  } <span class="keywordflow">else</span></div>
-<div class="line"><span class="lineno">   39</span>    nfft = nfftin;</div>
-<div class="line"><span class="lineno">   40</span>  operator_dt = dtin;</div>
-<div class="line"><span class="lineno">   41</span>  this-&gt;<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#a1dadcf9ec587fa2d48d04066ba1d55b4">set_df</a>(dtin);</div>
-<div class="line"><span class="lineno">   42</span>  <span class="keywordtype">int</span> nseq = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(2.0 * tbp);</div>
-<div class="line"><span class="lineno">   43</span>  <span class="keywordflow">if</span> (ntapers &gt; nseq) {</div>
-<div class="line"><span class="lineno">   44</span>    cerr &lt;&lt; <span class="stringliteral">&quot;MTPowerSpectrumEngine (WARNING):  requested number of tapers=&quot;</span></div>
-<div class="line"><span class="lineno">   45</span>         &lt;&lt; ntpin &lt;&lt; endl</div>
-<div class="line"><span class="lineno">   46</span>         &lt;&lt; <span class="stringliteral">&quot;is inconsistent with requested time time bandwidth product =&quot;</span></div>
-<div class="line"><span class="lineno">   47</span>         &lt;&lt; tbp &lt;&lt; endl</div>
-<div class="line"><span class="lineno">   48</span>         &lt;&lt; <span class="stringliteral">&quot;Automatically reset number tapers to max allowed=&quot;</span> &lt;&lt; nseq &lt;&lt; endl;</div>
-<div class="line"><span class="lineno">   49</span>    ntapers = nseq;</div>
-<div class="line"><span class="lineno">   50</span>  }</div>
-<div class="line"><span class="lineno">   51</span>  <span class="keywordtype">int</span> seql(0);</div>
-<div class="line"><span class="lineno">   52</span>  <span class="keywordtype">int</span> sequ = ntapers - 1;</div>
-<div class="line"><span class="lineno">   53</span>  <span class="keywordtype">double</span> *work = <span class="keyword">new</span> <span class="keywordtype">double</span>[ntapers * taperlen];</div>
-<div class="line"><span class="lineno">   54</span>  dpss_calc(taperlen, tbp, seql, sequ, work);</div>
-<div class="line"><span class="lineno">   55</span>  tapers = dmatrix(ntapers, taperlen);</div>
-<div class="line"><span class="lineno">   56</span>  <span class="keywordtype">int</span> i, ii, j;</div>
-<div class="line"><span class="lineno">   57</span>  <span class="keywordflow">for</span> (i = 0, ii = 0; i &lt; ntapers; ++i) {</div>
-<div class="line"><span class="lineno">   58</span>    <span class="keywordflow">for</span> (j = 0; j &lt; taperlen; ++j) {</div>
-<div class="line"><span class="lineno">   59</span>      tapers(i, j) = work[ii];</div>
-<div class="line"><span class="lineno">   60</span>      ++ii;</div>
-<div class="line"><span class="lineno">   61</span>    }</div>
-<div class="line"><span class="lineno">   62</span>  }</div>
-<div class="line"><span class="lineno">   63</span>  <span class="keyword">delete</span>[] work;</div>
+<div class="fragment"><div class="line"><span class="lineno">   31</span>                                                                {</div>
+<div class="line"><span class="lineno">   32</span>  taperlen = winsize;</div>
+<div class="line"><span class="lineno">   33</span>  tbp = tbpin;</div>
+<div class="line"><span class="lineno">   34</span>  ntapers = ntpin;</div>
+<div class="line"><span class="lineno">   35</span>  <span class="keywordflow">if</span> (nfftin &lt; winsize) {</div>
+<div class="line"><span class="lineno">   36</span>    nfft = nextPowerOf2(winsize);</div>
+<div class="line"><span class="lineno">   37</span>    <span class="keywordflow">if</span> (nfft == winsize)</div>
+<div class="line"><span class="lineno">   38</span>      nfft = 2 * winsize;</div>
+<div class="line"><span class="lineno">   39</span>  } <span class="keywordflow">else</span></div>
+<div class="line"><span class="lineno">   40</span>    nfft = nfftin;</div>
+<div class="line"><span class="lineno">   41</span>  operator_dt = dtin;</div>
+<div class="line"><span class="lineno">   42</span>  this-&gt;<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#a1dadcf9ec587fa2d48d04066ba1d55b4">set_df</a>(dtin);</div>
+<div class="line"><span class="lineno">   43</span>  <span class="keywordtype">int</span> nseq = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(2.0 * tbp);</div>
+<div class="line"><span class="lineno">   44</span>  <span class="keywordflow">if</span> (ntapers &gt; nseq) {</div>
+<div class="line"><span class="lineno">   45</span>    cerr &lt;&lt; <span class="stringliteral">&quot;MTPowerSpectrumEngine (WARNING):  requested number of tapers=&quot;</span></div>
+<div class="line"><span class="lineno">   46</span>         &lt;&lt; ntpin &lt;&lt; endl</div>
+<div class="line"><span class="lineno">   47</span>         &lt;&lt; <span class="stringliteral">&quot;is inconsistent with requested time time bandwidth product =&quot;</span></div>
+<div class="line"><span class="lineno">   48</span>         &lt;&lt; tbp &lt;&lt; endl</div>
+<div class="line"><span class="lineno">   49</span>         &lt;&lt; <span class="stringliteral">&quot;Automatically reset number tapers to max allowed=&quot;</span> &lt;&lt; nseq &lt;&lt; endl;</div>
+<div class="line"><span class="lineno">   50</span>    ntapers = nseq;</div>
+<div class="line"><span class="lineno">   51</span>  }</div>
+<div class="line"><span class="lineno">   52</span>  <span class="keywordtype">int</span> seql(0);</div>
+<div class="line"><span class="lineno">   53</span>  <span class="keywordtype">int</span> sequ = ntapers - 1;</div>
+<div class="line"><span class="lineno">   54</span>  std::vector&lt;double&gt; work(ntapers * taperlen, 0.0);</div>
+<div class="line"><span class="lineno">   55</span>  dpss_calc(taperlen, tbp, seql, sequ, &amp;(work[0]));</div>
+<div class="line"><span class="lineno">   56</span>  tapers = dmatrix(ntapers, taperlen);</div>
+<div class="line"><span class="lineno">   57</span>  <span class="keywordtype">int</span> i, ii, j;</div>
+<div class="line"><span class="lineno">   58</span>  <span class="keywordflow">for</span> (i = 0, ii = 0; i &lt; ntapers; ++i) {</div>
+<div class="line"><span class="lineno">   59</span>    <span class="keywordflow">for</span> (j = 0; j &lt; taperlen; ++j) {</div>
+<div class="line"><span class="lineno">   60</span>      tapers(i, j) = work[ii];</div>
+<div class="line"><span class="lineno">   61</span>      ++ii;</div>
+<div class="line"><span class="lineno">   62</span>    }</div>
+<div class="line"><span class="lineno">   63</span>  }</div>
 <div class="line"><span class="lineno">   64</span>  <span class="comment">/* To be consistent with Prieto we use this algorithm to convert to</span></div>
 <div class="line"><span class="lineno">   65</span><span class="comment">  what he calls the &quot;positive standard&quot;.   That means we assure the</span></div>
 <div class="line"><span class="lineno">   66</span><span class="comment">  center point is positive.</span></div>

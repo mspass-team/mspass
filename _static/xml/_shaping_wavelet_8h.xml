@@ -10,10 +10,13 @@
     <includes local="no">boost/serialization/vector.hpp</includes>
     <includedby refid="_c_n_r3_c_decon_8h" local="yes">/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h</includedby>
     <includedby refid="_c_n_r_decon_engine_8h" local="yes">/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNRDeconEngine.h</includedby>
+    <includedby refid="_frequency_domain_g_i_d_decon_8h" local="yes">/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h</includedby>
     <includedby refid="_least_square_decon_8h" local="yes">/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/LeastSquareDecon.h</includedby>
     <includedby refid="_multi_taper_spec_div_decon_8h" local="yes">/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MultiTaperSpecDivDecon.h</includedby>
     <includedby refid="_multi_taper_xcor_decon_8h" local="yes">/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MultiTaperXcorDecon.h</includedby>
+    <includedby refid="_noise_stable_decon_8h" local="yes">/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/NoiseStableDecon.h</includedby>
     <includedby refid="_scalar_decon_8h" local="yes">/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h</includedby>
+    <includedby refid="_time_domain_least_square_decon_8h" local="yes">/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainLeastSquareDecon.h</includedby>
     <includedby refid="_water_level_decon_8h" local="yes">/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/WaterLevelDecon.h</includedby>
     <includedby refid="_shaping_wavelet_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/ShapingWavelet.cc</includedby>
     <incdepgraph>
@@ -182,35 +185,53 @@
       <node id="3">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNRDeconEngine.h</label>
         <link refid="_c_n_r_decon_engine_8h_source"/>
-      </node>
-      <node id="8">
-        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h</label>
-        <link refid="_general_iter_decon_8h_source"/>
-      </node>
-      <node id="4">
-        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/LeastSquareDecon.h</label>
-        <link refid="_least_square_decon_8h_source"/>
-      </node>
-      <node id="5">
-        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MultiTaperSpecDivDecon.h</label>
-        <link refid="_multi_taper_spec_div_decon_8h_source"/>
-      </node>
-      <node id="6">
-        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MultiTaperXcorDecon.h</label>
-        <link refid="_multi_taper_xcor_decon_8h_source"/>
-      </node>
-      <node id="7">
-        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h</label>
-        <link refid="_scalar_decon_8h_source"/>
-        <childnode refid="8" relation="include">
-        </childnode>
         <childnode refid="4" relation="include">
         </childnode>
         <childnode refid="5" relation="include">
         </childnode>
-        <childnode refid="6" relation="include">
+      </node>
+      <node id="4">
+        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h</label>
+        <link refid="_frequency_domain_g_i_d_decon_8h_source"/>
+      </node>
+      <node id="6">
+        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h</label>
+        <link refid="_general_iter_decon_8h_source"/>
+      </node>
+      <node id="7">
+        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/LeastSquareDecon.h</label>
+        <link refid="_least_square_decon_8h_source"/>
+      </node>
+      <node id="8">
+        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MultiTaperSpecDivDecon.h</label>
+        <link refid="_multi_taper_spec_div_decon_8h_source"/>
+      </node>
+      <node id="9">
+        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MultiTaperXcorDecon.h</label>
+        <link refid="_multi_taper_xcor_decon_8h_source"/>
+      </node>
+      <node id="10">
+        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/NoiseStableDecon.h</label>
+        <link refid="_noise_stable_decon_8h_source"/>
+      </node>
+      <node id="11">
+        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ScalarDecon.h</label>
+        <link refid="_scalar_decon_8h_source"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
         </childnode>
         <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
         </childnode>
       </node>
       <node id="1">
@@ -222,16 +243,32 @@
         </childnode>
         <childnode refid="4" relation="include">
         </childnode>
-        <childnode refid="5" relation="include">
-        </childnode>
-        <childnode refid="6" relation="include">
-        </childnode>
         <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
         </childnode>
         <childnode refid="9" relation="include">
         </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
       </node>
-      <node id="9">
+      <node id="5">
+        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainGIDDecon.h</label>
+        <link refid="_time_domain_g_i_d_decon_8h_source"/>
+        <childnode refid="6" relation="include">
+        </childnode>
+      </node>
+      <node id="12">
+        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainLeastSquareDecon.h</label>
+        <link refid="_time_domain_least_square_decon_8h_source"/>
+      </node>
+      <node id="13">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/WaterLevelDecon.h</label>
         <link refid="_water_level_decon_8h_source"/>
       </node>

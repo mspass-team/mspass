@@ -87,6 +87,7 @@
 <p class="caption" role="heading"><span class="caption-text">Data Processing</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="user_manual/algorithms.html">Algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user_manual/deconvolution.html">Deconvolution Operators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="user_manual/importing_data.html">Importing Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="user_manual/handling_errors.html">Handling Errors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="user_manual/data_editing.html">Data Editing</a></li>
@@ -186,13 +187,21 @@
       <ul>
         <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.CNRDeconEngine.actual_output">(mspasspy.ccore.algorithms.deconvolution.CNRDeconEngine method)</a>
 </li>
+        <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon.actual_output">(mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon method)</a>
+</li>
         <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.LeastSquareDecon.actual_output">(mspasspy.ccore.algorithms.deconvolution.LeastSquareDecon method)</a>
 </li>
         <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.MultiTaperSpecDivDecon.actual_output">(mspasspy.ccore.algorithms.deconvolution.MultiTaperSpecDivDecon method)</a>
 </li>
         <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.MultiTaperXcorDecon.actual_output">(mspasspy.ccore.algorithms.deconvolution.MultiTaperXcorDecon method)</a>
 </li>
+        <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.NoiseStableDecon.actual_output">(mspasspy.ccore.algorithms.deconvolution.NoiseStableDecon method)</a>
+</li>
         <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.ScalarDecon.actual_output">(mspasspy.ccore.algorithms.deconvolution.ScalarDecon method)</a>
+</li>
+        <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon.actual_output">(mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon method)</a>
+</li>
+        <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.TimeDomainLeastSquareDecon.actual_output">(mspasspy.ccore.algorithms.deconvolution.TimeDomainLeastSquareDecon method)</a>
 </li>
         <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.WaterLevelDecon.actual_output">(mspasspy.ccore.algorithms.deconvolution.WaterLevelDecon method)</a>
 </li>
@@ -246,6 +255,12 @@
 </li>
       </ul></li>
       <li><a href="python_api/mspasspy.algorithms.html#mspasspy.algorithms.MCXcorStacking.align_and_stack">align_and_stack() (in module mspasspy.algorithms.MCXcorStacking)</a>
+</li>
+      <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.MultiTaperSpecDivDecon.all_actual_outputs">all_actual_outputs() (mspasspy.ccore.algorithms.deconvolution.MultiTaperSpecDivDecon method)</a>
+</li>
+      <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.MultiTaperSpecDivDecon.all_inverse_wavelets">all_inverse_wavelets() (mspasspy.ccore.algorithms.deconvolution.MultiTaperSpecDivDecon method)</a>
+</li>
+      <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.MultiTaperSpecDivDecon.all_rfestimates">all_rfestimates() (mspasspy.ccore.algorithms.deconvolution.MultiTaperSpecDivDecon method)</a>
 </li>
       <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.PowerSpectrum.amplitude">amplitude() (mspasspy.ccore.seismic.PowerSpectrum method)</a>
 </li>
@@ -321,6 +336,8 @@
         <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.MTPowerSpectrumEngine.apply">(mspasspy.ccore.algorithms.deconvolution.MTPowerSpectrumEngine method)</a>
 </li>
       </ul></li>
+      <li><a href="python_api/mspasspy.algorithms.html#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.apply_3c">apply_3c() (mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor method)</a>
+</li>
       <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.utility.MetadataDefinitions.apply_aliases">apply_aliases() (mspasspy.ccore.utility.MetadataDefinitions method)</a>
 
       <ul>
@@ -451,12 +468,20 @@
       </ul></li>
       <li><a href="python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.ChangeKey">ChangeKey (class in mspasspy.algorithms.edit)</a>
 </li>
-      <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.LeastSquareDecon.changeparameter">changeparameter() (mspasspy.ccore.algorithms.deconvolution.LeastSquareDecon method)</a>
+      <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon.changeparameter">changeparameter() (mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon method)</a>
 
       <ul>
+        <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.LeastSquareDecon.changeparameter">(mspasspy.ccore.algorithms.deconvolution.LeastSquareDecon method)</a>
+</li>
         <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.MultiTaperSpecDivDecon.changeparameter">(mspasspy.ccore.algorithms.deconvolution.MultiTaperSpecDivDecon method)</a>
 </li>
         <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.MultiTaperXcorDecon.changeparameter">(mspasspy.ccore.algorithms.deconvolution.MultiTaperXcorDecon method)</a>
+</li>
+        <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.NoiseStableDecon.changeparameter">(mspasspy.ccore.algorithms.deconvolution.NoiseStableDecon method)</a>
+</li>
+        <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon.changeparameter">(mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon method)</a>
+</li>
+        <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.TimeDomainLeastSquareDecon.changeparameter">(mspasspy.ccore.algorithms.deconvolution.TimeDomainLeastSquareDecon method)</a>
 </li>
         <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.WaterLevelDecon.changeparameter">(mspasspy.ccore.algorithms.deconvolution.WaterLevelDecon method)</a>
 </li>
@@ -561,6 +586,22 @@
 
       <ul>
         <li><a href="python_api/mspasspy.db.html#id117">(mspasspy.db.schema.SchemaDefinitionBase method)</a>, <a href="python_api/mspasspy.db.html#mspasspy.db.schema.SchemaDefinitionBase.clear_aliases">[1]</a>
+</li>
+      </ul></li>
+      <li><a href="python_api/mspasspy.algorithms.html#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.clear_external_noise">clear_external_noise() (mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor method)</a>
+
+      <ul>
+        <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon.clear_external_noise">(mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon method)</a>
+</li>
+        <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon.clear_external_noise">(mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon method)</a>
+</li>
+      </ul></li>
+      <li><a href="python_api/mspasspy.algorithms.html#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.clear_external_wavelet">clear_external_wavelet() (mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor method)</a>
+
+      <ul>
+        <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon.clear_external_wavelet">(mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon method)</a>
+</li>
+        <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon.clear_external_wavelet">(mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon method)</a>
 </li>
       </ul></li>
       <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.DataGap.clear_gaps">clear_gaps() (mspasspy.ccore.seismic.DataGap method)</a>
@@ -689,12 +730,24 @@
 </li>
       <li><a href="python_api/mspasspy.algorithms.html#mspasspy.algorithms.resample.BasicResampler.dec_factor">dec_factor() (mspasspy.algorithms.resample.BasicResampler method)</a>
 </li>
+      <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon.deconvolution_window_end">deconvolution_window_end() (mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon method)</a>
+
+      <ul>
+        <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon.deconvolution_window_end">(mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon method)</a>
+</li>
+      </ul></li>
+      <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon.deconvolution_window_start">deconvolution_window_start() (mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon method)</a>
+
+      <ul>
+        <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon.deconvolution_window_start">(mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="python_api/mspasspy.db.html#id97">default() (mspasspy.db.schema.DatabaseSchema method)</a>, <a href="python_api/mspasspy.db.html#mspasspy.db.schema.DatabaseSchema.default">[1]</a>
 </li>
       <li><a href="python_api/mspasspy.db.html#id98">default_name() (mspasspy.db.schema.DatabaseSchema method)</a>, <a href="python_api/mspasspy.db.html#mspasspy.db.schema.DatabaseSchema.default_name">[1]</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="python_api/mspasspy.db.html#id53">delete_data() (mspasspy.db.database.Database method)</a>, <a href="python_api/mspasspy.db.html#id8">[1]</a>, <a href="python_api/mspasspy.db.html#mspasspy.db.database.Database.delete_data">[2]</a>
 </li>
       <li><a href="python_api/mspasspy.algorithms.html#mspasspy.algorithms.MCXcorStacking.demean_residuals">demean_residuals() (in module mspasspy.algorithms.MCXcorStacking)</a>
@@ -867,10 +920,10 @@
         <li><a href="python_api/mspasspy.db.html#mspasspy.db.normalize.OriginTimeMatcher.find_doc">(mspasspy.db.normalize.OriginTimeMatcher method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.dbarrival.find_duplicate_sta">find_duplicate_sta() (in module mspasspy.preprocessing.css30.dbarrival)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.dbarrival.find_null_net_stations">find_null_net_stations() (in module mspasspy.preprocessing.css30.dbarrival)</a>
 </li>
       <li><a href="python_api/mspasspy.db.html#mspasspy.db.normalize.BasicMatcher.find_one">find_one() (mspasspy.db.normalize.BasicMatcher method)</a>
@@ -905,12 +958,20 @@
       </ul></li>
       <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.PowerSpectrum.frequency">frequency() (mspasspy.ccore.seismic.PowerSpectrum method)</a>
 </li>
+      <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon">FrequencyDomainGIDDecon (class in mspasspy.ccore.algorithms.deconvolution)</a>
+</li>
+      <li><a href="python_api/mspasspy.algorithms.html#mspasspy.algorithms.FrequencyDomainGIDDecon.FrequencyDomainGIDRFDecon">FrequencyDomainGIDRFDecon() (in module mspasspy.algorithms.FrequencyDomainGIDDecon)</a>
+</li>
+      <li><a href="python_api/mspasspy.algorithms.html#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.full_dwin">full_dwin (mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor property)</a>
+</li>
   </ul></td>
 </tr></table>
 
 <h2 id="G">G</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.NoiseStableDecon.gain_cap">gain_cap() (mspasspy.ccore.algorithms.deconvolution.NoiseStableDecon method)</a>
+</li>
       <li><a href="python_api/mspasspy.db.html#id42">geoJSON_doc() (in module mspasspy.db.database)</a>, <a href="python_api/mspasspy.db.html#id87">[1]</a>, <a href="python_api/mspasspy.db.html#mspasspy.db.database.geoJSON_doc">[2]</a>
 </li>
       <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.utility.Metadata.get">get() (mspasspy.ccore.utility.Metadata method)</a>
@@ -970,6 +1031,8 @@
       <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.utility.ProcessingHistory.get_nodes">get_nodes() (mspasspy.ccore.utility.ProcessingHistory method)</a>
 </li>
       <li><a href="python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.datascope.DatascopeDatabase.get_nulls">get_nulls() (mspasspy.preprocessing.css30.datascope.DatascopeDatabase method)</a>
+</li>
+      <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.MultiTaperSpecDivDecon.get_number_outputs">get_number_outputs() (mspasspy.ccore.algorithms.deconvolution.MultiTaperSpecDivDecon method)</a>
 </li>
       <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.MultiTaperSpecDivDecon.get_number_tapers">get_number_tapers() (mspasspy.ccore.algorithms.deconvolution.MultiTaperSpecDivDecon method)</a>
 
@@ -1041,8 +1104,14 @@
         <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.MultiTaperXcorDecon.get_time_bandwidth_product">(mspasspy.ccore.algorithms.deconvolution.MultiTaperXcorDecon method)</a>
 </li>
       </ul></li>
-      <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.ScalarDecon.getresult">getresult() (mspasspy.ccore.algorithms.deconvolution.ScalarDecon method)</a>
+      <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon.getresult">getresult() (mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon method)</a>
+
+      <ul>
+        <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.ScalarDecon.getresult">(mspasspy.ccore.algorithms.deconvolution.ScalarDecon method)</a>
 </li>
+        <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon.getresult">(mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon method)</a>
+</li>
+      </ul></li>
       <li><a href="python_api/mspasspy.global_history.html#mspasspy.global_history.manager.GlobalHistoryManager">GlobalHistoryManager (class in mspasspy.global_history.manager)</a>
 </li>
   </ul></td>
@@ -1088,7 +1157,11 @@
       <ul>
         <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.CNRDeconEngine.ideal_output">(mspasspy.ccore.algorithms.deconvolution.CNRDeconEngine method)</a>
 </li>
+        <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon.ideal_output">(mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon method)</a>
+</li>
         <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.ScalarDecon.ideal_output">(mspasspy.ccore.algorithms.deconvolution.ScalarDecon method)</a>
+</li>
+        <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon.ideal_output">(mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon method)</a>
 </li>
       </ul></li>
       <li><a href="python_api/mspasspy.graphics.html#mspasspy.graphics.image_raw">image_raw() (in module mspasspy.graphics)</a>
@@ -1143,10 +1216,10 @@
 </li>
       <li><a href="python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.IntegerDivide2">IntegerDivide2 (class in mspasspy.algorithms.edit)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="python_api/mspasspy.algorithms.html#mspasspy.algorithms.signals.interpolate">interpolate() (in module mspasspy.algorithms.signals)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.utility.ErrorSeverity.Invalid">Invalid (mspasspy.ccore.utility.ErrorSeverity attribute)</a>
 
       <ul>
@@ -1158,17 +1231,27 @@
       <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.CNRDeconEngine.inverse_wavelet">inverse_wavelet() (mspasspy.ccore.algorithms.deconvolution.CNRDeconEngine method)</a>
 
       <ul>
+        <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon.inverse_wavelet">(mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon method)</a>
+</li>
         <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.LeastSquareDecon.inverse_wavelet">(mspasspy.ccore.algorithms.deconvolution.LeastSquareDecon method)</a>
 </li>
         <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.MultiTaperSpecDivDecon.inverse_wavelet">(mspasspy.ccore.algorithms.deconvolution.MultiTaperSpecDivDecon method)</a>
 </li>
         <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.MultiTaperXcorDecon.inverse_wavelet">(mspasspy.ccore.algorithms.deconvolution.MultiTaperXcorDecon method)</a>
 </li>
+        <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.NoiseStableDecon.inverse_wavelet">(mspasspy.ccore.algorithms.deconvolution.NoiseStableDecon method)</a>
+</li>
         <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.ScalarDecon.inverse_wavelet">(mspasspy.ccore.algorithms.deconvolution.ScalarDecon method)</a>
+</li>
+        <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon.inverse_wavelet">(mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon method)</a>
+</li>
+        <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.TimeDomainLeastSquareDecon.inverse_wavelet">(mspasspy.ccore.algorithms.deconvolution.TimeDomainLeastSquareDecon method)</a>
 </li>
         <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.WaterLevelDecon.inverse_wavelet">(mspasspy.ccore.algorithms.deconvolution.WaterLevelDecon method)</a>
 </li>
       </ul></li>
+      <li><a href="python_api/mspasspy.algorithms.html#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.is_3c_engine">is_3c_engine (mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor property)</a>
+</li>
       <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.utility.MetadataDefinitions.is_alias">is_alias() (mspasspy.ccore.utility.MetadataDefinitions method)</a>
 
       <ul>
@@ -1297,12 +1380,16 @@
         <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeriesEnsemble.live">(mspasspy.ccore.seismic.TimeSeriesEnsemble property)</a>
 </li>
       </ul></li>
-      <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.MultiTaperSpecDivDecon.load">load() (mspasspy.ccore.algorithms.deconvolution.MultiTaperSpecDivDecon method)</a>
+      <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon.load">load() (mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon method)</a>
 
       <ul>
+        <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.MultiTaperSpecDivDecon.load">(mspasspy.ccore.algorithms.deconvolution.MultiTaperSpecDivDecon method)</a>
+</li>
         <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.MultiTaperXcorDecon.load">(mspasspy.ccore.algorithms.deconvolution.MultiTaperXcorDecon method)</a>
 </li>
         <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.ScalarDecon.load">(mspasspy.ccore.algorithms.deconvolution.ScalarDecon method)</a>
+</li>
+        <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon.load">(mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon method)</a>
 </li>
       </ul></li>
       <li><a href="python_api/mspasspy.history.html#mspasspy.history.basic_history_data.load_algorithm_args">load_algorithm_args() (mspasspy.history.basic_history_data method)</a>
@@ -1327,10 +1414,10 @@
       </ul></li>
       <li><a href="python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.seed.ensembles.load_hypocenter_data_by_time">load_hypocenter_data_by_time() (in module mspasspy.preprocessing.seed.ensembles)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.seed.ensembles.load_one_ensemble">load_one_ensemble() (in module mspasspy.preprocessing.seed.ensembles)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.seed.ensembles.load_site_data">load_site_data() (in module mspasspy.preprocessing.seed.ensembles)</a>
 </li>
       <li><a href="python_api/mspasspy.db.html#id19">load_site_metadata() (mspasspy.db.database.Database method)</a>, <a href="python_api/mspasspy.db.html#id64">[1]</a>, <a href="python_api/mspasspy.db.html#mspasspy.db.database.Database.load_site_metadata">[2]</a>
@@ -1348,15 +1435,25 @@
       <li><a href="python_api/mspasspy.algorithms.html#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.loadnoise">loadnoise() (mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor method)</a>
 
       <ul>
+        <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon.loadnoise">(mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon method)</a>
+</li>
         <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.MultiTaperSpecDivDecon.loadnoise">(mspasspy.ccore.algorithms.deconvolution.MultiTaperSpecDivDecon method)</a>
 </li>
         <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.MultiTaperXcorDecon.loadnoise">(mspasspy.ccore.algorithms.deconvolution.MultiTaperXcorDecon method)</a>
+</li>
+        <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.NoiseStableDecon.loadnoise">(mspasspy.ccore.algorithms.deconvolution.NoiseStableDecon method)</a>
+</li>
+        <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon.loadnoise">(mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon method)</a>
 </li>
       </ul></li>
       <li><a href="python_api/mspasspy.algorithms.html#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.loadwavelet">loadwavelet() (mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor method)</a>
 
       <ul>
+        <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon.loadwavelet">(mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon method)</a>
+</li>
         <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.ScalarDecon.loadwavelet">(mspasspy.ccore.algorithms.deconvolution.ScalarDecon method)</a>
+</li>
+        <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon.loadwavelet">(mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon method)</a>
 </li>
       </ul></li>
       <li><a href="python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.MetadataOperator.log_edit">log_edit() (mspasspy.algorithms.edit.MetadataOperator method)</a>
@@ -1394,6 +1491,8 @@
       <li><a href="python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.dbarrival.make_css30_composite_sta">make_css30_composite_sta() (in module mspasspy.preprocessing.css30.dbarrival)</a>
 </li>
       <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.utility.ProcessingHistory.map_as_saved">map_as_saved() (mspasspy.ccore.utility.ProcessingHistory method)</a>
+</li>
+      <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.NoiseStableDecon.max_gain">max_gain() (mspasspy.ccore.algorithms.deconvolution.NoiseStableDecon method)</a>
 </li>
       <li><a href="python_api/mspasspy.algorithms.html#mspasspy.algorithms.MCXcorStacking.MCXcorPrepP">MCXcorPrepP() (in module mspasspy.algorithms.MCXcorStacking)</a>
 </li>
@@ -1481,6 +1580,8 @@
 </li>
         <li><a href="python_api/mspasspy.algorithms.html#module-mspasspy.algorithms.edit">mspasspy.algorithms.edit</a>
 </li>
+        <li><a href="python_api/mspasspy.algorithms.html#module-mspasspy.algorithms.FrequencyDomainGIDDecon">mspasspy.algorithms.FrequencyDomainGIDDecon</a>
+</li>
         <li><a href="python_api/mspasspy.algorithms.html#module-mspasspy.algorithms.MCXcorStacking">mspasspy.algorithms.MCXcorStacking</a>
 </li>
         <li><a href="python_api/mspasspy.algorithms.html#module-mspasspy.algorithms.ml.arrival">mspasspy.algorithms.ml.arrival</a>
@@ -1494,6 +1595,8 @@
         <li><a href="python_api/mspasspy.algorithms.html#module-mspasspy.algorithms.signals">mspasspy.algorithms.signals</a>
 </li>
         <li><a href="python_api/mspasspy.algorithms.html#module-mspasspy.algorithms.snr">mspasspy.algorithms.snr</a>
+</li>
+        <li><a href="python_api/mspasspy.algorithms.html#module-mspasspy.algorithms.TimeDomainGIDDecon">mspasspy.algorithms.TimeDomainGIDDecon</a>
 </li>
         <li><a href="python_api/mspasspy.algorithms.html#module-mspasspy.algorithms.window">mspasspy.algorithms.window</a>
 </li>
@@ -1610,12 +1713,12 @@
 </li>
       <li><a href="cxx_api/mspass.utility.Metadata.html#_CPPv4N6mspass7utility8Metadata8MetadataERK8Metadata">mspass::utility::Metadata::Metadata (C++ function)</a>, <a href="cxx_api/mspass.utility.Metadata.html#_CPPv4N6mspass7utility8Metadata8MetadataERNSt8ifstreamEKNSt6stringE">[1]</a>, <a href="cxx_api/mspass.utility.Metadata.html#_CPPv4N6mspass7utility8Metadata8MetadataEv">[2]</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="cxx_api/mspass.utility.Metadata.html#_CPPv4NK6mspass7utility8Metadata8modifiedEv">mspass::utility::Metadata::modified (C++ function)</a>
 </li>
       <li><a href="cxx_api/mspass.utility.Metadata.html#_CPPv4NK6mspass7utility8MetadataplERK8Metadata">mspass::utility::Metadata::operator+ (C++ function)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="cxx_api/mspass.utility.Metadata.html#_CPPv4N6mspass7utility8MetadatapLERK8Metadata">mspass::utility::Metadata::operator+= (C++ function)</a>
 </li>
       <li><a href="cxx_api/mspass.utility.Metadata.html#_CPPv4N6mspass7utility8MetadatalsERNSt13ostringstreamERKN6mspass7utility8MetadataE">mspass::utility::Metadata::operator&lt;&lt; (C++ function)</a>
@@ -1686,6 +1789,13 @@
 </li>
       </ul></li>
       <li>
+    mspasspy.algorithms.FrequencyDomainGIDDecon
+
+      <ul>
+        <li><a href="python_api/mspasspy.algorithms.html#module-mspasspy.algorithms.FrequencyDomainGIDDecon">module</a>
+</li>
+      </ul></li>
+      <li>
     mspasspy.algorithms.MCXcorStacking
 
       <ul>
@@ -1732,6 +1842,13 @@
 
       <ul>
         <li><a href="python_api/mspasspy.algorithms.html#module-mspasspy.algorithms.snr">module</a>
+</li>
+      </ul></li>
+      <li>
+    mspasspy.algorithms.TimeDomainGIDDecon
+
+      <ul>
+        <li><a href="python_api/mspasspy.algorithms.html#module-mspasspy.algorithms.TimeDomainGIDDecon">module</a>
 </li>
       </ul></li>
       <li>
@@ -1954,6 +2071,10 @@
 </li>
       <li><a href="python_api/mspasspy.algorithms.html#mspasspy.algorithms.edit.Multiply2">Multiply2 (class in mspasspy.algorithms.edit)</a>
 </li>
+      <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.MultiTaperPowerSpecDivDecon">MultiTaperPowerSpecDivDecon (in module mspasspy.ccore.algorithms.deconvolution)</a>
+</li>
+      <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.MultiTaperPowerXcorDecon">MultiTaperPowerXcorDecon (in module mspasspy.ccore.algorithms.deconvolution)</a>
+</li>
       <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.MultiTaperSpecDivDecon">MultiTaperSpecDivDecon (class in mspasspy.ccore.algorithms.deconvolution)</a>
 </li>
       <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.MultiTaperXcorDecon">MultiTaperXcorDecon (class in mspasspy.ccore.algorithms.deconvolution)</a>
@@ -1998,8 +2119,22 @@
 </li>
       <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.utility.NodeData">NodeData (class in mspasspy.ccore.utility)</a>
 </li>
+      <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon.noise_window_end">noise_window_end() (mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon method)</a>
+
+      <ul>
+        <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon.noise_window_end">(mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon method)</a>
+</li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon.noise_window_start">noise_window_start() (mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon method)</a>
+
+      <ul>
+        <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon.noise_window_start">(mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon method)</a>
+</li>
+      </ul></li>
+      <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.NoiseStableDecon">NoiseStableDecon (class in mspasspy.ccore.algorithms.deconvolution)</a>
+</li>
       <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.ComplexArray.norm2">norm2() (mspasspy.ccore.algorithms.deconvolution.ComplexArray method)</a>
 </li>
       <li><a href="python_api/mspasspy.db.html#mspasspy.db.normalize.normalize">normalize() (in module mspasspy.db.normalize)</a>
@@ -2042,14 +2177,24 @@
 </li>
       <li><a href="python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.seed.ensembles.obspy_mseed_file_indexer">obspy_mseed_file_indexer() (in module mspasspy.preprocessing.seed.ensembles)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.utility.ProcessingStatus.ORIGIN">ORIGIN (mspasspy.ccore.utility.ProcessingStatus attribute)</a>
 </li>
       <li><a href="python_api/mspasspy.db.html#mspasspy.db.normalize.OriginTimeDBMatcher">OriginTimeDBMatcher (class in mspasspy.db.normalize)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="python_api/mspasspy.db.html#mspasspy.db.normalize.OriginTimeMatcher">OriginTimeMatcher (class in mspasspy.db.normalize)</a>
 </li>
+      <li><a href="python_api/mspasspy.algorithms.html#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.output_shaping_wavelet">output_shaping_wavelet() (mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor method)</a>
+
+      <ul>
+        <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.CNRDeconEngine.output_shaping_wavelet">(mspasspy.ccore.algorithms.deconvolution.CNRDeconEngine method)</a>
+</li>
+        <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.ScalarDecon.output_shaping_wavelet">(mspasspy.ccore.algorithms.deconvolution.ScalarDecon method)</a>
+</li>
+        <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.TimeDomainLeastSquareDecon.output_shaping_wavelet">(mspasspy.ccore.algorithms.deconvolution.TimeDomainLeastSquareDecon method)</a>
+</li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -2139,13 +2284,21 @@
       <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.CNRDeconEngine.process">process() (mspasspy.ccore.algorithms.deconvolution.CNRDeconEngine method)</a>
 
       <ul>
+        <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon.process">(mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon method)</a>
+</li>
         <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.LeastSquareDecon.process">(mspasspy.ccore.algorithms.deconvolution.LeastSquareDecon method)</a>
 </li>
         <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.MultiTaperSpecDivDecon.process">(mspasspy.ccore.algorithms.deconvolution.MultiTaperSpecDivDecon method)</a>
 </li>
         <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.MultiTaperXcorDecon.process">(mspasspy.ccore.algorithms.deconvolution.MultiTaperXcorDecon method)</a>
 </li>
+        <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.NoiseStableDecon.process">(mspasspy.ccore.algorithms.deconvolution.NoiseStableDecon method)</a>
+</li>
         <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.ScalarDecon.process">(mspasspy.ccore.algorithms.deconvolution.ScalarDecon method)</a>
+</li>
+        <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon.process">(mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon method)</a>
+</li>
+        <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.TimeDomainLeastSquareDecon.process">(mspasspy.ccore.algorithms.deconvolution.TimeDomainLeastSquareDecon method)</a>
 </li>
         <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.WaterLevelDecon.process">(mspasspy.ccore.algorithms.deconvolution.WaterLevelDecon method)</a>
 </li>
@@ -2183,13 +2336,21 @@
       <ul>
         <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.CNRDeconEngine.QCMetrics">(mspasspy.ccore.algorithms.deconvolution.CNRDeconEngine method)</a>
 </li>
+        <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon.QCMetrics">(mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon method)</a>
+</li>
         <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.LeastSquareDecon.QCMetrics">(mspasspy.ccore.algorithms.deconvolution.LeastSquareDecon method)</a>
 </li>
         <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.MultiTaperSpecDivDecon.QCMetrics">(mspasspy.ccore.algorithms.deconvolution.MultiTaperSpecDivDecon method)</a>
 </li>
         <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.MultiTaperXcorDecon.QCMetrics">(mspasspy.ccore.algorithms.deconvolution.MultiTaperXcorDecon method)</a>
 </li>
+        <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.NoiseStableDecon.QCMetrics">(mspasspy.ccore.algorithms.deconvolution.NoiseStableDecon method)</a>
+</li>
         <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.ScalarDecon.QCMetrics">(mspasspy.ccore.algorithms.deconvolution.ScalarDecon method)</a>
+</li>
+        <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon.QCMetrics">(mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon method)</a>
+</li>
+        <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.TimeDomainLeastSquareDecon.QCMetrics">(mspasspy.ccore.algorithms.deconvolution.TimeDomainLeastSquareDecon method)</a>
 </li>
         <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.WaterLevelDecon.QCMetrics">(mspasspy.ccore.algorithms.deconvolution.WaterLevelDecon method)</a>
 </li>
@@ -2258,14 +2419,14 @@
 </li>
       <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.TimeReferenceType.Relative">Relative (mspasspy.ccore.seismic.TimeReferenceType attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.DoubleVector.remove">remove() (mspasspy.ccore.algorithms.deconvolution.DoubleVector method)</a>
 
       <ul>
         <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.DoubleVector.remove">(mspasspy.ccore.seismic.DoubleVector method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="python_api/mspasspy.db.html#id128">remove_alias() (mspasspy.db.schema.SchemaDefinitionBase method)</a>, <a href="python_api/mspasspy.db.html#mspasspy.db.schema.SchemaDefinitionBase.remove_alias">[1]</a>
 </li>
       <li><a href="python_api/mspasspy.algorithms.html#mspasspy.algorithms.MCXcorStacking.remove_incident_wavefield">remove_incident_wavefield() (in module mspasspy.algorithms.MCXcorStacking)</a>
@@ -2282,6 +2443,12 @@
         <li><a href="python_api/mspasspy.algorithms.html#mspasspy.algorithms.resample.ScipyDecimator.resample">(mspasspy.algorithms.resample.ScipyDecimator method)</a>
 </li>
         <li><a href="python_api/mspasspy.algorithms.html#mspasspy.algorithms.resample.ScipyResampler.resample">(mspasspy.algorithms.resample.ScipyResampler method)</a>
+</li>
+      </ul></li>
+      <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.CNRDeconEngine.resolution_kernel">resolution_kernel() (mspasspy.ccore.algorithms.deconvolution.CNRDeconEngine method)</a>
+
+      <ul>
+        <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.ScalarDecon.resolution_kernel">(mspasspy.ccore.algorithms.deconvolution.ScalarDecon method)</a>
 </li>
       </ul></li>
       <li><a href="python_api/mspasspy.algorithms.html#mspasspy.algorithms.RFdeconProcessor.RFdecon">RFdecon() (in module mspasspy.algorithms.RFdeconProcessor)</a>
@@ -2418,14 +2585,14 @@
 </li>
       <li><a href="python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.dbarrival.set_netcode_time_interval">set_netcode_time_interval() (in module mspasspy.preprocessing.css30.dbarrival)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.utility.MetadataDefinitions.set_readonly">set_readonly() (mspasspy.ccore.utility.MetadataDefinitions method)</a>
 
       <ul>
         <li><a href="python_api/mspasspy.db.html#id106">(mspasspy.db.schema.MDSchemaDefinition method)</a>, <a href="python_api/mspasspy.db.html#mspasspy.db.schema.MDSchemaDefinition.set_readonly">[1]</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="python_api/mspasspy.client.html#mspasspy.client.Client.set_scheduler">set_scheduler() (mspasspy.client.Client method)</a>
 </li>
       <li><a href="python_api/mspasspy.db.html#id34">set_schema() (mspasspy.db.database.Database method)</a>, <a href="python_api/mspasspy.db.html#id79">[1]</a>, <a href="python_api/mspasspy.db.html#mspasspy.db.database.Database.set_schema">[2]</a>
@@ -2478,6 +2645,12 @@
 </li>
       <li><a href="python_api/mspasspy.util.html#mspasspy.util.seismic.sort_ensemble">sort_ensemble() (in module mspasspy.util.seismic)</a>
 </li>
+      <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon.sparse_output">sparse_output() (mspasspy.ccore.algorithms.deconvolution.FrequencyDomainGIDDecon method)</a>
+
+      <ul>
+        <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon.sparse_output">(mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon method)</a>
+</li>
+      </ul></li>
       <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.PowerSpectrum.spectrum">spectrum (mspasspy.ccore.seismic.PowerSpectrum property)</a>
 </li>
       <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.PowerSpectrum.spectrum_type">spectrum_type (mspasspy.ccore.seismic.PowerSpectrum property)</a>
@@ -2562,6 +2735,12 @@
         <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.MTPowerSpectrumEngine.time_bandwidth_product">(mspasspy.ccore.algorithms.deconvolution.MTPowerSpectrumEngine method)</a>
 </li>
       </ul></li>
+      <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.TimeDomainGIDDecon">TimeDomainGIDDecon (class in mspasspy.ccore.algorithms.deconvolution)</a>
+</li>
+      <li><a href="python_api/mspasspy.algorithms.html#mspasspy.algorithms.TimeDomainGIDDecon.TimeDomainGIDRFDecon">TimeDomainGIDRFDecon() (in module mspasspy.algorithms.TimeDomainGIDDecon)</a>
+</li>
+      <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.deconvolution.TimeDomainLeastSquareDecon">TimeDomainLeastSquareDecon (class in mspasspy.ccore.algorithms.deconvolution)</a>
+</li>
       <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.TimeReferenceType">TimeReferenceType (class in mspasspy.ccore.seismic)</a>
 </li>
       <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeries">TimeSeries (class in mspasspy.ccore.seismic)</a>
@@ -2580,12 +2759,12 @@
 </li>
       <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeriesVector">TimeSeriesVector (class in mspasspy.ccore.seismic)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeriesWGaps">TimeSeriesWGaps (class in mspasspy.ccore.seismic)</a>
 </li>
       <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.algorithms.basic.TimeWindow">TimeWindow (class in mspasspy.ccore.algorithms.basic)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="python_api/mspasspy.ccore.html#mspasspy.ccore.utility.AntelopePf.todict">todict() (mspasspy.ccore.utility.AntelopePf method)</a>
 
       <ul>
