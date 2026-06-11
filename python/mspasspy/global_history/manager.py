@@ -15,7 +15,7 @@ except ImportError:
 from bson.objectid import ObjectId
 from mspasspy.ccore.utility import MsPASSError, AntelopePf
 from mspasspy.util.converter import AntelopePf2dict
-from datetime import datetime, timezone
+from datetime import datetime
 from dill.source import getsource
 import functools
 
@@ -590,7 +590,7 @@ class GlobalHistoryManager:
         :type parameters: :class:`str`
         """
         # current timestamp when logging into database
-        timestamp = datetime.now(timezone.utc).timestamp()
+        timestamp = datetime.utcnow().timestamp()
 
         self.history_db[self.collection].insert_one(
             {
