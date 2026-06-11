@@ -2,11 +2,13 @@ import copy
 import io
 import os
 import pickle
+import warnings
 
 import gridfs
 import numpy as np
 import obspy
 import obspy.clients.fdsn.client
+from obspy.core.util.deprecation_helpers import ObsPyDeprecationWarning
 import pytest
 import sys
 import re
@@ -3383,9 +3385,14 @@ class TestDatabase:
         with patch(
             "obspy.clients.fdsn.client.Client.get_waveforms",
             new=self.mock_fdsn_get_waveform,
-        ):
+        ), warnings.catch_warnings():
+            warnings.filterwarnings(
+                "ignore",
+                message="IRIS is now EarthScope.*",
+                category=ObsPyDeprecationWarning,
+            )
             self.db.index_mseed_FDSN(
-                "EARTHSCOPE",
+                "IRIS",
                 2010,
                 58,
                 "IU",
@@ -3396,7 +3403,7 @@ class TestDatabase:
             )
             assert self.db["test_s3_fdsn"].count_documents({}) == 1
             fdsn_doc = self.db.test_s3_fdsn.find_one()
-            assert fdsn_doc["provider"] == "EARTHSCOPE"
+            assert fdsn_doc["provider"] == "IRIS"
             assert fdsn_doc["year"] == "2010"
             assert fdsn_doc["day_of_year"] == "058"
 
