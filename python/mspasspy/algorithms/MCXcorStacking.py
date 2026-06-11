@@ -1606,10 +1606,7 @@ def align_and_stack(
         )
         delta_rbeam = rbeam - rbeam0
         nrm_delta = np.linalg.norm(delta_rbeam.data)
-        if nrm_rbeam == 0.0:
-            if nrm_delta == 0.0:
-                break
-        elif nrm_delta / nrm_rbeam < convergence:
+        if nrm_rbeam != 0.0 and nrm_delta / nrm_rbeam < convergence:
             break
         # this updates the always longer beam signal for correlation
         # use rbeam is used for convergence testing

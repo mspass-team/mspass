@@ -39,8 +39,17 @@ def mock_excpt(*args, **kwargs):
 
 
 class TestMsPASSClient:
+    @staticmethod
+    def _close_dask_scheduler(client):
+        dask_client = getattr(client, "_dask_client", None)
+        if dask_client is not None:
+            dask_client.close()
+
     def setup_class(self):
         self.client = Client()
+
+    def teardown_class(self):
+        self._close_dask_scheduler(self.client)
 
     def test_init(self):
         with pytest.raises(
@@ -123,11 +132,16 @@ class TestMsPASSClient:
 
         monkeypatch.setenv("MONGODB_PORT", "12345")
         monkeypatch.setenv("MSPASS_DB_ADDRESS", "168.0.0.1")
+        self._close_dask_scheduler(self.client)
         client = Client(database_host="localhost:27017")
-        host, port = client._db_client.address
-        assert host == "localhost"
-        assert port == 27017
-        monkeypatch.undo()
+        try:
+            host, port = client._db_client.address
+            assert host == "localhost"
+            assert port == 27017
+        finally:
+            self._close_dask_scheduler(client)
+            monkeypatch.undo()
+            self.client = Client()
 
     def test_dask_scheduler(self, monkeypatch):
         monkeypatch.setattr(DaskClient, "__init__", mock_excpt)
