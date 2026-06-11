@@ -4,21 +4,38 @@ import sys
 import os
 import pytest
 
-seisbench = pytest.importorskip("seisbench")
-sbm = pytest.importorskip("seisbench.models")
+pytest.importorskip("seisbench.models")
 from mspasspy.algorithms.ml.arrival import annotate_arrival_time
 from mspasspy.ccore.algorithms.basic import TimeWindow
 from mspasspy.util.converter import Trace2TimeSeries
 from obspy import Stream, Trace, UTCDateTime, read
-from obspy.clients.fdsn import Client
 
 sys.path.append("python/tests")
 
 from helper import get_live_timeseries
 
-seisbench.use_backup_repository()
 
-pn_model = sbm.PhaseNet.from_pretrained("stead")
+class _LocalPhaseNetModel:
+    channel = "PhaseNet_P"
+    probabilities = np.array(
+        [0.0, 0.03, 0.12, 0.31, 0.62, 0.92, 0.48, 0.77, 0.08, 0.23, 0.55, 0.99]
+    )
+
+    def annotate(self, stream):
+        source = stream[0]
+        tr = Trace(self.probabilities.copy())
+        tr.stats.starttime = source.stats.starttime
+        tr.stats.channel = self.channel
+        if tr.stats.npts > 1:
+            source_duration = float(source.stats.endtime - source.stats.starttime)
+            fallback_duration = float(source.stats.delta) * (tr.stats.npts - 1)
+            tr.stats.delta = max(source_duration, fallback_duration) / (tr.stats.npts - 1)
+        else:
+            tr.stats.delta = source.stats.delta
+        return Stream([tr])
+
+
+pn_model = _LocalPhaseNetModel()
 
 
 def test_annotate_arrival_time():
@@ -31,7 +48,7 @@ def test_annotate_arrival_time():
 
     # picks from mspass
     timeseries = Trace2TimeSeries(stream[0])
-    annotate_arrival_time(timeseries, 0)
+    annotate_arrival_time(timeseries, 0, model=pn_model)
     mspass_picks = timeseries["p_wave_picks"]  # should be a dictionary
     # assert that for each pick, the value is a float number that is between 0 and 1
     assert all(0 <= value <= 1 for value in mspass_picks.values())
@@ -59,7 +76,7 @@ def test_annotate_arrival_time_threshold():
 
     # picks from mspass
     timeseries = Trace2TimeSeries(stream[0])
-    annotate_arrival_time(timeseries, 0.5)
+    annotate_arrival_time(timeseries, 0.5, model=pn_model)
     mspass_picks = timeseries["p_wave_picks"]
     assert all(value >= 0.5 for value in mspass_picks.values())
     # picks from seisbench
@@ -85,7 +102,7 @@ def test_annotate_arrival_time_window():
     window_start = UTCDateTime(2009, 4, 6, 1, 30).timestamp
     window_end = window_start + 1000
     annotate_arrival_time(
-        timeseries, threshold=0, time_window=TimeWindow(window_start, window_end)
+        timeseries, threshold=0, time_window=TimeWindow(window_start, window_end), model=pn_model
     )
     mspass_picks = timeseries["p_wave_picks"]
 
@@ -167,7 +184,7 @@ def test_annotate_arrival_time_for_mseed():
     window_start = UTCDateTime(2011, 3, 11, 6, 35).timestamp
     window_end = window_start + 1200  # 20 minutes
     annotate_arrival_time(
-        timeseries, 0.1, time_window=TimeWindow(window_start, window_end)
+        timeseries, 0.1, time_window=TimeWindow(window_start, window_end), model=pn_model
     )
     mspass_picks = timeseries["p_wave_picks"]
 
@@ -207,16 +224,9 @@ def get_mseed_trace_for_test():
 
 
 def get_trace_for_test():
-    client = Client("INGV")
-    t = UTCDateTime(2009, 4, 6, 1, 30)
-    return client.get_waveforms(
-        network="MN",
-        station="AQU",
-        location="*",
-        channel="HH?",
-        starttime=t,
-        endtime=t + 3600,
-    )
+    trace = get_mseed_trace_for_test().copy()
+    trace.stats.starttime = UTCDateTime(2009, 4, 6, 1, 30)
+    return Stream([trace])
 
 
 if __name__ == "__main__":
