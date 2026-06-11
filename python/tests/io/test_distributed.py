@@ -451,8 +451,8 @@ def define_set_dir_dfile_ensmble():
     ],
 )
 def test_read_distributed_atomic(
+    request,
     setup_environment,
-    spark_context,
     atomic_time_series_generator,
     atomic_seismogram_generator,
     scheduler,
@@ -485,6 +485,7 @@ def test_read_distributed_atomic(
     """
     print("Starting test with scheduler=", scheduler, " and collection=", collection)
     if scheduler == "spark":
+        spark_context = request.getfixturevalue("spark_context")
         context = spark_context
     else:
         context = None
@@ -679,10 +680,10 @@ def test_read_distributed_atomic(
     ],
 )
 def test_write_distributed_atomic(
+    request,
     setup_environment,
     scheduler,
     collection,
-    spark_context,
     define_kill_one,
     define_massacre,
     define_set_one_invalid,
@@ -700,6 +701,7 @@ def test_write_distributed_atomic(
     """
     print("Starting test with scheduler=", scheduler, " and collection=", collection)
     if scheduler == "spark":
+        spark_context = request.getfixturevalue("spark_context")
         context = spark_context
     else:
         context = None
@@ -1053,8 +1055,8 @@ def get_srclist_by_tag(db, data_tag) -> list:
     ],
 )
 def test_read_distributed_ensemble(
+    request,
     setup_environment,
-    spark_context,
     TimeSeriesEnsemble_generator,
     SeismogramEnsemble_generator,
     scheduler,
@@ -1062,6 +1064,7 @@ def test_read_distributed_ensemble(
 ):
     print("Starting test with scheduler=", scheduler, " and collection=", collection)
     if scheduler == "spark":
+        spark_context = request.getfixturevalue("spark_context")
         context = spark_context
         dask_client = None
     else:
@@ -1228,10 +1231,10 @@ def test_read_distributed_ensemble(
     ],
 )
 def test_write_distributed_ensemble(
+    request,
     setup_environment,
     scheduler,
     collection,
-    spark_context,
     define_kill_one_member,
     define_massacre,
     define_set_one_invalid_member,
@@ -1246,6 +1249,7 @@ def test_write_distributed_ensemble(
     """
     print("Starting test with scheduler=", scheduler, " and collection=", collection)
     if scheduler == "spark":
+        spark_context = request.getfixturevalue("spark_context")
         context = spark_context
         dask_client = None
     else:
