@@ -1,18 +1,34 @@
 import numpy as np
 import sys
+import types
 
 import os
-import pytest
 
-pytest.importorskip("seisbench.models")
+try:
+    import seisbench.models  # noqa: F401
+except ImportError:
+    seisbench = types.ModuleType("seisbench")
+    models = types.ModuleType("seisbench.models")
+    base = types.ModuleType("seisbench.models.base")
+
+    class WaveformModel:
+        pass
+
+    class _PhaseNet:
+        @staticmethod
+        def from_pretrained(*args, **kwargs):
+            raise RuntimeError("PhaseNet should be injected in these tests")
+
+    models.PhaseNet = _PhaseNet
+    base.WaveformModel = WaveformModel
+    seisbench.models = models
+    sys.modules["seisbench"] = seisbench
+    sys.modules["seisbench.models"] = models
+    sys.modules["seisbench.models.base"] = base
 from mspasspy.algorithms.ml.arrival import annotate_arrival_time
 from mspasspy.ccore.algorithms.basic import TimeWindow
 from mspasspy.util.converter import Trace2TimeSeries
 from obspy import Stream, Trace, UTCDateTime, read
-
-sys.path.append("python/tests")
-
-from helper import get_live_timeseries
 
 
 class _LocalPhaseNetModel:

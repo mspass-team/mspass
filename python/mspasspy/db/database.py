@@ -6017,7 +6017,7 @@ class Database(pymongo.database.Database):
           :param collection:  MongoDB collection name to be used to save the
           (often subsetted) tuples of filename as documents in this collection.
         :param separator: The delimiter used for seperating fields,
-          the default is r"\s+", which is the regular expression of "one or more
+          the default is r"\\s+", which is the regular expression of "one or more
           spaces".
               For csv file, its value should be set to ','.
               This parameter will be passed into pandas.read_csv or dask.dataframe.read_csv.

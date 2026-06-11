@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import warnings
+
 import numpy as np
 import pytest
 from scipy import signal
@@ -52,6 +54,38 @@ STRESS_SPIKES = {
     10.4: (-14.0, 19.0, 0.0),
     10.95: (13.0, -18.0, 0.0),
 }
+
+
+def _import_matplotlib_pyplot():
+    try:
+        from pyparsing.exceptions import PyparsingDeprecationWarning
+    except ImportError:
+        warning_category = Warning
+    else:
+        warning_category = PyparsingDeprecationWarning
+
+    with warnings.catch_warnings():
+        warnings.filterwarnings(
+            "ignore",
+            category=warning_category,
+            module=r"matplotlib\._fontconfig_pattern",
+        )
+        warnings.filterwarnings(
+            "ignore",
+            category=warning_category,
+            module=r"matplotlib\._mathtext",
+        )
+        try:
+            import matplotlib
+
+            matplotlib.use("Agg", force=True)
+            import matplotlib.pyplot as plt
+        except ImportError as err:
+            pytest.fail(
+                "--decon-validation-plots requires matplotlib; install it to write "
+                f"validation plots ({err})"
+            )
+    return plt
 
 
 def _make_validation_data(noise_level=0.0):
@@ -486,16 +520,7 @@ def _slice_matrix_to_window(matrix, src_t0, dt, out_t0, out_npts):
 def _plot_rf_overlay(plot_dir, filename, title, results, truth, t0, dt):
     if plot_dir is None:
         return
-    try:
-        import matplotlib
-
-        matplotlib.use("Agg", force=True)
-        import matplotlib.pyplot as plt
-    except ImportError as err:
-        pytest.fail(
-            "--decon-validation-plots requires matplotlib; install it to write "
-            f"validation plots ({err})"
-        )
+    plt = _import_matplotlib_pyplot()
 
     npts = min(matrix.shape[1] for matrix in results.values())
     t = t0 + np.arange(npts) * dt
@@ -548,17 +573,6 @@ def _plot_rf_overlay(plot_dir, filename, title, results, truth, t0, dt):
 def _plot_complex_colored_results(plot_dir, results, truth, wavelet):
     if plot_dir is None:
         return
-    try:
-        import matplotlib
-
-        matplotlib.use("Agg", force=True)
-        import matplotlib.pyplot as plt
-    except ImportError as err:
-        pytest.fail(
-            "--decon-validation-plots requires matplotlib; install it to write "
-            f"validation plots ({err})"
-        )
-
     _plot_rf_overlay(
         plot_dir,
         "complex_colored_scalar_methods.png",
@@ -569,6 +583,7 @@ def _plot_complex_colored_results(plot_dir, results, truth, wavelet):
         truth.dt,
     )
 
+    plt = _import_matplotlib_pyplot()
     tw = wavelet.t0 + np.arange(wavelet.npts) * wavelet.dt
     fig, axis = plt.subplots(1, 1, figsize=(10, 3))
     axis.plot(tw, np.asarray(wavelet.data), color="black", linewidth=1.2)
