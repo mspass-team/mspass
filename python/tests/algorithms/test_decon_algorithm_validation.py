@@ -517,7 +517,9 @@ def _slice_matrix_to_window(matrix, src_t0, dt, out_t0, out_npts):
     return result
 
 
-def _plot_rf_overlay(plot_dir, filename, title, results, truth, t0, dt):
+def _plot_rf_overlay(
+    plot_dir, filename, title, results, truth, t0, dt, failed_methods=None
+):
     if plot_dir is None:
         return
     plt = _import_matplotlib_pyplot()
@@ -562,6 +564,17 @@ def _plot_rf_overlay(plot_dir, filename, title, results, truth, t0, dt):
         axis.axvline(0.0, color="0.5", linestyle="--", linewidth=0.8)
         axis.set_ylabel(component_names[component])
         axis.grid(True, color="0.85", linewidth=0.6)
+    failed_methods = failed_methods or []
+    for name in failed_methods:
+        axes[0].plot(
+            [],
+            [],
+            color="0.45",
+            linestyle=":",
+            linewidth=1.2,
+            label=f"{name} (failed)",
+        )
+
     axes[-1].set_xlabel("Lag time relative to direct P sample (s)")
     axes[0].legend(loc="upper right", ncol=3, fontsize="small")
     fig.suptitle(title + " (method traces are vertically offset)")
@@ -596,7 +609,9 @@ def _plot_complex_colored_results(plot_dir, results, truth, wavelet):
     plt.close(fig)
 
 
-def _plot_stress_results(plot_dir, results, truth, wavelet, t0, dt, prefix):
+def _plot_stress_results(
+    plot_dir, results, truth, wavelet, t0, dt, prefix, failed_methods=None
+):
     if plot_dir is None:
         return
     _plot_rf_overlay(
@@ -607,6 +622,7 @@ def _plot_stress_results(plot_dir, results, truth, wavelet, t0, dt, prefix):
         truth,
         t0,
         dt,
+        failed_methods=failed_methods,
     )
 
 
@@ -622,7 +638,9 @@ def _plot_gid_mode_results(plot_dir, engine_name, results, truth, t0, dt):
     )
 
 
-def _plot_gid_sparse_results(plot_dir, engine_name, results, truth, t0, dt, suffix):
+def _plot_gid_sparse_results(
+    plot_dir, engine_name, results, truth, t0, dt, suffix, failed_methods=None
+):
     _plot_rf_overlay(
         plot_dir,
         f"{engine_name}_{suffix}_sparse_results.png",
@@ -631,6 +649,7 @@ def _plot_gid_sparse_results(plot_dir, engine_name, results, truth, t0, dt, suff
         truth,
         t0,
         dt,
+        failed_methods=failed_methods,
     )
 
 
@@ -1225,6 +1244,7 @@ def test_gid_methods_recover_stress_spike_signs_for_all_inverse_modes(
         plot_dt = rf.dt
 
     plot_truth = truth
+    skipped_plot_modes = []
     if decon_validation_plot_dir is not None and decon_validation_noise_scale != 0.01:
         plot_data, plot_truth, _ = _make_stress_colored_validation_data(
             noise_scale=decon_validation_noise_scale,
@@ -1232,6 +1252,7 @@ def test_gid_methods_recover_stress_spike_signs_for_all_inverse_modes(
         )
         plot_results = {}
         plot_sparse_results = {}
+        skipped_plot_modes = []
         plot_t0 = None
         plot_dt = None
         for mode in modes:
@@ -1248,6 +1269,8 @@ def test_gid_methods_recover_stress_spike_signs_for_all_inverse_modes(
                 plot_sparse_results[mode] = np.asarray(engine.sparse_output().data)
                 plot_t0 = rf.t0
                 plot_dt = rf.dt
+            else:
+                skipped_plot_modes.append(mode)
 
     _plot_stress_results(
         decon_validation_plot_dir,
@@ -1257,6 +1280,7 @@ def test_gid_methods_recover_stress_spike_signs_for_all_inverse_modes(
         plot_t0,
         plot_dt,
         f"{engine_class.__name__}_noise_{decon_validation_noise_scale:g}",
+        failed_methods=skipped_plot_modes,
     )
     _plot_gid_sparse_results(
         decon_validation_plot_dir,
@@ -1266,6 +1290,7 @@ def test_gid_methods_recover_stress_spike_signs_for_all_inverse_modes(
         plot_t0,
         plot_dt,
         f"noise_{decon_validation_noise_scale:g}_stress",
+        failed_methods=skipped_plot_modes,
     )
 
 
