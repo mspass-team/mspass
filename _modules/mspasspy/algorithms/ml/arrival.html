@@ -145,10 +145,12 @@
              
   <h1>Source code for mspasspy.algorithms.ml.arrival</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">seisbench.models</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sbm</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">seisbench.models.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">WaveformModel</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">seisbench.models.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">WaveformModel</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.ccore.seismic</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span><span class="p">,</span> <span class="n">TimeSeriesEnsemble</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.ccore.algorithms.basic</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeWindow</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">obspy</span><span class="w"> </span><span class="kn">import</span> <span class="n">UTCDateTime</span>
@@ -160,7 +162,7 @@
     <span class="n">timeseries</span><span class="p">:</span> <span class="n">TimeSeries</span><span class="p">,</span>
     <span class="n">threshold</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span>
     <span class="n">time_window</span><span class="p">:</span> <span class="n">TimeWindow</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">model</span><span class="p">:</span> <span class="n">WaveformModel</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">model</span><span class="p">:</span> <span class="s2">&quot;WaveformModel&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">model_args</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -198,13 +200,15 @@
     <span class="n">timeseries</span><span class="o">.</span><span class="n">rtoa</span><span class="p">()</span>
 
     <span class="c1"># load pretrained model based on the args if not provided</span>
-    <span class="k">if</span> <span class="n">model</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">model</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">seisbench.models</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sbm</span>
+
         <span class="c1"># &#39;stead&#39; model was trained on STEAD for 100 epochs with a learning rate of 0.01.</span>
         <span class="c1"># use sbm.PhaseNet.list_pretrained(details=True) to list out other supported models</span>
         <span class="c1"># when using this model, please reference the SeisBench publications listed at https://github.com/seisbench/seisbench</span>
         <span class="n">pretrained_model</span> <span class="o">=</span> <span class="p">(</span>
             <span class="s2">&quot;stead&quot;</span>
-            <span class="k">if</span> <span class="p">(</span><span class="n">model_args</span> <span class="o">==</span> <span class="kc">None</span> <span class="ow">or</span> <span class="s2">&quot;name&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">model_args</span><span class="p">)</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">model_args</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="s2">&quot;name&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">model_args</span><span class="p">)</span>
             <span class="k">else</span> <span class="n">model_args</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
         <span class="p">)</span>
         <span class="n">model</span> <span class="o">=</span> <span class="n">sbm</span><span class="o">.</span><span class="n">PhaseNet</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="n">pretrained_model</span><span class="p">)</span>
