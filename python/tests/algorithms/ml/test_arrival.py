@@ -18,7 +18,20 @@ from helper import get_live_timeseries
 class _LocalPhaseNetModel:
     channel = "PhaseNet_P"
     probabilities = np.array(
-        [0.0, 0.03, 0.12, 0.31, 0.62, 0.92, 0.48, 0.77, 0.08, 0.23, 0.55, 0.99]
+        [
+            0.0,
+            0.03,
+            0.12,
+            0.31,
+            0.62,
+            0.92,
+            0.48,
+            0.77,
+            0.08,
+            0.23,
+            0.55,
+            0.99,
+        ]
     )
 
     def annotate(self, stream):
@@ -102,7 +115,10 @@ def test_annotate_arrival_time_window():
     window_start = UTCDateTime(2009, 4, 6, 1, 30).timestamp
     window_end = window_start + 1000
     annotate_arrival_time(
-        timeseries, threshold=0, time_window=TimeWindow(window_start, window_end), model=pn_model
+        timeseries,
+        threshold=0,
+        time_window=TimeWindow(window_start, window_end),
+        model=pn_model,
     )
     mspass_picks = timeseries["p_wave_picks"]
 
@@ -184,7 +200,10 @@ def test_annotate_arrival_time_for_mseed():
     window_start = UTCDateTime(2011, 3, 11, 6, 35).timestamp
     window_end = window_start + 1200  # 20 minutes
     annotate_arrival_time(
-        timeseries, 0.1, time_window=TimeWindow(window_start, window_end), model=pn_model
+        timeseries,
+        0.1,
+        time_window=TimeWindow(window_start, window_end),
+        model=pn_model,
     )
     mspass_picks = timeseries["p_wave_picks"]
 
