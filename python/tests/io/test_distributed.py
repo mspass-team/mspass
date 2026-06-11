@@ -1070,11 +1070,16 @@ def test_read_distributed_ensemble(
     else:
         context = None
         # Create Dask distributed client with MongoDB worker plugin for ensemble tests
-        dask_client = DaskClient(processes=False, n_workers=2, threads_per_worker=1)
+        dask_client = DaskClient(
+            processes=False,
+            n_workers=2,
+            threads_per_worker=1,
+            dashboard_address=":0",
+        )
         plugin = MongoDBWorker(
             _MongoPluginMsPASSClientStub(DBClient("mongodb://localhost:27017/"))
         )
-        dask_client.register_worker_plugin(plugin)
+        dask_client.register_plugin(plugin)
 
     # warning src_data_list values must match string set in generators
     if collection == "wf_TimeSeries":
@@ -1255,11 +1260,16 @@ def test_write_distributed_ensemble(
     else:
         context = None
         # Create Dask distributed client with MongoDB worker plugin for ensemble tests
-        dask_client = DaskClient(processes=False, n_workers=2, threads_per_worker=1)
+        dask_client = DaskClient(
+            processes=False,
+            n_workers=2,
+            threads_per_worker=1,
+            dashboard_address=":0",
+        )
         plugin = MongoDBWorker(
             _MongoPluginMsPASSClientStub(DBClient("mongodb://localhost:27017/"))
         )
-        dask_client.register_worker_plugin(plugin)
+        dask_client.register_plugin(plugin)
     if collection == "wf_TimeSeries":
         wfid_list = TimeSeriesEnsemble_generator
         src_data_tag = "timeseries"

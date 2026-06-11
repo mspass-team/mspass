@@ -3385,7 +3385,7 @@ class TestDatabase:
             new=self.mock_fdsn_get_waveform,
         ):
             self.db.index_mseed_FDSN(
-                "IRIS",
+                "EARTHSCOPE",
                 2010,
                 58,
                 "IU",
@@ -3396,7 +3396,7 @@ class TestDatabase:
             )
             assert self.db["test_s3_fdsn"].count_documents({}) == 1
             fdsn_doc = self.db.test_s3_fdsn.find_one()
-            assert fdsn_doc["provider"] == "IRIS"
+            assert fdsn_doc["provider"] == "EARTHSCOPE"
             assert fdsn_doc["year"] == "2010"
             assert fdsn_doc["day_of_year"] == "058"
 

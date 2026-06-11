@@ -4,30 +4,31 @@ import types
 
 import os
 
-try:
-    import seisbench.models  # noqa: F401
-except ImportError:
-    seisbench = types.ModuleType("seisbench")
-    seisbench.__path__ = []
-    models = types.ModuleType("seisbench.models")
-    models.__path__ = []
-    base = types.ModuleType("seisbench.models.base")
+seisbench = types.ModuleType("seisbench")
+seisbench.__path__ = []
+models = types.ModuleType("seisbench.models")
+models.__path__ = []
+base = types.ModuleType("seisbench.models.base")
 
-    class WaveformModel:
-        pass
 
-    class _PhaseNet:
-        @staticmethod
-        def from_pretrained(*args, **kwargs):
-            raise RuntimeError("PhaseNet should be injected in these tests")
+class WaveformModel:
+    pass
 
-    models.PhaseNet = _PhaseNet
-    models.base = base
-    base.WaveformModel = WaveformModel
-    seisbench.models = models
-    sys.modules["seisbench"] = seisbench
-    sys.modules["seisbench.models"] = models
-    sys.modules["seisbench.models.base"] = base
+
+class _PhaseNet:
+    @staticmethod
+    def from_pretrained(*args, **kwargs):
+        raise RuntimeError("PhaseNet should be injected in these tests")
+
+
+models.PhaseNet = _PhaseNet
+models.base = base
+base.WaveformModel = WaveformModel
+seisbench.models = models
+sys.modules["seisbench"] = seisbench
+sys.modules["seisbench.models"] = models
+sys.modules["seisbench.models.base"] = base
+
 from mspasspy.algorithms.ml.arrival import annotate_arrival_time
 from mspasspy.ccore.algorithms.basic import TimeWindow
 from mspasspy.util.converter import Trace2TimeSeries
