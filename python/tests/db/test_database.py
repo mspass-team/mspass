@@ -333,6 +333,9 @@ class TestDatabase:
             response.read.side_effect = [pickle.load(handle)]
         return response
 
+    def mock_urlopen_failure(*args):
+        raise OSError("mocked download failure")
+
     def test_read_data_from_url(self):
         with patch("urllib.request.urlopen", new=self.mock_urlopen):
             url = "http://service.iris.edu/fdsnws/dataselect/1/query?net=IU&sta=ANMO&loc=00&cha=BH?&start=2010-02-27T06:30:00.000&end=2010-02-27T06:35:00.000"
@@ -344,8 +347,9 @@ class TestDatabase:
 
         # test invalid url
         bad_url = "http://service.iris.edu/fdsnws/dataselect/1/query?net=IU&sta=ANMO&loc=00&cha=DUMMY&start=2010-02-27T06:30:00.000&end=2010-02-27T06:35:00.000"
-        with pytest.raises(MsPASSError, match="Error while downloading"):
-            self.db._read_data_from_url(tmp_ts, bad_url)
+        with patch("urllib.request.urlopen", new=self.mock_urlopen_failure):
+            with pytest.raises(MsPASSError, match="Error while downloading"):
+                self.db._read_data_from_url(tmp_ts, bad_url)
 
     def test_mspass_type_helper(self):
         schema = self.metadata_def.Seismogram

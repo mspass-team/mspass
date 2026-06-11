@@ -5,8 +5,10 @@ from mspasspy.util.seismic import (
     has_live_data,
     ensemble_time_range,
     regularize_sampling,
+    sort_ensemble,
 )
 from mspasspy.ccore.seismic import TimeSeries, TimeSeriesEnsemble, Seismogram
+from mspasspy.ccore.utility import MsPASSError
 import numpy as np
 
 
@@ -66,6 +68,31 @@ def test_has_live_data():
     for i in range(len(e.member)):
         e.member[i].kill()
     assert not has_live_data(e)
+
+    with pytest.raises(TypeError, match="arg0 must be a TimeSeriesEnsemble"):
+        has_live_data(d)
+
+
+def test_sort_ensemble_rejects_non_ensemble():
+    with pytest.raises(MsPASSError) as err:
+        sort_ensemble(TimeSeries(), "sta")
+    assert "arg0 must be a TimeSeriesEnsemble" in err.value.args[1]
+
+
+def test_sort_ensemble_returns_timeseries_ensemble():
+    ensemble = TimeSeriesEnsemble(2)
+    for sta in ["B", "A"]:
+        datum = TimeSeries()
+        datum.set_live()
+        datum["sta"] = sta
+        ensemble.member.append(datum)
+
+    sorted_ensemble = sort_ensemble(ensemble, "sta")
+
+    assert isinstance(sorted_ensemble, TimeSeriesEnsemble)
+    assert sorted_ensemble.live
+    assert len(sorted_ensemble.member) == 2
+    assert [datum["sta"] for datum in sorted_ensemble.member] == ["A", "B"]
 
 
 def test_regularize_sampling():

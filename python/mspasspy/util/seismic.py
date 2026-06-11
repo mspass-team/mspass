@@ -73,9 +73,9 @@ def has_live_data(ensemble) -> bool:
     Check if an ensemble has any live data and return True if it does.
 
     This function simply scans the member vector of ensemble and returns
-    True the first time if finds a datum marked live.   That is much
-    faster with large ensembles than an alternative os using `number_live`
-    and using the result to set an ensemble  live or dead.   The normal
+    True the first time it finds a datum marked live. That is much
+    faster with large ensembles than an alternative to using `number_live`
+    and using the result to set an ensemble live or dead. The normal
     use of this function is to call it after accumulating a set of atomic
     data into an ensemble.  An empty ensemble container is always marked
     dead until explicitly set live.   Hence, after adding data to such
@@ -84,14 +84,14 @@ def has_live_data(ensemble) -> bool:
         if has_live_data(ensemble):
             ensemble.set_live()
     ```
-    Note this function will throw a ValueError exception if ensemble is
+    Note this function will throw a TypeError exception if ensemble is
     anything but a TimeSeriesEnsemble or SeismogramEnsemble.
 
-    :param enemble:   input ensemble to be scanned
+    :param ensemble:   input ensemble to be scanned
     """
     if not isinstance(ensemble, (TimeSeriesEnsemble, SeismogramEnsemble)):
         message = "has_live_data:  arg0 must be a TimeSeriesEnsemble or SeismogramEnsemble object\n"
-        message += "Actual type={}".type(ensemble)
+        message += "Actual type={}".format(type(ensemble))
         raise TypeError(message)
     for d in ensemble.member:
         if d.live:
@@ -272,7 +272,7 @@ def sort_ensemble(ensemble, key, nullvalue=0.0, ascending=True, drop_dead=True):
     alg = "sort_ensemble"
     if not isinstance(ensemble, (TimeSeriesEnsemble, SeismogramEnsemble)):
         message = "arg0 must be a TimeSeriesEnsemble or SeismogramEnsemble object\n"
-        message += "Actual type={}".type(ensemble)
+        message += "Actual type={}".format(type(ensemble))
         raise MsPASSError(alg, message, ErrorSeverity.Fatal)
     vallist = list()
     indexlist = list()
@@ -290,14 +290,14 @@ def sort_ensemble(ensemble, key, nullvalue=0.0, ascending=True, drop_dead=True):
     dfdict = {key: vallist, "member_number": indexlist}
     df = pd.DataFrame(dfdict)
     del dfdict
-    df.sort_values(key, ascending=ascending)
+    df = df.sort_values(key, ascending=ascending)
     N = len(df)
     if isinstance(ensemble, TimeSeriesEnsemble):
         ensout = TimeSeriesEnsemble(Metadata(ensemble), N)
     else:
         ensout = SeismogramEnsemble(Metadata(ensemble), N)
     for index, row in df.iterrows():
-        i = row["member_number"].astype(int)
+        i = int(row["member_number"])
         ensout.member.append(ensemble.member[i])
     if N > 0:
         ensout.set_live()
