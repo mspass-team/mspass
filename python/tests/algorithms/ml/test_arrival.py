@@ -42,7 +42,8 @@ class _LocalPhaseNetModel:
         if tr.stats.npts > 1:
             source_duration = float(source.stats.endtime - source.stats.starttime)
             fallback_duration = float(source.stats.delta) * (tr.stats.npts - 1)
-            tr.stats.delta = max(source_duration, fallback_duration) / (tr.stats.npts - 1)
+            prediction_duration = max(source_duration, fallback_duration)
+            tr.stats.delta = prediction_duration / (tr.stats.npts - 1)
         else:
             tr.stats.delta = source.stats.delta
         return Stream([tr])
