@@ -213,7 +213,7 @@ RUN python -c "import site; print(site.getsitepackages()[0])" > site_packages_pa
 	rm site_packages_path.txt
 
 # install Dask JupyterLab extension
-RUN pip install dask-labextension && docker-clean
+RUN pip install dask-labextension==7.0.0 && docker-clean
 
 ENV PATH="${SPARK_HOME}/bin:${SPARK_HOME}/sbin:${PATH}"
 

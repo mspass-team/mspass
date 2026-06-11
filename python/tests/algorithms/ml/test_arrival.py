@@ -8,7 +8,9 @@ try:
     import seisbench.models  # noqa: F401
 except ImportError:
     seisbench = types.ModuleType("seisbench")
+    seisbench.__path__ = []
     models = types.ModuleType("seisbench.models")
+    models.__path__ = []
     base = types.ModuleType("seisbench.models.base")
 
     class WaveformModel:
@@ -20,6 +22,7 @@ except ImportError:
             raise RuntimeError("PhaseNet should be injected in these tests")
 
     models.PhaseNet = _PhaseNet
+    models.base = base
     base.WaveformModel = WaveformModel
     seisbench.models = models
     sys.modules["seisbench"] = seisbench
