@@ -18,10 +18,6 @@ import re
 import pymongo
 import pytest
 
-pytestmark = pytest.mark.filterwarnings(
-    r"ignore:datetime\.datetime\.utcnow\(\) is deprecated.*:DeprecationWarning"
-)
-
 from bson.objectid import ObjectId
 from datetime import datetime
 

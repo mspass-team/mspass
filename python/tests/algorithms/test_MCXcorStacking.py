@@ -292,9 +292,6 @@ def test_align_and_stack():
     validate_lags(eo, lag_in_samples)
 
 
-@pytest.mark.filterwarnings(
-    "ignore:divide by zero encountered in scalar divide:RuntimeWarning"
-)
 def test_align_and_stack_error_handlers():
     """
     Like above but only tests error handlers.  Uses the
