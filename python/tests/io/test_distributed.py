@@ -51,6 +51,30 @@ wfdir = "python/tests/data/wf_filetestdata"
 
 
 @pytest.fixture
+def dask_test_client():
+    dask_client = DaskClient(
+        processes=False,
+        n_workers=2,
+        threads_per_worker=1,
+        dashboard_address=":0",
+    )
+    plugin = MongoDBWorker(
+        _MongoPluginMsPASSClientStub(DBClient("mongodb://localhost:27017/"))
+    )
+    dask_client.register_plugin(plugin)
+    yield dask_client
+    dask_client.close()
+
+
+def _collect_parallel_data(container, scheduler, dask_client=None):
+    if scheduler == "dask":
+        return container.compute(scheduler=dask_client)
+    if scheduler == "spark":
+        return container.collect()
+    raise ValueError("Illegal value scheduler=", scheduler)
+
+
+@pytest.fixture
 def setup_environment():
     if os.path.exists(wfdir):
         raise Exception(
@@ -451,8 +475,8 @@ def define_set_dir_dfile_ensmble():
     ],
 )
 def test_read_distributed_atomic(
+    request,
     setup_environment,
-    spark_context,
     atomic_time_series_generator,
     atomic_seismogram_generator,
     scheduler,
@@ -485,9 +509,12 @@ def test_read_distributed_atomic(
     """
     print("Starting test with scheduler=", scheduler, " and collection=", collection)
     if scheduler == "spark":
+        spark_context = request.getfixturevalue("spark_context")
         context = spark_context
+        dask_client = None
     else:
         context = None
+        dask_client = request.getfixturevalue("dask_test_client")
     if collection == "wf_TimeSeries":
         wfid_list = atomic_time_series_generator
     elif collection == "wf_Seismogram":
@@ -502,12 +529,7 @@ def test_read_distributed_atomic(
         scheduler=scheduler,
         spark_context=context,
     )
-    if scheduler == "dask":
-        wfdata_list = bag_or_rdd.compute()
-    elif scheduler == "spark":
-        wfdata_list = bag_or_rdd.collect()
-    else:
-        raise ValueError("Illegal value scheduler=", scheduler)
+    wfdata_list = _collect_parallel_data(bag_or_rdd, scheduler, dask_client)
     assert len(wfdata_list) == number_atomic_wf
     for d in wfdata_list:
         wfid = d["_id"]
@@ -538,12 +560,7 @@ def test_read_distributed_atomic(
         normalize=nrmlist,
         spark_context=context,
     )
-    if scheduler == "dask":
-        wfdata_list = bag_or_rdd.compute()
-    elif scheduler == "spark":
-        wfdata_list = bag_or_rdd.collect()
-    else:
-        raise ValueError("Illegal value scheduler=", scheduler)
+    wfdata_list = _collect_parallel_data(bag_or_rdd, scheduler, dask_client)
 
     assert len(wfdata_list) == number_atomic_wf
     for d in wfdata_list:
@@ -571,6 +588,7 @@ def test_read_distributed_atomic(
         collection=collection,
         data_tag="save_number_1",
         scheduler=scheduler,
+        dask_client=dask_client,
     )
     # Default above is assumed for return_data == False.  In that
     # case write_distributed_data should return a list of ObjectIds
@@ -594,12 +612,7 @@ def test_read_distributed_atomic(
         data_tag="save_number_1",
         spark_context=context,
     )
-    if scheduler == "dask":
-        wfdata_list = bag_or_rdd.compute()
-    elif scheduler == "spark":
-        wfdata_list = bag_or_rdd.collect()
-    else:
-        raise ValueError("Illegal value scheduler=", scheduler)
+    wfdata_list = _collect_parallel_data(bag_or_rdd, scheduler, dask_client)
     assert len(wfdata_list) == number_atomic_wf
     # test basic dataframe input - dataframe converter features are tested
     # in a different function
@@ -615,12 +628,7 @@ def test_read_distributed_atomic(
         npartitions=number_partitions,
         spark_context=context,
     )
-    if scheduler == "dask":
-        wfdata_list = bag_or_rdd.compute()
-    elif scheduler == "spark":
-        wfdata_list = bag_or_rdd.collect()
-    else:
-        raise ValueError("Illegal value scheduler=", scheduler)
+    wfdata_list = _collect_parallel_data(bag_or_rdd, scheduler, dask_client)
     # note this dependency on above settign new_wfids - watch out if editing
     assert len(wfdata_list) == number_atomic_wf
     for d in wfdata_list:
@@ -656,12 +664,7 @@ def test_read_distributed_atomic(
         data_tag="save_number_1",
         spark_context=context,
     )
-    if scheduler == "dask":
-        wfdata_list = bag_or_rdd.compute()
-    elif scheduler == "spark":
-        wfdata_list = bag_or_rdd.collect()
-    else:
-        raise ValueError("Illegal value scheduler=", scheduler)
+    wfdata_list = _collect_parallel_data(bag_or_rdd, scheduler, dask_client)
     assert len(wfdata_list) == number_atomic_wf
     for d in wfdata_list:
         assert d.is_defined("merged_source_id")
@@ -679,10 +682,10 @@ def test_read_distributed_atomic(
     ],
 )
 def test_write_distributed_atomic(
+    request,
     setup_environment,
     scheduler,
     collection,
-    spark_context,
     define_kill_one,
     define_massacre,
     define_set_one_invalid,
@@ -700,9 +703,12 @@ def test_write_distributed_atomic(
     """
     print("Starting test with scheduler=", scheduler, " and collection=", collection)
     if scheduler == "spark":
+        spark_context = request.getfixturevalue("spark_context")
         context = spark_context
+        dask_client = None
     else:
         context = None
+        dask_client = request.getfixturevalue("dask_test_client")
     # generators create wfid_list but we ignore it in these tests
     # Deleted to assure not misused below
     if collection == "wf_TimeSeries":
@@ -757,6 +763,7 @@ def test_write_distributed_atomic(
         collection=collection,
         data_tag="save_number_1",
         scheduler=scheduler,
+        dask_client=dask_client,
     )
     # Default above is assumed for return_data == False.  In that
     # case write_distributed_data should return a list of ObjectIds
@@ -783,10 +790,7 @@ def test_write_distributed_atomic(
         spark_context=context,
         data_tag="save_number_1",
     )
-    if scheduler == "dask":
-        dlist0 = bag_or_rdd.compute()
-    elif scheduler == "spark":
-        dlist0 = bag_or_rdd.collect()
+    dlist0 = _collect_parallel_data(bag_or_rdd, scheduler, dask_client)
     # Sanity check to verify that did what id should have done
     assert len(dlist0) == number_atomic_wf
     for d in dlist0:
@@ -820,6 +824,7 @@ def test_write_distributed_atomic(
         collection=collection,
         data_tag="save_explicit_kill",
         scheduler=scheduler,
+        dask_client=dask_client,
     )
     assert len(newwfidslist) == number_atomic_wf
     # kills are returned as None - this function counts not none values
@@ -858,6 +863,7 @@ def test_write_distributed_atomic(
         collection=collection,
         data_tag="save_explicit_kill_w_cremation",
         scheduler=scheduler,
+        dask_client=dask_client,
         cremate=True,
     )
     assert len(newwfidslist) == number_atomic_wf
@@ -891,6 +897,7 @@ def test_write_distributed_atomic(
         collection=collection,
         data_tag="save_kill_all",
         scheduler=scheduler,
+        dask_client=dask_client,
     )
     assert len(newwfidslist) == number_atomic_wf
     # kills are returned as None - this function counts not none values
@@ -924,6 +931,7 @@ def test_write_distributed_atomic(
         collection=collection,
         data_tag="save_pedantic_kill",
         scheduler=scheduler,
+        dask_client=dask_client,
     )
     assert len(newwfidslist) == number_atomic_wf
     # kills are returned as None - this function counts not none values
@@ -961,6 +969,7 @@ def test_write_distributed_atomic(
         collection=collection,
         data_tag="save_pedantic_kill_w_cremation",
         scheduler=scheduler,
+        dask_client=dask_client,
         cremate=True,
     )
     assert len(newwfidslist) == number_atomic_wf
@@ -997,6 +1006,7 @@ def test_write_distributed_atomic(
         collection=collection,
         data_tag=data_tag,
         scheduler=scheduler,
+        dask_client=dask_client,
     )
     query = {"data_tag": data_tag}
     n = db[collection].count_documents(query)
@@ -1018,10 +1028,7 @@ def test_write_distributed_atomic(
         spark_context=context,
         data_tag=data_tag,
     )
-    if scheduler == "dask":
-        wflist = bag_or_rdd.compute()
-    else:
-        wflist = bag_or_rdd.collect()
+    wflist = _collect_parallel_data(bag_or_rdd, scheduler, dask_client)
     assert len(wflist) == number_atomic_wf
     for d in wflist:
         assert d.live
@@ -1053,8 +1060,8 @@ def get_srclist_by_tag(db, data_tag) -> list:
     ],
 )
 def test_read_distributed_ensemble(
+    request,
     setup_environment,
-    spark_context,
     TimeSeriesEnsemble_generator,
     SeismogramEnsemble_generator,
     scheduler,
@@ -1062,16 +1069,12 @@ def test_read_distributed_ensemble(
 ):
     print("Starting test with scheduler=", scheduler, " and collection=", collection)
     if scheduler == "spark":
+        spark_context = request.getfixturevalue("spark_context")
         context = spark_context
         dask_client = None
     else:
         context = None
-        # Create Dask distributed client with MongoDB worker plugin for ensemble tests
-        dask_client = DaskClient(processes=False, n_workers=2, threads_per_worker=1)
-        plugin = MongoDBWorker(
-            _MongoPluginMsPASSClientStub(DBClient("mongodb://localhost:27017/"))
-        )
-        dask_client.register_worker_plugin(plugin)
+        dask_client = request.getfixturevalue("dask_test_client")
 
     # warning src_data_list values must match string set in generators
     if collection == "wf_TimeSeries":
@@ -1228,10 +1231,10 @@ def test_read_distributed_ensemble(
     ],
 )
 def test_write_distributed_ensemble(
+    request,
     setup_environment,
     scheduler,
     collection,
-    spark_context,
     define_kill_one_member,
     define_massacre,
     define_set_one_invalid_member,
@@ -1246,16 +1249,12 @@ def test_write_distributed_ensemble(
     """
     print("Starting test with scheduler=", scheduler, " and collection=", collection)
     if scheduler == "spark":
+        spark_context = request.getfixturevalue("spark_context")
         context = spark_context
         dask_client = None
     else:
         context = None
-        # Create Dask distributed client with MongoDB worker plugin for ensemble tests
-        dask_client = DaskClient(processes=False, n_workers=2, threads_per_worker=1)
-        plugin = MongoDBWorker(
-            _MongoPluginMsPASSClientStub(DBClient("mongodb://localhost:27017/"))
-        )
-        dask_client.register_worker_plugin(plugin)
+        dask_client = request.getfixturevalue("dask_test_client")
     if collection == "wf_TimeSeries":
         wfid_list = TimeSeriesEnsemble_generator
         src_data_tag = "timeseries"

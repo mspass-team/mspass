@@ -25,6 +25,7 @@ from mspasspy.ccore.utility import (
 
 try:
     import dask
+    import dask.bag
 
     _mspasspy_has_dask = True
 except ImportError:

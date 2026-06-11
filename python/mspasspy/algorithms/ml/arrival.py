@@ -1,8 +1,10 @@
 import logging
-import numpy as np
-import seisbench.models as sbm
+from typing import TYPE_CHECKING
 
-from seisbench.models.base import WaveformModel
+import numpy as np
+
+if TYPE_CHECKING:
+    from seisbench.models.base import WaveformModel
 from mspasspy.ccore.seismic import TimeSeries, TimeSeriesEnsemble
 from mspasspy.ccore.algorithms.basic import TimeWindow
 from obspy import UTCDateTime
@@ -12,7 +14,7 @@ def annotate_arrival_time(
     timeseries: TimeSeries,
     threshold=0.2,
     time_window: TimeWindow = None,
-    model: WaveformModel = None,
+    model: "WaveformModel" = None,
     model_args: dict = None,
 ):
     """
@@ -50,13 +52,15 @@ def annotate_arrival_time(
     timeseries.rtoa()
 
     # load pretrained model based on the args if not provided
-    if model == None:
+    if model is None:
+        import seisbench.models as sbm
+
         # 'stead' model was trained on STEAD for 100 epochs with a learning rate of 0.01.
         # use sbm.PhaseNet.list_pretrained(details=True) to list out other supported models
         # when using this model, please reference the SeisBench publications listed at https://github.com/seisbench/seisbench
         pretrained_model = (
             "stead"
-            if (model_args == None or "name" not in model_args)
+            if (model_args is None or "name" not in model_args)
             else model_args["name"]
         )
         model = sbm.PhaseNet.from_pretrained(pretrained_model)

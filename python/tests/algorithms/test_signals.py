@@ -1,4 +1,5 @@
 import sys
+import warnings
 import obspy
 import obspy.signal.cross_correlation
 import numpy as np
@@ -199,15 +200,27 @@ def test_correlation_detector():
 
 
 def test_templates_max_similarity():
-    # fixme seed id problem
     tse1 = get_live_timeseries_ensemble(3)
     tse2 = get_live_timeseries_ensemble(3)
     st1 = tse1.toStream()
     st2 = tse2.toStream()
-    res = templates_max_similarity(tse1, UTCDateTime(0), [tse2])
-    res2 = obspy.signal.cross_correlation.templates_max_similarity(
-        st1, UTCDateTime(0), [st2]
-    )
+    with warnings.catch_warnings():
+        warnings.filterwarnings(
+            "ignore",
+            message=r"Skipping trace .* in template correlation .*",
+            category=UserWarning,
+            module=r"obspy\.signal\.cross_correlation",
+        )
+        warnings.filterwarnings(
+            "ignore",
+            message=r"Skipping template\(s\) for station .*",
+            category=UserWarning,
+            module=r"obspy\.signal\.cross_correlation",
+        )
+        res = templates_max_similarity(tse1, UTCDateTime(0), [tse2])
+        res2 = obspy.signal.cross_correlation.templates_max_similarity(
+            st1, UTCDateTime(0), [st2]
+        )
     assert res == res2
 
 

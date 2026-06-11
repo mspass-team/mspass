@@ -17,17 +17,15 @@ jobs:
       uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
-#    - uses: actions/cache@v4
-#      with:
-#        path: |
-#          ~/.cache/pip
-#          ${{ env.pythonLocation }}/bin/*
-#          ${{ env.pythonLocation }}/include
-#          ${{ env.pythonLocation }}/lib/python*/site-packages/*
-#          !${{ env.pythonLocation }}/bin/pip*
-#          !${{ env.pythonLocation }}/lib/python*/site-packages/pip*
-#          !${{ env.pythonLocation }}/lib/python*/site-packages/setuptools*
-#        key: ${{ env.pythonLocation }}-${{ hashFiles('setup.py') }}-${{ hashFiles('pyproject.toml') }}
+        cache: pip
+        cache-dependency-path: |
+          pyproject.toml
+          .github/workflows/python-package.yml
+    - name: Set up Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: temurin
+        java-version: '17'
     - name: Install CXX Dependencies
       run: sudo apt-get update && sudo apt-get install -yq cmake gfortran libboost-dev libboost-serialization-dev liblapack-dev
     - name: Install MongoDB
@@ -37,23 +35,26 @@ jobs:
         python -m pip install --upgrade pip
         python -m pip install --upgrade --upgrade-strategy eager \
           setuptools setuptools_scm wheel numpy cmake pytest pytest-cov 
-    - name: Install Apache Spark
+    - name: Install Spark Python Dependencies
+      env:
+        PYSPARK_HADOOP_VERSION: "3"
       run: |
-        mkdir -p /opt
-        wget -q -O /opt/spark.tgz https://archive.apache.org/dist/spark/spark-3.5.4/spark-3.5.4-bin-hadoop3.tgz
-        tar xzf /opt/spark.tgz -C /opt/
-        rm /opt/spark.tgz
-        export SPARK_HOME=/opt/spark-3.5.4-bin-hadoop3
-        echo "SPARK_HOME=/opt/spark-3.5.4-bin-hadoop3" >> $GITHUB_ENV
-        export PATH=$PATH:/opt/spark-3.5.4-bin-hadoop3/bin
-        echo "/opt/spark-3.5.4-bin-hadoop3/bin" >> $GITHUB_PATH
-        PYSPARK_HADOOP_VERSION=3 python -m pip install --upgrade --upgrade-strategy eager pyspark pytest-spark
-        sudo apt-get update && sudo apt-get install openjdk-8-jdk
+        python -m pip install --upgrade --upgrade-strategy eager pyspark pytest-spark
+        python - <<'PY'
+        import os
+        from pathlib import Path
+        import pyspark
+
+        spark_home = Path(pyspark.__file__).resolve().parent
+        with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as env_file:
+            env_file.write(f"SPARK_HOME={spark_home}\n")
+        with open(os.environ["GITHUB_PATH"], "a", encoding="utf-8") as path_file:
+            path_file.write(f"{spark_home / 'bin'}\n")
+        PY
     - name: Free up disk space
       run: |
         sudo apt-get clean
         sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc
-        pip cache purge
         df -h
     - name: Install
       env:
@@ -63,7 +64,7 @@ jobs:
       run: |
         export MSPASS_HOME=$(pwd)
         export SPARK_LOCAL_IP=127.0.0.1
-        pytest --cov=mspasspy python/tests/
+        PYTHONUNBUFFERED=1 PYTHONFAULTHANDLER=1 pytest -vv --durations=25 --durations-min=1 --cov=mspasspy python/tests/
         make test -C build/temp.*/
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v4
@@ -89,4 +90,3 @@ jobs:
         BRANCH: gh-pages 
         FOLDER: docs/build/html 
         CLEAN: false
-
