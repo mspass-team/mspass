@@ -286,7 +286,9 @@ CoreTimeSeries NoiseStableDecon::inverse_wavelet() {
 }
 
 Metadata NoiseStableDecon::QCMetrics() {
-  Metadata md;
+  Metadata md(this->BasicQCMetrics("NoiseStableDecon", processed));
+  md.put("decon_operator_nfft", nfft);
+  md.put("decon_operator_sample_shift", sample_shift);
   md.put("ns_gid_gain_max_requested", gain_max);
   md.put("ns_gid_gain_max_actual", max_gain_actual);
   md.put("ns_gid_mu_min", mu_min);

@@ -84,6 +84,7 @@ public:
   void process();
   mspass::seismic::CoreSeismogram getresult();
   mspass::seismic::CoreSeismogram sparse_output();
+  std::vector<double> lag_weight_vector() const;
   /*! Legacy alias for output_shaping_wavelet inherited from ScalarDecon. */
   mspass::seismic::CoreTimeSeries ideal_output();
   mspass::seismic::CoreTimeSeries actual_output();
@@ -101,6 +102,7 @@ private:
   double residual_ratio_floor, residual_improvement_floor;
   double resid_l2_initial, resid_l2_prev, resid_l2_final;
   double resid_linf_initial, resid_linf_final;
+  double lag_weight_linf_final, lag_weight_l2_final;
   IterDeconType decon_type;
   std::unique_ptr<ScalarDecon> preprocessor;
   std::unique_ptr<CNRDeconEngine> cnrprocessor;
@@ -115,6 +117,7 @@ private:
   bool leaf_parameters_changed;
   mspass::utility::Metadata changed_leaf_metadata;
   std::vector<double> actual_o_fir;
+  std::vector<double> lag_weights, lag_weight_penalty;
   std::list<ThreeCSpike> spikes;
   double ns_peak_sigma_threshold, ns_peak_probability_threshold;
   double ns_residual_noise_ratio_floor, ns_peak_threshold;
@@ -123,12 +126,18 @@ private:
   int ns_max_spikes, ns_refit_interval;
   bool ns_use_empirical_noise_threshold, ns_converged;
   std::string ns_stop_reason;
+  bool gid_converged;
+  std::string gid_stop_reason;
+  std::string lag_weight_penalty_function;
+  double lag_weight_penalty_scale_factor;
+  int lag_weight_function_width;
 
   void initialize_inverse_operator();
   void invalidate_processing_state();
   double compute_ns_peak_threshold();
   void rescale_spike(ThreeCSpike &spk);
   void update_residual_matrix(const ThreeCSpike &spk);
+  void update_lag_weights(const int col);
 };
 } // namespace mspass::algorithms::deconvolution
 #endif

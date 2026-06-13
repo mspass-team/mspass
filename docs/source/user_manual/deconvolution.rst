@@ -287,6 +287,34 @@ Three-component and iterative operators
     system with LAPACK Cholesky and LU fallback.  The sparse impulse response is
     exposed by ``sparse_output``.
 
+    Candidate spike selection can be biased by a lag-weight penalty function.
+    The penalty is configured with ``lag_weight_penalty_function`` (``none``,
+    ``boxcar``, or ``cosine_taper``), ``lag_weight_penalty_scale_factor``, and
+    ``lag_weight_function_width``.  After a spike is accepted, the selected lag
+    neighborhood is multiplied by that penalty, which suppresses repeated picks
+    of the same large arrival and encourages later iterations to search for
+    weaker arrivals.  ``QCMetrics`` reports ``lag_weight_Linf_final`` and
+    ``lag_weight_L2_final`` and both engines expose the full final weight curve
+    with ``lag_weight_vector()`` for diagnostic plotting.  The metadata fields
+    ``gid_penalty_scale_factor`` and ``gid_penalty_width`` preserve configured
+    values, while ``gid_penalty_effective_width`` records the helper kernel
+    length actually applied (for example, ``none`` is a one-sample no-op
+    kernel).  The Python wrappers store scalar QC fields in their QC metadata
+    subdocuments, so they are saved with normal database records.
+
+    The three helper modes map directly to the final lag-weight plots produced
+    by the validation tests.  The theoretical interpretation and recommended
+    default are summarized in `Lag-weight penalty framework`_.
+
+    The time- and frequency-domain GID engines now use the same iteration-cap
+    behavior.  Reaching ``maximum_iterations`` stops the iteration, returns the
+    best accepted sparse model after the final amplitude refit, and records
+    ``gid_stop_reason="max_iterations"`` with ``gid_converged=false``.  Other
+    common QC fields include ``decon_operator``, ``decon_processed``,
+    ``gid_iterations``, ``gid_number_spikes``, ``gid_penalty_function``,
+    ``gid_penalty_scale_factor``, ``gid_penalty_width``, and
+    ``gid_penalty_effective_width``.
+
     Both GID Python wrappers use the same window convention.  If
     ``signal_window`` is omitted, the input datum's full time range is used as
     the analysis/output window.  If ``noise_window`` is omitted, the engine's
@@ -338,6 +366,98 @@ Three-component and iterative operators
     residual-energy threshold is a noise-level stopping rule: increasing it
     suppresses noise-generated spikes, while decreasing it can recover weak
     arrivals at the risk of fitting noise.
+
+Lag-weight penalty framework
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The GID penalty is best viewed as an adaptive prior on future spike locations,
+not as a shrinkage applied to amplitudes that have already been accepted.  At
+iteration :math:`k`, let :math:`\mathbf{a}^{(k)}_j` be the three-component
+detection-function vector at candidate lag sample :math:`j`, and let
+:math:`\ell^{(k)}_j \in [0, 1]` be the accumulated lag weight.  Ignoring
+candidate lags where the residual-update kernel cannot fit inside the working
+window, the implemented selection statistic is
+
+.. math::
+
+   q^{(k)}_j = \left(\ell^{(k)}_j\right)^2
+              \left\|\mathbf{a}^{(k)}_j\right\|_2^2,
+   \qquad
+   j_* = \operatorname*{arg\,max}_j q^{(k)}_j .
+
+The candidate spike amplitude is then rescaled against the compact resolution
+kernel and accepted only if the data-domain residual :math:`L_2` norm
+decreases.  Consequently, the penalty influences which lag is tried next, but
+the residual test still protects the physical data-domain fit.
+
+After accepting a spike at :math:`j_*`, the engine multiplies the lag weights
+near :math:`j_*` by a compact penalty kernel :math:`p_m`:
+
+.. math::
+
+   \ell^{(k+1)}_j =
+       \operatorname{clip}\left(\ell^{(k)}_j p_{j-j_*}, 0, 1\right).
+
+Outside the configured penalty width, :math:`p_m=1`.  Repeated hits near the
+same arrival therefore multiply down the same neighborhood, making the
+penalty a soft exclusion process.  Equivalently, the spike picker maximizes
+the unweighted detection energy with an adaptive location cost
+:math:`-2\log \ell^{(k)}_j`; already explained neighborhoods become more
+expensive while untouched lags retain cost zero.
+
+Let :math:`\alpha` be ``lag_weight_penalty_scale_factor`` and let
+:math:`W=2h+1` be the odd penalty width in samples.  If an even width is
+configured, the implementation increases it by one so the kernel has a center
+sample.  The implemented helper kernels are:
+
+.. math::
+
+   p_m =
+   \begin{cases}
+   1, & \text{``none''}, \\
+   1-\alpha, & \text{``boxcar'' and } |m|\le h, \\
+   1-\frac{\alpha}{2}\left[1+\cos\left(\frac{\pi m}{h+1}\right)\right],
+      & \text{``cosine_taper'' and } |m|\le h, \\
+   1, & |m| > h .
+   \end{cases}
+
+``none`` leaves the greedy selector unchanged.  It is useful as a diagnostic
+baseline and can be appropriate for very clean data, but it provides no
+mechanism to discourage repeated picks of a strong arrival.  ``boxcar`` is a
+hard local suppression.  It is easy to interpret, but its discontinuous edges
+can move false picks to the first unpenalized samples outside the window.
+``cosine_taper`` is a smooth compact suppression: the accepted sample receives
+the strongest penalty and nearby samples are downweighted gradually.  With the
+current default :math:`\alpha=0.5` and :math:`W=5`, the center sample is
+multiplied by ``0.5``, adjacent samples by ``0.625``, and edge samples by
+``0.875``.
+
+The optional validation figures demonstrate this framework directly.  The
+``*_least_square_penalty_lag_weights.png`` plots show the final
+:math:`\ell^{(K)}_j` curve above an aligned true sparse impulse response.  A
+dip in that curve is the accumulated adaptive cost for selecting another
+candidate near an already accepted spike.  The companion shaped and sparse
+penalty plots show the resulting receiver functions and raw spike support.
+The stress validation intentionally uses the less stable ``least_square``
+inverse mode in those figures so the penalty behavior is visible; with
+``ns_gid`` the inverse operator is often stable enough that all three penalty
+helpers select nearly the same support.
+
+The recommended production method is therefore ``cosine_taper`` with
+``lag_weight_penalty_scale_factor=0.5`` and
+``lag_weight_function_width=5``.  This is strong enough to reduce repeated
+selection of the same large arrival, but weak and local enough to preserve
+nearby arrivals of opposite polarity.  The width is in samples, so users with
+different sample intervals should choose a width that covers the central
+repeat-pick neighborhood of the resolution kernel without spanning physically
+distinct arrivals.  ``boxcar`` should be reserved for tests or cases where a
+deliberate hard exclusion is desired.  In noisy production workflows, this
+lag penalty should be combined with the ``ns_gid`` inverse mode; the
+least-square validation plots use ``least_square`` only because its weaker
+noise stability makes the differences among penalty kernels easier to see.
+For backward compatibility, the distributed parameter files still default to
+``deconvolution_type least_square``.  Users should switch the selected GID
+branch to ``deconvolution_type ns_gid`` for noisy production deconvolution.
 
 ``NS-GID`` inverse mode
     Noise-aware stable generalized iterative deconvolution is selected with
@@ -412,9 +532,16 @@ set of scalar, GID, sparse-output, and external-wavelet validation plots, run:
 
 The output directory contains overlays for scalar/CNR methods, shaped GID
 receiver functions, raw GID sparse impulse responses, external-wavelet runs,
-and the source wavelets used in the synthetic cases.  The sparse GID plots are
-the most direct visual comparison against the known sparse truth; shaped GID
-and CNR plots intentionally have more limited bandwidth.  The external-wavelet
+and the source-wavelet validation setups used in the synthetic cases.  The
+setup figures include the notched source wavelet, noisy convolved data, true
+three-component impulse response, and the requested manual plot noise scale.
+``--decon-validation-noise-scale`` is passed directly as the Gaussian noise
+amplitude before the synthetic bandpass coloring filter; it is not a target
+SNR or percent-noise value.  The setup figure normalizes the displayed data
+panel, so large changes in absolute noise amplitude are easiest to judge by
+the waveform shape and the noise-scale label.  The sparse GID plots are the
+most direct visual comparison against the known sparse truth; shaped GID and
+CNR plots intentionally have more limited bandwidth.  The external-wavelet
 overlay uses raw scalar inverse results and raw GID sparse outputs so spike
 support can be checked visually.  The same plot run also writes a
 ``external_wavelet_all_methods_display_filtered.png`` overlay with a common

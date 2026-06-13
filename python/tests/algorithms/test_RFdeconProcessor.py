@@ -68,6 +68,13 @@ def test_RFdeconProcessor():
         "TimeDomainLeastSquares",
         "WaterLevel",
     ]
+    expected_operator_names = {
+        "MultiTaperPowerXcor": "MultiTaperXcorDecon",
+        "MultiTaperPowerSpecDiv": "MultiTaperSpecDivDecon",
+        "LeastSquares": "LeastSquareDecon",
+        "TimeDomainLeastSquares": "TimeDomainLeastSquareDecon",
+        "WaterLevel": "WaterLevelDecon",
+    }
     decon_processor = RFdeconProcessor(alg="MultiTaperPowerXcor")
 
     np.random.seed(20240602)
@@ -97,6 +104,15 @@ def test_RFdeconProcessor():
         for k in processor.md.keys():
             assert processor.md[k] == processor_cpy.md[k]
         result = processor.apply()
+        qc = processor.QCMetrics()
+        assert qc["decon_operator"] == expected_operator_names[alg]
+        assert qc["decon_processed"]
+        assert qc["decon_input_loaded"]
+        assert qc["decon_data_npts"] > 0
+        assert qc["decon_wavelet_npts"] > 0
+        assert qc["decon_output_npts"] > 0
+        assert qc["decon_shaping_wavelet_nfft"] > 0
+        assert np.isfinite(qc["decon_shaping_wavelet_dt"])
         # in this test the output is meaningless - just verify length
         # assert len(result) == 1024
         ao = processor.actual_output()

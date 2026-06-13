@@ -108,6 +108,7 @@ public:
   ~TimeDomainGIDDecon();
   mspass::seismic::CoreSeismogram getresult();
   mspass::seismic::CoreSeismogram sparse_output();
+  std::vector<double> lag_weight_vector() const;
   /*! Legacy alias for output_shaping_wavelet inherited from ScalarDecon. */
   mspass::seismic::CoreTimeSeries ideal_output();
   mspass::seismic::CoreTimeSeries actual_output();
@@ -235,6 +236,11 @@ private:
   double ns_ridge_beta, ns_fractional_improvement_final;
   bool ns_use_empirical_noise_threshold, ns_converged;
   std::string ns_stop_reason;
+  bool gid_converged;
+  std::string gid_stop_reason;
+  std::string lag_weight_penalty_function;
+  double lag_weight_penalty_scale_factor;
+  int lag_weight_function_width;
 
 };
 } // namespace mspass::algorithms::deconvolution

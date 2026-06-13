@@ -970,6 +970,17 @@ TimeSeries CNR3CDecon::inverse_wavelet(double tshift0) {
 }
 Metadata CNR3CDecon::QCMetrics() {
   Metadata result;
+  result.put("decon_operator", string("CNR3CDecon"));
+  result.put("decon_processed", regularization_bandwidth_fraction > 0.0);
+  result.put("decon_operator_nfft", nfft);
+  result.put("decon_operator_sample_shift", sample_shift);
+  result.put("decon_sample_interval", operator_dt);
+  result.put("decon_window_start", processing_window.start);
+  result.put("decon_window_end", processing_window.end);
+  result.put("noise_window_start", noise_window.start);
+  result.put("noise_window_end", noise_window.end);
+  result.put("cnr_regularization_bandwidth_fraction",
+             regularization_bandwidth_fraction);
   result.put("waveletbf", regularization_bandwidth_fraction);
   result.put("maxsnr0", peak_snr[0]);
   result.put("maxsnr1", peak_snr[1]);

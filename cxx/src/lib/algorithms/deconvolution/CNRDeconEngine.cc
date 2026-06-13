@@ -835,6 +835,13 @@ TimeSeries CNRDeconEngine::inverse_wavelet(const TimeSeries &wavelet,
 
 Metadata CNRDeconEngine::QCMetrics() {
   Metadata result;
+  result.put("decon_operator", string("CNRDeconEngine"));
+  result.put("decon_processed", this->regularization_bandwidth_fraction > 0.0);
+  result.put("decon_operator_nfft", nfft);
+  result.put("decon_operator_sample_shift", sample_shift);
+  result.put("decon_sample_interval", operator_dt);
+  result.put("cnr_regularization_bandwidth_fraction",
+             this->regularization_bandwidth_fraction);
   result.put("waveletbf", this->regularization_bandwidth_fraction);
   result.put("maxsnr0", peak_snr[0]);
   result.put("maxsnr1", peak_snr[1]);
