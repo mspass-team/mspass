@@ -569,7 +569,11 @@ GIDAdaptivePenaltyMetrics ApplyGIDAdaptiveMemoryPenalty(
       lag_weights[j] = 0.0;
       continue;
     }
-    lag_weights[j] = exp(-memory[j]);
+    const double updated_weight = exp(-memory[j]);
+    lag_weights[j] =
+        (std::isfinite(updated_weight) && updated_weight >= weight_floor)
+            ? updated_weight
+            : weight_floor;
     linf = max(linf, memory[j]);
     sumsq += memory[j] * memory[j];
   }

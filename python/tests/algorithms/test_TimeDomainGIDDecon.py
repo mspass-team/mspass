@@ -465,9 +465,7 @@ def test_TimeDomainGIDDecon_binding_and_wrapper():
     assert lag_weights.size > 0
     assert np.isfinite(lag_weights).all()
     assert 0.0 <= lag_weights.min() <= lag_weights.max() <= 1.0
-    assert qc["lag_weight_Linf_final"] == pytest.approx(
-        float(np.max(lag_weights))
-    )
+    assert qc["lag_weight_Linf_final"] == pytest.approx(float(np.max(lag_weights)))
     assert qc["lag_weight_L2_final"] == pytest.approx(
         float(np.linalg.norm(lag_weights))
     )
@@ -561,9 +559,7 @@ def test_TimeDomainGIDDecon_kernel_penalty_modes_are_adaptive(
     assert qc["gid_penalty_function"] == penalty_function
     assert qc["gid_penalty_width"] == 101
     assert qc["gid_penalty_effective_width"] != qc["gid_penalty_width"]
-    assert qc["gid_adaptive_penalty_enabled"] == (
-        penalty_function == "adaptive_memory"
-    )
+    assert qc["gid_adaptive_penalty_enabled"] == (penalty_function == "adaptive_memory")
     assert 0.0 <= qc["gid_penalty_last_confidence"] < 1.0
     assert 0.0 <= qc["gid_penalty_last_immediate_strength"] < 1.0
     assert 0.0 <= qc["gid_penalty_last_specificity"] <= 1.0
@@ -922,9 +918,7 @@ def test_TimeDomainGIDDecon_validates_single_spike_recovery():
     _assert_single_spike_recovery(rf, ratio_tolerance=2.0e-3)
 
 
-@pytest.mark.parametrize(
-    "mode", ["least_square", "water_level", "multi_taper", "cnr"]
-)
+@pytest.mark.parametrize("mode", ["least_square", "water_level", "multi_taper", "cnr"])
 def test_TimeDomainGIDDecon_inverse_modes_are_valid(tmp_path, mode):
     data = _make_single_spike_convolution_data()
     pf = _pf_with_mode(

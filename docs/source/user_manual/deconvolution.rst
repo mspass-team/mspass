@@ -469,8 +469,8 @@ mechanism to discourage repeated picks of a strong arrival.  ``boxcar`` is a
 hard local suppression.  It is easy to interpret, but its discontinuous edges
 can move false picks to the first unpenalized samples outside the window.
 ``cosine_taper`` is a smooth compact suppression: the accepted sample receives
-the strongest penalty and nearby samples are downweighted gradually.  With the
-current default :math:`\alpha=0.5` and :math:`W=5`, the center sample is
+the strongest penalty and nearby samples are downweighted gradually.  For
+example, with :math:`\alpha=0.5` and :math:`W=5`, the center sample is
 multiplied by ``0.5``, adjacent samples by ``0.625``, and edge samples by
 ``0.875``.
 
@@ -906,11 +906,13 @@ three-component impulse response, and the requested manual plot noise scale.
 amplitude before the synthetic bandpass coloring filter; it is not a target
 SNR or percent-noise value.  The setup figure normalizes the displayed data
 panel, so large changes in absolute noise amplitude are easiest to judge by
-the waveform shape and the noise-scale label.  The sparse GID plots are the
-most direct visual comparison against the known sparse truth; shaped GID and
-CNR plots intentionally have more limited bandwidth.  The external-wavelet
-overlay uses raw scalar inverse results and raw GID sparse outputs so spike
-support can be checked visually.  The same plot run also writes a
+the waveform shape and the noise-scale label.  Adaptive-memory plot labels
+report the last selected-spike confidence as ``conf`` and the last memory
+retention factor as ``decay``.  The sparse GID plots are the most direct visual
+comparison against the known sparse truth; shaped GID and CNR plots
+intentionally have more limited bandwidth.  The external-wavelet overlay uses
+raw scalar inverse results and raw GID sparse outputs so spike support can be
+checked visually.  The same plot run also writes a
 ``external_wavelet_all_methods_display_filtered.png`` overlay with a common
 plotting-only Ricker filter so different methods can be compared at a similar
 visual bandwidth.  That display filter is not part of the scalar algorithms

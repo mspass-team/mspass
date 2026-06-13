@@ -21,7 +21,10 @@ def pytest_addoption(parser):
         action="store",
         type=float,
         default=0.01,
-        help="colored-noise scale for optional deconvolution validation plots",
+        help=(
+            "Gaussian noise amplitude before coloring for optional "
+            "deconvolution validation plots"
+        ),
     )
 
 
