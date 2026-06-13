@@ -374,6 +374,9 @@ Three-component and iterative operators
 Lag-weight penalty framework
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+Current lag-weight penalty methods
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 The GID penalty is best viewed as an adaptive prior on future spike locations,
 not as a shrinkage applied to amplitudes that have already been accepted.  At
 iteration :math:`k`, let :math:`\mathbf{a}^{(k)}_j` be the three-component
@@ -494,6 +497,168 @@ among penalty kernels easier to see.  For backward compatibility, the
 distributed parameter files still default to ``deconvolution_type
 least_square``.  Users should switch the selected GID branch to
 ``deconvolution_type ns_gid`` for noisy production deconvolution.
+
+Future adaptive anti-cycling penalty framework
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The implemented penalty methods above are deliberately simple.  They are best
+understood as a first anti-cycling rule for a greedy sparse pursuit, but they
+are not a complete theory for avoiding oscillation between two or more stable
+GID states.  This subsection describes the fuller model that motivates future
+adaptive penalty improvements.  It is a theoretical framework and design
+target, not a list of options currently exposed in the parameter files.
+
+The relevant analogies come from several domains with similar failure modes.
+Tabu search keeps a finite memory of recently explored states so a discrete
+optimizer does not cycle.  Matching pursuit and orthogonal matching pursuit
+avoid repeatedly choosing highly coherent dictionary atoms.  Non-maximum
+suppression suppresses detections in an uncertainty footprint around an
+accepted detection.  Refractory-period models temporarily inhibit repeat
+events after a spike, while active-set and trust-region methods relax
+constraints as the local model changes.  In GID language, these all point to
+the same principle: the penalty should be a finite-memory cost over coherent
+lag states, not a permanent declaration that a lag can never be revisited.
+It should preserve the current invariant that the penalty changes which
+candidate lag is tried next, while the data-domain residual decrease test
+remains the final acceptance rule.
+
+Let :math:`M^{(k)}_j \ge 0` be a lag-memory field, or anti-cycling cost, at
+lag sample :math:`j`.  The current lag-weight picker can be written
+equivalently as
+
+.. math::
+
+   q^{(k)}_j =
+      \exp\left[-2M^{(k)}_j\right]
+      \left\|\mathbf{a}^{(k)}_j\right\|_2^2 ,
+   \qquad
+   M^{(k)}_j = -\log \ell^{(k)}_j .
+
+The basic implemented update adds a local cost to :math:`M_j` after each
+accepted spike.  The current helpers are special cases of a broader
+event-conditioned penalty: they use either a fixed support or a
+kernel-derived support, a constant penalty strength, and a purely
+multiplicative accumulated lag weight.  A fuller anti-cycling model separates
+three questions that are combined in the fixed-width helpers:
+
+1. Which lags are in the same ambiguous state as the accepted spike?
+2. How reliable is the accepted spike as an explanation of the residual?
+3. How long should that anti-cycling memory persist?
+
+For an accepted spike at sample :math:`s`, define a variable-width,
+event-conditioned support or ambiguity footprint :math:`A_s(j)` from the
+coherence of the actual GID resolution-kernel atoms:
+
+.. math::
+
+   A_s(j) =
+      \left(
+      \frac{\left|\langle r_s, r_j\rangle\right|}
+           {\|r_s\|_2\|r_j\|_2}
+      \right)^q ,
+
+where :math:`r_s` is the compact residual-update kernel shifted to sample
+:math:`s`.  The exponent :math:`q` is shown only to describe possible shoulder
+shapes; a production implementation should tie that shape to the same
+resolution and noise model used elsewhere rather than expose it as an
+independent tuning knob.  This definition makes the penalty width an observed
+property of indistinguishability in the inverse operator and data window.  A
+broad resolution kernel creates a broad ambiguity footprint; a sharp kernel
+creates a narrow footprint; edge effects or asymmetric usable windows can
+produce asymmetric footprints.  The ``resolution_kernel`` penalty is a
+simplified global version of this idea.  A fuller model could also let
+noise-normalized event evidence narrow or broaden that footprint: high
+amplitude relative to low noise gives better localization and stronger
+memory, while low amplitude relative to high noise implies broader ambiguity
+but weaker, short-lived memory.
+
+The strength of the new memory should be tied to spike evidence, not a raw
+hand-tuned constant.  A natural evidence variable is a noise-normalized
+three-component detection statistic, for example
+
+.. math::
+
+   Z_s^2 =
+      \mathbf{a}_s^T \Sigma_s^{-1}\mathbf{a}_s ,
+
+where :math:`\Sigma_s` is a local noise covariance for the detection-function
+components.  With diagonal or scalar noise estimates this reduces to the
+usual squared amplitude divided by noise power.  A bounded confidence
+function :math:`B(Z_s)` can then control the penalty strength.  One useful
+shape is monotone, near zero for noise-level spikes, and approaching one for
+high-significance spikes:
+
+.. math::
+
+   B(Z_s) =
+      1 - \exp\left[-\frac{1}{2}
+      \max\left(0, Z_s^2 - Z_0^2\right)\right].
+
+The threshold :math:`Z_0` should come from the same noise model used for
+stopping or NS-GID significance tests, not from a separate ad hoc tuning
+constant.  Strong, high-SNR accepted spikes then create durable anti-cycling
+evidence; marginal noisy spikes create only weak memory and can be revised by
+later iterations if the residual evidence changes.
+
+Finally, the memory should be finite.  A decay rule should preserve the
+original anti-cycling purpose without freezing the search.  The key is that
+decay should be faster when the ambiguity footprint is broad and less
+specific, and slower when the footprint is narrow and local.  Decay should
+also be interpreted as evidence invalidation: later accepted spikes, joint
+refits, or a changed local residual can make old tabu evidence stale.  If
+:math:`N_\mathrm{valid}` is the number of valid lag samples and :math:`W_s`
+is an effective width of :math:`A_s`, an illustrative specificity measure is
+
+.. math::
+
+   S_s = 1 - \frac{W_s}{N_\mathrm{valid}} .
+
+The limiting cases are important.  If a penalty footprint covers nearly the
+whole deconvolution window, it contains little information about where the
+cycle occurs and should be forgotten almost immediately.  If the footprint is
+sharp and local, it is specific anti-cycling evidence and can persist longer.
+Combining spike confidence and footprint specificity gives an illustrative
+adaptive memory retention factor such as
+
+.. math::
+
+   \rho_s =
+      \rho_{\min} +
+      \left(\rho_{\max}-\rho_{\min}\right) B(Z_s) S_s ,
+
+with :math:`0 \le \rho_{\min} \le \rho_s \le \rho_{\max} < 1`.  The bounds
+represent design limits for the model, not recommended user-facing knobs.  The
+conceptual update is then
+
+.. math::
+
+   M^{(k+1)}_j =
+      \rho_s M^{(k)}_j
+      + \alpha B(Z_s) A_s(j).
+
+This model gives the desired behavior in the practical extremes:
+
+* high-SNR, sharp accepted spike: strong, specific memory that lasts;
+* high-SNR, broad ambiguity: strong immediate anti-cycling, but fast recovery;
+* low-SNR, sharp spike: cautious local memory;
+* low-SNR, broad ambiguity: little durable memory, avoiding global lockout.
+
+It also gives a rule for revisiting a penalized lag: the lag should become
+competitive again when its new noise-normalized residual evidence is larger
+than the accumulated anti-cycling memory cost.  That is the connection to
+tabu search and active-set methods.  The memory discourages immediate cycling
+among coherent states, but it does not prove global convergence or replace the
+existing residual-decrease acceptance criterion.
+
+The original motivation is therefore expressed more precisely as follows:
+GID penalty should be a noise-normalized, resolution-coherence-shaped,
+finite-memory tabu cost over lag states.  Variable width identifies the
+ambiguous state; spike amplitude relative to noise measures the evidence for
+remembering it; and adaptive decay controls how quickly nonspecific or weak
+evidence is forgotten.  The existing fixed and kernel-derived helper penalties
+are useful approximations to the spatial-memory part of this framework, but
+they do not yet implement event-specific noise-normalized evidence or adaptive
+memory decay.
 
 ``NS-GID`` inverse mode
     Noise-aware stable generalized iterative deconvolution is selected with
