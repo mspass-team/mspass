@@ -218,9 +218,7 @@ def _make_close_arrival_truth(n=900, dt=0.05, t0=-5.0):
     return truth
 
 
-def _make_close_arrival_cycling_validation_data(
-    noise_scale=0.015, return_truth=False
-):
+def _make_close_arrival_cycling_validation_data(noise_scale=0.015, return_truth=False):
     np.random.seed(314159)
     wavelet = make_simulation_wavelet(corners=[0.45, 6.5])
     notched_wavelet = _notch_filter_vector(
@@ -367,9 +365,7 @@ def _pf_with_gid_mode(tmp_path, pfname, branch_name, mode):
 
 def _replace_once(text, old, new, context):
     count = text.count(old)
-    assert (
-        count == 1
-    ), f"{context}: expected one occurrence of {old!r}, found {count}"
+    assert count == 1, f"{context}: expected one occurrence of {old!r}, found {count}"
     return text.replace(old, new)
 
 
@@ -873,9 +869,7 @@ def _plot_sparse_impulse_components(
     axis.grid(True, color="0.9", linewidth=0.6)
 
 
-def _plot_complex_colored_results(
-    plot_dir, results, truth, wavelet, data, noise_scale
-):
+def _plot_complex_colored_results(plot_dir, results, truth, wavelet, data, noise_scale):
     if plot_dir is None:
         return
     _plot_rf_overlay(
@@ -1333,9 +1327,7 @@ def test_scalar_methods_are_consistent_for_complex_colored_3c_synthetic(
                 "TimeDomainLeastSquares", plot_data
             ),
             "WaterLevel": _scalar_rf_matrix("WaterLevel", plot_data),
-            "MultiTaperPowerXcor": _scalar_rf_matrix(
-                "MultiTaperPowerXcor", plot_data
-            ),
+            "MultiTaperPowerXcor": _scalar_rf_matrix("MultiTaperPowerXcor", plot_data),
             "MultiTaperPowerSpecDiv": _scalar_rf_matrix(
                 "MultiTaperPowerSpecDiv", plot_data
             ),
@@ -1808,9 +1800,7 @@ def test_gid_methods_recover_stress_spike_signs_for_all_inverse_modes(
         matrix = np.asarray(rf.data)
         sparse = engine.sparse_output()
         sparse_matrix = np.asarray(sparse.data)
-        _assert_stress_gid_signs_recovered(
-            sparse_matrix, sparse.t0, sparse.dt
-        )
+        _assert_stress_gid_signs_recovered(sparse_matrix, sparse.t0, sparse.dt)
         plot_results[plot_label] = matrix
         plot_sparse_results[plot_label] = sparse_matrix
         plot_t0 = rf.t0
@@ -1982,9 +1972,7 @@ def test_gid_lag_penalty_improves_stress_fit_and_plots_diagnostics(
             sparse_matrix = np.asarray(sparse.data)
             sparse_results[plot_label] = sparse_matrix
             detection_metrics[qc["gid_penalty_function"]] = (
-                _classify_gid_spike_detections(
-                    sparse_matrix, sparse.t0, sparse.dt
-                )
+                _classify_gid_spike_detections(sparse_matrix, sparse.t0, sparse.dt)
             )
             lag_weight_results[plot_label] = np.asarray(engine.lag_weight_vector())
             qcs[qc["gid_penalty_function"]] = qc
@@ -2044,16 +2032,12 @@ def test_gid_lag_penalty_improves_stress_fit_and_plots_diagnostics(
     assert qcs["adaptive_memory"]["gid_penalty_effective_width"] >= 1
     assert qcs["adaptive_memory"]["gid_penalty_noise_amplitude"] > 0.0
     assert 0.0 <= qcs["adaptive_memory"]["gid_penalty_last_confidence"] < 1.0
-    assert (
-        0.0
-        <= qcs["adaptive_memory"]["gid_penalty_last_immediate_strength"]
-        < 1.0
-    )
+    assert 0.0 <= qcs["adaptive_memory"]["gid_penalty_last_immediate_strength"] < 1.0
     assert 0.0 <= qcs["adaptive_memory"]["gid_penalty_last_specificity"] <= 1.0
     assert 0.0 <= qcs["adaptive_memory"]["gid_penalty_last_decay_factor"] < 1.0
-    assert qcs["adaptive_memory"]["gid_penalty_last_immediate_strength"] == pytest.approx(
-        qcs["adaptive_memory"]["gid_penalty_last_confidence"]
-    )
+    assert qcs["adaptive_memory"][
+        "gid_penalty_last_immediate_strength"
+    ] == pytest.approx(qcs["adaptive_memory"]["gid_penalty_last_confidence"])
     assert qcs["adaptive_memory"]["gid_penalty_last_decay_factor"] == pytest.approx(
         qcs["adaptive_memory"]["gid_penalty_last_confidence"]
         * qcs["adaptive_memory"]["gid_penalty_last_specificity"]
@@ -2186,14 +2170,10 @@ def test_gid_adaptive_memory_penalty_bounds_close_arrival_revisits(
 
     assert adaptive["metrics"]["recall"] >= 0.75
     assert (
-        adaptive["metrics"]["false_positive"]
-        <= kernel["metrics"]["false_positive"] + 2
+        adaptive["metrics"]["false_positive"] <= kernel["metrics"]["false_positive"] + 2
     )
     assert adaptive["revisits"] <= kernel["revisits"] + 1
-    assert (
-        adaptive_qc["residual_L2_final"]
-        < adaptive_qc["residual_L2_initial"]
-    )
+    assert adaptive_qc["residual_L2_final"] < adaptive_qc["residual_L2_initial"]
 
 
 @pytest.mark.parametrize(
@@ -2258,8 +2238,7 @@ def test_gid_none_penalty_preserves_dense_close_arrival_support(
     assert adaptive["qc"]["gid_penalty_function"] == "adaptive_memory"
     assert no_penalty["metrics"]["recall"] >= adaptive["metrics"]["recall"]
     assert (
-        no_penalty["metrics"]["false_positive"]
-        <= adaptive["metrics"]["false_positive"]
+        no_penalty["metrics"]["false_positive"] <= adaptive["metrics"]["false_positive"]
     )
 
 
@@ -2339,10 +2318,7 @@ def test_gid_adaptive_memory_does_not_overlearn_noise_maxima(
         <= adaptive_qc["gid_penalty_last_immediate_strength"] + 1.0e-12
     )
     assert adaptive["peak_count"] <= no_penalty["peak_count"] + 2
-    assert (
-        adaptive["transverse_l2"]
-        <= no_penalty["transverse_l2"] * 1.10 + 1.0e-10
-    )
+    assert adaptive["transverse_l2"] <= no_penalty["transverse_l2"] * 1.10 + 1.0e-10
     if noise_scale >= 10.0:
         assert abs(adaptive["peak_count"] - no_penalty["peak_count"]) <= 2
 
