@@ -15,6 +15,7 @@ from mspasspy.algorithms.FrequencyDomainGIDDecon import FrequencyDomainGIDRFDeco
 
 from test_TimeDomainGIDDecon import (
     _assert_actual_and_output_shaping_are_distinct,
+    _assert_group_sparse_qc,
     _assert_single_spike_recovery,
     _assert_single_penalty_footprint,
     _assert_valid_rf,
@@ -688,7 +689,9 @@ def test_FrequencyDomainGIDDecon_rejects_external_timeseries_dt_mismatch(tmp_pat
         engine.loadnoise(noise)
 
 
-@pytest.mark.parametrize("mode", ["least_square", "water_level", "multi_taper", "cnr"])
+@pytest.mark.parametrize(
+    "mode", ["least_square", "water_level", "multi_taper", "cnr", "group_sparse"]
+)
 def test_FrequencyDomainGIDDecon_inverse_modes_are_valid(tmp_path, mode):
     data = _make_single_spike_convolution_data()
     pf = _pf_with_mode(
@@ -709,6 +712,10 @@ def test_FrequencyDomainGIDDecon_inverse_modes_are_valid(tmp_path, mode):
     qc = rf["FrequencyDomainGIDDecon_properties"]
     assert qc["iteration_count"] > 0
     assert qc["residual_L2_final"] < qc["residual_L2_initial"]
+    if mode == "group_sparse":
+        _assert_group_sparse_qc(qc)
+    else:
+        assert not qc["group_sparse_enabled"]
     _assert_single_spike_recovery(rf, ratio_tolerance=5.0e-2)
 
 
@@ -1099,6 +1106,41 @@ def test_FrequencyDomainGIDDecon_changeparameter_rejects_leaf_shaping_dt_drift()
             "lag_weight_penalty_function",
         ),
         (
+            "group_sparse_lambda 0.0",
+            "group_sparse_lambda -1.0",
+            "group_sparse_lambda",
+        ),
+        (
+            "group_sparse_lambda_scale 1.0",
+            "group_sparse_lambda_scale -1.0",
+            "group_sparse_lambda_scale",
+        ),
+        (
+            "group_sparse_tolerance 1.0e-4",
+            "group_sparse_tolerance 0.0",
+            "group_sparse_tolerance",
+        ),
+        (
+            "group_sparse_max_iterations 200",
+            "group_sparse_max_iterations 0",
+            "group_sparse_max_iterations",
+        ),
+        (
+            "group_sparse_active_threshold 0.02",
+            "group_sparse_active_threshold -0.01",
+            "group_sparse_active_threshold",
+        ),
+        (
+            "group_sparse_active_threshold_scale 1.0",
+            "group_sparse_active_threshold_scale -0.01",
+            "group_sparse_active_threshold_scale",
+        ),
+        (
+            "group_sparse_active_threshold_quantile 0.90",
+            "group_sparse_active_threshold_quantile 1.5",
+            "group_sparse_active_threshold_quantile",
+        ),
+        (
             "maximum_iterations 100",
             "maximum_iterations 0",
             "maximum_iterations",
@@ -1192,6 +1234,7 @@ def test_FrequencyDomainGIDDecon_reports_missing_fixed_penalty_width(tmp_path):
         ("ns_gid_refit_interval", 2),
         ("lag_weight_penalty_scale_factor", 0.5),
         ("lag_weight_function_width", 5),
+        ("group_sparse_lambda_scale", 1.0),
         ("noise_window_start", -30.0),
         ("noise_window_end", -3.0),
     ],

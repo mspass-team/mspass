@@ -13,6 +13,23 @@
 #include <vector>
 
 namespace mspass::algorithms::deconvolution {
+struct GroupSparseDeconResult {
+  std::list<ThreeCSpike> spikes;
+  mspass::seismic::CoreSeismogram residual;
+  int iterations = 0;
+  int active_groups = 0;
+  bool converged = false;
+  double lambda = 0.0;
+  double active_threshold_floor = 0.0;
+  double active_threshold_scale = 1.0;
+  double active_threshold_quantile = 0.0;
+  double active_threshold_quantile_value = 0.0;
+  double active_threshold_used = 0.0;
+  double objective_initial = 0.0;
+  double objective_final = 0.0;
+  double fractional_improvement_final = 0.0;
+};
+
 IterDeconType ParseGIDDeconType(const mspass::utility::Metadata &md,
                                 const std::string &caller);
 double GetDoubleDefault(const mspass::utility::Metadata &md,
@@ -94,5 +111,11 @@ void RefitSpikeAmplitudes(std::list<ThreeCSpike> &spikes,
                           const std::vector<double> &actual_o_fir,
                           const int actual_o_0,
                           const double ridge_beta = 1.0e-10);
+GroupSparseDeconResult SolveGroupSparseDecon(
+    const mspass::seismic::CoreSeismogram &target,
+    const std::vector<double> &actual_o_fir, const int actual_o_0,
+    const double lambda, const int max_iterations, const double tolerance,
+    const double active_threshold, const double active_threshold_scale,
+    const double active_threshold_quantile, const std::string &caller);
 } // namespace mspass::algorithms::deconvolution
 #endif

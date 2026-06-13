@@ -190,6 +190,26 @@ def _make_stress_colored_validation_data(noise_scale=0.025, return_truth=False):
     return data
 
 
+def _make_weak_stress_colored_validation_data(noise_scale=0.025, return_truth=False):
+    """Stress fixture with weak converted phases and a strong direct arrival."""
+    _, truth, wavelet = _make_stress_colored_validation_data(
+        noise_scale=0.0, return_truth=True
+    )
+    direct_sample = int(round((0.0 - truth.t0) / truth.dt))
+    for sample in range(truth.npts):
+        if sample == direct_sample:
+            continue
+        truth.data[0, sample] *= 0.35
+        truth.data[1, sample] *= 0.35
+    data = convolve_wavelet(truth, wavelet)
+    data = addnoise(data, nscale=noise_scale, padlength=900, corners=[0.04, 3.0])
+    data["low_f_band_edge"] = 0.02
+    data["high_f_band_edge"] = 2.0
+    if return_truth:
+        return data, truth, wavelet
+    return data
+
+
 def _make_direct_only_noisy_validation_data(noise_scale=3.0):
     np.random.seed(424242)
     wavelet = make_simulation_wavelet(corners=[0.35, 7.5])
@@ -590,6 +610,12 @@ def _count_unmatched_close_arrival_revisits(
     return revisits
 
 
+def _assert_group_sparse_detection_metrics(metrics):
+    assert metrics["recall"] >= 0.95
+    assert metrics["precision"] >= 0.75
+    assert metrics["false_positive"] <= 2
+
+
 def _classify_spike_detections_against_times(
     matrix, t0, dt, truth_times, detection_threshold=0.02, match_tolerance=0.15
 ):
@@ -980,6 +1006,14 @@ def _plot_gid_sparse_results(
 
 
 def _gid_plot_label(core_method, qc):
+    if qc["group_sparse_enabled"]:
+        return (
+            f"group_sparse/{qc['group_sparse_inverse_operator']}"
+            f" lam={qc['group_sparse_lambda_used']:.3g}"
+            f" thr={qc['group_sparse_active_threshold_used']:.3g}"
+            f" k={qc['group_sparse_active_groups']}"
+            f" it={qc['group_sparse_iterations']}"
+        )
     try:
         adaptive_enabled = qc["gid_adaptive_penalty_enabled"]
     except Exception:
@@ -1448,6 +1482,7 @@ def test_external_wavelet_validation_across_deconvolution_methods(
         "NoiseStable": _noise_stable_rf_matrix(data, external_wavelet=wavelet),
         "CNR": _cnr_rf_matrix(data, external_wavelet=wavelet),
     }
+    gid_sparse_names = []
     for engine_class, wrapper, pfname, branch_name in [
         (
             TimeDomainGIDDecon,
@@ -1462,25 +1497,35 @@ def test_external_wavelet_validation_across_deconvolution_methods(
             "frequency_domain_gid_deconvolution",
         ),
     ]:
-        pf = _pf_with_gid_mode(tmp_path, pfname, branch_name, "ns_gid")
-        engine = engine_class(pf)
-        rf = wrapper(
-            data,
-            engine,
-            signal_window=TimeWindow(-8.0, 20.0),
-            noise_window=TimeWindow(-35.0, -5.0),
-            external_wavelet=wavelet,
-        )
-        assert rf.live
-        results[f"{engine_class.__name__}:ns_gid"] = np.asarray(rf.data)
-        results[f"{engine_class.__name__}:ns_gid_sparse"] = np.asarray(
-            engine.sparse_output().data
-        )
-        qc = dict(rf[f"{engine_class.__name__}_properties"])
-        assert qc["ns_gid_external_wavelet_used"]
-        assert qc["ns_gid_gain_max_actual"] <= qc["ns_gid_gain_max_requested"] * (
-            1.0 + 1.0e-10
-        )
+        modes = ("ns_gid", "group_sparse")
+        for mode in modes:
+            pf = _pf_with_gid_mode(tmp_path, pfname, branch_name, mode)
+            engine = engine_class(pf)
+            rf = wrapper(
+                data,
+                engine,
+                signal_window=TimeWindow(-8.0, 20.0),
+                noise_window=TimeWindow(-35.0, -5.0),
+                external_wavelet=wavelet,
+            )
+            assert rf.live
+            prefix = f"{engine_class.__name__}:{mode}"
+            results[prefix] = np.asarray(rf.data)
+            sparse_name = f"{prefix}_sparse"
+            results[sparse_name] = np.asarray(engine.sparse_output().data)
+            gid_sparse_names.append(sparse_name)
+            qc = dict(rf[f"{engine_class.__name__}_properties"])
+            if mode == "ns_gid":
+                assert qc["ns_gid_external_wavelet_used"]
+                assert qc["ns_gid_gain_max_actual"] <= qc[
+                    "ns_gid_gain_max_requested"
+                ] * (1.0 + 1.0e-10)
+            else:
+                assert qc["group_sparse_enabled"]
+                assert qc["group_sparse_inverse_external_wavelet_used"]
+                assert qc["group_sparse_inverse_gain_max_actual"] <= qc[
+                    "group_sparse_inverse_gain_max_requested"
+                ] * (1.0 + 1.0e-10)
 
     reference = results["LeastSquares"]
     amp = np.sqrt(reference[0, :] ** 2 + reference[1, :] ** 2 + reference[2, :] ** 2)
@@ -1521,22 +1566,18 @@ def test_external_wavelet_validation_across_deconvolution_methods(
         np.asarray(sorted(STRESS_SPIKES.keys()), dtype=np.float64)
         + external_wavelet_shift
     )
-    td_metrics = _classify_spike_detections_against_times(
-        results["TimeDomainGIDDecon:ns_gid_sparse"],
-        -8.0,
-        truth.dt,
-        shifted_truth_times,
-    )
-    fd_metrics = _classify_spike_detections_against_times(
-        results["FrequencyDomainGIDDecon:ns_gid_sparse"],
-        -8.0,
-        truth.dt,
-        shifted_truth_times,
-    )
-    assert td_metrics["recall"] >= 0.95
-    assert td_metrics["precision"] >= 0.45
-    assert fd_metrics["recall"] >= 0.95
-    assert fd_metrics["precision"] >= 0.75
+    for sparse_name in gid_sparse_names:
+        metrics = _classify_spike_detections_against_times(
+            results[sparse_name],
+            -8.0,
+            truth.dt,
+            shifted_truth_times,
+        )
+        assert metrics["recall"] >= 0.95, sparse_name
+        if "FrequencyDomainGIDDecon" in sparse_name or "group_sparse" in sparse_name:
+            assert metrics["precision"] >= 0.75, sparse_name
+        else:
+            assert metrics["precision"] >= 0.45, sparse_name
 
     plot_npts = int(round((20.0 - SIGNAL_WINDOW.start) / truth.dt)) + 1
     plot_results = {}
@@ -1560,6 +1601,76 @@ def test_external_wavelet_validation_across_deconvolution_methods(
     )
 
 
+def test_group_sparse_adaptive_support_threshold_controls_clustered_coefficients(
+    tmp_path,
+):
+    data, truth, wavelet = _make_stress_colored_validation_data(
+        noise_scale=0.01,
+        return_truth=True,
+    )
+    reference = _scalar_rf_matrix_external_wavelet("LeastSquares", data, wavelet)
+    amp = np.sqrt(reference[0, :] ** 2 + reference[1, :] ** 2 + reference[2, :] ** 2)
+    external_wavelet_shift = SIGNAL_WINDOW.start + truth.dt * int(np.argmax(amp))
+    shifted_truth_times = (
+        np.asarray(sorted(STRESS_SPIKES.keys()), dtype=np.float64)
+        + external_wavelet_shift
+    )
+
+    def run_time_domain_group_sparse(replacements=None):
+        replacements = replacements or {}
+        pf = _pf_with_gid_mode_and_replacements(
+            tmp_path,
+            "data/pf/TimeDomainGIDDecon.pf",
+            "time_domain_gid_deconvolution",
+            "group_sparse",
+            replacements,
+        )
+        engine = TimeDomainGIDDecon(pf)
+        rf = TimeDomainGIDRFDecon(
+            data,
+            engine,
+            signal_window=TimeWindow(-8.0, 20.0),
+            noise_window=TimeWindow(-35.0, -5.0),
+            external_wavelet=wavelet,
+        )
+        assert rf.live
+        sparse = engine.sparse_output()
+        metrics = _classify_spike_detections_against_times(
+            np.asarray(sparse.data),
+            sparse.t0,
+            sparse.dt,
+            shifted_truth_times,
+        )
+        return metrics, dict(rf["TimeDomainGIDDecon_properties"])
+
+    default_metrics, default_qc = run_time_domain_group_sparse()
+    fixed_floor_metrics, fixed_floor_qc = run_time_domain_group_sparse(
+        {
+            "group_sparse_active_threshold 0.02": (
+                "group_sparse_active_threshold 0.000000001"
+            ),
+            "group_sparse_active_threshold_scale 1.0": (
+                "group_sparse_active_threshold_scale 0.0"
+            ),
+        }
+    )
+
+    assert default_qc["group_sparse_active_threshold_quantile"] == pytest.approx(0.90)
+    assert default_qc["group_sparse_active_threshold_used"] > default_qc[
+        "group_sparse_active_threshold"
+    ]
+    assert default_metrics["precision"] == pytest.approx(1.0)
+    assert default_metrics["recall"] == pytest.approx(1.0)
+    assert default_qc["group_sparse_active_groups"] == len(STRESS_SPIKES)
+
+    assert fixed_floor_qc["group_sparse_active_threshold_used"] == pytest.approx(
+        1.0e-9
+    )
+    assert fixed_floor_qc["group_sparse_active_groups"] > 100
+    assert fixed_floor_metrics["precision"] < default_metrics["precision"]
+    assert fixed_floor_metrics["f1"] < default_metrics["f1"]
+
+
 @pytest.mark.parametrize(
     "engine_class, wrapper, pfname, branch_name, modes, qc_key",
     [
@@ -1574,6 +1685,7 @@ def test_external_wavelet_validation_across_deconvolution_methods(
                 "multi_taper",
                 "cnr",
                 "ns_gid",
+                "group_sparse",
             ],
             "TimeDomainGIDDecon_properties",
         ),
@@ -1588,6 +1700,7 @@ def test_external_wavelet_validation_across_deconvolution_methods(
                 "multi_taper",
                 "cnr",
                 "ns_gid",
+                "group_sparse",
             ],
             "FrequencyDomainGIDDecon_properties",
         ),
@@ -1635,9 +1748,13 @@ def test_gid_methods_recover_colored_multi_spike_rf_for_all_inverse_modes(
             detection_threshold=0.05,
             match_tolerance=0.20,
         )
-        assert metrics["recall"] >= 0.95, mode
-        assert metrics["f1"] >= 0.30, mode
-        assert metrics["false_positive"] <= 16, mode
+        if mode == "group_sparse":
+            _assert_group_sparse_detection_metrics(metrics)
+            assert qc["group_sparse_enabled"]
+        else:
+            assert metrics["recall"] >= 0.95, mode
+            assert metrics["f1"] >= 0.30, mode
+            assert metrics["false_positive"] <= 16, mode
         zrf = ExtractComponent(rf, 2)
         peak_sample = int(np.argmax(np.abs(zrf.data)))
         assert abs(zrf.time(peak_sample)) <= 0.15, mode
@@ -1746,6 +1863,7 @@ def test_gid_output_shaping_wavelet_is_configurable_and_separate_from_sparse_sup
                 "multi_taper",
                 "cnr",
                 "ns_gid",
+                "group_sparse",
             ],
             "TimeDomainGIDDecon_properties",
         ),
@@ -1760,6 +1878,7 @@ def test_gid_output_shaping_wavelet_is_configurable_and_separate_from_sparse_sup
                 "multi_taper",
                 "cnr",
                 "ns_gid",
+                "group_sparse",
             ],
             "FrequencyDomainGIDDecon_properties",
         ),
@@ -1800,7 +1919,14 @@ def test_gid_methods_recover_stress_spike_signs_for_all_inverse_modes(
         matrix = np.asarray(rf.data)
         sparse = engine.sparse_output()
         sparse_matrix = np.asarray(sparse.data)
-        _assert_stress_gid_signs_recovered(sparse_matrix, sparse.t0, sparse.dt)
+        if mode == "group_sparse":
+            metrics = _classify_gid_spike_detections(
+                sparse_matrix, sparse.t0, sparse.dt
+            )
+            _assert_group_sparse_detection_metrics(metrics)
+            assert qc["group_sparse_enabled"]
+        else:
+            _assert_stress_gid_signs_recovered(sparse_matrix, sparse.t0, sparse.dt)
         plot_results[plot_label] = matrix
         plot_sparse_results[plot_label] = sparse_matrix
         plot_t0 = rf.t0
@@ -1859,6 +1985,83 @@ def test_gid_methods_recover_stress_spike_signs_for_all_inverse_modes(
         f"noise_{decon_validation_noise_scale:g}_stress",
         failed_methods=skipped_plot_modes,
     )
+
+
+@pytest.mark.parametrize(
+    "engine_class, wrapper, pfname, branch_name, qc_key",
+    [
+        (
+            TimeDomainGIDDecon,
+            TimeDomainGIDRFDecon,
+            "data/pf/TimeDomainGIDDecon.pf",
+            "time_domain_gid_deconvolution",
+            "TimeDomainGIDDecon_properties",
+        ),
+        (
+            FrequencyDomainGIDDecon,
+            FrequencyDomainGIDRFDecon,
+            "data/pf/FrequencyDomainGIDDecon.pf",
+            "frequency_domain_gid_deconvolution",
+            "FrequencyDomainGIDDecon_properties",
+        ),
+    ],
+)
+def test_group_sparse_recovers_weak_arrivals_like_adaptive_memory(
+    tmp_path, engine_class, wrapper, pfname, branch_name, qc_key
+):
+    for noise_scale in (0.0, 0.03):
+        data, _, _ = _make_weak_stress_colored_validation_data(
+            noise_scale=noise_scale,
+            return_truth=True,
+        )
+        results = {}
+        for label, mode in [
+            ("adaptive_memory_default", "least_square"),
+            ("adaptive_memory_ns_gid", "ns_gid"),
+            ("group_sparse", "group_sparse"),
+        ]:
+            pf = _pf_with_gid_mode(tmp_path, pfname, branch_name, mode)
+            engine = engine_class(pf)
+            rf = wrapper(
+                data,
+                engine,
+                signal_window=TimeWindow(-8.0, 20.0),
+                noise_window=TimeWindow(-35.0, -5.0),
+            )
+            assert rf.live, (engine_class.__name__, label, noise_scale)
+            qc = dict(rf[qc_key])
+            sparse = engine.sparse_output()
+            metrics = _classify_gid_spike_detections(
+                np.asarray(sparse.data),
+                sparse.t0,
+                sparse.dt,
+                detection_threshold=0.025,
+            )
+            results[label] = (metrics, qc)
+
+        default_metrics, default_qc = results["adaptive_memory_default"]
+        assert default_qc["gid_penalty_function"] == "adaptive_memory"
+        assert default_metrics["recall"] >= 0.95, noise_scale
+        assert default_metrics["precision"] >= 0.75, noise_scale
+
+        stable_metrics, stable_qc = results["adaptive_memory_ns_gid"]
+        assert stable_qc["gid_penalty_function"] == "adaptive_memory"
+        assert stable_metrics["recall"] >= 0.95, noise_scale
+        assert stable_metrics["precision"] >= 0.95, noise_scale
+
+        group_metrics, group_qc = results["group_sparse"]
+        assert group_qc["group_sparse_enabled"]
+        assert group_qc["group_sparse_active_threshold"] == pytest.approx(0.02)
+        assert group_qc["group_sparse_active_threshold_quantile"] == pytest.approx(
+            0.90
+        )
+        assert group_qc["group_sparse_active_threshold_used"] >= group_qc[
+            "group_sparse_active_threshold"
+        ]
+        assert group_metrics["recall"] >= stable_metrics["recall"] - 1.0e-12
+        assert group_metrics["precision"] >= stable_metrics["precision"] - 1.0e-12
+        assert group_metrics["f1"] >= default_metrics["f1"] - 1.0e-12
+        assert group_metrics["false_positive"] <= stable_metrics["false_positive"]
 
 
 @pytest.mark.parametrize(

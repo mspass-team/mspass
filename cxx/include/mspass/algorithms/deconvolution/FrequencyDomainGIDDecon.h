@@ -140,6 +140,17 @@ private:
   double adaptive_penalty_noise_amplitude;
   double adaptive_penalty_memory_linf;
   double adaptive_penalty_memory_l2;
+  double group_sparse_lambda, group_sparse_lambda_scale;
+  double group_sparse_lambda_used, group_sparse_tolerance;
+  double group_sparse_active_threshold, group_sparse_active_threshold_scale;
+  double group_sparse_active_threshold_quantile;
+  double group_sparse_active_threshold_quantile_value;
+  double group_sparse_active_threshold_used;
+  double group_sparse_objective_initial, group_sparse_objective_final;
+  double group_sparse_fractional_improvement_final;
+  int group_sparse_max_iterations, group_sparse_iterations;
+  int group_sparse_active_groups;
+  bool group_sparse_converged;
 
   void initialize_inverse_operator();
   void invalidate_processing_state();

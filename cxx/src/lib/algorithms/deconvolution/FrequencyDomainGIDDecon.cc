@@ -164,6 +164,12 @@ FrequencyDomainGIDDecon::FrequencyDomainGIDDecon(const AntelopePf &mdtoplevel)
       ValidateGIDLeafWindow(mdleaf, fftwin, "CNR", base_error);
       cnrprocessor = std::make_unique<CNRDeconEngine>(mdleaf);
       break;
+    case GROUP_SPARSE:
+      mdleaf = md.get_branch("ns_gid");
+      ValidateGIDLeafWindow(mdleaf, fftwin, "group sparse NS-GID inverse",
+                            base_error);
+      preprocessor = std::make_unique<NoiseStableDecon>(mdleaf);
+      break;
     case NS_GID:
     default:
       mdleaf = md.get_branch("ns_gid");
@@ -204,6 +210,33 @@ FrequencyDomainGIDDecon::FrequencyDomainGIDDecon(const AntelopePf &mdtoplevel)
     ns_ridge_beta =
         GetDoubleDefault(mdgid, "ns_gid_ridge_beta", 1.0e-10);
     ValidateNonnegative(ns_ridge_beta, "ns_gid_ridge_beta", base_error);
+    group_sparse_lambda = GetDoubleDefault(mdgid, "group_sparse_lambda", 0.0);
+    ValidateNonnegative(group_sparse_lambda, "group_sparse_lambda",
+                        base_error);
+    group_sparse_lambda_scale =
+        GetDoubleDefault(mdgid, "group_sparse_lambda_scale", 1.0);
+    ValidateNonnegative(group_sparse_lambda_scale,
+                        "group_sparse_lambda_scale", base_error);
+    group_sparse_tolerance =
+        GetDoubleDefault(mdgid, "group_sparse_tolerance", 1.0e-4);
+    ValidatePositive(group_sparse_tolerance, "group_sparse_tolerance",
+                     base_error);
+    group_sparse_max_iterations =
+        GetIntDefault(mdgid, "group_sparse_max_iterations", iter_max);
+    ValidatePositiveInteger(group_sparse_max_iterations,
+                            "group_sparse_max_iterations", base_error);
+    group_sparse_active_threshold =
+        GetDoubleDefault(mdgid, "group_sparse_active_threshold", 2.0e-2);
+    ValidateNonnegative(group_sparse_active_threshold,
+                        "group_sparse_active_threshold", base_error);
+    group_sparse_active_threshold_scale =
+        GetDoubleDefault(mdgid, "group_sparse_active_threshold_scale", 1.0);
+    ValidateNonnegative(group_sparse_active_threshold_scale,
+                        "group_sparse_active_threshold_scale", base_error);
+    group_sparse_active_threshold_quantile =
+        GetDoubleDefault(mdgid, "group_sparse_active_threshold_quantile", 0.90);
+    ValidateProbability(group_sparse_active_threshold_quantile,
+                        "group_sparse_active_threshold_quantile", base_error);
     this->invalidate_processing_state();
   } catch (...) {
     throw;
@@ -244,6 +277,15 @@ void FrequencyDomainGIDDecon::invalidate_processing_state() {
   ns_stop_reason = "not_started";
   gid_converged = false;
   gid_stop_reason = "not_started";
+  group_sparse_lambda_used = 0.0;
+  group_sparse_objective_initial = 0.0;
+  group_sparse_objective_final = 0.0;
+  group_sparse_fractional_improvement_final = 0.0;
+  group_sparse_active_threshold_quantile_value = 0.0;
+  group_sparse_active_threshold_used = 0.0;
+  group_sparse_iterations = 0;
+  group_sparse_active_groups = 0;
+  group_sparse_converged = false;
   processed = false;
 }
 
@@ -363,11 +405,12 @@ int FrequencyDomainGIDDecon::loadnoise(const CoreTimeSeries &noise_in) {
 }
 
 int FrequencyDomainGIDDecon::loadnoise(const PowerSpectrum &noise_spectrum_in) {
-  if (decon_type != NS_GID)
+  if (decon_type != NS_GID && decon_type != GROUP_SPARSE)
     throw MsPASSError("FrequencyDomainGIDDecon::loadnoise: external "
-                      "PowerSpectrum noise is only supported for ns_gid; pass "
-                      "a TimeSeries noise estimate for multi_taper or use the "
-                      "configured noise window for other GID modes",
+                      "PowerSpectrum noise is only supported for ns_gid and "
+                      "group_sparse; pass a TimeSeries noise estimate for "
+                      "multi_taper or use the configured noise window for "
+                      "other GID modes",
                       ErrorSeverity::Invalid);
   ValidatePowerSpectrumCoversDC(noise_spectrum_in,
                                 "FrequencyDomainGIDDecon::loadnoise");
@@ -463,7 +506,7 @@ void FrequencyDomainGIDDecon::initialize_inverse_operator() {
       if (mt_noise.size() > static_cast<size_t>(mtop->get_taperlen()))
         mt_noise.resize(mtop->get_taperlen());
       mtop->loadnoise(mt_noise);
-    } else if (decon_type == NS_GID) {
+    } else if (decon_type == NS_GID || decon_type == GROUP_SPARSE) {
       NoiseStableDecon *nsop = dynamic_cast<NoiseStableDecon *>(preprocessor.get());
       if (external_noise_spectrum_loaded)
         nsop->loadnoise(external_noise_spectrum);
@@ -559,7 +602,7 @@ CoreTimeSeries FrequencyDomainGIDDecon::inverse_wavelet(double t0parent) {
 }
 
 double FrequencyDomainGIDDecon::compute_ns_peak_threshold() {
-  if (decon_type != NS_GID)
+  if (decon_type != NS_GID && decon_type != GROUP_SPARSE)
     return 0.0;
   CoreSeismogram nwork(n);
   dmatrix uwork(nwork.u);
@@ -715,6 +758,60 @@ void FrequencyDomainGIDDecon::process() {
     if (resid_l2_initial <= 0.0)
       throw MsPASSError(base_error + "input data residual is zero",
                         ErrorSeverity::Invalid);
+    if (decon_type == GROUP_SPARSE) {
+      process_stage = "group-sparse regularized solve";
+      group_sparse_lambda_used = group_sparse_lambda;
+      if (group_sparse_lambda_used <= 0.0) {
+        const double lambda_base =
+            (ns_peak_threshold > 0.0) ? ns_peak_threshold
+                                      : 0.02 * resid_linf_initial;
+        group_sparse_lambda_used = group_sparse_lambda_scale * lambda_base;
+      }
+      GroupSparseDeconResult gs = SolveGroupSparseDecon(
+          d_decon, actual_o_fir, actual_o_0, group_sparse_lambda_used,
+          group_sparse_max_iterations, group_sparse_tolerance,
+          group_sparse_active_threshold, group_sparse_active_threshold_scale,
+          group_sparse_active_threshold_quantile, "FrequencyDomainGIDDecon");
+      spikes = gs.spikes;
+      iter_count = gs.iterations;
+      group_sparse_iterations = gs.iterations;
+      group_sparse_active_groups = static_cast<int>(spikes.size());
+      group_sparse_converged = gs.converged;
+      group_sparse_objective_initial = gs.objective_initial;
+      group_sparse_objective_final = gs.objective_final;
+      group_sparse_fractional_improvement_final =
+          gs.fractional_improvement_final;
+      group_sparse_active_threshold_quantile_value =
+          gs.active_threshold_quantile_value;
+      group_sparse_active_threshold_used = gs.active_threshold_used;
+      process_stage = "refit group-sparse amplitudes";
+      RefitSpikeAmplitudes(spikes, d_decon, actual_o_fir, actual_o_0,
+                           ns_ridge_beta);
+      spikes.remove_if([this](const ThreeCSpike &spk) {
+        return spk.amp <= group_sparse_active_threshold_used;
+      });
+      group_sparse_active_groups = static_cast<int>(spikes.size());
+      process_stage = "recompute group-sparse final residual";
+      r = d_decon;
+      for (auto sptr = spikes.begin(); sptr != spikes.end(); ++sptr)
+        this->update_residual_matrix(*sptr);
+      resid_l2_final = matrix_l2(r.u);
+      resid_linf_final = matrix_linf(r.u);
+      if (!lag_weights.empty()) {
+        auto lwmax = max_element(lag_weights.begin(), lag_weights.end());
+        lag_weight_linf_final = (lwmax != lag_weights.end()) ? *lwmax : 0.0;
+        lag_weight_l2_final =
+            cblas_dnrm2(lag_weights.size(), &(lag_weights[0]), 1);
+      }
+      gid_stop_reason = group_sparse_converged
+                            ? "group_sparse_converged"
+                            : "group_sparse_max_iterations";
+      gid_converged = group_sparse_converged;
+      ns_stop_reason = "not_enabled";
+      ns_converged = false;
+      processed = true;
+      return;
+    }
     vector<double> amps;
     amps.reserve(r.npts());
     process_stage = "sparse iteration";
@@ -970,6 +1067,57 @@ Metadata FrequencyDomainGIDDecon::QCMetrics() {
   md.put("gid_actual_o_fir_zero_lag_index", actual_o_0);
   md.put("gid_actual_o_fir_peak_normalized",
          processed && !actual_o_fir.empty());
+  md.put("group_sparse_enabled", decon_type == GROUP_SPARSE);
+  md.put("group_sparse_inverse_operator", string("ns_gid"));
+  md.put("group_sparse_lambda_requested", group_sparse_lambda);
+  md.put("group_sparse_lambda_scale", group_sparse_lambda_scale);
+  md.put("group_sparse_lambda_used", group_sparse_lambda_used);
+  md.put("group_sparse_tolerance", group_sparse_tolerance);
+  md.put("group_sparse_max_iterations", group_sparse_max_iterations);
+  md.put("group_sparse_iterations", group_sparse_iterations);
+  md.put("group_sparse_converged", group_sparse_converged);
+  md.put("group_sparse_active_threshold", group_sparse_active_threshold);
+  md.put("group_sparse_active_threshold_scale",
+         group_sparse_active_threshold_scale);
+  md.put("group_sparse_active_threshold_quantile",
+         group_sparse_active_threshold_quantile);
+  md.put("group_sparse_active_threshold_quantile_value",
+         group_sparse_active_threshold_quantile_value);
+  md.put("group_sparse_active_threshold_used",
+         group_sparse_active_threshold_used);
+  md.put("group_sparse_active_groups", group_sparse_active_groups);
+  md.put("group_sparse_objective_initial", group_sparse_objective_initial);
+  md.put("group_sparse_objective_final", group_sparse_objective_final);
+  md.put("group_sparse_fractional_improvement_final",
+         group_sparse_fractional_improvement_final);
+  md.put("group_sparse_noise_threshold", ns_peak_threshold);
+  if (decon_type == GROUP_SPARSE) {
+    NoiseStableDecon *nsop =
+        dynamic_cast<NoiseStableDecon *>(preprocessor.get());
+    if (nsop != nullptr) {
+      Metadata nsmd(nsop->QCMetrics());
+      md.put("group_sparse_inverse_gain_max_requested",
+             nsmd.get_double("ns_gid_gain_max_requested"));
+      md.put("group_sparse_inverse_gain_max_actual",
+             nsmd.get_double("ns_gid_gain_max_actual"));
+      md.put("group_sparse_inverse_mu_min", nsmd.get_double("ns_gid_mu_min"));
+      md.put("group_sparse_inverse_alpha", nsmd.get_double("ns_gid_alpha"));
+      md.put("group_sparse_inverse_noise_amplification",
+             nsmd.get_double("ns_gid_noise_amplification"));
+      md.put("group_sparse_inverse_effective_bandwidth_fraction",
+             nsmd.get_double("ns_gid_effective_bandwidth_fraction"));
+      md.put("group_sparse_inverse_operator_nfft",
+             nsmd.get_int("ns_gid_operator_nfft"));
+      md.put("group_sparse_inverse_use_reliability_taper",
+             nsmd.get_bool("ns_gid_use_reliability_taper"));
+      md.put("group_sparse_inverse_external_wavelet_used",
+             external_wavelet_loaded);
+      md.put("group_sparse_inverse_external_noise_used",
+             external_noise_loaded);
+      md.put("group_sparse_inverse_external_noise_spectrum_used",
+             external_noise_spectrum_loaded);
+    }
+  }
   md.put("ns_gid_enabled", decon_type == NS_GID);
   if (decon_type == NS_GID) {
     md.put("ns_gid_stop_reason", ns_stop_reason);

@@ -17,6 +17,14 @@ ThreeCSpike::ThreeCSpike(dmatrix &d, int k) {
     throw;
   };
 }
+ThreeCSpike::ThreeCSpike(int k, const double u0, const double u1,
+                         const double u2) {
+  col = k;
+  u[0] = u0;
+  u[1] = u1;
+  u[2] = u2;
+  amp = sqrt(u0 * u0 + u1 * u1 + u2 * u2);
+}
 ThreeCSpike::ThreeCSpike(const ThreeCSpike &parent) {
   col = parent.col;
   amp = parent.amp;

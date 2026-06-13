@@ -95,6 +95,39 @@ def _assert_single_spike_recovery(rf, ratio_tolerance):
     )
 
 
+def _assert_group_sparse_qc(qc):
+    assert qc["group_sparse_enabled"]
+    assert not qc["ns_gid_enabled"]
+    assert qc["group_sparse_inverse_operator"] == "ns_gid"
+    assert qc["group_sparse_lambda_requested"] == pytest.approx(0.0)
+    assert qc["group_sparse_lambda_scale"] == pytest.approx(1.0)
+    assert qc["group_sparse_lambda_used"] >= 0.0
+    assert qc["group_sparse_active_threshold"] == pytest.approx(0.02)
+    assert qc["group_sparse_active_threshold_scale"] == pytest.approx(1.0)
+    assert qc["group_sparse_active_threshold_quantile"] == pytest.approx(0.90)
+    assert qc["group_sparse_active_threshold_quantile_value"] >= 0.0
+    assert qc["group_sparse_active_threshold_used"] >= qc[
+        "group_sparse_active_threshold"
+    ]
+    assert qc["group_sparse_iterations"] == qc["iteration_count"]
+    assert qc["group_sparse_active_groups"] == qc["gid_number_spikes"]
+    assert qc["group_sparse_objective_final"] <= qc["group_sparse_objective_initial"]
+    assert qc["group_sparse_fractional_improvement_final"] >= 0.0
+    assert qc["group_sparse_inverse_operator_nfft"] > 0
+    assert qc["group_sparse_inverse_gain_max_actual"] <= (
+        qc["group_sparse_inverse_gain_max_requested"] * (1.0 + 1.0e-10)
+    )
+    assert qc["group_sparse_inverse_noise_amplification"] >= 0.0
+    assert 0.0 <= qc["group_sparse_inverse_effective_bandwidth_fraction"] <= 1.0
+    assert not qc["group_sparse_inverse_external_wavelet_used"]
+    assert not qc["group_sparse_inverse_external_noise_used"]
+    assert not qc["group_sparse_inverse_external_noise_spectrum_used"]
+    assert qc["gid_stop_reason"] in {
+        "group_sparse_converged",
+        "group_sparse_max_iterations",
+    }
+
+
 def _make_single_spike_convolution_data():
     n = 1400
     dt = 0.05
@@ -918,7 +951,9 @@ def test_TimeDomainGIDDecon_validates_single_spike_recovery():
     _assert_single_spike_recovery(rf, ratio_tolerance=2.0e-3)
 
 
-@pytest.mark.parametrize("mode", ["least_square", "water_level", "multi_taper", "cnr"])
+@pytest.mark.parametrize(
+    "mode", ["least_square", "water_level", "multi_taper", "cnr", "group_sparse"]
+)
 def test_TimeDomainGIDDecon_inverse_modes_are_valid(tmp_path, mode):
     data = _make_single_spike_convolution_data()
     pf = _pf_with_mode(
@@ -943,6 +978,10 @@ def test_TimeDomainGIDDecon_inverse_modes_are_valid(tmp_path, mode):
     qc = rf["TimeDomainGIDDecon_properties"]
     assert qc["iteration_count"] > 0
     assert qc["residual_L2_final"] < qc["residual_L2_initial"]
+    if mode == "group_sparse":
+        _assert_group_sparse_qc(qc)
+    else:
+        assert not qc["group_sparse_enabled"]
     _assert_single_spike_recovery(rf, ratio_tolerance=5.0e-2)
 
 
@@ -1294,6 +1333,41 @@ def test_TimeDomainGIDDecon_changeparameter_rejects_leaf_shaping_dt_drift():
             "lag_weight_penalty_function",
         ),
         (
+            "group_sparse_lambda 0.0",
+            "group_sparse_lambda -1.0",
+            "group_sparse_lambda",
+        ),
+        (
+            "group_sparse_lambda_scale 1.0",
+            "group_sparse_lambda_scale -1.0",
+            "group_sparse_lambda_scale",
+        ),
+        (
+            "group_sparse_tolerance 1.0e-4",
+            "group_sparse_tolerance 0.0",
+            "group_sparse_tolerance",
+        ),
+        (
+            "group_sparse_max_iterations 200",
+            "group_sparse_max_iterations 0",
+            "group_sparse_max_iterations",
+        ),
+        (
+            "group_sparse_active_threshold 0.02",
+            "group_sparse_active_threshold -0.01",
+            "group_sparse_active_threshold",
+        ),
+        (
+            "group_sparse_active_threshold_scale 1.0",
+            "group_sparse_active_threshold_scale -0.01",
+            "group_sparse_active_threshold_scale",
+        ),
+        (
+            "group_sparse_active_threshold_quantile 0.90",
+            "group_sparse_active_threshold_quantile 1.5",
+            "group_sparse_active_threshold_quantile",
+        ),
+        (
             "maximum_iterations 100",
             "maximum_iterations 0",
             "maximum_iterations",
@@ -1399,6 +1473,7 @@ def test_TimeDomainGIDDecon_changeparameter_rejects_gid_level_metadata():
         ("ns_gid_refit_interval", 2),
         ("lag_weight_penalty_scale_factor", 0.5),
         ("lag_weight_function_width", 5),
+        ("group_sparse_lambda_scale", 1.0),
         ("noise_window_start", -30.0),
         ("noise_window_end", -3.0),
     ],

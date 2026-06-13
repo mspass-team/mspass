@@ -30,6 +30,13 @@ deconvolution_operator_type &Arr{
         ns_gid_refit_interval 5
         ns_gid_ridge_beta 1.0e-10
         ns_gid_external_wavelet_allowed true
+        group_sparse_lambda 0.0
+        group_sparse_lambda_scale 1.0
+        group_sparse_tolerance 1.0e-4
+        group_sparse_max_iterations 200
+        group_sparse_active_threshold 0.02
+        group_sparse_active_threshold_scale 1.0
+        group_sparse_active_threshold_quantile 0.90
 
         # adaptive_memory derives its applied footprint from the resolution
         # kernel.  lag_weight_function_width is used by fixed-width penalties

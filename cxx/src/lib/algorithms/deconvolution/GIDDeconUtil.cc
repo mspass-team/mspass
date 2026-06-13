@@ -29,6 +29,9 @@ IterDeconType ParseGIDDeconType(const Metadata &md, const string &caller) {
   if ((sval == "ns_gid") || (sval == "noise_stable") ||
       (sval == "noise_aware_stable"))
     return NS_GID;
+  if ((sval == "group_sparse") || (sval == "group_lasso") ||
+      (sval == "sparse_group_lasso"))
+    return GROUP_SPARSE;
   throw MsPASSError(caller + ": unknown deconvolution_type=" + sval,
                     ErrorSeverity::Fatal);
 }
@@ -244,7 +247,14 @@ void ValidateGIDLeafOperatorMetadata(const Metadata &md,
       "ns_gid_max_spikes",
       "ns_gid_refit_interval",
       "ns_gid_ridge_beta",
-      "ns_gid_external_wavelet_allowed"};
+      "ns_gid_external_wavelet_allowed",
+      "group_sparse_lambda",
+      "group_sparse_lambda_scale",
+      "group_sparse_tolerance",
+      "group_sparse_max_iterations",
+      "group_sparse_active_threshold",
+      "group_sparse_active_threshold_scale",
+      "group_sparse_active_threshold_quantile"};
   static const vector<string> noise_window_keys{"noise_window_start",
                                                 "noise_window_end"};
   for (auto const &key : gid_level_keys) {
@@ -798,5 +808,190 @@ void RefitSpikeAmplitudes(list<ThreeCSpike> &spikes,
   for (auto &spk : spikes)
     spk.amp =
         sqrt(spk.u[0] * spk.u[0] + spk.u[1] * spk.u[1] + spk.u[2] * spk.u[2]);
+}
+
+double VectorQuantile(vector<double> values, const double quantile) {
+  if (values.empty())
+    return 0.0;
+  sort(values.begin(), values.end());
+  const double q = min(1.0, max(0.0, quantile));
+  const double pos = q * static_cast<double>(values.size() - 1);
+  const int lo = static_cast<int>(floor(pos));
+  const int hi = static_cast<int>(ceil(pos));
+  if (lo == hi)
+    return values[lo];
+  const double frac = pos - static_cast<double>(lo);
+  return values[lo] * (1.0 - frac) + values[hi] * frac;
+}
+
+GroupSparseDeconResult SolveGroupSparseDecon(
+    const CoreSeismogram &target, const vector<double> &actual_o_fir,
+    const int actual_o_0, const double lambda, const int max_iterations,
+    const double tolerance, const double active_threshold,
+    const double active_threshold_scale, const double active_threshold_quantile,
+    const string &caller) {
+  if (target.dead() || target.npts() <= 0)
+    throw MsPASSError(caller + ": target data are dead or empty",
+                      ErrorSeverity::Invalid);
+  if (actual_o_fir.empty())
+    throw MsPASSError(caller + ": actual output FIR kernel is empty",
+                      ErrorSeverity::Invalid);
+  if (!isfinite(lambda) || lambda < 0.0)
+    throw MsPASSError(caller + ": group_sparse_lambda must be nonnegative",
+                      ErrorSeverity::Fatal);
+  ValidatePositiveInteger(max_iterations, "group_sparse_max_iterations",
+                          caller);
+  ValidatePositive(tolerance, "group_sparse_tolerance", caller);
+  ValidateNonnegative(active_threshold, "group_sparse_active_threshold",
+                      caller);
+  ValidateNonnegative(active_threshold_scale,
+                      "group_sparse_active_threshold_scale", caller);
+  ValidateProbability(active_threshold_quantile,
+                      "group_sparse_active_threshold_quantile", caller);
+
+  const int npts = static_cast<int>(target.npts());
+  const int ncoef = 3 * npts;
+  const auto index = [npts](const int component, const int sample) {
+    return component * npts + sample;
+  };
+
+  vector<char> valid(npts, false);
+  for (int j = 0; j < npts; ++j) {
+    const int col0 = j - actual_o_0;
+    valid[j] = (col0 >= 0) &&
+               ((col0 + static_cast<int>(actual_o_fir.size())) <= npts);
+  }
+
+  double sumabs(0.0);
+  for (auto x : actual_o_fir)
+    sumabs += fabs(x);
+  const double lipschitz = max(1.0e-12, sumabs * sumabs);
+  const double step = 1.0 / lipschitz;
+
+  vector<double> target_vec(ncoef, 0.0), x(ncoef, 0.0), xnew(ncoef, 0.0),
+      model(ncoef, 0.0), residual(ncoef, 0.0), gradient(ncoef, 0.0);
+  for (int k = 0; k < 3; ++k) {
+    for (int j = 0; j < npts; ++j)
+      target_vec[index(k, j)] = target.u(k, j);
+  }
+
+  auto build_model = [&](const vector<double> &coef) {
+    fill(model.begin(), model.end(), 0.0);
+    for (int j = 0; j < npts; ++j) {
+      if (!valid[j])
+        continue;
+      const int col0 = j - actual_o_0;
+      for (int p = 0; p < static_cast<int>(actual_o_fir.size()); ++p) {
+        const int sample = col0 + p;
+        const double h = actual_o_fir[p];
+        for (int k = 0; k < 3; ++k)
+          model[index(k, sample)] += h * coef[index(k, j)];
+      }
+    }
+    for (int i = 0; i < ncoef; ++i)
+      residual[i] = model[i] - target_vec[i];
+  };
+
+  auto objective = [&](const vector<double> &coef) {
+    double rss(0.0), penalty(0.0);
+    for (auto e : residual)
+      rss += e * e;
+    for (int j = 0; j < npts; ++j) {
+      const double nrm = sqrt(coef[index(0, j)] * coef[index(0, j)] +
+                              coef[index(1, j)] * coef[index(1, j)] +
+                              coef[index(2, j)] * coef[index(2, j)]);
+      penalty += nrm;
+    }
+    return 0.5 * rss + lambda * penalty;
+  };
+
+  GroupSparseDeconResult result;
+  result.lambda = lambda;
+  result.active_threshold_floor = active_threshold;
+  result.active_threshold_scale = active_threshold_scale;
+  result.active_threshold_quantile = active_threshold_quantile;
+  build_model(x);
+  result.objective_initial = objective(x);
+  double prev_objective = result.objective_initial;
+  for (int iter = 1; iter <= max_iterations; ++iter) {
+    fill(gradient.begin(), gradient.end(), 0.0);
+    for (int j = 0; j < npts; ++j) {
+      if (!valid[j])
+        continue;
+      const int col0 = j - actual_o_0;
+      for (int p = 0; p < static_cast<int>(actual_o_fir.size()); ++p) {
+        const int sample = col0 + p;
+        const double h = actual_o_fir[p];
+        for (int k = 0; k < 3; ++k)
+          gradient[index(k, j)] += h * residual[index(k, sample)];
+      }
+    }
+
+    const double shrink_threshold = lambda * step;
+    fill(xnew.begin(), xnew.end(), 0.0);
+    for (int j = 0; j < npts; ++j) {
+      if (!valid[j])
+        continue;
+      double z[3];
+      double znorm2(0.0);
+      for (int k = 0; k < 3; ++k) {
+        z[k] = x[index(k, j)] - step * gradient[index(k, j)];
+        znorm2 += z[k] * z[k];
+      }
+      const double znorm = sqrt(znorm2);
+      if (znorm <= shrink_threshold || znorm <= 0.0)
+        continue;
+      const double scale = 1.0 - shrink_threshold / znorm;
+      for (int k = 0; k < 3; ++k)
+        xnew[index(k, j)] = scale * z[k];
+    }
+
+    build_model(xnew);
+    const double current_objective = objective(xnew);
+    result.iterations = iter;
+    result.fractional_improvement_final =
+        (prev_objective - current_objective) / max(1.0, prev_objective);
+    x.swap(xnew);
+    if (fabs(prev_objective - current_objective) <=
+        tolerance * max(1.0, prev_objective)) {
+      result.converged = true;
+      prev_objective = current_objective;
+      break;
+    }
+    prev_objective = current_objective;
+  }
+
+  build_model(x);
+  result.objective_final = objective(x);
+  result.residual = CoreSeismogram(target);
+  for (int k = 0; k < 3; ++k) {
+    for (int j = 0; j < npts; ++j)
+      result.residual.u(k, j) = target_vec[index(k, j)] - model[index(k, j)];
+  }
+  vector<double> group_norms;
+  group_norms.reserve(npts);
+  for (int j = 0; j < npts; ++j) {
+    const double nrm = sqrt(x[index(0, j)] * x[index(0, j)] +
+                            x[index(1, j)] * x[index(1, j)] +
+                            x[index(2, j)] * x[index(2, j)]);
+    if (valid[j])
+      group_norms.push_back(nrm);
+  }
+  result.active_threshold_quantile_value =
+      VectorQuantile(group_norms, active_threshold_quantile);
+  result.active_threshold_used =
+      max(active_threshold,
+          active_threshold_scale * result.active_threshold_quantile_value);
+  for (int j = 0; j < npts; ++j) {
+    const double nrm = sqrt(x[index(0, j)] * x[index(0, j)] +
+                            x[index(1, j)] * x[index(1, j)] +
+                            x[index(2, j)] * x[index(2, j)]);
+    if (valid[j] && nrm > result.active_threshold_used) {
+      result.spikes.emplace_back(j, x[index(0, j)], x[index(1, j)],
+                                 x[index(2, j)]);
+      ++result.active_groups;
+    }
+  }
+  return result;
 }
 } // namespace mspass::algorithms::deconvolution
