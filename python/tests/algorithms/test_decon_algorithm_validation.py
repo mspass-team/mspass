@@ -54,6 +54,16 @@ STRESS_SPIKES = {
     10.4: (-14.0, 19.0, 0.0),
     10.95: (13.0, -18.0, 0.0),
 }
+CLOSE_ARRIVAL_SPIKES = {
+    0.0: (-12.0, 8.0, 150.0),
+    1.00: (32.0, -24.0, 0.0),
+    1.20: (-27.0, 21.0, 0.0),
+    1.40: (13.0, -10.0, 0.0),
+    3.00: (-30.0, -22.0, 0.0),
+    3.20: (26.0, 18.0, 0.0),
+    5.10: (18.0, -16.0, 0.0),
+    7.40: (-20.0, 15.0, 0.0),
+}
 
 
 def _import_matplotlib_pyplot():
@@ -180,6 +190,62 @@ def _make_stress_colored_validation_data(noise_scale=0.025, return_truth=False):
     return data
 
 
+def _make_direct_only_noisy_validation_data(noise_scale=3.0):
+    np.random.seed(424242)
+    wavelet = make_simulation_wavelet(corners=[0.35, 7.5])
+    truth = _make_stress_truth()
+    truth.data[:, :] = 0.0
+    direct_sample = int(round((0.0 - truth.t0) / truth.dt))
+    truth.data[2, direct_sample] = STRESS_SPIKES[0.0][2]
+    data = convolve_wavelet(truth, wavelet)
+    data = addnoise(data, nscale=noise_scale, padlength=900, corners=[0.04, 3.0])
+    data["low_f_band_edge"] = 0.02
+    data["high_f_band_edge"] = 2.0
+    return data
+
+
+def _make_close_arrival_truth(n=900, dt=0.05, t0=-5.0):
+    truth = Seismogram(n)
+    truth.set_t0(t0)
+    truth.set_dt(dt)
+    truth.set_live()
+    truth.tref = TimeReferenceType.Relative
+    for arrival_time, amplitudes in CLOSE_ARRIVAL_SPIKES.items():
+        sample = int(round((arrival_time - t0) / dt))
+        if 0 <= sample < n:
+            for component, amplitude in enumerate(amplitudes):
+                truth.data[component, sample] = amplitude
+    return truth
+
+
+def _make_close_arrival_cycling_validation_data(
+    noise_scale=0.015, return_truth=False
+):
+    np.random.seed(314159)
+    wavelet = make_simulation_wavelet(corners=[0.45, 6.5])
+    notched_wavelet = _notch_filter_vector(
+        wavelet.data,
+        wavelet.dt,
+        [(1.0, 0.10, 0.65), (3.2, 0.18, 0.55)],
+    )
+    wavelet.data = DoubleVector(notched_wavelet.tolist())
+    truth = _make_close_arrival_truth()
+    data = convolve_wavelet(truth, wavelet)
+    data = addnoise(data, nscale=noise_scale, padlength=900, corners=[0.05, 2.6])
+    t = np.arange(data.npts) * data.dt + data.t0
+    for component, scale, phase in [
+        (0, 0.006, 0.1),
+        (1, 0.007, 1.3),
+        (2, 0.003, 2.1),
+    ]:
+        data.data[component, :] += scale * np.sin(2.0 * np.pi * 0.18 * t + phase)
+    data["low_f_band_edge"] = 0.02
+    data["high_f_band_edge"] = 2.0
+    if return_truth:
+        return data, truth, wavelet
+    return data
+
+
 def _scalar_rf_matrix(algorithm, data):
     processor = RFdeconProcessor(alg=algorithm, pf="data/pf/RFdeconProcessor.pf")
     processor.loadwavelet(data, dtype="Seismogram", component=2, window=True)
@@ -243,6 +309,19 @@ def _noise_stable_rf_matrix(data, external_wavelet=None):
         components.append(np.asarray(engine.getresult()))
     npts = min(len(x) for x in components)
     return np.vstack([x[:npts] for x in components])
+
+
+def _noise_stable_qc(data):
+    wavelet = WindowData(
+        ExtractComponent(data, 2), SIGNAL_WINDOW.start, SIGNAL_WINDOW.end
+    )
+    noise = WindowData(ExtractComponent(data, 2), NOISE_WINDOW.start, NOISE_WINDOW.end)
+    d = WindowData(ExtractComponent(data, 0), SIGNAL_WINDOW.start, SIGNAL_WINDOW.end)
+    engine = NoiseStableDecon(_noise_stable_metadata())
+    engine.loadnoise(noise)
+    engine.load(wavelet.data, d.data)
+    engine.process()
+    return dict(engine.QCMetrics())
 
 
 def _cnr_rf_matrix(data, external_wavelet=None):
@@ -455,6 +534,66 @@ def _classify_gid_spike_detections(
     )
 
 
+def _classify_close_arrival_spike_detections(
+    matrix, t0, dt, detection_threshold=0.04, match_tolerance=0.11
+):
+    truth_times = np.asarray(sorted(CLOSE_ARRIVAL_SPIKES.keys()), dtype=np.float64)
+    return _classify_spike_detections_against_times(
+        matrix, t0, dt, truth_times, detection_threshold, match_tolerance
+    )
+
+
+def _detected_sparse_spike_times(matrix, t0, dt, detection_threshold=0.04):
+    transverse_amp = np.sqrt(matrix[0, :] ** 2 + matrix[1, :] ** 2)
+    peak = np.max(transverse_amp)
+    if peak <= 0.0:
+        return np.asarray([], dtype=np.float64)
+    candidate_samples = np.where(transverse_amp >= detection_threshold * peak)[0]
+    groups = []
+    for sample in candidate_samples:
+        if not groups or sample - groups[-1][-1] > 2:
+            groups.append([sample])
+        else:
+            groups[-1].append(sample)
+    detection_samples = [
+        max(group, key=lambda sample: transverse_amp[sample]) for group in groups
+    ]
+    return t0 + dt * np.asarray(detection_samples, dtype=np.float64)
+
+
+def _count_unmatched_close_arrival_revisits(
+    matrix,
+    t0,
+    dt,
+    detection_threshold=0.04,
+    match_tolerance=0.11,
+    coherence_window=0.35,
+):
+    truth_times = np.asarray(sorted(CLOSE_ARRIVAL_SPIKES.keys()), dtype=np.float64)
+    detection_times = _detected_sparse_spike_times(
+        matrix, t0, dt, detection_threshold=detection_threshold
+    )
+    matched_detections = set()
+    for truth_time in truth_times:
+        unmatched = [
+            (index, abs(detection_time - truth_time))
+            for index, detection_time in enumerate(detection_times)
+            if index not in matched_detections
+        ]
+        if not unmatched:
+            continue
+        index, distance = min(unmatched, key=lambda item: item[1])
+        if distance <= match_tolerance:
+            matched_detections.add(index)
+    revisits = 0
+    for index, detection_time in enumerate(detection_times):
+        if index in matched_detections:
+            continue
+        if np.any(np.abs(truth_times - detection_time) <= coherence_window):
+            revisits += 1
+    return revisits
+
+
 def _classify_spike_detections_against_times(
     matrix, t0, dt, truth_times, detection_threshold=0.02, match_tolerance=0.15
 ):
@@ -662,6 +801,15 @@ def _plot_offset_components(
     return t
 
 
+def _windowed_threec_rms(matrix, t0, dt, window):
+    data = np.asarray(matrix, dtype=np.float64)
+    t = t0 + np.arange(data.shape[1]) * dt
+    mask = (t >= window.start) & (t <= window.end)
+    if not np.any(mask):
+        return 0.0
+    return float(np.sqrt(np.mean(data[:, mask] ** 2)))
+
+
 def _plot_sparse_impulse_norm(axis, truth, title=None):
     truth_matrix = np.asarray(truth.data)
     t = truth.t0 + np.arange(truth.npts) * truth.dt
@@ -755,6 +903,8 @@ def _plot_complex_colored_results(
     axes[0].set_ylabel("Amp")
     axes[0].grid(True, color="0.85", linewidth=0.6)
 
+    pre_event_rms = _windowed_threec_rms(data.data, data.t0, data.dt, NOISE_WINDOW)
+    signal_rms = _windowed_threec_rms(data.data, data.t0, data.dt, SIGNAL_WINDOW)
     _plot_offset_components(
         axes[1],
         data.data,
@@ -765,6 +915,16 @@ def _plot_complex_colored_results(
             f"(normalized display, noise scale={noise_scale:g})"
         ),
         color="C0",
+    )
+    axes[1].text(
+        0.99,
+        0.94,
+        f"pre-event RMS={pre_event_rms:.3g}\nsignal RMS={signal_rms:.3g}",
+        transform=axes[1].transAxes,
+        ha="right",
+        va="top",
+        fontsize="small",
+        bbox={"facecolor": "white", "edgecolor": "0.75", "alpha": 0.85},
     )
     axes[1].set_xlim(SIGNAL_WINDOW.start - 2.0, 18.0)
 
@@ -826,10 +986,21 @@ def _plot_gid_sparse_results(
 
 
 def _gid_plot_label(core_method, qc):
-    return (
-        f"core={core_method} | penalty={qc['gid_penalty_function']}"
-        f" (s={qc['gid_penalty_scale_factor']:g}, w={qc['gid_penalty_width']})"
+    try:
+        adaptive_enabled = qc["gid_adaptive_penalty_enabled"]
+    except Exception:
+        adaptive_enabled = False
+    label = (
+        f"{core_method}/{qc['gid_penalty_function']}"
+        f" s={qc['gid_penalty_scale_factor']:g}"
+        f" W={qc['gid_penalty_effective_width']}"
     )
+    if adaptive_enabled:
+        label += (
+            f" B={qc['gid_penalty_last_confidence']:.2f}"
+            f" R={qc['gid_penalty_last_decay_factor']:.2f}"
+        )
+    return label
 
 
 def _plot_gid_penalty_comparison(
@@ -1100,6 +1271,27 @@ def test_scalar_methods_are_consistent_for_complex_colored_3c_synthetic(
         _assert_scalar_result_is_not_discrete_sparse_output(result, name)
         _assert_direct_arrival_is_recovered(result, ratio_tol=1.0e-1)
         _assert_colored_transverse_arrivals_are_recovered(result)
+
+    cnr_engine = CNRDeconEngine(pfread("data/pf/CNRDeconEngine.pf"))
+    cnr_rf = CNRRFDecon(
+        data,
+        cnr_engine,
+        signal_window=SIGNAL_WINDOW,
+        noise_window=NOISE_WINDOW,
+    )
+    assert cnr_rf.live
+    assert "CNRFDecon_properties" in cnr_rf
+    cnr_qc = dict(cnr_rf["CNRFDecon_properties"])
+    assert cnr_qc["decon_operator"] == "CNRDeconEngine"
+    assert "decon_processed" in cnr_qc
+    assert cnr_qc["prediction_error"] >= 0.0
+
+    noise_stable_qc = _noise_stable_qc(data)
+    assert noise_stable_qc["decon_operator"] == "NoiseStableDecon"
+    assert noise_stable_qc["decon_processed"]
+    assert noise_stable_qc["ns_gid_gain_max_actual"] <= (
+        noise_stable_qc["ns_gid_gain_max_requested"] * (1.0 + 1.0e-10)
+    )
 
     assert (
         _normalized_correlation(results["LeastSquares"], results["WaterLevel"]) > 0.95
@@ -1725,28 +1917,34 @@ def test_gid_lag_penalty_improves_stress_fit_and_plots_diagnostics(
             (
                 "none",
                 {
-                    "lag_weight_penalty_function cosine_taper": "lag_weight_penalty_function none"
+                    "lag_weight_penalty_function adaptive_memory": "lag_weight_penalty_function none"
                 },
             ),
             (
                 "boxcar",
                 {
-                    "lag_weight_penalty_function cosine_taper": "lag_weight_penalty_function boxcar"
+                    "lag_weight_penalty_function adaptive_memory": "lag_weight_penalty_function boxcar"
                 },
             ),
             (
                 "shaping_wavelet",
                 {
-                    "lag_weight_penalty_function cosine_taper": "lag_weight_penalty_function shaping_wavelet"
+                    "lag_weight_penalty_function adaptive_memory": "lag_weight_penalty_function shaping_wavelet"
                 },
             ),
             (
                 "resolution_kernel",
                 {
-                    "lag_weight_penalty_function cosine_taper": "lag_weight_penalty_function resolution_kernel"
+                    "lag_weight_penalty_function adaptive_memory": "lag_weight_penalty_function resolution_kernel"
                 },
             ),
-            ("cosine_taper", {}),
+            ("adaptive_memory", {}),
+            (
+                "cosine_taper",
+                {
+                    "lag_weight_penalty_function adaptive_memory": "lag_weight_penalty_function cosine_taper"
+                },
+            ),
         ]
         for label, replacements in cases:
             pf = _pf_with_gid_mode_and_replacements(
@@ -1829,11 +2027,12 @@ def test_gid_lag_penalty_improves_stress_fit_and_plots_diagnostics(
         "cosine_taper",
         "shaping_wavelet",
         "resolution_kernel",
+        "adaptive_memory",
     }
-    assert qcs["cosine_taper"]["gid_penalty_scale_factor"] == pytest.approx(0.5)
-    assert detection_metrics["cosine_taper"]["recall"] >= 0.95
-    assert detection_metrics["cosine_taper"]["precision"] >= 0.80
-    assert detection_metrics["cosine_taper"]["false_positive"] <= 2
+    assert qcs["adaptive_memory"]["gid_penalty_scale_factor"] == pytest.approx(0.35)
+    assert detection_metrics["adaptive_memory"]["recall"] >= 0.95
+    assert detection_metrics["adaptive_memory"]["precision"] >= 0.95
+    assert detection_metrics["adaptive_memory"]["false_positive"] <= 1
     assert qcs["cosine_taper"]["gid_penalty_effective_width"] == 5
     for adaptive_penalty in ("shaping_wavelet", "resolution_kernel"):
         assert qcs[adaptive_penalty]["gid_penalty_effective_width"] > 1
@@ -1841,20 +2040,36 @@ def test_gid_lag_penalty_improves_stress_fit_and_plots_diagnostics(
             qcs[adaptive_penalty]["gid_penalty_effective_width"]
             != qcs[adaptive_penalty]["gid_penalty_width"]
         )
+    assert qcs["adaptive_memory"]["gid_adaptive_penalty_enabled"]
+    assert qcs["adaptive_memory"]["gid_penalty_effective_width"] >= 1
+    assert qcs["adaptive_memory"]["gid_penalty_noise_amplitude"] > 0.0
+    assert 0.0 <= qcs["adaptive_memory"]["gid_penalty_last_confidence"] < 1.0
     assert (
-        qcs["cosine_taper"]["iteration_count"]
+        0.0
+        <= qcs["adaptive_memory"]["gid_penalty_last_immediate_strength"]
+        < 1.0
+    )
+    assert 0.0 <= qcs["adaptive_memory"]["gid_penalty_last_specificity"] <= 1.0
+    assert 0.0 <= qcs["adaptive_memory"]["gid_penalty_last_decay_factor"] < 1.0
+    assert qcs["adaptive_memory"]["gid_penalty_last_immediate_strength"] == pytest.approx(
+        qcs["adaptive_memory"]["gid_penalty_last_confidence"]
+    )
+    assert qcs["adaptive_memory"]["gid_penalty_last_decay_factor"] == pytest.approx(
+        qcs["adaptive_memory"]["gid_penalty_last_confidence"]
+        * qcs["adaptive_memory"]["gid_penalty_last_specificity"]
+    )
+    assert qcs["adaptive_memory"]["gid_penalty_memory_Linf_final"] > 0.0
+    assert (
+        qcs["adaptive_memory"]["iteration_count"]
         <= qcs["none"]["iteration_count"]
+        + qcs["adaptive_memory"]["gid_penalty_effective_width"]
     )
     assert (
-        qcs["cosine_taper"]["residual_L2_final"]
+        qcs["adaptive_memory"]["residual_L2_final"]
         <= qcs["none"]["residual_L2_final"] * 1.05
     )
     assert (
-        qcs["cosine_taper"]["residual_L2_final"]
-        <= qcs["boxcar"]["residual_L2_final"] * 1.05
-    )
-    assert (
-        qcs["cosine_taper"]["lag_weight_L2_final"]
+        qcs["adaptive_memory"]["lag_weight_L2_final"]
         < qcs["none"]["lag_weight_L2_final"]
     )
 
@@ -1888,6 +2103,248 @@ def test_gid_lag_penalty_improves_stress_fit_and_plots_diagnostics(
         f"noise_{decon_validation_noise_scale:g}",
         failed_methods=failed_methods,
     )
+
+
+def _adaptive_memory_penalty_replacements():
+    return {}
+
+
+@pytest.mark.parametrize(
+    "engine_class, wrapper, pfname, branch_name, qc_key",
+    [
+        (
+            TimeDomainGIDDecon,
+            TimeDomainGIDRFDecon,
+            "data/pf/TimeDomainGIDDecon.pf",
+            "time_domain_gid_deconvolution",
+            "TimeDomainGIDDecon_properties",
+        ),
+        (
+            FrequencyDomainGIDDecon,
+            FrequencyDomainGIDRFDecon,
+            "data/pf/FrequencyDomainGIDDecon.pf",
+            "frequency_domain_gid_deconvolution",
+            "FrequencyDomainGIDDecon_properties",
+        ),
+    ],
+)
+def test_gid_adaptive_memory_penalty_bounds_close_arrival_revisits(
+    tmp_path, engine_class, wrapper, pfname, branch_name, qc_key
+):
+    data = _make_close_arrival_cycling_validation_data(noise_scale=0.015)
+    cases = {
+        "resolution_kernel": {
+            "lag_weight_penalty_function adaptive_memory": (
+                "lag_weight_penalty_function resolution_kernel"
+            ),
+            "lag_weight_function_width 5": "lag_weight_function_width 51",
+        },
+        "adaptive_memory": _adaptive_memory_penalty_replacements(),
+    }
+    results = {}
+    for label, replacements in cases.items():
+        pf = _pf_with_gid_mode_and_replacements(
+            tmp_path,
+            pfname,
+            branch_name,
+            "least_square",
+            replacements,
+        )
+        engine = engine_class(pf)
+        rf = wrapper(
+            data,
+            engine,
+            signal_window=TimeWindow(-8.0, 20.0),
+            noise_window=TimeWindow(-35.0, -5.0),
+        )
+        assert rf.live, label
+        sparse = engine.sparse_output()
+        sparse_matrix = np.asarray(sparse.data)
+        results[label] = {
+            "qc": dict(rf[qc_key]),
+            "metrics": _classify_close_arrival_spike_detections(
+                sparse_matrix, sparse.t0, sparse.dt
+            ),
+            "revisits": _count_unmatched_close_arrival_revisits(
+                sparse_matrix, sparse.t0, sparse.dt
+            ),
+        }
+
+    kernel = results["resolution_kernel"]
+    adaptive = results["adaptive_memory"]
+    adaptive_qc = adaptive["qc"]
+    assert adaptive_qc["gid_penalty_function"] == "adaptive_memory"
+    assert adaptive_qc["gid_adaptive_penalty_enabled"]
+    assert adaptive_qc["gid_penalty_effective_width"] >= 1
+    assert adaptive_qc["gid_penalty_noise_amplitude"] > 0.0
+    assert 0.0 <= adaptive_qc["gid_penalty_last_confidence"] < 1.0
+    assert 0.0 <= adaptive_qc["gid_penalty_last_immediate_strength"] < 1.0
+    assert 0.0 <= adaptive_qc["gid_penalty_last_specificity"] <= 1.0
+    assert 0.0 <= adaptive_qc["gid_penalty_last_decay_factor"] < 1.0
+    assert adaptive_qc["gid_penalty_memory_Linf_final"] > 0.0
+    assert adaptive_qc["gid_penalty_memory_L2_final"] > 0.0
+
+    assert adaptive["metrics"]["recall"] >= 0.75
+    assert (
+        adaptive["metrics"]["false_positive"]
+        <= kernel["metrics"]["false_positive"] + 2
+    )
+    assert adaptive["revisits"] <= kernel["revisits"] + 1
+    assert (
+        adaptive_qc["residual_L2_final"]
+        < adaptive_qc["residual_L2_initial"]
+    )
+
+
+@pytest.mark.parametrize(
+    "engine_class, wrapper, pfname, branch_name, qc_key",
+    [
+        (
+            TimeDomainGIDDecon,
+            TimeDomainGIDRFDecon,
+            "data/pf/TimeDomainGIDDecon.pf",
+            "time_domain_gid_deconvolution",
+            "TimeDomainGIDDecon_properties",
+        ),
+        (
+            FrequencyDomainGIDDecon,
+            FrequencyDomainGIDRFDecon,
+            "data/pf/FrequencyDomainGIDDecon.pf",
+            "frequency_domain_gid_deconvolution",
+            "FrequencyDomainGIDDecon_properties",
+        ),
+    ],
+)
+def test_gid_none_penalty_preserves_dense_close_arrival_support(
+    tmp_path, engine_class, wrapper, pfname, branch_name, qc_key
+):
+    data = _make_close_arrival_cycling_validation_data(noise_scale=0.015)
+    cases = {
+        "none": {
+            "lag_weight_penalty_function adaptive_memory": (
+                "lag_weight_penalty_function none"
+            ),
+        },
+        "adaptive_memory": _adaptive_memory_penalty_replacements(),
+    }
+    results = {}
+    for label, replacements in cases.items():
+        pf = _pf_with_gid_mode_and_replacements(
+            tmp_path,
+            pfname,
+            branch_name,
+            "least_square",
+            replacements,
+        )
+        engine = engine_class(pf)
+        rf = wrapper(
+            data,
+            engine,
+            signal_window=TimeWindow(-8.0, 20.0),
+            noise_window=TimeWindow(-35.0, -5.0),
+        )
+        assert rf.live, label
+        sparse = engine.sparse_output()
+        results[label] = {
+            "qc": dict(rf[qc_key]),
+            "metrics": _classify_close_arrival_spike_detections(
+                np.asarray(sparse.data), sparse.t0, sparse.dt
+            ),
+        }
+
+    no_penalty = results["none"]
+    adaptive = results["adaptive_memory"]
+    assert no_penalty["qc"]["gid_penalty_function"] == "none"
+    assert adaptive["qc"]["gid_penalty_function"] == "adaptive_memory"
+    assert no_penalty["metrics"]["recall"] >= adaptive["metrics"]["recall"]
+    assert (
+        no_penalty["metrics"]["false_positive"]
+        <= adaptive["metrics"]["false_positive"]
+    )
+
+
+@pytest.mark.parametrize(
+    "engine_class, wrapper, pfname, branch_name, qc_key",
+    [
+        (
+            TimeDomainGIDDecon,
+            TimeDomainGIDRFDecon,
+            "data/pf/TimeDomainGIDDecon.pf",
+            "time_domain_gid_deconvolution",
+            "TimeDomainGIDDecon_properties",
+        ),
+        (
+            FrequencyDomainGIDDecon,
+            FrequencyDomainGIDRFDecon,
+            "data/pf/FrequencyDomainGIDDecon.pf",
+            "frequency_domain_gid_deconvolution",
+            "FrequencyDomainGIDDecon_properties",
+        ),
+    ],
+)
+@pytest.mark.parametrize("noise_scale", [3.0, 10.0, 30.0, 100.0])
+def test_gid_adaptive_memory_does_not_overlearn_noise_maxima(
+    tmp_path, engine_class, wrapper, pfname, branch_name, qc_key, noise_scale
+):
+    data = _make_direct_only_noisy_validation_data(noise_scale=noise_scale)
+    cases = {
+        "none": {
+            "lag_weight_penalty_function adaptive_memory": (
+                "lag_weight_penalty_function none"
+            ),
+        },
+        "adaptive_memory": _adaptive_memory_penalty_replacements(),
+    }
+    results = {}
+    for label, replacements in cases.items():
+        pf = _pf_with_gid_mode_and_replacements(
+            tmp_path,
+            pfname,
+            branch_name,
+            "least_square",
+            replacements,
+        )
+        engine = engine_class(pf)
+        rf = wrapper(
+            data,
+            engine,
+            signal_window=TimeWindow(-8.0, 20.0),
+            noise_window=TimeWindow(-35.0, -5.0),
+        )
+        assert rf.live, label
+        sparse = engine.sparse_output()
+        sparse_matrix = np.asarray(sparse.data)
+        results[label] = {
+            "qc": dict(rf[qc_key]),
+            "peak_count": len(
+                _detected_sparse_spike_times(
+                    sparse_matrix,
+                    sparse.t0,
+                    sparse.dt,
+                    detection_threshold=0.08,
+                )
+            ),
+            "transverse_l2": np.linalg.norm(sparse_matrix[:2, :]),
+        }
+
+    no_penalty = results["none"]
+    adaptive = results["adaptive_memory"]
+    adaptive_qc = adaptive["qc"]
+    assert adaptive_qc["gid_penalty_function"] == "adaptive_memory"
+    assert adaptive_qc["gid_penalty_noise_amplitude"] > 0.0
+    assert 0.0 <= adaptive_qc["gid_penalty_last_confidence"] < 1.0
+    assert 0.0 <= adaptive_qc["gid_penalty_last_immediate_strength"] < 1.0
+    assert (
+        adaptive_qc["gid_penalty_last_decay_factor"]
+        <= adaptive_qc["gid_penalty_last_immediate_strength"] + 1.0e-12
+    )
+    assert adaptive["peak_count"] <= no_penalty["peak_count"] + 2
+    assert (
+        adaptive["transverse_l2"]
+        <= no_penalty["transverse_l2"] * 1.10 + 1.0e-10
+    )
+    if noise_scale >= 10.0:
+        assert abs(adaptive["peak_count"] - no_penalty["peak_count"]) <= 2
 
 
 @pytest.mark.parametrize(

@@ -201,13 +201,14 @@ private:
   beyond that given in Wang and Pavlis's paper.   This private method
   updates the weight vector using the lag position (in samples) of the
   current spike. */
-  void update_lag_weights(int col);
+  void update_lag_weights(int col, const double candidate_amplitude);
   /*! This private method is called after loading noise to set the quantity
   resid_linf_floor = convergence criteria on amplitude.  That parameter is
   computed from sorting the filtered, preevent noise and setting the
   threshold from a probability level.  Returns the computed floor but
   also sets resid_linf_floor in this base object */
-  double compute_resid_linf_floor();
+  double compute_resid_linf_floor(
+      const mspass::seismic::CoreSeismogram &noise);
   /*! Apply all convergence tests. Returns false to terminate the iteration
   loop.  This puts all such calculations in one place. */
   bool has_not_converged();
@@ -231,7 +232,7 @@ private:
   double resid_l2_tol;
   double ns_peak_sigma_threshold, ns_peak_probability_threshold;
   double ns_residual_noise_ratio_floor, ns_peak_threshold;
-  double ns_last_peak_significance, ns_noise_l2;
+  double ns_last_peak_significance, ns_noise_l2, ns_noise_amplitude_rms;
   int ns_max_spikes, ns_refit_interval;
   double ns_ridge_beta, ns_fractional_improvement_final;
   bool ns_use_empirical_noise_threshold, ns_converged;
@@ -241,6 +242,15 @@ private:
   std::string lag_weight_penalty_function;
   double lag_weight_penalty_scale_factor;
   int lag_weight_function_width;
+  std::vector<double> adaptive_penalty_memory;
+  std::vector<double> adaptive_penalty_retention;
+  double adaptive_penalty_last_confidence;
+  double adaptive_penalty_last_immediate_strength;
+  double adaptive_penalty_last_specificity;
+  double adaptive_penalty_last_decay_factor;
+  double adaptive_penalty_noise_amplitude;
+  double adaptive_penalty_memory_linf;
+  double adaptive_penalty_memory_l2;
 
 };
 } // namespace mspass::algorithms::deconvolution

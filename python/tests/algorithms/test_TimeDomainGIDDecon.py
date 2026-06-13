@@ -55,6 +55,20 @@ def _assert_valid_rf(rf):
     assert np.linalg.norm(rf.data) > 0.0
 
 
+def _assert_single_penalty_footprint(lag_weights, effective_width):
+    valid = lag_weights > 0.0
+    changed = np.flatnonzero(valid & (lag_weights < 1.0 - 1.0e-10))
+    assert changed.size == effective_width
+    assert changed.size > 1
+    assert np.all(np.diff(changed) == 1)
+    footprint = lag_weights[changed]
+    center = changed.size // 2
+    assert np.argmin(footprint) == center
+    assert footprint[center] == pytest.approx(float(lag_weights[valid].min()))
+    assert footprint[center] < footprint[0]
+    assert np.allclose(footprint, footprint[::-1], atol=1.0e-10)
+
+
 def _assert_actual_and_output_shaping_are_distinct(
     actual_output, output_shaping_wavelet
 ):
@@ -431,10 +445,17 @@ def test_TimeDomainGIDDecon_binding_and_wrapper():
         "no_acceptable_candidate",
         "residual_linf_floor",
     }
-    assert qc["gid_penalty_function"] == "cosine_taper"
-    assert qc["gid_penalty_scale_factor"] == pytest.approx(0.5)
+    assert qc["gid_penalty_function"] == "adaptive_memory"
+    assert qc["gid_penalty_scale_factor"] == pytest.approx(0.35)
     assert qc["gid_penalty_width"] == 5
-    assert qc["gid_penalty_effective_width"] == 5
+    assert qc["gid_penalty_effective_width"] >= 1
+    assert qc["gid_adaptive_penalty_enabled"]
+    assert qc["gid_penalty_last_immediate_strength"] == pytest.approx(
+        qc["gid_penalty_last_confidence"]
+    )
+    assert qc["gid_penalty_last_decay_factor"] == pytest.approx(
+        qc["gid_penalty_last_confidence"] * qc["gid_penalty_last_specificity"]
+    )
     assert qc["iteration_count"] > 0
     assert qc["gid_actual_o_fir_npts"] > 0
     assert 0 <= qc["gid_actual_o_fir_zero_lag_index"] < qc["gid_actual_o_fir_npts"]
@@ -477,7 +498,7 @@ def test_TimeDomainGIDDecon_penalty_reduces_multispike_residual(tmp_path):
     text = Path("./data/pf/TimeDomainGIDDecon.pf").read_text()
     no_penalty_pf.write_text(
         text.replace(
-            "lag_weight_penalty_function cosine_taper",
+            "lag_weight_penalty_function adaptive_memory",
             "lag_weight_penalty_function none",
         )
     )
@@ -497,17 +518,19 @@ def test_TimeDomainGIDDecon_penalty_reduces_multispike_residual(tmp_path):
 
     penalty_qc = penalty_rf["TimeDomainGIDDecon_properties"]
     no_penalty_qc = no_penalty_rf["TimeDomainGIDDecon_properties"]
-    assert penalty_qc["gid_penalty_function"] == "cosine_taper"
-    assert penalty_qc["gid_penalty_effective_width"] == 5
+    assert penalty_qc["gid_penalty_function"] == "adaptive_memory"
+    assert penalty_qc["gid_penalty_effective_width"] >= 1
     assert no_penalty_qc["gid_penalty_function"] == "none"
-    assert no_penalty_qc["gid_penalty_scale_factor"] == pytest.approx(0.5)
+    assert no_penalty_qc["gid_penalty_scale_factor"] == pytest.approx(0.35)
     assert no_penalty_qc["gid_penalty_width"] == 5
     assert no_penalty_qc["gid_penalty_effective_width"] == 1
     assert penalty_qc["residual_L2_final"] < no_penalty_qc["residual_L2_final"]
     assert penalty_qc["lag_weight_L2_final"] < no_penalty_qc["lag_weight_L2_final"]
 
 
-@pytest.mark.parametrize("penalty_function", ["shaping_wavelet", "resolution_kernel"])
+@pytest.mark.parametrize(
+    "penalty_function", ["shaping_wavelet", "resolution_kernel", "adaptive_memory"]
+)
 def test_TimeDomainGIDDecon_kernel_penalty_modes_are_adaptive(
     tmp_path, penalty_function
 ):
@@ -518,10 +541,11 @@ def test_TimeDomainGIDDecon_kernel_penalty_modes_are_adaptive(
     pf = tmp_path / f"TimeDomainGIDDecon_{penalty_function}.pf"
     text = Path("./data/pf/TimeDomainGIDDecon.pf").read_text()
     text = text.replace(
-        "lag_weight_penalty_function cosine_taper",
+        "lag_weight_penalty_function adaptive_memory",
         f"lag_weight_penalty_function {penalty_function}",
     )
     text = text.replace("lag_weight_function_width 5", "lag_weight_function_width 101")
+    text = text.replace("maximum_iterations 100", "maximum_iterations 1")
     pf.write_text(text)
 
     engine = TimeDomainGIDDecon(pfread(str(pf)))
@@ -536,8 +560,24 @@ def test_TimeDomainGIDDecon_kernel_penalty_modes_are_adaptive(
     qc = rf["TimeDomainGIDDecon_properties"]
     assert qc["gid_penalty_function"] == penalty_function
     assert qc["gid_penalty_width"] == 101
-    assert qc["gid_penalty_effective_width"] > 1
     assert qc["gid_penalty_effective_width"] != qc["gid_penalty_width"]
+    assert qc["gid_adaptive_penalty_enabled"] == (
+        penalty_function == "adaptive_memory"
+    )
+    assert 0.0 <= qc["gid_penalty_last_confidence"] < 1.0
+    assert 0.0 <= qc["gid_penalty_last_immediate_strength"] < 1.0
+    assert 0.0 <= qc["gid_penalty_last_specificity"] <= 1.0
+    assert 0.0 <= qc["gid_penalty_last_decay_factor"] < 1.0
+    assert qc["gid_penalty_valid_lags"] > 0
+    if penalty_function == "adaptive_memory":
+        assert qc["gid_penalty_effective_width"] >= 1
+        assert qc["gid_penalty_noise_amplitude"] > 0.0
+        assert qc["gid_penalty_memory_Linf_final"] > 0.0
+        assert qc["gid_penalty_memory_L2_final"] > 0.0
+    else:
+        assert qc["gid_penalty_effective_width"] > 1
+        assert qc["gid_penalty_memory_Linf_final"] == pytest.approx(0.0)
+        assert qc["gid_penalty_memory_L2_final"] == pytest.approx(0.0)
     assert qc["residual_L2_final"] < qc["residual_L2_initial"]
     lag_weights = np.asarray(engine.lag_weight_vector())
     assert lag_weights.size > 0
@@ -546,6 +586,7 @@ def test_TimeDomainGIDDecon_kernel_penalty_modes_are_adaptive(
     assert qc["lag_weight_L2_final"] == pytest.approx(
         float(np.linalg.norm(lag_weights))
     )
+    _assert_single_penalty_footprint(lag_weights, qc["gid_penalty_effective_width"])
 
 
 def test_TimeDomainGIDDecon_iteration_cap_returns_best_result(tmp_path):
@@ -828,6 +869,36 @@ def test_TimeDomainGIDDecon_engine_reuse_is_stable():
     _assert_valid_rf(rf1)
     _assert_valid_rf(rf2)
     assert np.allclose(rf1.data, rf2.data)
+
+
+def test_TimeDomainGIDDecon_repeated_process_preserves_loaded_noise():
+    data = _make_gid_test_data(noise_level=None)
+    pf = pfread("./data/pf/TimeDomainGIDDecon.pf")
+    engine = TimeDomainGIDDecon(pf)
+    assert engine.load(data, TimeWindow(-8.0, 20.0), TimeWindow(-25.0, -8.0)) == 0
+
+    engine.process()
+    first_result = np.asarray(engine.getresult().data, dtype=np.float64).copy()
+    first_lag_weights = np.asarray(engine.lag_weight_vector(), dtype=np.float64).copy()
+    first_qc = dict(engine.QCMetrics())
+
+    engine.process()
+    second_result = np.asarray(engine.getresult().data, dtype=np.float64)
+    second_lag_weights = np.asarray(engine.lag_weight_vector(), dtype=np.float64)
+    second_qc = dict(engine.QCMetrics())
+
+    assert np.allclose(second_result, first_result)
+    assert np.allclose(second_lag_weights, first_lag_weights)
+    assert second_qc["gid_stop_reason"] == first_qc["gid_stop_reason"]
+    for key in (
+        "iteration_count",
+        "gid_penalty_noise_amplitude",
+        "residual_L2_final",
+        "lag_weight_L2_final",
+        "gid_penalty_last_confidence",
+        "gid_penalty_memory_L2_final",
+    ):
+        assert second_qc[key] == pytest.approx(first_qc[key])
 
 
 def test_TimeDomainGIDDecon_validates_single_spike_recovery():
@@ -1219,12 +1290,12 @@ def test_TimeDomainGIDDecon_changeparameter_rejects_leaf_shaping_dt_drift():
             "lag_weight_function_width",
         ),
         (
-            "lag_weight_penalty_scale_factor 0.5",
+            "lag_weight_penalty_scale_factor 0.35",
             "lag_weight_penalty_scale_factor 0.0",
             "lag_weight_penalty_scale_factor",
         ),
         (
-            "lag_weight_penalty_function cosine_taper",
+            "lag_weight_penalty_function adaptive_memory",
             "lag_weight_penalty_function invalid_penalty",
             "lag_weight_penalty_function",
         ),
@@ -1273,6 +1344,44 @@ def test_TimeDomainGIDDecon_rejects_invalid_probability_and_lag_parameters(
     pf.write_text(text.replace(old, new))
 
     with pytest.raises(MsPASSError, match=match) as excinfo:
+        TimeDomainGIDDecon(pfread(str(pf)))
+    assert excinfo.value.severity == ErrorSeverity.Fatal
+
+
+def test_TimeDomainGIDDecon_defaults_missing_lag_penalty_function_to_none(
+    tmp_path,
+):
+    text = open("data/pf/TimeDomainGIDDecon.pf", encoding="utf-8").read()
+    text = text.replace("        lag_weight_penalty_function adaptive_memory\n", "")
+    pf = tmp_path / "TimeDomainGIDDecon_legacy_no_penalty_function.pf"
+    pf.write_text(text)
+
+    data = _make_gid_test_data(noise_level=None)
+    engine = TimeDomainGIDDecon(pfread(str(pf)))
+    rf = TimeDomainGIDRFDecon(
+        data,
+        engine,
+        signal_window=TimeWindow(-8.0, 20.0),
+        noise_window=TimeWindow(-25.0, -8.0),
+    )
+
+    _assert_valid_rf(rf)
+    qc = rf["TimeDomainGIDDecon_properties"]
+    assert qc["gid_penalty_function"] == "none"
+    assert qc["gid_penalty_effective_width"] == 1
+
+
+def test_TimeDomainGIDDecon_reports_missing_fixed_penalty_width(tmp_path):
+    text = open("data/pf/TimeDomainGIDDecon.pf", encoding="utf-8").read()
+    text = text.replace(
+        "lag_weight_penalty_function adaptive_memory",
+        "lag_weight_penalty_function cosine_taper",
+    )
+    text = text.replace("        lag_weight_function_width 5\n", "")
+    pf = tmp_path / "TimeDomainGIDDecon_missing_penalty_width.pf"
+    pf.write_text(text)
+
+    with pytest.raises(MsPASSError, match="lag_weight_function_width") as excinfo:
         TimeDomainGIDDecon(pfread(str(pf)))
     assert excinfo.value.severity == ErrorSeverity.Fatal
 

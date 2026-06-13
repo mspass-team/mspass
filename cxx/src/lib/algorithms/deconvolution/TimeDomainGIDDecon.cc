@@ -213,6 +213,15 @@ void TimeDomainGIDDecon::invalidate_processing_state() {
   lag_weights.clear();
   actual_o_fir.clear();
   actual_o_0 = 0;
+  adaptive_penalty_memory.clear();
+  adaptive_penalty_retention.clear();
+  adaptive_penalty_last_confidence = 0.0;
+  adaptive_penalty_last_immediate_strength = 0.0;
+  adaptive_penalty_last_specificity = 0.0;
+  adaptive_penalty_last_decay_factor = 0.0;
+  adaptive_penalty_noise_amplitude = 0.0;
+  adaptive_penalty_memory_linf = 0.0;
+  adaptive_penalty_memory_l2 = 0.0;
   wavelet_pad = 0;
   iter_count = 0;
   lw_linf_initial = 0.0;
@@ -227,6 +236,7 @@ void TimeDomainGIDDecon::invalidate_processing_state() {
   ns_last_peak_significance = 0.0;
   ns_peak_threshold = 0.0;
   ns_noise_l2 = 0.0;
+  ns_noise_amplitude_rms = 0.0;
   ns_converged = false;
   ns_stop_reason = "not_started";
   gid_converged = false;
@@ -277,7 +287,10 @@ CoreTimeSeries TimeDomainGIDDecon::inverse_wavelet(double t0parent) {
 
 void TimeDomainGIDDecon::construct_weight_penalty_function(const Metadata &md) {
   try {
-    lag_weight_penalty_function = md.get_string("lag_weight_penalty_function");
+    lag_weight_penalty_function =
+        md.is_defined("lag_weight_penalty_function")
+            ? md.get_string("lag_weight_penalty_function")
+            : "none";
     lag_weight_penalty_scale_factor =
         md.is_defined("lag_weight_penalty_scale_factor")
             ? md.get<double>("lag_weight_penalty_scale_factor")
@@ -296,13 +309,17 @@ void TimeDomainGIDDecon::construct_weight_penalty_function(const Metadata &md) {
       ValidatePositiveInteger(
           lag_weight_function_width, "lag_weight_function_width",
           "TimeDomainGIDDecon::construct_weight_penalty_function");
-    if (lag_weight_penalty_function == "shaping_wavelet") {
+    if (lag_weight_penalty_function == "none") {
+      wtf = vector<double>{1.0};
+    } else if (lag_weight_penalty_function == "shaping_wavelet") {
       CoreTimeSeries shaping(this->output_shaping_wavelet());
       wtf = BuildGIDLagWeightPenaltyFunctionFromKernel(
           lag_weight_penalty_function, lag_weight_penalty_scale_factor,
           shaping.s, shaping.sample_number(0.0),
           "TimeDomainGIDDecon::construct_weight_penalty_function");
-    } else if (lag_weight_penalty_function == "resolution_kernel") {
+    } else if (lag_weight_penalty_function == "resolution_kernel" ||
+               GIDLagWeightPenaltyUsesAdaptiveMemory(
+                   lag_weight_penalty_function)) {
       wtf = vector<double>{1.0};
     } else {
       wtf = BuildGIDLagWeightPenaltyFunction(
@@ -380,7 +397,7 @@ int TimeDomainGIDDecon::loadnoise(const CoreSeismogram &draw,
       }
       return 0;
     }
-    this->compute_resid_linf_floor();
+    this->compute_resid_linf_floor(n);
     return 0;
   } catch (...) {
     throw;
@@ -551,18 +568,36 @@ the constructor centered at lag = col.  This mirrors the experimental
 iterdecon penalty model: repeated hits keep suppressing the same lag or
 neighborhood, which encourages the next iteration to examine weaker arrivals. */
 
-void TimeDomainGIDDecon::update_lag_weights(int col) {
+void TimeDomainGIDDecon::update_lag_weights(
+    int col, const double candidate_amplitude) {
   try {
-    ApplyGIDLagWeightPenalty(lag_weights, wtf, col);
+    if (GIDLagWeightPenaltyUsesAdaptiveMemory(lag_weight_penalty_function)) {
+      GIDAdaptivePenaltyMetrics metrics(ApplyGIDAdaptiveMemoryPenalty(
+          lag_weights, adaptive_penalty_memory, adaptive_penalty_retention,
+          actual_o_fir, actual_o_0, col, lag_weight_penalty_scale_factor,
+          candidate_amplitude, adaptive_penalty_noise_amplitude,
+          "TimeDomainGIDDecon::update_lag_weights"));
+      adaptive_penalty_last_confidence = metrics.confidence;
+      adaptive_penalty_last_immediate_strength = metrics.immediate_strength;
+      adaptive_penalty_last_specificity = metrics.specificity;
+      adaptive_penalty_last_decay_factor = metrics.decay_factor;
+      adaptive_penalty_noise_amplitude = metrics.noise_amplitude;
+      adaptive_penalty_memory_linf = metrics.memory_linf;
+      adaptive_penalty_memory_l2 = metrics.memory_l2;
+      nwtf = metrics.effective_width;
+    } else {
+      ApplyGIDLagWeightPenalty(lag_weights, wtf, col);
+    }
   } catch (...) {
     throw;
   };
 }
-double TimeDomainGIDDecon::compute_resid_linf_floor() {
+double TimeDomainGIDDecon::compute_resid_linf_floor(
+    const CoreSeismogram &noise) {
   try {
     /*Note - this needs an enhancement.   We should not include points
     in a padded region accounting for the inverse filter padding. */
-    vector<double> amps(ThreeCAmplitudes(n.u));
+    vector<double> amps(ThreeCAmplitudes(noise.u));
     sort(amps.begin(), amps.end());
     int floor_position;
     floor_position = static_cast<int>(resid_linf_prob * ((double)amps.size()));
@@ -833,7 +868,8 @@ void TimeDomainGIDDecon::process() {
     vector<double>::iterator aoptr;
     for (aoptr = actual_o_fir.begin(); aoptr != actual_o_fir.end(); ++aoptr)
       (*aoptr) /= peak_scale;
-    if (lag_weight_penalty_function == "resolution_kernel") {
+    if (lag_weight_penalty_function == "resolution_kernel" ||
+        GIDLagWeightPenaltyUsesAdaptiveMemory(lag_weight_penalty_function)) {
       wtf = BuildGIDLagWeightPenaltyFunctionFromKernel(
           lag_weight_penalty_function, lag_weight_penalty_scale_factor,
           actual_o_fir, actual_o_0,
@@ -908,27 +944,35 @@ void TimeDomainGIDDecon::process() {
         double sumsq(0.0);
         for (auto x : noise_amps)
           sumsq += x * x;
-        double rms = sqrt(sumsq / static_cast<double>(noise_amps.size()));
-        double sigma_floor = ns_peak_sigma_threshold * rms;
+        ns_noise_amplitude_rms =
+            sqrt(sumsq / static_cast<double>(noise_amps.size()));
+        double sigma_floor = ns_peak_sigma_threshold * ns_noise_amplitude_rms;
         ns_peak_threshold =
             ns_use_empirical_noise_threshold ? max(empirical, sigma_floor)
                                              : sigma_floor;
       } else {
         ns_peak_threshold = 0.0;
+        ns_noise_amplitude_rms = 0.0;
       }
       ns_noise_l2 = cblas_dnrm2(3 * ns_noise_npts,
                                 nfiltered.get_address(0, 0), 1);
+      adaptive_penalty_noise_amplitude =
+          (ns_noise_amplitude_rms > 0.0) ? ns_noise_amplitude_rms
+                                         : ns_peak_threshold;
     } else {
       process_stage = "legacy GID inverse-filter noise";
-      /* Replace n by convolution with inverse wavelet to get the levels
-       * correct for legacy GID stopping criteria. */
-      n = sparse_convolve(winv, n);
+      /* Map a local copy of the noise window into the inverse domain to get the
+       * levels correct for legacy GID stopping criteria. */
+      CoreSeismogram nwork(sparse_convolve(winv, n));
       TimeWindow trimwin;
-      trimwin.start = n.t0() + (n.dt()) * ((double)(winv.npts()));
-      trimwin.end = n.endtime() - (n.dt()) * ((double)(winv.npts()));
-      n = WindowData(n, trimwin);
-      nnwin = n.npts();
-      this->compute_resid_linf_floor();
+      trimwin.start = nwork.t0() + (nwork.dt()) * ((double)(winv.npts()));
+      trimwin.end = nwork.endtime() - (nwork.dt()) * ((double)(winv.npts()));
+      nwork = WindowData(nwork, trimwin);
+      this->compute_resid_linf_floor(nwork);
+      adaptive_penalty_noise_amplitude =
+          EstimateThreeCColumnAmplitudeRMS(nwork);
+      if (adaptive_penalty_noise_amplitude <= 0.0)
+        adaptive_penalty_noise_amplitude = resid_linf_floor;
     }
     /* d_all now contains the deconvolved data.  Now enter the
     generalized iterative method recursion */
@@ -948,6 +992,8 @@ void TimeDomainGIDDecon::process() {
       if ((col0 < 0) || ((col0 + actual_o_fir.size()) > r.npts()))
         lag_weights[i] = 0.0;
     }
+    adaptive_penalty_memory.assign(lag_weights.size(), 0.0);
+    adaptive_penalty_retention.assign(lag_weights.size(), 0.0);
     /* These are initial values of convergence parameters */
     lw_linf_initial = 1.0;
     lw_l2_initial = 1.0;
@@ -1007,6 +1053,10 @@ void TimeDomainGIDDecon::process() {
       bool accepted(false);
       while (!accepted && (*amax > 0.0)) {
         int imax = distance(wamps.begin(), amax);
+        double candidate_amp2(0.0);
+        for (k = 0; k < 3; ++k)
+          candidate_amp2 += r.u(k, imax) * r.u(k, imax);
+        const double candidate_amp = sqrt(max(0.0, candidate_amp2));
         ThreeCSpike spk(r.u, imax);
         rescale_spike_amplitude(spk, r, actual_o_fir, actual_o_0);
         CoreSeismogram saved_r(r);
@@ -1014,7 +1064,7 @@ void TimeDomainGIDDecon::process() {
         double trial_l2 = L2(r.u);
         if (trial_l2 < resid_l2_prev) {
           spikes.push_back(spk);
-          this->update_lag_weights(imax);
+          this->update_lag_weights(imax, candidate_amp);
           ++iter_count;
           accepted = true;
           if (decon_type == NS_GID && ns_refit_interval > 0 &&
@@ -1237,6 +1287,25 @@ Metadata TimeDomainGIDDecon::QCMetrics() {
   md.put("gid_penalty_scale_factor", lag_weight_penalty_scale_factor);
   md.put("gid_penalty_width", lag_weight_function_width);
   md.put("gid_penalty_effective_width", nwtf);
+  md.put("gid_adaptive_penalty_enabled",
+         GIDLagWeightPenaltyUsesAdaptiveMemory(lag_weight_penalty_function));
+  md.put("gid_penalty_noise_amplitude", adaptive_penalty_noise_amplitude);
+  md.put("gid_penalty_last_confidence",
+         adaptive_penalty_last_confidence);
+  md.put("gid_penalty_last_immediate_strength",
+         adaptive_penalty_last_immediate_strength);
+  md.put("gid_penalty_last_specificity",
+         adaptive_penalty_last_specificity);
+  md.put("gid_penalty_last_decay_factor",
+         adaptive_penalty_last_decay_factor);
+  md.put("gid_penalty_memory_Linf_final", adaptive_penalty_memory_linf);
+  md.put("gid_penalty_memory_L2_final", adaptive_penalty_memory_l2);
+  int gid_penalty_valid_lags(0);
+  for (auto w : lag_weights) {
+    if (w > 0.0)
+      ++gid_penalty_valid_lags;
+  }
+  md.put("gid_penalty_valid_lags", gid_penalty_valid_lags);
   md.put("gid_external_wavelet_used", external_wavelet_loaded);
   md.put("gid_external_noise_used", external_noise_loaded);
   md.put("gid_external_noise_spectrum_used",
@@ -1259,6 +1328,7 @@ Metadata TimeDomainGIDDecon::QCMetrics() {
     md.put("ns_gid_iterations", iter_count);
     md.put("ns_gid_number_spikes", static_cast<int>(spikes.size()));
     md.put("ns_gid_peak_threshold", ns_peak_threshold);
+    md.put("ns_gid_noise_amplitude_rms", ns_noise_amplitude_rms);
     md.put("ns_gid_last_peak_significance", ns_last_peak_significance);
     md.put("ns_gid_external_wavelet_used", external_wavelet_loaded);
     md.put("ns_gid_external_noise_used", external_noise_loaded);

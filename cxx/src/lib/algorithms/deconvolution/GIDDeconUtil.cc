@@ -5,8 +5,10 @@
 #include <algorithm>
 #include <boost/any.hpp>
 #include <cmath>
+#include <limits>
 #include <sstream>
 #include <typeinfo>
+#include <utility>
 
 namespace mspass::algorithms::deconvolution {
 using namespace std;
@@ -184,7 +186,7 @@ string AntelopePfToText(const AntelopePf &pf, const int indent) {
   return ss.str();
 }
 
-vector<double> ThreeCAmplitudes(dmatrix &d) {
+vector<double> ThreeCAmplitudes(const dmatrix &d) {
   vector<double> result;
   result.reserve(d.columns());
   for (int i = 0; i < d.columns(); ++i) {
@@ -307,7 +309,73 @@ void ValidateExternalTimeSeriesSampleInterval(const TimeSeries &d,
 
 bool GIDLagWeightPenaltyUsesDynamicKernel(const string &penalty_type) {
   return (penalty_type == "resolution_kernel") ||
-         (penalty_type == "shaping_wavelet");
+         (penalty_type == "shaping_wavelet") ||
+         GIDLagWeightPenaltyUsesAdaptiveMemory(penalty_type);
+}
+
+bool GIDLagWeightPenaltyUsesAdaptiveMemory(const string &penalty_type) {
+  return penalty_type == "adaptive_memory";
+}
+
+namespace {
+vector<double> kernel_coherence(const vector<double> &kernel,
+                                const string &penalty_type,
+                                const string &base_error) {
+  if (kernel.empty())
+    throw MsPASSError(base_error + penalty_type + " penalty kernel is empty",
+                      ErrorSeverity::Invalid);
+  double energy(0.0);
+  for (auto x : kernel)
+    energy += x * x;
+  if (energy <= 0.0 || !std::isfinite(energy))
+    throw MsPASSError(base_error + penalty_type +
+                          " penalty kernel has zero or invalid energy",
+                      ErrorSeverity::Invalid);
+
+  const int max_radius = static_cast<int>(kernel.size()) - 1;
+  vector<double> coherence(2 * max_radius + 1, 0.0);
+  for (int delta = -max_radius; delta <= max_radius; ++delta) {
+    double overlap(0.0);
+    for (int i = 0; i < static_cast<int>(kernel.size()); ++i) {
+      const int j = i + delta;
+      if (j < 0 || j >= static_cast<int>(kernel.size()))
+        continue;
+      overlap += kernel[i] * kernel[j];
+    }
+    coherence[delta + max_radius] = fabs(overlap) / energy;
+  }
+  return coherence;
+}
+
+int coherence_radius(const vector<double> &coherence,
+                     const double coherence_floor) {
+  if (coherence.empty())
+    return 0;
+  const int max_radius = (static_cast<int>(coherence.size()) - 1) / 2;
+  int left_radius(0), right_radius(0);
+  while ((left_radius + 1) <= max_radius &&
+         coherence[max_radius - left_radius - 1] >= coherence_floor)
+    ++left_radius;
+  while ((right_radius + 1) <= max_radius &&
+         coherence[max_radius + right_radius + 1] >= coherence_floor)
+    ++right_radius;
+  return max(left_radius, right_radius);
+}
+
+int fwhm_radius(const vector<double> &coherence) {
+  return coherence_radius(coherence, 0.5);
+}
+} // namespace
+
+double EstimateThreeCColumnAmplitudeRMS(const CoreSeismogram &d) {
+  if (d.dead() || d.npts() <= 0)
+    return 0.0;
+  double sumsq(0.0);
+  for (int i = 0; i < d.npts(); ++i) {
+    for (int k = 0; k < 3; ++k)
+      sumsq += d.u(k, i) * d.u(k, i);
+  }
+  return sqrt(sumsq / static_cast<double>(d.npts()));
 }
 
 vector<double> BuildGIDLagWeightPenaltyFunctionFromKernel(
@@ -334,36 +402,9 @@ vector<double> BuildGIDLagWeightPenaltyFunctionFromKernel(
                           " zero-lag sample is outside the penalty kernel",
                       ErrorSeverity::Invalid);
 
-  double energy(0.0);
-  for (auto x : kernel)
-    energy += x * x;
-  if (energy <= 0.0 || !std::isfinite(energy))
-    throw MsPASSError(base_error + penalty_type +
-                          " penalty kernel has zero or invalid energy",
-                      ErrorSeverity::Invalid);
-
+  vector<double> coherence(kernel_coherence(kernel, penalty_type, base_error));
   const int max_radius = static_cast<int>(kernel.size()) - 1;
-  vector<double> coherence(2 * max_radius + 1, 0.0);
-  for (int delta = -max_radius; delta <= max_radius; ++delta) {
-    double overlap(0.0);
-    for (int i = 0; i < static_cast<int>(kernel.size()); ++i) {
-      const int j = i + delta;
-      if (j < 0 || j >= static_cast<int>(kernel.size()))
-        continue;
-      overlap += kernel[i] * kernel[j];
-    }
-    coherence[delta + max_radius] = fabs(overlap) / energy;
-  }
-
-  const double coherence_floor = 0.5;
-  int left_radius(0), right_radius(0);
-  while ((left_radius + 1) <= max_radius &&
-         coherence[max_radius - left_radius - 1] >= coherence_floor)
-    ++left_radius;
-  while ((right_radius + 1) <= max_radius &&
-         coherence[max_radius + right_radius + 1] >= coherence_floor)
-    ++right_radius;
-  const int radius = max(left_radius, right_radius);
+  const int radius = fwhm_radius(coherence);
 
   vector<double> penalty;
   penalty.reserve(2 * radius + 1);
@@ -381,21 +422,189 @@ vector<double> BuildGIDLagWeightPenaltyFunctionFromKernel(
   return penalty;
 }
 
+GIDAdaptivePenaltyMetrics ApplyGIDAdaptiveMemoryPenalty(
+    vector<double> &lag_weights, vector<double> &memory,
+    vector<double> &retention, const vector<double> &kernel,
+    const int zero_lag_sample, const int center_col,
+    const double penalty_scale, const double candidate_amplitude,
+    const double noise_amplitude, const string &caller) {
+  GIDAdaptivePenaltyMetrics metrics;
+  if (lag_weights.empty())
+    return metrics;
+
+  const string base_error(caller + ": ");
+  if (!std::isfinite(penalty_scale) || penalty_scale <= 0.0 ||
+      penalty_scale > 1.0)
+    throw MsPASSError(base_error +
+                          "lag_weight_penalty_scale_factor must be in (0, 1]",
+                      ErrorSeverity::Fatal);
+  if (zero_lag_sample < 0 ||
+      zero_lag_sample >= static_cast<int>(kernel.size()))
+    throw MsPASSError(base_error +
+                          "adaptive penalty zero-lag sample is outside the "
+                          "penalty kernel",
+                      ErrorSeverity::Invalid);
+
+  if (memory.size() != lag_weights.size())
+    memory.assign(lag_weights.size(), 0.0);
+  if (retention.size() != lag_weights.size())
+    retention.assign(lag_weights.size(), 0.0);
+
+  int valid_lags(0);
+  for (auto w : lag_weights) {
+    if (std::isfinite(w) && w > 0.0)
+      ++valid_lags;
+  }
+
+  const double noise_floor =
+      (std::isfinite(noise_amplitude) && noise_amplitude > 0.0)
+          ? noise_amplitude
+          : numeric_limits<double>::epsilon();
+  metrics.noise_amplitude = noise_floor;
+  double z(0.0);
+  if (std::isfinite(candidate_amplitude) && candidate_amplitude > 0.0) {
+    z = candidate_amplitude / noise_floor;
+  }
+  vector<double> coherence(
+      kernel_coherence(kernel, "adaptive_memory", base_error));
+  const int max_radius = static_cast<int>(kernel.size()) - 1;
+  const double z2 = z * z;
+  /* GID selects the maximum over all currently valid lags.  Even pure noise
+   * therefore produces candidate amplitudes well above the RMS noise level.
+   * The confidence must compare the accepted peak with a full-search
+   * noise-only bound, not with an arbitrary single-lag sample.  Use the
+   * Laurent-Massart chi-square tail bound with x=2*log(Nvalid) for a
+   * three-component vector, normalized by the vector RMS used for noise_floor.
+   * The extra log(Nvalid) factor controls false memory over repeated searches
+   * without adding a user-tuned threshold. */
+  const double search_log =
+      2.0 * log(max(1.0, static_cast<double>(valid_lags)));
+  const double search_energy =
+      max(1.0, 1.0 + 2.0 * sqrt(search_log / 3.0) +
+                         (2.0 / 3.0) * search_log);
+  const double selection_adjusted_z2 = (z2 > 0.0) ? z2 / search_energy : 0.0;
+  double confidence(0.0);
+  if (selection_adjusted_z2 > 1.0) {
+    confidence = std::isfinite(selection_adjusted_z2)
+                     ? 1.0 - 1.0 / selection_adjusted_z2
+                     : nextafter(1.0, 0.0);
+  }
+  if (!std::isfinite(confidence))
+    confidence = 0.0;
+  confidence = max(0.0, min(nextafter(1.0, 0.0), confidence));
+
+  double coherence_energy_floor(0.25);
+  if (confidence > 0.0)
+    coherence_energy_floor = max(0.25, min(0.5, confidence));
+  double coherence_floor = sqrt(coherence_energy_floor);
+  coherence_floor =
+      max(0.0, min(nextafter(1.0, 0.0), coherence_floor));
+  const int radius = coherence_radius(coherence, coherence_floor);
+  vector<pair<int, double>> footprint;
+  footprint.reserve(2 * radius + 1);
+  double footprint_energy_sum(0.0), footprint_energy_sumsq(0.0);
+  for (int delta = -radius; delta <= radius; ++delta) {
+    const int j = center_col + delta;
+    if (j < 0 || j >= static_cast<int>(lag_weights.size()) ||
+        lag_weights[j] <= 0.0)
+      continue;
+    const double c = coherence[delta + max_radius];
+    const double coherence_weight = c * c;
+    if (!std::isfinite(coherence_weight) || coherence_weight <= 0.0)
+      continue;
+    footprint.push_back(pair<int, double>(j, coherence_weight));
+    footprint_energy_sum += coherence_weight;
+    footprint_energy_sumsq += coherence_weight * coherence_weight;
+  }
+  metrics.effective_width = static_cast<int>(footprint.size());
+
+  double specificity(0.0);
+  if (valid_lags > 1 && footprint_energy_sum > 0.0 &&
+      footprint_energy_sumsq > 0.0) {
+    const double n_effective =
+        max(1.0, (footprint_energy_sum * footprint_energy_sum) /
+                     footprint_energy_sumsq);
+    specificity = 1.0 - log(n_effective) / log(static_cast<double>(valid_lags));
+  }
+  specificity = max(0.0, min(nextafter(1.0, 0.0), specificity));
+  const double immediate_strength = confidence;
+  const double retention_strength = confidence * specificity;
+  metrics.confidence = confidence;
+  metrics.immediate_strength = immediate_strength;
+  metrics.specificity = specificity;
+  metrics.decay_factor = retention_strength;
+
+  const double weight_floor = numeric_limits<double>::min();
+  for (int j = 0; j < static_cast<int>(lag_weights.size()); ++j) {
+    if (!std::isfinite(lag_weights[j]) || lag_weights[j] <= 0.0) {
+      lag_weights[j] = 0.0;
+      memory[j] = 0.0;
+      retention[j] = 0.0;
+      continue;
+    }
+    const double rho = max(0.0, min(nextafter(1.0, 0.0), retention[j]));
+    memory[j] *= rho;
+    retention[j] = (memory[j] > 0.0) ? rho : 0.0;
+  }
+
+  for (auto const &penalty_sample : footprint) {
+    const int j = penalty_sample.first;
+    const double coherence_weight = penalty_sample.second;
+    double w = 1.0 - penalty_scale * immediate_strength * coherence_weight;
+    w = max(weight_floor, min(1.0, w));
+    const double old_memory = memory[j];
+    const double added_memory = -log(w);
+    const double updated_memory = old_memory + added_memory;
+    memory[j] = updated_memory;
+    retention[j] =
+        (updated_memory > 0.0)
+            ? (old_memory * retention[j] + added_memory * retention_strength) /
+                  updated_memory
+            : 0.0;
+  }
+
+  double sumsq(0.0), linf(0.0);
+  for (int j = 0; j < static_cast<int>(lag_weights.size()); ++j) {
+    if (lag_weights[j] <= 0.0) {
+      lag_weights[j] = 0.0;
+      continue;
+    }
+    lag_weights[j] = exp(-memory[j]);
+    linf = max(linf, memory[j]);
+    sumsq += memory[j] * memory[j];
+  }
+  metrics.memory_linf = linf;
+  metrics.memory_l2 = sqrt(sumsq);
+  return metrics;
+}
+
 vector<double> BuildGIDLagWeightPenaltyFunction(const Metadata &md,
                                                 const string &caller) {
   const string base_error(caller + ": ");
+  if (!md.is_defined("lag_weight_penalty_function"))
+    throw MsPASSError(base_error +
+                          "missing required parameter "
+                          "lag_weight_penalty_function",
+                      ErrorSeverity::Fatal);
   const string penalty_type = md.get_string("lag_weight_penalty_function");
   if (penalty_type == "none")
     return vector<double>{1.0};
 
   const double penalty_scale =
-      md.get<double>("lag_weight_penalty_scale_factor");
+      md.is_defined("lag_weight_penalty_scale_factor")
+          ? md.get<double>("lag_weight_penalty_scale_factor")
+          : 1.0;
   if (!std::isfinite(penalty_scale) || penalty_scale <= 0.0 ||
       penalty_scale > 1.0)
     throw MsPASSError(base_error +
                           "lag_weight_penalty_scale_factor must be in (0, 1]",
                       ErrorSeverity::Fatal);
 
+  if (!md.is_defined("lag_weight_function_width"))
+    throw MsPASSError(base_error +
+                          "missing required parameter "
+                          "lag_weight_function_width",
+                      ErrorSeverity::Fatal);
   int npenalty = md.get<int>("lag_weight_function_width");
   if (npenalty <= 0)
     throw MsPASSError(base_error + "lag_weight_function_width must be positive",

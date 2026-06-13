@@ -118,10 +118,12 @@ private:
   mspass::utility::Metadata changed_leaf_metadata;
   std::vector<double> actual_o_fir;
   std::vector<double> lag_weights, lag_weight_penalty;
+  std::vector<double> adaptive_penalty_memory;
+  std::vector<double> adaptive_penalty_retention;
   std::list<ThreeCSpike> spikes;
   double ns_peak_sigma_threshold, ns_peak_probability_threshold;
   double ns_residual_noise_ratio_floor, ns_peak_threshold;
-  double ns_last_peak_significance, ns_noise_l2;
+  double ns_last_peak_significance, ns_noise_l2, ns_noise_amplitude_rms;
   double ns_fractional_improvement_final, ns_ridge_beta;
   int ns_max_spikes, ns_refit_interval;
   bool ns_use_empirical_noise_threshold, ns_converged;
@@ -131,13 +133,20 @@ private:
   std::string lag_weight_penalty_function;
   double lag_weight_penalty_scale_factor;
   int lag_weight_function_width;
+  double adaptive_penalty_last_confidence;
+  double adaptive_penalty_last_immediate_strength;
+  double adaptive_penalty_last_specificity;
+  double adaptive_penalty_last_decay_factor;
+  double adaptive_penalty_noise_amplitude;
+  double adaptive_penalty_memory_linf;
+  double adaptive_penalty_memory_l2;
 
   void initialize_inverse_operator();
   void invalidate_processing_state();
   double compute_ns_peak_threshold();
   void rescale_spike(ThreeCSpike &spk);
   void update_residual_matrix(const ThreeCSpike &spk);
-  void update_lag_weights(const int col);
+  void update_lag_weights(const int col, const double candidate_amplitude);
 };
 } // namespace mspass::algorithms::deconvolution
 #endif

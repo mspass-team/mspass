@@ -36,7 +36,7 @@ void PutPrefixedMetadata(mspass::utility::Metadata &target,
                          const std::string &prefix);
 std::string AntelopePfToText(const mspass::utility::AntelopePf &pf,
                              const int indent = 0);
-std::vector<double> ThreeCAmplitudes(mspass::utility::dmatrix &d);
+std::vector<double> ThreeCAmplitudes(const mspass::utility::dmatrix &d);
 void ValidateGIDLeafWindow(const mspass::utility::AntelopePf &mdleaf,
                            const mspass::algorithms::TimeWindow &fftwin,
                            const std::string &leaf_name,
@@ -55,6 +55,17 @@ mspass::algorithms::TimeWindow ClipTimeWindowToSeries(
 std::vector<double> BuildGIDLagWeightPenaltyFunction(
     const mspass::utility::Metadata &md, const std::string &caller);
 bool GIDLagWeightPenaltyUsesDynamicKernel(const std::string &penalty_type);
+bool GIDLagWeightPenaltyUsesAdaptiveMemory(const std::string &penalty_type);
+struct GIDAdaptivePenaltyMetrics {
+  double confidence = 0.0;
+  double immediate_strength = 0.0;
+  double specificity = 0.0;
+  double decay_factor = 0.0;
+  double memory_linf = 0.0;
+  double memory_l2 = 0.0;
+  double noise_amplitude = 0.0;
+  int effective_width = 1;
+};
 std::vector<double> BuildGIDLagWeightPenaltyFunctionFromKernel(
     const std::string &penalty_type, const double penalty_scale,
     const std::vector<double> &kernel, const int zero_lag_sample,
@@ -62,6 +73,14 @@ std::vector<double> BuildGIDLagWeightPenaltyFunctionFromKernel(
 void ApplyGIDLagWeightPenalty(std::vector<double> &lag_weights,
                               const std::vector<double> &penalty,
                               const int center_col);
+double EstimateThreeCColumnAmplitudeRMS(
+    const mspass::seismic::CoreSeismogram &d);
+GIDAdaptivePenaltyMetrics ApplyGIDAdaptiveMemoryPenalty(
+    std::vector<double> &lag_weights, std::vector<double> &memory,
+    std::vector<double> &retention, const std::vector<double> &kernel,
+    const int zero_lag_sample, const int center_col,
+    const double penalty_scale, const double candidate_amplitude,
+    const double noise_amplitude, const std::string &caller);
 double FIRSelfOverlap(const std::vector<double> &fir, const int col0_i,
                       const int col0_j, const int ncols);
 double FIRDataOverlap(const std::vector<double> &fir,
