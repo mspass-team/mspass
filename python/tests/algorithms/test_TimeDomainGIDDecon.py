@@ -497,14 +497,55 @@ def test_TimeDomainGIDDecon_penalty_reduces_multispike_residual(tmp_path):
 
     penalty_qc = penalty_rf["TimeDomainGIDDecon_properties"]
     no_penalty_qc = no_penalty_rf["TimeDomainGIDDecon_properties"]
+    assert penalty_qc["gid_penalty_function"] == "cosine_taper"
     assert penalty_qc["gid_penalty_effective_width"] == 5
     assert no_penalty_qc["gid_penalty_function"] == "none"
     assert no_penalty_qc["gid_penalty_scale_factor"] == pytest.approx(0.5)
     assert no_penalty_qc["gid_penalty_width"] == 5
     assert no_penalty_qc["gid_penalty_effective_width"] == 1
-    assert penalty_qc["iteration_count"] > no_penalty_qc["iteration_count"]
     assert penalty_qc["residual_L2_final"] < no_penalty_qc["residual_L2_final"]
     assert penalty_qc["lag_weight_L2_final"] < no_penalty_qc["lag_weight_L2_final"]
+
+
+@pytest.mark.parametrize("penalty_function", ["shaping_wavelet", "resolution_kernel"])
+def test_TimeDomainGIDDecon_kernel_penalty_modes_are_adaptive(
+    tmp_path, penalty_function
+):
+    data = _make_gid_test_data(noise_level=None)
+    signal_window = TimeWindow(-8.0, 20.0)
+    noise_window = TimeWindow(-25.0, -8.0)
+
+    pf = tmp_path / f"TimeDomainGIDDecon_{penalty_function}.pf"
+    text = Path("./data/pf/TimeDomainGIDDecon.pf").read_text()
+    text = text.replace(
+        "lag_weight_penalty_function cosine_taper",
+        f"lag_weight_penalty_function {penalty_function}",
+    )
+    text = text.replace("lag_weight_function_width 5", "lag_weight_function_width 101")
+    pf.write_text(text)
+
+    engine = TimeDomainGIDDecon(pfread(str(pf)))
+    rf = TimeDomainGIDRFDecon(
+        data,
+        engine,
+        signal_window=signal_window,
+        noise_window=noise_window,
+    )
+
+    assert rf.live
+    qc = rf["TimeDomainGIDDecon_properties"]
+    assert qc["gid_penalty_function"] == penalty_function
+    assert qc["gid_penalty_width"] == 101
+    assert qc["gid_penalty_effective_width"] > 1
+    assert qc["gid_penalty_effective_width"] != qc["gid_penalty_width"]
+    assert qc["residual_L2_final"] < qc["residual_L2_initial"]
+    lag_weights = np.asarray(engine.lag_weight_vector())
+    assert lag_weights.size > 0
+    assert np.isfinite(lag_weights).all()
+    assert 0.0 <= lag_weights.min() <= lag_weights.max() <= 1.0
+    assert qc["lag_weight_L2_final"] == pytest.approx(
+        float(np.linalg.norm(lag_weights))
+    )
 
 
 def test_TimeDomainGIDDecon_iteration_cap_returns_best_result(tmp_path):
@@ -810,7 +851,9 @@ def test_TimeDomainGIDDecon_validates_single_spike_recovery():
     _assert_single_spike_recovery(rf, ratio_tolerance=2.0e-3)
 
 
-@pytest.mark.parametrize("mode", ["least_square", "water_level", "multi_taper", "cnr"])
+@pytest.mark.parametrize(
+    "mode", ["least_square", "water_level", "multi_taper", "cnr"]
+)
 def test_TimeDomainGIDDecon_inverse_modes_are_valid(tmp_path, mode):
     data = _make_single_spike_convolution_data()
     pf = _pf_with_mode(

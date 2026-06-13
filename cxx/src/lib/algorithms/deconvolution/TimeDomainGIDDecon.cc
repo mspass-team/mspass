@@ -277,18 +277,38 @@ CoreTimeSeries TimeDomainGIDDecon::inverse_wavelet(double t0parent) {
 
 void TimeDomainGIDDecon::construct_weight_penalty_function(const Metadata &md) {
   try {
-    wtf = BuildGIDLagWeightPenaltyFunction(
-        md, "TimeDomainGIDDecon::construct_weight_penalty_function");
-    nwtf = static_cast<int>(wtf.size());
     lag_weight_penalty_function = md.get_string("lag_weight_penalty_function");
     lag_weight_penalty_scale_factor =
         md.is_defined("lag_weight_penalty_scale_factor")
             ? md.get<double>("lag_weight_penalty_scale_factor")
             : 1.0;
+    if (!isfinite(lag_weight_penalty_scale_factor) ||
+        lag_weight_penalty_scale_factor <= 0.0 ||
+        lag_weight_penalty_scale_factor > 1.0)
+      throw MsPASSError("TimeDomainGIDDecon::construct_weight_penalty_function: "
+                        "lag_weight_penalty_scale_factor must be in (0, 1]",
+                        ErrorSeverity::Fatal);
     lag_weight_function_width =
         md.is_defined("lag_weight_function_width")
             ? md.get<int>("lag_weight_function_width")
-            : nwtf;
+            : 0;
+    if (md.is_defined("lag_weight_function_width"))
+      ValidatePositiveInteger(
+          lag_weight_function_width, "lag_weight_function_width",
+          "TimeDomainGIDDecon::construct_weight_penalty_function");
+    if (lag_weight_penalty_function == "shaping_wavelet") {
+      CoreTimeSeries shaping(this->output_shaping_wavelet());
+      wtf = BuildGIDLagWeightPenaltyFunctionFromKernel(
+          lag_weight_penalty_function, lag_weight_penalty_scale_factor,
+          shaping.s, shaping.sample_number(0.0),
+          "TimeDomainGIDDecon::construct_weight_penalty_function");
+    } else if (lag_weight_penalty_function == "resolution_kernel") {
+      wtf = vector<double>{1.0};
+    } else {
+      wtf = BuildGIDLagWeightPenaltyFunction(
+          md, "TimeDomainGIDDecon::construct_weight_penalty_function");
+    }
+    nwtf = static_cast<int>(wtf.size());
   } catch (...) {
     throw;
   };
@@ -813,6 +833,13 @@ void TimeDomainGIDDecon::process() {
     vector<double>::iterator aoptr;
     for (aoptr = actual_o_fir.begin(); aoptr != actual_o_fir.end(); ++aoptr)
       (*aoptr) /= peak_scale;
+    if (lag_weight_penalty_function == "resolution_kernel") {
+      wtf = BuildGIDLagWeightPenaltyFunctionFromKernel(
+          lag_weight_penalty_function, lag_weight_penalty_scale_factor,
+          actual_o_fir, actual_o_0,
+          "TimeDomainGIDDecon::process");
+      nwtf = static_cast<int>(wtf.size());
+    }
     /* This is the size of the inverse wavelet convolution transient
     we use it to prevent iterations in transient region of the deconvolved
     data */
@@ -932,7 +959,7 @@ void TimeDomainGIDDecon::process() {
     resid_l2_prev = resid_l2_initial;
     iter_count = 0;
     ns_converged = false;
-    ns_stop_reason = "running";
+    ns_stop_reason = (decon_type == NS_GID) ? "running" : "not_enabled";
     gid_stop_reason = "running";
     gid_converged = false;
     ns_last_peak_significance = 0.0;

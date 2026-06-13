@@ -54,6 +54,11 @@ mspass::algorithms::TimeWindow ClipTimeWindowToSeries(
     const std::string &caller);
 std::vector<double> BuildGIDLagWeightPenaltyFunction(
     const mspass::utility::Metadata &md, const std::string &caller);
+bool GIDLagWeightPenaltyUsesDynamicKernel(const std::string &penalty_type);
+std::vector<double> BuildGIDLagWeightPenaltyFunctionFromKernel(
+    const std::string &penalty_type, const double penalty_scale,
+    const std::vector<double> &kernel, const int zero_lag_sample,
+    const std::string &caller);
 void ApplyGIDLagWeightPenalty(std::vector<double> &lag_weights,
                               const std::vector<double> &penalty,
                               const int center_col);

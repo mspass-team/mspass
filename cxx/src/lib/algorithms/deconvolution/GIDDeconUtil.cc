@@ -305,6 +305,82 @@ void ValidateExternalTimeSeriesSampleInterval(const TimeSeries &d,
                       ErrorSeverity::Invalid);
 }
 
+bool GIDLagWeightPenaltyUsesDynamicKernel(const string &penalty_type) {
+  return (penalty_type == "resolution_kernel") ||
+         (penalty_type == "shaping_wavelet");
+}
+
+vector<double> BuildGIDLagWeightPenaltyFunctionFromKernel(
+    const string &penalty_type, const double penalty_scale,
+    const vector<double> &kernel, const int zero_lag_sample,
+    const string &caller) {
+  const string base_error(caller + ": ");
+  if (!GIDLagWeightPenaltyUsesDynamicKernel(penalty_type))
+    throw MsPASSError(base_error + "kernel-derived penalty requested for "
+                                   "non-kernel penalty function=" +
+                          penalty_type,
+                      ErrorSeverity::Fatal);
+  if (!std::isfinite(penalty_scale) || penalty_scale <= 0.0 ||
+      penalty_scale > 1.0)
+    throw MsPASSError(base_error +
+                          "lag_weight_penalty_scale_factor must be in (0, 1]",
+                      ErrorSeverity::Fatal);
+  if (kernel.empty())
+    throw MsPASSError(base_error + penalty_type + " penalty kernel is empty",
+                      ErrorSeverity::Invalid);
+  if (zero_lag_sample < 0 ||
+      zero_lag_sample >= static_cast<int>(kernel.size()))
+    throw MsPASSError(base_error + penalty_type +
+                          " zero-lag sample is outside the penalty kernel",
+                      ErrorSeverity::Invalid);
+
+  double energy(0.0);
+  for (auto x : kernel)
+    energy += x * x;
+  if (energy <= 0.0 || !std::isfinite(energy))
+    throw MsPASSError(base_error + penalty_type +
+                          " penalty kernel has zero or invalid energy",
+                      ErrorSeverity::Invalid);
+
+  const int max_radius = static_cast<int>(kernel.size()) - 1;
+  vector<double> coherence(2 * max_radius + 1, 0.0);
+  for (int delta = -max_radius; delta <= max_radius; ++delta) {
+    double overlap(0.0);
+    for (int i = 0; i < static_cast<int>(kernel.size()); ++i) {
+      const int j = i + delta;
+      if (j < 0 || j >= static_cast<int>(kernel.size()))
+        continue;
+      overlap += kernel[i] * kernel[j];
+    }
+    coherence[delta + max_radius] = fabs(overlap) / energy;
+  }
+
+  const double coherence_floor = 0.5;
+  int left_radius(0), right_radius(0);
+  while ((left_radius + 1) <= max_radius &&
+         coherence[max_radius - left_radius - 1] >= coherence_floor)
+    ++left_radius;
+  while ((right_radius + 1) <= max_radius &&
+         coherence[max_radius + right_radius + 1] >= coherence_floor)
+    ++right_radius;
+  const int radius = max(left_radius, right_radius);
+
+  vector<double> penalty;
+  penalty.reserve(2 * radius + 1);
+  for (int delta = -radius; delta <= radius; ++delta) {
+    const double c = coherence[delta + max_radius];
+    const double coherence_weight = c * c;
+    double weight =
+        1.0 - penalty_scale * coherence_weight;
+    if (weight < 0.0)
+      weight = 0.0;
+    else if (weight > 1.0)
+      weight = 1.0;
+    penalty.push_back(weight);
+  }
+  return penalty;
+}
+
 vector<double> BuildGIDLagWeightPenaltyFunction(const Metadata &md,
                                                 const string &caller) {
   const string base_error(caller + ": ");
@@ -347,11 +423,11 @@ vector<double> BuildGIDLagWeightPenaltyFunction(const Metadata &md,
         weight = 1.0;
       penalty.push_back(weight);
     }
-  } else if (penalty_type == "shaping_wavelet") {
+  } else if (GIDLagWeightPenaltyUsesDynamicKernel(penalty_type)) {
     throw MsPASSError(
         base_error +
-            "lag_weight_penalty_function=shaping_wavelet is disabled.  "
-            "Use cosine_taper, boxcar, or none.",
+            "lag_weight_penalty_function=" + penalty_type +
+            " requires a kernel context.  Use the kernel-aware helper.",
         ErrorSeverity::Fatal);
   } else {
     throw MsPASSError(base_error +
