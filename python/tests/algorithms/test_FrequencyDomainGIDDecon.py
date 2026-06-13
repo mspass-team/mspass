@@ -16,6 +16,7 @@ from mspasspy.algorithms.FrequencyDomainGIDDecon import FrequencyDomainGIDRFDeco
 from test_TimeDomainGIDDecon import (
     _assert_actual_and_output_shaping_are_distinct,
     _assert_single_spike_recovery,
+    _assert_single_penalty_footprint,
     _assert_valid_rf,
     _make_external_noise,
     _make_external_wavelet_3c_data,
@@ -76,10 +77,17 @@ def test_FrequencyDomainGIDDecon_binding_and_wrapper():
         "no_valid_candidate",
         "residual_ratio_floor",
     }
-    assert qc["gid_penalty_function"] == "cosine_taper"
-    assert qc["gid_penalty_scale_factor"] == pytest.approx(0.5)
+    assert qc["gid_penalty_function"] == "adaptive_memory"
+    assert qc["gid_penalty_scale_factor"] == pytest.approx(0.35)
     assert qc["gid_penalty_width"] == 5
-    assert qc["gid_penalty_effective_width"] == 5
+    assert qc["gid_penalty_effective_width"] >= 1
+    assert qc["gid_adaptive_penalty_enabled"]
+    assert qc["gid_penalty_last_immediate_strength"] == pytest.approx(
+        qc["gid_penalty_last_confidence"]
+    )
+    assert qc["gid_penalty_last_decay_factor"] == pytest.approx(
+        qc["gid_penalty_last_confidence"] * qc["gid_penalty_last_specificity"]
+    )
     assert qc["iteration_count"] > 0
     assert qc["residual_L2_final"] < qc["residual_L2_initial"]
     assert qc["gid_actual_o_fir_npts"] > 0
@@ -108,7 +116,7 @@ def test_FrequencyDomainGIDDecon_penalty_reduces_multispike_residual(tmp_path):
     text = Path("./data/pf/FrequencyDomainGIDDecon.pf").read_text()
     no_penalty_pf.write_text(
         text.replace(
-            "lag_weight_penalty_function cosine_taper",
+            "lag_weight_penalty_function adaptive_memory",
             "lag_weight_penalty_function none",
         )
     )
@@ -128,10 +136,10 @@ def test_FrequencyDomainGIDDecon_penalty_reduces_multispike_residual(tmp_path):
 
     penalty_qc = penalty_rf["FrequencyDomainGIDDecon_properties"]
     no_penalty_qc = no_penalty_rf["FrequencyDomainGIDDecon_properties"]
-    assert penalty_qc["gid_penalty_function"] == "cosine_taper"
-    assert penalty_qc["gid_penalty_effective_width"] == 5
+    assert penalty_qc["gid_penalty_function"] == "adaptive_memory"
+    assert penalty_qc["gid_penalty_effective_width"] >= 1
     assert no_penalty_qc["gid_penalty_function"] == "none"
-    assert no_penalty_qc["gid_penalty_scale_factor"] == pytest.approx(0.5)
+    assert no_penalty_qc["gid_penalty_scale_factor"] == pytest.approx(0.35)
     assert no_penalty_qc["gid_penalty_width"] == 5
     assert no_penalty_qc["gid_penalty_effective_width"] == 1
     assert penalty_qc["iteration_count"] > no_penalty_qc["iteration_count"]
@@ -139,7 +147,9 @@ def test_FrequencyDomainGIDDecon_penalty_reduces_multispike_residual(tmp_path):
     assert penalty_qc["lag_weight_L2_final"] < no_penalty_qc["lag_weight_L2_final"]
 
 
-@pytest.mark.parametrize("penalty_function", ["shaping_wavelet", "resolution_kernel"])
+@pytest.mark.parametrize(
+    "penalty_function", ["shaping_wavelet", "resolution_kernel", "adaptive_memory"]
+)
 def test_FrequencyDomainGIDDecon_kernel_penalty_modes_are_adaptive(
     tmp_path, penalty_function
 ):
@@ -150,10 +160,11 @@ def test_FrequencyDomainGIDDecon_kernel_penalty_modes_are_adaptive(
     pf = tmp_path / f"FrequencyDomainGIDDecon_{penalty_function}.pf"
     text = Path("./data/pf/FrequencyDomainGIDDecon.pf").read_text()
     text = text.replace(
-        "lag_weight_penalty_function cosine_taper",
+        "lag_weight_penalty_function adaptive_memory",
         f"lag_weight_penalty_function {penalty_function}",
     )
     text = text.replace("lag_weight_function_width 5", "lag_weight_function_width 101")
+    text = text.replace("maximum_iterations 100", "maximum_iterations 1")
     pf.write_text(text)
 
     engine = FrequencyDomainGIDDecon(pfread(str(pf)))
@@ -168,8 +179,24 @@ def test_FrequencyDomainGIDDecon_kernel_penalty_modes_are_adaptive(
     qc = rf["FrequencyDomainGIDDecon_properties"]
     assert qc["gid_penalty_function"] == penalty_function
     assert qc["gid_penalty_width"] == 101
-    assert qc["gid_penalty_effective_width"] > 1
     assert qc["gid_penalty_effective_width"] != qc["gid_penalty_width"]
+    assert qc["gid_adaptive_penalty_enabled"] == (
+        penalty_function == "adaptive_memory"
+    )
+    assert 0.0 <= qc["gid_penalty_last_confidence"] < 1.0
+    assert 0.0 <= qc["gid_penalty_last_immediate_strength"] < 1.0
+    assert 0.0 <= qc["gid_penalty_last_specificity"] <= 1.0
+    assert 0.0 <= qc["gid_penalty_last_decay_factor"] < 1.0
+    assert qc["gid_penalty_valid_lags"] > 0
+    if penalty_function == "adaptive_memory":
+        assert qc["gid_penalty_effective_width"] >= 1
+        assert qc["gid_penalty_noise_amplitude"] > 0.0
+        assert qc["gid_penalty_memory_Linf_final"] > 0.0
+        assert qc["gid_penalty_memory_L2_final"] > 0.0
+    else:
+        assert qc["gid_penalty_effective_width"] > 1
+        assert qc["gid_penalty_memory_Linf_final"] == pytest.approx(0.0)
+        assert qc["gid_penalty_memory_L2_final"] == pytest.approx(0.0)
     assert qc["residual_L2_final"] < qc["residual_L2_initial"]
     lag_weights = np.asarray(engine.lag_weight_vector())
     assert lag_weights.size > 0
@@ -178,6 +205,7 @@ def test_FrequencyDomainGIDDecon_kernel_penalty_modes_are_adaptive(
     assert qc["lag_weight_L2_final"] == pytest.approx(
         float(np.linalg.norm(lag_weights))
     )
+    _assert_single_penalty_footprint(lag_weights, qc["gid_penalty_effective_width"])
 
 
 def test_FrequencyDomainGIDDecon_iteration_cap_returns_best_result(tmp_path):
@@ -716,6 +744,34 @@ def test_FrequencyDomainGIDDecon_cnr_honors_external_noise(tmp_path):
     assert difference_norm / np.linalg.norm(outputs[0]) > 1.0e-3
 
 
+def test_FrequencyDomainGIDDecon_cnr_penalty_qc_tracks_residual_noise(
+    tmp_path,
+):
+    pf = _pf_with_mode(
+        tmp_path,
+        "FrequencyDomainGIDDecon.pf",
+        "frequency_domain_gid_deconvolution",
+        "cnr",
+    )
+
+    qc_noise_amplitudes = []
+    for scale in (0.001, 0.1):
+        np.random.seed(37)
+        data = _make_gid_test_data(noise_level=scale)
+        engine = FrequencyDomainGIDDecon(pf)
+        rf = FrequencyDomainGIDRFDecon(
+            data,
+            engine,
+            signal_window=TimeWindow(-8.0, 20.0),
+            noise_window=TimeWindow(-25.0, -8.0),
+        )
+        _assert_valid_rf(rf)
+        qc = rf["FrequencyDomainGIDDecon_properties"]
+        qc_noise_amplitudes.append(qc["gid_penalty_noise_amplitude"])
+
+    assert qc_noise_amplitudes[1] > 5.0 * qc_noise_amplitudes[0]
+
+
 def test_FrequencyDomainGIDDecon_short_kernel_crop_is_bounded(tmp_path):
     data = _make_single_spike_convolution_data()
     pf = _pf_with_short_decon_window(tmp_path, "FrequencyDomainGIDDecon.pf")
@@ -1039,12 +1095,12 @@ def test_FrequencyDomainGIDDecon_changeparameter_rejects_leaf_shaping_dt_drift()
             "lag_weight_function_width",
         ),
         (
-            "lag_weight_penalty_scale_factor 0.5",
+            "lag_weight_penalty_scale_factor 0.35",
             "lag_weight_penalty_scale_factor 0.0",
             "lag_weight_penalty_scale_factor",
         ),
         (
-            "lag_weight_penalty_function cosine_taper",
+            "lag_weight_penalty_function adaptive_memory",
             "lag_weight_penalty_function invalid_penalty",
             "lag_weight_penalty_function",
         ),
@@ -1093,6 +1149,44 @@ def test_FrequencyDomainGIDDecon_rejects_invalid_top_level_parameters(
     pf.write_text(text.replace(old, new))
 
     with pytest.raises(MsPASSError, match=match) as excinfo:
+        FrequencyDomainGIDDecon(pfread(str(pf)))
+    assert excinfo.value.severity == ErrorSeverity.Fatal
+
+
+def test_FrequencyDomainGIDDecon_defaults_missing_lag_penalty_function_to_none(
+    tmp_path,
+):
+    text = open("data/pf/FrequencyDomainGIDDecon.pf", encoding="utf-8").read()
+    text = text.replace("        lag_weight_penalty_function adaptive_memory\n", "")
+    pf = tmp_path / "FrequencyDomainGIDDecon_legacy_no_penalty_function.pf"
+    pf.write_text(text)
+
+    data = _make_gid_test_data(noise_level=None)
+    engine = FrequencyDomainGIDDecon(pfread(str(pf)))
+    rf = FrequencyDomainGIDRFDecon(
+        data,
+        engine,
+        signal_window=TimeWindow(-8.0, 20.0),
+        noise_window=TimeWindow(-25.0, -8.0),
+    )
+
+    _assert_valid_rf(rf)
+    qc = rf["FrequencyDomainGIDDecon_properties"]
+    assert qc["gid_penalty_function"] == "none"
+    assert qc["gid_penalty_effective_width"] == 1
+
+
+def test_FrequencyDomainGIDDecon_reports_missing_fixed_penalty_width(tmp_path):
+    text = open("data/pf/FrequencyDomainGIDDecon.pf", encoding="utf-8").read()
+    text = text.replace(
+        "lag_weight_penalty_function adaptive_memory",
+        "lag_weight_penalty_function cosine_taper",
+    )
+    text = text.replace("        lag_weight_function_width 5\n", "")
+    pf = tmp_path / "FrequencyDomainGIDDecon_missing_penalty_width.pf"
+    pf.write_text(text)
+
+    with pytest.raises(MsPASSError, match="lag_weight_function_width") as excinfo:
         FrequencyDomainGIDDecon(pfread(str(pf)))
     assert excinfo.value.severity == ErrorSeverity.Fatal
 
