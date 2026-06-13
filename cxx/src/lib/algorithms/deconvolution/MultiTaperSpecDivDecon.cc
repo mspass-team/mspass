@@ -534,14 +534,17 @@ MultiTaperSpecDivDecon::all_actual_outputs(const double t0parent) {
 }
 
 Metadata MultiTaperSpecDivDecon::QCMetrics() {
-  Metadata md;
+  const bool did_process(!winv_taper.empty());
+  Metadata md(this->BasicQCMetrics("MultiTaperSpecDivDecon", did_process));
   md.put("multitaper_operator_type", string("specdiv_power_stabilized"));
   md.put("multitaper_operator_nfft", nfft);
+  md.put("decon_operator_nfft", nfft);
+  md.put("decon_operator_sample_shift", sample_shift);
   md.put("multitaper_taper_length", static_cast<int>(taperlen));
   md.put("multitaper_number_tapers", nseq);
   md.put("multitaper_time_bandwidth_product", nw);
   md.put("multitaper_damping_factor", damp);
-  md.put("multitaper_processed", !winv_taper.empty());
+  md.put("multitaper_processed", did_process);
   md.put("multitaper_number_outputs", static_cast<int>(winv_taper.size()));
   return md;
 }

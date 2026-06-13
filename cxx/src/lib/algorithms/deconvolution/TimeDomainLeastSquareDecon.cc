@@ -331,9 +331,12 @@ CoreTimeSeries TimeDomainLeastSquareDecon::inverse_wavelet() {
 }
 
 Metadata TimeDomainLeastSquareDecon::QCMetrics() {
-  Metadata md;
+  Metadata md(this->BasicQCMetrics("TimeDomainLeastSquareDecon",
+                                   !result.empty()));
   md.put("damping_factor", damp);
   md.put("sample_shift", sample_shift);
+  md.put("decon_operator_sample_shift", sample_shift);
+  md.put("time_domain_least_square_output_length", output_length);
   md.put("regularization_parameter", regularization_parameter);
   md.put("residual_norm", residual_norm);
   md.put("data_norm", data_norm);

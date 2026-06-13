@@ -192,11 +192,11 @@ CoreTimeSeries LeastSquareDecon::inverse_wavelet() {
   };
 }
 Metadata LeastSquareDecon::QCMetrics() {
-  /* Return only an empty Metadata container.  Done as it is
-  easier to maintain the code letting python do this work.
-  This also anticipates new metrics being added which would be
-  easier in python.*/
-  Metadata md;
+  Metadata md(this->BasicQCMetrics("LeastSquareDecon", !result.empty()));
+  md.put("decon_operator_nfft", nfft);
+  md.put("decon_operator_sample_shift", sample_shift);
+  md.put("damping_factor", damp);
+  md.put("least_square_damping_factor", damp);
   return md;
 }
 } // namespace mspass::algorithms::deconvolution

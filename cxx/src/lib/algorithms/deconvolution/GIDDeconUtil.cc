@@ -305,6 +305,81 @@ void ValidateExternalTimeSeriesSampleInterval(const TimeSeries &d,
                       ErrorSeverity::Invalid);
 }
 
+vector<double> BuildGIDLagWeightPenaltyFunction(const Metadata &md,
+                                                const string &caller) {
+  const string base_error(caller + ": ");
+  const string penalty_type = md.get_string("lag_weight_penalty_function");
+  if (penalty_type == "none")
+    return vector<double>{1.0};
+
+  const double penalty_scale =
+      md.get<double>("lag_weight_penalty_scale_factor");
+  if (!std::isfinite(penalty_scale) || penalty_scale <= 0.0 ||
+      penalty_scale > 1.0)
+    throw MsPASSError(base_error +
+                          "lag_weight_penalty_scale_factor must be in (0, 1]",
+                      ErrorSeverity::Fatal);
+
+  int npenalty = md.get<int>("lag_weight_function_width");
+  if (npenalty <= 0)
+    throw MsPASSError(base_error + "lag_weight_function_width must be positive",
+                      ErrorSeverity::Fatal);
+  if ((npenalty % 2) == 0)
+    ++npenalty;
+
+  vector<double> penalty;
+  penalty.reserve(npenalty);
+  if (penalty_type == "boxcar") {
+    const double weight = max(0.0, 1.0 - penalty_scale);
+    for (int i = 0; i < npenalty; ++i)
+      penalty.push_back(weight);
+  } else if (penalty_type == "cosine_taper") {
+    const double period = static_cast<double>(npenalty + 1);
+    const double pi = acos(-1.0);
+    for (int i = 0; i < npenalty; ++i) {
+      double taper = 0.5 * (-cos(2.0 * pi *
+                                  (static_cast<double>(i + 1)) / period));
+      taper += 0.5;
+      double weight = 1.0 - penalty_scale * taper;
+      if (weight < 0.0)
+        weight = 0.0;
+      if (weight > 1.0)
+        weight = 1.0;
+      penalty.push_back(weight);
+    }
+  } else if (penalty_type == "shaping_wavelet") {
+    throw MsPASSError(
+        base_error +
+            "lag_weight_penalty_function=shaping_wavelet is disabled.  "
+            "Use cosine_taper, boxcar, or none.",
+        ErrorSeverity::Fatal);
+  } else {
+    throw MsPASSError(base_error +
+                          "illegal lag_weight_penalty_function=" +
+                          penalty_type,
+                      ErrorSeverity::Fatal);
+  }
+  return penalty;
+}
+
+void ApplyGIDLagWeightPenalty(vector<double> &lag_weights,
+                              const vector<double> &penalty,
+                              const int center_col) {
+  if (lag_weights.empty() || penalty.empty())
+    return;
+  const int npenalty = static_cast<int>(penalty.size());
+  const int first_col = center_col - npenalty / 2;
+  for (int i = 0, j = first_col; i < npenalty; ++i, ++j) {
+    if (j < 0 || j >= static_cast<int>(lag_weights.size()))
+      continue;
+    lag_weights[j] *= penalty[i];
+    if (lag_weights[j] < 0.0)
+      lag_weights[j] = 0.0;
+    else if (lag_weights[j] > 1.0)
+      lag_weights[j] = 1.0;
+  }
+}
+
 TimeWindow ClipTimeWindowToSeries(const CoreTimeSeries &d,
                                   const TimeWindow &requested,
                                   const string &caller) {

@@ -73,6 +73,18 @@ FrequencyDomainGIDDecon::FrequencyDomainGIDDecon(const AntelopePf &mdtoplevel)
         mdgid.get<double>("residual_fractional_improvement_floor");
     ValidateNonnegative(residual_improvement_floor,
                         "residual_fractional_improvement_floor", base_error);
+    lag_weight_penalty =
+        BuildGIDLagWeightPenaltyFunction(mdgid, "FrequencyDomainGIDDecon");
+    lag_weight_penalty_function =
+        mdgid.get_string("lag_weight_penalty_function");
+    lag_weight_penalty_scale_factor =
+        mdgid.is_defined("lag_weight_penalty_scale_factor")
+            ? mdgid.get<double>("lag_weight_penalty_scale_factor")
+            : 1.0;
+    lag_weight_function_width =
+        mdgid.is_defined("lag_weight_function_width")
+            ? mdgid.get<int>("lag_weight_function_width")
+            : static_cast<int>(lag_weight_penalty.size());
 
     AntelopePf mdleaf;
     switch (decon_type) {
@@ -148,12 +160,15 @@ void FrequencyDomainGIDDecon::invalidate_processing_state() {
   result.clear();
   spikes.clear();
   actual_o_fir.clear();
+  lag_weights.clear();
   iter_count = 0;
   resid_l2_initial = 0.0;
   resid_l2_prev = 0.0;
   resid_l2_final = 0.0;
   resid_linf_initial = 0.0;
   resid_linf_final = 0.0;
+  lag_weight_linf_final = 0.0;
+  lag_weight_l2_final = 0.0;
   actual_o_0 = 0;
   ns_fractional_improvement_final = 0.0;
   ns_last_peak_significance = 0.0;
@@ -161,6 +176,8 @@ void FrequencyDomainGIDDecon::invalidate_processing_state() {
   ns_noise_l2 = 0.0;
   ns_converged = false;
   ns_stop_reason = "not_started";
+  gid_converged = false;
+  gid_stop_reason = "not_started";
   processed = false;
 }
 
@@ -541,11 +558,17 @@ void FrequencyDomainGIDDecon::update_residual_matrix(const ThreeCSpike &spk) {
   }
 }
 
+void FrequencyDomainGIDDecon::update_lag_weights(const int col) {
+  ApplyGIDLagWeightPenalty(lag_weights, lag_weight_penalty, col);
+}
+
 void FrequencyDomainGIDDecon::process() {
   const string base_error("FrequencyDomainGIDDecon::process: ");
   string process_stage("initialize inverse operator");
   this->invalidate_processing_state();
   ns_stop_reason = (decon_type == NS_GID) ? "running" : "not_enabled";
+  gid_stop_reason = "running";
+  gid_converged = false;
   try {
     if (d_all.dead() || d_all.npts() <= 0)
       throw MsPASSError(base_error + "valid data window has not been loaded",
@@ -560,8 +583,19 @@ void FrequencyDomainGIDDecon::process() {
     r = d_decon;
     spikes.clear();
     iter_count = 0;
+    lag_weights.clear();
+    lag_weights.reserve(r.npts());
+    for (int i = 0; i < r.npts(); ++i)
+      lag_weights.push_back(1.0);
+    for (int i = 0; i < r.npts(); ++i) {
+      int col0 = i - actual_o_0;
+      if ((col0 < 0) || ((col0 + actual_o_fir.size()) > r.npts()))
+        lag_weights[i] = 0.0;
+    }
     ns_converged = false;
     ns_stop_reason = (decon_type == NS_GID) ? "running" : "not_enabled";
+    gid_stop_reason = "running";
+    gid_converged = false;
     ns_last_peak_significance = 0.0;
     resid_l2_initial = matrix_l2(r.u);
     resid_linf_initial = matrix_linf(r.u);
@@ -582,26 +616,37 @@ void FrequencyDomainGIDDecon::process() {
           double amp2(0.0);
           for (int k = 0; k < 3; ++k)
             amp2 += r.u(k, i) * r.u(k, i);
-          amps.push_back(amp2);
+          amps.push_back(amp2 * lag_weights[i] * lag_weights[i]);
         }
       }
       auto amax = max_element(amps.begin(), amps.end());
-      if ((amax == amps.end()) || (*amax <= 0.0))
+      if ((amax == amps.end()) || (*amax <= 0.0)) {
+        gid_stop_reason = "no_valid_candidate";
+        gid_converged = true;
         break;
+      }
       if (decon_type == NS_GID) {
-        double candidate_amp = sqrt(max(0.0, *amax));
+        int imax = distance(amps.begin(), amax);
+        double candidate_amp2(0.0);
+        for (int k = 0; k < 3; ++k)
+          candidate_amp2 += r.u(k, imax) * r.u(k, imax);
+        double candidate_amp = sqrt(max(0.0, candidate_amp2));
         ns_last_peak_significance =
             (ns_peak_threshold > 0.0) ? candidate_amp / ns_peak_threshold
                                       : 0.0;
         if (ns_peak_threshold > 0.0 && candidate_amp < ns_peak_threshold) {
           ns_stop_reason = "candidate_not_significant";
           ns_converged = true;
+          gid_stop_reason = ns_stop_reason;
+          gid_converged = ns_converged;
           break;
         }
         if ((ns_max_spikes > 0) &&
             (static_cast<int>(spikes.size()) >= ns_max_spikes)) {
           ns_stop_reason = "max_spikes";
           ns_converged = true;
+          gid_stop_reason = ns_stop_reason;
+          gid_converged = ns_converged;
           break;
         }
       }
@@ -616,6 +661,7 @@ void FrequencyDomainGIDDecon::process() {
         double trial_l2 = matrix_l2(r.u);
         if (trial_l2 < resid_l2_prev) {
           spikes.push_back(spk);
+          this->update_lag_weights(imax);
           iter_count = iiter + 1;
           accepted = true;
           if (decon_type == NS_GID && ns_refit_interval > 0 &&
@@ -632,8 +678,11 @@ void FrequencyDomainGIDDecon::process() {
           amax = max_element(amps.begin(), amps.end());
         }
       }
-      if (!accepted)
+      if (!accepted) {
+        gid_stop_reason = "no_acceptable_candidate";
+        gid_converged = true;
         break;
+      }
       resid_l2_final = matrix_l2(r.u);
       resid_linf_final = matrix_linf(r.u);
       double ratio = resid_l2_final / resid_l2_initial;
@@ -644,9 +693,13 @@ void FrequencyDomainGIDDecon::process() {
           (resid_l2_final / ns_noise_l2) <= ns_residual_noise_ratio_floor) {
         ns_stop_reason = "residual_reached_noise_floor";
         ns_converged = true;
+        gid_stop_reason = ns_stop_reason;
+        gid_converged = ns_converged;
         break;
       }
       if (ratio <= residual_ratio_floor) {
+        gid_stop_reason = "residual_ratio_floor";
+        gid_converged = true;
         if (decon_type == NS_GID) {
           ns_stop_reason = "residual_ratio_floor";
           ns_converged = true;
@@ -654,6 +707,8 @@ void FrequencyDomainGIDDecon::process() {
         break;
       }
       if (improvement <= residual_improvement_floor) {
+        gid_stop_reason = "fractional_improvement_floor";
+        gid_converged = true;
         if (decon_type == NS_GID) {
           ns_stop_reason = "fractional_improvement_floor";
           ns_converged = true;
@@ -668,6 +723,13 @@ void FrequencyDomainGIDDecon::process() {
         ns_stop_reason = "converged";
         ns_converged = true;
       }
+      gid_stop_reason = ns_stop_reason;
+      gid_converged = ns_converged;
+    }
+    if (decon_type != NS_GID && gid_stop_reason == "running") {
+      gid_stop_reason = (iter_count >= iter_max) ? "max_iterations"
+                                                 : "converged";
+      gid_converged = (gid_stop_reason != "max_iterations");
     }
     process_stage = "refit sparse amplitudes";
     double ridge_beta = (decon_type == NS_GID) ? ns_ridge_beta : 1.0e-10;
@@ -679,6 +741,12 @@ void FrequencyDomainGIDDecon::process() {
       this->update_residual_matrix(*sptr);
     resid_l2_final = matrix_l2(r.u);
     resid_linf_final = matrix_linf(r.u);
+    if (!lag_weights.empty()) {
+      auto lwmax = max_element(lag_weights.begin(), lag_weights.end());
+      lag_weight_linf_final = (lwmax != lag_weights.end()) ? *lwmax : 0.0;
+      lag_weight_l2_final =
+          cblas_dnrm2(lag_weights.size(), &(lag_weights[0]), 1);
+    }
     processed = true;
   } catch (const MsPASSError &err) {
     throw MsPASSError(base_error + "failed during " + process_stage + "\n" +
@@ -709,6 +777,14 @@ CoreSeismogram FrequencyDomainGIDDecon::sparse_output() {
   return result;
 }
 
+vector<double> FrequencyDomainGIDDecon::lag_weight_vector() const {
+  if (!processed)
+    throw MsPASSError("FrequencyDomainGIDDecon::lag_weight_vector: process "
+                      "must be called first",
+                      ErrorSeverity::Invalid);
+  return lag_weights;
+}
+
 CoreSeismogram FrequencyDomainGIDDecon::getresult() {
   if (!processed)
     throw MsPASSError(
@@ -723,13 +799,38 @@ CoreSeismogram FrequencyDomainGIDDecon::getresult() {
 Metadata FrequencyDomainGIDDecon::QCMetrics() {
   Metadata md;
   PutPrefixedMetadata(md, changed_leaf_metadata, "gid_leaf_");
+  md.put("decon_operator", string("FrequencyDomainGIDDecon"));
+  md.put("decon_processed", processed);
+  md.put("decon_sample_interval", target_dt);
+  md.put("decon_window_start", dwin.start);
+  md.put("decon_window_end", dwin.end);
+  md.put("deconvolution_window_start", fftwin.start);
+  md.put("deconvolution_window_end", fftwin.end);
+  md.put("noise_window_start", nwin.start);
+  md.put("noise_window_end", nwin.end);
   md.put("gid_leaf_parameters_changed", leaf_parameters_changed);
   md.put("gid_processed", processed);
+  md.put("gid_converged", gid_converged);
+  md.put("gid_stop_reason", gid_stop_reason);
+  md.put("gid_iterations", iter_count);
+  md.put("gid_number_spikes", static_cast<int>(spikes.size()));
+  md.put("gid_maximum_iterations", iter_max);
+  md.put("gid_penalty_function", lag_weight_penalty_function);
+  md.put("gid_penalty_scale_factor", lag_weight_penalty_scale_factor);
+  md.put("gid_penalty_width", lag_weight_function_width);
+  md.put("gid_penalty_effective_width",
+         static_cast<int>(lag_weight_penalty.size()));
+  md.put("gid_external_wavelet_used", external_wavelet_loaded);
+  md.put("gid_external_noise_used", external_noise_loaded);
+  md.put("gid_external_noise_spectrum_used",
+         external_noise_spectrum_loaded);
   md.put("iteration_count", iter_count);
   md.put("residual_Linf_initial", resid_linf_initial);
   md.put("residual_Linf_final", resid_linf_final);
   md.put("residual_L2_initial", resid_l2_initial);
   md.put("residual_L2_final", resid_l2_final);
+  md.put("lag_weight_Linf_final", lag_weight_linf_final);
+  md.put("lag_weight_L2_final", lag_weight_l2_final);
   md.put("gid_actual_o_fir_npts", static_cast<int>(actual_o_fir.size()));
   md.put("gid_actual_o_fir_zero_lag_index", actual_o_0);
   md.put("gid_actual_o_fir_peak_normalized",

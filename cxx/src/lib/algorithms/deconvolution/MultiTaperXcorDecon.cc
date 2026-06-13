@@ -393,15 +393,18 @@ CoreTimeSeries MultiTaperXcorDecon::inverse_wavelet() {
 }
 
 Metadata MultiTaperXcorDecon::QCMetrics() {
-  Metadata md;
+  const bool did_process(ao_fft.size() > 0);
+  Metadata md(this->BasicQCMetrics("MultiTaperXcorDecon", did_process));
   md.put("multitaper_operator_type", string("xcor_power_stabilized"));
   md.put("multitaper_operator_nfft", nfft);
+  md.put("decon_operator_nfft", nfft);
+  md.put("decon_operator_sample_shift", sample_shift);
   md.put("multitaper_taper_length", static_cast<int>(taperlen));
   md.put("multitaper_number_tapers", nseq);
   md.put("multitaper_time_bandwidth_product", nw);
   md.put("multitaper_damping_factor", damp);
-  md.put("multitaper_processed", ao_fft.size() > 0);
-  md.put("multitaper_number_outputs", ao_fft.size() > 0 ? 1 : 0);
+  md.put("multitaper_processed", did_process);
+  md.put("multitaper_number_outputs", did_process ? 1 : 0);
   return md;
 }
 } // namespace mspass::algorithms::deconvolution

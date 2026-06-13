@@ -5,6 +5,7 @@
 #include "mspass/algorithms/deconvolution/ShapingWavelet.h"
 #include "mspass/seismic/CoreTimeSeries.h"
 #include "mspass/utility/Metadata.h"
+#include <string>
 #include <vector>
 
 #include <boost/archive/text_iarchive.hpp>
@@ -104,6 +105,8 @@ public:
   virtual mspass::utility::Metadata QCMetrics() = 0;
 
 protected:
+  mspass::utility::Metadata BasicQCMetrics(const std::string &operator_name,
+                                           const bool processed);
   std::vector<double> data;
   std::vector<double> wavelet;
   std::vector<double> result;

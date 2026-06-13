@@ -56,4 +56,18 @@ void ScalarDecon::changeparameter(const Metadata &md) {
 void ScalarDecon::change_shaping_wavelet(const ShapingWavelet &nsw) {
   shapingwavelet = nsw;
 }
+Metadata ScalarDecon::BasicQCMetrics(const string &operator_name,
+                                     const bool processed) {
+  Metadata md;
+  md.put("decon_operator", operator_name);
+  md.put("decon_processed", processed);
+  md.put("decon_input_loaded", !data.empty() && !wavelet.empty());
+  md.put("decon_data_npts", static_cast<int>(data.size()));
+  md.put("decon_wavelet_npts", static_cast<int>(wavelet.size()));
+  md.put("decon_output_npts", static_cast<int>(result.size()));
+  md.put("decon_shaping_wavelet_type", shapingwavelet.type());
+  md.put("decon_shaping_wavelet_dt", shapingwavelet.sample_interval());
+  md.put("decon_shaping_wavelet_nfft", shapingwavelet.size());
+  return md;
+}
 } // namespace mspass::algorithms::deconvolution

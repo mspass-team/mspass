@@ -5,6 +5,7 @@ import pytest
 import numpy as np
 import pickle
 import cloudpickle
+from pathlib import Path
 
 from mspasspy.ccore.algorithms.basic import TimeWindow
 from mspasspy.ccore.algorithms.deconvolution import FrequencyDomainGIDDecon
@@ -64,12 +65,100 @@ def test_FrequencyDomainGIDDecon_binding_and_wrapper():
     )
     assert rf.is_defined("FrequencyDomainGIDDecon_properties")
     qc = rf["FrequencyDomainGIDDecon_properties"]
+    assert qc["decon_operator"] == "FrequencyDomainGIDDecon"
+    assert qc["decon_processed"]
+    assert qc["gid_processed"]
+    assert qc["gid_stop_reason"] in {
+        "converged",
+        "fractional_improvement_floor",
+        "max_iterations",
+        "no_acceptable_candidate",
+        "no_valid_candidate",
+        "residual_ratio_floor",
+    }
+    assert qc["gid_penalty_function"] == "cosine_taper"
+    assert qc["gid_penalty_scale_factor"] == pytest.approx(0.5)
+    assert qc["gid_penalty_width"] == 5
+    assert qc["gid_penalty_effective_width"] == 5
     assert qc["iteration_count"] > 0
     assert qc["residual_L2_final"] < qc["residual_L2_initial"]
     assert qc["gid_actual_o_fir_npts"] > 0
     assert 0 <= qc["gid_actual_o_fir_zero_lag_index"] < qc["gid_actual_o_fir_npts"]
     assert qc["gid_actual_o_fir_peak_normalized"]
     assert qc["gid_actual_o_fir_npts"] <= actual_output.npts
+    lag_weights = np.asarray(engine.lag_weight_vector())
+    assert lag_weights.size > 0
+    assert np.isfinite(lag_weights).all()
+    assert 0.0 <= lag_weights.min() <= lag_weights.max() <= 1.0
+    assert qc["lag_weight_Linf_final"] == pytest.approx(
+        float(np.max(lag_weights))
+    )
+    assert qc["lag_weight_L2_final"] == pytest.approx(
+        float(np.linalg.norm(lag_weights))
+    )
+
+
+def test_FrequencyDomainGIDDecon_penalty_reduces_multispike_residual(tmp_path):
+    np.random.seed(13)
+    data = _make_gid_test_data(noise_level=None)
+    signal_window = TimeWindow(-8.0, 20.0)
+    noise_window = TimeWindow(-25.0, -8.0)
+
+    no_penalty_pf = tmp_path / "FrequencyDomainGIDDecon_no_penalty.pf"
+    text = Path("./data/pf/FrequencyDomainGIDDecon.pf").read_text()
+    no_penalty_pf.write_text(
+        text.replace(
+            "lag_weight_penalty_function cosine_taper",
+            "lag_weight_penalty_function none",
+        )
+    )
+
+    penalty_rf = FrequencyDomainGIDRFDecon(
+        data,
+        FrequencyDomainGIDDecon(pfread("./data/pf/FrequencyDomainGIDDecon.pf")),
+        signal_window=signal_window,
+        noise_window=noise_window,
+    )
+    no_penalty_rf = FrequencyDomainGIDRFDecon(
+        data,
+        FrequencyDomainGIDDecon(pfread(str(no_penalty_pf))),
+        signal_window=signal_window,
+        noise_window=noise_window,
+    )
+
+    penalty_qc = penalty_rf["FrequencyDomainGIDDecon_properties"]
+    no_penalty_qc = no_penalty_rf["FrequencyDomainGIDDecon_properties"]
+    assert penalty_qc["gid_penalty_effective_width"] == 5
+    assert no_penalty_qc["gid_penalty_function"] == "none"
+    assert no_penalty_qc["gid_penalty_scale_factor"] == pytest.approx(0.5)
+    assert no_penalty_qc["gid_penalty_width"] == 5
+    assert no_penalty_qc["gid_penalty_effective_width"] == 1
+    assert penalty_qc["iteration_count"] > no_penalty_qc["iteration_count"]
+    assert penalty_qc["residual_L2_final"] < no_penalty_qc["residual_L2_final"]
+    assert penalty_qc["lag_weight_L2_final"] < no_penalty_qc["lag_weight_L2_final"]
+
+
+def test_FrequencyDomainGIDDecon_iteration_cap_returns_best_result(tmp_path):
+    data = _make_gid_test_data(noise_level=None)
+    capped_pf = tmp_path / "FrequencyDomainGIDDecon_capped.pf"
+    text = Path("./data/pf/FrequencyDomainGIDDecon.pf").read_text()
+    capped_pf.write_text(text.replace("maximum_iterations 100", "maximum_iterations 1"))
+    engine = FrequencyDomainGIDDecon(pfread(str(capped_pf)))
+
+    rf = FrequencyDomainGIDRFDecon(
+        data,
+        engine,
+        signal_window=TimeWindow(-8.0, 20.0),
+        noise_window=TimeWindow(-25.0, -8.0),
+    )
+
+    assert rf.live
+    qc = rf["FrequencyDomainGIDDecon_properties"]
+    assert qc["iteration_count"] == 1
+    assert qc["gid_iterations"] == 1
+    assert qc["gid_stop_reason"] == "max_iterations"
+    assert not qc["gid_converged"]
+    assert qc["residual_L2_final"] < qc["residual_L2_initial"]
 
 
 def test_FrequencyDomainGIDRFDecon_uses_custom_algorithm_name_in_qc():
@@ -899,6 +988,21 @@ def test_FrequencyDomainGIDDecon_changeparameter_rejects_leaf_shaping_dt_drift()
             "ns_gid_peak_probability_threshold 0.995",
             "ns_gid_peak_probability_threshold 2.0",
             "ns_gid_peak_probability_threshold",
+        ),
+        (
+            "lag_weight_function_width 5",
+            "lag_weight_function_width -3",
+            "lag_weight_function_width",
+        ),
+        (
+            "lag_weight_penalty_scale_factor 0.5",
+            "lag_weight_penalty_scale_factor 0.0",
+            "lag_weight_penalty_scale_factor",
+        ),
+        (
+            "lag_weight_penalty_function cosine_taper",
+            "lag_weight_penalty_function invalid_penalty",
+            "lag_weight_penalty_function",
         ),
         (
             "maximum_iterations 100",

@@ -445,6 +445,8 @@ PYBIND11_MODULE(deconvolution, m) {
             "Return the deconvolved three-component receiver function")
     .def("sparse_output",&TimeDomainGIDDecon::sparse_output,
             "Return the raw sparse impulse response from the GID iteration")
+    .def("lag_weight_vector",&TimeDomainGIDDecon::lag_weight_vector,
+            "Return the final lag penalty weights from the GID iteration")
     .def("ideal_output",&TimeDomainGIDDecon::ideal_output,
             "Legacy alias for output_shaping_wavelet")
     .def("actual_output",&TimeDomainGIDDecon::actual_output,
@@ -525,6 +527,8 @@ PYBIND11_MODULE(deconvolution, m) {
             "Return the deconvolved three-component receiver function")
     .def("sparse_output",&FrequencyDomainGIDDecon::sparse_output,
             "Return the raw sparse impulse response from the GID iteration")
+    .def("lag_weight_vector",&FrequencyDomainGIDDecon::lag_weight_vector,
+            "Return the final lag penalty weights from the GID iteration")
     .def("ideal_output",&FrequencyDomainGIDDecon::ideal_output,
             "Legacy alias for output_shaping_wavelet")
     .def("actual_output",&FrequencyDomainGIDDecon::actual_output,

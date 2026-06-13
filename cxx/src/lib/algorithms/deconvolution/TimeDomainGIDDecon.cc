@@ -229,6 +229,8 @@ void TimeDomainGIDDecon::invalidate_processing_state() {
   ns_noise_l2 = 0.0;
   ns_converged = false;
   ns_stop_reason = "not_started";
+  gid_converged = false;
+  gid_stop_reason = "not_started";
   processed = false;
 }
 
@@ -275,65 +277,18 @@ CoreTimeSeries TimeDomainGIDDecon::inverse_wavelet(double t0parent) {
 
 void TimeDomainGIDDecon::construct_weight_penalty_function(const Metadata &md) {
   try {
-    const string base_error(
-        "TimeDomainGIDDecon::construct_weight_penalty_function:  ");
-    int i;
-    /* All options use this scale factor */
-    double wtf_scale = md.get<double>("lag_weight_penalty_scale_factor");
-    if ((wtf_scale <= 0) || (wtf_scale > 1.0))
-      throw MsPASSError(
-          base_error +
-              "Illegal value for parameter lag_weight_penalty_scale_factor\n" +
-              "Must be a number in the interval (0,1]",
-          ErrorSeverity::Fatal);
-    /* This keyword defines the options for defining the penalty function */
-    string wtf_type = md.get_string("lag_weight_penalty_function");
-    /* Most options use this parameter so we set it outside the
-    conditional.  With usual use of pffiles this should not be a big issue.
-    */
-    wtf.clear();
-    nwtf = md.get<int>("lag_weight_function_width");
-    if (nwtf <= 0)
-      throw MsPASSError(base_error +
-                            "lag_weight_function_width must be positive",
-                        ErrorSeverity::Fatal);
-    /* nwtf must be forced to be an odd number to force the function to
-    be symmetric. */
-    if ((nwtf % 2) == 0)
-      ++nwtf;
-    if (wtf_type == "boxcar") {
-      for (i = 0; i < nwtf; ++i)
-        wtf.push_back(wtf_scale);
-    } else if (wtf_type == "cosine_taper") {
-      /* This creates one cycle of cosine function with wavelength(period)
-      of nwtf, offset by 0.5 and scaled in amplitude.   That means it tapers to
-      1 at edges and has a minimum value of 1-wtf_scale. */
-      double period = (double)(nwtf + 1); // set period so points one left and
-                                          // right (1) can be dropped
-      for (i = 0; i < nwtf; ++i) {
-        double f;
-        f = 0.5 * (-cos(2.0 * M_PI * ((double)(i + 1)) / period));
-        f += 0.5;
-        f = 1.0 - wtf_scale * f; // This makes minimum f=1-wtf_scale
-        /* Avoid negatives */
-        if (f < 0)
-          f = 0.0;
-        wtf.push_back(f);
-      }
-    } else if (wtf_type == "shaping_wavelet") {
-      throw MsPASSError(
-          base_error +
-              "lag_weight_penalty_function=shaping_wavelet is disabled.  "
-              "The actual output/resolution kernel is data dependent and is "
-              "not available during construction; use cosine_taper or boxcar.",
-          ErrorSeverity::Fatal);
-    } else {
-      throw MsPASSError(
-          base_error +
-              "illegal value for parameter lag_weight_penalty_function=" +
-              wtf_type,
-          ErrorSeverity::Fatal);
-    }
+    wtf = BuildGIDLagWeightPenaltyFunction(
+        md, "TimeDomainGIDDecon::construct_weight_penalty_function");
+    nwtf = static_cast<int>(wtf.size());
+    lag_weight_penalty_function = md.get_string("lag_weight_penalty_function");
+    lag_weight_penalty_scale_factor =
+        md.is_defined("lag_weight_penalty_scale_factor")
+            ? md.get<double>("lag_weight_penalty_scale_factor")
+            : 1.0;
+    lag_weight_function_width =
+        md.is_defined("lag_weight_function_width")
+            ? md.get<int>("lag_weight_function_width")
+            : nwtf;
   } catch (...) {
     throw;
   };
@@ -571,24 +526,14 @@ void TimeDomainGIDDecon::update_residual_matrix(ThreeCSpike spk) {
     throw;
   };
 }
-/* This method adds (not multiply add) the weighting function created by
-the constructor centered at lag = col.  Because a range can be hit multiple
-times we test for negatives and zero them in the loop.   This is also why
-we use an explicit loop instead of a call to daxpy as in the residual
-update method.  Note like update_residual_matrix we assume nwtf is
-correct and don't test for memory faults for efficiency  */
+/* This method multiplies the lag weights by the penalty function created by
+the constructor centered at lag = col.  This mirrors the experimental
+iterdecon penalty model: repeated hits keep suppressing the same lag or
+neighborhood, which encourages the next iteration to examine weaker arrivals. */
 
 void TimeDomainGIDDecon::update_lag_weights(int col) {
   try {
-    int i, ii;
-    int first_col = col - nwtf / 2;
-    for (i = 0, ii = first_col; i < nwtf; ++i, ++ii) {
-      if ((ii < 0) || (ii >= lag_weights.size()))
-        continue;
-      lag_weights[ii] -= wtf[i];
-      if (lag_weights[ii] < 0.0)
-        lag_weights[ii] = 0;
-    }
+    ApplyGIDLagWeightPenalty(lag_weights, wtf, col);
   } catch (...) {
     throw;
   };
@@ -697,6 +642,8 @@ void TimeDomainGIDDecon::process() {
   string process_stage("initialization");
   this->invalidate_processing_state();
   ns_stop_reason = (decon_type == NS_GID) ? "running" : "not_enabled";
+  gid_stop_reason = "running";
+  gid_converged = false;
   try {
     if (d_all.dead() || d_all.npts() <= 0)
       throw MsPASSError(base_error + "valid data window has not been loaded",
@@ -986,6 +933,8 @@ void TimeDomainGIDDecon::process() {
     iter_count = 0;
     ns_converged = false;
     ns_stop_reason = "running";
+    gid_stop_reason = "running";
+    gid_converged = false;
     ns_last_peak_significance = 0.0;
     do {
       process_stage = "sparse iteration";
@@ -999,19 +948,27 @@ void TimeDomainGIDDecon::process() {
       }
       amax = max_element(wamps.begin(), wamps.end());
       if (decon_type == NS_GID) {
-        const double candidate_amp = sqrt(max(0.0, *amax));
+        const int imax = distance(wamps.begin(), amax);
+        double candidate_amp2(0.0);
+        for (k = 0; k < 3; ++k)
+          candidate_amp2 += r.u(k, imax) * r.u(k, imax);
+        const double candidate_amp = sqrt(max(0.0, candidate_amp2));
         ns_last_peak_significance =
             (ns_peak_threshold > 0.0) ? candidate_amp / ns_peak_threshold
                                       : 0.0;
         if (ns_peak_threshold > 0.0 && candidate_amp < ns_peak_threshold) {
           ns_stop_reason = "candidate_not_significant";
           ns_converged = true;
+          gid_stop_reason = ns_stop_reason;
+          gid_converged = ns_converged;
           break;
         }
         if ((ns_max_spikes > 0) &&
             (static_cast<int>(spikes.size()) >= ns_max_spikes)) {
           ns_stop_reason = "max_spikes";
           ns_converged = true;
+          gid_stop_reason = ns_stop_reason;
+          gid_converged = ns_converged;
           break;
         }
       }
@@ -1047,8 +1004,11 @@ void TimeDomainGIDDecon::process() {
           amax = max_element(wamps.begin(), wamps.end());
         }
       }
-      if (!accepted)
+      if (!accepted) {
+        gid_stop_reason = "no_acceptable_candidate";
+        gid_converged = true;
         break;
+      }
     } while (this->has_not_converged());
     process_stage = "refit sparse amplitudes";
     double ridge_beta = (decon_type == NS_GID) ? ns_ridge_beta : 1.0e-10;
@@ -1060,16 +1020,28 @@ void TimeDomainGIDDecon::process() {
       this->update_residual_matrix(*sptr);
     resid_linf_prev = Linf(r.u);
     resid_l2_prev = L2(r.u);
+    if (!lag_weights.empty()) {
+      auto lwmax = max_element(lag_weights.begin(), lag_weights.end());
+      lw_linf_prev = (lwmax != lag_weights.end()) ? *lwmax : 0.0;
+      lw_l2_prev = cblas_dnrm2(lag_weights.size(), &(lag_weights[0]), 1);
+    } else {
+      lw_linf_prev = 0.0;
+      lw_l2_prev = 0.0;
+    }
     if (decon_type == NS_GID && ns_stop_reason == "running") {
       if (iter_count >= iter_max)
         ns_stop_reason = "max_iterations";
       else
         ns_stop_reason = "converged";
       ns_converged = (iter_count < iter_max);
+      gid_stop_reason = ns_stop_reason;
+      gid_converged = ns_converged;
     }
-    if ((decon_type != NS_GID) && iter_count >= iter_max)
-      throw MsPASSError("TimeDomainGIDDecon::process did not converge",
-                        ErrorSeverity::Suspect);
+    if (decon_type != NS_GID && gid_stop_reason == "running") {
+      gid_stop_reason = (iter_count >= iter_max) ? "max_iterations"
+                                                 : "converged";
+      gid_converged = (gid_stop_reason != "max_iterations");
+    }
     processed = true;
   } catch (const MsPASSError &err) {
     throw MsPASSError(base_error + "failed during " + process_stage + "\n" +
@@ -1098,40 +1070,60 @@ bool TimeDomainGIDDecon::has_not_converged() {
     resid_linf_prev = resid_linf_now;
     resid_l2_prev = resid_l2_now;
     if (decon_type == NS_GID) {
-      if (iter_count >= iter_max) {
-        ns_stop_reason = "max_iterations";
-        return false;
-      }
       if ((ns_max_spikes > 0) && (static_cast<int>(spikes.size()) >= ns_max_spikes)) {
         ns_stop_reason = "max_spikes";
         ns_converged = true;
+        gid_stop_reason = ns_stop_reason;
+        gid_converged = ns_converged;
         return false;
       }
       if (ns_noise_l2 > 0.0 &&
           (resid_l2_now / ns_noise_l2) <= ns_residual_noise_ratio_floor) {
         ns_stop_reason = "residual_reached_noise_floor";
         ns_converged = true;
+        gid_stop_reason = ns_stop_reason;
+        gid_converged = ns_converged;
         return false;
       }
       if (eps < resid_l2_tol) {
         ns_stop_reason = "fractional_improvement_floor";
+        ns_converged = true;
+        gid_stop_reason = ns_stop_reason;
+        gid_converged = ns_converged;
+        return false;
+      }
+      if (iter_count >= iter_max) {
+        ns_stop_reason = "max_iterations";
+        ns_converged = false;
+        gid_stop_reason = ns_stop_reason;
+        gid_converged = ns_converged;
         return false;
       }
       return true;
     }
-    if (iter_count > iter_max) {
-      return false;
-    }
     if (lw_linf_now < lw_linf_floor) {
+      gid_stop_reason = "lag_weight_linf_floor";
+      gid_converged = true;
       return false;
     }
     if (lw_l2_now < lw_l2_floor) {
+      gid_stop_reason = "lag_weight_l2_floor";
+      gid_converged = true;
       return false;
     }
     if (resid_linf_now < resid_linf_floor) {
+      gid_stop_reason = "residual_linf_floor";
+      gid_converged = true;
       return false;
     }
     if (eps < resid_l2_tol) {
+      gid_stop_reason = "fractional_improvement_floor";
+      gid_converged = true;
+      return false;
+    }
+    if (iter_count >= iter_max) {
+      gid_stop_reason = "max_iterations";
+      gid_converged = false;
       return false;
     }
     return true;
@@ -1174,6 +1166,13 @@ CoreSeismogram TimeDomainGIDDecon::sparse_output() {
     throw;
   };
 }
+vector<double> TimeDomainGIDDecon::lag_weight_vector() const {
+  if (!processed)
+    throw MsPASSError(
+        "TimeDomainGIDDecon::lag_weight_vector: process must be called first",
+        ErrorSeverity::Invalid);
+  return lag_weights;
+}
 CoreSeismogram TimeDomainGIDDecon::getresult() {
   try {
     if (!processed)
@@ -1191,8 +1190,30 @@ CoreSeismogram TimeDomainGIDDecon::getresult() {
 Metadata TimeDomainGIDDecon::QCMetrics() {
   Metadata md;
   PutPrefixedMetadata(md, changed_leaf_metadata, "gid_leaf_");
+  md.put("decon_operator", string("TimeDomainGIDDecon"));
+  md.put("decon_processed", processed);
+  md.put("decon_sample_interval", target_dt);
+  md.put("decon_window_start", dwin.start);
+  md.put("decon_window_end", dwin.end);
+  md.put("deconvolution_window_start", fftwin.start);
+  md.put("deconvolution_window_end", fftwin.end);
+  md.put("noise_window_start", nwin.start);
+  md.put("noise_window_end", nwin.end);
   md.put("gid_leaf_parameters_changed", leaf_parameters_changed);
   md.put("gid_processed", processed);
+  md.put("gid_converged", gid_converged);
+  md.put("gid_stop_reason", gid_stop_reason);
+  md.put("gid_iterations", iter_count);
+  md.put("gid_number_spikes", static_cast<int>(spikes.size()));
+  md.put("gid_maximum_iterations", iter_max);
+  md.put("gid_penalty_function", lag_weight_penalty_function);
+  md.put("gid_penalty_scale_factor", lag_weight_penalty_scale_factor);
+  md.put("gid_penalty_width", lag_weight_function_width);
+  md.put("gid_penalty_effective_width", nwtf);
+  md.put("gid_external_wavelet_used", external_wavelet_loaded);
+  md.put("gid_external_noise_used", external_noise_loaded);
+  md.put("gid_external_noise_spectrum_used",
+         external_noise_spectrum_loaded);
   md.put("iteration_count", iter_count);
   md.put("residual_Linf_initial", resid_linf_initial);
   md.put("residual_Linf_final", resid_linf_prev);

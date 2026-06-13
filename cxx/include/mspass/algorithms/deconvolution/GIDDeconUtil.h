@@ -52,6 +52,11 @@ mspass::algorithms::TimeWindow ClipTimeWindowToSeries(
     const mspass::seismic::CoreTimeSeries &d,
     const mspass::algorithms::TimeWindow &requested,
     const std::string &caller);
+std::vector<double> BuildGIDLagWeightPenaltyFunction(
+    const mspass::utility::Metadata &md, const std::string &caller);
+void ApplyGIDLagWeightPenalty(std::vector<double> &lag_weights,
+                              const std::vector<double> &penalty,
+                              const int center_col);
 double FIRSelfOverlap(const std::vector<double> &fir, const int col0_i,
                       const int col0_j, const int ncols);
 double FIRDataOverlap(const std::vector<double> &fir,

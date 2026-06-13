@@ -108,7 +108,7 @@ def _notch_filter_vector(x, dt, notches):
     return np.fft.irfft(spec * response, len(x))
 
 
-def _make_complex_colored_validation_data(return_truth=False):
+def _make_complex_colored_validation_data(noise_scale=0.025, return_truth=False):
     np.random.seed(24680)
     wavelet = make_simulation_wavelet(corners=[0.4, 7.0])
     notched_wavelet = _notch_filter_vector(
@@ -117,7 +117,7 @@ def _make_complex_colored_validation_data(return_truth=False):
     wavelet.data = DoubleVector(notched_wavelet.tolist())
     truth = make_impulse_data()
     data = convolve_wavelet(truth, wavelet)
-    data = addnoise(data, nscale=0.025, padlength=900, corners=[0.04, 2.8])
+    data = addnoise(data, nscale=noise_scale, padlength=900, corners=[0.04, 2.8])
 
     # Add a weak, coherent low-frequency field and a higher-frequency
     # transverse noise term.  This mimics colored seismic noise without
@@ -275,25 +275,45 @@ def _pf_with_gid_mode(tmp_path, pfname, branch_name, mode):
     # The C++ engines expect an AntelopePf tree, so write a temporary pf file
     # after changing only the GID inverse mode under test.
     text = open(pfname, encoding="utf-8").read()
-    text = text.replace(
+    text = _replace_once(
+        text,
         f"{branch_name} &Arr{{\n        deconvolution_type least_square",
         f"{branch_name} &Arr{{\n        deconvolution_type {mode}",
+        pfname,
     )
     dst = tmp_path / pfname.split("/")[-1]
     dst.write_text(text)
     return pfread(str(dst))
 
 
+def _replace_once(text, old, new, context):
+    count = text.count(old)
+    assert (
+        count == 1
+    ), f"{context}: expected one occurrence of {old!r}, found {count}"
+    return text.replace(old, new)
+
+
+def test_replace_once_rejects_missing_or_duplicate_targets():
+    assert _replace_once("alpha beta", "alpha", "gamma", "unit") == "gamma beta"
+    with pytest.raises(AssertionError, match="expected one occurrence"):
+        _replace_once("alpha beta", "delta", "gamma", "unit")
+    with pytest.raises(AssertionError, match="expected one occurrence"):
+        _replace_once("alpha alpha", "alpha", "gamma", "unit")
+
+
 def _pf_with_gid_mode_and_replacements(
     tmp_path, pfname, branch_name, mode, replacements
 ):
     text = open(pfname, encoding="utf-8").read()
-    text = text.replace(
+    text = _replace_once(
+        text,
         f"{branch_name} &Arr{{\n        deconvolution_type least_square",
         f"{branch_name} &Arr{{\n        deconvolution_type {mode}",
+        pfname,
     )
     for old, new in replacements.items():
-        text = text.replace(old, new)
+        text = _replace_once(text, old, new, pfname)
     suffix = abs(hash((pfname, branch_name, mode, tuple(replacements.items()))))
     dst = tmp_path / f"{pfname.split('/')[-1]}.{suffix}.pf"
     dst.write_text(text)
@@ -524,7 +544,10 @@ def _plot_rf_overlay(
         return
     plt = _import_matplotlib_pyplot()
 
-    npts = min(matrix.shape[1] for matrix in results.values())
+    if results:
+        npts = min(matrix.shape[1] for matrix in results.values())
+    else:
+        npts = truth.npts
     t = t0 + np.arange(npts) * dt
     truth_matrix = _truth_matrix_for_times(truth, t)
     component_names = ["EW", "NS", "Z"]
@@ -576,14 +599,135 @@ def _plot_rf_overlay(
         )
 
     axes[-1].set_xlabel("Lag time relative to direct P sample (s)")
-    axes[0].legend(loc="upper right", ncol=3, fontsize="small")
-    fig.suptitle(title + " (method traces are vertically offset)")
-    fig.tight_layout()
-    fig.savefig(plot_dir / filename, dpi=150)
+    handles, labels = axes[0].get_legend_handles_labels()
+    fig.suptitle(
+        title + " (method traces are vertically offset and normalized independently)"
+    )
+    bottom_margin = 0.22 if labels else 0.08
+    fig.tight_layout(rect=(0.0, bottom_margin, 1.0, 0.95))
+    if handles:
+        max_label = max(len(label) for label in labels)
+        ncol = 1 if max_label > 55 else min(3, len(labels))
+        fig.legend(
+            handles,
+            labels,
+            loc="lower center",
+            bbox_to_anchor=(0.5, 0.01),
+            ncol=ncol,
+            fontsize="x-small",
+            frameon=False,
+        )
+    fig.savefig(plot_dir / filename, dpi=150, bbox_inches="tight")
     plt.close(fig)
 
 
-def _plot_complex_colored_results(plot_dir, results, truth, wavelet):
+def _plot_offset_components(
+    axis,
+    matrix,
+    t0,
+    dt,
+    component_names=("EW", "NS", "Z"),
+    title=None,
+    color="C0",
+    linewidth=1.0,
+):
+    data = np.asarray(matrix)
+    npts = data.shape[1]
+    t = t0 + np.arange(npts) * dt
+    scale = np.nanmax(np.abs(data))
+    if scale == 0.0 or not np.isfinite(scale):
+        scale = 1.0
+    offset_step = 1.8
+    for component, component_name in enumerate(component_names):
+        offset = offset_step * (len(component_names) - component - 1)
+        axis.plot(
+            t,
+            data[component, :] / scale + offset,
+            color=color,
+            linewidth=linewidth,
+        )
+        axis.text(
+            0.01,
+            offset,
+            component_name,
+            transform=axis.get_yaxis_transform(),
+            va="center",
+            ha="left",
+            fontsize="small",
+        )
+    if title is not None:
+        axis.set_title(title)
+    axis.set_yticks([])
+    axis.grid(True, color="0.88", linewidth=0.6)
+    return t
+
+
+def _plot_sparse_impulse_norm(axis, truth, title=None):
+    truth_matrix = np.asarray(truth.data)
+    t = truth.t0 + np.arange(truth.npts) * truth.dt
+    impulse_norm = np.linalg.norm(truth_matrix, axis=0)
+    scale = np.max(np.abs(impulse_norm))
+    if scale == 0.0:
+        scale = 1.0
+    nonzero = np.flatnonzero(impulse_norm)
+    axis.vlines(
+        t[nonzero],
+        0.0,
+        impulse_norm[nonzero] / scale,
+        color="black",
+        linewidth=1.0,
+    )
+    axis.axhline(0.0, color="0.45", linewidth=0.8)
+    axis.set_ylim(-0.05, 1.05)
+    axis.set_yticks([])
+    if title is not None:
+        axis.set_title(title)
+    axis.grid(True, color="0.9", linewidth=0.6)
+
+
+def _plot_sparse_impulse_components(
+    axis,
+    truth,
+    component_names=("EW", "NS", "Z"),
+    title=None,
+):
+    truth_matrix = np.asarray(truth.data)
+    t = truth.t0 + np.arange(truth.npts) * truth.dt
+    scale = np.nanmax(np.abs(truth_matrix))
+    if scale == 0.0 or not np.isfinite(scale):
+        scale = 1.0
+    offset_step = 1.8
+    for component, component_name in enumerate(component_names):
+        values = truth_matrix[component, :] / scale
+        nonzero = np.flatnonzero(values)
+        offset = offset_step * (len(component_names) - component - 1)
+        axis.axhline(offset, color="0.7", linewidth=0.7)
+        axis.vlines(
+            t[nonzero],
+            offset,
+            offset + values[nonzero],
+            color="black",
+            linewidth=1.0,
+        )
+        axis.text(
+            0.01,
+            offset,
+            component_name,
+            transform=axis.get_yaxis_transform(),
+            va="center",
+            ha="left",
+            fontsize="small",
+        )
+    if title is not None:
+        axis.set_title(title)
+    axis.set_yticks([])
+    axis.set_ylim(-1.1, offset_step * (len(component_names) - 1) + 1.1)
+    axis.grid(True, color="0.9", linewidth=0.6)
+
+
+def _plot_complex_colored_results(
+    plot_dir, results, truth, wavelet, data, noise_scale
+):
     if plot_dir is None:
         return
     _plot_rf_overlay(
@@ -598,13 +742,41 @@ def _plot_complex_colored_results(plot_dir, results, truth, wavelet):
 
     plt = _import_matplotlib_pyplot()
     tw = wavelet.t0 + np.arange(wavelet.npts) * wavelet.dt
-    fig, axis = plt.subplots(1, 1, figsize=(10, 3))
-    axis.plot(tw, np.asarray(wavelet.data), color="black", linewidth=1.2)
-    axis.set_title("Notched source wavelet used for validation")
-    axis.set_xlabel("Time (s)")
-    axis.set_ylabel("Amplitude")
-    axis.grid(True, color="0.85", linewidth=0.6)
-    fig.tight_layout()
+
+    fig, axes = plt.subplots(
+        3,
+        1,
+        figsize=(12, 6.8),
+        sharex=False,
+        gridspec_kw={"height_ratios": [1.0, 1.5, 1.2]},
+    )
+    axes[0].plot(tw, np.asarray(wavelet.data), color="black", linewidth=1.2)
+    axes[0].set_title("Notched source wavelet")
+    axes[0].set_ylabel("Amp")
+    axes[0].grid(True, color="0.85", linewidth=0.6)
+
+    _plot_offset_components(
+        axes[1],
+        data.data,
+        data.t0,
+        data.dt,
+        title=(
+            "Convolved 3C data with colored noise "
+            f"(normalized display, noise scale={noise_scale:g})"
+        ),
+        color="C0",
+    )
+    axes[1].set_xlim(SIGNAL_WINDOW.start - 2.0, 18.0)
+
+    _plot_sparse_impulse_components(
+        axes[2],
+        truth,
+        title="True sparse 3C impulse response",
+    )
+    axes[2].set_xlim(SIGNAL_WINDOW.start - 2.0, 18.0)
+    axes[2].set_xlabel("Lag time relative to direct P sample (s)")
+    fig.suptitle("Complex colored validation setup")
+    fig.tight_layout(rect=(0.0, 0.0, 1.0, 0.96))
     fig.savefig(plot_dir / "complex_colored_validation_wavelet.png", dpi=150)
     plt.close(fig)
 
@@ -630,7 +802,7 @@ def _plot_gid_mode_results(plot_dir, engine_name, results, truth, t0, dt):
     _plot_rf_overlay(
         plot_dir,
         f"{engine_name}_inverse_modes.png",
-        f"{engine_name} validation by inverse-operator mode",
+        f"{engine_name} validation by core inverse mode and penalty helper",
         results,
         truth,
         t0,
@@ -644,13 +816,142 @@ def _plot_gid_sparse_results(
     _plot_rf_overlay(
         plot_dir,
         f"{engine_name}_{suffix}_sparse_results.png",
-        f"{engine_name} raw sparse spike output ({suffix})",
+        f"{engine_name} raw sparse spike output by core inverse and penalty ({suffix})",
         results,
         truth,
         t0,
         dt,
         failed_methods=failed_methods,
     )
+
+
+def _gid_plot_label(core_method, qc):
+    return (
+        f"core={core_method} | penalty={qc['gid_penalty_function']}"
+        f"(s={qc['gid_penalty_scale_factor']:g}, w={qc['gid_penalty_width']})"
+    )
+
+
+def _plot_gid_penalty_comparison(
+    plot_dir,
+    engine_name,
+    core_method,
+    shaped_results,
+    sparse_results,
+    lag_weights,
+    truth,
+    shaped_t0,
+    sparse_t0,
+    dt,
+    weight_t0,
+    suffix,
+    failed_methods=None,
+):
+    if plot_dir is None:
+        return
+    failed_methods = failed_methods or []
+    _plot_rf_overlay(
+        plot_dir,
+        f"{engine_name}_{suffix}_{core_method}_penalty_shaped_results.png",
+        (
+            f"{engine_name} penalty comparison with {core_method} core inverse, "
+            "shaped receiver functions"
+        ),
+        shaped_results,
+        truth,
+        shaped_t0,
+        dt,
+        failed_methods=failed_methods,
+    )
+    _plot_rf_overlay(
+        plot_dir,
+        f"{engine_name}_{suffix}_{core_method}_penalty_sparse_results.png",
+        (
+            f"{engine_name} penalty comparison with {core_method} core inverse, "
+            "raw sparse outputs"
+        ),
+        sparse_results,
+        truth,
+        sparse_t0,
+        dt,
+        failed_methods=failed_methods,
+    )
+
+    plt = _import_matplotlib_pyplot()
+    if lag_weights:
+        npts = min(len(weights) for weights in lag_weights.values())
+        t = weight_t0 + np.arange(npts) * dt
+    else:
+        npts = truth.npts
+        t = truth.t0 + np.arange(npts) * truth.dt
+    colors = plt.get_cmap("tab10")
+    fig, (axis, truth_axis) = plt.subplots(
+        2,
+        1,
+        figsize=(12, 4.8),
+        sharex=True,
+        gridspec_kw={"height_ratios": [3.0, 1.0], "hspace": 0.08},
+    )
+    for index, (name, weights) in enumerate(lag_weights.items()):
+        axis.plot(
+            t,
+            weights[:npts],
+            linewidth=1.3,
+            color=colors(index % 10),
+            label=name,
+        )
+    for name in failed_methods:
+        axis.plot(
+            [],
+            [],
+            color="0.45",
+            linestyle=":",
+            linewidth=1.2,
+            label=f"{name} (failed)",
+        )
+    if not lag_weights:
+        axis.text(
+            0.5,
+            0.5,
+            "No live penalty runs for this diagnostic noise level",
+            transform=axis.transAxes,
+            ha="center",
+            va="center",
+            color="0.35",
+        )
+    for arrival_time in STRESS_SPIKES:
+        axis.axvline(arrival_time, color="0.75", linewidth=0.8, linestyle=":")
+    axis.axhline(1.0, color="0.85", linewidth=0.8)
+    axis.set_ylim(-0.05, 1.05)
+    axis.set_ylabel("Final lag weight")
+    axis.set_title(
+        f"{engine_name} final lag weights after GID iteration ({core_method} core)"
+    )
+    axis.grid(True, color="0.88", linewidth=0.6)
+    handles, labels = axis.get_legend_handles_labels()
+    if handles:
+        axis.legend(
+            handles,
+            labels,
+            loc="upper left",
+            bbox_to_anchor=(1.01, 1.0),
+            fontsize="x-small",
+            frameon=False,
+        )
+    _plot_sparse_impulse_norm(
+        truth_axis,
+        truth,
+    )
+    truth_axis.set_ylabel("True\nimpulse")
+    truth_axis.set_xlabel("Lag time relative to direct P sample (s)")
+    truth_axis.set_xlim(t[0], t[-1])
+    fig.subplots_adjust(left=0.08, right=0.74, top=0.86, bottom=0.14, hspace=0.08)
+    fig.savefig(
+        plot_dir / f"{engine_name}_{suffix}_{core_method}_penalty_lag_weights.png",
+        dpi=150,
+        bbox_inches="tight",
+    )
+    plt.close(fig)
 
 
 def _plot_external_wavelet_results(plot_dir, results, truth, t0, dt):
@@ -781,6 +1082,7 @@ def test_existing_decon_methods_are_consistent_for_noise_free_input():
 
 def test_scalar_methods_are_consistent_for_complex_colored_3c_synthetic(
     decon_validation_plot_dir,
+    decon_validation_noise_scale,
 ):
     data, truth, wavelet = _make_complex_colored_validation_data(return_truth=True)
     results = {
@@ -824,7 +1126,38 @@ def test_scalar_methods_are_consistent_for_complex_colored_3c_synthetic(
         )
         > 0.90
     )
-    _plot_complex_colored_results(decon_validation_plot_dir, results, truth, wavelet)
+    plot_data = data
+    plot_truth = truth
+    plot_wavelet = wavelet
+    plot_results = results
+    if decon_validation_plot_dir is not None and decon_validation_noise_scale != 0.025:
+        plot_data, plot_truth, plot_wavelet = _make_complex_colored_validation_data(
+            noise_scale=decon_validation_noise_scale,
+            return_truth=True,
+        )
+        plot_results = {
+            "LeastSquares": _scalar_rf_matrix("LeastSquares", plot_data),
+            "TimeDomainLeastSquares": _scalar_rf_matrix(
+                "TimeDomainLeastSquares", plot_data
+            ),
+            "WaterLevel": _scalar_rf_matrix("WaterLevel", plot_data),
+            "MultiTaperPowerXcor": _scalar_rf_matrix(
+                "MultiTaperPowerXcor", plot_data
+            ),
+            "MultiTaperPowerSpecDiv": _scalar_rf_matrix(
+                "MultiTaperPowerSpecDiv", plot_data
+            ),
+            "NoiseStable": _noise_stable_rf_matrix(plot_data),
+            "CNR": _cnr_rf_matrix(plot_data),
+        }
+    _plot_complex_colored_results(
+        decon_validation_plot_dir,
+        plot_results,
+        plot_truth,
+        plot_wavelet,
+        plot_data,
+        decon_validation_noise_scale,
+    )
 
 
 def test_scalar_methods_recover_stress_spikes_with_colored_noise(
@@ -1089,12 +1422,14 @@ def test_gid_methods_recover_colored_multi_spike_rf_for_all_inverse_modes(
             noise_window=TimeWindow(-35.0, -5.0),
         )
         assert rf.live, mode
-        assert rf[qc_key]["residual_L2_final"] < rf[qc_key]["residual_L2_initial"]
-        plot_results[mode] = np.asarray(rf.data)
+        qc = rf[qc_key]
+        assert qc["residual_L2_final"] < qc["residual_L2_initial"]
+        plot_label = _gid_plot_label(mode, qc)
+        plot_results[plot_label] = np.asarray(rf.data)
         plot_t0 = rf.t0
         plot_dt = rf.dt
         sparse = engine.sparse_output()
-        plot_sparse_results[mode] = np.asarray(sparse.data)
+        plot_sparse_results[plot_label] = np.asarray(sparse.data)
         _assert_colored_gid_arrival_signs_are_recovered(
             np.asarray(sparse.data), sparse.t0, sparse.dt
         )
@@ -1160,7 +1495,17 @@ def test_gid_output_shaping_wavelet_is_configurable_and_separate_from_sparse_sup
         pfname,
         branch_name,
         "ns_gid",
-        {"shaping_wavelet_frequency 1.0": "shaping_wavelet_frequency 2.0"},
+        {
+            "lag_weight_function_width 5\n\n"
+            "        shaping_wavelet_dt 0.05\n"
+            "        shaping_wavelet_type ricker\n"
+            "        shaping_wavelet_frequency 1.0": (
+                "lag_weight_function_width 5\n\n"
+                "        shaping_wavelet_dt 0.05\n"
+                "        shaping_wavelet_type ricker\n"
+                "        shaping_wavelet_frequency 2.0"
+            )
+        },
     )
 
     shaped_outputs = []
@@ -1232,14 +1577,16 @@ def test_gid_methods_recover_stress_spike_signs_for_all_inverse_modes(
             noise_window=TimeWindow(-35.0, -5.0),
         )
         assert rf.live, mode
-        assert rf[qc_key]["residual_L2_final"] < rf[qc_key]["residual_L2_initial"]
+        qc = rf[qc_key]
+        assert qc["residual_L2_final"] < qc["residual_L2_initial"]
+        plot_label = _gid_plot_label(mode, qc)
         matrix = np.asarray(rf.data)
         sparse = engine.sparse_output()
         _assert_stress_gid_signs_recovered(
             np.asarray(sparse.data), sparse.t0, sparse.dt
         )
-        plot_results[mode] = matrix
-        plot_sparse_results[mode] = np.asarray(sparse.data)
+        plot_results[plot_label] = matrix
+        plot_sparse_results[plot_label] = np.asarray(sparse.data)
         plot_t0 = rf.t0
         plot_dt = rf.dt
 
@@ -1265,8 +1612,12 @@ def test_gid_methods_recover_stress_spike_signs_for_all_inverse_modes(
                 noise_window=TimeWindow(-35.0, -5.0),
             )
             if rf.live:
-                plot_results[mode] = np.asarray(rf.data)
-                plot_sparse_results[mode] = np.asarray(engine.sparse_output().data)
+                qc = rf[qc_key]
+                plot_label = _gid_plot_label(mode, qc)
+                plot_results[plot_label] = np.asarray(rf.data)
+                plot_sparse_results[plot_label] = np.asarray(
+                    engine.sparse_output().data
+                )
                 plot_t0 = rf.t0
                 plot_dt = rf.dt
             else:
@@ -1291,6 +1642,192 @@ def test_gid_methods_recover_stress_spike_signs_for_all_inverse_modes(
         plot_dt,
         f"noise_{decon_validation_noise_scale:g}_stress",
         failed_methods=skipped_plot_modes,
+    )
+
+
+@pytest.mark.parametrize(
+    "engine_class, wrapper, pfname, branch_name, qc_key",
+    [
+        (
+            TimeDomainGIDDecon,
+            TimeDomainGIDRFDecon,
+            "data/pf/TimeDomainGIDDecon.pf",
+            "time_domain_gid_deconvolution",
+            "TimeDomainGIDDecon_properties",
+        ),
+        (
+            FrequencyDomainGIDDecon,
+            FrequencyDomainGIDRFDecon,
+            "data/pf/FrequencyDomainGIDDecon.pf",
+            "frequency_domain_gid_deconvolution",
+            "FrequencyDomainGIDDecon_properties",
+        ),
+    ],
+)
+def test_gid_lag_penalty_improves_stress_fit_and_plots_diagnostics(
+    tmp_path,
+    decon_validation_plot_dir,
+    decon_validation_noise_scale,
+    engine_class,
+    wrapper,
+    pfname,
+    branch_name,
+    qc_key,
+):
+    def run_cases(noise_scale, require_live=True):
+        data, truth, _ = _make_stress_colored_validation_data(
+            noise_scale=noise_scale,
+            return_truth=True,
+        )
+        shaped_results = {}
+        sparse_results = {}
+        lag_weight_results = {}
+        qcs = {}
+        detection_metrics = {}
+        failed_methods = []
+        shaped_t0 = sparse_t0 = weight_t0 = -8.0
+        dt = truth.dt
+        cases = [
+            (
+                "none",
+                {
+                    "lag_weight_penalty_function cosine_taper": "lag_weight_penalty_function none"
+                },
+            ),
+            (
+                "boxcar",
+                {
+                    "lag_weight_penalty_function cosine_taper": "lag_weight_penalty_function boxcar"
+                },
+            ),
+            ("cosine_taper", {}),
+        ]
+        for label, replacements in cases:
+            pf = _pf_with_gid_mode_and_replacements(
+                tmp_path,
+                pfname,
+                branch_name,
+                "least_square",
+                replacements,
+            )
+            engine = engine_class(pf)
+            try:
+                rf = wrapper(
+                    data,
+                    engine,
+                    signal_window=TimeWindow(-8.0, 20.0),
+                    noise_window=TimeWindow(-35.0, -5.0),
+                )
+            except Exception as err:
+                if require_live:
+                    raise
+                failed_methods.append(f"{label} ({type(err).__name__})")
+                continue
+            if not rf.live:
+                if require_live:
+                    assert rf.live, label
+                failed_methods.append(label)
+                continue
+            qc = rf[qc_key]
+            plot_label = (
+                f"{_gid_plot_label('least_square', qc)}; "
+                f"iters={qc['iteration_count']} L2={qc['residual_L2_final']:.3g}"
+            )
+            shaped_results[plot_label] = np.asarray(rf.data)
+            sparse = engine.sparse_output()
+            sparse_matrix = np.asarray(sparse.data)
+            sparse_results[plot_label] = sparse_matrix
+            detection_metrics[qc["gid_penalty_function"]] = (
+                _classify_gid_spike_detections(
+                    sparse_matrix, sparse.t0, sparse.dt
+                )
+            )
+            lag_weight_results[plot_label] = np.asarray(engine.lag_weight_vector())
+            qcs[qc["gid_penalty_function"]] = qc
+            shaped_t0 = rf.t0
+            sparse_t0 = sparse.t0
+            weight_t0 = engine.deconvolution_window_start()
+            dt = rf.dt
+        return (
+            truth,
+            shaped_results,
+            sparse_results,
+            lag_weight_results,
+            qcs,
+            shaped_t0,
+            sparse_t0,
+            weight_t0,
+            dt,
+            detection_metrics,
+            failed_methods,
+        )
+
+    (
+        truth,
+        shaped_results,
+        sparse_results,
+        lag_weight_results,
+        qcs,
+        shaped_t0,
+        sparse_t0,
+        weight_t0,
+        dt,
+        detection_metrics,
+        failed_methods,
+    ) = run_cases(0.01)
+
+    assert failed_methods == []
+    assert set(qcs) == {"none", "boxcar", "cosine_taper"}
+    assert qcs["cosine_taper"]["gid_penalty_scale_factor"] == pytest.approx(0.5)
+    assert detection_metrics["cosine_taper"]["recall"] >= 0.95
+    assert detection_metrics["cosine_taper"]["precision"] >= 0.80
+    assert detection_metrics["cosine_taper"]["false_positive"] <= 2
+    assert (
+        qcs["cosine_taper"]["iteration_count"]
+        <= qcs["none"]["iteration_count"]
+    )
+    assert (
+        qcs["cosine_taper"]["residual_L2_final"]
+        <= qcs["none"]["residual_L2_final"] * 1.05
+    )
+    assert (
+        qcs["cosine_taper"]["residual_L2_final"]
+        <= qcs["boxcar"]["residual_L2_final"] * 1.05
+    )
+    assert (
+        qcs["cosine_taper"]["lag_weight_L2_final"]
+        < qcs["none"]["lag_weight_L2_final"]
+    )
+
+    if decon_validation_plot_dir is not None and decon_validation_noise_scale != 0.01:
+        (
+            truth,
+            shaped_results,
+            sparse_results,
+            lag_weight_results,
+            _,
+            shaped_t0,
+            sparse_t0,
+            weight_t0,
+            dt,
+            _,
+            failed_methods,
+        ) = run_cases(decon_validation_noise_scale, require_live=False)
+
+    _plot_gid_penalty_comparison(
+        decon_validation_plot_dir,
+        engine_class.__name__,
+        "least_square",
+        shaped_results,
+        sparse_results,
+        lag_weight_results,
+        truth,
+        shaped_t0,
+        sparse_t0,
+        dt,
+        weight_t0,
+        f"noise_{decon_validation_noise_scale:g}",
+        failed_methods=failed_methods,
     )
 
 

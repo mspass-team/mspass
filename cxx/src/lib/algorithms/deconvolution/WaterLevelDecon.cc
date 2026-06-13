@@ -199,11 +199,11 @@ CoreTimeSeries WaterLevelDecon::inverse_wavelet() {
   };
 }
 Metadata WaterLevelDecon::QCMetrics() {
-  /* Return only an empty Metadata container.  Done as it is
-  easier to maintain the code letting python do this work.
-  This also anticipates new metrics being added which would be
-  easier in python.*/
-  Metadata md;
+  Metadata md(this->BasicQCMetrics("WaterLevelDecon", !result.empty()));
+  md.put("decon_operator_nfft", nfft);
+  md.put("decon_operator_sample_shift", sample_shift);
+  md.put("water_level", wlv);
+  md.put("water_level_regularization_fraction", regularization_fraction);
   return md;
 }
 } // namespace mspass::algorithms::deconvolution
