@@ -73,18 +73,36 @@ FrequencyDomainGIDDecon::FrequencyDomainGIDDecon(const AntelopePf &mdtoplevel)
         mdgid.get<double>("residual_fractional_improvement_floor");
     ValidateNonnegative(residual_improvement_floor,
                         "residual_fractional_improvement_floor", base_error);
-    lag_weight_penalty =
-        BuildGIDLagWeightPenaltyFunction(mdgid, "FrequencyDomainGIDDecon");
     lag_weight_penalty_function =
         mdgid.get_string("lag_weight_penalty_function");
     lag_weight_penalty_scale_factor =
         mdgid.is_defined("lag_weight_penalty_scale_factor")
             ? mdgid.get<double>("lag_weight_penalty_scale_factor")
             : 1.0;
+    if (!isfinite(lag_weight_penalty_scale_factor) ||
+        lag_weight_penalty_scale_factor <= 0.0 ||
+        lag_weight_penalty_scale_factor > 1.0)
+      throw MsPASSError(base_error +
+                            "lag_weight_penalty_scale_factor must be in (0, 1]",
+                        ErrorSeverity::Fatal);
     lag_weight_function_width =
         mdgid.is_defined("lag_weight_function_width")
             ? mdgid.get<int>("lag_weight_function_width")
-            : static_cast<int>(lag_weight_penalty.size());
+            : 0;
+    if (mdgid.is_defined("lag_weight_function_width"))
+      ValidatePositiveInteger(lag_weight_function_width,
+                              "lag_weight_function_width", base_error);
+    if (lag_weight_penalty_function == "shaping_wavelet") {
+      CoreTimeSeries shaping(this->output_shaping_wavelet());
+      lag_weight_penalty = BuildGIDLagWeightPenaltyFunctionFromKernel(
+          lag_weight_penalty_function, lag_weight_penalty_scale_factor,
+          shaping.s, shaping.sample_number(0.0), "FrequencyDomainGIDDecon");
+    } else if (lag_weight_penalty_function == "resolution_kernel") {
+      lag_weight_penalty = vector<double>{1.0};
+    } else {
+      lag_weight_penalty =
+          BuildGIDLagWeightPenaltyFunction(mdgid, "FrequencyDomainGIDDecon");
+    }
 
     AntelopePf mdleaf;
     switch (decon_type) {
@@ -456,6 +474,11 @@ void FrequencyDomainGIDDecon::initialize_inverse_operator() {
                       ErrorSeverity::Invalid);
   for (auto &x : actual_o_fir)
     x /= peak_scale;
+  if (lag_weight_penalty_function == "resolution_kernel") {
+    lag_weight_penalty = BuildGIDLagWeightPenaltyFunctionFromKernel(
+        lag_weight_penalty_function, lag_weight_penalty_scale_factor,
+        actual_o_fir, actual_o_0, "FrequencyDomainGIDDecon");
+  }
 }
 
 CoreTimeSeries FrequencyDomainGIDDecon::ideal_output() {

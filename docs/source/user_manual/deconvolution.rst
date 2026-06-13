@@ -289,11 +289,15 @@ Three-component and iterative operators
 
     Candidate spike selection can be biased by a lag-weight penalty function.
     The penalty is configured with ``lag_weight_penalty_function`` (``none``,
-    ``boxcar``, or ``cosine_taper``), ``lag_weight_penalty_scale_factor``, and
+    ``boxcar``, ``cosine_taper``, ``shaping_wavelet``, or
+    ``resolution_kernel``), ``lag_weight_penalty_scale_factor``, and
     ``lag_weight_function_width``.  After a spike is accepted, the selected lag
     neighborhood is multiplied by that penalty, which suppresses repeated picks
     of the same large arrival and encourages later iterations to search for
-    weaker arrivals.  ``QCMetrics`` reports ``lag_weight_Linf_final`` and
+    weaker arrivals.  ``boxcar`` and ``cosine_taper`` use the configured fixed
+    width.  ``shaping_wavelet`` and ``resolution_kernel`` derive their applied
+    width from a kernel autocorrelation and preserve the configured width only
+    as QC context.  ``QCMetrics`` reports ``lag_weight_Linf_final`` and
     ``lag_weight_L2_final`` and both engines expose the full final weight curve
     with ``lag_weight_vector()`` for diagnostic plotting.  The metadata fields
     ``gid_penalty_scale_factor`` and ``gid_penalty_width`` preserve configured
@@ -302,7 +306,7 @@ Three-component and iterative operators
     kernel).  The Python wrappers store scalar QC fields in their QC metadata
     subdocuments, so they are saved with normal database records.
 
-    The three helper modes map directly to the final lag-weight plots produced
+    The five helper modes map directly to the final lag-weight plots produced
     by the validation tests.  The theoretical interpretation and recommended
     default are summarized in `Lag-weight penalty framework`_.
 
@@ -398,17 +402,17 @@ near :math:`j_*` by a compact penalty kernel :math:`p_m`:
    \ell^{(k+1)}_j =
        \operatorname{clip}\left(\ell^{(k)}_j p_{j-j_*}, 0, 1\right).
 
-Outside the configured penalty width, :math:`p_m=1`.  Repeated hits near the
-same arrival therefore multiply down the same neighborhood, making the
-penalty a soft exclusion process.  Equivalently, the spike picker maximizes
-the unweighted detection energy with an adaptive location cost
+Outside the penalty support, :math:`p_m=1`.  Repeated hits near the same
+arrival therefore multiply down the same neighborhood, making the penalty a
+soft exclusion process.  Equivalently, the spike picker maximizes the
+unweighted detection energy with an adaptive location cost
 :math:`-2\log \ell^{(k)}_j`; already explained neighborhoods become more
 expensive while untouched lags retain cost zero.
 
 Let :math:`\alpha` be ``lag_weight_penalty_scale_factor`` and let
-:math:`W=2h+1` be the odd penalty width in samples.  If an even width is
+:math:`W=2h+1` be the odd fixed penalty width in samples.  If an even width is
 configured, the implementation increases it by one so the kernel has a center
-sample.  The implemented helper kernels are:
+sample.  The fixed-width helper kernels are:
 
 .. math::
 
@@ -432,6 +436,37 @@ current default :math:`\alpha=0.5` and :math:`W=5`, the center sample is
 multiplied by ``0.5``, adjacent samples by ``0.625``, and edge samples by
 ``0.875``.
 
+The kernel-derived modes replace the user-selected width with a resolution
+measure.  Let :math:`h_i` be either the requested output shaping wavelet
+(``shaping_wavelet``) or the compact actual residual-update kernel
+(``resolution_kernel``).  The engines compute the normalized absolute kernel
+coherence
+
+.. math::
+
+   c_m =
+     \frac{\left|\sum_i h_i h_{i+m}\right|}
+          {\sum_i h_i^2},
+   \qquad c_0 = 1,
+
+and keep the contiguous full-width-at-half-maximum support around zero lag,
+where :math:`c_m \ge 0.5`.  Because the GID picker ranks squared
+three-component amplitudes, the applied penalty uses coherence energy:
+
+.. math::
+
+   p_m = 1-\alpha c_m^2,
+
+with :math:`p_m=1` outside the support.  This gives the accepted spike the same
+center suppression as the fixed helpers, but sets both the width and the
+shoulder shape from the resolving power of the wavelet/operator while keeping
+the shoulders gentler for close arrivals than a raw-coherence penalty.  The
+``shaping_wavelet`` mode is useful for controlled comparisons and for cases
+where the requested output pulse is the desired resolution reference.
+``resolution_kernel`` is more adaptive because it uses the actual kernel after
+the inverse operator, trimming, and peak normalization.  For ``ns_gid`` that
+kernel also reflects noise-dependent regularization.
+
 The optional validation figures demonstrate this framework directly.  The
 ``*_least_square_penalty_lag_weights.png`` plots show the final
 :math:`\ell^{(K)}_j` curve above an aligned true sparse impulse response.  A
@@ -440,24 +475,25 @@ candidate near an already accepted spike.  The companion shaped and sparse
 penalty plots show the resulting receiver functions and raw spike support.
 The stress validation intentionally uses the less stable ``least_square``
 inverse mode in those figures so the penalty behavior is visible; with
-``ns_gid`` the inverse operator is often stable enough that all three penalty
-helpers select nearly the same support.
+``ns_gid`` the inverse operator is often stable enough that all penalty helpers
+select nearly the same support.
 
-The recommended production method is therefore ``cosine_taper`` with
-``lag_weight_penalty_scale_factor=0.5`` and
-``lag_weight_function_width=5``.  This is strong enough to reduce repeated
-selection of the same large arrival, but weak and local enough to preserve
-nearby arrivals of opposite polarity.  The width is in samples, so users with
-different sample intervals should choose a width that covers the central
-repeat-pick neighborhood of the resolution kernel without spanning physically
-distinct arrivals.  ``boxcar`` should be reserved for tests or cases where a
-deliberate hard exclusion is desired.  In noisy production workflows, this
-lag penalty should be combined with the ``ns_gid`` inverse mode; the
-least-square validation plots use ``least_square`` only because its weaker
-noise stability makes the differences among penalty kernels easier to see.
-For backward compatibility, the distributed parameter files still default to
-``deconvolution_type least_square``.  Users should switch the selected GID
-branch to ``deconvolution_type ns_gid`` for noisy production deconvolution.
+The recommended production default remains ``cosine_taper`` with
+``lag_weight_penalty_scale_factor=0.5`` and ``lag_weight_function_width=5``.
+The validation sweeps show that it is the most conservative choice across the
+current close-arrival tests: it suppresses repeated picks without changing the
+historical fixed-width behavior.  ``resolution_kernel`` is the preferred
+adaptive option when users want to remove manual width tuning, but its QC
+fields and validation plots should be checked on data sets with closely spaced
+opposite-polarity arrivals before making it a project default.  ``boxcar``
+should be reserved for tests or cases where a deliberate hard exclusion is
+desired.  In noisy production workflows, this lag penalty should be combined
+with the ``ns_gid`` inverse mode; the least-square validation plots use
+``least_square`` only because its weaker noise stability makes the differences
+among penalty kernels easier to see.  For backward compatibility, the
+distributed parameter files still default to ``deconvolution_type
+least_square``.  Users should switch the selected GID branch to
+``deconvolution_type ns_gid`` for noisy production deconvolution.
 
 ``NS-GID`` inverse mode
     Noise-aware stable generalized iterative deconvolution is selected with
