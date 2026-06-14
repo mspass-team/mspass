@@ -163,6 +163,7 @@
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">tempfile</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
@@ -236,6 +237,332 @@
         <span class="k">return</span> <span class="n">fp</span><span class="o">.</span><span class="n">name</span>
     <span class="k">finally</span><span class="p">:</span>
         <span class="n">fp</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+
+<span class="n">_TIME_DOMAIN_GID_ALIASES</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;GeneralizedIterative&quot;</span><span class="p">,</span> <span class="s2">&quot;TimeDomainGID&quot;</span><span class="p">,</span> <span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="s2">&quot;td&quot;</span><span class="p">}</span>
+<span class="n">_FREQUENCY_DOMAIN_GID_ALIASES</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;FrequencyDomainGID&quot;</span><span class="p">,</span> <span class="s2">&quot;frequency&quot;</span><span class="p">,</span> <span class="s2">&quot;fd&quot;</span><span class="p">}</span>
+<span class="n">_SUPPORTED_GID_DECONVOLUTION_TYPES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;least_square&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;water_level&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;multi_taper&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;cnr&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;cnr3c&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ns_gid&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;noise_stable&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;noise_aware_stable&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;group_sparse&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;group_lasso&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;sparse_group_lasso&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+<span class="n">_SUPPORTED_GID_PENALTY_FUNCTIONS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;none&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;boxcar&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;cosine_taper&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;shaping_wavelet&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;resolution_kernel&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;adaptive_memory&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_canonical_gid_algorithm</span><span class="p">(</span><span class="n">alg</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">alg</span> <span class="ow">in</span> <span class="n">_TIME_DOMAIN_GID_ALIASES</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;TimeDomainGID&quot;</span>
+    <span class="k">if</span> <span class="n">alg</span> <span class="ow">in</span> <span class="n">_FREQUENCY_DOMAIN_GID_ALIASES</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;FrequencyDomainGID&quot;</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+        <span class="s2">&quot;GID configuration helpers require alg=&#39;TimeDomainGID&#39;, &quot;</span>
+        <span class="s2">&quot;&#39;GeneralizedIterative&#39;, or &#39;FrequencyDomainGID&#39;&quot;</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_gid_default_pf</span><span class="p">(</span><span class="n">alg</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="s2">&quot;TimeDomainGIDDecon.pf&quot;</span>
+        <span class="k">if</span> <span class="n">_canonical_gid_algorithm</span><span class="p">(</span><span class="n">alg</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;TimeDomainGID&quot;</span>
+        <span class="k">else</span> <span class="s2">&quot;FrequencyDomainGIDDecon.pf&quot;</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_gid_branch_name</span><span class="p">(</span><span class="n">alg</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="s2">&quot;time_domain_gid_deconvolution&quot;</span>
+        <span class="k">if</span> <span class="n">_canonical_gid_algorithm</span><span class="p">(</span><span class="n">alg</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;TimeDomainGID&quot;</span>
+        <span class="k">else</span> <span class="s2">&quot;frequency_domain_gid_deconvolution&quot;</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_format_pf_value</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">bool_</span><span class="p">)):</span>
+        <span class="k">return</span> <span class="s2">&quot;true&quot;</span> <span class="k">if</span> <span class="nb">bool</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;false&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">))</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">bool_</span><span class="p">)):</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">)):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">:</span><span class="s2">.15g</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">!=</span> <span class="n">value</span> <span class="ow">or</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\s&quot;</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;pf scalar string values cannot contain whitespace: </span><span class="si">{</span><span class="n">value</span><span class="si">!r}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">value</span>
+    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+        <span class="s2">&quot;GID parameter values must be bool, int, float, numpy scalar, &quot;</span>
+        <span class="s2">&quot;or whitespace-free string&quot;</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_normalize_metadata_scalar_value</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">generic</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">value</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">value</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">context</span><span class="si">}</span><span class="s2">: metadata parameter </span><span class="si">{</span><span class="n">key</span><span class="si">!r}</span><span class="s2"> must be scalar&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">Metadata</span><span class="p">)):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">context</span><span class="si">}</span><span class="s2">: metadata parameter </span><span class="si">{</span><span class="n">key</span><span class="si">!r}</span><span class="s2"> must be scalar&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">value</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_normalize_metadata_scalars</span><span class="p">(</span><span class="n">md</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">Metadata</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">md</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="n">result</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">_normalize_metadata_scalar_value</span><span class="p">(</span><span class="n">md</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">key</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">result</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_validate_component_index</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">bool_</span><span class="p">)):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">context</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> must be integer 0, 1, or 2&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">):</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">context</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> must be integer 0, 1, or 2&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">value</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">context</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> must be integer 0, 1, or 2&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">value</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_find_pf_branch_line_range</span><span class="p">(</span><span class="n">lines</span><span class="p">,</span> <span class="n">branch_name</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+    <span class="n">branch_pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^\s*&quot;</span> <span class="o">+</span> <span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">branch_name</span><span class="p">)</span> <span class="o">+</span> <span class="sa">r</span><span class="s2">&quot;\s+&amp;Arr\{\s*$&quot;</span><span class="p">)</span>
+    <span class="n">starts</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span> <span class="k">if</span> <span class="n">branch_pattern</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">line</span><span class="p">)]</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">starts</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">context</span><span class="si">}</span><span class="s2">: expected one </span><span class="si">{</span><span class="n">branch_name</span><span class="si">!r}</span><span class="s2"> branch, found </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">starts</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Fatal</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="n">start</span> <span class="o">=</span> <span class="n">starts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">depth</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">)):</span>
+        <span class="n">depth</span> <span class="o">+=</span> <span class="n">lines</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">&quot;{&quot;</span><span class="p">)</span>
+        <span class="n">depth</span> <span class="o">-=</span> <span class="n">lines</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">&quot;}&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="n">start</span> <span class="ow">and</span> <span class="n">depth</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">start</span><span class="p">,</span> <span class="n">i</span>
+    <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">context</span><span class="si">}</span><span class="s2">: unterminated </span><span class="si">{</span><span class="n">branch_name</span><span class="si">!r}</span><span class="s2"> branch&quot;</span><span class="p">,</span>
+        <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Fatal</span><span class="p">,</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_replace_pf_scalar_in_branch</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">branch_name</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+    <span class="n">lines</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span>
+    <span class="n">start</span><span class="p">,</span> <span class="n">end</span> <span class="o">=</span> <span class="n">_find_pf_branch_line_range</span><span class="p">(</span><span class="n">lines</span><span class="p">,</span> <span class="n">branch_name</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span>
+    <span class="n">key_pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^(\s*)&quot;</span> <span class="o">+</span> <span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">+</span> <span class="sa">r</span><span class="s2">&quot;\s+\S+(\s*(#.*)?)$&quot;</span><span class="p">)</span>
+    <span class="n">matches</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">depth</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">start</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">end</span><span class="p">):</span>
+        <span class="n">match</span> <span class="o">=</span> <span class="n">key_pattern</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">lines</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">depth</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">match</span><span class="p">:</span>
+            <span class="n">matches</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">i</span><span class="p">,</span> <span class="n">match</span><span class="p">))</span>
+        <span class="n">depth</span> <span class="o">+=</span> <span class="n">lines</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">&quot;{&quot;</span><span class="p">)</span>
+        <span class="n">depth</span> <span class="o">-=</span> <span class="n">lines</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">&quot;}&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">matches</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">context</span><span class="si">}</span><span class="s2">: expected one scalar key </span><span class="si">{</span><span class="n">key</span><span class="si">!r}</span><span class="s2"> in </span><span class="si">{</span><span class="n">branch_name</span><span class="si">!r}</span><span class="s2">, &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;found </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">matches</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Fatal</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="n">line_index</span><span class="p">,</span> <span class="n">match</span> <span class="o">=</span> <span class="n">matches</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">indent</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">suffix</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">lines</span><span class="p">[</span><span class="n">line_index</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">indent</span><span class="si">}{</span><span class="n">key</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">_format_pf_value</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">}{</span><span class="n">suffix</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">text</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_normalize_gid_option_aliases</span><span class="p">(</span>
+    <span class="n">deconvolution_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">gid_mode</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">lag_weight_penalty_function</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">gid_penalty_function</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">gid_parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="n">gid_parameters</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">gid_parameters</span> <span class="ow">or</span> <span class="p">{})</span>
+
+    <span class="n">parameter_mode</span> <span class="o">=</span> <span class="n">gid_parameters</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;deconvolution_type&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">modes</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="p">(</span><span class="n">deconvolution_type</span><span class="p">,</span> <span class="n">gid_mode</span><span class="p">,</span> <span class="n">parameter_mode</span><span class="p">)</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">modes</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;conflicting GID deconvolution_type/gid_mode values&quot;</span><span class="p">)</span>
+    <span class="n">mode</span> <span class="o">=</span> <span class="n">modes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">modes</span> <span class="k">else</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">mode</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">mode</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_SUPPORTED_GID_DECONVOLUTION_TYPES</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;unsupported GID deconvolution_type=</span><span class="si">{</span><span class="n">mode</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">parameter_penalty</span> <span class="o">=</span> <span class="n">gid_parameters</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;lag_weight_penalty_function&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">penalties</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">x</span>
+        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="p">(</span>
+            <span class="n">lag_weight_penalty_function</span><span class="p">,</span>
+            <span class="n">gid_penalty_function</span><span class="p">,</span>
+            <span class="n">parameter_penalty</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+    <span class="p">]</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">penalties</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;conflicting GID lag_weight_penalty_function values&quot;</span><span class="p">)</span>
+    <span class="n">penalty</span> <span class="o">=</span> <span class="n">penalties</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">penalties</span> <span class="k">else</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">penalty</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">penalty</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_SUPPORTED_GID_PENALTY_FUNCTIONS</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;unsupported GID lag_weight_penalty_function=</span><span class="si">{</span><span class="n">penalty</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">mode</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">gid_parameters</span><span class="p">[</span><span class="s2">&quot;deconvolution_type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">mode</span>
+    <span class="k">if</span> <span class="n">penalty</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">gid_parameters</span><span class="p">[</span><span class="s2">&quot;lag_weight_penalty_function&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">penalty</span>
+    <span class="k">return</span> <span class="n">gid_parameters</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_gid_overrides_requested</span><span class="p">(</span>
+    <span class="n">deconvolution_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">gid_mode</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">lag_weight_penalty_function</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">gid_penalty_function</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">gid_parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="k">return</span> <span class="nb">any</span><span class="p">(</span>
+        <span class="n">x</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="p">(</span>
+            <span class="n">deconvolution_type</span><span class="p">,</span>
+            <span class="n">gid_mode</span><span class="p">,</span>
+            <span class="n">lag_weight_penalty_function</span><span class="p">,</span>
+            <span class="n">gid_penalty_function</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="p">)</span> <span class="ow">or</span> <span class="nb">bool</span><span class="p">(</span><span class="n">gid_parameters</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="make_gid_pf_text">
+<a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.RFdeconProcessor.make_gid_pf_text">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">make_gid_pf_text</span><span class="p">(</span>
+    <span class="n">alg</span><span class="o">=</span><span class="s2">&quot;TimeDomainGID&quot;</span><span class="p">,</span>
+    <span class="n">pf</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">deconvolution_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">gid_mode</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">lag_weight_penalty_function</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">gid_penalty_function</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">gid_parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">_pf_text</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return GID parameter-file text with validated GID-branch overrides applied.</span>
+
+<span class="sd">    This helper is the supported Python path for comparing GID inverse or solver</span>
+<span class="sd">    modes and lag-penalty settings without hand-editing Antelope pf text.  It</span>
+<span class="sd">    only changes keys in the top-level GID branch; leaf inverse-operator</span>
+<span class="sd">    parameters should still be changed through a custom pf file or the leaf</span>
+<span class="sd">    ``changeparameter`` path.  Custom pf files should follow the shipped GID</span>
+<span class="sd">    pf style: the GID branch opener on its own line and scalar keys stored as</span>
+<span class="sd">    single-token values.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">canonical_alg</span> <span class="o">=</span> <span class="n">_canonical_gid_algorithm</span><span class="p">(</span><span class="n">alg</span><span class="p">)</span>
+    <span class="n">pf</span> <span class="o">=</span> <span class="n">_gid_default_pf</span><span class="p">(</span><span class="n">canonical_alg</span><span class="p">)</span> <span class="k">if</span> <span class="n">pf</span> <span class="ow">in</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;RFdeconProcessor.pf&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="n">pf</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="n">_pf_text</span> <span class="k">if</span> <span class="n">_pf_text</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">_antelope_pf_to_text</span><span class="p">(</span><span class="n">AntelopePf</span><span class="p">(</span><span class="n">pf</span><span class="p">))</span>
+    <span class="n">overrides</span> <span class="o">=</span> <span class="n">_normalize_gid_option_aliases</span><span class="p">(</span>
+        <span class="n">deconvolution_type</span><span class="o">=</span><span class="n">deconvolution_type</span><span class="p">,</span>
+        <span class="n">gid_mode</span><span class="o">=</span><span class="n">gid_mode</span><span class="p">,</span>
+        <span class="n">lag_weight_penalty_function</span><span class="o">=</span><span class="n">lag_weight_penalty_function</span><span class="p">,</span>
+        <span class="n">gid_penalty_function</span><span class="o">=</span><span class="n">gid_penalty_function</span><span class="p">,</span>
+        <span class="n">gid_parameters</span><span class="o">=</span><span class="n">gid_parameters</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">branch_name</span> <span class="o">=</span> <span class="n">_gid_branch_name</span><span class="p">(</span><span class="n">canonical_alg</span><span class="p">)</span>
+    <span class="n">context</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;make_gid_pf_text(</span><span class="si">{</span><span class="n">canonical_alg</span><span class="si">}</span><span class="s2">)&quot;</span>
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">overrides</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">_replace_pf_scalar_in_branch</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">branch_name</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">text</span></div>
+
+
+
+<div class="viewcode-block" id="make_gid_pf">
+<a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.RFdeconProcessor.make_gid_pf">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">make_gid_pf</span><span class="p">(</span>
+    <span class="n">alg</span><span class="o">=</span><span class="s2">&quot;TimeDomainGID&quot;</span><span class="p">,</span>
+    <span class="n">pf</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">deconvolution_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">gid_mode</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">lag_weight_penalty_function</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">gid_penalty_function</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">gid_parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Build an ``AntelopePf`` for a GID engine with selected GID options.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    ``make_gid_pf(alg=&quot;TimeDomainGID&quot;, deconvolution_type=&quot;group_sparse&quot;)``</span>
+<span class="sd">    returns a parameter object suitable for ``TimeDomainGIDDecon``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">canonical_alg</span> <span class="o">=</span> <span class="n">_canonical_gid_algorithm</span><span class="p">(</span><span class="n">alg</span><span class="p">)</span>
+    <span class="n">pf</span> <span class="o">=</span> <span class="n">_gid_default_pf</span><span class="p">(</span><span class="n">canonical_alg</span><span class="p">)</span> <span class="k">if</span> <span class="n">pf</span> <span class="ow">in</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;RFdeconProcessor.pf&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="n">pf</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="n">make_gid_pf_text</span><span class="p">(</span>
+        <span class="n">canonical_alg</span><span class="p">,</span>
+        <span class="n">pf</span><span class="p">,</span>
+        <span class="n">deconvolution_type</span><span class="o">=</span><span class="n">deconvolution_type</span><span class="p">,</span>
+        <span class="n">gid_mode</span><span class="o">=</span><span class="n">gid_mode</span><span class="p">,</span>
+        <span class="n">lag_weight_penalty_function</span><span class="o">=</span><span class="n">lag_weight_penalty_function</span><span class="p">,</span>
+        <span class="n">gid_penalty_function</span><span class="o">=</span><span class="n">gid_penalty_function</span><span class="p">,</span>
+        <span class="n">gid_parameters</span><span class="o">=</span><span class="n">gid_parameters</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">pf_to_load</span> <span class="o">=</span> <span class="n">_write_pickled_pf_text</span><span class="p">(</span><span class="n">pf</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">AntelopePf</span><span class="p">(</span><span class="n">pf_to_load</span><span class="p">)</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">pf_to_load</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+            <span class="k">pass</span></div>
+
+
+
+<div class="viewcode-block" id="make_gid_engine">
+<a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.RFdeconProcessor.make_gid_engine">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">make_gid_engine</span><span class="p">(</span>
+    <span class="n">alg</span><span class="o">=</span><span class="s2">&quot;TimeDomainGID&quot;</span><span class="p">,</span>
+    <span class="n">pf</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">deconvolution_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">gid_mode</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">lag_weight_penalty_function</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">gid_penalty_function</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">gid_parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Build a configured low-level time- or frequency-domain GID engine.</span>
+
+<span class="sd">    The returned object is passed to ``TimeDomainGIDRFDecon`` or</span>
+<span class="sd">    ``FrequencyDomainGIDRFDecon`` directly.  For the high-level ``RFdecon``</span>
+<span class="sd">    wrapper, use ``RFdeconProcessor`` or pass the same GID keywords directly</span>
+<span class="sd">    to ``RFdecon``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">canonical_alg</span> <span class="o">=</span> <span class="n">_canonical_gid_algorithm</span><span class="p">(</span><span class="n">alg</span><span class="p">)</span>
+    <span class="n">pfhandle</span> <span class="o">=</span> <span class="n">make_gid_pf</span><span class="p">(</span>
+        <span class="n">canonical_alg</span><span class="p">,</span>
+        <span class="n">pf</span><span class="p">,</span>
+        <span class="n">deconvolution_type</span><span class="o">=</span><span class="n">deconvolution_type</span><span class="p">,</span>
+        <span class="n">gid_mode</span><span class="o">=</span><span class="n">gid_mode</span><span class="p">,</span>
+        <span class="n">lag_weight_penalty_function</span><span class="o">=</span><span class="n">lag_weight_penalty_function</span><span class="p">,</span>
+        <span class="n">gid_penalty_function</span><span class="o">=</span><span class="n">gid_penalty_function</span><span class="p">,</span>
+        <span class="n">gid_parameters</span><span class="o">=</span><span class="n">gid_parameters</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">canonical_alg</span> <span class="o">==</span> <span class="s2">&quot;TimeDomainGID&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">TimeDomainGIDDecon</span><span class="p">(</span><span class="n">pfhandle</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">FrequencyDomainGIDDecon</span><span class="p">(</span><span class="n">pfhandle</span><span class="p">)</span></div>
+
 
 
 <div class="viewcode-block" id="RFdeconProcessor">
@@ -359,7 +686,18 @@
                 <span class="nb">delattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span></div>
 
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alg</span><span class="o">=</span><span class="s2">&quot;LeastSquares&quot;</span><span class="p">,</span> <span class="n">pf</span><span class="o">=</span><span class="s2">&quot;RFdeconProcessor.pf&quot;</span><span class="p">,</span> <span class="n">_pf_text</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">alg</span><span class="o">=</span><span class="s2">&quot;LeastSquares&quot;</span><span class="p">,</span>
+        <span class="n">pf</span><span class="o">=</span><span class="s2">&quot;RFdeconProcessor.pf&quot;</span><span class="p">,</span>
+        <span class="n">_pf_text</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">deconvolution_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">gid_mode</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">lag_weight_penalty_function</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">gid_penalty_function</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">gid_parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span> <span class="o">=</span> <span class="n">alg</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__is_3c_engine</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="k">if</span> <span class="n">pf</span> <span class="o">==</span> <span class="s2">&quot;RFdeconProcessor.pf&quot;</span><span class="p">:</span>
@@ -367,6 +705,29 @@
                 <span class="n">pf</span> <span class="o">=</span> <span class="s2">&quot;TimeDomainGIDDecon.pf&quot;</span>
             <span class="k">elif</span> <span class="n">alg</span> <span class="o">==</span> <span class="s2">&quot;FrequencyDomainGID&quot;</span><span class="p">:</span>
                 <span class="n">pf</span> <span class="o">=</span> <span class="s2">&quot;FrequencyDomainGIDDecon.pf&quot;</span>
+        <span class="k">if</span> <span class="n">_gid_overrides_requested</span><span class="p">(</span>
+            <span class="n">deconvolution_type</span><span class="o">=</span><span class="n">deconvolution_type</span><span class="p">,</span>
+            <span class="n">gid_mode</span><span class="o">=</span><span class="n">gid_mode</span><span class="p">,</span>
+            <span class="n">lag_weight_penalty_function</span><span class="o">=</span><span class="n">lag_weight_penalty_function</span><span class="p">,</span>
+            <span class="n">gid_penalty_function</span><span class="o">=</span><span class="n">gid_penalty_function</span><span class="p">,</span>
+            <span class="n">gid_parameters</span><span class="o">=</span><span class="n">gid_parameters</span><span class="p">,</span>
+        <span class="p">):</span>
+            <span class="k">if</span> <span class="n">alg</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span>
+                <span class="s2">&quot;GeneralizedIterative&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;TimeDomainGID&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;FrequencyDomainGID&quot;</span><span class="p">,</span>
+            <span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;GID configuration keywords require a GID algorithm&quot;</span><span class="p">)</span>
+            <span class="n">_pf_text</span> <span class="o">=</span> <span class="n">make_gid_pf_text</span><span class="p">(</span>
+                <span class="n">alg</span><span class="p">,</span>
+                <span class="n">pf</span><span class="p">,</span>
+                <span class="n">deconvolution_type</span><span class="o">=</span><span class="n">deconvolution_type</span><span class="p">,</span>
+                <span class="n">gid_mode</span><span class="o">=</span><span class="n">gid_mode</span><span class="p">,</span>
+                <span class="n">lag_weight_penalty_function</span><span class="o">=</span><span class="n">lag_weight_penalty_function</span><span class="p">,</span>
+                <span class="n">gid_penalty_function</span><span class="o">=</span><span class="n">gid_penalty_function</span><span class="p">,</span>
+                <span class="n">gid_parameters</span><span class="o">=</span><span class="n">gid_parameters</span><span class="p">,</span>
+                <span class="n">_pf_text</span><span class="o">=</span><span class="n">_pf_text</span><span class="p">,</span>
+            <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pf</span> <span class="o">=</span> <span class="n">pf</span>
         <span class="n">pf_to_load</span> <span class="o">=</span> <span class="n">pf</span>
         <span class="k">if</span> <span class="n">_pf_text</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -874,6 +1235,28 @@
         <span class="c1"># merge in an output of the implementations QCMetrics method</span>
         <span class="n">qcmeth_output</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">processor</span><span class="o">.</span><span class="n">QCMetrics</span><span class="p">())</span>
         <span class="n">qcmd</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">qcmeth_output</span><span class="p">)</span>
+        <span class="n">decon_type</span> <span class="o">=</span> <span class="n">qcmeth_output</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="s2">&quot;deconvolution_type&quot;</span><span class="p">,</span> <span class="n">qcmd</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;deconvolution_type&quot;</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">decon_type</span> <span class="o">!=</span> <span class="s2">&quot;group_sparse&quot;</span><span class="p">:</span>
+            <span class="n">qcmd</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="n">key</span><span class="p">:</span> <span class="n">value</span>
+                <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">qcmd</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;group_sparse&quot;</span><span class="p">)</span>
+            <span class="p">}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">qcmd</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="n">key</span><span class="p">:</span> <span class="n">value</span>
+                <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">qcmd</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;gid_penalty&quot;</span><span class="p">)</span>
+                <span class="ow">and</span> <span class="ow">not</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;lag_weight&quot;</span><span class="p">)</span>
+            <span class="p">}</span>
+        <span class="k">if</span> <span class="n">decon_type</span> <span class="o">!=</span> <span class="s2">&quot;ns_gid&quot;</span><span class="p">:</span>
+            <span class="n">qcmd</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="n">key</span><span class="p">:</span> <span class="n">value</span>
+                <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">qcmd</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;ns_gid&quot;</span><span class="p">)</span>
+            <span class="p">}</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__is_3c_engine</span><span class="p">:</span>
             <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">qcmd</span><span class="p">)</span>
         <span class="c1"># always compute the prediction error</span>
@@ -898,7 +1281,9 @@
 <span class="sd">        :param md: is a mspass.Metadata object containing required parameters</span>
 <span class="sd">            for the alternative algorithm.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">parameter_md</span> <span class="o">=</span> <span class="n">Metadata</span><span class="p">(</span><span class="n">md</span><span class="p">)</span>
+        <span class="n">parameter_md</span> <span class="o">=</span> <span class="n">_normalize_metadata_scalars</span><span class="p">(</span>
+            <span class="n">md</span><span class="p">,</span> <span class="s2">&quot;RFdeconProcessor.change_parameters&quot;</span>
+        <span class="p">)</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">processor</span><span class="p">,</span> <span class="s2">&quot;changeparameter&quot;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">processor</span><span class="o">.</span><span class="n">changeparameter</span><span class="p">(</span><span class="n">parameter_md</span><span class="p">)</span>
         <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">processor</span><span class="p">,</span> <span class="s2">&quot;change_parameter&quot;</span><span class="p">):</span>
@@ -966,6 +1351,11 @@
     <span class="n">engine</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">alg</span><span class="o">=</span><span class="s2">&quot;LeastSquares&quot;</span><span class="p">,</span>
     <span class="n">pf</span><span class="o">=</span><span class="s2">&quot;RFdeconProcessor.pf&quot;</span><span class="p">,</span>
+    <span class="n">deconvolution_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">gid_mode</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">lag_weight_penalty_function</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">gid_penalty_function</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">gid_parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">wavelet</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">noisedata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">wcomp</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
@@ -1051,6 +1441,20 @@
 <span class="sd">        RFdeconProcessor.  Ignored if engine is used.</span>
 <span class="sd">    :type pf:  string defining an absolute path for the file name</span>
 <span class="sd">        or a path relative to a directory defined by PFPATH.</span>
+<span class="sd">    :param deconvolution_type: optional GID inverse or solver mode override</span>
+<span class="sd">        used only when ``alg`` selects ``GeneralizedIterative``,</span>
+<span class="sd">        ``TimeDomainGID``, or ``FrequencyDomainGID``.  Common values are ``ns_gid``,</span>
+<span class="sd">        ``least_square``, ``cnr``, and ``group_sparse``.  This builds a fresh</span>
+<span class="sd">        configured GID processor instead of requiring callers to edit a pf</span>
+<span class="sd">        file.</span>
+<span class="sd">    :param gid_mode: compatibility alias for ``deconvolution_type``.</span>
+<span class="sd">    :param lag_weight_penalty_function: optional GID lag-weight penalty</span>
+<span class="sd">        override, e.g. ``adaptive_memory`` or ``none``.</span>
+<span class="sd">    :param gid_penalty_function: compatibility alias for</span>
+<span class="sd">        ``lag_weight_penalty_function``.</span>
+<span class="sd">    :param gid_parameters: optional dictionary of additional scalar keys in</span>
+<span class="sd">        the top-level GID branch to override, such as</span>
+<span class="sd">        ``{&quot;group_sparse_lambda_scale&quot;: 0.8}``.</span>
 <span class="sd">    :param wavelet:   vector of doubles (numpy array or the</span>
 <span class="sd">        std::vector container internal to TimeSeries object) or TimeSeries</span>
 <span class="sd">        defining the wavelet to use to compute deconvolution operator.</span>
@@ -1071,9 +1475,11 @@
 <span class="sd">        For GID algorithms, raw vectors are converted to a TimeSeries using</span>
 <span class="sd">        target_sample_interval and noise_window_start.  If noisedata is None,</span>
 <span class="sd">        a reused GID processor preserves any previously loaded external noise.</span>
-<span class="sd">        External PowerSpectrum noise is supported only by the NS-GID inverse</span>
-<span class="sd">        mode; other GID modes require TimeSeries/vector noise or the</span>
-<span class="sd">        configured noise window.</span>
+<span class="sd">        External PowerSpectrum noise is supported by the NS-GID inverse mode</span>
+<span class="sd">        and by ``group_sparse`` GID, which uses the NS-GID inverse internally.</span>
+<span class="sd">        It regularizes only the inverse operator; residual-domain stopping and</span>
+<span class="sd">        sparse support decisions still use the configured noise window or</span>
+<span class="sd">        loaded TimeSeries/vector noise where applicable.</span>
 <span class="sd">    :type noisedata:  None, TimeSeries, PowerSpectrum, or an iterable vector container</span>
 <span class="sd">        (in MsPASS that means a python array, a numpy array, or a DoubleVector)</span>
 <span class="sd">    :param wcomp:  When defined from Seismogram d the wavelet</span>
@@ -1124,7 +1530,20 @@
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
         <span class="k">return</span> <span class="n">d</span>
+    <span class="n">wcomp</span> <span class="o">=</span> <span class="n">_validate_component_index</span><span class="p">(</span><span class="n">wcomp</span><span class="p">,</span> <span class="s2">&quot;wcomp&quot;</span><span class="p">,</span> <span class="s2">&quot;RFdecon&quot;</span><span class="p">)</span>
+    <span class="n">ncomp</span> <span class="o">=</span> <span class="n">_validate_component_index</span><span class="p">(</span><span class="n">ncomp</span><span class="p">,</span> <span class="s2">&quot;ncomp&quot;</span><span class="p">,</span> <span class="s2">&quot;RFdecon&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">engine</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">_gid_overrides_requested</span><span class="p">(</span>
+            <span class="n">deconvolution_type</span><span class="o">=</span><span class="n">deconvolution_type</span><span class="p">,</span>
+            <span class="n">gid_mode</span><span class="o">=</span><span class="n">gid_mode</span><span class="p">,</span>
+            <span class="n">lag_weight_penalty_function</span><span class="o">=</span><span class="n">lag_weight_penalty_function</span><span class="p">,</span>
+            <span class="n">gid_penalty_function</span><span class="o">=</span><span class="n">gid_penalty_function</span><span class="p">,</span>
+            <span class="n">gid_parameters</span><span class="o">=</span><span class="n">gid_parameters</span><span class="p">,</span>
+        <span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;GID configuration keywords cannot be used with an already &quot;</span>
+                <span class="s2">&quot;constructed RFdeconProcessor engine&quot;</span>
+            <span class="p">)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">engine</span><span class="p">,</span> <span class="n">RFdeconProcessor</span><span class="p">):</span>
             <span class="n">processor</span> <span class="o">=</span> <span class="n">engine</span>
         <span class="k">else</span><span class="p">:</span>
@@ -1136,7 +1555,15 @@
             <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;If defined must be an instance of RFdeconProcessor&quot;</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">processor</span> <span class="o">=</span> <span class="n">RFdeconProcessor</span><span class="p">(</span><span class="n">alg</span><span class="p">,</span> <span class="n">pf</span><span class="p">)</span>
+        <span class="n">processor</span> <span class="o">=</span> <span class="n">RFdeconProcessor</span><span class="p">(</span>
+            <span class="n">alg</span><span class="p">,</span>
+            <span class="n">pf</span><span class="p">,</span>
+            <span class="n">deconvolution_type</span><span class="o">=</span><span class="n">deconvolution_type</span><span class="p">,</span>
+            <span class="n">gid_mode</span><span class="o">=</span><span class="n">gid_mode</span><span class="p">,</span>
+            <span class="n">lag_weight_penalty_function</span><span class="o">=</span><span class="n">lag_weight_penalty_function</span><span class="p">,</span>
+            <span class="n">gid_penalty_function</span><span class="o">=</span><span class="n">gid_penalty_function</span><span class="p">,</span>
+            <span class="n">gid_parameters</span><span class="o">=</span><span class="n">gid_parameters</span><span class="p">,</span>
+        <span class="p">)</span>
 
     <span class="k">if</span> <span class="n">processor</span><span class="o">.</span><span class="n">is_3c_engine</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>

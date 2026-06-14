@@ -684,6 +684,24 @@
     <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1abbbbdda988c95f6b528efb38ae90b997" kind="variable"><name>adaptive_penalty_noise_amplitude</name></member>
     <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a420050040725ecd0c44b0b03fc02e951" kind="variable"><name>adaptive_penalty_memory_linf</name></member>
     <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a0c72301216cebff346327f3e5b828e5d" kind="variable"><name>adaptive_penalty_memory_l2</name></member>
+    <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1acb2cd06799e59518bc80d340efceb52e" kind="variable"><name>group_sparse_lambda</name></member>
+    <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1af6ae06a91a7a730bb43f9a74b8e48ee4" kind="variable"><name>group_sparse_lambda_scale</name></member>
+    <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a496704745a8ff5619509f8189d4b8403" kind="variable"><name>group_sparse_lambda_used</name></member>
+    <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a928ae9b2f62e0afcfbeec4836789c3c4" kind="variable"><name>group_sparse_tolerance</name></member>
+    <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a2dfd8f7514afae9a129e2aa6303fe085" kind="variable"><name>group_sparse_active_threshold</name></member>
+    <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1abee4cb44b3d5f804c7e6392522cdd8d5" kind="variable"><name>group_sparse_active_threshold_scale</name></member>
+    <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1ab88b0932ac3d6cb4fdaa386b3acdfffa" kind="variable"><name>group_sparse_active_threshold_quantile</name></member>
+    <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a1b2bffeb14475e08ea046a0d7e1b1871" kind="variable"><name>group_sparse_active_threshold_quantile_value</name></member>
+    <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1ab021620ad21f83c0bd684f508cb6578a" kind="variable"><name>group_sparse_active_threshold_used</name></member>
+    <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a500324b643d2246f8ea4831686ce4991" kind="variable"><name>group_sparse_objective_initial</name></member>
+    <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a802d50bcb06bd6c4db92dd8d7844cf20" kind="variable"><name>group_sparse_objective_final</name></member>
+    <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1aa1a6dcc82563861327901acfc363bb22" kind="variable"><name>group_sparse_fractional_improvement_final</name></member>
+    <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a83c5923cc5f47ab06324105a24ca0811" kind="variable"><name>group_sparse_debiased_objective_final</name></member>
+    <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a07eb4fd981908ed2946657e98b1e6466" kind="variable"><name>group_sparse_debiased_fractional_improvement_final</name></member>
+    <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a21eb5974e5e5a01822138e8b2b2d05a4" kind="variable"><name>group_sparse_max_iterations</name></member>
+    <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a4b4fb2d9beb42b643a9500e2aa853970" kind="variable"><name>group_sparse_iterations</name></member>
+    <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a56797a38fbeb78404f657ef1f3f944bd" kind="variable"><name>group_sparse_active_groups</name></member>
+    <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a6b33c496f94e3ed8a049c813499a54ff" kind="variable"><name>group_sparse_converged</name></member>
     <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a6e6b9438e8f3dbbfb90eb6ccbd6b0ae3" kind="function"><name>FrequencyDomainGIDDecon</name></member>
     <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1ad95404c43160c186963ecef1f52dc1e7" kind="function"><name>FrequencyDomainGIDDecon</name></member>
     <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1aaa20a6c5b90063c21cad2cc433267063" kind="function"><name>operator=</name></member>
@@ -740,6 +758,22 @@
   </compound>
   <compound refid="structmspass_1_1algorithms_1_1greater__seedorder" kind="struct"><name>mspass::algorithms::greater_seedorder</name>
     <member refid="structmspass_1_1algorithms_1_1greater__seedorder_1a3be26b413cd06229c775bc212ac10b40" kind="function"><name>operator()</name></member>
+  </compound>
+  <compound refid="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result" kind="struct"><name>mspass::algorithms::deconvolution::GroupSparseDeconResult</name>
+    <member refid="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result_1a9270d562897ab545c9b4f58015dec967" kind="variable"><name>spikes</name></member>
+    <member refid="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result_1aa1a49c1e9a34c85aae1fee434827f6ad" kind="variable"><name>residual</name></member>
+    <member refid="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result_1af4ea5eeef16c9f7926f6094b66bf4024" kind="variable"><name>iterations</name></member>
+    <member refid="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result_1a59b63b52173ab13811fa08f5786b6c35" kind="variable"><name>active_groups</name></member>
+    <member refid="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result_1ac9737ebde5afda00b5ca1c837652b422" kind="variable"><name>converged</name></member>
+    <member refid="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result_1a67930b8afa0b5f619eb263625c00d5c5" kind="variable"><name>lambda</name></member>
+    <member refid="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result_1a36bd3499f4035bd66af34e4161e7b4f1" kind="variable"><name>active_threshold_floor</name></member>
+    <member refid="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result_1a92d2eb5401b9a992d07c0e7b12eadfa9" kind="variable"><name>active_threshold_scale</name></member>
+    <member refid="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result_1adc34f5764bdd0a287623038b0adb9356" kind="variable"><name>active_threshold_quantile</name></member>
+    <member refid="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result_1a8067525596b7c3385282ce2ef8859794" kind="variable"><name>active_threshold_quantile_value</name></member>
+    <member refid="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result_1a44d51f81c13b57dfc277f1f97f348c18" kind="variable"><name>active_threshold_used</name></member>
+    <member refid="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result_1a51fb7cf4573e7b287eaa6cc51f62e738" kind="variable"><name>objective_initial</name></member>
+    <member refid="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result_1ad2229033d337af5db1eb8c1acbf271d0" kind="variable"><name>objective_final</name></member>
+    <member refid="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result_1a319622351d1f6dea08a3adaca8852392" kind="variable"><name>fractional_improvement_final</name></member>
   </compound>
   <compound refid="classmspass_1_1algorithms_1_1deconvolution_1_1_l_a_p_a_c_k___e_r_r_o_r" kind="class"><name>mspass::algorithms::deconvolution::LAPACK_ERROR</name>
     <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_l_a_p_a_c_k___e_r_r_o_r_1a612c7464fe816ffc2140f658df81ed92" kind="function"><name>LAPACK_ERROR</name></member>
@@ -849,6 +883,16 @@
     <member refid="classmspass_1_1utility_1_1_metadata_1af9aea7916d2b11f9f1e94b7d84b8db23" kind="function"><name>begin</name></member>
     <member refid="classmspass_1_1utility_1_1_metadata_1a7f1e227ec1acaab97343ecbf47bedac4" kind="function"><name>end</name></member>
     <member refid="classmspass_1_1utility_1_1_metadata_1a20c1da469f6e0a073b291a680425f9e8" kind="function"><name>change_key</name></member>
+    <member refid="classmspass_1_1utility_1_1_metadata_1a8de95c06d1c6e064e261c1cde49f0ff9" kind="function"><name>get</name></member>
+    <member refid="classmspass_1_1utility_1_1_metadata_1a461fa38069a9b499e6381cb4cad3b14d" kind="function"><name>get</name></member>
+    <member refid="classmspass_1_1utility_1_1_metadata_1a7904a74f5d29f63c92d0607c6d76d1a3" kind="function"><name>get</name></member>
+    <member refid="classmspass_1_1utility_1_1_metadata_1af526cc7f00976c793f104b32539768f7" kind="function"><name>get</name></member>
+    <member refid="classmspass_1_1utility_1_1_metadata_1a2ed7fd2682fe3b127ef3148c48cc9cd2" kind="function"><name>get</name></member>
+    <member refid="classmspass_1_1utility_1_1_metadata_1a2269c377a085fa237380ef7223016438" kind="function"><name>get</name></member>
+    <member refid="classmspass_1_1utility_1_1_metadata_1af6039a832c2a9174fba5138313e22af0" kind="function"><name>get</name></member>
+    <member refid="classmspass_1_1utility_1_1_metadata_1a5db9d3c7df64572dbea4dcad4697af2b" kind="function"><name>get</name></member>
+    <member refid="classmspass_1_1utility_1_1_metadata_1ab3c0669e8079562da593df78c9719270" kind="function"><name>get</name></member>
+    <member refid="classmspass_1_1utility_1_1_metadata_1aa417fcccd6e5ba621b5def12ab8d98ad" kind="function"><name>get</name></member>
     <member refid="classmspass_1_1utility_1_1_metadata_1a492ba774f3adb7d1f45bdf41eaa4639b" kind="friend"><name>serialize_metadata_py</name></member>
     <member refid="classmspass_1_1utility_1_1_metadata_1a542596be1a0a6bae256936fc0828eeec" kind="friend"><name>restore_serialized_metadata_py</name></member>
     <member refid="classmspass_1_1utility_1_1_metadata_1ab5bd5012ea08b04497a3d19e97412ab1" kind="friend"><name>operator&lt;&lt;</name></member>
@@ -898,6 +942,7 @@
     <member refid="classmspass_1_1utility_1_1_metadata_get_error_1aed2c0cb6144d56a95bceeb5176bbe569" kind="function"><name>MetadataGetError</name></member>
     <member refid="classmspass_1_1utility_1_1_metadata_get_error_1abed3080ca93a137df98dc3586b8ac777" kind="function"><name>MetadataGetError</name></member>
     <member refid="classmspass_1_1utility_1_1_metadata_get_error_1a8e9ab0f856d4936e98fd614da5e83ff9" kind="function"><name>MetadataGetError</name></member>
+    <member refid="classmspass_1_1utility_1_1_metadata_get_error_1a49b1e071f63befe7334b3ae4b9476ddf" kind="function"><name>MetadataGetError</name></member>
     <member refid="classmspass_1_1utility_1_1_metadata_get_error_1a127c004dbfe93ba17259ec320b34fdfd" kind="function"><name>MetadataGetError</name></member>
     <member refid="classmspass_1_1utility_1_1_metadata_get_error_1add785f65915c4f138850dbf86b0a9cd1" kind="function"><name>operator=</name></member>
   </compound>
@@ -1273,6 +1318,7 @@
     <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike_1aa4b4869936d07d25a3078cdd52cb41e4" kind="variable"><name>u</name></member>
     <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike_1a33bc82ddbebf5be8781c4833bd46b44d" kind="variable"><name>amp</name></member>
     <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike_1a4fd05cb28f3af9c4e934413e4de4f80c" kind="function"><name>ThreeCSpike</name></member>
+    <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike_1a10d1bcc7e27b67f3359f27c43e8c2fa3" kind="function"><name>ThreeCSpike</name></member>
     <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike_1a06623d666c1d41e52dbbfa4b539d803d" kind="function"><name>ThreeCSpike</name></member>
     <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike_1aa8bdeef42c27a659671ac313eaafc116" kind="function"><name>operator=</name></member>
   </compound>
@@ -1355,6 +1401,24 @@
     <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1ab8cc64951ef782b68031bdc5fbbd33a7" kind="variable"><name>adaptive_penalty_noise_amplitude</name></member>
     <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1aef7ad6fdbef4b9cc38277fc0296736e6" kind="variable"><name>adaptive_penalty_memory_linf</name></member>
     <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a9f36c41740e848f07762885d6840b0b1" kind="variable"><name>adaptive_penalty_memory_l2</name></member>
+    <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a9bbaf8edb278a6241161290bdf85d9c3" kind="variable"><name>group_sparse_lambda</name></member>
+    <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1aa7ea0d85803b28780719ccc0d1629edf" kind="variable"><name>group_sparse_lambda_scale</name></member>
+    <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a6e5497a4fef98713e997a25119bcd1be" kind="variable"><name>group_sparse_lambda_used</name></member>
+    <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1ac1fe996002e7462020e3519e4af15e41" kind="variable"><name>group_sparse_tolerance</name></member>
+    <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a954b2ab924547ba7b1863e2293900f46" kind="variable"><name>group_sparse_active_threshold</name></member>
+    <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a509135cd6e880868a1854b2babf8ace1" kind="variable"><name>group_sparse_active_threshold_scale</name></member>
+    <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a4803071904fa39cf68fcdad6a556e116" kind="variable"><name>group_sparse_active_threshold_quantile</name></member>
+    <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1aa84cdc389b5de0939393fdd302f9a1bc" kind="variable"><name>group_sparse_active_threshold_quantile_value</name></member>
+    <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1ae975ba13150ebd7eae3548700ec7f04c" kind="variable"><name>group_sparse_active_threshold_used</name></member>
+    <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1aa5cd8c88e5da383b2406dc506c649f8d" kind="variable"><name>group_sparse_objective_initial</name></member>
+    <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1ab7fe570af87fd7eb06d7076fbe10dedf" kind="variable"><name>group_sparse_objective_final</name></member>
+    <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1af34c8e47d2641399d3a85905db00044a" kind="variable"><name>group_sparse_fractional_improvement_final</name></member>
+    <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a5f4f05505609c458e5448cc1745b1d7d" kind="variable"><name>group_sparse_debiased_objective_final</name></member>
+    <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1aca4f25971143ceee1c1a79ad173590fc" kind="variable"><name>group_sparse_debiased_fractional_improvement_final</name></member>
+    <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1ad3bd15002143139d365269163dfe4fc6" kind="variable"><name>group_sparse_max_iterations</name></member>
+    <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a37956b4d5c029d199653c55ee2b1012c" kind="variable"><name>group_sparse_iterations</name></member>
+    <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1a6a3e255614bbd59650297d5a9a290519" kind="variable"><name>group_sparse_active_groups</name></member>
+    <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1af07aa97c1c44b23a6acc8d02d9e50acd" kind="variable"><name>group_sparse_converged</name></member>
     <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1aa83262f4e7ae78ba6d45e98f5fe7e9e1" kind="function"><name>TimeDomainGIDDecon</name></member>
     <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1ae1f42cec8bb0a16381e4ba48f81e27e7" kind="function"><name>TimeDomainGIDDecon</name></member>
     <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon_1aa51f877acc727489eabda6117d628a3e" kind="function"><name>operator=</name></member>
@@ -1617,6 +1681,7 @@
     <member refid="_three_c_spike_8h_1a3b28eff30fc23e0873f859a5145b9309a5cbb0448e38a87acad8dc485ee08e64d" kind="enumvalue"><name>MULTI_TAPER</name></member>
     <member refid="_three_c_spike_8h_1a3b28eff30fc23e0873f859a5145b9309a5f963986606ba6580939d4b910f0d026" kind="enumvalue"><name>CNR</name></member>
     <member refid="_three_c_spike_8h_1a3b28eff30fc23e0873f859a5145b9309ab5229c26731a7621558de079c7a7da33" kind="enumvalue"><name>NS_GID</name></member>
+    <member refid="_three_c_spike_8h_1a3b28eff30fc23e0873f859a5145b9309ad7ce586ff6c0509b3d4c13ce1384f8ab" kind="enumvalue"><name>GROUP_SPARSE</name></member>
     <member refid="_complex_array_8h_1a401dc10cea742b1f6689392808177438" kind="typedef"><name>Complex64</name></member>
     <member refid="_complex_array_8h_1ac7d824dd5dfab7367bb8b0a4fee7a9f8" kind="typedef"><name>Complex32</name></member>
     <member refid="_complex_array_8h_1a402194b447c34d598d776616d0e67f5d" kind="typedef"><name>FortranComplex32</name></member>
@@ -1638,8 +1703,12 @@
     <member refid="_f_f_t_decon_operator_8h_1abd925d3a48bbdc38c7ff50979ecae2d7" kind="function"><name>ExtractLagWindow</name></member>
     <member refid="_f_f_t_decon_operator_8h_1a229a74c492351850a66acbdf499cb647" kind="function"><name>nextPowerOf2</name></member>
     <member refid="_g_i_d_decon_util_8h_1a707c387b01475cf6a74371b8cb3898dc" kind="function"><name>ParseGIDDeconType</name></member>
+    <member refid="_g_i_d_decon_util_8h_1a8174fd674975b44a1eef9386dd357339" kind="function"><name>GIDDeconTypeName</name></member>
     <member refid="_g_i_d_decon_util_8h_1a6d798f63d9b87ec7ea30bbdc4a367508" kind="function"><name>GetDoubleDefault</name></member>
+    <member refid="_g_i_d_decon_util_8h_1a7c1e091f21f82851dd34a133afedf9db" kind="function"><name>GetDoubleRequired</name></member>
     <member refid="_g_i_d_decon_util_8h_1a6ff22fc52f8c6ac377394480a9a8c707" kind="function"><name>GetIntDefault</name></member>
+    <member refid="_g_i_d_decon_util_8h_1a9ac44bc18b57ed6620b10a685c250629" kind="function"><name>GetIntRequired</name></member>
+    <member refid="_g_i_d_decon_util_8h_1a4817621175023537666f364c1d7b5b6a" kind="function"><name>GetLongRequired</name></member>
     <member refid="_g_i_d_decon_util_8h_1a7f3e2d60b37e9dee913e558587c654e7" kind="function"><name>GetBoolDefault</name></member>
     <member refid="_g_i_d_decon_util_8h_1a526b8848874d1270559596e2c65e1333" kind="function"><name>ValidateProbability</name></member>
     <member refid="_g_i_d_decon_util_8h_1abe47f83a44ee2483167d0bf42c66494a" kind="function"><name>ValidatePositive</name></member>
@@ -1649,6 +1718,7 @@
     <member refid="_g_i_d_decon_util_8h_1a2c7aa87a10e59012ad30d1276531c0a9" kind="function"><name>PutPrefixedMetadata</name></member>
     <member refid="_g_i_d_decon_util_8h_1aa4ffd7b148650268fe2ff74a767f2893" kind="function"><name>AntelopePfToText</name></member>
     <member refid="_g_i_d_decon_util_8h_1a5c12143fa285382fcffb18f19e9637ff" kind="function"><name>ThreeCAmplitudes</name></member>
+    <member refid="_g_i_d_decon_util_8h_1a595ebb7eb02023d7fc64f3f5278d3b37" kind="function"><name>GroupSparseObjective</name></member>
     <member refid="_g_i_d_decon_util_8h_1ae8f7d563de01de817ec3ea0993e05f3c" kind="function"><name>ValidateGIDLeafWindow</name></member>
     <member refid="_g_i_d_decon_util_8h_1a85e2cb91b1866fc777a1eae41ad8fba5" kind="function"><name>ValidateGIDLeafOperatorMetadata</name></member>
     <member refid="_g_i_d_decon_util_8h_1a81c923fa13ddac98bb6286948c23155a" kind="function"><name>ValidateExternalTimeSeriesSampleInterval</name></member>
@@ -1664,6 +1734,7 @@
     <member refid="_g_i_d_decon_util_8h_1ad373ebc61519cf87bb7dd4dc3eb329c9" kind="function"><name>FIRDataOverlap</name></member>
     <member refid="_g_i_d_decon_util_8h_1ad5c12422b2d2693b0b0291b48446b053" kind="function"><name>SolveDenseSystem</name></member>
     <member refid="_g_i_d_decon_util_8h_1a6e3162e205a275ce57bc87138f9d77ea" kind="function"><name>RefitSpikeAmplitudes</name></member>
+    <member refid="_g_i_d_decon_util_8h_1ae05effe60304ec81735f9f537901920e" kind="function"><name>SolveGroupSparseDecon</name></member>
     <member refid="wavelet_8h_1a6e8b614cf929acba50d2f39e0d497cdc" kind="function"><name>rickerwavelet</name></member>
     <member refid="wavelet_8h_1a6658f5b5ecca7774294e55bda8153e7e" kind="function"><name>gaussian</name></member>
     <member refid="wavelet_8h_1a3fa0683aa5d8908943b20e4c724f46e5" kind="function"><name>slepian0</name></member>
@@ -1675,7 +1746,10 @@
     <member refid="_f_f_t_decon_operator_8cc_1a4d47114f97889bb85f0ce8ed053e79cd" kind="function"><name>ValidatePowerSpectrumCoversDC</name></member>
     <member refid="_g_i_d_decon_util_8cc_1ae459ce285da18e34a99e5661ad8c19a0" kind="function"><name>ParseGIDDeconType</name></member>
     <member refid="_g_i_d_decon_util_8cc_1ab50f81cb776ce03254740dcbf7370b96" kind="function"><name>GetDoubleDefault</name></member>
+    <member refid="_g_i_d_decon_util_8cc_1a374763e596663cfc3489da3a5317eb98" kind="function"><name>GetDoubleRequired</name></member>
     <member refid="_g_i_d_decon_util_8cc_1a06b757675122628152efc18c083ab452" kind="function"><name>GetIntDefault</name></member>
+    <member refid="_g_i_d_decon_util_8cc_1afc190c178965d21a9a1f274b9fc29432" kind="function"><name>GetIntRequired</name></member>
+    <member refid="_g_i_d_decon_util_8cc_1a0bf61d2eb6884143abbc42ebefa38122" kind="function"><name>GetLongRequired</name></member>
     <member refid="_g_i_d_decon_util_8cc_1a3bdbe39a864da28a605a7cf43441dce3" kind="function"><name>GetBoolDefault</name></member>
     <member refid="_g_i_d_decon_util_8cc_1af872d2c282181cdadbfc42d85e68f381" kind="function"><name>ValidateProbability</name></member>
     <member refid="_g_i_d_decon_util_8cc_1a77d5f05c9e9786db0d518c77436cb1fa" kind="function"><name>ValidatePositive</name></member>
@@ -1683,6 +1757,7 @@
     <member refid="_g_i_d_decon_util_8cc_1ad2c091fde7b32238ebeeca9e3dac3738" kind="function"><name>ValidatePositiveInteger</name></member>
     <member refid="_g_i_d_decon_util_8cc_1a93e5f9cbd80a7c6c05259b879ebfe1bd" kind="function"><name>ValidateThreeComponentIndex</name></member>
     <member refid="_g_i_d_decon_util_8cc_1a35f191d280ec548d60f252e94db210bc" kind="function"><name>PutPrefixedMetadata</name></member>
+    <member refid="_g_i_d_decon_util_8cc_1afeb41d94c755cf78bcb4ed76f4c8aff0" kind="function"><name>GroupSparseObjective</name></member>
     <member refid="_g_i_d_decon_util_8cc_1a5217443da343ac26f43d4b8e57820187" kind="function"><name>ValidateGIDLeafWindow</name></member>
     <member refid="_g_i_d_decon_util_8cc_1ab440c4d400b3b23023847883a18004a7" kind="function"><name>ValidateGIDLeafOperatorMetadata</name></member>
     <member refid="_g_i_d_decon_util_8cc_1ad3f3bd94f3007a4877e554706644e914" kind="function"><name>ValidateExternalTimeSeriesSampleInterval</name></member>
@@ -1697,10 +1772,14 @@
     <member refid="_g_i_d_decon_util_8cc_1aa7ce392549b3b92c7222a83da440b86e" kind="function"><name>FIRDataOverlap</name></member>
     <member refid="_g_i_d_decon_util_8cc_1a20fa6525fbd73266b924a89c1effb9c7" kind="function"><name>SolveDenseSystem</name></member>
     <member refid="_g_i_d_decon_util_8cc_1a41e00e255bb4fc9a8f14dca1c6316d81" kind="function"><name>RefitSpikeAmplitudes</name></member>
+    <member refid="_g_i_d_decon_util_8cc_1a8537b2ab76f28da3e4d2c8b8e81c820f" kind="function"><name>VectorQuantile</name></member>
+    <member refid="_g_i_d_decon_util_8cc_1a28b5a8c698d26a5df19655167185e407" kind="function"><name>SolveGroupSparseDecon</name></member>
     <member refid="_time_domain_g_i_d_decon_8cc_1a02e12047206838d6f416b75201b2ec77" kind="function"><name>Linf</name></member>
     <member refid="_time_domain_g_i_d_decon_8cc_1a785e5766431ee9c3c6fb4c46645ae45b" kind="function"><name>L2</name></member>
     <member refid="_time_domain_g_i_d_decon_8cc_1a995d8603919367f0ab41f14c1137d752" kind="function"><name>rescale_spike_amplitude</name></member>
     <member refid="_time_domain_g_i_d_decon_8cc_1aed90de11ea345da91efd8fbcc6dcce5f" kind="function"><name>trim</name></member>
+  </compound>
+  <compound refid="namespacemspass_1_1algorithms_1_1deconvolution_1_1_0d75" kind="namespace"><name>mspass::algorithms::deconvolution::@75</name>
   </compound>
   <compound refid="namespacemspass_1_1algorithms_1_1deconvolution_1_1_0d81" kind="namespace"><name>mspass::algorithms::deconvolution::@81</name>
   </compound>
@@ -1860,6 +1939,8 @@
     <member refid="_ms_p_a_s_s_error_8cc_1aea52e03c1a67a292b7080b9b72ef3956" kind="function"><name>string2severity</name></member>
     <member refid="_processing_history_8cc_1a62389fcaa5e15291550b690b46b29049" kind="function"><name>status_to_words</name></member>
     <member refid="_processing_history_8cc_1a17bf4f635a7951ee80f56ebd2fc1e859" kind="function"><name>algorithm_outputs</name></member>
+  </compound>
+  <compound refid="namespacemspass_1_1utility_1_1_0d125" kind="namespace"><name>mspass::utility::@125</name>
   </compound>
   <compound refid="namespacemspass_1_1utility_1_1memory__constants" kind="namespace"><name>mspass::utility::memory_constants</name>
     <member refid="memory__constants_8h_1a6221d1d1d18a4093cbbe60433190f87d" kind="function"><name>KEY_AVERAGE_SIZE</name></member>

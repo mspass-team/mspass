@@ -3658,7 +3658,7 @@
 <span class="sd">      and the collections defined by the matcher_list list.</span>
 <span class="sd">    :param wf_col: The collection that need to be normalized, default is</span>
 <span class="sd">      wf_miniseed</span>
-<span class="sd">    :param blockssize:   To speed up updates this function uses the</span>
+<span class="sd">    :param blocksize:   To speed up updates this function uses the</span>
 <span class="sd">      bulk writer/updater methods of MongoDB that can be orders of</span>
 <span class="sd">      magnitude faster than one-at-a-time updates. A user should not normally</span>
 <span class="sd">      need to alter this parameter.</span>
@@ -3795,6 +3795,7 @@
     <span class="n">blocksize</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
     <span class="n">normalize_channel</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">normalize_site</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">wf_col</span><span class="o">=</span><span class="s2">&quot;wf_miniseed&quot;</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    In MsPASS the standard support for station information is stored in</span>
@@ -3804,7 +3805,9 @@
 <span class="sd">    with MsPASS database methods.   The default behavior tries to associate</span>
 <span class="sd">    each wf_miniseed document with an entry in &quot;site&quot;.  In MsPASS site is a</span>
 <span class="sd">    smaller collection intended for use only with data already assembled</span>
-<span class="sd">    into three component bundles we call Seismogram objects.</span>
+<span class="sd">    into three component bundles we call Seismogram objects.  Normal use</span>
+<span class="sd">    of this function is to add normalization cross referencing ids to the</span>
+<span class="sd">    wf_miniseed collection.  Change wf_col to run on a different collection.</span>
 
 
 <span class="sd">    For both channel and site the association algorithm used assumes</span>
@@ -3818,17 +3821,21 @@
 <span class="sd">    data refer to common attributes of one seismic observatory (commonly</span>
 <span class="sd">    also called a &quot;station&quot;).</span>
 
-<span class="sd">    :param db: should be a MsPASS database handle containing at least</span>
-<span class="sd">      wf_miniseed and the collections defined by the norm_collection list.</span>
-<span class="sd">    :param blockssize:   To speed up updates this function uses the</span>
+<span class="sd">    :param db: should be a MsPASS database handle containing the waveform</span>
+<span class="sd">      collection defined by wf_col, &quot;channel&quot;, and &quot;site&quot;.  Note that</span>
+<span class="sd">      the booleans normalize_channel and normalize_site define if</span>
+<span class="sd">      channel or site respectively are actually required.</span>
+<span class="sd">    :param wf_col: waveform collection that is to be updated with normalization</span>
+<span class="sd">      ObjectId cross-referencing keys.  Default is &quot;wf_miniseed&quot;.</span>
+<span class="sd">    :param wfquery: is an optional query to apply to wf_col.  The output of this</span>
+<span class="sd">      query defines the list of documents that the algorithm will attempt</span>
+<span class="sd">      to normalize as described above.  The default (None) will process the entire</span>
+<span class="sd">      wf_col collection.</span>
+<span class="sd">    :param blocksize:   To speed up updates this function uses the</span>
 <span class="sd">      bulk writer/updater methods of MongoDB that can be orders of</span>
 <span class="sd">      magnitude faster than one-at-a-time updates for setting</span>
 <span class="sd">      channel_id and site_id.  A user should not normally need to alter this</span>
-<span class="sd">      parameter.</span>
-<span class="sd">    :param wfquery: is a query to apply to wf_miniseed.  The output of this</span>
-<span class="sd">      query defines the list of documents that the algorithm will attempt</span>
-<span class="sd">      to normalize as described above.  The default will process the entire</span>
-<span class="sd">      wf_miniseed collection (query set to an emtpy dict).</span>
+<span class="sd">      parameter.  It is the number of records written per write operation.</span>
 <span class="sd">    :param normalize_channel:  boolean for handling channel collection.</span>
 <span class="sd">      When True (default) matches will be attempted with the channel collection</span>
 <span class="sd">      and when matches are found the associated channel document id will be</span>
@@ -3842,7 +3849,7 @@
 
 
 <span class="sd">    :return: list with three integers.  0 is the number of documents processed in</span>
-<span class="sd">      wf_miniseed (output of query), 1 is the number with channel ids set,</span>
+<span class="sd">      wf_col (output of query), 1 is the number with channel ids set,</span>
 <span class="sd">      and 2 contains the number of site documents set.  1 or 2 should</span>
 <span class="sd">      contain 0 if normalization for that collection was set false.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -3880,7 +3887,7 @@
     <span class="n">bulk_ret</span> <span class="o">=</span> <span class="n">bulk_normalize</span><span class="p">(</span>
         <span class="n">db</span><span class="p">,</span>
         <span class="n">wfquery</span><span class="o">=</span><span class="n">wfquery</span><span class="p">,</span>
-        <span class="n">wf_col</span><span class="o">=</span><span class="s2">&quot;wf_miniseed&quot;</span><span class="p">,</span>
+        <span class="n">wf_col</span><span class="o">=</span><span class="n">wf_col</span><span class="p">,</span>
         <span class="n">blocksize</span><span class="o">=</span><span class="n">blocksize</span><span class="p">,</span>
         <span class="n">matcher_list</span><span class="o">=</span><span class="n">matcher_function_list</span><span class="p">,</span>
     <span class="p">)</span>

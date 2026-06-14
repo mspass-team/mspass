@@ -203,8 +203,8 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   64</span>    : ScalarDecon(), output_length(0), sample_shift(0), damp(1.0e-6), dt(1.0),</div>
-<div class="line"><span class="lineno">   65</span>      residual_norm(0.0), data_norm(0.0), regularization_parameter(0.0) {}</div>
+<div class="fragment"><div class="line"><span class="lineno">   65</span>    : ScalarDecon(), output_length(0), sample_shift(0), damp(1.0e-6), dt(1.0),</div>
+<div class="line"><span class="lineno">   66</span>      residual_norm(0.0), data_norm(0.0), regularization_parameter(0.0) {}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -223,10 +223,10 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   69</span>    : ScalarDecon(parent), output_length(parent.output_length),</div>
-<div class="line"><span class="lineno">   70</span>      sample_shift(parent.sample_shift), damp(parent.damp), dt(parent.dt),</div>
-<div class="line"><span class="lineno">   71</span>      residual_norm(parent.residual_norm), data_norm(parent.data_norm),</div>
-<div class="line"><span class="lineno">   72</span>      regularization_parameter(parent.regularization_parameter) {}</div>
+<div class="fragment"><div class="line"><span class="lineno">   70</span>    : ScalarDecon(parent), output_length(parent.output_length),</div>
+<div class="line"><span class="lineno">   71</span>      sample_shift(parent.sample_shift), damp(parent.damp), dt(parent.dt),</div>
+<div class="line"><span class="lineno">   72</span>      residual_norm(parent.residual_norm), data_norm(parent.data_norm),</div>
+<div class="line"><span class="lineno">   73</span>      regularization_parameter(parent.regularization_parameter) {}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -245,10 +245,10 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   75</span>    : ScalarDecon(), output_length(0), sample_shift(0), damp(1.0e-6), dt(1.0),</div>
-<div class="line"><span class="lineno">   76</span>      residual_norm(0.0), data_norm(0.0), regularization_parameter(0.0) {</div>
-<div class="line"><span class="lineno">   77</span>  this-&gt;read_metadata(md);</div>
-<div class="line"><span class="lineno">   78</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">   76</span>    : ScalarDecon(), output_length(0), sample_shift(0), damp(1.0e-6), dt(1.0),</div>
+<div class="line"><span class="lineno">   77</span>      residual_norm(0.0), data_norm(0.0), regularization_parameter(0.0) {</div>
+<div class="line"><span class="lineno">   78</span>  this-&gt;read_metadata(md);</div>
+<div class="line"><span class="lineno">   79</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -280,39 +280,39 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
 <p>The actual output is defined as w^-1*w and is compable to resolution kernels in linear inverse theory. Although not required we would normally expect this function to be peaked at 0. Offsets from 0 would imply a bias. </p>
 
 <p>Implements <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#a84f320ad48e8bfc9c292f8dde33c0593">mspass::algorithms::deconvolution::ScalarDecon</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  271</span>                                                         {</div>
-<div class="line"><span class="lineno">  272</span>  <span class="keywordflow">if</span> (wavelet.empty())</div>
-<div class="line"><span class="lineno">  273</span>    <span class="keywordflow">throw</span> MsPASSError(<span class="stringliteral">&quot;TimeDomainLeastSquareDecon::actual_output: wavelet has &quot;</span></div>
-<div class="line"><span class="lineno">  274</span>                      <span class="stringliteral">&quot;not been loaded&quot;</span>,</div>
-<div class="line"><span class="lineno">  275</span>                      ErrorSeverity::Invalid);</div>
-<div class="line"><span class="lineno">  276</span>  <span class="keyword">const</span> <span class="keywordtype">string</span> base_error(<span class="stringliteral">&quot;TimeDomainLeastSquareDecon::actual_output: &quot;</span>);</div>
-<div class="line"><span class="lineno">  277</span>  <span class="keyword">const</span> <span class="keywordtype">int</span> nlag(this-&gt;diagnostic_length());</div>
-<div class="line"><span class="lineno">  278</span>  <span class="keywordflow">if</span> (sample_shift &lt; 0 || sample_shift &gt;= nlag)</div>
-<div class="line"><span class="lineno">  279</span>    <span class="keywordflow">throw</span> MsPASSError(base_error +</div>
-<div class="line"><span class="lineno">  280</span>                          <span class="stringliteral">&quot;zero-lag sample is outside extracted lag window&quot;</span>,</div>
-<div class="line"><span class="lineno">  281</span>                      ErrorSeverity::Invalid);</div>
-<div class="line"><span class="lineno">  282</span>  vector&lt;double&gt; delta(nlag, 0.0);</div>
-<div class="line"><span class="lineno">  283</span>  delta[sample_shift] = 1.0;</div>
-<div class="line"><span class="lineno">  284</span>  vector&lt;double&gt; inv(this-&gt;solve_for(delta));</div>
-<div class="line"><span class="lineno">  285</span>  vector&lt;double&gt; ao(nlag, 0.0);</div>
-<div class="line"><span class="lineno">  286</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; static_cast&lt;int&gt;(ao.size()); ++i) {</div>
-<div class="line"><span class="lineno">  287</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = 0; j &lt; static_cast&lt;int&gt;(inv.size()); ++j) {</div>
-<div class="line"><span class="lineno">  288</span>      <span class="keyword">const</span> <span class="keywordtype">int</span> iw = i - j + sample_shift;</div>
-<div class="line"><span class="lineno">  289</span>      <span class="keywordflow">if</span> (iw &gt;= 0 &amp;&amp; iw &lt; <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(wavelet.size()))</div>
-<div class="line"><span class="lineno">  290</span>        ao[i] += wavelet[iw] * inv[j];</div>
-<div class="line"><span class="lineno">  291</span>    }</div>
-<div class="line"><span class="lineno">  292</span>  }</div>
-<div class="line"><span class="lineno">  293</span>  ao = this-&gt;apply_shaping_wavelet(ao);</div>
-<div class="line"><span class="lineno">  294</span>  <span class="keywordflow">if</span> (l2_norm(ao) &gt; 0.0)</div>
-<div class="line"><span class="lineno">  295</span>    ao = normalize&lt;double&gt;(ao);</div>
-<div class="line"><span class="lineno">  296</span>  CoreTimeSeries result(ao.size());</div>
-<div class="line"><span class="lineno">  297</span>  result.set_dt(dt);</div>
-<div class="line"><span class="lineno">  298</span>  result.set_t0(-dt * <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(sample_shift));</div>
-<div class="line"><span class="lineno">  299</span>  result.set_tref(TimeReferenceType::Relative);</div>
-<div class="line"><span class="lineno">  300</span>  result.set_live();</div>
-<div class="line"><span class="lineno">  301</span>  result.s = ao;</div>
-<div class="line"><span class="lineno">  302</span>  <span class="keywordflow">return</span> result;</div>
-<div class="line"><span class="lineno">  303</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  275</span>                                                         {</div>
+<div class="line"><span class="lineno">  276</span>  <span class="keywordflow">if</span> (wavelet.empty())</div>
+<div class="line"><span class="lineno">  277</span>    <span class="keywordflow">throw</span> MsPASSError(<span class="stringliteral">&quot;TimeDomainLeastSquareDecon::actual_output: wavelet has &quot;</span></div>
+<div class="line"><span class="lineno">  278</span>                      <span class="stringliteral">&quot;not been loaded&quot;</span>,</div>
+<div class="line"><span class="lineno">  279</span>                      ErrorSeverity::Invalid);</div>
+<div class="line"><span class="lineno">  280</span>  <span class="keyword">const</span> <span class="keywordtype">string</span> base_error(<span class="stringliteral">&quot;TimeDomainLeastSquareDecon::actual_output: &quot;</span>);</div>
+<div class="line"><span class="lineno">  281</span>  <span class="keyword">const</span> <span class="keywordtype">int</span> nlag(this-&gt;diagnostic_length());</div>
+<div class="line"><span class="lineno">  282</span>  <span class="keywordflow">if</span> (sample_shift &lt; 0 || sample_shift &gt;= nlag)</div>
+<div class="line"><span class="lineno">  283</span>    <span class="keywordflow">throw</span> MsPASSError(base_error +</div>
+<div class="line"><span class="lineno">  284</span>                          <span class="stringliteral">&quot;zero-lag sample is outside extracted lag window&quot;</span>,</div>
+<div class="line"><span class="lineno">  285</span>                      ErrorSeverity::Invalid);</div>
+<div class="line"><span class="lineno">  286</span>  vector&lt;double&gt; delta(nlag, 0.0);</div>
+<div class="line"><span class="lineno">  287</span>  delta[sample_shift] = 1.0;</div>
+<div class="line"><span class="lineno">  288</span>  vector&lt;double&gt; inv(this-&gt;solve_for(delta));</div>
+<div class="line"><span class="lineno">  289</span>  vector&lt;double&gt; ao(nlag, 0.0);</div>
+<div class="line"><span class="lineno">  290</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; static_cast&lt;int&gt;(ao.size()); ++i) {</div>
+<div class="line"><span class="lineno">  291</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = 0; j &lt; static_cast&lt;int&gt;(inv.size()); ++j) {</div>
+<div class="line"><span class="lineno">  292</span>      <span class="keyword">const</span> <span class="keywordtype">int</span> iw = i - j + sample_shift;</div>
+<div class="line"><span class="lineno">  293</span>      <span class="keywordflow">if</span> (iw &gt;= 0 &amp;&amp; iw &lt; <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(wavelet.size()))</div>
+<div class="line"><span class="lineno">  294</span>        ao[i] += wavelet[iw] * inv[j];</div>
+<div class="line"><span class="lineno">  295</span>    }</div>
+<div class="line"><span class="lineno">  296</span>  }</div>
+<div class="line"><span class="lineno">  297</span>  ao = this-&gt;apply_shaping_wavelet(ao);</div>
+<div class="line"><span class="lineno">  298</span>  <span class="keywordflow">if</span> (l2_norm(ao) &gt; 0.0)</div>
+<div class="line"><span class="lineno">  299</span>    ao = normalize&lt;double&gt;(ao);</div>
+<div class="line"><span class="lineno">  300</span>  CoreTimeSeries result(ao.size());</div>
+<div class="line"><span class="lineno">  301</span>  result.set_dt(dt);</div>
+<div class="line"><span class="lineno">  302</span>  result.set_t0(-dt * <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(sample_shift));</div>
+<div class="line"><span class="lineno">  303</span>  result.set_tref(TimeReferenceType::Relative);</div>
+<div class="line"><span class="lineno">  304</span>  result.set_live();</div>
+<div class="line"><span class="lineno">  305</span>  result.s = ao;</div>
+<div class="line"><span class="lineno">  306</span>  <span class="keywordflow">return</span> result;</div>
+<div class="line"><span class="lineno">  307</span>}</div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_core_time_series.html#ab044edb3fe5fe734cb577a4434f390a2">mspass::seismic::CoreTimeSeries::s</a>, <a class="el" href="classmspass_1_1seismic_1_1_core_time_series.html#a97ff6732aa816b0c327c5bf667ffe841">mspass::seismic::CoreTimeSeries::set_dt()</a>, <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#a1ca7ba8bcd8337bd49d438664e74966d">mspass::seismic::BasicTimeSeries::set_live()</a>, <a class="el" href="classmspass_1_1seismic_1_1_core_time_series.html#ae90b28cff0bc1997aa65a1693d8562d0">mspass::seismic::CoreTimeSeries::set_t0()</a>, and <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#ac3f8c8200710fe0d3ef211c7c758e864">mspass::seismic::BasicTimeSeries::set_tref()</a>.</p>
 
@@ -343,9 +343,9 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
 </div><div class="memdoc">
 
 <p>Reimplemented from <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html">mspass::algorithms::deconvolution::ScalarDecon</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  131</span>                                                                   {</div>
-<div class="line"><span class="lineno">  132</span>  this-&gt;read_metadata(md);</div>
-<div class="line"><span class="lineno">  133</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  135</span>                                                                   {</div>
+<div class="line"><span class="lineno">  136</span>  this-&gt;read_metadata(md);</div>
+<div class="line"><span class="lineno">  137</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -377,10 +377,10 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
  </p>
 
 <p>Implements <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#a078d038467a3be52d1e91e0d080d503e">mspass::algorithms::deconvolution::ScalarDecon</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  329</span>                                                           {</div>
-<div class="line"><span class="lineno">  330</span>  <span class="keywordflow">return</span> this-&gt;<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_least_square_decon.html#a72b7dfccd79cd8d8e10c7f6e6dcde718">inverse_wavelet</a>(0.0);</div>
-<div class="line"><span class="lineno">  331</span>}</div>
-<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_least_square_decon_html_a72b7dfccd79cd8d8e10c7f6e6dcde718"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_least_square_decon.html#a72b7dfccd79cd8d8e10c7f6e6dcde718">mspass::algorithms::deconvolution::TimeDomainLeastSquareDecon::inverse_wavelet</a></div><div class="ttdeci">mspass::seismic::CoreTimeSeries inverse_wavelet()</div><div class="ttdoc">Return a FIR represention of the inverse filter.</div><div class="ttdef"><b>Definition</b> TimeDomainLeastSquareDecon.cc:329</div></div>
+<div class="fragment"><div class="line"><span class="lineno">  333</span>                                                           {</div>
+<div class="line"><span class="lineno">  334</span>  <span class="keywordflow">return</span> this-&gt;<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_least_square_decon.html#a72b7dfccd79cd8d8e10c7f6e6dcde718">inverse_wavelet</a>(0.0);</div>
+<div class="line"><span class="lineno">  335</span>}</div>
+<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_least_square_decon_html_a72b7dfccd79cd8d8e10c7f6e6dcde718"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_least_square_decon.html#a72b7dfccd79cd8d8e10c7f6e6dcde718">mspass::algorithms::deconvolution::TimeDomainLeastSquareDecon::inverse_wavelet</a></div><div class="ttdeci">mspass::seismic::CoreTimeSeries inverse_wavelet()</div><div class="ttdoc">Return a FIR represention of the inverse filter.</div><div class="ttdef"><b>Definition</b> TimeDomainLeastSquareDecon.cc:333</div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -409,28 +409,28 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
 </div><div class="memdoc">
 
 <p>Implements <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html">mspass::algorithms::deconvolution::ScalarDecon</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  306</span>                                                                 {</div>
-<div class="line"><span class="lineno">  307</span>  <span class="keywordflow">if</span> (wavelet.empty())</div>
-<div class="line"><span class="lineno">  308</span>    <span class="keywordflow">throw</span> MsPASSError(<span class="stringliteral">&quot;TimeDomainLeastSquareDecon::inverse_wavelet: wavelet &quot;</span></div>
-<div class="line"><span class="lineno">  309</span>                      <span class="stringliteral">&quot;has not been loaded&quot;</span>,</div>
-<div class="line"><span class="lineno">  310</span>                      ErrorSeverity::Invalid);</div>
-<div class="line"><span class="lineno">  311</span>  <span class="keyword">const</span> <span class="keywordtype">string</span> base_error(<span class="stringliteral">&quot;TimeDomainLeastSquareDecon::inverse_wavelet: &quot;</span>);</div>
-<div class="line"><span class="lineno">  312</span>  <span class="keyword">const</span> <span class="keywordtype">int</span> nlag(this-&gt;diagnostic_length());</div>
-<div class="line"><span class="lineno">  313</span>  <span class="keywordflow">if</span> (sample_shift &lt; 0 || sample_shift &gt;= nlag)</div>
-<div class="line"><span class="lineno">  314</span>    <span class="keywordflow">throw</span> MsPASSError(base_error +</div>
-<div class="line"><span class="lineno">  315</span>                          <span class="stringliteral">&quot;zero-lag sample is outside extracted lag window&quot;</span>,</div>
-<div class="line"><span class="lineno">  316</span>                      ErrorSeverity::Invalid);</div>
-<div class="line"><span class="lineno">  317</span>  vector&lt;double&gt; delta(nlag, 0.0);</div>
-<div class="line"><span class="lineno">  318</span>  delta[sample_shift] = 1.0;</div>
-<div class="line"><span class="lineno">  319</span>  vector&lt;double&gt; inv(this-&gt;solve_for(delta));</div>
-<div class="line"><span class="lineno">  320</span>  CoreTimeSeries result(inv.size());</div>
-<div class="line"><span class="lineno">  321</span>  result.set_dt(dt);</div>
-<div class="line"><span class="lineno">  322</span>  result.set_t0(-dt * <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(sample_shift) - t0parent);</div>
-<div class="line"><span class="lineno">  323</span>  result.set_tref(TimeReferenceType::Relative);</div>
-<div class="line"><span class="lineno">  324</span>  result.set_live();</div>
-<div class="line"><span class="lineno">  325</span>  result.s = inv;</div>
-<div class="line"><span class="lineno">  326</span>  <span class="keywordflow">return</span> result;</div>
-<div class="line"><span class="lineno">  327</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  310</span>                                                                 {</div>
+<div class="line"><span class="lineno">  311</span>  <span class="keywordflow">if</span> (wavelet.empty())</div>
+<div class="line"><span class="lineno">  312</span>    <span class="keywordflow">throw</span> MsPASSError(<span class="stringliteral">&quot;TimeDomainLeastSquareDecon::inverse_wavelet: wavelet &quot;</span></div>
+<div class="line"><span class="lineno">  313</span>                      <span class="stringliteral">&quot;has not been loaded&quot;</span>,</div>
+<div class="line"><span class="lineno">  314</span>                      ErrorSeverity::Invalid);</div>
+<div class="line"><span class="lineno">  315</span>  <span class="keyword">const</span> <span class="keywordtype">string</span> base_error(<span class="stringliteral">&quot;TimeDomainLeastSquareDecon::inverse_wavelet: &quot;</span>);</div>
+<div class="line"><span class="lineno">  316</span>  <span class="keyword">const</span> <span class="keywordtype">int</span> nlag(this-&gt;diagnostic_length());</div>
+<div class="line"><span class="lineno">  317</span>  <span class="keywordflow">if</span> (sample_shift &lt; 0 || sample_shift &gt;= nlag)</div>
+<div class="line"><span class="lineno">  318</span>    <span class="keywordflow">throw</span> MsPASSError(base_error +</div>
+<div class="line"><span class="lineno">  319</span>                          <span class="stringliteral">&quot;zero-lag sample is outside extracted lag window&quot;</span>,</div>
+<div class="line"><span class="lineno">  320</span>                      ErrorSeverity::Invalid);</div>
+<div class="line"><span class="lineno">  321</span>  vector&lt;double&gt; delta(nlag, 0.0);</div>
+<div class="line"><span class="lineno">  322</span>  delta[sample_shift] = 1.0;</div>
+<div class="line"><span class="lineno">  323</span>  vector&lt;double&gt; inv(this-&gt;solve_for(delta));</div>
+<div class="line"><span class="lineno">  324</span>  CoreTimeSeries result(inv.size());</div>
+<div class="line"><span class="lineno">  325</span>  result.set_dt(dt);</div>
+<div class="line"><span class="lineno">  326</span>  result.set_t0(-dt * <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(sample_shift) - t0parent);</div>
+<div class="line"><span class="lineno">  327</span>  result.set_tref(TimeReferenceType::Relative);</div>
+<div class="line"><span class="lineno">  328</span>  result.set_live();</div>
+<div class="line"><span class="lineno">  329</span>  result.s = inv;</div>
+<div class="line"><span class="lineno">  330</span>  <span class="keywordflow">return</span> result;</div>
+<div class="line"><span class="lineno">  331</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -461,30 +461,30 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
 <p>Wang and Pavlis (2016) call this wavelet ws(t). GID methods convolve the sparse impulse response with this wavelet to form the finite-duration receiver-function representation used for stacking and imaging. </p>
 
 <p>Reimplemented from <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#afdf74a0ef7db252ae472d5c21b6a4cc7">mspass::algorithms::deconvolution::ScalarDecon</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  228</span>                                                                  {</div>
-<div class="line"><span class="lineno">  229</span>  <span class="keyword">const</span> <span class="keywordtype">string</span> base_error(</div>
-<div class="line"><span class="lineno">  230</span>      <span class="stringliteral">&quot;TimeDomainLeastSquareDecon::output_shaping_wavelet: &quot;</span>);</div>
-<div class="line"><span class="lineno">  231</span>  <span class="keyword">const</span> <span class="keywordtype">int</span> nlag(this-&gt;diagnostic_length());</div>
-<div class="line"><span class="lineno">  232</span>  <span class="keywordflow">if</span> (nlag &lt;= 0)</div>
-<div class="line"><span class="lineno">  233</span>    <span class="keywordflow">return</span> this-&gt;<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#afdf74a0ef7db252ae472d5c21b6a4cc7">ScalarDecon::output_shaping_wavelet</a>();</div>
-<div class="line"><span class="lineno">  234</span>  <span class="keywordflow">if</span> (sample_shift &lt; 0 || sample_shift &gt;= nlag)</div>
-<div class="line"><span class="lineno">  235</span>    <span class="keywordflow">throw</span> MsPASSError(base_error +</div>
-<div class="line"><span class="lineno">  236</span>                          <span class="stringliteral">&quot;zero-lag sample is outside extracted lag window&quot;</span>,</div>
-<div class="line"><span class="lineno">  237</span>                      ErrorSeverity::Invalid);</div>
-<div class="line"><span class="lineno">  238</span>  vector&lt;double&gt; delta(nlag, 0.0);</div>
-<div class="line"><span class="lineno">  239</span>  delta[sample_shift] = 1.0;</div>
-<div class="line"><span class="lineno">  240</span>  vector&lt;double&gt; ws(this-&gt;apply_shaping_wavelet(delta));</div>
-<div class="line"><span class="lineno">  241</span>  <span class="keywordflow">if</span> (l2_norm(ws) &gt; 0.0)</div>
-<div class="line"><span class="lineno">  242</span>    ws = normalize&lt;double&gt;(ws);</div>
-<div class="line"><span class="lineno">  243</span> </div>
-<div class="line"><span class="lineno">  244</span>  CoreTimeSeries result(ws.size());</div>
-<div class="line"><span class="lineno">  245</span>  result.set_dt(dt);</div>
-<div class="line"><span class="lineno">  246</span>  result.set_t0(-dt * <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(sample_shift));</div>
-<div class="line"><span class="lineno">  247</span>  result.set_tref(TimeReferenceType::Relative);</div>
-<div class="line"><span class="lineno">  248</span>  result.set_live();</div>
-<div class="line"><span class="lineno">  249</span>  result.s = ws;</div>
-<div class="line"><span class="lineno">  250</span>  <span class="keywordflow">return</span> result;</div>
-<div class="line"><span class="lineno">  251</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  232</span>                                                                  {</div>
+<div class="line"><span class="lineno">  233</span>  <span class="keyword">const</span> <span class="keywordtype">string</span> base_error(</div>
+<div class="line"><span class="lineno">  234</span>      <span class="stringliteral">&quot;TimeDomainLeastSquareDecon::output_shaping_wavelet: &quot;</span>);</div>
+<div class="line"><span class="lineno">  235</span>  <span class="keyword">const</span> <span class="keywordtype">int</span> nlag(this-&gt;diagnostic_length());</div>
+<div class="line"><span class="lineno">  236</span>  <span class="keywordflow">if</span> (nlag &lt;= 0)</div>
+<div class="line"><span class="lineno">  237</span>    <span class="keywordflow">return</span> this-&gt;<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#afdf74a0ef7db252ae472d5c21b6a4cc7">ScalarDecon::output_shaping_wavelet</a>();</div>
+<div class="line"><span class="lineno">  238</span>  <span class="keywordflow">if</span> (sample_shift &lt; 0 || sample_shift &gt;= nlag)</div>
+<div class="line"><span class="lineno">  239</span>    <span class="keywordflow">throw</span> MsPASSError(base_error +</div>
+<div class="line"><span class="lineno">  240</span>                          <span class="stringliteral">&quot;zero-lag sample is outside extracted lag window&quot;</span>,</div>
+<div class="line"><span class="lineno">  241</span>                      ErrorSeverity::Invalid);</div>
+<div class="line"><span class="lineno">  242</span>  vector&lt;double&gt; delta(nlag, 0.0);</div>
+<div class="line"><span class="lineno">  243</span>  delta[sample_shift] = 1.0;</div>
+<div class="line"><span class="lineno">  244</span>  vector&lt;double&gt; ws(this-&gt;apply_shaping_wavelet(delta));</div>
+<div class="line"><span class="lineno">  245</span>  <span class="keywordflow">if</span> (l2_norm(ws) &gt; 0.0)</div>
+<div class="line"><span class="lineno">  246</span>    ws = normalize&lt;double&gt;(ws);</div>
+<div class="line"><span class="lineno">  247</span> </div>
+<div class="line"><span class="lineno">  248</span>  CoreTimeSeries result(ws.size());</div>
+<div class="line"><span class="lineno">  249</span>  result.set_dt(dt);</div>
+<div class="line"><span class="lineno">  250</span>  result.set_t0(-dt * <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(sample_shift));</div>
+<div class="line"><span class="lineno">  251</span>  result.set_tref(TimeReferenceType::Relative);</div>
+<div class="line"><span class="lineno">  252</span>  result.set_live();</div>
+<div class="line"><span class="lineno">  253</span>  result.s = ws;</div>
+<div class="line"><span class="lineno">  254</span>  <span class="keywordflow">return</span> result;</div>
+<div class="line"><span class="lineno">  255</span>}</div>
 <div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_html_afdf74a0ef7db252ae472d5c21b6a4cc7"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#afdf74a0ef7db252ae472d5c21b6a4cc7">mspass::algorithms::deconvolution::ScalarDecon::output_shaping_wavelet</a></div><div class="ttdeci">virtual mspass::seismic::CoreTimeSeries output_shaping_wavelet()</div><div class="ttdoc">Return the output shaping wavelet.</div><div class="ttdef"><b>Definition</b> ScalarDecon.h:72</div></div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_core_time_series.html#ab044edb3fe5fe734cb577a4434f390a2">mspass::seismic::CoreTimeSeries::s</a>, <a class="el" href="classmspass_1_1seismic_1_1_core_time_series.html#a97ff6732aa816b0c327c5bf667ffe841">mspass::seismic::CoreTimeSeries::set_dt()</a>, <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#a1ca7ba8bcd8337bd49d438664e74966d">mspass::seismic::BasicTimeSeries::set_live()</a>, <a class="el" href="classmspass_1_1seismic_1_1_core_time_series.html#ae90b28cff0bc1997aa65a1693d8562d0">mspass::seismic::CoreTimeSeries::set_t0()</a>, and <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#ac3f8c8200710fe0d3ef211c7c758e864">mspass::seismic::BasicTimeSeries::set_tref()</a>.</p>
@@ -515,23 +515,23 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
 </div><div class="memdoc">
 
 <p>Implements <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html">mspass::algorithms::deconvolution::ScalarDecon</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  253</span>                                         {</div>
-<div class="line"><span class="lineno">  254</span>  <span class="keyword">const</span> <span class="keywordtype">string</span> base_error(<span class="stringliteral">&quot;TimeDomainLeastSquareDecon::process:  &quot;</span>);</div>
-<div class="line"><span class="lineno">  255</span>  result.clear();</div>
-<div class="line"><span class="lineno">  256</span>  vector&lt;double&gt; model(this-&gt;solve_for(data));</div>
-<div class="line"><span class="lineno">  257</span>  vector&lt;double&gt; predicted(this-&gt;apply_wavelet(model));</div>
-<div class="line"><span class="lineno">  258</span>  data_norm = l2_norm(data);</div>
-<div class="line"><span class="lineno">  259</span>  <span class="keywordtype">double</span> r2(0.0);</div>
-<div class="line"><span class="lineno">  260</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; static_cast&lt;int&gt;(data.size()); ++i) {</div>
-<div class="line"><span class="lineno">  261</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> r = data[i] - predicted[i];</div>
-<div class="line"><span class="lineno">  262</span>    r2 += r * r;</div>
-<div class="line"><span class="lineno">  263</span>  }</div>
-<div class="line"><span class="lineno">  264</span>  residual_norm = sqrt(r2);</div>
-<div class="line"><span class="lineno">  265</span>  result = this-&gt;apply_shaping_wavelet(model);</div>
-<div class="line"><span class="lineno">  266</span>  <span class="keywordflow">if</span> (result.empty())</div>
-<div class="line"><span class="lineno">  267</span>    <span class="keywordflow">throw</span> MsPASSError(base_error + <span class="stringliteral">&quot;computed an empty result&quot;</span>,</div>
-<div class="line"><span class="lineno">  268</span>                      ErrorSeverity::Fatal);</div>
-<div class="line"><span class="lineno">  269</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  257</span>                                         {</div>
+<div class="line"><span class="lineno">  258</span>  <span class="keyword">const</span> <span class="keywordtype">string</span> base_error(<span class="stringliteral">&quot;TimeDomainLeastSquareDecon::process:  &quot;</span>);</div>
+<div class="line"><span class="lineno">  259</span>  result.clear();</div>
+<div class="line"><span class="lineno">  260</span>  vector&lt;double&gt; model(this-&gt;solve_for(data));</div>
+<div class="line"><span class="lineno">  261</span>  vector&lt;double&gt; predicted(this-&gt;apply_wavelet(model));</div>
+<div class="line"><span class="lineno">  262</span>  data_norm = l2_norm(data);</div>
+<div class="line"><span class="lineno">  263</span>  <span class="keywordtype">double</span> r2(0.0);</div>
+<div class="line"><span class="lineno">  264</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; static_cast&lt;int&gt;(data.size()); ++i) {</div>
+<div class="line"><span class="lineno">  265</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> r = data[i] - predicted[i];</div>
+<div class="line"><span class="lineno">  266</span>    r2 += r * r;</div>
+<div class="line"><span class="lineno">  267</span>  }</div>
+<div class="line"><span class="lineno">  268</span>  residual_norm = sqrt(r2);</div>
+<div class="line"><span class="lineno">  269</span>  result = this-&gt;apply_shaping_wavelet(model);</div>
+<div class="line"><span class="lineno">  270</span>  <span class="keywordflow">if</span> (result.empty())</div>
+<div class="line"><span class="lineno">  271</span>    <span class="keywordflow">throw</span> MsPASSError(base_error + <span class="stringliteral">&quot;computed an empty result&quot;</span>,</div>
+<div class="line"><span class="lineno">  272</span>                      ErrorSeverity::Fatal);</div>
+<div class="line"><span class="lineno">  273</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -562,20 +562,20 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
 <p>Each operator commonly has different was to measure the quality of the result. This method should return these in a generic Metadata object. </p>
 
 <p>Implements <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#af683c2f25e91155c2bc1f81f9b62bbb1">mspass::algorithms::deconvolution::ScalarDecon</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  333</span>                                               {</div>
-<div class="line"><span class="lineno">  334</span>  Metadata md(this-&gt;BasicQCMetrics(<span class="stringliteral">&quot;TimeDomainLeastSquareDecon&quot;</span>,</div>
-<div class="line"><span class="lineno">  335</span>                                   !result.empty()));</div>
-<div class="line"><span class="lineno">  336</span>  md.put(<span class="stringliteral">&quot;damping_factor&quot;</span>, damp);</div>
-<div class="line"><span class="lineno">  337</span>  md.put(<span class="stringliteral">&quot;sample_shift&quot;</span>, sample_shift);</div>
-<div class="line"><span class="lineno">  338</span>  md.put(<span class="stringliteral">&quot;decon_operator_sample_shift&quot;</span>, sample_shift);</div>
-<div class="line"><span class="lineno">  339</span>  md.put(<span class="stringliteral">&quot;time_domain_least_square_output_length&quot;</span>, output_length);</div>
-<div class="line"><span class="lineno">  340</span>  md.put(<span class="stringliteral">&quot;regularization_parameter&quot;</span>, regularization_parameter);</div>
-<div class="line"><span class="lineno">  341</span>  md.put(<span class="stringliteral">&quot;residual_norm&quot;</span>, residual_norm);</div>
-<div class="line"><span class="lineno">  342</span>  md.put(<span class="stringliteral">&quot;data_norm&quot;</span>, data_norm);</div>
-<div class="line"><span class="lineno">  343</span>  <span class="keywordflow">if</span> (data_norm &gt; 0.0)</div>
-<div class="line"><span class="lineno">  344</span>    md.put(<span class="stringliteral">&quot;relative_residual_norm&quot;</span>, residual_norm / data_norm);</div>
-<div class="line"><span class="lineno">  345</span>  <span class="keywordflow">return</span> md;</div>
-<div class="line"><span class="lineno">  346</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  337</span>                                               {</div>
+<div class="line"><span class="lineno">  338</span>  Metadata md(this-&gt;BasicQCMetrics(<span class="stringliteral">&quot;TimeDomainLeastSquareDecon&quot;</span>,</div>
+<div class="line"><span class="lineno">  339</span>                                   !result.empty()));</div>
+<div class="line"><span class="lineno">  340</span>  md.put(<span class="stringliteral">&quot;damping_factor&quot;</span>, damp);</div>
+<div class="line"><span class="lineno">  341</span>  md.put(<span class="stringliteral">&quot;sample_shift&quot;</span>, sample_shift);</div>
+<div class="line"><span class="lineno">  342</span>  md.put(<span class="stringliteral">&quot;decon_operator_sample_shift&quot;</span>, sample_shift);</div>
+<div class="line"><span class="lineno">  343</span>  md.put(<span class="stringliteral">&quot;time_domain_least_square_output_length&quot;</span>, output_length);</div>
+<div class="line"><span class="lineno">  344</span>  md.put(<span class="stringliteral">&quot;regularization_parameter&quot;</span>, regularization_parameter);</div>
+<div class="line"><span class="lineno">  345</span>  md.put(<span class="stringliteral">&quot;residual_norm&quot;</span>, residual_norm);</div>
+<div class="line"><span class="lineno">  346</span>  md.put(<span class="stringliteral">&quot;data_norm&quot;</span>, data_norm);</div>
+<div class="line"><span class="lineno">  347</span>  <span class="keywordflow">if</span> (data_norm &gt; 0.0)</div>
+<div class="line"><span class="lineno">  348</span>    md.put(<span class="stringliteral">&quot;relative_residual_norm&quot;</span>, residual_norm / data_norm);</div>
+<div class="line"><span class="lineno">  349</span>  <span class="keywordflow">return</span> md;</div>
+<div class="line"><span class="lineno">  350</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>

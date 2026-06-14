@@ -256,12 +256,12 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   33</span>    : FFTDeconOperator(), ScalarDecon(), mu_min(3.0e-3), alpha(1.0),</div>
-<div class="line"><span class="lineno">   34</span>      noise_floor(1.0e-12), gain_max(1.0e3), snr_taper_low(1.0),</div>
-<div class="line"><span class="lineno">   35</span>      snr_taper_high(3.0), use_reliability_taper(<span class="keyword">false</span>),</div>
-<div class="line"><span class="lineno">   36</span>      noise_vector_loaded(<span class="keyword">false</span>), noise_spectrum_loaded(<span class="keyword">false</span>),</div>
-<div class="line"><span class="lineno">   37</span>      processed(<span class="keyword">false</span>), max_gain_actual(0.0), noise_amplification(0.0),</div>
-<div class="line"><span class="lineno">   38</span>      effective_bandwidth_fraction(0.0) {}</div>
+<div class="fragment"><div class="line"><span class="lineno">   34</span>    : FFTDeconOperator(), ScalarDecon(), mu_min(3.0e-3), alpha(1.0),</div>
+<div class="line"><span class="lineno">   35</span>      noise_floor(1.0e-12), gain_max(1.0e3), snr_taper_low(1.0),</div>
+<div class="line"><span class="lineno">   36</span>      snr_taper_high(3.0), use_reliability_taper(<span class="keyword">false</span>),</div>
+<div class="line"><span class="lineno">   37</span>      noise_vector_loaded(<span class="keyword">false</span>), noise_spectrum_loaded(<span class="keyword">false</span>),</div>
+<div class="line"><span class="lineno">   38</span>      processed(<span class="keyword">false</span>), max_gain_actual(0.0), noise_amplification(0.0),</div>
+<div class="line"><span class="lineno">   39</span>      effective_bandwidth_fraction(0.0) {}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -280,10 +280,10 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">   41</span>    : FFTDeconOperator(md), noise_vector_loaded(<span class="keyword">false</span>),</div>
-<div class="line"><span class="lineno">   42</span>      noise_spectrum_loaded(<span class="keyword">false</span>), processed(<span class="keyword">false</span>) {</div>
-<div class="line"><span class="lineno">   43</span>  this-&gt;read_metadata(md);</div>
-<div class="line"><span class="lineno">   44</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">   42</span>    : FFTDeconOperator(md), noise_vector_loaded(<span class="keyword">false</span>),</div>
+<div class="line"><span class="lineno">   43</span>      noise_spectrum_loaded(<span class="keyword">false</span>), processed(<span class="keyword">false</span>) {</div>
+<div class="line"><span class="lineno">   44</span>  this-&gt;read_metadata(md);</div>
+<div class="line"><span class="lineno">   45</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -315,36 +315,36 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
 <p>The actual output is defined as w^-1*w and is compable to resolution kernels in linear inverse theory. Although not required we would normally expect this function to be peaked at 0. Offsets from 0 would imply a bias. </p>
 
 <p>Implements <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#a84f320ad48e8bfc9c292f8dde33c0593">mspass::algorithms::deconvolution::ScalarDecon</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  238</span>                                               {</div>
-<div class="line"><span class="lineno">  239</span>  <span class="keywordflow">if</span> (!processed || winv.size() &lt;= 0)</div>
-<div class="line"><span class="lineno">  240</span>    <span class="keywordflow">throw</span> MsPASSError(</div>
-<div class="line"><span class="lineno">  241</span>        <span class="stringliteral">&quot;NoiseStableDecon::actual_output: process must be called first&quot;</span>,</div>
-<div class="line"><span class="lineno">  242</span>        ErrorSeverity::Invalid);</div>
-<div class="line"><span class="lineno">  243</span>  vector&lt;double&gt; wavelet_padded(wavelet);</div>
-<div class="line"><span class="lineno">  244</span>  <span class="keywordflow">if</span> (wavelet_padded.size() &lt; nfft)</div>
-<div class="line"><span class="lineno">  245</span>    wavelet_padded.resize(nfft, 0.0);</div>
-<div class="line"><span class="lineno">  246</span>  ComplexArray W(nfft, &amp;(wavelet_padded[0]));</div>
-<div class="line"><span class="lineno">  247</span>  gsl_fft_complex_forward(W.ptr(), 1, nfft, wavetable, workspace);</div>
-<div class="line"><span class="lineno">  248</span>  ComplexArray ao_fft = winv * W;</div>
-<div class="line"><span class="lineno">  249</span>  gsl_fft_complex_inverse(ao_fft.ptr(), 1, nfft, wavetable, workspace);</div>
-<div class="line"><span class="lineno">  250</span>  vector&lt;double&gt; ao;</div>
-<div class="line"><span class="lineno">  251</span>  ao.reserve(nfft);</div>
-<div class="line"><span class="lineno">  252</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> k = 0; k &lt; ao_fft.size(); ++k)</div>
-<div class="line"><span class="lineno">  253</span>    ao.push_back(ao_fft[k].real());</div>
-<div class="line"><span class="lineno">  254</span>  <span class="keywordtype">int</span> i0 = nfft / 2;</div>
-<div class="line"><span class="lineno">  255</span>  ao = circular_shift(ao, i0);</div>
-<div class="line"><span class="lineno">  256</span>  CoreTimeSeries result(nfft);</div>
-<div class="line"><span class="lineno">  257</span>  <span class="keywordtype">double</span> dt = shapingwavelet.sample_interval();</div>
-<div class="line"><span class="lineno">  258</span>  result.set_t0(-dt * <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(i0));</div>
-<div class="line"><span class="lineno">  259</span>  result.set_dt(dt);</div>
-<div class="line"><span class="lineno">  260</span>  result.set_live();</div>
-<div class="line"><span class="lineno">  261</span>  result.set_npts(nfft);</div>
-<div class="line"><span class="lineno">  262</span>  result.set_tref(TimeReferenceType::Relative);</div>
-<div class="line"><span class="lineno">  263</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> k = 0; k &lt; nfft; ++k)</div>
-<div class="line"><span class="lineno">  264</span>    result.s[k] = ao[k];</div>
-<div class="line"><span class="lineno">  265</span>  result.s = normalize&lt;double&gt;(result.s);</div>
-<div class="line"><span class="lineno">  266</span>  <span class="keywordflow">return</span> result;</div>
-<div class="line"><span class="lineno">  267</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  239</span>                                               {</div>
+<div class="line"><span class="lineno">  240</span>  <span class="keywordflow">if</span> (!processed || winv.size() &lt;= 0)</div>
+<div class="line"><span class="lineno">  241</span>    <span class="keywordflow">throw</span> MsPASSError(</div>
+<div class="line"><span class="lineno">  242</span>        <span class="stringliteral">&quot;NoiseStableDecon::actual_output: process must be called first&quot;</span>,</div>
+<div class="line"><span class="lineno">  243</span>        ErrorSeverity::Invalid);</div>
+<div class="line"><span class="lineno">  244</span>  vector&lt;double&gt; wavelet_padded(wavelet);</div>
+<div class="line"><span class="lineno">  245</span>  <span class="keywordflow">if</span> (wavelet_padded.size() &lt; nfft)</div>
+<div class="line"><span class="lineno">  246</span>    wavelet_padded.resize(nfft, 0.0);</div>
+<div class="line"><span class="lineno">  247</span>  ComplexArray W(nfft, &amp;(wavelet_padded[0]));</div>
+<div class="line"><span class="lineno">  248</span>  gsl_fft_complex_forward(W.ptr(), 1, nfft, wavetable, workspace);</div>
+<div class="line"><span class="lineno">  249</span>  ComplexArray ao_fft = winv * W;</div>
+<div class="line"><span class="lineno">  250</span>  gsl_fft_complex_inverse(ao_fft.ptr(), 1, nfft, wavetable, workspace);</div>
+<div class="line"><span class="lineno">  251</span>  vector&lt;double&gt; ao;</div>
+<div class="line"><span class="lineno">  252</span>  ao.reserve(nfft);</div>
+<div class="line"><span class="lineno">  253</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> k = 0; k &lt; ao_fft.size(); ++k)</div>
+<div class="line"><span class="lineno">  254</span>    ao.push_back(ao_fft[k].real());</div>
+<div class="line"><span class="lineno">  255</span>  <span class="keywordtype">int</span> i0 = nfft / 2;</div>
+<div class="line"><span class="lineno">  256</span>  ao = circular_shift(ao, i0);</div>
+<div class="line"><span class="lineno">  257</span>  CoreTimeSeries result(nfft);</div>
+<div class="line"><span class="lineno">  258</span>  <span class="keywordtype">double</span> dt = shapingwavelet.sample_interval();</div>
+<div class="line"><span class="lineno">  259</span>  result.set_t0(-dt * <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(i0));</div>
+<div class="line"><span class="lineno">  260</span>  result.set_dt(dt);</div>
+<div class="line"><span class="lineno">  261</span>  result.set_live();</div>
+<div class="line"><span class="lineno">  262</span>  result.set_npts(nfft);</div>
+<div class="line"><span class="lineno">  263</span>  result.set_tref(TimeReferenceType::Relative);</div>
+<div class="line"><span class="lineno">  264</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> k = 0; k &lt; nfft; ++k)</div>
+<div class="line"><span class="lineno">  265</span>    result.s[k] = ao[k];</div>
+<div class="line"><span class="lineno">  266</span>  result.s = normalize&lt;double&gt;(result.s);</div>
+<div class="line"><span class="lineno">  267</span>  <span class="keywordflow">return</span> result;</div>
+<div class="line"><span class="lineno">  268</span>}</div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_core_time_series.html#ab044edb3fe5fe734cb577a4434f390a2">mspass::seismic::CoreTimeSeries::s</a>, <a class="el" href="classmspass_1_1seismic_1_1_core_time_series.html#a97ff6732aa816b0c327c5bf667ffe841">mspass::seismic::CoreTimeSeries::set_dt()</a>, <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#a1ca7ba8bcd8337bd49d438664e74966d">mspass::seismic::BasicTimeSeries::set_live()</a>, <a class="el" href="classmspass_1_1seismic_1_1_core_time_series.html#ae538485ac0aed2f8691477dffce6cda8">mspass::seismic::CoreTimeSeries::set_npts()</a>, <a class="el" href="classmspass_1_1seismic_1_1_core_time_series.html#ae90b28cff0bc1997aa65a1693d8562d0">mspass::seismic::CoreTimeSeries::set_t0()</a>, and <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#ac3f8c8200710fe0d3ef211c7c758e864">mspass::seismic::BasicTimeSeries::set_tref()</a>.</p>
 
@@ -375,12 +375,12 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
 </div><div class="memdoc">
 
 <p>Implements <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_basic_decon_operator.html">mspass::algorithms::deconvolution::BasicDeconOperator</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   97</span>                                                         {</div>
-<div class="line"><span class="lineno">   98</span>  this-&gt;read_metadata(md);</div>
-<div class="line"><span class="lineno">   99</span>  result.clear();</div>
-<div class="line"><span class="lineno">  100</span>  winv = ComplexArray();</div>
-<div class="line"><span class="lineno">  101</span>  processed = <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">  102</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">   98</span>                                                         {</div>
+<div class="line"><span class="lineno">   99</span>  this-&gt;read_metadata(md);</div>
+<div class="line"><span class="lineno">  100</span>  result.clear();</div>
+<div class="line"><span class="lineno">  101</span>  winv = ComplexArray();</div>
+<div class="line"><span class="lineno">  102</span>  processed = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  103</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -438,10 +438,10 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
  </p>
 
 <p>Implements <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#a078d038467a3be52d1e91e0d080d503e">mspass::algorithms::deconvolution::ScalarDecon</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  284</span>                                                 {</div>
-<div class="line"><span class="lineno">  285</span>  <span class="keywordflow">return</span> this-&gt;<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_noise_stable_decon.html#aa79682eec94211b4610ae8219a7e0495">inverse_wavelet</a>(0.0);</div>
-<div class="line"><span class="lineno">  286</span>}</div>
-<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_noise_stable_decon_html_aa79682eec94211b4610ae8219a7e0495"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_noise_stable_decon.html#aa79682eec94211b4610ae8219a7e0495">mspass::algorithms::deconvolution::NoiseStableDecon::inverse_wavelet</a></div><div class="ttdeci">mspass::seismic::CoreTimeSeries inverse_wavelet()</div><div class="ttdoc">Return a FIR represention of the inverse filter.</div><div class="ttdef"><b>Definition</b> NoiseStableDecon.cc:284</div></div>
+<div class="fragment"><div class="line"><span class="lineno">  285</span>                                                 {</div>
+<div class="line"><span class="lineno">  286</span>  <span class="keywordflow">return</span> this-&gt;<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_noise_stable_decon.html#aa79682eec94211b4610ae8219a7e0495">inverse_wavelet</a>(0.0);</div>
+<div class="line"><span class="lineno">  287</span>}</div>
+<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_noise_stable_decon_html_aa79682eec94211b4610ae8219a7e0495"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_noise_stable_decon.html#aa79682eec94211b4610ae8219a7e0495">mspass::algorithms::deconvolution::NoiseStableDecon::inverse_wavelet</a></div><div class="ttdeci">mspass::seismic::CoreTimeSeries inverse_wavelet()</div><div class="ttdoc">Return a FIR represention of the inverse filter.</div><div class="ttdef"><b>Definition</b> NoiseStableDecon.cc:285</div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -470,21 +470,21 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
 </div><div class="memdoc">
 
 <p>Implements <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html">mspass::algorithms::deconvolution::ScalarDecon</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  269</span>                                                                      {</div>
-<div class="line"><span class="lineno">  270</span>  <span class="keywordflow">if</span> (!processed || winv.size() &lt;= 0)</div>
-<div class="line"><span class="lineno">  271</span>    <span class="keywordflow">throw</span> MsPASSError(</div>
-<div class="line"><span class="lineno">  272</span>        <span class="stringliteral">&quot;NoiseStableDecon::inverse_wavelet: process must be called first&quot;</span>,</div>
-<div class="line"><span class="lineno">  273</span>        ErrorSeverity::Invalid);</div>
-<div class="line"><span class="lineno">  274</span>  <span class="keywordtype">double</span> dt = shapingwavelet.sample_interval();</div>
-<div class="line"><span class="lineno">  275</span>  ComplexArray no_shaping(nfft);</div>
-<div class="line"><span class="lineno">  276</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> k = 0; k &lt; nfft; ++k) {</div>
-<div class="line"><span class="lineno">  277</span>    <span class="keywordtype">double</span> *ptr = no_shaping.ptr(k);</div>
-<div class="line"><span class="lineno">  278</span>    ptr[0] = 1.0;</div>
-<div class="line"><span class="lineno">  279</span>    ptr[1] = 0.0;</div>
-<div class="line"><span class="lineno">  280</span>  }</div>
-<div class="line"><span class="lineno">  281</span>  <span class="keywordflow">return</span> this-&gt;<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a3473dc7f359332dbf5a685efe30a684b">FourierInverse</a>(winv, no_shaping, dt, t0parent);</div>
-<div class="line"><span class="lineno">  282</span>}</div>
-<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_html_a3473dc7f359332dbf5a685efe30a684b"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a3473dc7f359332dbf5a685efe30a684b">mspass::algorithms::deconvolution::FFTDeconOperator::FourierInverse</a></div><div class="ttdeci">mspass::seismic::CoreTimeSeries FourierInverse(const ComplexArray &amp;winv, const ComplexArray &amp;sw, const double dt, const double t0parent)</div><div class="ttdoc">Return inverse wavelet for Fourier methods.</div><div class="ttdef"><b>Definition</b> FFTDeconOperator.cc:141</div></div>
+<div class="fragment"><div class="line"><span class="lineno">  270</span>                                                                      {</div>
+<div class="line"><span class="lineno">  271</span>  <span class="keywordflow">if</span> (!processed || winv.size() &lt;= 0)</div>
+<div class="line"><span class="lineno">  272</span>    <span class="keywordflow">throw</span> MsPASSError(</div>
+<div class="line"><span class="lineno">  273</span>        <span class="stringliteral">&quot;NoiseStableDecon::inverse_wavelet: process must be called first&quot;</span>,</div>
+<div class="line"><span class="lineno">  274</span>        ErrorSeverity::Invalid);</div>
+<div class="line"><span class="lineno">  275</span>  <span class="keywordtype">double</span> dt = shapingwavelet.sample_interval();</div>
+<div class="line"><span class="lineno">  276</span>  ComplexArray no_shaping(nfft);</div>
+<div class="line"><span class="lineno">  277</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> k = 0; k &lt; nfft; ++k) {</div>
+<div class="line"><span class="lineno">  278</span>    <span class="keywordtype">double</span> *ptr = no_shaping.ptr(k);</div>
+<div class="line"><span class="lineno">  279</span>    ptr[0] = 1.0;</div>
+<div class="line"><span class="lineno">  280</span>    ptr[1] = 0.0;</div>
+<div class="line"><span class="lineno">  281</span>  }</div>
+<div class="line"><span class="lineno">  282</span>  <span class="keywordflow">return</span> this-&gt;<a class="code hl_function" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a3473dc7f359332dbf5a685efe30a684b">FourierInverse</a>(winv, no_shaping, dt, t0parent);</div>
+<div class="line"><span class="lineno">  283</span>}</div>
+<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_html_a3473dc7f359332dbf5a685efe30a684b"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html#a3473dc7f359332dbf5a685efe30a684b">mspass::algorithms::deconvolution::FFTDeconOperator::FourierInverse</a></div><div class="ttdeci">mspass::seismic::CoreTimeSeries FourierInverse(const ComplexArray &amp;winv, const ComplexArray &amp;sw, const double dt, const double t0parent)</div><div class="ttdoc">Return inverse wavelet for Fourier methods.</div><div class="ttdef"><b>Definition</b> FFTDeconOperator.cc:144</div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -503,9 +503,9 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  117</span>                                                               {</div>
-<div class="line"><span class="lineno">  118</span>  this-&gt;loadnoise(noise_in.s);</div>
-<div class="line"><span class="lineno">  119</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  118</span>                                                               {</div>
+<div class="line"><span class="lineno">  119</span>  this-&gt;loadnoise(noise_in.s);</div>
+<div class="line"><span class="lineno">  120</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -524,16 +524,16 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="fragment"><div class="line"><span class="lineno">  121</span>                                                                       {</div>
-<div class="line"><span class="lineno">  122</span>  ValidatePowerSpectrumCoversDC(noise_spectrum_in,</div>
-<div class="line"><span class="lineno">  123</span>                                <span class="stringliteral">&quot;NoiseStableDecon::loadnoise&quot;</span>);</div>
-<div class="line"><span class="lineno">  124</span>  noise_spectrum = noise_spectrum_in;</div>
-<div class="line"><span class="lineno">  125</span>  noise_spectrum_loaded = <span class="keyword">true</span>;</div>
-<div class="line"><span class="lineno">  126</span>  noise_vector_loaded = <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">  127</span>  result.clear();</div>
-<div class="line"><span class="lineno">  128</span>  winv = ComplexArray();</div>
-<div class="line"><span class="lineno">  129</span>  processed = <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">  130</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  122</span>                                                                       {</div>
+<div class="line"><span class="lineno">  123</span>  ValidatePowerSpectrumCoversDC(noise_spectrum_in,</div>
+<div class="line"><span class="lineno">  124</span>                                <span class="stringliteral">&quot;NoiseStableDecon::loadnoise&quot;</span>);</div>
+<div class="line"><span class="lineno">  125</span>  noise_spectrum = noise_spectrum_in;</div>
+<div class="line"><span class="lineno">  126</span>  noise_spectrum_loaded = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  127</span>  noise_vector_loaded = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  128</span>  result.clear();</div>
+<div class="line"><span class="lineno">  129</span>  winv = ComplexArray();</div>
+<div class="line"><span class="lineno">  130</span>  processed = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  131</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -587,77 +587,77 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
 </div><div class="memdoc">
 
 <p>Implements <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html">mspass::algorithms::deconvolution::ScalarDecon</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  166</span>                               {</div>
-<div class="line"><span class="lineno">  167</span>  <span class="keyword">const</span> <span class="keywordtype">string</span> base_error(<span class="stringliteral">&quot;NoiseStableDecon::process: &quot;</span>);</div>
-<div class="line"><span class="lineno">  168</span>  result.clear();</div>
-<div class="line"><span class="lineno">  169</span>  winv = ComplexArray();</div>
-<div class="line"><span class="lineno">  170</span>  processed = <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">  171</span>  <span class="keyword">const</span> <span class="keywordtype">int</span> output_length = data.size();</div>
-<div class="line"><span class="lineno">  172</span>  <span class="keywordflow">if</span> (output_length &lt;= 0)</div>
-<div class="line"><span class="lineno">  173</span>    <span class="keywordflow">throw</span> MsPASSError(base_error + <span class="stringliteral">&quot;no data loaded&quot;</span>, ErrorSeverity::Invalid);</div>
-<div class="line"><span class="lineno">  174</span>  <span class="keywordflow">if</span> (wavelet.empty())</div>
-<div class="line"><span class="lineno">  175</span>    <span class="keywordflow">throw</span> MsPASSError(base_error + <span class="stringliteral">&quot;no wavelet loaded&quot;</span>, ErrorSeverity::Invalid);</div>
-<div class="line"><span class="lineno">  176</span>  <span class="keywordflow">if</span> (output_length &gt; nfft || wavelet.size() &gt; nfft)</div>
-<div class="line"><span class="lineno">  177</span>    <span class="keywordflow">throw</span> MsPASSError(base_error + <span class="stringliteral">&quot;loaded vectors exceed padded FFT length&quot;</span>,</div>
-<div class="line"><span class="lineno">  178</span>                      ErrorSeverity::Invalid);</div>
-<div class="line"><span class="lineno">  179</span> </div>
-<div class="line"><span class="lineno">  180</span>  vector&lt;double&gt; data_padded(data);</div>
-<div class="line"><span class="lineno">  181</span>  data_padded.resize(nfft, 0.0);</div>
-<div class="line"><span class="lineno">  182</span>  ComplexArray d_fft(nfft, &amp;(data_padded[0]));</div>
-<div class="line"><span class="lineno">  183</span>  gsl_fft_complex_forward(d_fft.ptr(), 1, nfft, wavetable, workspace);</div>
-<div class="line"><span class="lineno">  184</span> </div>
-<div class="line"><span class="lineno">  185</span>  vector&lt;double&gt; wavelet_padded(wavelet);</div>
-<div class="line"><span class="lineno">  186</span>  wavelet_padded.resize(nfft, 0.0);</div>
-<div class="line"><span class="lineno">  187</span>  ComplexArray s_fft(nfft, &amp;(wavelet_padded[0]));</div>
-<div class="line"><span class="lineno">  188</span>  gsl_fft_complex_forward(s_fft.ptr(), 1, nfft, wavetable, workspace);</div>
-<div class="line"><span class="lineno">  189</span>  <span class="keywordflow">if</span> (s_fft.rms() &lt;= 0.0)</div>
-<div class="line"><span class="lineno">  190</span>    <span class="keywordflow">throw</span> MsPASSError(base_error + <span class="stringliteral">&quot;wavelet vector is all zeros&quot;</span>,</div>
-<div class="line"><span class="lineno">  191</span>                      ErrorSeverity::Invalid);</div>
-<div class="line"><span class="lineno">  192</span> </div>
-<div class="line"><span class="lineno">  193</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> dt = shapingwavelet.sample_interval();</div>
-<div class="line"><span class="lineno">  194</span>  vector&lt;double&gt; pn = this-&gt;noise_power_spectrum(dt);</div>
-<div class="line"><span class="lineno">  195</span>  winv = ComplexArray(nfft);</div>
-<div class="line"><span class="lineno">  196</span>  max_gain_actual = 0.0;</div>
-<div class="line"><span class="lineno">  197</span>  noise_amplification = 0.0;</div>
-<div class="line"><span class="lineno">  198</span>  <span class="keywordtype">double</span> spectral_power_peak = 0.0;</div>
-<div class="line"><span class="lineno">  199</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> k = 0; k &lt; nfft; ++k)</div>
-<div class="line"><span class="lineno">  200</span>    spectral_power_peak = max(spectral_power_peak, norm(s_fft[k]));</div>
-<div class="line"><span class="lineno">  201</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> mu_floor = mu_min * spectral_power_peak;</div>
-<div class="line"><span class="lineno">  202</span>  <span class="keywordtype">int</span> usable_bins = 0;</div>
-<div class="line"><span class="lineno">  203</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> k = 0; k &lt; nfft; ++k) {</div>
-<div class="line"><span class="lineno">  204</span>    Complex64 s = s_fft[k];</div>
-<div class="line"><span class="lineno">  205</span>    <span class="keywordtype">double</span> absS2 = norm(s);</div>
-<div class="line"><span class="lineno">  206</span>    <span class="keywordtype">double</span> absS = sqrt(absS2);</div>
-<div class="line"><span class="lineno">  207</span>    <span class="keywordtype">double</span> snr = absS2 / (pn[k] + noise_floor);</div>
-<div class="line"><span class="lineno">  208</span>    <span class="keywordtype">double</span> mu_noise = alpha * absS2 / (snr + 1.0e-12);</div>
-<div class="line"><span class="lineno">  209</span>    <span class="keywordtype">double</span> mu_gain = max(0.0, absS / gain_max - absS2);</div>
-<div class="line"><span class="lineno">  210</span>    <span class="keywordtype">double</span> mu = max({mu_floor, mu_noise, mu_gain});</div>
-<div class="line"><span class="lineno">  211</span>    <span class="keywordtype">double</span> b = this-&gt;reliability_taper(snr);</div>
-<div class="line"><span class="lineno">  212</span>    Complex64 g(0.0, 0.0);</div>
-<div class="line"><span class="lineno">  213</span>    <span class="keywordflow">if</span> ((absS2 + mu) &gt; 0.0)</div>
-<div class="line"><span class="lineno">  214</span>      g = b * conj(s) / (absS2 + mu);</div>
-<div class="line"><span class="lineno">  215</span>    <span class="keywordtype">double</span> gain = abs(g);</div>
-<div class="line"><span class="lineno">  216</span>    <span class="keywordflow">if</span> (gain &gt; gain_max) {</div>
-<div class="line"><span class="lineno">  217</span>      g *= gain_max / gain;</div>
-<div class="line"><span class="lineno">  218</span>      gain = gain_max;</div>
-<div class="line"><span class="lineno">  219</span>    }</div>
-<div class="line"><span class="lineno">  220</span>    <span class="keywordtype">double</span> *ptr = winv.ptr(k);</div>
-<div class="line"><span class="lineno">  221</span>    ptr[0] = g.real();</div>
-<div class="line"><span class="lineno">  222</span>    ptr[1] = g.imag();</div>
-<div class="line"><span class="lineno">  223</span>    max_gain_actual = max(max_gain_actual, gain);</div>
-<div class="line"><span class="lineno">  224</span>    noise_amplification += gain * gain * pn[k];</div>
-<div class="line"><span class="lineno">  225</span>    <span class="keywordflow">if</span> (b &gt; 0.0 &amp;&amp; gain &gt; 0.0)</div>
-<div class="line"><span class="lineno">  226</span>      ++usable_bins;</div>
-<div class="line"><span class="lineno">  227</span>  }</div>
-<div class="line"><span class="lineno">  228</span>  noise_amplification = sqrt(noise_amplification / <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(nfft));</div>
-<div class="line"><span class="lineno">  229</span>  effective_bandwidth_fraction =</div>
-<div class="line"><span class="lineno">  230</span>      <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(usable_bins) / <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(nfft);</div>
-<div class="line"><span class="lineno">  231</span> </div>
-<div class="line"><span class="lineno">  232</span>  ComplexArray rf_fft = winv * d_fft;</div>
-<div class="line"><span class="lineno">  233</span>  gsl_fft_complex_inverse(rf_fft.ptr(), 1, nfft, wavetable, workspace);</div>
-<div class="line"><span class="lineno">  234</span>  result = ExtractLagWindow(rf_fft, output_length, sample_shift);</div>
-<div class="line"><span class="lineno">  235</span>  processed = <span class="keyword">true</span>;</div>
-<div class="line"><span class="lineno">  236</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  167</span>                               {</div>
+<div class="line"><span class="lineno">  168</span>  <span class="keyword">const</span> <span class="keywordtype">string</span> base_error(<span class="stringliteral">&quot;NoiseStableDecon::process: &quot;</span>);</div>
+<div class="line"><span class="lineno">  169</span>  result.clear();</div>
+<div class="line"><span class="lineno">  170</span>  winv = ComplexArray();</div>
+<div class="line"><span class="lineno">  171</span>  processed = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  172</span>  <span class="keyword">const</span> <span class="keywordtype">int</span> output_length = data.size();</div>
+<div class="line"><span class="lineno">  173</span>  <span class="keywordflow">if</span> (output_length &lt;= 0)</div>
+<div class="line"><span class="lineno">  174</span>    <span class="keywordflow">throw</span> MsPASSError(base_error + <span class="stringliteral">&quot;no data loaded&quot;</span>, ErrorSeverity::Invalid);</div>
+<div class="line"><span class="lineno">  175</span>  <span class="keywordflow">if</span> (wavelet.empty())</div>
+<div class="line"><span class="lineno">  176</span>    <span class="keywordflow">throw</span> MsPASSError(base_error + <span class="stringliteral">&quot;no wavelet loaded&quot;</span>, ErrorSeverity::Invalid);</div>
+<div class="line"><span class="lineno">  177</span>  <span class="keywordflow">if</span> (output_length &gt; nfft || wavelet.size() &gt; nfft)</div>
+<div class="line"><span class="lineno">  178</span>    <span class="keywordflow">throw</span> MsPASSError(base_error + <span class="stringliteral">&quot;loaded vectors exceed padded FFT length&quot;</span>,</div>
+<div class="line"><span class="lineno">  179</span>                      ErrorSeverity::Invalid);</div>
+<div class="line"><span class="lineno">  180</span> </div>
+<div class="line"><span class="lineno">  181</span>  vector&lt;double&gt; data_padded(data);</div>
+<div class="line"><span class="lineno">  182</span>  data_padded.resize(nfft, 0.0);</div>
+<div class="line"><span class="lineno">  183</span>  ComplexArray d_fft(nfft, &amp;(data_padded[0]));</div>
+<div class="line"><span class="lineno">  184</span>  gsl_fft_complex_forward(d_fft.ptr(), 1, nfft, wavetable, workspace);</div>
+<div class="line"><span class="lineno">  185</span> </div>
+<div class="line"><span class="lineno">  186</span>  vector&lt;double&gt; wavelet_padded(wavelet);</div>
+<div class="line"><span class="lineno">  187</span>  wavelet_padded.resize(nfft, 0.0);</div>
+<div class="line"><span class="lineno">  188</span>  ComplexArray s_fft(nfft, &amp;(wavelet_padded[0]));</div>
+<div class="line"><span class="lineno">  189</span>  gsl_fft_complex_forward(s_fft.ptr(), 1, nfft, wavetable, workspace);</div>
+<div class="line"><span class="lineno">  190</span>  <span class="keywordflow">if</span> (s_fft.rms() &lt;= 0.0)</div>
+<div class="line"><span class="lineno">  191</span>    <span class="keywordflow">throw</span> MsPASSError(base_error + <span class="stringliteral">&quot;wavelet vector is all zeros&quot;</span>,</div>
+<div class="line"><span class="lineno">  192</span>                      ErrorSeverity::Invalid);</div>
+<div class="line"><span class="lineno">  193</span> </div>
+<div class="line"><span class="lineno">  194</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> dt = shapingwavelet.sample_interval();</div>
+<div class="line"><span class="lineno">  195</span>  vector&lt;double&gt; pn = this-&gt;noise_power_spectrum(dt);</div>
+<div class="line"><span class="lineno">  196</span>  winv = ComplexArray(nfft);</div>
+<div class="line"><span class="lineno">  197</span>  max_gain_actual = 0.0;</div>
+<div class="line"><span class="lineno">  198</span>  noise_amplification = 0.0;</div>
+<div class="line"><span class="lineno">  199</span>  <span class="keywordtype">double</span> spectral_power_peak = 0.0;</div>
+<div class="line"><span class="lineno">  200</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> k = 0; k &lt; nfft; ++k)</div>
+<div class="line"><span class="lineno">  201</span>    spectral_power_peak = max(spectral_power_peak, norm(s_fft[k]));</div>
+<div class="line"><span class="lineno">  202</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> mu_floor = mu_min * spectral_power_peak;</div>
+<div class="line"><span class="lineno">  203</span>  <span class="keywordtype">int</span> usable_bins = 0;</div>
+<div class="line"><span class="lineno">  204</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> k = 0; k &lt; nfft; ++k) {</div>
+<div class="line"><span class="lineno">  205</span>    Complex64 s = s_fft[k];</div>
+<div class="line"><span class="lineno">  206</span>    <span class="keywordtype">double</span> absS2 = norm(s);</div>
+<div class="line"><span class="lineno">  207</span>    <span class="keywordtype">double</span> absS = sqrt(absS2);</div>
+<div class="line"><span class="lineno">  208</span>    <span class="keywordtype">double</span> snr = absS2 / (pn[k] + noise_floor);</div>
+<div class="line"><span class="lineno">  209</span>    <span class="keywordtype">double</span> mu_noise = alpha * absS2 / (snr + 1.0e-12);</div>
+<div class="line"><span class="lineno">  210</span>    <span class="keywordtype">double</span> mu_gain = max(0.0, absS / gain_max - absS2);</div>
+<div class="line"><span class="lineno">  211</span>    <span class="keywordtype">double</span> mu = max({mu_floor, mu_noise, mu_gain});</div>
+<div class="line"><span class="lineno">  212</span>    <span class="keywordtype">double</span> b = this-&gt;reliability_taper(snr);</div>
+<div class="line"><span class="lineno">  213</span>    Complex64 g(0.0, 0.0);</div>
+<div class="line"><span class="lineno">  214</span>    <span class="keywordflow">if</span> ((absS2 + mu) &gt; 0.0)</div>
+<div class="line"><span class="lineno">  215</span>      g = b * conj(s) / (absS2 + mu);</div>
+<div class="line"><span class="lineno">  216</span>    <span class="keywordtype">double</span> gain = abs(g);</div>
+<div class="line"><span class="lineno">  217</span>    <span class="keywordflow">if</span> (gain &gt; gain_max) {</div>
+<div class="line"><span class="lineno">  218</span>      g *= gain_max / gain;</div>
+<div class="line"><span class="lineno">  219</span>      gain = gain_max;</div>
+<div class="line"><span class="lineno">  220</span>    }</div>
+<div class="line"><span class="lineno">  221</span>    <span class="keywordtype">double</span> *ptr = winv.ptr(k);</div>
+<div class="line"><span class="lineno">  222</span>    ptr[0] = g.real();</div>
+<div class="line"><span class="lineno">  223</span>    ptr[1] = g.imag();</div>
+<div class="line"><span class="lineno">  224</span>    max_gain_actual = max(max_gain_actual, gain);</div>
+<div class="line"><span class="lineno">  225</span>    noise_amplification += gain * gain * pn[k];</div>
+<div class="line"><span class="lineno">  226</span>    <span class="keywordflow">if</span> (b &gt; 0.0 &amp;&amp; gain &gt; 0.0)</div>
+<div class="line"><span class="lineno">  227</span>      ++usable_bins;</div>
+<div class="line"><span class="lineno">  228</span>  }</div>
+<div class="line"><span class="lineno">  229</span>  noise_amplification = sqrt(noise_amplification / <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(nfft));</div>
+<div class="line"><span class="lineno">  230</span>  effective_bandwidth_fraction =</div>
+<div class="line"><span class="lineno">  231</span>      <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(usable_bins) / <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(nfft);</div>
+<div class="line"><span class="lineno">  232</span> </div>
+<div class="line"><span class="lineno">  233</span>  ComplexArray rf_fft = winv * d_fft;</div>
+<div class="line"><span class="lineno">  234</span>  gsl_fft_complex_inverse(rf_fft.ptr(), 1, nfft, wavetable, workspace);</div>
+<div class="line"><span class="lineno">  235</span>  result = ExtractLagWindow(rf_fft, output_length, sample_shift);</div>
+<div class="line"><span class="lineno">  236</span>  processed = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  237</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -688,21 +688,21 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
 <p>Each operator commonly has different was to measure the quality of the result. This method should return these in a generic Metadata object. </p>
 
 <p>Implements <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#af683c2f25e91155c2bc1f81f9b62bbb1">mspass::algorithms::deconvolution::ScalarDecon</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  288</span>                                     {</div>
-<div class="line"><span class="lineno">  289</span>  Metadata md(this-&gt;BasicQCMetrics(<span class="stringliteral">&quot;NoiseStableDecon&quot;</span>, processed));</div>
-<div class="line"><span class="lineno">  290</span>  md.put(<span class="stringliteral">&quot;decon_operator_nfft&quot;</span>, nfft);</div>
-<div class="line"><span class="lineno">  291</span>  md.put(<span class="stringliteral">&quot;decon_operator_sample_shift&quot;</span>, sample_shift);</div>
-<div class="line"><span class="lineno">  292</span>  md.put(<span class="stringliteral">&quot;ns_gid_gain_max_requested&quot;</span>, gain_max);</div>
-<div class="line"><span class="lineno">  293</span>  md.put(<span class="stringliteral">&quot;ns_gid_gain_max_actual&quot;</span>, max_gain_actual);</div>
-<div class="line"><span class="lineno">  294</span>  md.put(<span class="stringliteral">&quot;ns_gid_mu_min&quot;</span>, mu_min);</div>
-<div class="line"><span class="lineno">  295</span>  md.put(<span class="stringliteral">&quot;ns_gid_alpha&quot;</span>, alpha);</div>
-<div class="line"><span class="lineno">  296</span>  md.put(<span class="stringliteral">&quot;ns_gid_noise_amplification&quot;</span>, noise_amplification);</div>
-<div class="line"><span class="lineno">  297</span>  md.put(<span class="stringliteral">&quot;ns_gid_effective_bandwidth_fraction&quot;</span>,</div>
-<div class="line"><span class="lineno">  298</span>         effective_bandwidth_fraction);</div>
-<div class="line"><span class="lineno">  299</span>  md.put(<span class="stringliteral">&quot;ns_gid_operator_nfft&quot;</span>, nfft);</div>
-<div class="line"><span class="lineno">  300</span>  md.put(<span class="stringliteral">&quot;ns_gid_use_reliability_taper&quot;</span>, use_reliability_taper);</div>
-<div class="line"><span class="lineno">  301</span>  <span class="keywordflow">return</span> md;</div>
-<div class="line"><span class="lineno">  302</span>}</div>
+<div class="fragment"><div class="line"><span class="lineno">  289</span>                                     {</div>
+<div class="line"><span class="lineno">  290</span>  Metadata md(this-&gt;BasicQCMetrics(<span class="stringliteral">&quot;NoiseStableDecon&quot;</span>, processed));</div>
+<div class="line"><span class="lineno">  291</span>  md.put(<span class="stringliteral">&quot;decon_operator_nfft&quot;</span>, nfft);</div>
+<div class="line"><span class="lineno">  292</span>  md.put(<span class="stringliteral">&quot;decon_operator_sample_shift&quot;</span>, sample_shift);</div>
+<div class="line"><span class="lineno">  293</span>  md.put(<span class="stringliteral">&quot;ns_gid_gain_max_requested&quot;</span>, gain_max);</div>
+<div class="line"><span class="lineno">  294</span>  md.put(<span class="stringliteral">&quot;ns_gid_gain_max_actual&quot;</span>, max_gain_actual);</div>
+<div class="line"><span class="lineno">  295</span>  md.put(<span class="stringliteral">&quot;ns_gid_mu_min&quot;</span>, mu_min);</div>
+<div class="line"><span class="lineno">  296</span>  md.put(<span class="stringliteral">&quot;ns_gid_alpha&quot;</span>, alpha);</div>
+<div class="line"><span class="lineno">  297</span>  md.put(<span class="stringliteral">&quot;ns_gid_noise_amplification&quot;</span>, noise_amplification);</div>
+<div class="line"><span class="lineno">  298</span>  md.put(<span class="stringliteral">&quot;ns_gid_effective_bandwidth_fraction&quot;</span>,</div>
+<div class="line"><span class="lineno">  299</span>         effective_bandwidth_fraction);</div>
+<div class="line"><span class="lineno">  300</span>  md.put(<span class="stringliteral">&quot;ns_gid_operator_nfft&quot;</span>, nfft);</div>
+<div class="line"><span class="lineno">  301</span>  md.put(<span class="stringliteral">&quot;ns_gid_use_reliability_taper&quot;</span>, use_reliability_taper);</div>
+<div class="line"><span class="lineno">  302</span>  <span class="keywordflow">return</span> md;</div>
+<div class="line"><span class="lineno">  303</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
