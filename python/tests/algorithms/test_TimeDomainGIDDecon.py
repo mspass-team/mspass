@@ -877,13 +877,14 @@ def test_TimeDomainGIDDecon_group_sparse_honors_external_noise_spectrum(tmp_path
     assert high_qc["group_sparse_inverse_external_wavelet_used"]
     assert low_qc["group_sparse_inverse_external_noise_spectrum_used"]
     assert high_qc["group_sparse_inverse_external_noise_spectrum_used"]
-    assert low_qc["group_sparse_noise_threshold"] > high_qc[
-        "group_sparse_noise_threshold"
-    ]
+    assert (
+        low_qc["group_sparse_noise_threshold"] > high_qc["group_sparse_noise_threshold"]
+    )
     assert low_qc["group_sparse_lambda_used"] > high_qc["group_sparse_lambda_used"]
-    assert high_qc["group_sparse_inverse_noise_amplification"] > low_qc[
-        "group_sparse_inverse_noise_amplification"
-    ]
+    assert (
+        high_qc["group_sparse_inverse_noise_amplification"]
+        > low_qc["group_sparse_inverse_noise_amplification"]
+    )
 
 
 def test_TimeDomainGIDDecon_clear_external_state_drops_pickle_payload(tmp_path):
@@ -1123,7 +1124,9 @@ def test_TimeDomainGIDDecon_QCMetrics_rejects_unsupported_changed_leaf_metadata(
     leaf_md["diagnostic_object"] = [1, 2, 3]
     engine.changeparameter(leaf_md)
 
-    with pytest.raises(MsPASSError, match="unsupported Metadata type.*diagnostic_object"):
+    with pytest.raises(
+        MsPASSError, match="unsupported Metadata type.*diagnostic_object"
+    ):
         engine.QCMetrics()
 
 
