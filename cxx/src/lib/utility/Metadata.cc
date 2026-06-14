@@ -59,6 +59,18 @@ bool pyobject_to_double(const py::object &obj, double &result) {
   }
 }
 
+bool double_is_integer_valued(const double value) {
+  return isfinite(value) && floor(value) == value;
+}
+
+bool double_fits_long(const double value) {
+  if (!double_is_integer_valued(value))
+    return false;
+  const long double wide_value = static_cast<long double>(value);
+  return wide_value >= static_cast<long double>(numeric_limits<long>::min()) &&
+         wide_value <= static_cast<long double>(numeric_limits<long>::max());
+}
+
 bool pyobject_to_long(const py::object &obj, long &result) {
   py::gil_scoped_acquire gil;
   if (pyobject_is_bool_like(obj))
@@ -98,10 +110,8 @@ bool pyobject_to_long(const py::object &obj, long &result) {
 
   if ((has_dtype_kind && kind == "f") || py::isinstance<py::float_>(obj)) {
     double numeric_value(0.0);
-    if (pyobject_to_double(obj, numeric_value) && isfinite(numeric_value) &&
-        floor(numeric_value) == numeric_value &&
-        numeric_value >= static_cast<double>(numeric_limits<long>::min()) &&
-        numeric_value < static_cast<double>(numeric_limits<long>::max())) {
+    if (pyobject_to_double(obj, numeric_value) &&
+        double_fits_long(numeric_value)) {
       result = static_cast<long>(numeric_value);
       return true;
     }
@@ -174,10 +184,6 @@ bool any_to_double(const boost::any &val, double &result) {
   return false;
 }
 
-bool double_is_integer_valued(const double value) {
-  return isfinite(value) && floor(value) == value;
-}
-
 bool any_to_long(const boost::any &val, long &result) {
   if (val.type() == typeid(short)) {
     result = static_cast<long>(boost::any_cast<short>(val));
@@ -224,10 +230,7 @@ bool any_to_long(const boost::any &val, long &result) {
   if (val.type() == typeid(py::object))
     return pyobject_to_long(boost::any_cast<py::object>(val), result);
   double numeric_value(0.0);
-  if (any_to_double(val, numeric_value) &&
-      double_is_integer_valued(numeric_value) &&
-      numeric_value >= static_cast<double>(numeric_limits<long>::min()) &&
-      numeric_value < static_cast<double>(numeric_limits<long>::max())) {
+  if (any_to_double(val, numeric_value) && double_fits_long(numeric_value)) {
     result = static_cast<long>(numeric_value);
     return true;
   }

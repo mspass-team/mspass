@@ -438,6 +438,12 @@ def test_Metadata_typed_getters_accept_compatible_scalar_types():
     md["numpy_float32"] = np.float32(1.25)
     md["numpy_int64"] = np.int64(8)
     md["numpy_bool"] = np.bool_(True)
+    md["long_min_float"] = float(-sys.maxsize - 1)
+    if sys.maxsize > 2**53:
+        float_below_long_max = np.nextafter(float(sys.maxsize), 0.0)
+        md["float_below_long_max"] = float_below_long_max
+    else:
+        md["long_max_float"] = float(sys.maxsize)
     md.put("put_numpy_float32", np.float32(3.5))
     md.put("put_numpy_int64", np.int64(11))
     md_from_dict = Metadata(
@@ -460,6 +466,11 @@ def test_Metadata_typed_getters_accept_compatible_scalar_types():
     assert md.get_double("numpy_float32") == pytest.approx(1.25)
     assert md.get_long("numpy_int64") == 8
     assert md.get_bool("numpy_bool") is True
+    assert md.get_long("long_min_float") == -sys.maxsize - 1
+    if sys.maxsize > 2**53:
+        assert md.get_long("float_below_long_max") == int(float_below_long_max)
+    else:
+        assert md.get_long("long_max_float") == sys.maxsize
     assert md.get_double("put_numpy_float32") == pytest.approx(3.5)
     assert md.get_long("put_numpy_int64") == 11
     assert md_from_dict.get_double("dict_numpy_float32") == pytest.approx(2.5)
@@ -490,6 +501,8 @@ def test_Metadata_typed_getters_reject_incompatible_scalar_types():
     md["not_boolean"] = 2
     md["true_bool"] = True
     md["too_large_long"] = float(np.iinfo(np.int64).max) * 2.0
+    if sys.maxsize > 2**53:
+        md["rounded_float_long_max"] = float(sys.maxsize)
     md_from_dict = Metadata(
         {"numpy_uint64_out_of_range": np.uint64(np.iinfo(np.uint64).max)}
     )
@@ -519,6 +532,9 @@ def test_Metadata_typed_getters_reject_incompatible_scalar_types():
         md.get_double("true_bool")
     with pytest.raises(MsPASSError, match="integer-valued|outside long range"):
         md.get_long("too_large_long")
+    if sys.maxsize > 2**53:
+        with pytest.raises(MsPASSError, match="outside long range"):
+            md.get_long("rounded_float_long_max")
     with pytest.raises(MsPASSError, match="integer-valued|outside long range"):
         md_from_dict.get_long("numpy_uint64_out_of_range")
 
