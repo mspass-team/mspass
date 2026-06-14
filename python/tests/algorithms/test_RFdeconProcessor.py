@@ -274,6 +274,23 @@ def test_make_gid_pf_text_overrides_mode_and_penalty_without_pf_edits(alg):
 
 
 @pytest.mark.parametrize("alg", GID_SWITCHING_ALGORITHMS)
+def test_make_gid_pf_text_accepts_numpy_scalar_gid_parameters(alg):
+    with _test_pfpath():
+        text = make_gid_pf_text(
+            alg=alg,
+            gid_parameters={
+                "maximum_iterations": np.int64(9),
+                "group_sparse_lambda_scale": np.float64(0.75),
+                "ns_gid_use_empirical_noise_threshold": np.bool_(False),
+            },
+        )
+
+    assert "maximum_iterations 9" in text
+    assert "group_sparse_lambda_scale 0.75" in text
+    assert "ns_gid_use_empirical_noise_threshold false" in text
+
+
+@pytest.mark.parametrize("alg", GID_SWITCHING_ALGORITHMS)
 def test_make_gid_pf_applies_public_aliases_without_pf_edits(alg):
     with _test_pfpath():
         pf = make_gid_pf(
