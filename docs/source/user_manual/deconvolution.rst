@@ -15,7 +15,7 @@ source spectra contain notches and real data contain noise, so MsPASS uses
 regularized inverse filters or sparse iterative methods rather than direct
 spectral division.
 
-Most users should read this page in three passes:
+Most users should read this page in four passes:
 
 1. Skim `Essential terms`_ so the method descriptions use familiar words.
 2. Read `Wrappers and engines`_, `Common conventions`_, and
