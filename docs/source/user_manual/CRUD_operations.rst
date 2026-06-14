@@ -5,7 +5,7 @@ CRUD Operations in MsPASS
 
 Overview
 ~~~~~~~~~~~
-The acronymn CRUD is often used as a mnemonic in books and online tutorials
+The acronym CRUD is often used as a mnemonic in books and online tutorials
 teaching database concepts.  CRUD stands for Create-Read-Update-Delete.
 It is a useful mnemonic because it summarizes the four main things any database system
 must accomplish cleanly.  This section is organized into subsections on
@@ -35,38 +35,26 @@ MongoDB.   However, for reasons outlined in the section
 :ref:`data_object_design_concepts` a schema feature
 was added as a component of MsPASS.  We emphasize the
 schema in this design, however, can be thought of as more
-like guidelines than rigid rules.
-The default schema for a Database assumes the data set is a set of
-TimeSeries object.  That implies the dataset is defined in the
-collection we call :code:`wf_TimeSeries`.   If the dataset is already
-assembled into three component bundles (:code:`Seismogram` objects)
-the Database constructor needs to be informed of that through this
-alternative construct:
-
-.. code-block:: python
-
-    from mspasspy.db.client import Client
-    from mspasspy.db.database import Database
-    dbclient = Client()
-    db=Database(dbclient, 'database_name', db_schema='wf_Seismogram')
-
-If your workflow requires reading both TimeSeries and Seismogram
-data, best practice (i.e. it isn't required but a good idea)
-would be to create two handles with one using the wf_TimeSeries
-and the other using the wf_Seismogram schema.
+like guidelines than rigid rules.  The default waveform collection
+for most examples is :code:`wf_TimeSeries`.  Workflows that handle
+three-component bundles can use the same :code:`Database` handle and
+pass :code:`collection="wf_Seismogram"` to the read and write methods
+where that collection is required.
 
 Create
 ~~~~~~~~~~
 
-We tag all methods of the Database class that do "Create" operations with
-the synonymous word "save".   Here we list all save methods with a brief
-description of each method.  Consult the docstring pages for detailed
-and most up to date usage:
+We tag all methods of the :code:`Database` class that do "Create"
+operations with the synonymous word "save".   Here we list the most
+important save methods with a brief description of each method.  Consult
+the docstring pages for detailed and most up to date usage:
 
-1.  :code:`save_data` is probably the most common method you will use.  The
-    first argument is one of the atomic objects defined in MsPASS
-    (Seismogram or TimeSeries) that you wish to save.  Options are
-    described in the docstring.  Here is an example usage:
+1.  :py:meth:`~mspasspy.db.database.Database.save_data` is the primary
+    waveform writer.  The first argument can be any of the core seismic
+    data objects defined in MsPASS:  :code:`TimeSeries`,
+    :code:`Seismogram`, :code:`TimeSeriesEnsemble`, or
+    :code:`SeismogramEnsemble`.  Here is an example usage for a single
+    miniseed trace:
 
     .. code-block:: python
 
@@ -81,33 +69,37 @@ and most up to date usage:
         db.save_data(d)
 
     By default :code:`save_data` stores all Metadata except those linked to
-    normalized collections (:code:`source`, :code:`channel`, and/or :code:`site`) with no
-    safety checks.  We discuss additional common options in a later section.
+    normalized collections (:code:`source`, :code:`channel`, and/or
+    :code:`site`) with no safety checks.  We discuss additional common
+    options in a later section.  The default return value is the
+    :code:`ObjectId` or list of :code:`ObjectId` values for the waveform
+    documents it writes.  Set :code:`return_data=True` when an
+    intermediate save needs the updated data object returned to the workflow.
 
-2.  :code:`save_ensemble_data`  is similar to :code:`save_data` except the first argument
-    is an Ensemble object.  There are currently two of them:  (1) TimeSeriesEnsemble
-    and (2) SeismogramEnsemble.   As discussed in the section
-    :ref:`data_object_design_concepts` an Ensemble
-    is a generalization of the idea of a "gather" in seismic reflection processing.
-    The :code:`save_ensemble_data` method is a convenience function for saving Ensembles.
-    Ensembles are containers of atomic objects.  :code:`save_ensemble_data`
-    is mostly a loop over the container saving the atomic objects it contains
-    to the wf_TimeSeries (for TimeSeriesEnsembles) or wf_Seismogram
-    (for Seismogram objects).  The method has one feature that differs form
-    :code:`save_data`; Ensemble objects may and often do contain attributes
-    common to the entire group in a separate Metadata container linked to the
-    ensemble as a whole.  Prior to entering the loop for saving the atomic
-    members of the ensemble the contents of the Ensemble's Metadata container
-    are copied verbatim to each member.  If previous values existed in any
-    of the members they will be silently replaced by the ensemble groups version.
+    When :code:`save_data` is passed an ensemble, it writes each live member
+    as an atomic datum.  Ensemble Metadata are copied to each member before
+    the member is saved.  A common pattern for miniseed data is to bundle
+    single-component data into three-component seismograms before saving:
 
-3.  :code:`save_catalog` should be viewed mostly as a convenience method to build
+    .. code-block:: python
+
+        # d is a TimeSeriesEnsemble loaded earlier in the workflow.
+        d3c = bundle_seed_data(d)
+        db.save_data(d3c, collection="wf_Seismogram")
+
+    See :py:func:`~mspasspy.algorithms.bundle.bundle_seed_data` for details
+    on the bundling step.  Older ensemble-specific write helpers are
+    backward-compatibility wrappers; new code should use :code:`save_data`.
+
+2.  :py:meth:`~mspasspy.db.database.Database.save_catalog` should be
+    viewed mostly as a convenience method to build
     the :code:`source` collection from QUAKEML data downloaded from FDSN data
     centers via obspy's web services functions.   :code:`save_catalog` can be
     thought of as a converter that translates the contents of a QUAKEML
     file or string for storage as a set of MongoDB documents in the :code:`source`
     collection.  We used obspy's :code:`Catalog` object as an intermediary to
-    avoid the need to write our own QUAKEML parser.   As with save_data
+    avoid the need to write our own QUAKEML parser.   As with
+    :code:`save_data`
     the easiest way to understand the usage would be this example derived from
     our *getting_started* tutorial.
 
@@ -133,7 +125,8 @@ and most up to date usage:
     This particular example pulls 11 large aftershocks of the 2011 Tohoku
     Earthquake.
 
-4.  :code:`save_inventory` is similar in concept to :code:`save_catalog`, but instead of
+3.  :py:meth:`~mspasspy.db.database.Database.save_inventory` is similar
+    in concept to :code:`save_catalog`, but instead of
     translating data for source information it translates information to
     MsPASS for station metadata.  The station information problem is slightly
     more complicated than the source problem because of an implementation
@@ -154,7 +147,7 @@ and most up to date usage:
     a python translation of the data structure defined by the
     `FDSN StationXML <https://www.fdsn.org/xml/station/>`__
     standardized format defined for web service requests for station metadata.
-    Like :code:`save_source` an example from the getting started tutorial
+    Like :code:`save_catalog` an example from the getting started tutorial
     should be instructive:
 
     .. code-block:: python
@@ -164,7 +157,7 @@ and most up to date usage:
 
     This example extracts all stations with the "network code" of "TA"
     (the Earthscope transportable array).  A complication of station
-    metadata that differs from source data is that station metatdata is
+    metadata that differs from source data is that station metadata is
     time variable.  The reason is that sensors change, three-component sensors
     are reoriented, digitizers change, etc.  That means station metadata
     have a time span for which they are valid that has to be handled to
@@ -186,7 +179,7 @@ and most up to date usage:
 
     Finally, we note a key feature of the :code:`save_inventory` method:
     it enforces a seed convention to avoid saving duplicate documents.
-    As noted earlier he SEED standard uses the keys we call net, sta, chan,
+    As noted earlier the SEED standard uses the keys we call net, sta, chan,
     and loc along with a time interval to define a unique block of
     receiver metadata.   The :code:`save_inventory` method enforces
     the unique combination of these keys in a save.  It always will
@@ -198,33 +191,41 @@ and most up to date usage:
 Read
 ~~~~~~~
 
-The Read operation is the inverse of save (create).  The core readers were
-designed to simplify the process of reading the core data types of MsPASS:  TimeSeries
-and Seismogram.  There are also convenience functions for reading ensembles.
-As with the save operators we discuss here the key methods, but refer the
-reader to the sphinx documentation for full usage.
+The Read operation is the inverse of save (create).  The core reader was
+designed to simplify the process of reading the core data types of MsPASS:
+:code:`TimeSeries`, :code:`Seismogram`, :code:`TimeSeriesEnsemble`, and
+:code:`SeismogramEnsemble`.  As with the save operators we discuss here
+the key methods, but refer the reader to the sphinx documentation for full
+usage.
 
-#.  :code:`read_data` is the core method for reading atomic data.  The method has
-    one required argument.  That argument is an ObjectID for the document used
-    to define the read operation OR a MongoDB document (python dict) that
-    contains the ObjectID.  The ObjectID is guaranteed to provide a
-    unique key to one and only one document and is the way this reader
-    finds one and only one record to fetch per call.  The most common use
-    is the for with a MongoDB document in a construct like the following
-    in a serial job:
+#.  :py:meth:`~mspasspy.db.database.Database.read_data` is the core
+    waveform reader.  Its required first argument can be any of the
+    following:
+
+    1.  A MongoDB :code:`ObjectId`.  This reads one atomic datum from the
+        waveform collection selected by the :code:`collection` argument.
+        It is convenient but slower than cursor-driven reads because it
+        requires an extra database query per datum.
+    2.  A MongoDB document represented as a python :code:`dict` or
+        :code:`Metadata` object.  This is the preferred serial pattern
+        when iterating over a MongoDB cursor.
+    3.  A :code:`pymongo.cursor.Cursor`.  This reads all documents returned
+        by the cursor and constructs a :code:`TimeSeriesEnsemble` or
+        :code:`SeismogramEnsemble`, depending on the selected collection.
+
+    The most common serial pattern is to iterate over a cursor and pass
+    each document to :code:`read_data`:
 
     .. code-block:: python
 
-      query={...Some MongoDB query dict entry...}
-      cursor=db.wf_TimeSeries.find(query) # Changed to wf_Seismogram for 3D data
-      for doc in cursor:
-        d=db.read_data(doc)  # Add option collection='wf_Seismogram' for 3C reads
+        query = {...Some MongoDB query dict entry...}
+        cursor = db.wf_TimeSeries.find(query)
+        for doc in cursor:
+            d = db.read_data(doc, collection="wf_TimeSeries")
 
-    By default :code:`read_data` will use the waveform collection defined
-    in the schema defined for the handle.  The default for the standard
-    MsPASS schema is TimeSeries.   As the comment in the example states
-    if you are trying to read from a different collection (i.e wf_Seismogram
-    or wf_miniseed) you need to specify that alternative with the collection argument.
+    Use :code:`collection="wf_Seismogram"` when reading three-component
+    seismograms, or another waveform collection name such as
+    :code:`wf_miniseed` when appropriate.
 
     The data objects in MsPASS are stored internally as C++ objects with
     multiple elements illustrated in the figure below.   Although these
@@ -283,17 +284,13 @@ reader to the sphinx documentation for full usage.
     3.  The "pedantic" mode is mainly of use for data export where a
         type mismatch could produce invalid data required by another package.
 
-#.  A closely related function to :code:`read_data` is :code:`read_ensemble_data`.  Like
-    :code:`save_ensemble_data` it is mostly a loop to assemble an ensemble of
-    atomic data using a sequence of calls to :code:`read_data`.  The sequence of
-    what to read is defined by arg 0.   That arg must be one of two things:
-    (a) a python list of ObjectIDs or (b) a cursor object created by a query
-    that uniquely defines the ensemble contnts.  The example code below illustrates how this is done.
-    This code fragment assumes the variable :code:`source_id` was defined earlier
-    and defines (a) a valid ObjectId in the source collection, and (b) has
-    been defined in wf_TimeSeries previously by a cross-referencing function.  Notice we
-    also include a size check with the MongoDB function count_documents
-    to impose constraints on the query. That is always good practice.
+    Passing a cursor directly to :code:`read_data` constructs an ensemble.
+    The example code below assumes the variable :code:`source_id` was
+    defined earlier, is a valid :code:`ObjectId` in the :code:`source`
+    collection, and has been cross-referenced into :code:`wf_TimeSeries`.
+    Notice we include a size check with the MongoDB function
+    :code:`count_documents` to impose constraints on the query. That is
+    always good practice.
 
     .. code-block:: python
 
@@ -303,15 +300,16 @@ reader to the sphinx documentation for full usage.
             print("No data found for source_id = ", source_id)
         elif ndocs > TOOBIG:
             print("Number of documents matching source_id=", source_id, " is ", ndocs,
-                "Exceeds the internal limit on the ensemble size=", TOBIG)
+                  "Exceeds the internal limit on the ensemble size=", TOOBIG)
         else:
             cursor = db.wf_TimeSeries.find(query)
-            ens = db.read_ensemble_data(cursoe)
+            ensemble = db.read_data(cursor, collection="wf_TimeSeries")
 
 #.  A workflow that needs to read and process a large data sets in
     a parallel environment should use
-    the parallel equivalent of :code:`read_data` and :code:`read_ensemble_data` called
-    :code:`read_distributed_data`.  MsPASS supports two parallel frameworks called
+    the parallel equivalent of :code:`read_data` called
+    :py:func:`~mspasspy.io.distributed.read_distributed_data`.  MsPASS
+    supports two parallel frameworks called
     SPARK and DASK.   Both abstract the concept of the parallel data set in
     a container they call an RDD and Bag respectively.   Both are best thought
     of as a handle to the entire data set that can be passed between
@@ -324,30 +322,29 @@ reader to the sphinx documentation for full usage.
     mechanism we use as the default data storage.  :code:`read_distributed_data`
     provides the mechanism to accomplish that.
 
-    :code:`read_distributed_data` has a very different call structure than the
-    other seismic data readers.  It is not a method of Database, but a
-    separate function call.  The input to be read by this function is
-    defined by arg 2 (C counting starting at 0).  It expects to be passed a
-    MongoDB cursor object, which is the standard return from the database
-    find operation.   As with the other functions discussed in this section
-    a block of example code should make this clearer:
+    :code:`read_distributed_data` is not a method of :code:`Database`; it
+    is a separate function in :code:`mspasspy.io.distributed`.  Its first
+    argument can be a :code:`Database` handle, a dataframe representation of
+    a waveform collection, or a list of ensemble-defining queries.  The
+    common pattern for reading a subset of a waveform collection is:
 
     .. code-block:: python
 
-        from mspasspy.db.client import Client
-        from mspasspy.db.database import Database,read_distributed_data
-        dbclient = Client()
-        # This is the name used to acccess the database of interest assumed
-        # to contain data loaded previously.  Name used would change for user
-        dbname = 'distributed_data_example'  # name of db set in MongoDB - example
-        db = Database(dbclient,dbname)
-        # This example reads all the data currently stored in this database
-        cursor = db.wf_TimeSeries.find({})
-        rdd0 = read_distributed_data(dbclient, dbname, cursor)
+        from mspasspy.io.distributed import read_distributed_data
 
-    The output of the read is the SPARK RDD that we assign the symbol rdd0.
-    If you are using DASK instead of SPARK you would add the optional
-    argument :code:`format='dask'`.
+        query = {...Some MongoDB query dict entry...}
+        data = read_distributed_data(
+            db,
+            query=query,
+            collection="wf_TimeSeries",
+            scheduler="dask",
+        )
+
+    The output is a Dask bag by default or a Spark RDD when
+    :code:`scheduler="spark"`.  See :ref:`parallel_processing`,
+    :ref:`parallel_io`, and
+    :py:func:`~mspasspy.io.distributed.read_distributed_data` for more
+    complete parallel workflow examples.
 
 Update
 ~~~~~~
@@ -670,12 +667,13 @@ they are handled during construction.
     The set of which collections are to be loaded are controlled by optional
     parameters in each reader.  An important constraint is that for all
     normalized collections defined as required, if the cross-referencing
-    key is not defined a reader will ignore that datum.  :code:`read_data` silently
-    signals that condition by returning a None.  :code:`read_ensemble_data` and
-    :code:`read_distributed_data` normally silently skip such data.   That model
-    is intentional because it allows initial loading of a large data set with
-    unresolvable anomalies that prevent one or more of the cross-referencing
-    ids from being defined.
+    key is not defined a reader will ignore that datum.  Atomic
+    :code:`read_data` calls silently signal that condition by returning
+    :code:`None`.  Ensemble reads through :code:`read_data` and distributed
+    reads through :code:`read_distributed_data` normally silently skip such
+    data.  That model is intentional because it allows initial loading of a
+    large data set with unresolvable anomalies that prevent one or more of
+    the cross-referencing ids from being defined.
 
 3.  The waveform data is read and the data object is constructed.  If that process fails the data
     will be marked dead and an error log posted with the reason (e.g. a
