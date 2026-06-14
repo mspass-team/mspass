@@ -148,9 +148,7 @@ def _gid_branch_name(alg):
 def _format_pf_value(value):
     if isinstance(value, (bool, np.bool_)):
         return "true" if bool(value) else "false"
-    if isinstance(value, (int, np.integer)) and not isinstance(
-        value, (bool, np.bool_)
-    ):
+    if isinstance(value, (int, np.integer)) and not isinstance(value, (bool, np.bool_)):
         return str(int(value))
     if isinstance(value, (float, np.floating)):
         return f"{float(value):.15g}"
@@ -158,7 +156,7 @@ def _format_pf_value(value):
         if value.strip() != value or re.search(r"\s", value):
             raise ValueError(
                 f"pf scalar string values cannot contain whitespace: {value!r}"
-        )
+            )
         return value
     raise TypeError(
         "GID parameter values must be bool, int, float, numpy scalar, "

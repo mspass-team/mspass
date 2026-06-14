@@ -485,9 +485,10 @@ def test_CNRRFDecon_error_handlers():
         d = Seismogram(d0wn)
         d["low_f_band_edge"] = bad_bandwidth
         d["high_f_band_edge"] = 8.0
-        assert fetch_bandwidth_data(
-            d, ["low_f_band_edge", "high_f_band_edge"]
-        ) == (-1.0, 8.0)
+        assert fetch_bandwidth_data(d, ["low_f_band_edge", "high_f_band_edge"]) == (
+            -1.0,
+            8.0,
+        )
         d_decon = CNRRFDecon(
             d,
             engine,
