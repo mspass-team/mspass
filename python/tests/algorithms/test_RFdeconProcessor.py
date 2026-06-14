@@ -420,6 +420,22 @@ def test_RFdecon_gid_keywords_switch_modes_without_pf_edits(alg, mode):
         assert qc["gid_penalty_function"] == "none"
 
 
+@pytest.mark.parametrize("alg", GID_SWITCHING_ALGORITHMS)
+def test_RFdecon_gid_accepts_integral_values_for_double_parameters(alg):
+    with _test_pfpath():
+        rf = RFdecon(
+            Seismogram(_make_gid_switching_data()),
+            alg=alg,
+            gid_mode="group_sparse",
+            gid_parameters={"group_sparse_lambda_scale": 2},
+        )
+
+    assert rf.live
+    qc = rf["RFdecon_properties"]
+    assert qc["group_sparse_enabled"]
+    assert qc["group_sparse_lambda_scale"] == pytest.approx(2.0)
+
+
 @pytest.mark.parametrize(
     "alg,pf",
     [

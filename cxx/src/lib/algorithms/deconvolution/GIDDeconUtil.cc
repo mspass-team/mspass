@@ -56,8 +56,20 @@ string GIDDeconTypeName(const IterDeconType type) {
 
 double GetDoubleDefault(const Metadata &md, const string &key,
                         const double default_value) {
-  if (md.is_defined(key))
-    return md.get_double(key);
+  if (md.is_defined(key)) {
+    boost::any val(md.get_any(key));
+    if (val.type() == typeid(double))
+      return boost::any_cast<double>(val);
+    if (val.type() == typeid(float))
+      return static_cast<double>(boost::any_cast<float>(val));
+    if (val.type() == typeid(int))
+      return static_cast<double>(boost::any_cast<int>(val));
+    if (val.type() == typeid(long))
+      return static_cast<double>(boost::any_cast<long>(val));
+    throw MsPASSError("GetDoubleDefault: Metadata key=" + key +
+                          " must be numeric",
+                      ErrorSeverity::Invalid);
+  }
   return default_value;
 }
 
@@ -888,9 +900,7 @@ GroupSparseDeconResult SolveGroupSparseDecon(
 
   const int npts = static_cast<int>(target.npts());
   const int ncoef = 3 * npts;
-  const auto index = [npts](const int component, const int sample) {
-    return component * npts + sample;
-  };
+  const int nf = static_cast<int>(actual_o_fir.size());
 
   vector<char> valid(npts, false);
   for (int j = 0; j < npts; ++j) {
@@ -907,22 +917,33 @@ GroupSparseDeconResult SolveGroupSparseDecon(
 
   vector<double> target_vec(ncoef, 0.0), x(ncoef, 0.0), xnew(ncoef, 0.0),
       model(ncoef, 0.0), residual(ncoef, 0.0), gradient(ncoef, 0.0);
-  for (int k = 0; k < 3; ++k) {
-    for (int j = 0; j < npts; ++j)
-      target_vec[index(k, j)] = target.u(k, j);
+  for (int j = 0; j < npts; ++j) {
+    target_vec[j] = target.u(0, j);
+    target_vec[npts + j] = target.u(1, j);
+    target_vec[2 * npts + j] = target.u(2, j);
   }
 
   auto build_model = [&](const vector<double> &coef) {
     fill(model.begin(), model.end(), 0.0);
+    const double *c0 = coef.data();
+    const double *c1 = c0 + npts;
+    const double *c2 = c1 + npts;
+    double *m0 = model.data();
+    double *m1 = m0 + npts;
+    double *m2 = m1 + npts;
     for (int j = 0; j < npts; ++j) {
       if (!valid[j])
         continue;
       const int col0 = j - actual_o_0;
-      for (int p = 0; p < static_cast<int>(actual_o_fir.size()); ++p) {
+      const double a0 = c0[j];
+      const double a1 = c1[j];
+      const double a2 = c2[j];
+      for (int p = 0; p < nf; ++p) {
         const int sample = col0 + p;
         const double h = actual_o_fir[p];
-        for (int k = 0; k < 3; ++k)
-          model[index(k, sample)] += h * coef[index(k, j)];
+        m0[sample] += h * a0;
+        m1[sample] += h * a1;
+        m2[sample] += h * a2;
       }
     }
     for (int i = 0; i < ncoef; ++i)
@@ -934,10 +955,12 @@ GroupSparseDeconResult SolveGroupSparseDecon(
     double rss(0.0), penalty(0.0);
     for (auto e : residual)
       rss += e * e;
+    const double *c0 = coef.data();
+    const double *c1 = c0 + npts;
+    const double *c2 = c1 + npts;
     for (int j = 0; j < npts; ++j) {
-      const double nrm = sqrt(coef[index(0, j)] * coef[index(0, j)] +
-                              coef[index(1, j)] * coef[index(1, j)] +
-                              coef[index(2, j)] * coef[index(2, j)]);
+      const double nrm =
+          sqrt(c0[j] * c0[j] + c1[j] * c1[j] + c2[j] * c2[j]);
       penalty += nrm;
     }
     return 0.5 * rss + lambda * penalty;
@@ -952,35 +975,54 @@ GroupSparseDeconResult SolveGroupSparseDecon(
   double prev_objective = result.objective_initial;
   for (int iter = 1; iter <= max_iterations; ++iter) {
     fill(gradient.begin(), gradient.end(), 0.0);
+    double *g0 = gradient.data();
+    double *g1 = g0 + npts;
+    double *g2 = g1 + npts;
+    const double *r0 = residual.data();
+    const double *r1 = r0 + npts;
+    const double *r2 = r1 + npts;
     for (int j = 0; j < npts; ++j) {
       if (!valid[j])
         continue;
       const int col0 = j - actual_o_0;
-      for (int p = 0; p < static_cast<int>(actual_o_fir.size()); ++p) {
+      double sum0(0.0), sum1(0.0), sum2(0.0);
+      for (int p = 0; p < nf; ++p) {
         const int sample = col0 + p;
         const double h = actual_o_fir[p];
-        for (int k = 0; k < 3; ++k)
-          gradient[index(k, j)] += h * residual[index(k, sample)];
+        sum0 += h * r0[sample];
+        sum1 += h * r1[sample];
+        sum2 += h * r2[sample];
       }
+      g0[j] = sum0;
+      g1[j] = sum1;
+      g2[j] = sum2;
     }
 
     const double shrink_threshold = lambda * step;
     fill(xnew.begin(), xnew.end(), 0.0);
+    const double *x0 = x.data();
+    const double *x1 = x0 + npts;
+    const double *x2 = x1 + npts;
+    const double *grad0 = gradient.data();
+    const double *grad1 = grad0 + npts;
+    const double *grad2 = grad1 + npts;
+    double *xn0 = xnew.data();
+    double *xn1 = xn0 + npts;
+    double *xn2 = xn1 + npts;
     for (int j = 0; j < npts; ++j) {
       if (!valid[j])
         continue;
-      double z[3];
-      double znorm2(0.0);
-      for (int k = 0; k < 3; ++k) {
-        z[k] = x[index(k, j)] - step * gradient[index(k, j)];
-        znorm2 += z[k] * z[k];
-      }
+      const double z0 = x0[j] - step * grad0[j];
+      const double z1 = x1[j] - step * grad1[j];
+      const double z2 = x2[j] - step * grad2[j];
+      const double znorm2 = z0 * z0 + z1 * z1 + z2 * z2;
       const double znorm = sqrt(znorm2);
       if (znorm <= shrink_threshold || znorm <= 0.0)
         continue;
       const double scale = 1.0 - shrink_threshold / znorm;
-      for (int k = 0; k < 3; ++k)
-        xnew[index(k, j)] = scale * z[k];
+      xn0[j] = scale * z0;
+      xn1[j] = scale * z1;
+      xn2[j] = scale * z2;
     }
 
     const double current_objective = objective(xnew);
@@ -999,10 +1041,12 @@ GroupSparseDeconResult SolveGroupSparseDecon(
 
   vector<double> group_norms;
   group_norms.reserve(npts);
+  const double *x0 = x.data();
+  const double *x1 = x0 + npts;
+  const double *x2 = x1 + npts;
   for (int j = 0; j < npts; ++j) {
-    const double nrm = sqrt(x[index(0, j)] * x[index(0, j)] +
-                            x[index(1, j)] * x[index(1, j)] +
-                            x[index(2, j)] * x[index(2, j)]);
+    const double nrm =
+        sqrt(x0[j] * x0[j] + x1[j] * x1[j] + x2[j] * x2[j]);
     if (valid[j])
       group_norms.push_back(nrm);
   }
@@ -1012,15 +1056,17 @@ GroupSparseDeconResult SolveGroupSparseDecon(
       max(active_threshold,
           active_threshold_scale * result.active_threshold_quantile_value);
   vector<double> xactive(ncoef, 0.0);
+  double *xa0 = xactive.data();
+  double *xa1 = xa0 + npts;
+  double *xa2 = xa1 + npts;
   for (int j = 0; j < npts; ++j) {
-    const double nrm = sqrt(x[index(0, j)] * x[index(0, j)] +
-                            x[index(1, j)] * x[index(1, j)] +
-                            x[index(2, j)] * x[index(2, j)]);
+    const double nrm =
+        sqrt(x0[j] * x0[j] + x1[j] * x1[j] + x2[j] * x2[j]);
     if (valid[j] && nrm > result.active_threshold_used) {
-      result.spikes.emplace_back(j, x[index(0, j)], x[index(1, j)],
-                                 x[index(2, j)]);
-      for (int k = 0; k < 3; ++k)
-        xactive[index(k, j)] = x[index(k, j)];
+      result.spikes.emplace_back(j, x0[j], x1[j], x2[j]);
+      xa0[j] = x0[j];
+      xa1[j] = x1[j];
+      xa2[j] = x2[j];
       ++result.active_groups;
     }
   }
@@ -1029,9 +1075,13 @@ GroupSparseDeconResult SolveGroupSparseDecon(
       (result.objective_initial - result.objective_final) /
       max(1.0, result.objective_initial);
   result.residual = CoreSeismogram(target);
-  for (int k = 0; k < 3; ++k) {
-    for (int j = 0; j < npts; ++j)
-      result.residual.u(k, j) = target_vec[index(k, j)] - model[index(k, j)];
+  const double *m0 = model.data();
+  const double *m1 = m0 + npts;
+  const double *m2 = m1 + npts;
+  for (int j = 0; j < npts; ++j) {
+    result.residual.u(0, j) = target_vec[j] - m0[j];
+    result.residual.u(1, j) = target_vec[npts + j] - m1[j];
+    result.residual.u(2, j) = target_vec[2 * npts + j] - m2[j];
   }
   return result;
 }
