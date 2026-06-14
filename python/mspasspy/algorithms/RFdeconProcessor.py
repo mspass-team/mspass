@@ -17,6 +17,7 @@ Created on Fri Jul 31 06:24:10 2020
 
 import numpy as np
 import os
+import re
 import tempfile
 import warnings
 
@@ -90,6 +91,323 @@ def _write_pickled_pf_text(pf, text):
         return fp.name
     finally:
         fp.close()
+
+
+_TIME_DOMAIN_GID_ALIASES = {"GeneralizedIterative", "TimeDomainGID", "time", "td"}
+_FREQUENCY_DOMAIN_GID_ALIASES = {"FrequencyDomainGID", "frequency", "fd"}
+_SUPPORTED_GID_DECONVOLUTION_TYPES = {
+    "least_square",
+    "water_level",
+    "multi_taper",
+    "cnr",
+    "cnr3c",
+    "ns_gid",
+    "noise_stable",
+    "noise_aware_stable",
+    "group_sparse",
+    "group_lasso",
+    "sparse_group_lasso",
+}
+_SUPPORTED_GID_PENALTY_FUNCTIONS = {
+    "none",
+    "boxcar",
+    "cosine_taper",
+    "shaping_wavelet",
+    "resolution_kernel",
+    "adaptive_memory",
+}
+
+
+def _canonical_gid_algorithm(alg):
+    if alg in _TIME_DOMAIN_GID_ALIASES:
+        return "TimeDomainGID"
+    if alg in _FREQUENCY_DOMAIN_GID_ALIASES:
+        return "FrequencyDomainGID"
+    raise ValueError(
+        "GID configuration helpers require alg='TimeDomainGID', "
+        "'GeneralizedIterative', or 'FrequencyDomainGID'"
+    )
+
+
+def _gid_default_pf(alg):
+    return (
+        "TimeDomainGIDDecon.pf"
+        if _canonical_gid_algorithm(alg) == "TimeDomainGID"
+        else "FrequencyDomainGIDDecon.pf"
+    )
+
+
+def _gid_branch_name(alg):
+    return (
+        "time_domain_gid_deconvolution"
+        if _canonical_gid_algorithm(alg) == "TimeDomainGID"
+        else "frequency_domain_gid_deconvolution"
+    )
+
+
+def _format_pf_value(value):
+    if isinstance(value, (bool, np.bool_)):
+        return "true" if bool(value) else "false"
+    if isinstance(value, (int, np.integer)) and not isinstance(value, (bool, np.bool_)):
+        return str(int(value))
+    if isinstance(value, (float, np.floating)):
+        return f"{float(value):.15g}"
+    if isinstance(value, str):
+        if value.strip() != value or re.search(r"\s", value):
+            raise ValueError(
+                f"pf scalar string values cannot contain whitespace: {value!r}"
+            )
+        return value
+    raise TypeError(
+        "GID parameter values must be bool, int, float, numpy scalar, "
+        "or whitespace-free string"
+    )
+
+
+def _normalize_metadata_scalar_value(value, key, context):
+    if isinstance(value, np.generic):
+        return value.item()
+    if isinstance(value, np.ndarray):
+        if value.ndim == 0:
+            return value.item()
+        raise TypeError(f"{context}: metadata parameter {key!r} must be scalar")
+    if isinstance(value, (list, tuple, dict, Metadata)):
+        raise TypeError(f"{context}: metadata parameter {key!r} must be scalar")
+    return value
+
+
+def _normalize_metadata_scalars(md, context):
+    result = Metadata()
+    for key in md.keys():
+        result[key] = _normalize_metadata_scalar_value(md[key], key, context)
+    return result
+
+
+def _validate_component_index(value, name, context):
+    if isinstance(value, (bool, np.bool_)):
+        raise ValueError(f"{context}: {name} must be integer 0, 1, or 2")
+    if isinstance(value, np.integer):
+        value = int(value)
+    elif not isinstance(value, int):
+        raise ValueError(f"{context}: {name} must be integer 0, 1, or 2")
+    if value not in (0, 1, 2):
+        raise ValueError(f"{context}: {name} must be integer 0, 1, or 2")
+    return value
+
+
+def _find_pf_branch_line_range(lines, branch_name, context):
+    branch_pattern = re.compile(r"^\s*" + re.escape(branch_name) + r"\s+&Arr\{\s*$")
+    starts = [i for i, line in enumerate(lines) if branch_pattern.match(line)]
+    if len(starts) != 1:
+        raise MsPASSError(
+            f"{context}: expected one {branch_name!r} branch, found {len(starts)}",
+            ErrorSeverity.Fatal,
+        )
+    start = starts[0]
+    depth = 0
+    for i in range(start, len(lines)):
+        depth += lines[i].count("{")
+        depth -= lines[i].count("}")
+        if i > start and depth == 0:
+            return start, i
+    raise MsPASSError(
+        f"{context}: unterminated {branch_name!r} branch",
+        ErrorSeverity.Fatal,
+    )
+
+
+def _replace_pf_scalar_in_branch(text, branch_name, key, value, context):
+    lines = text.splitlines()
+    start, end = _find_pf_branch_line_range(lines, branch_name, context)
+    key_pattern = re.compile(r"^(\s*)" + re.escape(key) + r"\s+\S+(\s*(#.*)?)$")
+    matches = []
+    depth = 1
+    for i in range(start + 1, end):
+        match = key_pattern.match(lines[i])
+        if depth == 1 and match:
+            matches.append((i, match))
+        depth += lines[i].count("{")
+        depth -= lines[i].count("}")
+    if len(matches) != 1:
+        raise MsPASSError(
+            f"{context}: expected one scalar key {key!r} in {branch_name!r}, "
+            f"found {len(matches)}",
+            ErrorSeverity.Fatal,
+        )
+    line_index, match = matches[0]
+    indent = match.group(1)
+    suffix = match.group(2) or ""
+    lines[line_index] = f"{indent}{key} {_format_pf_value(value)}{suffix}"
+    return "\n".join(lines) + ("\n" if text.endswith("\n") else "")
+
+
+def _normalize_gid_option_aliases(
+    deconvolution_type=None,
+    gid_mode=None,
+    lag_weight_penalty_function=None,
+    gid_penalty_function=None,
+    gid_parameters=None,
+):
+    gid_parameters = dict(gid_parameters or {})
+
+    parameter_mode = gid_parameters.pop("deconvolution_type", None)
+    modes = [x for x in (deconvolution_type, gid_mode, parameter_mode) if x is not None]
+    if len(set(modes)) > 1:
+        raise ValueError("conflicting GID deconvolution_type/gid_mode values")
+    mode = modes[0] if modes else None
+    if mode is not None and mode not in _SUPPORTED_GID_DECONVOLUTION_TYPES:
+        raise ValueError(f"unsupported GID deconvolution_type={mode!r}")
+
+    parameter_penalty = gid_parameters.pop("lag_weight_penalty_function", None)
+    penalties = [
+        x
+        for x in (
+            lag_weight_penalty_function,
+            gid_penalty_function,
+            parameter_penalty,
+        )
+        if x is not None
+    ]
+    if len(set(penalties)) > 1:
+        raise ValueError("conflicting GID lag_weight_penalty_function values")
+    penalty = penalties[0] if penalties else None
+    if penalty is not None and penalty not in _SUPPORTED_GID_PENALTY_FUNCTIONS:
+        raise ValueError(f"unsupported GID lag_weight_penalty_function={penalty!r}")
+
+    if mode is not None:
+        gid_parameters["deconvolution_type"] = mode
+    if penalty is not None:
+        gid_parameters["lag_weight_penalty_function"] = penalty
+    return gid_parameters
+
+
+def _gid_overrides_requested(
+    deconvolution_type=None,
+    gid_mode=None,
+    lag_weight_penalty_function=None,
+    gid_penalty_function=None,
+    gid_parameters=None,
+):
+    return any(
+        x is not None
+        for x in (
+            deconvolution_type,
+            gid_mode,
+            lag_weight_penalty_function,
+            gid_penalty_function,
+        )
+    ) or bool(gid_parameters)
+
+
+def make_gid_pf_text(
+    alg="TimeDomainGID",
+    pf=None,
+    *,
+    deconvolution_type=None,
+    gid_mode=None,
+    lag_weight_penalty_function=None,
+    gid_penalty_function=None,
+    gid_parameters=None,
+    _pf_text=None,
+):
+    """
+    Return GID parameter-file text with validated GID-branch overrides applied.
+
+    This helper is the supported Python path for comparing GID inverse or solver
+    modes and lag-penalty settings without hand-editing Antelope pf text.  It
+    only changes keys in the top-level GID branch; leaf inverse-operator
+    parameters should still be changed through a custom pf file or the leaf
+    ``changeparameter`` path.  Custom pf files should follow the shipped GID
+    pf style: the GID branch opener on its own line and scalar keys stored as
+    single-token values.
+    """
+    canonical_alg = _canonical_gid_algorithm(alg)
+    pf = _gid_default_pf(canonical_alg) if pf in (None, "RFdeconProcessor.pf") else pf
+    text = _pf_text if _pf_text is not None else _antelope_pf_to_text(AntelopePf(pf))
+    overrides = _normalize_gid_option_aliases(
+        deconvolution_type=deconvolution_type,
+        gid_mode=gid_mode,
+        lag_weight_penalty_function=lag_weight_penalty_function,
+        gid_penalty_function=gid_penalty_function,
+        gid_parameters=gid_parameters,
+    )
+    branch_name = _gid_branch_name(canonical_alg)
+    context = f"make_gid_pf_text({canonical_alg})"
+    for key, value in overrides.items():
+        text = _replace_pf_scalar_in_branch(text, branch_name, key, value, context)
+    return text
+
+
+def make_gid_pf(
+    alg="TimeDomainGID",
+    pf=None,
+    *,
+    deconvolution_type=None,
+    gid_mode=None,
+    lag_weight_penalty_function=None,
+    gid_penalty_function=None,
+    gid_parameters=None,
+):
+    """
+    Build an ``AntelopePf`` for a GID engine with selected GID options.
+
+    Examples
+    --------
+    ``make_gid_pf(alg="TimeDomainGID", deconvolution_type="group_sparse")``
+    returns a parameter object suitable for ``TimeDomainGIDDecon``.
+    """
+    canonical_alg = _canonical_gid_algorithm(alg)
+    pf = _gid_default_pf(canonical_alg) if pf in (None, "RFdeconProcessor.pf") else pf
+    text = make_gid_pf_text(
+        canonical_alg,
+        pf,
+        deconvolution_type=deconvolution_type,
+        gid_mode=gid_mode,
+        lag_weight_penalty_function=lag_weight_penalty_function,
+        gid_penalty_function=gid_penalty_function,
+        gid_parameters=gid_parameters,
+    )
+    pf_to_load = _write_pickled_pf_text(pf, text)
+    try:
+        return AntelopePf(pf_to_load)
+    finally:
+        try:
+            os.unlink(pf_to_load)
+        except OSError:
+            pass
+
+
+def make_gid_engine(
+    alg="TimeDomainGID",
+    pf=None,
+    *,
+    deconvolution_type=None,
+    gid_mode=None,
+    lag_weight_penalty_function=None,
+    gid_penalty_function=None,
+    gid_parameters=None,
+):
+    """
+    Build a configured low-level time- or frequency-domain GID engine.
+
+    The returned object is passed to ``TimeDomainGIDRFDecon`` or
+    ``FrequencyDomainGIDRFDecon`` directly.  For the high-level ``RFdecon``
+    wrapper, use ``RFdeconProcessor`` or pass the same GID keywords directly
+    to ``RFdecon``.
+    """
+    canonical_alg = _canonical_gid_algorithm(alg)
+    pfhandle = make_gid_pf(
+        canonical_alg,
+        pf,
+        deconvolution_type=deconvolution_type,
+        gid_mode=gid_mode,
+        lag_weight_penalty_function=lag_weight_penalty_function,
+        gid_penalty_function=gid_penalty_function,
+        gid_parameters=gid_parameters,
+    )
+    if canonical_alg == "TimeDomainGID":
+        return TimeDomainGIDDecon(pfhandle)
+    return FrequencyDomainGIDDecon(pfhandle)
 
 
 class RFdeconProcessor:
@@ -205,7 +523,18 @@ class RFdeconProcessor:
             if hasattr(self, attr):
                 delattr(self, attr)
 
-    def __init__(self, alg="LeastSquares", pf="RFdeconProcessor.pf", _pf_text=None):
+    def __init__(
+        self,
+        alg="LeastSquares",
+        pf="RFdeconProcessor.pf",
+        _pf_text=None,
+        *,
+        deconvolution_type=None,
+        gid_mode=None,
+        lag_weight_penalty_function=None,
+        gid_penalty_function=None,
+        gid_parameters=None,
+    ):
         self.algorithm = alg
         self.__is_3c_engine = False
         if pf == "RFdeconProcessor.pf":
@@ -213,6 +542,29 @@ class RFdeconProcessor:
                 pf = "TimeDomainGIDDecon.pf"
             elif alg == "FrequencyDomainGID":
                 pf = "FrequencyDomainGIDDecon.pf"
+        if _gid_overrides_requested(
+            deconvolution_type=deconvolution_type,
+            gid_mode=gid_mode,
+            lag_weight_penalty_function=lag_weight_penalty_function,
+            gid_penalty_function=gid_penalty_function,
+            gid_parameters=gid_parameters,
+        ):
+            if alg not in (
+                "GeneralizedIterative",
+                "TimeDomainGID",
+                "FrequencyDomainGID",
+            ):
+                raise ValueError("GID configuration keywords require a GID algorithm")
+            _pf_text = make_gid_pf_text(
+                alg,
+                pf,
+                deconvolution_type=deconvolution_type,
+                gid_mode=gid_mode,
+                lag_weight_penalty_function=lag_weight_penalty_function,
+                gid_penalty_function=gid_penalty_function,
+                gid_parameters=gid_parameters,
+                _pf_text=_pf_text,
+            )
         self.pf = pf
         pf_to_load = pf
         if _pf_text is not None:
@@ -691,6 +1043,28 @@ class RFdeconProcessor:
         # merge in an output of the implementations QCMetrics method
         qcmeth_output = dict(self.processor.QCMetrics())
         qcmd.update(qcmeth_output)
+        decon_type = qcmeth_output.get(
+            "deconvolution_type", qcmd.get("deconvolution_type")
+        )
+        if decon_type != "group_sparse":
+            qcmd = {
+                key: value
+                for key, value in qcmd.items()
+                if not key.startswith("group_sparse")
+            }
+        else:
+            qcmd = {
+                key: value
+                for key, value in qcmd.items()
+                if not key.startswith("gid_penalty")
+                and not key.startswith("lag_weight")
+            }
+        if decon_type != "ns_gid":
+            qcmd = {
+                key: value
+                for key, value in qcmd.items()
+                if not key.startswith("ns_gid")
+            }
         if self.__is_3c_engine:
             return dict(qcmd)
         # always compute the prediction error
@@ -712,7 +1086,9 @@ class RFdeconProcessor:
         :param md: is a mspass.Metadata object containing required parameters
             for the alternative algorithm.
         """
-        parameter_md = Metadata(md)
+        parameter_md = _normalize_metadata_scalars(
+            md, "RFdeconProcessor.change_parameters"
+        )
         if hasattr(self.processor, "changeparameter"):
             self.processor.changeparameter(parameter_md)
         elif hasattr(self.processor, "change_parameter"):
@@ -776,6 +1152,11 @@ def RFdecon(
     engine=None,
     alg="LeastSquares",
     pf="RFdeconProcessor.pf",
+    deconvolution_type=None,
+    gid_mode=None,
+    lag_weight_penalty_function=None,
+    gid_penalty_function=None,
+    gid_parameters=None,
     wavelet=None,
     noisedata=None,
     wcomp=2,
@@ -861,6 +1242,20 @@ def RFdecon(
         RFdeconProcessor.  Ignored if engine is used.
     :type pf:  string defining an absolute path for the file name
         or a path relative to a directory defined by PFPATH.
+    :param deconvolution_type: optional GID inverse or solver mode override
+        used only when ``alg`` selects ``GeneralizedIterative``,
+        ``TimeDomainGID``, or ``FrequencyDomainGID``.  Common values are ``ns_gid``,
+        ``least_square``, ``cnr``, and ``group_sparse``.  This builds a fresh
+        configured GID processor instead of requiring callers to edit a pf
+        file.
+    :param gid_mode: compatibility alias for ``deconvolution_type``.
+    :param lag_weight_penalty_function: optional GID lag-weight penalty
+        override, e.g. ``adaptive_memory`` or ``none``.
+    :param gid_penalty_function: compatibility alias for
+        ``lag_weight_penalty_function``.
+    :param gid_parameters: optional dictionary of additional scalar keys in
+        the top-level GID branch to override, such as
+        ``{"group_sparse_lambda_scale": 0.8}``.
     :param wavelet:   vector of doubles (numpy array or the
         std::vector container internal to TimeSeries object) or TimeSeries
         defining the wavelet to use to compute deconvolution operator.
@@ -881,9 +1276,11 @@ def RFdecon(
         For GID algorithms, raw vectors are converted to a TimeSeries using
         target_sample_interval and noise_window_start.  If noisedata is None,
         a reused GID processor preserves any previously loaded external noise.
-        External PowerSpectrum noise is supported only by the NS-GID inverse
-        mode; other GID modes require TimeSeries/vector noise or the
-        configured noise window.
+        External PowerSpectrum noise is supported by the NS-GID inverse mode
+        and by ``group_sparse`` GID, which uses the NS-GID inverse internally.
+        It regularizes only the inverse operator; residual-domain stopping and
+        sparse support decisions still use the configured noise window or
+        loaded TimeSeries/vector noise where applicable.
     :type noisedata:  None, TimeSeries, PowerSpectrum, or an iterable vector container
         (in MsPASS that means a python array, a numpy array, or a DoubleVector)
     :param wcomp:  When defined from Seismogram d the wavelet
@@ -934,7 +1331,20 @@ def RFdecon(
         raise TypeError(message)
     if d.dead():
         return d
+    wcomp = _validate_component_index(wcomp, "wcomp", "RFdecon")
+    ncomp = _validate_component_index(ncomp, "ncomp", "RFdecon")
     if engine:
+        if _gid_overrides_requested(
+            deconvolution_type=deconvolution_type,
+            gid_mode=gid_mode,
+            lag_weight_penalty_function=lag_weight_penalty_function,
+            gid_penalty_function=gid_penalty_function,
+            gid_parameters=gid_parameters,
+        ):
+            raise ValueError(
+                "GID configuration keywords cannot be used with an already "
+                "constructed RFdeconProcessor engine"
+            )
         if isinstance(engine, RFdeconProcessor):
             processor = engine
         else:
@@ -946,7 +1356,15 @@ def RFdecon(
             message += "If defined must be an instance of RFdeconProcessor"
             raise TypeError(message)
     else:
-        processor = RFdeconProcessor(alg, pf)
+        processor = RFdeconProcessor(
+            alg,
+            pf,
+            deconvolution_type=deconvolution_type,
+            gid_mode=gid_mode,
+            lag_weight_penalty_function=lag_weight_penalty_function,
+            gid_penalty_function=gid_penalty_function,
+            gid_parameters=gid_parameters,
+        )
 
     if processor.is_3c_engine:
         try:

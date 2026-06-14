@@ -16,6 +16,24 @@ using namespace mspass::algorithms;
 using namespace mspass::seismic;
 using namespace mspass::utility;
 
+namespace {
+string metadata_type_name(const boost::any &val) { return demangled_name(val); }
+
+MsPASSError metadata_get_context_error(const string &function_name,
+                                       const string &key,
+                                       const string &expected,
+                                       const MetadataGetError &err) {
+  return MsPASSError(function_name + ": Metadata key=" + key + " must be " +
+                        expected + "; " + string(err.what()),
+                    ErrorSeverity::Invalid);
+}
+
+inline double three_component_norm(const double x0, const double x1,
+                                   const double x2) {
+  return sqrt(x0 * x0 + x1 * x1 + x2 * x2);
+}
+} // namespace
+
 IterDeconType ParseGIDDeconType(const Metadata &md, const string &caller) {
   string sval = md.get_string("deconvolution_type");
   if (sval == "water_level")
@@ -29,28 +47,87 @@ IterDeconType ParseGIDDeconType(const Metadata &md, const string &caller) {
   if ((sval == "ns_gid") || (sval == "noise_stable") ||
       (sval == "noise_aware_stable"))
     return NS_GID;
+  if ((sval == "group_sparse") || (sval == "group_lasso") ||
+      (sval == "sparse_group_lasso"))
+    return GROUP_SPARSE;
   throw MsPASSError(caller + ": unknown deconvolution_type=" + sval,
                     ErrorSeverity::Fatal);
+}
+
+string GIDDeconTypeName(const IterDeconType type) {
+  switch (type) {
+  case WATER_LEVEL:
+    return "water_level";
+  case LEAST_SQ:
+    return "least_square";
+  case MULTI_TAPER:
+    return "multi_taper";
+  case CNR:
+    return "cnr";
+  case NS_GID:
+    return "ns_gid";
+  case GROUP_SPARSE:
+    return "group_sparse";
+  }
+  return "unknown";
 }
 
 double GetDoubleDefault(const Metadata &md, const string &key,
                         const double default_value) {
   if (md.is_defined(key))
-    return md.get_double(key);
+    return GetDoubleRequired(md, key);
   return default_value;
+}
+
+double GetDoubleRequired(const Metadata &md, const string &key) {
+  try {
+    return md.get_double(key);
+  } catch (const MetadataGetError &merr) {
+    if (md.is_defined(key))
+      throw metadata_get_context_error("GetDoubleRequired", key, "numeric",
+                                       merr);
+    throw;
+  }
 }
 
 int GetIntDefault(const Metadata &md, const string &key,
                   const int default_value) {
   if (md.is_defined(key))
-    return md.get_int(key);
+    return GetIntRequired(md, key);
   return default_value;
+}
+
+int GetIntRequired(const Metadata &md, const string &key) {
+  try {
+    return md.get_int(key);
+  } catch (const MetadataGetError &merr) {
+    if (md.is_defined(key))
+      throw metadata_get_context_error("GetIntRequired", key, "integer-valued",
+                                       merr);
+    throw;
+  }
+}
+
+long GetLongRequired(const Metadata &md, const string &key) {
+  try {
+    return md.get_long(key);
+  } catch (const MetadataGetError &merr) {
+    if (md.is_defined(key))
+      throw metadata_get_context_error("GetLongRequired", key,
+                                       "integer-valued", merr);
+    throw;
+  }
 }
 
 bool GetBoolDefault(const Metadata &md, const string &key,
                     const bool default_value) {
-  if (md.is_defined(key))
-    return md.get_bool(key);
+  if (md.is_defined(key)) {
+    try {
+      return md.get_bool(key);
+    } catch (const MetadataGetError &merr) {
+      throw metadata_get_context_error("GetBoolDefault", key, "boolean", merr);
+    }
+  }
   return default_value;
 }
 
@@ -107,8 +184,9 @@ void PutPrefixedMetadata(Metadata &target, const Metadata &source,
       target.put(prefixed_key, boost::any_cast<string>(val));
     else
       throw MsPASSError("PutPrefixedMetadata: unsupported Metadata type for "
-                            "key=" +
-                            key,
+                        "key=" +
+                            key + " prefixed as " + prefixed_key +
+                            "; actual type=" + metadata_type_name(val),
                         ErrorSeverity::Invalid);
   }
 }
@@ -188,22 +266,38 @@ string AntelopePfToText(const AntelopePf &pf, const int indent) {
 
 vector<double> ThreeCAmplitudes(const dmatrix &d) {
   vector<double> result;
-  result.reserve(d.columns());
-  for (int i = 0; i < d.columns(); ++i) {
-    double amp2(0.0);
-    for (int k = 0; k < 3; ++k)
-      amp2 += d(k, i) * d(k, i);
-    result.push_back(sqrt(amp2));
+  const int ncols = static_cast<int>(d.columns());
+  result.reserve(ncols);
+  for (int i = 0; i < ncols; ++i) {
+    result.push_back(three_component_norm(d(0, i), d(1, i), d(2, i)));
   }
   return result;
+}
+
+double GroupSparseObjective(const CoreSeismogram &residual,
+                            const list<ThreeCSpike> &spikes,
+                            const double lambda) {
+  double rss(0.0), penalty(0.0);
+  const int nrows = static_cast<int>(residual.u.rows());
+  const int ncols = static_cast<int>(residual.u.columns());
+  for (int k = 0; k < nrows; ++k) {
+    for (int j = 0; j < ncols; ++j) {
+      const double e = residual.u(k, j);
+      rss += e * e;
+    }
+  }
+  for (const auto &spk : spikes) {
+    penalty += three_component_norm(spk.u[0], spk.u[1], spk.u[2]);
+  }
+  return 0.5 * rss + lambda * penalty;
 }
 
 void ValidateGIDLeafWindow(const AntelopePf &mdleaf,
                            const TimeWindow &fftwin,
                            const string &leaf_name,
                            const string &base_error) {
-  const double ts = mdleaf.get<double>("deconvolution_data_window_start");
-  const double te = mdleaf.get<double>("deconvolution_data_window_end");
+  const double ts = GetDoubleRequired(mdleaf, "deconvolution_data_window_start");
+  const double te = GetDoubleRequired(mdleaf, "deconvolution_data_window_end");
   if ((ts != fftwin.start) || (te != fftwin.end)) {
     stringstream ss;
     ss << base_error << leaf_name
@@ -244,7 +338,14 @@ void ValidateGIDLeafOperatorMetadata(const Metadata &md,
       "ns_gid_max_spikes",
       "ns_gid_refit_interval",
       "ns_gid_ridge_beta",
-      "ns_gid_external_wavelet_allowed"};
+      "ns_gid_external_wavelet_allowed",
+      "group_sparse_lambda",
+      "group_sparse_lambda_scale",
+      "group_sparse_tolerance",
+      "group_sparse_max_iterations",
+      "group_sparse_active_threshold",
+      "group_sparse_active_threshold_scale",
+      "group_sparse_active_threshold_quantile"};
   static const vector<string> noise_window_keys{"noise_window_start",
                                                 "noise_window_end"};
   for (auto const &key : gid_level_keys) {
@@ -266,21 +367,21 @@ void ValidateGIDLeafOperatorMetadata(const Metadata &md,
     }
   }
   if (md.is_defined("deconvolution_data_window_start")) {
-    const double ts = md.get_double("deconvolution_data_window_start");
+    const double ts = GetDoubleRequired(md, "deconvolution_data_window_start");
     if (fabs(ts - fftwin.start) > 1.0e-10)
       throw MsPASSError(caller + ": leaf deconvolution_data_window_start does "
                                  "not match the GID deconvolution window",
                         ErrorSeverity::Fatal);
   }
   if (md.is_defined("deconvolution_data_window_end")) {
-    const double te = md.get_double("deconvolution_data_window_end");
+    const double te = GetDoubleRequired(md, "deconvolution_data_window_end");
     if (fabs(te - fftwin.end) > 1.0e-10)
       throw MsPASSError(caller + ": leaf deconvolution_data_window_end does "
                                  "not match the GID deconvolution window",
                         ErrorSeverity::Fatal);
   }
   if (md.is_defined("target_sample_interval")) {
-    const double dt = md.get_double("target_sample_interval");
+    const double dt = GetDoubleRequired(md, "target_sample_interval");
     if (fabs(dt - target_dt) >
         1.0e-6 * max(1.0, max(fabs(dt), fabs(target_dt))))
       throw MsPASSError(caller + ": leaf target_sample_interval does not "
@@ -288,7 +389,7 @@ void ValidateGIDLeafOperatorMetadata(const Metadata &md,
                         ErrorSeverity::Fatal);
   }
   if (md.is_defined("shaping_wavelet_dt")) {
-    const double dt = md.get_double("shaping_wavelet_dt");
+    const double dt = GetDoubleRequired(md, "shaping_wavelet_dt");
     if (fabs(dt - target_dt) >
         1.0e-6 * max(1.0, max(fabs(dt), fabs(target_dt))))
       throw MsPASSError(caller + ": leaf shaping_wavelet_dt does not match "
@@ -370,12 +471,13 @@ int fwhm_radius(const vector<double> &coherence) {
 double EstimateThreeCColumnAmplitudeRMS(const CoreSeismogram &d) {
   if (d.dead() || d.npts() <= 0)
     return 0.0;
+  const int npts = static_cast<int>(d.npts());
   double sumsq(0.0);
-  for (int i = 0; i < d.npts(); ++i) {
+  for (int i = 0; i < npts; ++i) {
     for (int k = 0; k < 3; ++k)
       sumsq += d.u(k, i) * d.u(k, i);
   }
-  return sqrt(sumsq / static_cast<double>(d.npts()));
+  return sqrt(sumsq / static_cast<double>(npts));
 }
 
 vector<double> BuildGIDLagWeightPenaltyFunctionFromKernel(
@@ -596,7 +698,7 @@ vector<double> BuildGIDLagWeightPenaltyFunction(const Metadata &md,
 
   const double penalty_scale =
       md.is_defined("lag_weight_penalty_scale_factor")
-          ? md.get<double>("lag_weight_penalty_scale_factor")
+          ? GetDoubleRequired(md, "lag_weight_penalty_scale_factor")
           : 1.0;
   if (!std::isfinite(penalty_scale) || penalty_scale <= 0.0 ||
       penalty_scale > 1.0)
@@ -609,7 +711,7 @@ vector<double> BuildGIDLagWeightPenaltyFunction(const Metadata &md,
                           "missing required parameter "
                           "lag_weight_function_width",
                       ErrorSeverity::Fatal);
-  int npenalty = md.get<int>("lag_weight_function_width");
+  int npenalty = GetIntRequired(md, "lag_weight_function_width");
   if (npenalty <= 0)
     throw MsPASSError(base_error + "lag_weight_function_width must be positive",
                       ErrorSeverity::Fatal);
@@ -796,7 +898,229 @@ void RefitSpikeAmplitudes(list<ThreeCSpike> &spikes,
       spike_ptrs[i]->u[component] = amps[i];
   }
   for (auto &spk : spikes)
-    spk.amp =
-        sqrt(spk.u[0] * spk.u[0] + spk.u[1] * spk.u[1] + spk.u[2] * spk.u[2]);
+    spk.amp = three_component_norm(spk.u[0], spk.u[1], spk.u[2]);
+}
+
+double VectorQuantile(vector<double> values, const double quantile) {
+  if (values.empty())
+    return 0.0;
+  sort(values.begin(), values.end());
+  const double q = min(1.0, max(0.0, quantile));
+  const double pos = q * static_cast<double>(values.size() - 1);
+  const int lo = static_cast<int>(floor(pos));
+  const int hi = static_cast<int>(ceil(pos));
+  if (lo == hi)
+    return values[lo];
+  const double frac = pos - static_cast<double>(lo);
+  return values[lo] * (1.0 - frac) + values[hi] * frac;
+}
+
+GroupSparseDeconResult SolveGroupSparseDecon(
+    const CoreSeismogram &target, const vector<double> &actual_o_fir,
+    const int actual_o_0, const double lambda, const int max_iterations,
+    const double tolerance, const double active_threshold,
+    const double active_threshold_scale, const double active_threshold_quantile,
+    const string &caller) {
+  if (target.dead() || target.npts() <= 0)
+    throw MsPASSError(caller + ": target data are dead or empty",
+                      ErrorSeverity::Invalid);
+  if (actual_o_fir.empty())
+    throw MsPASSError(caller + ": actual output FIR kernel is empty",
+                      ErrorSeverity::Invalid);
+  if (!isfinite(lambda) || lambda < 0.0)
+    throw MsPASSError(caller + ": group_sparse_lambda must be nonnegative",
+                      ErrorSeverity::Fatal);
+  ValidatePositiveInteger(max_iterations, "group_sparse_max_iterations",
+                          caller);
+  ValidatePositive(tolerance, "group_sparse_tolerance", caller);
+  ValidateNonnegative(active_threshold, "group_sparse_active_threshold",
+                      caller);
+  ValidateNonnegative(active_threshold_scale,
+                      "group_sparse_active_threshold_scale", caller);
+  ValidateProbability(active_threshold_quantile,
+                      "group_sparse_active_threshold_quantile", caller);
+
+  const int npts = static_cast<int>(target.npts());
+  const int ncoef = 3 * npts;
+  const int nf = static_cast<int>(actual_o_fir.size());
+
+  vector<char> valid(npts, false);
+  for (int j = 0; j < npts; ++j) {
+    const int col0 = j - actual_o_0;
+    valid[j] = (col0 >= 0) &&
+               ((col0 + static_cast<int>(actual_o_fir.size())) <= npts);
+  }
+
+  double sumabs(0.0);
+  for (auto x : actual_o_fir)
+    sumabs += fabs(x);
+  const double lipschitz = max(1.0e-12, sumabs * sumabs);
+  const double step = 1.0 / lipschitz;
+
+  vector<double> target_vec(ncoef, 0.0), x(ncoef, 0.0), xnew(ncoef, 0.0),
+      model(ncoef, 0.0), residual(ncoef, 0.0), gradient(ncoef, 0.0);
+  for (int j = 0; j < npts; ++j) {
+    target_vec[j] = target.u(0, j);
+    target_vec[npts + j] = target.u(1, j);
+    target_vec[2 * npts + j] = target.u(2, j);
+  }
+
+  auto build_model = [&](const vector<double> &coef) {
+    fill(model.begin(), model.end(), 0.0);
+    const double *c0 = coef.data();
+    const double *c1 = c0 + npts;
+    const double *c2 = c1 + npts;
+    double *m0 = model.data();
+    double *m1 = m0 + npts;
+    double *m2 = m1 + npts;
+    for (int j = 0; j < npts; ++j) {
+      if (!valid[j])
+        continue;
+      const int col0 = j - actual_o_0;
+      const double a0 = c0[j];
+      const double a1 = c1[j];
+      const double a2 = c2[j];
+      for (int p = 0; p < nf; ++p) {
+        const int sample = col0 + p;
+        const double h = actual_o_fir[p];
+        m0[sample] += h * a0;
+        m1[sample] += h * a1;
+        m2[sample] += h * a2;
+      }
+    }
+    for (int i = 0; i < ncoef; ++i)
+      residual[i] = model[i] - target_vec[i];
+  };
+
+  auto objective = [&](const vector<double> &coef) {
+    build_model(coef);
+    double rss(0.0), penalty(0.0);
+    for (auto e : residual)
+      rss += e * e;
+    const double *c0 = coef.data();
+    const double *c1 = c0 + npts;
+    const double *c2 = c1 + npts;
+    for (int j = 0; j < npts; ++j) {
+      penalty += three_component_norm(c0[j], c1[j], c2[j]);
+    }
+    return 0.5 * rss + lambda * penalty;
+  };
+
+  GroupSparseDeconResult result;
+  result.lambda = lambda;
+  result.active_threshold_floor = active_threshold;
+  result.active_threshold_scale = active_threshold_scale;
+  result.active_threshold_quantile = active_threshold_quantile;
+  result.objective_initial = objective(x);
+  double prev_objective = result.objective_initial;
+  for (int iter = 1; iter <= max_iterations; ++iter) {
+    fill(gradient.begin(), gradient.end(), 0.0);
+    double *g0 = gradient.data();
+    double *g1 = g0 + npts;
+    double *g2 = g1 + npts;
+    const double *r0 = residual.data();
+    const double *r1 = r0 + npts;
+    const double *r2 = r1 + npts;
+    for (int j = 0; j < npts; ++j) {
+      if (!valid[j])
+        continue;
+      const int col0 = j - actual_o_0;
+      double sum0(0.0), sum1(0.0), sum2(0.0);
+      for (int p = 0; p < nf; ++p) {
+        const int sample = col0 + p;
+        const double h = actual_o_fir[p];
+        sum0 += h * r0[sample];
+        sum1 += h * r1[sample];
+        sum2 += h * r2[sample];
+      }
+      g0[j] = sum0;
+      g1[j] = sum1;
+      g2[j] = sum2;
+    }
+
+    const double shrink_threshold = lambda * step;
+    fill(xnew.begin(), xnew.end(), 0.0);
+    const double *x0 = x.data();
+    const double *x1 = x0 + npts;
+    const double *x2 = x1 + npts;
+    const double *grad0 = gradient.data();
+    const double *grad1 = grad0 + npts;
+    const double *grad2 = grad1 + npts;
+    double *xn0 = xnew.data();
+    double *xn1 = xn0 + npts;
+    double *xn2 = xn1 + npts;
+    for (int j = 0; j < npts; ++j) {
+      if (!valid[j])
+        continue;
+      const double z0 = x0[j] - step * grad0[j];
+      const double z1 = x1[j] - step * grad1[j];
+      const double z2 = x2[j] - step * grad2[j];
+      const double znorm2 = z0 * z0 + z1 * z1 + z2 * z2;
+      const double znorm = sqrt(znorm2);
+      if (znorm <= shrink_threshold || znorm <= 0.0)
+        continue;
+      const double scale = 1.0 - shrink_threshold / znorm;
+      xn0[j] = scale * z0;
+      xn1[j] = scale * z1;
+      xn2[j] = scale * z2;
+    }
+
+    const double current_objective = objective(xnew);
+    result.iterations = iter;
+    result.fractional_improvement_final =
+        (prev_objective - current_objective) / max(1.0, prev_objective);
+    x.swap(xnew);
+    if (fabs(prev_objective - current_objective) <=
+        tolerance * max(1.0, prev_objective)) {
+      result.converged = true;
+      prev_objective = current_objective;
+      break;
+    }
+    prev_objective = current_objective;
+  }
+
+  vector<double> xnorm(npts, 0.0);
+  vector<double> group_norms;
+  group_norms.reserve(npts);
+  const double *x0 = x.data();
+  const double *x1 = x0 + npts;
+  const double *x2 = x1 + npts;
+  for (int j = 0; j < npts; ++j) {
+    xnorm[j] = three_component_norm(x0[j], x1[j], x2[j]);
+    if (valid[j])
+      group_norms.push_back(xnorm[j]);
+  }
+  result.active_threshold_quantile_value =
+      VectorQuantile(std::move(group_norms), active_threshold_quantile);
+  result.active_threshold_used =
+      max(active_threshold,
+          active_threshold_scale * result.active_threshold_quantile_value);
+  vector<double> xactive(ncoef, 0.0);
+  double *xa0 = xactive.data();
+  double *xa1 = xa0 + npts;
+  double *xa2 = xa1 + npts;
+  for (int j = 0; j < npts; ++j) {
+    if (valid[j] && xnorm[j] > result.active_threshold_used) {
+      result.spikes.emplace_back(j, x0[j], x1[j], x2[j]);
+      xa0[j] = x0[j];
+      xa1[j] = x1[j];
+      xa2[j] = x2[j];
+      ++result.active_groups;
+    }
+  }
+  result.objective_final = objective(xactive);
+  result.fractional_improvement_final =
+      (result.objective_initial - result.objective_final) /
+      max(1.0, result.objective_initial);
+  result.residual = CoreSeismogram(target);
+  const double *m0 = model.data();
+  const double *m1 = m0 + npts;
+  const double *m2 = m1 + npts;
+  for (int j = 0; j < npts; ++j) {
+    result.residual.u(0, j) = target_vec[j] - m0[j];
+    result.residual.u(1, j) = target_vec[npts + j] - m1[j];
+    result.residual.u(2, j) = target_vec[2 * npts + j] - m2[j];
+  }
+  return result;
 }
 } // namespace mspass::algorithms::deconvolution

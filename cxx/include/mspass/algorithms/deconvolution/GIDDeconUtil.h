@@ -13,12 +13,36 @@
 #include <vector>
 
 namespace mspass::algorithms::deconvolution {
+struct GroupSparseDeconResult {
+  std::list<ThreeCSpike> spikes;
+  mspass::seismic::CoreSeismogram residual;
+  int iterations = 0;
+  int active_groups = 0;
+  bool converged = false;
+  double lambda = 0.0;
+  double active_threshold_floor = 0.0;
+  double active_threshold_scale = 1.0;
+  double active_threshold_quantile = 0.0;
+  double active_threshold_quantile_value = 0.0;
+  double active_threshold_used = 0.0;
+  double objective_initial = 0.0;
+  double objective_final = 0.0;
+  double fractional_improvement_final = 0.0;
+};
+
 IterDeconType ParseGIDDeconType(const mspass::utility::Metadata &md,
                                 const std::string &caller);
+std::string GIDDeconTypeName(const IterDeconType type);
 double GetDoubleDefault(const mspass::utility::Metadata &md,
                         const std::string &key, const double default_value);
+double GetDoubleRequired(const mspass::utility::Metadata &md,
+                         const std::string &key);
 int GetIntDefault(const mspass::utility::Metadata &md, const std::string &key,
                   const int default_value);
+int GetIntRequired(const mspass::utility::Metadata &md,
+                   const std::string &key);
+long GetLongRequired(const mspass::utility::Metadata &md,
+                     const std::string &key);
 bool GetBoolDefault(const mspass::utility::Metadata &md,
                     const std::string &key, const bool default_value);
 void ValidateProbability(const double p, const std::string &key,
@@ -37,6 +61,9 @@ void PutPrefixedMetadata(mspass::utility::Metadata &target,
 std::string AntelopePfToText(const mspass::utility::AntelopePf &pf,
                              const int indent = 0);
 std::vector<double> ThreeCAmplitudes(const mspass::utility::dmatrix &d);
+double GroupSparseObjective(const mspass::seismic::CoreSeismogram &residual,
+                            const std::list<ThreeCSpike> &spikes,
+                            const double lambda);
 void ValidateGIDLeafWindow(const mspass::utility::AntelopePf &mdleaf,
                            const mspass::algorithms::TimeWindow &fftwin,
                            const std::string &leaf_name,
@@ -94,5 +121,11 @@ void RefitSpikeAmplitudes(std::list<ThreeCSpike> &spikes,
                           const std::vector<double> &actual_o_fir,
                           const int actual_o_0,
                           const double ridge_beta = 1.0e-10);
+GroupSparseDeconResult SolveGroupSparseDecon(
+    const mspass::seismic::CoreSeismogram &target,
+    const std::vector<double> &actual_o_fir, const int actual_o_0,
+    const double lambda, const int max_iterations, const double tolerance,
+    const double active_threshold, const double active_threshold_scale,
+    const double active_threshold_quantile, const std::string &caller);
 } // namespace mspass::algorithms::deconvolution
 #endif

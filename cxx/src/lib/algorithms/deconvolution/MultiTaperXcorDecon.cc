@@ -1,5 +1,6 @@
 #include "mspass/algorithms/deconvolution/MultiTaperXcorDecon.h"
 #include "mspass/algorithms/amplitudes.h"
+#include "mspass/algorithms/deconvolution/GIDDeconUtil.h"
 #include "mspass/algorithms/deconvolution/common_multitaper.h"
 #include "mspass/algorithms/deconvolution/dpss.h"
 #include "mspass/seismic/CoreTimeSeries.h"
@@ -70,19 +71,19 @@ int MultiTaperXcorDecon::read_metadata(const Metadata &md, bool refresh) {
       throw MsPASSError(base_error +
                             "computed sample_shift exceeds length of fft",
                         ErrorSeverity::Fatal);
-    damp = md.get_double("damping_factor");
+    damp = GetDoubleRequired(md, "damping_factor");
     if (damp <= 0.0) {
       throw MsPASSError(base_error +
                             "damping_factor must be positive to regularize "
                             "multitaper spectral division.",
                         ErrorSeverity::Fatal);
     }
-    nw = md.get_double("time_bandwidth_product");
+    nw = GetDoubleRequired(md, "time_bandwidth_product");
     /* Wang originally had this as nw*2-2 but Park and Levin say
     the maximum is nw*2-1 which we use here.  P&L papers all use mw=2.5
     with K(seql here) of 3 */
     // seql=md.get_int("lower_dpss");
-    nseq = md.get_int("number_tapers");
+    nseq = GetIntRequired(md, "number_tapers");
     int nseqtest = static_cast<int>(2.0 * nw);
     if (nseq > nseqtest || (nseq < 1)) {
       throw MsPASSError(base_error +

@@ -50,10 +50,9 @@ MetadataList get_mdlist(const AntelopePf &m, const string tag) {
 int copy_selected_metadata(const Metadata &mdin, Metadata &mdout,
                            const MetadataList &mdlist) {
   MetadataList::const_iterator mdti;
-  int count;
+  int copied_count(0);
 
-  for (mdti = mdlist.begin(), count = 0; mdti != mdlist.end();
-       ++mdti, ++count) {
+  for (mdti = mdlist.begin(); mdti != mdlist.end(); ++mdti) {
     MDtype mdtest;
     float f;
     double r;
@@ -69,35 +68,35 @@ int copy_selected_metadata(const Metadata &mdin, Metadata &mdout,
       case MDtype::Real32:
         f = mdin.get<float>(mdti->tag);
         mdout.put(mdti->tag, f);
-        ++count;
+        ++copied_count;
         break;
       case MDtype::Double:
       case MDtype::Real64:
         r = mdin.get<double>(mdti->tag);
         mdout.put(mdti->tag, r);
-        ++count;
+        ++copied_count;
         break;
       case MDtype::Integer:
       case MDtype::Int32:
         ii = mdin.get<int>(mdti->tag);
         mdout.put(mdti->tag, ii);
-        ++count;
+        ++copied_count;
         break;
       case MDtype::Long:
       case MDtype::Int64:
         iv = mdin.get<long>(mdti->tag);
         mdout.put(mdti->tag, iv);
-        ++count;
+        ++copied_count;
         break;
       case MDtype::String:
         s = mdin.get<string>(mdti->tag);
         mdout.put(mdti->tag, s);
-        ++count;
+        ++copied_count;
         break;
       case MDtype::Boolean:
         b = mdin.get<bool>(mdti->tag);
         mdout.put(mdti->tag, b);
-        ++count;
+        ++copied_count;
         break;
       case MDtype::Invalid:
         // silently skip values marked as invalid
@@ -115,6 +114,6 @@ int copy_selected_metadata(const Metadata &mdin, Metadata &mdout,
       throw;
     }
   }
-  return count;
+  return copied_count;
 }
 } // namespace mspass::utility

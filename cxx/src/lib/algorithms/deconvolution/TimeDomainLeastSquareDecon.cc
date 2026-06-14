@@ -1,6 +1,7 @@
 #include "mspass/algorithms/deconvolution/TimeDomainLeastSquareDecon.h"
 #include "gsl/gsl_cblas.h"
 #include "mspass/algorithms/amplitudes.h"
+#include "mspass/algorithms/deconvolution/GIDDeconUtil.h"
 #include "mspass/utility/MsPASSError.h"
 #include <cmath>
 #include <sstream>
@@ -87,18 +88,20 @@ TimeDomainLeastSquareDecon::TimeDomainLeastSquareDecon(
 void TimeDomainLeastSquareDecon::read_metadata(const Metadata &md) {
   const string base_error("TimeDomainLeastSquareDecon::read_metadata:  ");
   try {
-    damp = md.get_double("damping_factor");
+    damp = GetDoubleRequired(md, "damping_factor");
     if (damp <= 0.0)
       throw MsPASSError(base_error +
                             "damping_factor must be positive for stable "
                         "time-domain least-squares deconvolution",
                         ErrorSeverity::Fatal);
-    dt = md.get_double("target_sample_interval");
+    dt = GetDoubleRequired(md, "target_sample_interval");
     if (dt <= 0.0)
       throw MsPASSError(base_error + "target_sample_interval must be positive",
                         ErrorSeverity::Fatal);
-    const double dwinstart = md.get_double("deconvolution_data_window_start");
-    const double dwinend = md.get_double("deconvolution_data_window_end");
+    const double dwinstart =
+        GetDoubleRequired(md, "deconvolution_data_window_start");
+    const double dwinend =
+        GetDoubleRequired(md, "deconvolution_data_window_end");
     if (dwinend <= dwinstart)
       throw MsPASSError(base_error +
                             "deconvolution_data_window_end must be greater "
@@ -111,15 +114,16 @@ void TimeDomainLeastSquareDecon::read_metadata(const Metadata &md) {
                             "positive for this lag convention",
                         ErrorSeverity::Fatal);
     if (md.is_defined("model_length")) {
-      output_length = md.get_int("model_length");
+      output_length = GetIntRequired(md, "model_length");
       if (output_length <= 0)
         throw MsPASSError(base_error + "model_length must be positive",
                           ErrorSeverity::Fatal);
     } else {
       output_length = 0;
     }
-    int shaping_nfft(md.is_defined("operator_nfft") ? md.get_int("operator_nfft")
-                                                    : 0);
+    int shaping_nfft(
+        md.is_defined("operator_nfft") ? GetIntRequired(md, "operator_nfft")
+                                       : 0);
     if (shaping_nfft <= 0)
       shaping_nfft = 1;
     shapingwavelet = ShapingWavelet(md, shaping_nfft);

@@ -27,8 +27,15 @@ namespace pybind11 { namespace detail {
     static std::map<std::type_index, std::function<handle(boost::any const&)>> toPythonMap;
     static std::map<std::type_index, std::function<handle(boost::any const&)>> createToPythonMap() {
       std::map<std::type_index, std::function<handle(boost::any const&)>> m;
+      m[typeid(short)]       = [](boost::any const& x) { return py::cast(boost::any_cast<short>(x)).release();};
+      m[typeid(unsigned short)] = [](boost::any const& x) { return py::cast(boost::any_cast<unsigned short>(x)).release();};
       m[typeid(long)]        = [](boost::any const& x) { return py::cast(boost::any_cast<long>(x)).release();};
+      m[typeid(unsigned long)] = [](boost::any const& x) { return py::cast(boost::any_cast<unsigned long>(x)).release();};
       m[typeid(int)]         = [](boost::any const& x) { return py::cast(boost::any_cast<int>(x)).release();};
+      m[typeid(unsigned int)] = [](boost::any const& x) { return py::cast(boost::any_cast<unsigned int>(x)).release();};
+      m[typeid(long long)]   = [](boost::any const& x) { return py::cast(boost::any_cast<long long>(x)).release();};
+      m[typeid(unsigned long long)] = [](boost::any const& x) { return py::cast(boost::any_cast<unsigned long long>(x)).release();};
+      m[typeid(float)]       = [](boost::any const& x) { return py::cast(boost::any_cast<float>(x)).release();};
       m[typeid(double)]      = [](boost::any const& x) { return py::cast(boost::any_cast<double>(x)).release();};
       m[typeid(bool)]        = [](boost::any const& x) { return py::cast(boost::any_cast<bool>(x)).release();};
       m[typeid(std::string)] = [](boost::any const& x) { return py::cast(boost::any_cast<std::string>(x)).release();};

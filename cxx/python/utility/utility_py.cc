@@ -24,6 +24,50 @@ namespace py=pybind11;
 using namespace std;
 using namespace mspass::utility;
 
+namespace {
+bool is_expected_python_conversion_error(py::error_already_set &err) {
+  return err.matches(PyExc_TypeError) || err.matches(PyExc_ValueError) ||
+         err.matches(PyExc_OverflowError);
+}
+
+void put_metadata_py_value(Metadata &md, const std::string &key,
+                           py::object value) {
+  py::object original_value = value;
+  if (!(py::isinstance<py::float_>(value) ||
+        py::isinstance<py::bool_>(value) ||
+        py::isinstance<py::int_>(value) ||
+        py::isinstance<py::bytes>(value) ||
+        py::isinstance<py::str>(value))) {
+    py::object numpy_generic = py::module_::import("numpy").attr("generic");
+    if (py::isinstance(value, numpy_generic))
+      value = value.attr("item")();
+  }
+
+  if(py::isinstance<py::float_>(value))
+    md.put(key, (value.cast<double>()));
+  else if(py::isinstance<py::bool_>(value))
+    md.put(key, (value.cast<bool>()));
+  else if(py::isinstance<py::int_>(value)) {
+    try {
+      md.put(key, (value.cast<long>()));
+    } catch (const py::cast_error &) {
+      md.put_object(key, original_value);
+    } catch (py::error_already_set &err) {
+      if (!is_expected_python_conversion_error(err))
+        throw;
+      PyErr_Clear();
+      md.put_object(key, original_value);
+    }
+  }
+  else if(py::isinstance<py::bytes>(value))
+    md.put_object(key, value);
+  else if(py::isinstance<py::str>(value))
+    md.put(key, std::string(py::str(value)));
+  else
+    md.put_object(key, value);
+}
+} // namespace
+
 /* This is what the pybind11 documentation calls a trampoline class for
 needed to handle virtual function in the abstract base class BasicMetadata. */
 class PyBasicMetadata : public BasicMetadata {
@@ -256,18 +300,9 @@ PYBIND11_MODULE(utility, m) {
     .def(py::init([](py::dict d) {
       auto md = new Metadata();
       for(auto i : d) {
-        if(py::isinstance<py::float_>(i.second))
-          md->put(std::string(py::str(i.first)), (i.second.cast<double>()));
-        else if(py::isinstance<py::bool_>(i.second))
-          md->put(std::string(py::str(i.first)), (i.second.cast<bool>()));
-        else if(py::isinstance<py::int_>(i.second))
-          md->put(std::string(py::str(i.first)), (i.second.cast<long>()));
-        else if(py::isinstance<py::bytes>(i.second))
-          md->put_object(std::string(py::str(i.first)), py::reinterpret_borrow<py::object>(i.second));
-        else if(py::isinstance<py::str>(i.second))
-          md->put(std::string(py::str(i.first)), std::string(py::str(i.second)));
-        else
-          md->put_object(std::string(py::str(i.first)), py::reinterpret_borrow<py::object>(i.second));
+        put_metadata_py_value(
+            *md, std::string(py::str(i.first)),
+            py::reinterpret_borrow<py::object>(i.second));
       }
       md->clear_modified();
       return md;
@@ -279,18 +314,7 @@ PYBIND11_MODULE(utility, m) {
     .def("get",&Metadata::get_any,"Return the value indexed by a specified key")
     .def("__getitem__",&Metadata::get_any,"Return the value indexed by a specified key")
     .def("put", [](Metadata& md, const py::bytes k, const py::object v) {
-      if(py::isinstance<py::float_>(v))
-        md.put(std::string(py::str(k.attr("__str__")())), (v.cast<double>()));
-      else if(py::isinstance<py::bool_>(v))
-        md.put(std::string(py::str(k.attr("__str__")())), (v.cast<bool>()));
-      else if(py::isinstance<py::int_>(v))
-        md.put(std::string(py::str(k.attr("__str__")())), (v.cast<long>()));
-      else if(py::isinstance<py::bytes>(v))
-        md.put_object(std::string(py::str(k.attr("__str__")())), v);
-      else if(py::isinstance<py::str>(v))
-        md.put(std::string(py::str(k.attr("__str__")())), std::string(py::str(v)));
-      else
-        md.put_object(std::string(py::str(k.attr("__str__")())), v);
+      put_metadata_py_value(md, std::string(py::str(k.attr("__str__")())), v);
     })
     .def("put",py::overload_cast<const std::string,const double>(&BasicMetadata::put))
     .def("put",py::overload_cast<const std::string,const bool>(&BasicMetadata::put))
@@ -299,20 +323,11 @@ PYBIND11_MODULE(utility, m) {
         md.put_object(k, py::reinterpret_borrow<py::object>(v));
     })
     .def("put",py::overload_cast<const std::string,const std::string>(&BasicMetadata::put))
-    .def("put",py::overload_cast<const std::string,const py::object>(&Metadata::put_object))
+    .def("put",[](Metadata& md, const std::string k, const py::object v) {
+        put_metadata_py_value(md, k, v);
+    })
     .def("__setitem__", [](Metadata& md, const py::bytes k, const py::object v) {
-      if(py::isinstance<py::float_>(v))
-        md.put(std::string(py::str(k.attr("__str__")())), (v.cast<double>()));
-      else if(py::isinstance<py::bool_>(v))
-        md.put(std::string(py::str(k.attr("__str__")())), (v.cast<bool>()));
-      else if(py::isinstance<py::int_>(v))
-        md.put(std::string(py::str(k.attr("__str__")())), (v.cast<long>()));
-      else if(py::isinstance<py::bytes>(v))
-        md.put_object(std::string(py::str(k.attr("__str__")())), v);
-      else if(py::isinstance<py::str>(v))
-        md.put(std::string(py::str(k.attr("__str__")())), std::string(py::str(v)));
-      else
-        md.put_object(std::string(py::str(k.attr("__str__")())), v);
+      put_metadata_py_value(md, std::string(py::str(k.attr("__str__")())), v);
     })
     .def("__setitem__",py::overload_cast<const std::string,const double>(&BasicMetadata::put))
     .def("__setitem__",py::overload_cast<const std::string,const bool>(&BasicMetadata::put))
@@ -321,7 +336,9 @@ PYBIND11_MODULE(utility, m) {
         md.put_object(k, py::reinterpret_borrow<py::object>(v));
     })
     .def("__setitem__",py::overload_cast<const std::string,const std::string>(&BasicMetadata::put))
-    .def("__setitem__",py::overload_cast<const std::string,const py::object>(&Metadata::put_object))
+    .def("__setitem__",[](Metadata& md, const std::string k, const py::object v) {
+        put_metadata_py_value(md, k, v);
+    })
     .def("put_double",&Metadata::put_double,"Interface class for doubles")
     .def("put_bool",&Metadata::put_bool,"Interface class for boolean")
     .def("put_string",&Metadata::put_string,"Interface class for strings")
@@ -381,6 +398,22 @@ PYBIND11_MODULE(utility, m) {
           key = key + ": False, ";
         else if (index->second.type() == typeid(long))
           key = key + ": " + std::to_string(boost::any_cast<long>(index->second)) + ", ";
+        else if (index->second.type() == typeid(int))
+          key = key + ": " + std::to_string(boost::any_cast<int>(index->second)) + ", ";
+        else if (index->second.type() == typeid(short))
+          key = key + ": " + std::to_string(boost::any_cast<short>(index->second)) + ", ";
+        else if (index->second.type() == typeid(unsigned short))
+          key = key + ": " + std::to_string(boost::any_cast<unsigned short>(index->second)) + ", ";
+        else if (index->second.type() == typeid(unsigned int))
+          key = key + ": " + std::to_string(boost::any_cast<unsigned int>(index->second)) + ", ";
+        else if (index->second.type() == typeid(unsigned long))
+          key = key + ": " + std::to_string(boost::any_cast<unsigned long>(index->second)) + ", ";
+        else if (index->second.type() == typeid(long long))
+          key = key + ": " + std::to_string(boost::any_cast<long long>(index->second)) + ", ";
+        else if (index->second.type() == typeid(unsigned long long))
+          key = key + ": " + std::to_string(boost::any_cast<unsigned long long>(index->second)) + ", ";
+        else if (index->second.type() == typeid(float))
+          key = key + ": " + std::to_string(boost::any_cast<float>(index->second)) + ", ";
         /* The py::repr function will get the double/single
          * quotes right based on the content of the string */
         else
@@ -433,6 +466,8 @@ PYBIND11_MODULE(utility, m) {
     .def_readwrite("tag",&Metadata_typedef::tag,"Name key for this metadata")
     .def_readwrite("mdt",&Metadata_typedef::mdt,"Type of any value associated with this key")
   ;
+  m.def("copy_selected_metadata",&copy_selected_metadata,
+        "Copy selected values from one Metadata container to another using a MetadataList schema");
 
   /* We need this definition to bind dmatrix to a numpy array as described
   in this section of pybind11 documentation:\

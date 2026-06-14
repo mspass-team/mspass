@@ -1,9 +1,11 @@
 #include "mspass/algorithms/deconvolution/CNR3CDecon.h"
 #include "mspass/algorithms/algorithms.h"
+#include "mspass/algorithms/deconvolution/GIDDeconUtil.h"
 #include "mspass/seismic/Seismogram.h"
 #include "mspass/seismic/TimeSeries.h"
 #include "mspass/utility/MsPASSError.h"
 #include <algorithm>
+#include <sstream>
 #include <string.h> //needed for memcpy
 
 /* This enum is file scope to intentionally exclude it from python wrappers.
@@ -22,6 +24,21 @@ using namespace mspass::seismic;
 using namespace mspass::utility;
 using namespace mspass::algorithms;
 using namespace mspass::algorithms::amplitudes;
+
+namespace {
+double parse_vector_taper_value(const string &text,
+                                const string &table_name) {
+  istringstream ss(text);
+  double val;
+  ss >> val;
+  if (!ss || !(ss >> ws).eof())
+    throw MsPASSError("CNR3CDecon::read_parameters: invalid numeric value "
+                      "in " +
+                          table_name + ": " + text,
+                      ErrorSeverity::Fatal);
+  return val;
+}
+} // namespace
 
 CNR3CDecon::CNR3CDecon()
     : FFTDeconOperator(), signalengine(), waveletengine(), dnoise_engine(),
@@ -73,7 +90,7 @@ void CNR3CDecon::read_parameters(const AntelopePf &pf) {
                             stmp,
                         ErrorSeverity::Fatal);
     }
-    this->damp = pf.get_double("damping_factor");
+    this->damp = GetDoubleRequired(pf, "damping_factor");
     if (this->damp <= 0.0) {
       throw MsPASSError("CNR3CDecon::read_parameters: damping_factor must be "
                         "positive for stable regularized deconvolution",
@@ -81,18 +98,20 @@ void CNR3CDecon::read_parameters(const AntelopePf &pf) {
     }
     /* Note this paramter is used for both the damping method and the
     generalized_water_level */
-    this->noise_floor = pf.get_double("noise_floor");
-    this->snr_regularization_floor = pf.get_double("snr_regularization_floor");
-    this->snr_bandwidth = pf.get_double("snr_for_bandwidth_estimator");
-    this->operator_dt = pf.get_double("target_sample_interval");
+    this->noise_floor = GetDoubleRequired(pf, "noise_floor");
+    this->snr_regularization_floor =
+        GetDoubleRequired(pf, "snr_regularization_floor");
+    this->snr_bandwidth =
+        GetDoubleRequired(pf, "snr_for_bandwidth_estimator");
+    this->operator_dt = GetDoubleRequired(pf, "target_sample_interval");
     if (this->operator_dt <= 0.0)
       throw MsPASSError("CNR3CDecon::read_parameters: "
                         "target_sample_interval must be positive",
                         ErrorSeverity::Fatal);
-    this->fhs = pf.get_double("high_frequency_search_start");
+    this->fhs = GetDoubleRequired(pf, "high_frequency_search_start");
     double ts, te;
-    ts = pf.get_double("deconvolution_data_window_start");
-    te = pf.get_double("deconvolution_data_window_end");
+    ts = GetDoubleRequired(pf, "deconvolution_data_window_start");
+    te = GetDoubleRequired(pf, "deconvolution_data_window_end");
     this->processing_window = TimeWindow(ts, te);
     ValidateWindowDuration(this->processing_window,
                            "deconvolution_data_window",
@@ -109,7 +128,7 @@ void CNR3CDecon::read_parameters(const AntelopePf &pf) {
      * ShapingWavelet constructor and FFTDeconOperator api constraints created
      * by use in other classes in this directory that also use these */
     int nfftneeded = nextPowerOf2(minwinsize);
-    int nfftpf = pf.get<int>("operator_nfft");
+    int nfftpf = GetIntRequired(pf, "operator_nfft");
     if (nfftneeded != nfftpf) {
       FFTDeconOperator::change_size(nfftneeded);
       AntelopePf pfcopy(pf);
@@ -127,14 +146,14 @@ void CNR3CDecon::read_parameters(const AntelopePf &pf) {
           ErrorSeverity::Invalid);
     }
     FFTDeconOperator::change_size(nextPowerOf2(minwinsize));
-    ts = pf.get_double("noise_window_start");
-    te = pf.get_double("noise_window_end");
+    ts = GetDoubleRequired(pf, "noise_window_start");
+    te = GetDoubleRequired(pf, "noise_window_end");
     this->noise_window = TimeWindow(ts, te);
     ValidateWindowDuration(this->noise_window, "noise_window",
                            "CNR3CDecon::read_parameters");
     int noise_winlength = round((te - ts) / operator_dt) + 1;
-    double tbp = pf.get_double("time_bandwidth_product");
-    long ntapers = pf.get_long("number_tapers");
+    double tbp = GetDoubleRequired(pf, "time_bandwidth_product");
+    long ntapers = GetLongRequired(pf, "number_tapers");
     this->dnoise_engine = MTPowerSpectrumEngine(noise_winlength, tbp, ntapers);
     /* Default wavelet noise window to data window length - adjusted dynamically
     if changed*/
@@ -147,37 +166,38 @@ void CNR3CDecon::read_parameters(const AntelopePf &pf) {
     sval = pf.get_string("taper_type");
     /* New parameter added for dynamic bandwidth adjustment feature implemented
     december 2020 */
-    decon_bandwidth_cutoff = pf.get_double("decon_bandwidth_cutoff");
+    decon_bandwidth_cutoff =
+        GetDoubleRequired(pf, "decon_bandwidth_cutoff");
     if (sval == "linear") {
       double f0, f1, t1, t0;
       AntelopePf pfb = pf.get_branch("LinearTaper");
       AntelopePf pfbranch = pfb.get_branch("wavelet_taper");
-      f0 = pfbranch.get_double("front0");
-      f1 = pfbranch.get_double("front1");
-      t1 = pfbranch.get_double("tail1");
-      t0 = pfbranch.get_double("tail0");
+      f0 = GetDoubleRequired(pfbranch, "front0");
+      f1 = GetDoubleRequired(pfbranch, "front1");
+      t1 = GetDoubleRequired(pfbranch, "tail1");
+      t0 = GetDoubleRequired(pfbranch, "tail0");
       wavelet_taper = shared_ptr<LinearTaper>(new LinearTaper(f0, f1, t1, t0));
       pfbranch = pfb.get_branch("data_taper");
-      f0 = pfbranch.get_double("front0");
-      f1 = pfbranch.get_double("front1");
-      t1 = pfbranch.get_double("tail1");
-      t0 = pfbranch.get_double("tail0");
+      f0 = GetDoubleRequired(pfbranch, "front0");
+      f1 = GetDoubleRequired(pfbranch, "front1");
+      t1 = GetDoubleRequired(pfbranch, "tail1");
+      t0 = GetDoubleRequired(pfbranch, "tail0");
       data_taper = shared_ptr<LinearTaper>(new LinearTaper(f0, f1, t1, t0));
       taper_data = true;
     } else if (sval == "cosine") {
       double f0, f1, t1, t0;
       AntelopePf pfb = pf.get_branch("CosineTaper");
       AntelopePf pfbranch = pfb.get_branch("wavelet_taper");
-      f0 = pfbranch.get_double("front0");
-      f1 = pfbranch.get_double("front1");
-      t1 = pfbranch.get_double("tail1");
-      t0 = pfbranch.get_double("tail0");
+      f0 = GetDoubleRequired(pfbranch, "front0");
+      f1 = GetDoubleRequired(pfbranch, "front1");
+      t1 = GetDoubleRequired(pfbranch, "tail1");
+      t0 = GetDoubleRequired(pfbranch, "tail0");
       wavelet_taper = shared_ptr<CosineTaper>(new CosineTaper(f0, f1, t1, t0));
       pfbranch = pfb.get_branch("data_taper");
-      f0 = pfbranch.get_double("front0");
-      f1 = pfbranch.get_double("front1");
-      t1 = pfbranch.get_double("tail1");
-      t0 = pfbranch.get_double("tail0");
+      f0 = GetDoubleRequired(pfbranch, "front0");
+      f1 = GetDoubleRequired(pfbranch, "front1");
+      t1 = GetDoubleRequired(pfbranch, "tail1");
+      t0 = GetDoubleRequired(pfbranch, "tail0");
       data_taper = shared_ptr<CosineTaper>(new CosineTaper(f0, f1, t1, t0));
       taper_data = true;
     } else if (sval == "vector") {
@@ -188,9 +208,8 @@ void CNR3CDecon::read_parameters(const AntelopePf &pf) {
       tdataread.reserve(tdl.size());
       list<string>::iterator tptr;
       for (tptr = tdl.begin(); tptr != tdl.end(); ++tptr) {
-        double val;
-        sscanf(tptr->c_str(), "%lf", &val);
-        tdataread.push_back(val);
+        tdataread.push_back(
+            parse_vector_taper_value(*tptr, "wavelet_taper_vector"));
       }
       wavelet_taper = shared_ptr<VectorTaper>(new VectorTaper(tdataread));
       tdataread.clear();
@@ -198,9 +217,8 @@ void CNR3CDecon::read_parameters(const AntelopePf &pf) {
       tdl = pfbranch.get_tbl("data_taper_vector");
       tdataread.reserve(tdl.size());
       for (tptr = tdl.begin(); tptr != tdl.end(); ++tptr) {
-        double val;
-        sscanf(tptr->c_str(), "%lf", &val);
-        tdataread.push_back(val);
+        tdataread.push_back(
+            parse_vector_taper_value(*tptr, "data_taper_vector"));
       }
       data_taper = shared_ptr<VectorTaper>(new VectorTaper(tdataread));
       taper_data = true;

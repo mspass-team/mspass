@@ -20,19 +20,22 @@ from mspasspy.ccore.seismic import (
 )
 from mspasspy.ccore.utility import (
     AtomicType,
+    copy_selected_metadata,
     dmatrix,
     ErrorLogger,
     ErrorSeverity,
     LogData,
     Metadata,
     MetadataDefinitions,
+    Metadata_typedef,
+    MDtype,
     MsPASSError,
     ProcessingHistory,
     SphericalCoordinate,
 )
 
 from mspasspy.util.error_logger import PyErrorLogger
-from mspasspy.ccore.algorithms.basic import _ExtractComponent
+from mspasspy.ccore.algorithms.basic import Butterworth, _ExtractComponent
 from mspasspy.ccore.algorithms.deconvolution import MTPowerSpectrumEngine
 from mspasspy.ccore.algorithms.basic import TimeWindow
 
@@ -420,6 +423,224 @@ def test_Metadata():
     for i in md:
         assert md[i] == md_copy[i]
     assert md.modified() == md_copy.modified()
+
+
+def test_Metadata_typed_getters_accept_compatible_scalar_types():
+    md = Metadata()
+    md["integer_value"] = 5
+    md["double_integer"] = 6.0
+    md["double_true"] = 1.0
+    md["integer_false"] = 0
+    md["string_true"] = "YES"
+    md["string_false"] = "no"
+    md["string_true_with_space"] = " true "
+    md["string_false_with_newline"] = "false\n"
+    md["numpy_float32"] = np.float32(1.25)
+    md["numpy_int64"] = np.int64(8)
+    md["numpy_bool"] = np.bool_(True)
+    md["long_min_float"] = float(-sys.maxsize - 1)
+    if sys.maxsize > 2**53:
+        float_below_long_max = np.nextafter(float(sys.maxsize), 0.0)
+        md["float_below_long_max"] = float_below_long_max
+    else:
+        md["long_max_float"] = float(sys.maxsize)
+    md.put("put_numpy_float32", np.float32(3.5))
+    md.put("put_numpy_int64", np.int64(11))
+    md_from_dict = Metadata(
+        {
+            "dict_numpy_float32": np.float32(2.5),
+            "dict_numpy_int32": np.int32(9),
+            "dict_numpy_bool": np.bool_(False),
+            "numpy_array": np.array([3, 4]),
+        }
+    )
+
+    assert md.get_double("integer_value") == pytest.approx(5.0)
+    assert md.get_long("double_integer") == 6
+    assert md.get_bool("double_true") is True
+    assert md.get_bool("integer_false") is False
+    assert md.get_bool("string_true") is True
+    assert md.get_bool("string_false") is False
+    assert md.get_bool("string_true_with_space") is True
+    assert md.get_bool("string_false_with_newline") is False
+    assert md.get_double("numpy_float32") == pytest.approx(1.25)
+    assert md.get_long("numpy_int64") == 8
+    assert md.get_bool("numpy_bool") is True
+    assert md.get_long("long_min_float") == -sys.maxsize - 1
+    if sys.maxsize > 2**53:
+        assert md.get_long("float_below_long_max") == int(float_below_long_max)
+    else:
+        assert md.get_long("long_max_float") == sys.maxsize
+    assert md.get_double("put_numpy_float32") == pytest.approx(3.5)
+    assert md.get_long("put_numpy_int64") == 11
+    assert md_from_dict.get_double("dict_numpy_float32") == pytest.approx(2.5)
+    assert md_from_dict.get_long("dict_numpy_int32") == 9
+    assert md_from_dict.get_bool("dict_numpy_bool") is False
+    assert md_from_dict.type("dict_numpy_float32") == "double"
+    assert md_from_dict.type("dict_numpy_int32") == "long"
+    assert md_from_dict.type("dict_numpy_bool") == "bool"
+    assert (md_from_dict["numpy_array"] == np.array([3, 4])).all()
+    md_roundtrip = pickle.loads(pickle.dumps(md_from_dict))
+    assert md_roundtrip.get_double("dict_numpy_float32") == pytest.approx(2.5)
+    assert md_roundtrip.get_long("dict_numpy_int32") == 9
+    assert md_roundtrip.get_bool("dict_numpy_bool") is False
+
+
+def test_Metadata_typed_getters_reject_incompatible_scalar_types():
+    md = Metadata()
+    md["fractional_integer"] = 4.5
+    md["numpy_fractional_integer"] = np.float32(4.5)
+    md["numpy_bool_not_numeric"] = np.bool_(True)
+    md["numpy_uint64_small"] = np.uint64(3)
+    md["native_long_max"] = sys.maxsize
+    md["native_long_min"] = -sys.maxsize - 1
+    md["numpy_int64_max"] = np.int64(np.iinfo(np.int64).max)
+    md["numpy_int64_min"] = np.int64(np.iinfo(np.int64).min)
+    md["huge_python_integer"] = 2**100
+    md["not_numeric"] = "abc"
+    md["not_boolean"] = 2
+    md["true_bool"] = True
+    md["too_large_long"] = float(np.iinfo(np.int64).max) * 2.0
+    if sys.maxsize > 2**53:
+        md["rounded_float_long_max"] = float(sys.maxsize)
+    md_from_dict = Metadata(
+        {"numpy_uint64_out_of_range": np.uint64(np.iinfo(np.uint64).max)}
+    )
+
+    assert md.get_long("numpy_uint64_small") == 3
+    assert md.get_long("native_long_max") == sys.maxsize
+    assert md.get_long("native_long_min") == -sys.maxsize - 1
+    assert md.get_long("numpy_int64_max") == np.iinfo(np.int64).max
+    assert md.get_long("numpy_int64_min") == np.iinfo(np.int64).min
+    assert md_from_dict.get_double("numpy_uint64_out_of_range") == pytest.approx(
+        float(np.iinfo(np.uint64).max)
+    )
+    assert md.get_double("huge_python_integer") == pytest.approx(float(2**100))
+    with pytest.raises(MsPASSError, match="integer-valued"):
+        md.get_long("fractional_integer")
+    with pytest.raises(MsPASSError, match="integer-valued"):
+        md.get_long("numpy_fractional_integer")
+    with pytest.raises(MsPASSError, match="outside long range"):
+        md.get_long("huge_python_integer")
+    with pytest.raises(MsPASSError, match="not numeric"):
+        md.get_double("numpy_bool_not_numeric")
+    with pytest.raises(MsPASSError, match="not numeric"):
+        md.get_double("not_numeric")
+    with pytest.raises(MsPASSError, match="not boolean"):
+        md.get_bool("not_boolean")
+    with pytest.raises(MsPASSError, match="not numeric"):
+        md.get_double("true_bool")
+    with pytest.raises(MsPASSError, match="integer-valued|outside long range"):
+        md.get_long("too_large_long")
+    if sys.maxsize > 2**53:
+        with pytest.raises(MsPASSError, match="outside long range"):
+            md.get_long("rounded_float_long_max")
+    with pytest.raises(MsPASSError, match="integer-valued|outside long range"):
+        md_from_dict.get_long("numpy_uint64_out_of_range")
+
+
+def test_Metadata_template_getters_accept_compatible_scalar_types_through_cpp():
+    md = Metadata()
+    md["sample_interval"] = 1
+    md["zerophase"] = "false"
+    md["filter_type"] = "lowpass"
+    md["filter_definition_method"] = "corner_pole"
+    md["npoles_high"] = 4.0
+    md["corner_high"] = 0.25
+
+    filt = Butterworth(md)
+
+    assert filt.dt() == pytest.approx(1.0)
+    assert filt.npoles_high() == 4
+    assert filt.is_zerophase() is False
+
+
+def test_copy_selected_metadata_uses_root_scalar_coercion():
+    source = Metadata()
+    source["as_float"] = 1
+    source["as_double"] = np.float32(2.25)
+    source["as_int"] = 4.0
+    source["as_long"] = np.int64(7)
+    source["as_bool"] = " true "
+    source["as_string"] = "ok"
+    source["skip"] = "ignored"
+    target = Metadata()
+    mdlist = []
+    for tag, mdt in [
+        ("as_float", MDtype.Real32),
+        ("as_double", MDtype.Double),
+        ("as_int", MDtype.Int32),
+        ("as_long", MDtype.Int64),
+        ("as_bool", MDtype.Boolean),
+        ("as_string", MDtype.String),
+        ("skip", MDtype.Invalid),
+    ]:
+        item = Metadata_typedef()
+        item.tag = tag
+        item.mdt = mdt
+        mdlist.append(item)
+
+    copied_count = copy_selected_metadata(source, target, mdlist)
+
+    assert copied_count == 6
+    assert target.get_double("as_float") == pytest.approx(1.0)
+    assert target.get_double("as_double") == pytest.approx(2.25)
+    assert target.get_long("as_int") == 4
+    assert target.get_long("as_long") == 7
+    assert target.get_bool("as_bool") is True
+    assert target.get_string("as_string") == "ok"
+    assert not target.is_defined("skip")
+    assert target["as_float"] == pytest.approx(1.0)
+    assert target["as_int"] == 4
+    target_dict = dict(target)
+    assert target_dict["as_float"] == pytest.approx(1.0)
+    assert target_dict["as_int"] == 4
+    assert target_dict["as_bool"] is True
+    assert "as_float" in str(target)
+    assert "as_int" in repr(target)
+    target_roundtrip = pickle.loads(pickle.dumps(target))
+    assert target_roundtrip["as_float"] == pytest.approx(1.0)
+    assert target_roundtrip["as_int"] == 4
+
+    bad_source = Metadata(source)
+    bad_source["as_int"] = 4.5
+    with pytest.raises(MsPASSError, match="integer-valued"):
+        copy_selected_metadata(bad_source, Metadata(), mdlist)
+
+    int_overflow_source = Metadata(source)
+    int_overflow_source["as_int"] = float(np.iinfo(np.int32).max) + 1.0
+    with pytest.raises(MsPASSError, match="outside int range"):
+        copy_selected_metadata(int_overflow_source, Metadata(), mdlist)
+
+    float_overflow_source = Metadata(source)
+    float_overflow_source["as_float"] = float(np.finfo(np.float32).max) * 2.0
+    with pytest.raises(MsPASSError, match="outside float range"):
+        copy_selected_metadata(float_overflow_source, Metadata(), mdlist)
+
+
+def test_Metadata_scalar_coercion_in_seismic_constructors():
+    ts_md = Metadata()
+    ts_md["delta"] = 1
+    ts_md["starttime"] = 0
+    ts_md["npts"] = 5.0
+    ts = TimeSeries(ts_md)
+    assert ts.dt == pytest.approx(1.0)
+    assert ts.t0 == pytest.approx(0.0)
+    assert ts.npts == 5
+
+    seis_md = Metadata()
+    seis_md["delta"] = 1
+    seis_md["starttime"] = 0
+    seis_md["npts"] = 4.0
+    seis = _CoreSeismogram(seis_md, False)
+    assert seis.dt == pytest.approx(1.0)
+    assert seis.t0 == pytest.approx(0.0)
+    assert seis.npts == 4
+
+    bad_md = Metadata(ts_md)
+    bad_md["npts"] = 5.5
+    with pytest.raises(MsPASSError, match="integer-valued"):
+        TimeSeries(bad_md)
 
 
 @pytest.fixture(params=[Seismogram, SeismogramEnsemble, TimeSeries, TimeSeriesEnsemble])

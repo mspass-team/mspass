@@ -10,6 +10,7 @@
 #include <pybind11/pybind11.h>
 #include <set>
 #include <sstream>
+#include <string>
 #include <typeinfo>
 
 namespace mspass {
@@ -44,7 +45,7 @@ public:
     when the type of the return does not match the type requested. */
   MetadataGetError(const char *boostmessage, const std::string key,
                    const char *Texpected, const char *Tactual) {
-    ss << "Error in Metadata get method.   Type mismatch in attem to get "
+    ss << "Error in Metadata get method.   Type mismatch in attempt to get "
        << "data with key=" << key << std::endl
        << "boost::any bad_any_cast wrote this message:  " << std::endl
        << boostmessage << std::endl;
@@ -52,6 +53,24 @@ public:
     ss << "Trying to convert to data of type=" << name_e << std::endl;
     std::string name_a(boost::core::demangle(Tactual));
     ss << "Actual entry has type=" << name_a << std::endl;
+    message = ss.str();
+    badness = ErrorSeverity::Suspect;
+  };
+  /*! \brief Constructor called when compatible scalar conversion fails.
+
+    This form is used by typed getter wrappers that accept compatible
+    scalar types (for example, integer metadata for a double request), but
+    still need to reject semantic mismatches such as a fractional value for
+    an integer request. */
+  MetadataGetError(const std::string key, const char *Texpected,
+                   const char *Tactual, const std::string detail) {
+    ss << "Error in Metadata get method. Type mismatch in attempt to get "
+       << "data with key=" << key << std::endl;
+    std::string name_e(boost::core::demangle(Texpected));
+    ss << "Trying to convert to data of type=" << name_e << std::endl;
+    std::string name_a(boost::core::demangle(Tactual));
+    ss << "Actual entry has type=" << name_a << std::endl;
+    ss << detail << std::endl;
     message = ss.str();
     badness = ErrorSeverity::Suspect;
   };
@@ -128,22 +147,7 @@ other attributes.
   type mismatch.
   \param key keyword associated with requested metadata member.
   **/
-  double get_double(const std::string key) const override {
-    try {
-      double val;
-      val = get<double>(key);
-      return val;
-    } catch (MetadataGetError &merr) {
-      /* Try a float if that failed */
-      try {
-        float fval;
-        fval = get<float>(key);
-        return fval;
-      } catch (MetadataGetError &merr) {
-        throw merr;
-      }
-    }
-  };
+  double get_double(const std::string key) const override;
   /*!
   Get an integer from the Metadata object.
 
@@ -151,21 +155,7 @@ other attributes.
   type mismatch.
   \param key keyword associated with requested metadata member.
   **/
-  int get_int(const std::string key) const override {
-    try {
-      int val;
-      val = get<int>(key);
-      return val;
-    } catch (MetadataGetError &merr) {
-      try {
-        long lval;
-        lval = get<long>(key);
-        return static_cast<int>(lval);
-      } catch (MetadataGetError &merr) {
-        throw merr;
-      }
-    }
-  };
+  int get_int(const std::string key) const override;
   /*!
   Get a long integer from the Metadata object.
 
@@ -173,21 +163,7 @@ other attributes.
   type mismatch.
   \param key keyword associated with requested metadata member.
   **/
-  long get_long(const std::string key) const {
-    try {
-      long val;
-      val = get<long>(key);
-      return val;
-    } catch (MetadataGetError &merr) {
-      try {
-        int ival;
-        ival = get<int>(key);
-        return static_cast<long>(ival);
-      } catch (MetadataGetError &merr) {
-        throw merr;
-      }
-    }
-  };
+  long get_long(const std::string key) const;
   /*!
   Get a string from the Metadata object.
 
@@ -211,20 +187,12 @@ other attributes.
   /*!
   Get a  boolean parameter from the Metadata object.
 
-  This method never throws an exception assuming that if the
-  requested parameter is not found it is false.
+  \exception MetadataGetError if requested parameter is not found or there is a
+  type mismatch.
 
   \param key keyword associated with requested metadata member.
   **/
-  bool get_bool(const std::string key) const override {
-    try {
-      bool val;
-      val = get<bool>(key);
-      return val;
-    } catch (...) {
-      throw;
-    };
-  };
+  bool get_bool(const std::string key) const override;
   /*! Generic get interface.
 
   This is a generic interface most useful for template procedures
@@ -458,6 +426,11 @@ template <typename T> T Metadata::get(const std::string key) const {
   };
   return result;
 }
+template <> double Metadata::get<double>(const std::string key) const;
+template <> int Metadata::get<int>(const std::string key) const;
+template <> long Metadata::get<long>(const std::string key) const;
+template <> bool Metadata::get<bool>(const std::string key) const;
+template <> float Metadata::get<float>(const std::string key) const;
 /*! Return a pretty name from a boost any object.
  *
  * We use a boost::any object as a container to hold any generic object.
