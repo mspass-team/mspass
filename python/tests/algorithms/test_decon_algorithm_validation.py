@@ -1656,16 +1656,15 @@ def test_group_sparse_adaptive_support_threshold_controls_clustered_coefficients
     )
 
     assert default_qc["group_sparse_active_threshold_quantile"] == pytest.approx(0.90)
-    assert default_qc["group_sparse_active_threshold_used"] > default_qc[
-        "group_sparse_active_threshold"
-    ]
+    assert (
+        default_qc["group_sparse_active_threshold_used"]
+        > default_qc["group_sparse_active_threshold"]
+    )
     assert default_metrics["precision"] == pytest.approx(1.0)
     assert default_metrics["recall"] == pytest.approx(1.0)
     assert default_qc["group_sparse_active_groups"] == len(STRESS_SPIKES)
 
-    assert fixed_floor_qc["group_sparse_active_threshold_used"] == pytest.approx(
-        1.0e-9
-    )
+    assert fixed_floor_qc["group_sparse_active_threshold_used"] == pytest.approx(1.0e-9)
     assert fixed_floor_qc["group_sparse_active_groups"] > 100
     assert fixed_floor_metrics["precision"] < default_metrics["precision"]
     assert fixed_floor_metrics["f1"] < default_metrics["f1"]
@@ -2052,12 +2051,11 @@ def test_group_sparse_recovers_weak_arrivals_like_adaptive_memory(
         group_metrics, group_qc = results["group_sparse"]
         assert group_qc["group_sparse_enabled"]
         assert group_qc["group_sparse_active_threshold"] == pytest.approx(0.02)
-        assert group_qc["group_sparse_active_threshold_quantile"] == pytest.approx(
-            0.90
+        assert group_qc["group_sparse_active_threshold_quantile"] == pytest.approx(0.90)
+        assert (
+            group_qc["group_sparse_active_threshold_used"]
+            >= group_qc["group_sparse_active_threshold"]
         )
-        assert group_qc["group_sparse_active_threshold_used"] >= group_qc[
-            "group_sparse_active_threshold"
-        ]
         assert group_metrics["recall"] >= stable_metrics["recall"] - 1.0e-12
         assert group_metrics["precision"] >= stable_metrics["precision"] - 1.0e-12
         assert group_metrics["f1"] >= default_metrics["f1"] - 1.0e-12
