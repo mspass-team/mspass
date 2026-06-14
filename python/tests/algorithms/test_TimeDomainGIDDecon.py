@@ -60,6 +60,12 @@ def _make_external_noise(npts=300, dt=0.05, t0=-35.0, scale=1.0):
     return noise
 
 
+def _make_external_noise_spectrum(power):
+    return PowerSpectrum(
+        Metadata(), DoubleVector([power, power, power]), 1.0, "valid", -1.0, 1.0, 3
+    )
+
+
 def _assert_valid_rf(rf):
     assert rf.live
     assert rf.npts > 0
@@ -126,9 +132,12 @@ def _assert_group_sparse_qc(qc):
         qc["group_sparse_active_threshold_used"] >= qc["group_sparse_active_threshold"]
     )
     assert qc["group_sparse_iterations"] == qc["iteration_count"]
+    assert qc["gid_maximum_iterations"] == qc["group_sparse_max_iterations"]
     assert qc["group_sparse_active_groups"] == qc["gid_number_spikes"]
     assert qc["group_sparse_objective_final"] <= qc["group_sparse_objective_initial"]
     assert qc["group_sparse_fractional_improvement_final"] >= 0.0
+    assert np.isfinite(qc["group_sparse_debiased_objective_final"])
+    assert np.isfinite(qc["group_sparse_debiased_fractional_improvement_final"])
     assert qc["group_sparse_inverse_operator_nfft"] > 0
     assert qc["group_sparse_inverse_gain_max_actual"] <= (
         qc["group_sparse_inverse_gain_max_requested"] * (1.0 + 1.0e-10)
@@ -385,7 +394,9 @@ def test_TimeDomainGIDDecon_rejects_invalid_external_noise_spectrum(tmp_path):
 
 
 @pytest.mark.parametrize("mode", ["multi_taper", "least_square", "water_level", "cnr"])
-def test_TimeDomainGIDDecon_rejects_non_ns_power_spectrum_noise(tmp_path, mode):
+def test_TimeDomainGIDDecon_rejects_power_spectrum_noise_without_ns_inverse(
+    tmp_path, mode
+):
     pf = _pf_with_mode(
         tmp_path,
         "TimeDomainGIDDecon.pf",
@@ -397,7 +408,7 @@ def test_TimeDomainGIDDecon_rejects_non_ns_power_spectrum_noise(tmp_path, mode):
         Metadata(), DoubleVector([1.0, 1.0, 1.0]), 1.0, "valid", -1.0, 1.0, 3
     )
 
-    with pytest.raises(MsPASSError, match="only supported for ns_gid"):
+    with pytest.raises(MsPASSError, match="only supported for ns_gid and group_sparse"):
         engine.loadnoise(spectrum)
 
 
@@ -845,26 +856,34 @@ def test_TimeDomainGIDDecon_group_sparse_honors_external_noise_spectrum(tmp_path
         "time_domain_gid_deconvolution",
         "group_sparse",
     )
-    engine = TimeDomainGIDDecon(pf)
-    engine.loadwavelet(wavelet)
-    engine.loadnoise(
-        PowerSpectrum(
-            Metadata(), DoubleVector([1.0, 1.0, 1.0]), 1.0, "valid", -1.0, 1.0, 3
+
+    def run_with_spectrum(power):
+        engine = TimeDomainGIDDecon(pf)
+        engine.loadwavelet(wavelet)
+        engine.loadnoise(_make_external_noise_spectrum(power))
+        rf = TimeDomainGIDRFDecon(
+            data,
+            engine,
+            signal_window=TimeWindow(-8.0, 22.0),
+            noise_window=TimeWindow(-35.0, -8.0),
         )
-    )
+        assert rf.live
+        return rf["TimeDomainGIDDecon_properties"]
 
-    rf = TimeDomainGIDRFDecon(
-        data,
-        engine,
-        signal_window=TimeWindow(-8.0, 22.0),
-        noise_window=TimeWindow(-35.0, -8.0),
-    )
+    low_qc = run_with_spectrum(1.0e-8)
+    high_qc = run_with_spectrum(1.0e6)
 
-    assert rf.live
-    qc = rf["TimeDomainGIDDecon_properties"]
-    assert qc["group_sparse_inverse_external_wavelet_used"]
-    assert qc["group_sparse_inverse_external_noise_spectrum_used"]
-    assert qc["group_sparse_noise_threshold"] > 0.0
+    assert low_qc["group_sparse_inverse_external_wavelet_used"]
+    assert high_qc["group_sparse_inverse_external_wavelet_used"]
+    assert low_qc["group_sparse_inverse_external_noise_spectrum_used"]
+    assert high_qc["group_sparse_inverse_external_noise_spectrum_used"]
+    assert low_qc["group_sparse_noise_threshold"] > high_qc[
+        "group_sparse_noise_threshold"
+    ]
+    assert low_qc["group_sparse_lambda_used"] > high_qc["group_sparse_lambda_used"]
+    assert high_qc["group_sparse_inverse_noise_amplification"] > low_qc[
+        "group_sparse_inverse_noise_amplification"
+    ]
 
 
 def test_TimeDomainGIDDecon_clear_external_state_drops_pickle_payload(tmp_path):
@@ -1095,6 +1114,17 @@ def test_TimeDomainGIDDecon_changeparameter_handles_cnr_mode(tmp_path):
     cnr_md = pf.get_branch("deconvolution_operator_type").get_branch("cnr")
 
     engine.changeparameter(cnr_md)
+
+
+def test_TimeDomainGIDDecon_QCMetrics_rejects_unsupported_changed_leaf_metadata():
+    pf = pfread("./data/pf/TimeDomainGIDDecon.pf")
+    engine = TimeDomainGIDDecon(pf)
+    leaf_md = pf.get_branch("deconvolution_operator_type").get_branch("ns_gid")
+    leaf_md["diagnostic_object"] = [1, 2, 3]
+    engine.changeparameter(leaf_md)
+
+    with pytest.raises(MsPASSError, match="unsupported Metadata type.*diagnostic_object"):
+        engine.QCMetrics()
 
 
 def test_TimeDomainGIDDecon_preprocess_outputs_are_guarded():
@@ -1509,7 +1539,8 @@ def test_TimeDomainGIDDecon_changeparameter_rejects_leaf_shaping_dt_drift():
 def test_TimeDomainGIDDecon_rejects_invalid_probability_and_lag_parameters(
     tmp_path, old, new, match
 ):
-    text = open("data/pf/TimeDomainGIDDecon.pf", encoding="utf-8").read()
+    with open("data/pf/TimeDomainGIDDecon.pf", encoding="utf-8") as fp:
+        text = fp.read()
     pf = tmp_path / "TimeDomainGIDDecon.pf"
     pf.write_text(text.replace(old, new))
 
@@ -1521,7 +1552,8 @@ def test_TimeDomainGIDDecon_rejects_invalid_probability_and_lag_parameters(
 def test_TimeDomainGIDDecon_defaults_missing_lag_penalty_function_to_none(
     tmp_path,
 ):
-    text = open("data/pf/TimeDomainGIDDecon.pf", encoding="utf-8").read()
+    with open("data/pf/TimeDomainGIDDecon.pf", encoding="utf-8") as fp:
+        text = fp.read()
     text = text.replace("        lag_weight_penalty_function adaptive_memory\n", "")
     pf = tmp_path / "TimeDomainGIDDecon_legacy_no_penalty_function.pf"
     pf.write_text(text)
@@ -1542,7 +1574,8 @@ def test_TimeDomainGIDDecon_defaults_missing_lag_penalty_function_to_none(
 
 
 def test_TimeDomainGIDDecon_reports_missing_fixed_penalty_width(tmp_path):
-    text = open("data/pf/TimeDomainGIDDecon.pf", encoding="utf-8").read()
+    with open("data/pf/TimeDomainGIDDecon.pf", encoding="utf-8") as fp:
+        text = fp.read()
     text = text.replace(
         "lag_weight_penalty_function adaptive_memory",
         "lag_weight_penalty_function cosine_taper",

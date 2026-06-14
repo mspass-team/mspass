@@ -36,9 +36,10 @@ uses the configured receiver-function compatibility behavior.
 
 External TimeSeries noise can supply both the inverse-operator noise estimate
 and, when no windowed residual noise has been loaded, the residual-domain
-stopping threshold.  External PowerSpectrum noise is only an inverse-operator
-regularization estimate for ns_gid; callers must still load residual-domain
-noise with load(d, dwin, nwin) or loadnoise(d, nwin) before process().
+stopping threshold.  External PowerSpectrum noise is accepted by ns_gid and
+group_sparse because both use NS-GID inverse-operator regularization; callers
+must still load residual-domain noise with load(d, dwin, nwin) or
+loadnoise(d, nwin) before process().
 */
 
 class TimeDomainGIDDecon : public ScalarDecon {
@@ -259,6 +260,8 @@ private:
   double group_sparse_active_threshold_used;
   double group_sparse_objective_initial, group_sparse_objective_final;
   double group_sparse_fractional_improvement_final;
+  double group_sparse_debiased_objective_final;
+  double group_sparse_debiased_fractional_improvement_final;
   int group_sparse_max_iterations, group_sparse_iterations;
   int group_sparse_active_groups;
   bool group_sparse_converged;

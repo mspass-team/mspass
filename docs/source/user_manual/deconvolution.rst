@@ -210,11 +210,12 @@ The word "noise" has several meanings:
     Noise used by iterative methods to decide whether another sparse spike is
     significant and when iteration should stop.
 
-For ``ns_gid``, an external ``TimeSeries`` noise estimate can be used for both
-inverse-operator regularization and, when loaded as residual noise,
-residual-domain stopping.  An external ``PowerSpectrum`` can regularize only
-the inverse operator; a residual-domain noise window is still needed for sparse
-iteration stopping.
+For ``ns_gid`` and ``group_sparse``, an external ``TimeSeries`` noise estimate
+can be used for inverse-operator regularization and, when loaded as residual
+noise, residual-domain stopping or support decisions.  An external
+``PowerSpectrum`` can regularize only the NS-GID inverse operator; a
+residual-domain noise window or time-domain noise estimate is still needed for
+sparse iteration stopping or group-sparse support decisions.
 
 Choosing an operator
 --------------------
@@ -331,6 +332,11 @@ For lower-level workflows that use the GID engines directly, use
        deconvolution_type="least_square",
    )
 
+``make_gid_engine`` returns the lower-level C++ GID engine object.  Pass that
+object to ``TimeDomainGIDRFDecon`` or ``FrequencyDomainGIDRFDecon``; pass an
+``RFdeconProcessor`` object to the high-level ``RFdecon(..., engine=...)``
+interface.
+
 These settings are separate layers.  The ``deconvolution_type`` method layer and
 its alias ``gid_mode`` choose the GID inverse or solver mode, such as ``ns_gid``,
 ``least_square``, or ``group_sparse``.  ``lag_weight_penalty_function`` and its
@@ -340,6 +346,11 @@ such as ``group_sparse_active_threshold``,
 ``group_sparse_active_threshold_scale``, and
 ``group_sparse_active_threshold_quantile``, are applied after the group-sparse
 solve to decide which lag groups remain in the sparse output.
+
+The modes above are the recommended user-facing choices.  Legacy and advanced
+inverse modes are still accepted where supported, including ``water_level``,
+``multi_taper``, ``cnr``/``cnr3c``, the ``noise_stable`` alias for ``ns_gid``,
+and the ``group_lasso``/``sparse_group_lasso`` aliases for ``group_sparse``.
 
 Scalar inverse operators
 ------------------------
@@ -484,7 +495,9 @@ wavelets can be supplied through the GID ``loadwavelet`` APIs or wrapper
 inverse regularization and residual-domain stopping when loaded as residual
 noise.  External ``PowerSpectrum`` noise only regularizes the inverse operator;
 a residual-domain noise window is still needed for spike significance and
-stopping.
+stopping.  In ``group_sparse`` mode, that inverse regularization can also
+change the automatically selected ``group_sparse_lambda`` because the automatic
+lambda uses the NS-GID inverse-filtered noise threshold when it is available.
 
 Convergence and stopping
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -908,9 +921,11 @@ QC and interpretation
 ``group_sparse_active_threshold_quantile_value``,
 ``group_sparse_active_threshold_used``, and
 ``group_sparse_active_groups``.  It also records ``group_sparse_iterations``
-and ``group_sparse_converged`` for the proximal solve.  These fields let
-downstream QC distinguish the regularized solve from the support-reporting
-layer.
+and ``group_sparse_converged`` for the proximal solve, plus
+``group_sparse_debiased_objective_final`` and
+``group_sparse_debiased_fractional_improvement_final`` for the amplitude refit
+on the selected support.  These fields let downstream QC distinguish the
+regularized solve from the support-reporting and debiased-amplitude layers.
 
 These are not optional display fields.  They are part of the QC subdocument
 that should be saved with the deconvolved datum and used by downstream
@@ -1082,9 +1097,13 @@ Useful first-pass fields are:
 ``group_sparse_active_threshold_used``, ``group_sparse_active_groups``,
 ``group_sparse_objective_initial``, and ``group_sparse_objective_final``
     Summarize the regularized group-sparse solve and the exported sparse
-    support decision.  ``group_sparse_objective_final`` is recomputed after
-    thresholding and amplitude refit, so it describes the exported sparse
-    receiver function.  These fields are present only for
+    support decision.  ``group_sparse_objective_final`` is the solver's final
+    regularized objective after thresholding the proximal solution.  The
+    amplitude refit is reported separately as
+    ``group_sparse_debiased_objective_final`` and
+    ``group_sparse_debiased_fractional_improvement_final`` because it is the
+    same regularized objective evaluated after the debiased amplitude update on
+    the selected support.  These fields are present only for
     ``deconvolution_type group_sparse``.
 
 ``ns_gid_gain_max_actual``, ``ns_gid_noise_amplification``, and

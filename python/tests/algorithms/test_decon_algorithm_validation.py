@@ -372,7 +372,8 @@ def _assert_scalar_result_is_not_discrete_sparse_output(matrix, name):
 def _pf_with_gid_mode(tmp_path, pfname, branch_name, mode):
     # The C++ engines expect an AntelopePf tree, so write a temporary pf file
     # after changing only the GID inverse mode under test.
-    text = open(pfname, encoding="utf-8").read()
+    with open(pfname, encoding="utf-8") as fp:
+        text = fp.read()
     text = _replace_once(
         text,
         (
@@ -404,7 +405,8 @@ def test_replace_once_rejects_missing_or_duplicate_targets():
 def _pf_with_gid_mode_and_replacements(
     tmp_path, pfname, branch_name, mode, replacements
 ):
-    text = open(pfname, encoding="utf-8").read()
+    with open(pfname, encoding="utf-8") as fp:
+        text = fp.read()
     text = _replace_once(
         text,
         (
@@ -2111,7 +2113,7 @@ def test_group_sparse_recovers_weak_arrivals_like_adaptive_memory(
         ),
     ],
 )
-def test_gid_lag_penalty_improves_stress_fit_and_plots_diagnostics(
+def test_gid_lag_penalty_controls_stress_fit_and_plots_diagnostics(
     tmp_path,
     decon_validation_plot_dir,
     decon_validation_noise_scale,

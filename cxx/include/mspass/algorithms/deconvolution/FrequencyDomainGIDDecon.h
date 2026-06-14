@@ -23,8 +23,9 @@ namespace mspass::algorithms::deconvolution {
 This engine shares the sparse GID iteration semantics of TimeDomainGIDDecon
 but applies the candidate inverse operator in the frequency domain.  Processing
 requires both a loaded signal window and residual-domain noise window.  External
-PowerSpectrum noise is only an ns_gid inverse-operator regularization estimate;
-it does not replace load(d, dwin, nwin) or loadnoise(d, nwin).
+PowerSpectrum noise is accepted by ns_gid and group_sparse because both use
+NS-GID inverse-operator regularization; it does not replace load(d, dwin, nwin)
+or loadnoise(d, nwin).
 */
 class FrequencyDomainGIDDecon : public ScalarDecon {
 public:
@@ -148,6 +149,8 @@ private:
   double group_sparse_active_threshold_used;
   double group_sparse_objective_initial, group_sparse_objective_final;
   double group_sparse_fractional_improvement_final;
+  double group_sparse_debiased_objective_final;
+  double group_sparse_debiased_fractional_improvement_final;
   int group_sparse_max_iterations, group_sparse_iterations;
   int group_sparse_active_groups;
   bool group_sparse_converged;

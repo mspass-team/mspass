@@ -123,7 +123,8 @@ def _run_public_gid_engine(alg, **kwargs):
 
 
 def _gid_pf_with_mode(tmp_path, mode, pf_name="TimeDomainGIDDecon.pf"):
-    text = open(f"data/pf/{pf_name}", encoding="utf-8").read()
+    with open(f"data/pf/{pf_name}", encoding="utf-8") as fp:
+        text = fp.read()
     old = (
         "time_domain_gid_deconvolution &Arr{\n        "
         f"deconvolution_type {DEFAULT_GID_DECONVOLUTION_TYPE}"
@@ -730,7 +731,8 @@ def test_RFdeconProcessor_pickle_uses_same_pf_when_pfpath_has_multiple_matches(
         pf_name = "TimeDomainGIDDecon.pf"
     else:
         pf_name = "RFdeconProcessor.pf"
-    text = open(f"data/pf/{pf_name}", encoding="utf-8").read()
+    with open(f"data/pf/{pf_name}", encoding="utf-8") as fp:
+        text = fp.read()
     (pf1 / pf_name).write_text(text)
     (pf2 / pf_name).write_text(text.replace(replacement[0], replacement[1], 1))
     old_pfpath = os.environ.get("PFPATH")
@@ -1173,7 +1175,8 @@ bad
 def test_RFdeconProcessor_malformed_preferred_multitaper_branch_does_not_fallback(
     tmp_path, preferred_alg, malformed_text, expected_message
 ):
-    pf_text = open("data/pf/RFdeconProcessor.pf", encoding="utf-8").read()
+    with open("data/pf/RFdeconProcessor.pf", encoding="utf-8") as fp:
+        pf_text = fp.read()
     pf_text += malformed_text
     pf = tmp_path / "RFdeconProcessor_bad_preferred.pf"
     pf.write_text(pf_text)

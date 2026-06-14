@@ -282,6 +282,8 @@ void FrequencyDomainGIDDecon::invalidate_processing_state() {
   group_sparse_objective_initial = 0.0;
   group_sparse_objective_final = 0.0;
   group_sparse_fractional_improvement_final = 0.0;
+  group_sparse_debiased_objective_final = 0.0;
+  group_sparse_debiased_fractional_improvement_final = 0.0;
   group_sparse_active_threshold_quantile_value = 0.0;
   group_sparse_active_threshold_used = 0.0;
   group_sparse_iterations = 0;
@@ -800,10 +802,11 @@ void FrequencyDomainGIDDecon::process() {
         this->update_residual_matrix(*sptr);
       resid_l2_final = matrix_l2(r.u);
       resid_linf_final = matrix_linf(r.u);
-      group_sparse_objective_final =
+      group_sparse_debiased_objective_final =
           GroupSparseObjective(r, spikes, group_sparse_lambda_used);
-      group_sparse_fractional_improvement_final =
-          (group_sparse_objective_initial - group_sparse_objective_final) /
+      group_sparse_debiased_fractional_improvement_final =
+          (group_sparse_objective_initial -
+           group_sparse_debiased_objective_final) /
           max(1.0, group_sparse_objective_initial);
       if (!lag_weights.empty()) {
         auto lwmax = max_element(lag_weights.begin(), lag_weights.end());
@@ -1036,7 +1039,8 @@ Metadata FrequencyDomainGIDDecon::QCMetrics() {
   md.put("gid_stop_reason", gid_stop_reason);
   md.put("gid_iterations", iter_count);
   md.put("gid_number_spikes", static_cast<int>(spikes.size()));
-  md.put("gid_maximum_iterations", iter_max);
+  md.put("gid_maximum_iterations",
+         (decon_type == GROUP_SPARSE) ? group_sparse_max_iterations : iter_max);
   if (decon_type != GROUP_SPARSE) {
     md.put("gid_penalty_function", lag_weight_penalty_function);
     md.put("gid_penalty_scale_factor", lag_weight_penalty_scale_factor);
@@ -1100,6 +1104,10 @@ Metadata FrequencyDomainGIDDecon::QCMetrics() {
     md.put("group_sparse_objective_final", group_sparse_objective_final);
     md.put("group_sparse_fractional_improvement_final",
            group_sparse_fractional_improvement_final);
+    md.put("group_sparse_debiased_objective_final",
+           group_sparse_debiased_objective_final);
+    md.put("group_sparse_debiased_fractional_improvement_final",
+           group_sparse_debiased_fractional_improvement_final);
     md.put("group_sparse_noise_threshold", ns_peak_threshold);
     NoiseStableDecon *nsop =
         dynamic_cast<NoiseStableDecon *>(preprocessor.get());

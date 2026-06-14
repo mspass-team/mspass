@@ -315,10 +315,10 @@ def make_gid_pf_text(
     """
     Return GID parameter-file text with validated GID-branch overrides applied.
 
-    This helper is the supported Python path for comparing GID inverse modes
-    or lag-penalty settings without hand-editing Antelope pf text.  It only
-    changes keys in the top-level GID branch; leaf inverse-operator parameters
-    should still be changed through a custom pf file or the leaf
+    This helper is the supported Python path for comparing GID inverse or solver
+    modes and lag-penalty settings without hand-editing Antelope pf text.  It
+    only changes keys in the top-level GID branch; leaf inverse-operator
+    parameters should still be changed through a custom pf file or the leaf
     ``changeparameter`` path.  Custom pf files should follow the shipped GID
     pf style: the GID branch opener on its own line and scalar keys stored as
     single-token values.
@@ -1244,9 +1244,9 @@ def RFdecon(
         RFdeconProcessor.  Ignored if engine is used.
     :type pf:  string defining an absolute path for the file name
         or a path relative to a directory defined by PFPATH.
-    :param deconvolution_type: optional GID inverse mode override used only
-        when ``alg`` selects ``GeneralizedIterative``, ``TimeDomainGID``, or
-        ``FrequencyDomainGID``.  Common values are ``ns_gid``,
+    :param deconvolution_type: optional GID inverse or solver mode override
+        used only when ``alg`` selects ``GeneralizedIterative``,
+        ``TimeDomainGID``, or ``FrequencyDomainGID``.  Common values are ``ns_gid``,
         ``least_square``, ``cnr``, and ``group_sparse``.  This builds a fresh
         configured GID processor instead of requiring callers to edit a pf
         file.
@@ -1278,9 +1278,11 @@ def RFdecon(
         For GID algorithms, raw vectors are converted to a TimeSeries using
         target_sample_interval and noise_window_start.  If noisedata is None,
         a reused GID processor preserves any previously loaded external noise.
-        External PowerSpectrum noise is supported only by the NS-GID inverse
-        mode; other GID modes require TimeSeries/vector noise or the
-        configured noise window.
+        External PowerSpectrum noise is supported by the NS-GID inverse mode
+        and by ``group_sparse`` GID, which uses the NS-GID inverse internally.
+        It regularizes only the inverse operator; residual-domain stopping and
+        sparse support decisions still use the configured noise window or
+        loaded TimeSeries/vector noise where applicable.
     :type noisedata:  None, TimeSeries, PowerSpectrum, or an iterable vector container
         (in MsPASS that means a python array, a numpy array, or a DoubleVector)
     :param wcomp:  When defined from Seismogram d the wavelet

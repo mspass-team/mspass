@@ -284,7 +284,8 @@ def verify_decon_output(d_decon, engine, wavelet):
     ],
 )
 def test_CNRDeconEngine_rejects_invalid_windows(tmp_path, old, new, match):
-    text = open("data/pf/CNRDeconEngine.pf", encoding="utf-8").read()
+    with open("data/pf/CNRDeconEngine.pf", encoding="utf-8") as fp:
+        text = fp.read()
     pf = tmp_path / "CNRDeconEngine.pf"
     pf.write_text(text.replace(old, new))
 

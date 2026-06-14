@@ -4,7 +4,6 @@
 #include "misc/blas.h"
 #include <algorithm>
 #include <boost/any.hpp>
-#include <cctype>
 #include <cmath>
 #include <limits>
 #include <sstream>
@@ -18,102 +17,20 @@ using namespace mspass::seismic;
 using namespace mspass::utility;
 
 namespace {
-string metadata_type_name(const boost::any &val) { return val.type().name(); }
+string metadata_type_name(const boost::any &val) { return demangled_name(val); }
 
-MsPASSError metadata_type_error(const string &function_name, const string &key,
-                                const string &expected,
-                                const boost::any &val) {
+MsPASSError metadata_get_context_error(const string &function_name,
+                                       const string &key,
+                                       const string &expected,
+                                       const MetadataGetError &err) {
   return MsPASSError(function_name + ": Metadata key=" + key + " must be " +
-                        expected + "; actual type=" + metadata_type_name(val),
+                        expected + "; " + string(err.what()),
                     ErrorSeverity::Invalid);
 }
 
-bool any_to_double(const boost::any &val, double &result) {
-  if (val.type() == typeid(double)) {
-    result = boost::any_cast<double>(val);
-    return true;
-  }
-  if (val.type() == typeid(float)) {
-    result = static_cast<double>(boost::any_cast<float>(val));
-    return true;
-  }
-  if (val.type() == typeid(int)) {
-    result = static_cast<double>(boost::any_cast<int>(val));
-    return true;
-  }
-  if (val.type() == typeid(long)) {
-    result = static_cast<double>(boost::any_cast<long>(val));
-    return true;
-  }
-  if (val.type() == typeid(long long)) {
-    result = static_cast<double>(boost::any_cast<long long>(val));
-    return true;
-  }
-  return false;
-}
-
-bool double_is_integer_valued(const double value) {
-  return isfinite(value) && floor(value) == value;
-}
-
-bool any_to_long(const boost::any &val, long &result) {
-  if (val.type() == typeid(int)) {
-    result = static_cast<long>(boost::any_cast<int>(val));
-    return true;
-  }
-  if (val.type() == typeid(long)) {
-    result = boost::any_cast<long>(val);
-    return true;
-  }
-  if (val.type() == typeid(long long)) {
-    const long long value = boost::any_cast<long long>(val);
-    if (value < static_cast<long long>(numeric_limits<long>::min()) ||
-        value > static_cast<long long>(numeric_limits<long>::max()))
-      return false;
-    result = static_cast<long>(value);
-    return true;
-  }
-  double numeric_value(0.0);
-  if (any_to_double(val, numeric_value) &&
-      double_is_integer_valued(numeric_value) &&
-      numeric_value >= static_cast<double>(numeric_limits<long>::min()) &&
-      numeric_value <= static_cast<double>(numeric_limits<long>::max())) {
-    result = static_cast<long>(numeric_value);
-    return true;
-  }
-  return false;
-}
-
-string lower_ascii(string value) {
-  transform(value.begin(), value.end(), value.begin(), [](unsigned char c) {
-    return static_cast<char>(tolower(c));
-  });
-  return value;
-}
-
-bool any_to_bool(const boost::any &val, bool &result) {
-  if (val.type() == typeid(bool)) {
-    result = boost::any_cast<bool>(val);
-    return true;
-  }
-  long integer_value(0);
-  if (any_to_long(val, integer_value) &&
-      (integer_value == 0 || integer_value == 1)) {
-    result = (integer_value == 1);
-    return true;
-  }
-  if (val.type() == typeid(string)) {
-    const string value = lower_ascii(boost::any_cast<string>(val));
-    if (value == "true" || value == "yes" || value == "1") {
-      result = true;
-      return true;
-    }
-    if (value == "false" || value == "no" || value == "0") {
-      result = false;
-      return true;
-    }
-  }
-  return false;
+inline double three_component_norm(const double x0, const double x1,
+                                   const double x2) {
+  return sqrt(x0 * x0 + x1 * x1 + x2 * x2);
 }
 } // namespace
 
@@ -163,11 +80,14 @@ double GetDoubleDefault(const Metadata &md, const string &key,
 }
 
 double GetDoubleRequired(const Metadata &md, const string &key) {
-  boost::any val(md.get_any(key));
-  double result(0.0);
-  if (any_to_double(val, result))
-    return result;
-  throw metadata_type_error("GetDoubleRequired", key, "numeric", val);
+  try {
+    return md.get_double(key);
+  } catch (const MetadataGetError &merr) {
+    if (md.is_defined(key))
+      throw metadata_get_context_error("GetDoubleRequired", key, "numeric",
+                                       merr);
+    throw;
+  }
 }
 
 int GetIntDefault(const Metadata &md, const string &key,
@@ -178,31 +98,35 @@ int GetIntDefault(const Metadata &md, const string &key,
 }
 
 int GetIntRequired(const Metadata &md, const string &key) {
-  boost::any val(md.get_any(key));
-  long result(0);
-  if (any_to_long(val, result) &&
-      result >= static_cast<long>(numeric_limits<int>::min()) &&
-      result <= static_cast<long>(numeric_limits<int>::max()))
-    return static_cast<int>(result);
-  throw metadata_type_error("GetIntRequired", key, "integer-valued", val);
+  try {
+    return md.get_int(key);
+  } catch (const MetadataGetError &merr) {
+    if (md.is_defined(key))
+      throw metadata_get_context_error("GetIntRequired", key, "integer-valued",
+                                       merr);
+    throw;
+  }
 }
 
 long GetLongRequired(const Metadata &md, const string &key) {
-  boost::any val(md.get_any(key));
-  long result(0);
-  if (any_to_long(val, result))
-    return result;
-  throw metadata_type_error("GetLongRequired", key, "integer-valued", val);
+  try {
+    return md.get_long(key);
+  } catch (const MetadataGetError &merr) {
+    if (md.is_defined(key))
+      throw metadata_get_context_error("GetLongRequired", key,
+                                       "integer-valued", merr);
+    throw;
+  }
 }
 
 bool GetBoolDefault(const Metadata &md, const string &key,
                     const bool default_value) {
   if (md.is_defined(key)) {
-    boost::any val(md.get_any(key));
-    bool result(false);
-    if (any_to_bool(val, result))
-      return result;
-    throw metadata_type_error("GetBoolDefault", key, "boolean", val);
+    try {
+      return md.get_bool(key);
+    } catch (const MetadataGetError &merr) {
+      throw metadata_get_context_error("GetBoolDefault", key, "boolean", merr);
+    }
   }
   return default_value;
 }
@@ -259,7 +183,11 @@ void PutPrefixedMetadata(Metadata &target, const Metadata &source,
     else if (val.type() == typeid(string))
       target.put(prefixed_key, boost::any_cast<string>(val));
     else
-      continue;
+      throw MsPASSError("PutPrefixedMetadata: unsupported Metadata type for "
+                        "key=" +
+                            key + " prefixed as " + prefixed_key +
+                            "; actual type=" + metadata_type_name(val),
+                        ErrorSeverity::Invalid);
   }
 }
 
@@ -338,12 +266,10 @@ string AntelopePfToText(const AntelopePf &pf, const int indent) {
 
 vector<double> ThreeCAmplitudes(const dmatrix &d) {
   vector<double> result;
-  result.reserve(d.columns());
-  for (int i = 0; i < d.columns(); ++i) {
-    double amp2(0.0);
-    for (int k = 0; k < 3; ++k)
-      amp2 += d(k, i) * d(k, i);
-    result.push_back(sqrt(amp2));
+  const int ncols = static_cast<int>(d.columns());
+  result.reserve(ncols);
+  for (int i = 0; i < ncols; ++i) {
+    result.push_back(three_component_norm(d(0, i), d(1, i), d(2, i)));
   }
   return result;
 }
@@ -361,8 +287,7 @@ double GroupSparseObjective(const CoreSeismogram &residual,
     }
   }
   for (const auto &spk : spikes) {
-    penalty += sqrt(spk.u[0] * spk.u[0] + spk.u[1] * spk.u[1] +
-                    spk.u[2] * spk.u[2]);
+    penalty += three_component_norm(spk.u[0], spk.u[1], spk.u[2]);
   }
   return 0.5 * rss + lambda * penalty;
 }
@@ -546,12 +471,13 @@ int fwhm_radius(const vector<double> &coherence) {
 double EstimateThreeCColumnAmplitudeRMS(const CoreSeismogram &d) {
   if (d.dead() || d.npts() <= 0)
     return 0.0;
+  const int npts = static_cast<int>(d.npts());
   double sumsq(0.0);
-  for (int i = 0; i < d.npts(); ++i) {
+  for (int i = 0; i < npts; ++i) {
     for (int k = 0; k < 3; ++k)
       sumsq += d.u(k, i) * d.u(k, i);
   }
-  return sqrt(sumsq / static_cast<double>(d.npts()));
+  return sqrt(sumsq / static_cast<double>(npts));
 }
 
 vector<double> BuildGIDLagWeightPenaltyFunctionFromKernel(
@@ -972,8 +898,7 @@ void RefitSpikeAmplitudes(list<ThreeCSpike> &spikes,
       spike_ptrs[i]->u[component] = amps[i];
   }
   for (auto &spk : spikes)
-    spk.amp =
-        sqrt(spk.u[0] * spk.u[0] + spk.u[1] * spk.u[1] + spk.u[2] * spk.u[2]);
+    spk.amp = three_component_norm(spk.u[0], spk.u[1], spk.u[2]);
 }
 
 double VectorQuantile(vector<double> values, const double quantile) {
@@ -1076,9 +1001,7 @@ GroupSparseDeconResult SolveGroupSparseDecon(
     const double *c1 = c0 + npts;
     const double *c2 = c1 + npts;
     for (int j = 0; j < npts; ++j) {
-      const double nrm =
-          sqrt(c0[j] * c0[j] + c1[j] * c1[j] + c2[j] * c2[j]);
-      penalty += nrm;
+      penalty += three_component_norm(c0[j], c1[j], c2[j]);
     }
     return 0.5 * rss + lambda * penalty;
   };
@@ -1156,16 +1079,16 @@ GroupSparseDeconResult SolveGroupSparseDecon(
     prev_objective = current_objective;
   }
 
+  vector<double> xnorm(npts, 0.0);
   vector<double> group_norms;
   group_norms.reserve(npts);
   const double *x0 = x.data();
   const double *x1 = x0 + npts;
   const double *x2 = x1 + npts;
   for (int j = 0; j < npts; ++j) {
-    const double nrm =
-        sqrt(x0[j] * x0[j] + x1[j] * x1[j] + x2[j] * x2[j]);
+    xnorm[j] = three_component_norm(x0[j], x1[j], x2[j]);
     if (valid[j])
-      group_norms.push_back(nrm);
+      group_norms.push_back(xnorm[j]);
   }
   result.active_threshold_quantile_value =
       VectorQuantile(std::move(group_norms), active_threshold_quantile);
@@ -1177,9 +1100,7 @@ GroupSparseDeconResult SolveGroupSparseDecon(
   double *xa1 = xa0 + npts;
   double *xa2 = xa1 + npts;
   for (int j = 0; j < npts; ++j) {
-    const double nrm =
-        sqrt(x0[j] * x0[j] + x1[j] * x1[j] + x2[j] * x2[j]);
-    if (valid[j] && nrm > result.active_threshold_used) {
+    if (valid[j] && xnorm[j] > result.active_threshold_used) {
       result.spikes.emplace_back(j, x0[j], x1[j], x2[j]);
       xa0[j] = x0[j];
       xa1[j] = x1[j];

@@ -21,6 +21,7 @@ from test_TimeDomainGIDDecon import (
     _assert_single_penalty_footprint,
     _assert_valid_rf,
     _make_external_noise,
+    _make_external_noise_spectrum,
     _make_external_wavelet_3c_data,
     _make_gid_test_data,
     _make_single_spike_convolution_data,
@@ -419,26 +420,34 @@ def test_FrequencyDomainGIDDecon_group_sparse_honors_external_noise_spectrum(tmp
         "frequency_domain_gid_deconvolution",
         "group_sparse",
     )
-    engine = FrequencyDomainGIDDecon(pf)
-    engine.loadwavelet(wavelet)
-    engine.loadnoise(
-        PowerSpectrum(
-            Metadata(), DoubleVector([1.0, 1.0, 1.0]), 1.0, "valid", -1.0, 1.0, 3
+
+    def run_with_spectrum(power):
+        engine = FrequencyDomainGIDDecon(pf)
+        engine.loadwavelet(wavelet)
+        engine.loadnoise(_make_external_noise_spectrum(power))
+        rf = FrequencyDomainGIDRFDecon(
+            data,
+            engine,
+            signal_window=TimeWindow(-8.0, 22.0),
+            noise_window=TimeWindow(-35.0, -8.0),
         )
-    )
+        assert rf.live
+        return rf["FrequencyDomainGIDDecon_properties"]
 
-    rf = FrequencyDomainGIDRFDecon(
-        data,
-        engine,
-        signal_window=TimeWindow(-8.0, 22.0),
-        noise_window=TimeWindow(-35.0, -8.0),
-    )
+    low_qc = run_with_spectrum(1.0e-8)
+    high_qc = run_with_spectrum(1.0e6)
 
-    assert rf.live
-    qc = rf["FrequencyDomainGIDDecon_properties"]
-    assert qc["group_sparse_inverse_external_wavelet_used"]
-    assert qc["group_sparse_inverse_external_noise_spectrum_used"]
-    assert qc["group_sparse_noise_threshold"] > 0.0
+    assert low_qc["group_sparse_inverse_external_wavelet_used"]
+    assert high_qc["group_sparse_inverse_external_wavelet_used"]
+    assert low_qc["group_sparse_inverse_external_noise_spectrum_used"]
+    assert high_qc["group_sparse_inverse_external_noise_spectrum_used"]
+    assert low_qc["group_sparse_noise_threshold"] > high_qc[
+        "group_sparse_noise_threshold"
+    ]
+    assert low_qc["group_sparse_lambda_used"] > high_qc["group_sparse_lambda_used"]
+    assert high_qc["group_sparse_inverse_noise_amplification"] > low_qc[
+        "group_sparse_inverse_noise_amplification"
+    ]
 
 
 def test_FrequencyDomainGIDDecon_clear_external_state_drops_pickle_payload(
@@ -536,7 +545,8 @@ def test_FrequencyDomainGIDDecon_validates_single_spike_recovery():
 
 
 def test_FrequencyDomainGIDDecon_rejects_leaf_window_drift(tmp_path):
-    text = open("data/pf/FrequencyDomainGIDDecon.pf", encoding="utf-8").read()
+    with open("data/pf/FrequencyDomainGIDDecon.pf", encoding="utf-8") as fp:
+        text = fp.read()
     text = _replace_gid_deconvolution_type(
         text, "frequency_domain_gid_deconvolution", "least_square"
     )
@@ -678,7 +688,9 @@ def test_FrequencyDomainGIDDecon_rejects_invalid_external_noise_spectrum(tmp_pat
 
 
 @pytest.mark.parametrize("mode", ["multi_taper", "least_square", "water_level", "cnr"])
-def test_FrequencyDomainGIDDecon_rejects_non_ns_power_spectrum_noise(tmp_path, mode):
+def test_FrequencyDomainGIDDecon_rejects_power_spectrum_noise_without_ns_inverse(
+    tmp_path, mode
+):
     pf = _pf_with_mode(
         tmp_path,
         "FrequencyDomainGIDDecon.pf",
@@ -690,7 +702,7 @@ def test_FrequencyDomainGIDDecon_rejects_non_ns_power_spectrum_noise(tmp_path, m
         Metadata(), DoubleVector([1.0, 1.0, 1.0]), 1.0, "valid", -1.0, 1.0, 3
     )
 
-    with pytest.raises(MsPASSError, match="only supported for ns_gid"):
+    with pytest.raises(MsPASSError, match="only supported for ns_gid and group_sparse"):
         engine.loadnoise(spectrum)
 
 
@@ -857,6 +869,17 @@ def test_FrequencyDomainGIDDecon_changeparameter_handles_cnr_mode(tmp_path):
     cnr_md = pf.get_branch("deconvolution_operator_type").get_branch("cnr")
 
     engine.changeparameter(cnr_md)
+
+
+def test_FrequencyDomainGIDDecon_QCMetrics_rejects_unsupported_changed_leaf_metadata():
+    pf = pfread("./data/pf/FrequencyDomainGIDDecon.pf")
+    engine = FrequencyDomainGIDDecon(pf)
+    leaf_md = pf.get_branch("deconvolution_operator_type").get_branch("ns_gid")
+    leaf_md["diagnostic_object"] = [1, 2, 3]
+    engine.changeparameter(leaf_md)
+
+    with pytest.raises(MsPASSError, match="unsupported Metadata type.*diagnostic_object"):
+        engine.QCMetrics()
 
 
 def test_FrequencyDomainGIDDecon_preprocess_outputs_are_guarded():
@@ -1268,7 +1291,8 @@ def test_FrequencyDomainGIDDecon_changeparameter_rejects_leaf_shaping_dt_drift()
 def test_FrequencyDomainGIDDecon_rejects_invalid_top_level_parameters(
     tmp_path, old, new, match
 ):
-    text = open("data/pf/FrequencyDomainGIDDecon.pf", encoding="utf-8").read()
+    with open("data/pf/FrequencyDomainGIDDecon.pf", encoding="utf-8") as fp:
+        text = fp.read()
     pf = tmp_path / "FrequencyDomainGIDDecon.pf"
     pf.write_text(text.replace(old, new))
 
@@ -1280,7 +1304,8 @@ def test_FrequencyDomainGIDDecon_rejects_invalid_top_level_parameters(
 def test_FrequencyDomainGIDDecon_defaults_missing_lag_penalty_function_to_none(
     tmp_path,
 ):
-    text = open("data/pf/FrequencyDomainGIDDecon.pf", encoding="utf-8").read()
+    with open("data/pf/FrequencyDomainGIDDecon.pf", encoding="utf-8") as fp:
+        text = fp.read()
     text = text.replace("        lag_weight_penalty_function adaptive_memory\n", "")
     pf = tmp_path / "FrequencyDomainGIDDecon_legacy_no_penalty_function.pf"
     pf.write_text(text)
@@ -1301,7 +1326,8 @@ def test_FrequencyDomainGIDDecon_defaults_missing_lag_penalty_function_to_none(
 
 
 def test_FrequencyDomainGIDDecon_reports_missing_fixed_penalty_width(tmp_path):
-    text = open("data/pf/FrequencyDomainGIDDecon.pf", encoding="utf-8").read()
+    with open("data/pf/FrequencyDomainGIDDecon.pf", encoding="utf-8") as fp:
+        text = fp.read()
     text = text.replace(
         "lag_weight_penalty_function adaptive_memory",
         "lag_weight_penalty_function cosine_taper",

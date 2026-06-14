@@ -1,11 +1,287 @@
 #include "mspass/utility/Metadata.h"
 #include "misc/base64.h"
 #include "mspass/utility/MsPASSError.h"
+#include <algorithm>
 #include <boost/core/demangle.hpp>
+#include <cctype>
+#include <cmath>
 #include <iomanip>
+#include <limits>
 #include <pybind11/stl.h>
 namespace mspass::utility {
 using namespace std;
+
+namespace {
+namespace py = pybind11;
+
+bool is_expected_python_probe_error(py::error_already_set &err) {
+  return err.matches(PyExc_AttributeError) || err.matches(PyExc_TypeError) ||
+         err.matches(PyExc_ValueError) || err.matches(PyExc_OverflowError);
+}
+
+bool pyobject_dtype_kind(const py::object &obj, string &kind) {
+  if (!py::hasattr(obj, "dtype"))
+    return false;
+  try {
+    kind = py::str(obj.attr("dtype").attr("kind"));
+    return true;
+  } catch (py::error_already_set &err) {
+    if (is_expected_python_probe_error(err)) {
+      PyErr_Clear();
+      return false;
+    }
+    throw;
+  }
+}
+
+bool pyobject_is_bool_like(const py::object &obj) {
+  if (py::isinstance<py::bool_>(obj))
+    return true;
+  string kind;
+  return pyobject_dtype_kind(obj, kind) && kind == "b";
+}
+
+bool pyobject_to_double(const py::object &obj, double &result) {
+  py::gil_scoped_acquire gil;
+  if (pyobject_is_bool_like(obj))
+    return false;
+  try {
+    result = obj.cast<double>();
+    return true;
+  } catch (py::cast_error &) {
+    return false;
+  } catch (py::error_already_set &err) {
+    if (is_expected_python_probe_error(err)) {
+      PyErr_Clear();
+      return false;
+    }
+    throw;
+  }
+}
+
+bool pyobject_to_long(const py::object &obj, long &result) {
+  py::gil_scoped_acquire gil;
+  if (pyobject_is_bool_like(obj))
+    return false;
+
+  string kind;
+  const bool has_dtype_kind = pyobject_dtype_kind(obj, kind);
+  if (has_dtype_kind && (kind == "i" || kind == "u")) {
+    try {
+      result = obj.cast<long>();
+      return true;
+    } catch (py::cast_error &) {
+      return false;
+    } catch (py::error_already_set &err) {
+      if (is_expected_python_probe_error(err)) {
+        PyErr_Clear();
+        return false;
+      }
+      throw;
+    }
+  }
+
+  if (py::isinstance<py::int_>(obj)) {
+    try {
+      result = obj.cast<long>();
+      return true;
+    } catch (py::cast_error &) {
+      return false;
+    } catch (py::error_already_set &err) {
+      if (is_expected_python_probe_error(err)) {
+        PyErr_Clear();
+        return false;
+      }
+      throw;
+    }
+  }
+
+  if ((has_dtype_kind && kind == "f") || py::isinstance<py::float_>(obj)) {
+    double numeric_value(0.0);
+    if (pyobject_to_double(obj, numeric_value) && isfinite(numeric_value) &&
+        floor(numeric_value) == numeric_value &&
+        numeric_value >= static_cast<double>(numeric_limits<long>::min()) &&
+        numeric_value < static_cast<double>(numeric_limits<long>::max())) {
+      result = static_cast<long>(numeric_value);
+      return true;
+    }
+  }
+  return false;
+}
+
+bool pyobject_to_bool(const py::object &obj, bool &result) {
+  py::gil_scoped_acquire gil;
+  if (pyobject_is_bool_like(obj)) {
+    try {
+      result = obj.cast<bool>();
+      return true;
+    } catch (py::cast_error &) {
+      return false;
+    } catch (py::error_already_set &err) {
+      if (is_expected_python_probe_error(err)) {
+        PyErr_Clear();
+        return false;
+      }
+      throw;
+    }
+  }
+  return false;
+}
+
+bool any_to_double(const boost::any &val, double &result) {
+  if (val.type() == typeid(double)) {
+    result = boost::any_cast<double>(val);
+    return true;
+  }
+  if (val.type() == typeid(float)) {
+    result = static_cast<double>(boost::any_cast<float>(val));
+    return true;
+  }
+  if (val.type() == typeid(short)) {
+    result = static_cast<double>(boost::any_cast<short>(val));
+    return true;
+  }
+  if (val.type() == typeid(unsigned short)) {
+    result = static_cast<double>(boost::any_cast<unsigned short>(val));
+    return true;
+  }
+  if (val.type() == typeid(int)) {
+    result = static_cast<double>(boost::any_cast<int>(val));
+    return true;
+  }
+  if (val.type() == typeid(unsigned int)) {
+    result = static_cast<double>(boost::any_cast<unsigned int>(val));
+    return true;
+  }
+  if (val.type() == typeid(long)) {
+    result = static_cast<double>(boost::any_cast<long>(val));
+    return true;
+  }
+  if (val.type() == typeid(unsigned long)) {
+    result = static_cast<double>(boost::any_cast<unsigned long>(val));
+    return true;
+  }
+  if (val.type() == typeid(long long)) {
+    result = static_cast<double>(boost::any_cast<long long>(val));
+    return true;
+  }
+  if (val.type() == typeid(unsigned long long)) {
+    result = static_cast<double>(boost::any_cast<unsigned long long>(val));
+    return true;
+  }
+  if (val.type() == typeid(py::object))
+    return pyobject_to_double(boost::any_cast<py::object>(val), result);
+  return false;
+}
+
+bool double_is_integer_valued(const double value) {
+  return isfinite(value) && floor(value) == value;
+}
+
+bool any_to_long(const boost::any &val, long &result) {
+  if (val.type() == typeid(short)) {
+    result = static_cast<long>(boost::any_cast<short>(val));
+    return true;
+  }
+  if (val.type() == typeid(unsigned short)) {
+    result = static_cast<long>(boost::any_cast<unsigned short>(val));
+    return true;
+  }
+  if (val.type() == typeid(int)) {
+    result = static_cast<long>(boost::any_cast<int>(val));
+    return true;
+  }
+  if (val.type() == typeid(unsigned int)) {
+    result = static_cast<long>(boost::any_cast<unsigned int>(val));
+    return true;
+  }
+  if (val.type() == typeid(long)) {
+    result = boost::any_cast<long>(val);
+    return true;
+  }
+  if (val.type() == typeid(unsigned long)) {
+    const unsigned long value = boost::any_cast<unsigned long>(val);
+    if (value > static_cast<unsigned long>(numeric_limits<long>::max()))
+      return false;
+    result = static_cast<long>(value);
+    return true;
+  }
+  if (val.type() == typeid(long long)) {
+    const long long value = boost::any_cast<long long>(val);
+    if (value < static_cast<long long>(numeric_limits<long>::min()) ||
+        value > static_cast<long long>(numeric_limits<long>::max()))
+      return false;
+    result = static_cast<long>(value);
+    return true;
+  }
+  if (val.type() == typeid(unsigned long long)) {
+    const unsigned long long value = boost::any_cast<unsigned long long>(val);
+    if (value > static_cast<unsigned long long>(numeric_limits<long>::max()))
+      return false;
+    result = static_cast<long>(value);
+    return true;
+  }
+  if (val.type() == typeid(py::object))
+    return pyobject_to_long(boost::any_cast<py::object>(val), result);
+  double numeric_value(0.0);
+  if (any_to_double(val, numeric_value) &&
+      double_is_integer_valued(numeric_value) &&
+      numeric_value >= static_cast<double>(numeric_limits<long>::min()) &&
+      numeric_value < static_cast<double>(numeric_limits<long>::max())) {
+    result = static_cast<long>(numeric_value);
+    return true;
+  }
+  return false;
+}
+
+string lower_ascii(string value) {
+  transform(value.begin(), value.end(), value.begin(), [](unsigned char c) {
+    return static_cast<char>(tolower(c));
+  });
+  return value;
+}
+
+string trim_ascii(string value) {
+  const auto first =
+      find_if_not(value.begin(), value.end(),
+                  [](unsigned char c) { return isspace(c); });
+  const auto last =
+      find_if_not(value.rbegin(), value.rend(),
+                  [](unsigned char c) { return isspace(c); })
+          .base();
+  if (first >= last)
+    return string();
+  return string(first, last);
+}
+
+bool any_to_bool(const boost::any &val, bool &result) {
+  if (val.type() == typeid(bool)) {
+    result = boost::any_cast<bool>(val);
+    return true;
+  }
+  if (val.type() == typeid(py::object) &&
+      pyobject_to_bool(boost::any_cast<py::object>(val), result))
+    return true;
+  long integer_value(0);
+  if (any_to_long(val, integer_value) &&
+      (integer_value == 0 || integer_value == 1)) {
+    result = (integer_value == 1);
+    return true;
+  }
+  if (val.type() == typeid(string)) {
+    const string value = lower_ascii(trim_ascii(boost::any_cast<string>(val)));
+    if (value == "true" || value == "yes" || value == "1") {
+      result = true;
+      return true;
+    }
+    if (value == "false" || value == "no" || value == "0") {
+      result = false;
+      return true;
+    }
+  }
+  return false;
+}
+} // namespace
 
 Metadata::Metadata(ifstream &ifs, const string form) {
   try {
@@ -69,6 +345,92 @@ bool Metadata::is_defined(const string key) const noexcept {
     return false;
   }
 }
+
+double Metadata::get_double(const string key) const {
+  map<string, boost::any>::const_iterator iptr;
+  iptr = md.find(key);
+  if (iptr == md.end())
+    throw MetadataGetError(key, typeid(double).name());
+  double val(0.0);
+  if (any_to_double(iptr->second, val))
+    return val;
+  throw MetadataGetError(key, typeid(double).name(), iptr->second.type().name(),
+                         "Metadata value is not numeric");
+}
+
+int Metadata::get_int(const string key) const {
+  map<string, boost::any>::const_iterator iptr;
+  iptr = md.find(key);
+  if (iptr == md.end())
+    throw MetadataGetError(key, typeid(int).name());
+  long val(0);
+  if (any_to_long(iptr->second, val) &&
+      val >= static_cast<long>(numeric_limits<int>::min()) &&
+      val <= static_cast<long>(numeric_limits<int>::max()))
+    return static_cast<int>(val);
+  throw MetadataGetError(
+      key, typeid(int).name(), iptr->second.type().name(),
+      "Metadata value is not integer-valued or is outside int range");
+}
+
+long Metadata::get_long(const string key) const {
+  map<string, boost::any>::const_iterator iptr;
+  iptr = md.find(key);
+  if (iptr == md.end())
+    throw MetadataGetError(key, typeid(long).name());
+  long val(0);
+  if (any_to_long(iptr->second, val))
+    return val;
+  throw MetadataGetError(
+      key, typeid(long).name(), iptr->second.type().name(),
+      "Metadata value is not integer-valued or is outside long range");
+}
+
+bool Metadata::get_bool(const string key) const {
+  map<string, boost::any>::const_iterator iptr;
+  iptr = md.find(key);
+  if (iptr == md.end())
+    throw MetadataGetError(key, typeid(bool).name());
+  bool val(false);
+  if (any_to_bool(iptr->second, val))
+    return val;
+  throw MetadataGetError(key, typeid(bool).name(), iptr->second.type().name(),
+                         "Metadata value is not boolean");
+}
+
+template <> double Metadata::get<double>(const string key) const {
+  return this->get_double(key);
+}
+
+template <> int Metadata::get<int>(const string key) const {
+  return this->get_int(key);
+}
+
+template <> long Metadata::get<long>(const string key) const {
+  return this->get_long(key);
+}
+
+template <> bool Metadata::get<bool>(const string key) const {
+  return this->get_bool(key);
+}
+
+template <> float Metadata::get<float>(const string key) const {
+  map<string, boost::any>::const_iterator iptr;
+  iptr = md.find(key);
+  if (iptr == md.end())
+    throw MetadataGetError(key, typeid(float).name());
+  if (iptr->second.type() == typeid(float))
+    return boost::any_cast<float>(iptr->second);
+  double val(0.0);
+  if (any_to_double(iptr->second, val) && isfinite(val) &&
+      val >= -static_cast<double>(numeric_limits<float>::max()) &&
+      val <= static_cast<double>(numeric_limits<float>::max()))
+    return static_cast<float>(val);
+  throw MetadataGetError(
+      key, typeid(float).name(), iptr->second.type().name(),
+      "Metadata value is not numeric or is outside float range");
+}
+
 void Metadata::append_chain(const std::string key, const std::string val,
                             const std::string separator) {
   if (this->is_defined(key)) {
