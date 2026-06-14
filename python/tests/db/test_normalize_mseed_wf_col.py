@@ -38,22 +38,24 @@ def test_normalize_mseed_updates_requested_waveform_collection():
         default_channel_ids = db.wf_miniseed.count_documents(
             {"channel_id": {"$exists": True}}
         )
-        default_site_ids = db.wf_miniseed.count_documents({"site_id": {"$exists": True}})
+        default_site_ids = db.wf_miniseed.count_documents(
+            {"site_id": {"$exists": True}}
+        )
 
         ret = normalize_mseed(db, wf_col="wf_custom")
 
         assert ret[0] == len(docs)
-        assert ret[1] == db.wf_custom.count_documents(
-            {"channel_id": {"$exists": True}}
-        )
+        assert ret[1] == db.wf_custom.count_documents({"channel_id": {"$exists": True}})
         assert ret[2] == db.wf_custom.count_documents({"site_id": {"$exists": True}})
         assert ret[1] > 0
         assert ret[2] > 0
-        assert db.wf_miniseed.count_documents(
-            {"channel_id": {"$exists": True}}
-        ) == default_channel_ids
-        assert db.wf_miniseed.count_documents(
-            {"site_id": {"$exists": True}}
-        ) == default_site_ids
+        assert (
+            db.wf_miniseed.count_documents({"channel_id": {"$exists": True}})
+            == default_channel_ids
+        )
+        assert (
+            db.wf_miniseed.count_documents({"site_id": {"$exists": True}})
+            == default_site_ids
+        )
     finally:
         client.drop_database(dbname)
