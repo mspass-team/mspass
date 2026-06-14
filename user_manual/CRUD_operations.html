@@ -164,7 +164,7 @@
 <span id="crud-operations"></span><h1>CRUD Operations in MsPASS<a class="headerlink" href="#crud-operations-in-mspass" title="Link to this heading"></a></h1>
 <section id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
-<p>The acronymn CRUD is often used as a mnemonic in books and online tutorials
+<p>The acronym CRUD is often used as a mnemonic in books and online tutorials
 teaching database concepts.  CRUD stands for Create-Read-Update-Delete.
 It is a useful mnemonic because it summarizes the four main things any database system
 must accomplish cleanly.  This section is organized into subsections on
@@ -190,35 +190,25 @@ MongoDB.   However, for reasons outlined in the section
 <a class="reference internal" href="data_object_design_concepts.html#data-object-design-concepts"><span class="std std-ref">Data Object Design Concepts</span></a> a schema feature
 was added as a component of MsPASS.  We emphasize the
 schema in this design, however, can be thought of as more
-like guidelines than rigid rules.
-The default schema for a Database assumes the data set is a set of
-TimeSeries object.  That implies the dataset is defined in the
-collection we call <code class="code docutils literal notranslate"><span class="pre">wf_TimeSeries</span></code>.   If the dataset is already
-assembled into three component bundles (<code class="code docutils literal notranslate"><span class="pre">Seismogram</span></code> objects)
-the Database constructor needs to be informed of that through this
-alternative construct:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.db.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">Client</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.db.database</span><span class="w"> </span><span class="kn">import</span> <span class="n">Database</span>
-<span class="n">dbclient</span> <span class="o">=</span> <span class="n">Client</span><span class="p">()</span>
-<span class="n">db</span><span class="o">=</span><span class="n">Database</span><span class="p">(</span><span class="n">dbclient</span><span class="p">,</span> <span class="s1">&#39;database_name&#39;</span><span class="p">,</span> <span class="n">db_schema</span><span class="o">=</span><span class="s1">&#39;wf_Seismogram&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>If your workflow requires reading both TimeSeries and Seismogram
-data, best practice (i.e. it isn’t required but a good idea)
-would be to create two handles with one using the wf_TimeSeries
-and the other using the wf_Seismogram schema.</p>
+like guidelines than rigid rules.  The default waveform collection
+for most examples is <code class="code docutils literal notranslate"><span class="pre">wf_TimeSeries</span></code>.  Workflows that handle
+three-component bundles can use the same <code class="code docutils literal notranslate"><span class="pre">Database</span></code> handle and
+pass <code class="code docutils literal notranslate"><span class="pre">collection=&quot;wf_Seismogram&quot;</span></code> to the read and write methods
+where that collection is required.</p>
 </section>
 <section id="create">
 <h2>Create<a class="headerlink" href="#create" title="Link to this heading"></a></h2>
-<p>We tag all methods of the Database class that do “Create” operations with
-the synonymous word “save”.   Here we list all save methods with a brief
-description of each method.  Consult the docstring pages for detailed
-and most up to date usage:</p>
+<p>We tag all methods of the <code class="code docutils literal notranslate"><span class="pre">Database</span></code> class that do “Create”
+operations with the synonymous word “save”.   Here we list the most
+important save methods with a brief description of each method.  Consult
+the docstring pages for detailed and most up to date usage:</p>
 <ol class="arabic">
-<li><p><code class="code docutils literal notranslate"><span class="pre">save_data</span></code> is probably the most common method you will use.  The
-first argument is one of the atomic objects defined in MsPASS
-(Seismogram or TimeSeries) that you wish to save.  Options are
-described in the docstring.  Here is an example usage:</p>
+<li><p><a class="reference internal" href="../python_api/mspasspy.db.html#id71" title="mspasspy.db.database.Database.save_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">save_data()</span></code></a> is the primary
+waveform writer.  The first argument can be any of the core seismic
+data objects defined in MsPASS:  <code class="code docutils literal notranslate"><span class="pre">TimeSeries</span></code>,
+<code class="code docutils literal notranslate"><span class="pre">Seismogram</span></code>, <code class="code docutils literal notranslate"><span class="pre">TimeSeriesEnsemble</span></code>, or
+<code class="code docutils literal notranslate"><span class="pre">SeismogramEnsemble</span></code>.  Here is an example usage for a single
+miniseed trace:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Example assumes filename contains one channel of data in</span>
 <span class="c1"># miniseed format</span>
 <span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;testfile.msd&#39;</span>
@@ -231,32 +221,34 @@ described in the docstring.  Here is an example usage:</p>
 </pre></div>
 </div>
 <p>By default <code class="code docutils literal notranslate"><span class="pre">save_data</span></code> stores all Metadata except those linked to
-normalized collections (<code class="code docutils literal notranslate"><span class="pre">source</span></code>, <code class="code docutils literal notranslate"><span class="pre">channel</span></code>, and/or <code class="code docutils literal notranslate"><span class="pre">site</span></code>) with no
-safety checks.  We discuss additional common options in a later section.</p>
+normalized collections (<code class="code docutils literal notranslate"><span class="pre">source</span></code>, <code class="code docutils literal notranslate"><span class="pre">channel</span></code>, and/or
+<code class="code docutils literal notranslate"><span class="pre">site</span></code>) with no safety checks.  We discuss additional common
+options in a later section.  The default return value is the
+<code class="code docutils literal notranslate"><span class="pre">ObjectId</span></code> or list of <code class="code docutils literal notranslate"><span class="pre">ObjectId</span></code> values for the waveform
+documents it writes.  Set <code class="code docutils literal notranslate"><span class="pre">return_data=True</span></code> when an
+intermediate save needs the updated data object returned to the workflow.</p>
+<p>When <code class="code docutils literal notranslate"><span class="pre">save_data</span></code> is passed an ensemble, it writes each live member
+as an atomic datum.  Ensemble Metadata are copied to each member before
+the member is saved.  A common pattern for miniseed data is to bundle
+single-component data into three-component seismograms before saving:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># d is a TimeSeriesEnsemble loaded earlier in the workflow.</span>
+<span class="n">d3c</span> <span class="o">=</span> <span class="n">bundle_seed_data</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+<span class="n">db</span><span class="o">.</span><span class="n">save_data</span><span class="p">(</span><span class="n">d3c</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;wf_Seismogram&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>See <a class="reference internal" href="../python_api/mspasspy.algorithms.html#mspasspy.algorithms.bundle.bundle_seed_data" title="mspasspy.algorithms.bundle.bundle_seed_data"><code class="xref py py-func docutils literal notranslate"><span class="pre">bundle_seed_data()</span></code></a> for details
+on the bundling step.  Older ensemble-specific write helpers are
+backward-compatibility wrappers; new code should use <code class="code docutils literal notranslate"><span class="pre">save_data</span></code>.</p>
 </li>
-<li><p><code class="code docutils literal notranslate"><span class="pre">save_ensemble_data</span></code>  is similar to <code class="code docutils literal notranslate"><span class="pre">save_data</span></code> except the first argument
-is an Ensemble object.  There are currently two of them:  (1) TimeSeriesEnsemble
-and (2) SeismogramEnsemble.   As discussed in the section
-<a class="reference internal" href="data_object_design_concepts.html#data-object-design-concepts"><span class="std std-ref">Data Object Design Concepts</span></a> an Ensemble
-is a generalization of the idea of a “gather” in seismic reflection processing.
-The <code class="code docutils literal notranslate"><span class="pre">save_ensemble_data</span></code> method is a convenience function for saving Ensembles.
-Ensembles are containers of atomic objects.  <code class="code docutils literal notranslate"><span class="pre">save_ensemble_data</span></code>
-is mostly a loop over the container saving the atomic objects it contains
-to the wf_TimeSeries (for TimeSeriesEnsembles) or wf_Seismogram
-(for Seismogram objects).  The method has one feature that differs form
-<code class="code docutils literal notranslate"><span class="pre">save_data</span></code>; Ensemble objects may and often do contain attributes
-common to the entire group in a separate Metadata container linked to the
-ensemble as a whole.  Prior to entering the loop for saving the atomic
-members of the ensemble the contents of the Ensemble’s Metadata container
-are copied verbatim to each member.  If previous values existed in any
-of the members they will be silently replaced by the ensemble groups version.</p></li>
-<li><p><code class="code docutils literal notranslate"><span class="pre">save_catalog</span></code> should be viewed mostly as a convenience method to build
+<li><p><a class="reference internal" href="../python_api/mspasspy.db.html#id70" title="mspasspy.db.database.Database.save_catalog"><code class="xref py py-meth docutils literal notranslate"><span class="pre">save_catalog()</span></code></a> should be
+viewed mostly as a convenience method to build
 the <code class="code docutils literal notranslate"><span class="pre">source</span></code> collection from QUAKEML data downloaded from FDSN data
 centers via obspy’s web services functions.   <code class="code docutils literal notranslate"><span class="pre">save_catalog</span></code> can be
 thought of as a converter that translates the contents of a QUAKEML
 file or string for storage as a set of MongoDB documents in the <code class="code docutils literal notranslate"><span class="pre">source</span></code>
 collection.  We used obspy’s <code class="code docutils literal notranslate"><span class="pre">Catalog</span></code> object as an intermediary to
-avoid the need to write our own QUAKEML parser.   As with save_data
+avoid the need to write our own QUAKEML parser.   As with
+<code class="code docutils literal notranslate"><span class="pre">save_data</span></code>
 the easiest way to understand the usage would be this example derived from
 our <em>getting_started</em> tutorial.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="s2">&quot;IRIS&quot;</span><span class="p">)</span>
@@ -280,7 +272,8 @@ our <em>getting_started</em> tutorial.</p>
 <p>This particular example pulls 11 large aftershocks of the 2011 Tohoku
 Earthquake.</p>
 </li>
-<li><p><code class="code docutils literal notranslate"><span class="pre">save_inventory</span></code> is similar in concept to <code class="code docutils literal notranslate"><span class="pre">save_catalog</span></code>, but instead of
+<li><p><a class="reference internal" href="../python_api/mspasspy.db.html#id75" title="mspasspy.db.database.Database.save_inventory"><code class="xref py py-meth docutils literal notranslate"><span class="pre">save_inventory()</span></code></a> is similar
+in concept to <code class="code docutils literal notranslate"><span class="pre">save_catalog</span></code>, but instead of
 translating data for source information it translates information to
 MsPASS for station metadata.  The station information problem is slightly
 more complicated than the source problem because of an implementation
@@ -301,7 +294,7 @@ It may be helpful to realize that Obspy’s Inventory object is actually
 a python translation of the data structure defined by the
 <a class="reference external" href="https://www.fdsn.org/xml/station/">FDSN StationXML</a>
 standardized format defined for web service requests for station metadata.
-Like <code class="code docutils literal notranslate"><span class="pre">save_source</span></code> an example from the getting started tutorial
+Like <code class="code docutils literal notranslate"><span class="pre">save_catalog</span></code> an example from the getting started tutorial
 should be instructive:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">inv</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_stations</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="s1">&#39;TA&#39;</span><span class="p">,</span> <span class="n">starttime</span><span class="o">=</span><span class="n">starttime</span><span class="p">,</span> <span class="n">endtime</span><span class="o">=</span><span class="n">endtime</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;xml&#39;</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="s1">&#39;*&#39;</span><span class="p">)</span>
 <span class="n">db</span><span class="o">.</span><span class="n">save_inventory</span><span class="p">(</span><span class="n">inv</span><span class="p">)</span>
@@ -309,7 +302,7 @@ should be instructive:</p>
 </div>
 <p>This example extracts all stations with the “network code” of “TA”
 (the Earthscope transportable array).  A complication of station
-metadata that differs from source data is that station metatdata is
+metadata that differs from source data is that station metadata is
 time variable.  The reason is that sensors change, three-component sensors
 are reoriented, digitizers change, etc.  That means station metadata
 have a time span for which they are valid that has to be handled to
@@ -329,7 +322,7 @@ in the StationXML data as translated by obspy.   In the read section
 below we describe how to retrieve response data from <code class="code docutils literal notranslate"><span class="pre">channel</span></code>.</p>
 <p>Finally, we note a key feature of the <code class="code docutils literal notranslate"><span class="pre">save_inventory</span></code> method:
 it enforces a seed convention to avoid saving duplicate documents.
-As noted earlier he SEED standard uses the keys we call net, sta, chan,
+As noted earlier the SEED standard uses the keys we call net, sta, chan,
 and loc along with a time interval to define a unique block of
 receiver metadata.   The <code class="code docutils literal notranslate"><span class="pre">save_inventory</span></code> method enforces
 the unique combination of these keys in a save.  It always will
@@ -342,31 +335,39 @@ behaviour or rebuild the collection as needed with web services.</p>
 </section>
 <section id="read">
 <h2>Read<a class="headerlink" href="#read" title="Link to this heading"></a></h2>
-<p>The Read operation is the inverse of save (create).  The core readers were
-designed to simplify the process of reading the core data types of MsPASS:  TimeSeries
-and Seismogram.  There are also convenience functions for reading ensembles.
-As with the save operators we discuss here the key methods, but refer the
-reader to the sphinx documentation for full usage.</p>
+<p>The Read operation is the inverse of save (create).  The core reader was
+designed to simplify the process of reading the core data types of MsPASS:
+<code class="code docutils literal notranslate"><span class="pre">TimeSeries</span></code>, <code class="code docutils literal notranslate"><span class="pre">Seismogram</span></code>, <code class="code docutils literal notranslate"><span class="pre">TimeSeriesEnsemble</span></code>, and
+<code class="code docutils literal notranslate"><span class="pre">SeismogramEnsemble</span></code>.  As with the save operators we discuss here
+the key methods, but refer the reader to the sphinx documentation for full
+usage.</p>
 <ol class="arabic">
-<li><p><code class="code docutils literal notranslate"><span class="pre">read_data</span></code> is the core method for reading atomic data.  The method has
-one required argument.  That argument is an ObjectID for the document used
-to define the read operation OR a MongoDB document (python dict) that
-contains the ObjectID.  The ObjectID is guaranteed to provide a
-unique key to one and only one document and is the way this reader
-finds one and only one record to fetch per call.  The most common use
-is the for with a MongoDB document in a construct like the following
-in a serial job:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">query</span><span class="o">=</span><span class="p">{</span><span class="o">...</span><span class="n">Some</span> <span class="n">MongoDB</span> <span class="n">query</span> <span class="nb">dict</span> <span class="n">entry</span><span class="o">...</span><span class="p">}</span>
-<span class="n">cursor</span><span class="o">=</span><span class="n">db</span><span class="o">.</span><span class="n">wf_TimeSeries</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">)</span> <span class="c1"># Changed to wf_Seismogram for 3D data</span>
+<li><p><a class="reference internal" href="../python_api/mspasspy.db.html#id66" title="mspasspy.db.database.Database.read_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">read_data()</span></code></a> is the core
+waveform reader.  Its required first argument can be any of the
+following:</p>
+<ol class="arabic simple">
+<li><p>A MongoDB <code class="code docutils literal notranslate"><span class="pre">ObjectId</span></code>.  This reads one atomic datum from the
+waveform collection selected by the <code class="code docutils literal notranslate"><span class="pre">collection</span></code> argument.
+It is convenient but slower than cursor-driven reads because it
+requires an extra database query per datum.</p></li>
+<li><p>A MongoDB document represented as a python <code class="code docutils literal notranslate"><span class="pre">dict</span></code> or
+<code class="code docutils literal notranslate"><span class="pre">Metadata</span></code> object.  This is the preferred serial pattern
+when iterating over a MongoDB cursor.</p></li>
+<li><p>A <code class="code docutils literal notranslate"><span class="pre">pymongo.cursor.Cursor</span></code>.  This reads all documents returned
+by the cursor and constructs a <code class="code docutils literal notranslate"><span class="pre">TimeSeriesEnsemble</span></code> or
+<code class="code docutils literal notranslate"><span class="pre">SeismogramEnsemble</span></code>, depending on the selected collection.</p></li>
+</ol>
+<p>The most common serial pattern is to iterate over a cursor and pass
+each document to <code class="code docutils literal notranslate"><span class="pre">read_data</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="o">...</span><span class="n">Some</span> <span class="n">MongoDB</span> <span class="n">query</span> <span class="nb">dict</span> <span class="n">entry</span><span class="o">...</span><span class="p">}</span>
+<span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_TimeSeries</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
 <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">cursor</span><span class="p">:</span>
-  <span class="n">d</span><span class="o">=</span><span class="n">db</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>  <span class="c1"># Add option collection=&#39;wf_Seismogram&#39; for 3C reads</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;wf_TimeSeries&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>By default <code class="code docutils literal notranslate"><span class="pre">read_data</span></code> will use the waveform collection defined
-in the schema defined for the handle.  The default for the standard
-MsPASS schema is TimeSeries.   As the comment in the example states
-if you are trying to read from a different collection (i.e wf_Seismogram
-or wf_miniseed) you need to specify that alternative with the collection argument.</p>
+<p>Use <code class="code docutils literal notranslate"><span class="pre">collection=&quot;wf_Seismogram&quot;</span></code> when reading three-component
+seismograms, or another waveform collection name such as
+<code class="code docutils literal notranslate"><span class="pre">wf_miniseed</span></code> when appropriate.</p>
 <p>The data objects in MsPASS are stored internally as C++ objects with
 multiple elements illustrated in the figure below.   Although these
 objects should be thought of as a single entity the individual
@@ -421,35 +422,31 @@ algorithm.</p></li>
 <li><p>The “pedantic” mode is mainly of use for data export where a
 type mismatch could produce invalid data required by another package.</p></li>
 </ol>
-</li>
-<li><p>A closely related function to <code class="code docutils literal notranslate"><span class="pre">read_data</span></code> is <code class="code docutils literal notranslate"><span class="pre">read_ensemble_data</span></code>.  Like
-<code class="code docutils literal notranslate"><span class="pre">save_ensemble_data</span></code> it is mostly a loop to assemble an ensemble of
-atomic data using a sequence of calls to <code class="code docutils literal notranslate"><span class="pre">read_data</span></code>.  The sequence of
-what to read is defined by arg 0.   That arg must be one of two things:
-(a) a python list of ObjectIDs or (b) a cursor object created by a query
-that uniquely defines the ensemble contnts.  The example code below illustrates how this is done.
-This code fragment assumes the variable <code class="code docutils literal notranslate"><span class="pre">source_id</span></code> was defined earlier
-and defines (a) a valid ObjectId in the source collection, and (b) has
-been defined in wf_TimeSeries previously by a cross-referencing function.  Notice we
-also include a size check with the MongoDB function count_documents
-to impose constraints on the query. That is always good practice.</p>
+<p>Passing a cursor directly to <code class="code docutils literal notranslate"><span class="pre">read_data</span></code> constructs an ensemble.
+The example code below assumes the variable <code class="code docutils literal notranslate"><span class="pre">source_id</span></code> was
+defined earlier, is a valid <code class="code docutils literal notranslate"><span class="pre">ObjectId</span></code> in the <code class="code docutils literal notranslate"><span class="pre">source</span></code>
+collection, and has been cross-referenced into <code class="code docutils literal notranslate"><span class="pre">wf_TimeSeries</span></code>.
+Notice we include a size check with the MongoDB function
+<code class="code docutils literal notranslate"><span class="pre">count_documents</span></code> to impose constraints on the query. That is
+always good practice.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;source_id&quot;</span><span class="p">:</span> <span class="n">source_id</span><span class="p">}</span>
 <span class="n">ndocs</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_TimeSeries</span><span class="o">.</span><span class="n">count_documents</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
 <span class="k">if</span> <span class="n">ndocs</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;No data found for source_id = &quot;</span><span class="p">,</span> <span class="n">source_id</span><span class="p">)</span>
 <span class="k">elif</span> <span class="n">ndocs</span> <span class="o">&gt;</span> <span class="n">TOOBIG</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of documents matching source_id=&quot;</span><span class="p">,</span> <span class="n">source_id</span><span class="p">,</span> <span class="s2">&quot; is &quot;</span><span class="p">,</span> <span class="n">ndocs</span><span class="p">,</span>
-        <span class="s2">&quot;Exceeds the internal limit on the ensemble size=&quot;</span><span class="p">,</span> <span class="n">TOBIG</span><span class="p">)</span>
+          <span class="s2">&quot;Exceeds the internal limit on the ensemble size=&quot;</span><span class="p">,</span> <span class="n">TOOBIG</span><span class="p">)</span>
 <span class="k">else</span><span class="p">:</span>
     <span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_TimeSeries</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
-    <span class="n">ens</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">read_ensemble_data</span><span class="p">(</span><span class="n">cursoe</span><span class="p">)</span>
+    <span class="n">ensemble</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span><span class="n">cursor</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;wf_TimeSeries&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </li>
 <li><p>A workflow that needs to read and process a large data sets in
 a parallel environment should use
-the parallel equivalent of <code class="code docutils literal notranslate"><span class="pre">read_data</span></code> and <code class="code docutils literal notranslate"><span class="pre">read_ensemble_data</span></code> called
-<code class="code docutils literal notranslate"><span class="pre">read_distributed_data</span></code>.  MsPASS supports two parallel frameworks called
+the parallel equivalent of <code class="code docutils literal notranslate"><span class="pre">read_data</span></code> called
+<a class="reference internal" href="../python_api/mspasspy.io.html#mspasspy.io.distributed.read_distributed_data" title="mspasspy.io.distributed.read_distributed_data"><code class="xref py py-func docutils literal notranslate"><span class="pre">read_distributed_data()</span></code></a>.  MsPASS
+supports two parallel frameworks called
 SPARK and DASK.   Both abstract the concept of the parallel data set in
 a container they call an RDD and Bag respectively.   Both are best thought
 of as a handle to the entire data set that can be passed between
@@ -461,28 +458,27 @@ in a parallel environment.  SPARK and DASK have internal mechanisms to schedule
 IO to optimize throughput, particularly with reads made through the gridfs
 mechanism we use as the default data storage.  <code class="code docutils literal notranslate"><span class="pre">read_distributed_data</span></code>
 provides the mechanism to accomplish that.</p>
-<p><code class="code docutils literal notranslate"><span class="pre">read_distributed_data</span></code> has a very different call structure than the
-other seismic data readers.  It is not a method of Database, but a
-separate function call.  The input to be read by this function is
-defined by arg 2 (C counting starting at 0).  It expects to be passed a
-MongoDB cursor object, which is the standard return from the database
-find operation.   As with the other functions discussed in this section
-a block of example code should make this clearer:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.db.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">Client</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.db.database</span><span class="w"> </span><span class="kn">import</span> <span class="n">Database</span><span class="p">,</span><span class="n">read_distributed_data</span>
-<span class="n">dbclient</span> <span class="o">=</span> <span class="n">Client</span><span class="p">()</span>
-<span class="c1"># This is the name used to acccess the database of interest assumed</span>
-<span class="c1"># to contain data loaded previously.  Name used would change for user</span>
-<span class="n">dbname</span> <span class="o">=</span> <span class="s1">&#39;distributed_data_example&#39;</span>  <span class="c1"># name of db set in MongoDB - example</span>
-<span class="n">db</span> <span class="o">=</span> <span class="n">Database</span><span class="p">(</span><span class="n">dbclient</span><span class="p">,</span><span class="n">dbname</span><span class="p">)</span>
-<span class="c1"># This example reads all the data currently stored in this database</span>
-<span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_TimeSeries</span><span class="o">.</span><span class="n">find</span><span class="p">({})</span>
-<span class="n">rdd0</span> <span class="o">=</span> <span class="n">read_distributed_data</span><span class="p">(</span><span class="n">dbclient</span><span class="p">,</span> <span class="n">dbname</span><span class="p">,</span> <span class="n">cursor</span><span class="p">)</span>
+<p><code class="code docutils literal notranslate"><span class="pre">read_distributed_data</span></code> is not a method of <code class="code docutils literal notranslate"><span class="pre">Database</span></code>; it
+is a separate function in <code class="code docutils literal notranslate"><span class="pre">mspasspy.io.distributed</span></code>.  Its first
+argument can be a <code class="code docutils literal notranslate"><span class="pre">Database</span></code> handle, a dataframe representation of
+a waveform collection, or a list of ensemble-defining queries.  The
+common pattern for reading a subset of a waveform collection is:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.io.distributed</span><span class="w"> </span><span class="kn">import</span> <span class="n">read_distributed_data</span>
+
+<span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="o">...</span><span class="n">Some</span> <span class="n">MongoDB</span> <span class="n">query</span> <span class="nb">dict</span> <span class="n">entry</span><span class="o">...</span><span class="p">}</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">read_distributed_data</span><span class="p">(</span>
+    <span class="n">db</span><span class="p">,</span>
+    <span class="n">query</span><span class="o">=</span><span class="n">query</span><span class="p">,</span>
+    <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;wf_TimeSeries&quot;</span><span class="p">,</span>
+    <span class="n">scheduler</span><span class="o">=</span><span class="s2">&quot;dask&quot;</span><span class="p">,</span>
+<span class="p">)</span>
 </pre></div>
 </div>
-<p>The output of the read is the SPARK RDD that we assign the symbol rdd0.
-If you are using DASK instead of SPARK you would add the optional
-argument <code class="code docutils literal notranslate"><span class="pre">format='dask'</span></code>.</p>
+<p>The output is a Dask bag by default or a Spark RDD when
+<code class="code docutils literal notranslate"><span class="pre">scheduler=&quot;spark&quot;</span></code>.  See <a class="reference internal" href="parallel_processing.html#parallel-processing"><span class="std std-ref">Parallel Processing</span></a>,
+<a class="reference internal" href="parallel_io.html#parallel-io"><span class="std std-ref">Parallel IO in MsPASS</span></a>, and
+<a class="reference internal" href="../python_api/mspasspy.io.html#mspasspy.io.distributed.read_distributed_data" title="mspasspy.io.distributed.read_distributed_data"><code class="xref py py-func docutils literal notranslate"><span class="pre">read_distributed_data()</span></code></a> for more
+complete parallel workflow examples.</p>
 </li>
 </ol>
 </section>
@@ -790,12 +786,13 @@ keys (currently source_id, site_id, and/or channel_id but more may be added).
 The set of which collections are to be loaded are controlled by optional
 parameters in each reader.  An important constraint is that for all
 normalized collections defined as required, if the cross-referencing
-key is not defined a reader will ignore that datum.  <code class="code docutils literal notranslate"><span class="pre">read_data</span></code> silently
-signals that condition by returning a None.  <code class="code docutils literal notranslate"><span class="pre">read_ensemble_data</span></code> and
-<code class="code docutils literal notranslate"><span class="pre">read_distributed_data</span></code> normally silently skip such data.   That model
-is intentional because it allows initial loading of a large data set with
-unresolvable anomalies that prevent one or more of the cross-referencing
-ids from being defined.</p></li>
+key is not defined a reader will ignore that datum.  Atomic
+<code class="code docutils literal notranslate"><span class="pre">read_data</span></code> calls silently signal that condition by returning
+<code class="code docutils literal notranslate"><span class="pre">None</span></code>.  Ensemble reads through <code class="code docutils literal notranslate"><span class="pre">read_data</span></code> and distributed
+reads through <code class="code docutils literal notranslate"><span class="pre">read_distributed_data</span></code> normally silently skip such
+data.  That model is intentional because it allows initial loading of a
+large data set with unresolvable anomalies that prevent one or more of
+the cross-referencing ids from being defined.</p></li>
 <li><p>The waveform data is read and the data object is constructed.  If that process fails the data
 will be marked dead and an error log posted with the reason (e.g. a
 file not found message).</p></li>

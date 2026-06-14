@@ -9315,7 +9315,7 @@ channel_id, site_id, and source_id.</p>
 and the collections defined by the matcher_list list.</p></li>
 <li><p><strong>wf_col</strong> – The collection that need to be normalized, default is
 wf_miniseed</p></li>
-<li><p><strong>blockssize</strong> – To speed up updates this function uses the
+<li><p><strong>blocksize</strong> – To speed up updates this function uses the
 bulk writer/updater methods of MongoDB that can be orders of
 magnitude faster than one-at-a-time updates. A user should not normally
 need to alter this parameter.</p></li>
@@ -9401,7 +9401,7 @@ if kill_on_failure is true the result may be killed on return.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="mspasspy.db.normalize.normalize_mseed">
-<span class="sig-prename descclassname"><span class="pre">mspasspy.db.normalize.</span></span><span class="sig-name descname"><span class="pre">normalize_mseed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wfquery</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">blocksize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize_channel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize_site</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/normalize.html#normalize_mseed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.normalize.normalize_mseed" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">mspasspy.db.normalize.</span></span><span class="sig-name descname"><span class="pre">normalize_mseed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wfquery</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">blocksize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize_channel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize_site</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wf_col</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'wf_miniseed'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/normalize.html#normalize_mseed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.normalize.normalize_mseed" title="Link to this definition"></a></dt>
 <dd><p>In MsPASS the standard support for station information is stored in
 two collections called “channel” and “site”.   When normalized
 with channel collection data a miniseed record can be associated with
@@ -9409,7 +9409,9 @@ station metadata downloaded by FDSN web services and stored previously
 with MsPASS database methods.   The default behavior tries to associate
 each wf_miniseed document with an entry in “site”.  In MsPASS site is a
 smaller collection intended for use only with data already assembled
-into three component bundles we call Seismogram objects.</p>
+into three component bundles we call Seismogram objects.  Normal use
+of this function is to add normalization cross referencing ids to the
+wf_miniseed collection.  Change wf_col to run on a different collection.</p>
 <p>For both channel and site the association algorithm used assumes
 the SEED convention wherein the strings stored with the keys
 “net”,”sta”,”chan”, and (optionally) “loc” define a unique channel
@@ -9423,17 +9425,21 @@ also called a “station”).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>db</strong> – should be a MsPASS database handle containing at least
-wf_miniseed and the collections defined by the norm_collection list.</p></li>
-<li><p><strong>blockssize</strong> – To speed up updates this function uses the
+<li><p><strong>db</strong> – should be a MsPASS database handle containing the waveform
+collection defined by wf_col, “channel”, and “site”.  Note that
+the booleans normalize_channel and normalize_site define if
+channel or site respectively are actually required.</p></li>
+<li><p><strong>wf_col</strong> – waveform collection that is to be updated with normalization
+ObjectId cross-referencing keys.  Default is “wf_miniseed”.</p></li>
+<li><p><strong>wfquery</strong> – is an optional query to apply to wf_col.  The output of this
+query defines the list of documents that the algorithm will attempt
+to normalize as described above.  The default (None) will process the entire
+wf_col collection.</p></li>
+<li><p><strong>blocksize</strong> – To speed up updates this function uses the
 bulk writer/updater methods of MongoDB that can be orders of
 magnitude faster than one-at-a-time updates for setting
 channel_id and site_id.  A user should not normally need to alter this
-parameter.</p></li>
-<li><p><strong>wfquery</strong> – is a query to apply to wf_miniseed.  The output of this
-query defines the list of documents that the algorithm will attempt
-to normalize as described above.  The default will process the entire
-wf_miniseed collection (query set to an emtpy dict).</p></li>
+parameter.  It is the number of records written per write operation.</p></li>
 <li><p><strong>normalize_channel</strong> – boolean for handling channel collection.
 When True (default) matches will be attempted with the channel collection
 and when matches are found the associated channel document id will be
@@ -9448,7 +9454,7 @@ or the function will immediately abort.</p></li>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>list with three integers.  0 is the number of documents processed in
-wf_miniseed (output of query), 1 is the number with channel ids set,
+wf_col (output of query), 1 is the number with channel ids set,
 and 2 contains the number of site documents set.  1 or 2 should
 contain 0 if normalization for that collection was set false.</p>
 </dd>
