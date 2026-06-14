@@ -1399,16 +1399,23 @@
 <codeline lineno="835"><highlight class="normal"></highlight></codeline>
 <codeline lineno="836"><highlight class="normal"><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref><sp/>CNRDeconEngine::QCMetrics()<sp/>{</highlight></codeline>
 <codeline lineno="837"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref><sp/>result;</highlight></codeline>
-<codeline lineno="838"><highlight class="normal"><sp/><sp/>result.put(</highlight><highlight class="stringliteral">&quot;waveletbf&quot;</highlight><highlight class="normal">,<sp/>this-&gt;regularization_bandwidth_fraction);</highlight></codeline>
-<codeline lineno="839"><highlight class="normal"><sp/><sp/>result.put(</highlight><highlight class="stringliteral">&quot;maxsnr0&quot;</highlight><highlight class="normal">,<sp/>peak_snr[0]);</highlight></codeline>
-<codeline lineno="840"><highlight class="normal"><sp/><sp/>result.put(</highlight><highlight class="stringliteral">&quot;maxsnr1&quot;</highlight><highlight class="normal">,<sp/>peak_snr[1]);</highlight></codeline>
-<codeline lineno="841"><highlight class="normal"><sp/><sp/>result.put(</highlight><highlight class="stringliteral">&quot;maxsnr2&quot;</highlight><highlight class="normal">,<sp/>peak_snr[2]);</highlight></codeline>
-<codeline lineno="842"><highlight class="normal"><sp/><sp/>result.put(</highlight><highlight class="stringliteral">&quot;signalbf0&quot;</highlight><highlight class="normal">,<sp/>signal_bandwidth_fraction[0]);</highlight></codeline>
-<codeline lineno="843"><highlight class="normal"><sp/><sp/>result.put(</highlight><highlight class="stringliteral">&quot;signalbf1&quot;</highlight><highlight class="normal">,<sp/>signal_bandwidth_fraction[1]);</highlight></codeline>
-<codeline lineno="844"><highlight class="normal"><sp/><sp/>result.put(</highlight><highlight class="stringliteral">&quot;signalbf2&quot;</highlight><highlight class="normal">,<sp/>signal_bandwidth_fraction[2]);</highlight></codeline>
-<codeline lineno="845"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>result;</highlight></codeline>
-<codeline lineno="846"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="847"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>mspass::algorithms::deconvolution</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="838"><highlight class="normal"><sp/><sp/>result.put(</highlight><highlight class="stringliteral">&quot;decon_operator&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal">(</highlight><highlight class="stringliteral">&quot;CNRDeconEngine&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="839"><highlight class="normal"><sp/><sp/>result.put(</highlight><highlight class="stringliteral">&quot;decon_processed&quot;</highlight><highlight class="normal">,<sp/>this-&gt;regularization_bandwidth_fraction<sp/>&gt;<sp/>0.0);</highlight></codeline>
+<codeline lineno="840"><highlight class="normal"><sp/><sp/>result.put(</highlight><highlight class="stringliteral">&quot;decon_operator_nfft&quot;</highlight><highlight class="normal">,<sp/>nfft);</highlight></codeline>
+<codeline lineno="841"><highlight class="normal"><sp/><sp/>result.put(</highlight><highlight class="stringliteral">&quot;decon_operator_sample_shift&quot;</highlight><highlight class="normal">,<sp/>sample_shift);</highlight></codeline>
+<codeline lineno="842"><highlight class="normal"><sp/><sp/>result.put(</highlight><highlight class="stringliteral">&quot;decon_sample_interval&quot;</highlight><highlight class="normal">,<sp/>operator_dt);</highlight></codeline>
+<codeline lineno="843"><highlight class="normal"><sp/><sp/>result.put(</highlight><highlight class="stringliteral">&quot;cnr_regularization_bandwidth_fraction&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="844"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>this-&gt;regularization_bandwidth_fraction);</highlight></codeline>
+<codeline lineno="845"><highlight class="normal"><sp/><sp/>result.put(</highlight><highlight class="stringliteral">&quot;waveletbf&quot;</highlight><highlight class="normal">,<sp/>this-&gt;regularization_bandwidth_fraction);</highlight></codeline>
+<codeline lineno="846"><highlight class="normal"><sp/><sp/>result.put(</highlight><highlight class="stringliteral">&quot;maxsnr0&quot;</highlight><highlight class="normal">,<sp/>peak_snr[0]);</highlight></codeline>
+<codeline lineno="847"><highlight class="normal"><sp/><sp/>result.put(</highlight><highlight class="stringliteral">&quot;maxsnr1&quot;</highlight><highlight class="normal">,<sp/>peak_snr[1]);</highlight></codeline>
+<codeline lineno="848"><highlight class="normal"><sp/><sp/>result.put(</highlight><highlight class="stringliteral">&quot;maxsnr2&quot;</highlight><highlight class="normal">,<sp/>peak_snr[2]);</highlight></codeline>
+<codeline lineno="849"><highlight class="normal"><sp/><sp/>result.put(</highlight><highlight class="stringliteral">&quot;signalbf0&quot;</highlight><highlight class="normal">,<sp/>signal_bandwidth_fraction[0]);</highlight></codeline>
+<codeline lineno="850"><highlight class="normal"><sp/><sp/>result.put(</highlight><highlight class="stringliteral">&quot;signalbf1&quot;</highlight><highlight class="normal">,<sp/>signal_bandwidth_fraction[1]);</highlight></codeline>
+<codeline lineno="851"><highlight class="normal"><sp/><sp/>result.put(</highlight><highlight class="stringliteral">&quot;signalbf2&quot;</highlight><highlight class="normal">,<sp/>signal_bandwidth_fraction[2]);</highlight></codeline>
+<codeline lineno="852"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>result;</highlight></codeline>
+<codeline lineno="853"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="854"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>mspass::algorithms::deconvolution</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/CNRDeconEngine.cc"/>
   </compounddef>

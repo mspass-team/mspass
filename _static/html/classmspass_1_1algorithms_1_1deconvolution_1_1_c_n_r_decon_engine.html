@@ -1187,15 +1187,22 @@ gsl_fft_complex_workspace *&#160;</td><td class="memItemRight" valign="bottom"><
 </div><div class="memdoc">
 <div class="fragment"><div class="line"><span class="lineno">  836</span>                                   {</div>
 <div class="line"><span class="lineno">  837</span>  Metadata result;</div>
-<div class="line"><span class="lineno">  838</span>  result.put(<span class="stringliteral">&quot;waveletbf&quot;</span>, this-&gt;regularization_bandwidth_fraction);</div>
-<div class="line"><span class="lineno">  839</span>  result.put(<span class="stringliteral">&quot;maxsnr0&quot;</span>, peak_snr[0]);</div>
-<div class="line"><span class="lineno">  840</span>  result.put(<span class="stringliteral">&quot;maxsnr1&quot;</span>, peak_snr[1]);</div>
-<div class="line"><span class="lineno">  841</span>  result.put(<span class="stringliteral">&quot;maxsnr2&quot;</span>, peak_snr[2]);</div>
-<div class="line"><span class="lineno">  842</span>  result.put(<span class="stringliteral">&quot;signalbf0&quot;</span>, signal_bandwidth_fraction[0]);</div>
-<div class="line"><span class="lineno">  843</span>  result.put(<span class="stringliteral">&quot;signalbf1&quot;</span>, signal_bandwidth_fraction[1]);</div>
-<div class="line"><span class="lineno">  844</span>  result.put(<span class="stringliteral">&quot;signalbf2&quot;</span>, signal_bandwidth_fraction[2]);</div>
-<div class="line"><span class="lineno">  845</span>  <span class="keywordflow">return</span> result;</div>
-<div class="line"><span class="lineno">  846</span>}</div>
+<div class="line"><span class="lineno">  838</span>  result.put(<span class="stringliteral">&quot;decon_operator&quot;</span>, <span class="keywordtype">string</span>(<span class="stringliteral">&quot;CNRDeconEngine&quot;</span>));</div>
+<div class="line"><span class="lineno">  839</span>  result.put(<span class="stringliteral">&quot;decon_processed&quot;</span>, this-&gt;regularization_bandwidth_fraction &gt; 0.0);</div>
+<div class="line"><span class="lineno">  840</span>  result.put(<span class="stringliteral">&quot;decon_operator_nfft&quot;</span>, nfft);</div>
+<div class="line"><span class="lineno">  841</span>  result.put(<span class="stringliteral">&quot;decon_operator_sample_shift&quot;</span>, sample_shift);</div>
+<div class="line"><span class="lineno">  842</span>  result.put(<span class="stringliteral">&quot;decon_sample_interval&quot;</span>, operator_dt);</div>
+<div class="line"><span class="lineno">  843</span>  result.put(<span class="stringliteral">&quot;cnr_regularization_bandwidth_fraction&quot;</span>,</div>
+<div class="line"><span class="lineno">  844</span>             this-&gt;regularization_bandwidth_fraction);</div>
+<div class="line"><span class="lineno">  845</span>  result.put(<span class="stringliteral">&quot;waveletbf&quot;</span>, this-&gt;regularization_bandwidth_fraction);</div>
+<div class="line"><span class="lineno">  846</span>  result.put(<span class="stringliteral">&quot;maxsnr0&quot;</span>, peak_snr[0]);</div>
+<div class="line"><span class="lineno">  847</span>  result.put(<span class="stringliteral">&quot;maxsnr1&quot;</span>, peak_snr[1]);</div>
+<div class="line"><span class="lineno">  848</span>  result.put(<span class="stringliteral">&quot;maxsnr2&quot;</span>, peak_snr[2]);</div>
+<div class="line"><span class="lineno">  849</span>  result.put(<span class="stringliteral">&quot;signalbf0&quot;</span>, signal_bandwidth_fraction[0]);</div>
+<div class="line"><span class="lineno">  850</span>  result.put(<span class="stringliteral">&quot;signalbf1&quot;</span>, signal_bandwidth_fraction[1]);</div>
+<div class="line"><span class="lineno">  851</span>  result.put(<span class="stringliteral">&quot;signalbf2&quot;</span>, signal_bandwidth_fraction[2]);</div>
+<div class="line"><span class="lineno">  852</span>  <span class="keywordflow">return</span> result;</div>
+<div class="line"><span class="lineno">  853</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>

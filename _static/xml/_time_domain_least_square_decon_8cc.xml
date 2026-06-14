@@ -95,6 +95,8 @@
         </childnode>
         <childnode refid="5" relation="include">
         </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
         <childnode refid="27" relation="include">
         </childnode>
         <childnode refid="21" relation="include">
@@ -865,17 +867,20 @@
 <codeline lineno="331"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="332"><highlight class="normal"></highlight></codeline>
 <codeline lineno="333" refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_least_square_decon_1a0a7439911588bbbd51df7d3171ce2ef8" refkind="member"><highlight class="normal"><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref><sp/>TimeDomainLeastSquareDecon::QCMetrics()<sp/>{</highlight></codeline>
-<codeline lineno="334"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref><sp/>md;</highlight></codeline>
-<codeline lineno="335"><highlight class="normal"><sp/><sp/>md.put(</highlight><highlight class="stringliteral">&quot;damping_factor&quot;</highlight><highlight class="normal">,<sp/>damp);</highlight></codeline>
-<codeline lineno="336"><highlight class="normal"><sp/><sp/>md.put(</highlight><highlight class="stringliteral">&quot;sample_shift&quot;</highlight><highlight class="normal">,<sp/>sample_shift);</highlight></codeline>
-<codeline lineno="337"><highlight class="normal"><sp/><sp/>md.put(</highlight><highlight class="stringliteral">&quot;regularization_parameter&quot;</highlight><highlight class="normal">,<sp/>regularization_parameter);</highlight></codeline>
-<codeline lineno="338"><highlight class="normal"><sp/><sp/>md.put(</highlight><highlight class="stringliteral">&quot;residual_norm&quot;</highlight><highlight class="normal">,<sp/>residual_norm);</highlight></codeline>
-<codeline lineno="339"><highlight class="normal"><sp/><sp/>md.put(</highlight><highlight class="stringliteral">&quot;data_norm&quot;</highlight><highlight class="normal">,<sp/>data_norm);</highlight></codeline>
-<codeline lineno="340"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(data_norm<sp/>&gt;<sp/>0.0)</highlight></codeline>
-<codeline lineno="341"><highlight class="normal"><sp/><sp/><sp/><sp/>md.put(</highlight><highlight class="stringliteral">&quot;relative_residual_norm&quot;</highlight><highlight class="normal">,<sp/>residual_norm<sp/>/<sp/>data_norm);</highlight></codeline>
-<codeline lineno="342"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>md;</highlight></codeline>
-<codeline lineno="343"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="344"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>mspass::algorithms::deconvolution</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="334"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref><sp/>md(this-&gt;BasicQCMetrics(</highlight><highlight class="stringliteral">&quot;TimeDomainLeastSquareDecon&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="335"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>!result.empty()));</highlight></codeline>
+<codeline lineno="336"><highlight class="normal"><sp/><sp/>md.put(</highlight><highlight class="stringliteral">&quot;damping_factor&quot;</highlight><highlight class="normal">,<sp/>damp);</highlight></codeline>
+<codeline lineno="337"><highlight class="normal"><sp/><sp/>md.put(</highlight><highlight class="stringliteral">&quot;sample_shift&quot;</highlight><highlight class="normal">,<sp/>sample_shift);</highlight></codeline>
+<codeline lineno="338"><highlight class="normal"><sp/><sp/>md.put(</highlight><highlight class="stringliteral">&quot;decon_operator_sample_shift&quot;</highlight><highlight class="normal">,<sp/>sample_shift);</highlight></codeline>
+<codeline lineno="339"><highlight class="normal"><sp/><sp/>md.put(</highlight><highlight class="stringliteral">&quot;time_domain_least_square_output_length&quot;</highlight><highlight class="normal">,<sp/>output_length);</highlight></codeline>
+<codeline lineno="340"><highlight class="normal"><sp/><sp/>md.put(</highlight><highlight class="stringliteral">&quot;regularization_parameter&quot;</highlight><highlight class="normal">,<sp/>regularization_parameter);</highlight></codeline>
+<codeline lineno="341"><highlight class="normal"><sp/><sp/>md.put(</highlight><highlight class="stringliteral">&quot;residual_norm&quot;</highlight><highlight class="normal">,<sp/>residual_norm);</highlight></codeline>
+<codeline lineno="342"><highlight class="normal"><sp/><sp/>md.put(</highlight><highlight class="stringliteral">&quot;data_norm&quot;</highlight><highlight class="normal">,<sp/>data_norm);</highlight></codeline>
+<codeline lineno="343"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(data_norm<sp/>&gt;<sp/>0.0)</highlight></codeline>
+<codeline lineno="344"><highlight class="normal"><sp/><sp/><sp/><sp/>md.put(</highlight><highlight class="stringliteral">&quot;relative_residual_norm&quot;</highlight><highlight class="normal">,<sp/>residual_norm<sp/>/<sp/>data_norm);</highlight></codeline>
+<codeline lineno="345"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>md;</highlight></codeline>
+<codeline lineno="346"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="347"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>mspass::algorithms::deconvolution</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/TimeDomainLeastSquareDecon.cc"/>
   </compounddef>

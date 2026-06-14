@@ -146,6 +146,8 @@
         </childnode>
         <childnode refid="17" relation="include">
         </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
         <childnode refid="11" relation="include">
         </childnode>
         <childnode refid="4" relation="include">
@@ -1131,18 +1133,21 @@
 <codeline lineno="534"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="535"><highlight class="normal"></highlight></codeline>
 <codeline lineno="536" refid="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_spec_div_decon_1abe73bf7bdbd568b1d2066942886aebbc" refkind="member"><highlight class="normal"><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref><sp/>MultiTaperSpecDivDecon::QCMetrics()<sp/>{</highlight></codeline>
-<codeline lineno="537"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref><sp/>md;</highlight></codeline>
-<codeline lineno="538"><highlight class="normal"><sp/><sp/>md.put(</highlight><highlight class="stringliteral">&quot;multitaper_operator_type&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal">(</highlight><highlight class="stringliteral">&quot;specdiv_power_stabilized&quot;</highlight><highlight class="normal">));</highlight></codeline>
-<codeline lineno="539"><highlight class="normal"><sp/><sp/>md.put(</highlight><highlight class="stringliteral">&quot;multitaper_operator_nfft&quot;</highlight><highlight class="normal">,<sp/>nfft);</highlight></codeline>
-<codeline lineno="540"><highlight class="normal"><sp/><sp/>md.put(</highlight><highlight class="stringliteral">&quot;multitaper_taper_length&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keywordtype">int</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(taperlen));</highlight></codeline>
-<codeline lineno="541"><highlight class="normal"><sp/><sp/>md.put(</highlight><highlight class="stringliteral">&quot;multitaper_number_tapers&quot;</highlight><highlight class="normal">,<sp/>nseq);</highlight></codeline>
-<codeline lineno="542"><highlight class="normal"><sp/><sp/>md.put(</highlight><highlight class="stringliteral">&quot;multitaper_time_bandwidth_product&quot;</highlight><highlight class="normal">,<sp/>nw);</highlight></codeline>
-<codeline lineno="543"><highlight class="normal"><sp/><sp/>md.put(</highlight><highlight class="stringliteral">&quot;multitaper_damping_factor&quot;</highlight><highlight class="normal">,<sp/>damp);</highlight></codeline>
-<codeline lineno="544"><highlight class="normal"><sp/><sp/>md.put(</highlight><highlight class="stringliteral">&quot;multitaper_processed&quot;</highlight><highlight class="normal">,<sp/>!winv_taper.empty());</highlight></codeline>
-<codeline lineno="545"><highlight class="normal"><sp/><sp/>md.put(</highlight><highlight class="stringliteral">&quot;multitaper_number_outputs&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keywordtype">int</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(winv_taper.size()));</highlight></codeline>
-<codeline lineno="546"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>md;</highlight></codeline>
-<codeline lineno="547"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="548"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>mspass::algorithms::deconvolution</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="537"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>did_process(!winv_taper.empty());</highlight></codeline>
+<codeline lineno="538"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref><sp/>md(this-&gt;BasicQCMetrics(</highlight><highlight class="stringliteral">&quot;MultiTaperSpecDivDecon&quot;</highlight><highlight class="normal">,<sp/>did_process));</highlight></codeline>
+<codeline lineno="539"><highlight class="normal"><sp/><sp/>md.put(</highlight><highlight class="stringliteral">&quot;multitaper_operator_type&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal">(</highlight><highlight class="stringliteral">&quot;specdiv_power_stabilized&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="540"><highlight class="normal"><sp/><sp/>md.put(</highlight><highlight class="stringliteral">&quot;multitaper_operator_nfft&quot;</highlight><highlight class="normal">,<sp/>nfft);</highlight></codeline>
+<codeline lineno="541"><highlight class="normal"><sp/><sp/>md.put(</highlight><highlight class="stringliteral">&quot;decon_operator_nfft&quot;</highlight><highlight class="normal">,<sp/>nfft);</highlight></codeline>
+<codeline lineno="542"><highlight class="normal"><sp/><sp/>md.put(</highlight><highlight class="stringliteral">&quot;decon_operator_sample_shift&quot;</highlight><highlight class="normal">,<sp/>sample_shift);</highlight></codeline>
+<codeline lineno="543"><highlight class="normal"><sp/><sp/>md.put(</highlight><highlight class="stringliteral">&quot;multitaper_taper_length&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keywordtype">int</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(taperlen));</highlight></codeline>
+<codeline lineno="544"><highlight class="normal"><sp/><sp/>md.put(</highlight><highlight class="stringliteral">&quot;multitaper_number_tapers&quot;</highlight><highlight class="normal">,<sp/>nseq);</highlight></codeline>
+<codeline lineno="545"><highlight class="normal"><sp/><sp/>md.put(</highlight><highlight class="stringliteral">&quot;multitaper_time_bandwidth_product&quot;</highlight><highlight class="normal">,<sp/>nw);</highlight></codeline>
+<codeline lineno="546"><highlight class="normal"><sp/><sp/>md.put(</highlight><highlight class="stringliteral">&quot;multitaper_damping_factor&quot;</highlight><highlight class="normal">,<sp/>damp);</highlight></codeline>
+<codeline lineno="547"><highlight class="normal"><sp/><sp/>md.put(</highlight><highlight class="stringliteral">&quot;multitaper_processed&quot;</highlight><highlight class="normal">,<sp/>did_process);</highlight></codeline>
+<codeline lineno="548"><highlight class="normal"><sp/><sp/>md.put(</highlight><highlight class="stringliteral">&quot;multitaper_number_outputs&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keywordtype">int</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(winv_taper.size()));</highlight></codeline>
+<codeline lineno="549"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>md;</highlight></codeline>
+<codeline lineno="550"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="551"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>mspass::algorithms::deconvolution</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/MultiTaperSpecDivDecon.cc"/>
   </compounddef>

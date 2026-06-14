@@ -129,6 +129,8 @@
         </childnode>
         <childnode refid="17" relation="include">
         </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
         <childnode refid="13" relation="include">
         </childnode>
         <childnode refid="6" relation="include">
@@ -821,19 +823,21 @@
 <codeline lineno="286"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="287"><highlight class="normal"></highlight></codeline>
 <codeline lineno="288" refid="classmspass_1_1algorithms_1_1deconvolution_1_1_noise_stable_decon_1a026a23ca70213ae84f7a189b3e18985a" refkind="member"><highlight class="normal"><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref><sp/>NoiseStableDecon::QCMetrics()<sp/>{</highlight></codeline>
-<codeline lineno="289"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref><sp/>md;</highlight></codeline>
-<codeline lineno="290"><highlight class="normal"><sp/><sp/>md.put(</highlight><highlight class="stringliteral">&quot;ns_gid_gain_max_requested&quot;</highlight><highlight class="normal">,<sp/>gain_max);</highlight></codeline>
-<codeline lineno="291"><highlight class="normal"><sp/><sp/>md.put(</highlight><highlight class="stringliteral">&quot;ns_gid_gain_max_actual&quot;</highlight><highlight class="normal">,<sp/>max_gain_actual);</highlight></codeline>
-<codeline lineno="292"><highlight class="normal"><sp/><sp/>md.put(</highlight><highlight class="stringliteral">&quot;ns_gid_mu_min&quot;</highlight><highlight class="normal">,<sp/>mu_min);</highlight></codeline>
-<codeline lineno="293"><highlight class="normal"><sp/><sp/>md.put(</highlight><highlight class="stringliteral">&quot;ns_gid_alpha&quot;</highlight><highlight class="normal">,<sp/>alpha);</highlight></codeline>
-<codeline lineno="294"><highlight class="normal"><sp/><sp/>md.put(</highlight><highlight class="stringliteral">&quot;ns_gid_noise_amplification&quot;</highlight><highlight class="normal">,<sp/>noise_amplification);</highlight></codeline>
-<codeline lineno="295"><highlight class="normal"><sp/><sp/>md.put(</highlight><highlight class="stringliteral">&quot;ns_gid_effective_bandwidth_fraction&quot;</highlight><highlight class="normal">,</highlight></codeline>
-<codeline lineno="296"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>effective_bandwidth_fraction);</highlight></codeline>
-<codeline lineno="297"><highlight class="normal"><sp/><sp/>md.put(</highlight><highlight class="stringliteral">&quot;ns_gid_operator_nfft&quot;</highlight><highlight class="normal">,<sp/>nfft);</highlight></codeline>
-<codeline lineno="298"><highlight class="normal"><sp/><sp/>md.put(</highlight><highlight class="stringliteral">&quot;ns_gid_use_reliability_taper&quot;</highlight><highlight class="normal">,<sp/>use_reliability_taper);</highlight></codeline>
-<codeline lineno="299"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>md;</highlight></codeline>
-<codeline lineno="300"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="301"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>mspass::algorithms::deconvolution</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="289"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref><sp/>md(this-&gt;BasicQCMetrics(</highlight><highlight class="stringliteral">&quot;NoiseStableDecon&quot;</highlight><highlight class="normal">,<sp/>processed));</highlight></codeline>
+<codeline lineno="290"><highlight class="normal"><sp/><sp/>md.put(</highlight><highlight class="stringliteral">&quot;decon_operator_nfft&quot;</highlight><highlight class="normal">,<sp/>nfft);</highlight></codeline>
+<codeline lineno="291"><highlight class="normal"><sp/><sp/>md.put(</highlight><highlight class="stringliteral">&quot;decon_operator_sample_shift&quot;</highlight><highlight class="normal">,<sp/>sample_shift);</highlight></codeline>
+<codeline lineno="292"><highlight class="normal"><sp/><sp/>md.put(</highlight><highlight class="stringliteral">&quot;ns_gid_gain_max_requested&quot;</highlight><highlight class="normal">,<sp/>gain_max);</highlight></codeline>
+<codeline lineno="293"><highlight class="normal"><sp/><sp/>md.put(</highlight><highlight class="stringliteral">&quot;ns_gid_gain_max_actual&quot;</highlight><highlight class="normal">,<sp/>max_gain_actual);</highlight></codeline>
+<codeline lineno="294"><highlight class="normal"><sp/><sp/>md.put(</highlight><highlight class="stringliteral">&quot;ns_gid_mu_min&quot;</highlight><highlight class="normal">,<sp/>mu_min);</highlight></codeline>
+<codeline lineno="295"><highlight class="normal"><sp/><sp/>md.put(</highlight><highlight class="stringliteral">&quot;ns_gid_alpha&quot;</highlight><highlight class="normal">,<sp/>alpha);</highlight></codeline>
+<codeline lineno="296"><highlight class="normal"><sp/><sp/>md.put(</highlight><highlight class="stringliteral">&quot;ns_gid_noise_amplification&quot;</highlight><highlight class="normal">,<sp/>noise_amplification);</highlight></codeline>
+<codeline lineno="297"><highlight class="normal"><sp/><sp/>md.put(</highlight><highlight class="stringliteral">&quot;ns_gid_effective_bandwidth_fraction&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="298"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>effective_bandwidth_fraction);</highlight></codeline>
+<codeline lineno="299"><highlight class="normal"><sp/><sp/>md.put(</highlight><highlight class="stringliteral">&quot;ns_gid_operator_nfft&quot;</highlight><highlight class="normal">,<sp/>nfft);</highlight></codeline>
+<codeline lineno="300"><highlight class="normal"><sp/><sp/>md.put(</highlight><highlight class="stringliteral">&quot;ns_gid_use_reliability_taper&quot;</highlight><highlight class="normal">,<sp/>use_reliability_taper);</highlight></codeline>
+<codeline lineno="301"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>md;</highlight></codeline>
+<codeline lineno="302"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="303"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>mspass::algorithms::deconvolution</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/NoiseStableDecon.cc"/>
   </compounddef>

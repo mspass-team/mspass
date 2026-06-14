@@ -158,6 +158,8 @@
         </childnode>
         <childnode refid="17" relation="include">
         </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
         <childnode refid="13" relation="include">
         </childnode>
         <childnode refid="6" relation="include">
@@ -754,11 +756,11 @@
 <codeline lineno="192"><highlight class="normal"><sp/><sp/>};</highlight></codeline>
 <codeline lineno="193"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="194" refid="classmspass_1_1algorithms_1_1deconvolution_1_1_least_square_decon_1a9546ad7acceb273efbfff836d4e804b9" refkind="member"><highlight class="normal"><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref><sp/>LeastSquareDecon::QCMetrics()<sp/>{</highlight></codeline>
-<codeline lineno="195"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>Return<sp/>only<sp/>an<sp/>empty<sp/>Metadata<sp/>container.<sp/><sp/>Done<sp/>as<sp/>it<sp/>is</highlight></codeline>
-<codeline lineno="196"><highlight class="comment"><sp/><sp/>easier<sp/>to<sp/>maintain<sp/>the<sp/>code<sp/>letting<sp/>python<sp/>do<sp/>this<sp/>work.</highlight></codeline>
-<codeline lineno="197"><highlight class="comment"><sp/><sp/>This<sp/>also<sp/>anticipates<sp/>new<sp/>metrics<sp/>being<sp/>added<sp/>which<sp/>would<sp/>be</highlight></codeline>
-<codeline lineno="198"><highlight class="comment"><sp/><sp/>easier<sp/>in<sp/>python.*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="199"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref><sp/>md;</highlight></codeline>
+<codeline lineno="195"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref><sp/>md(this-&gt;BasicQCMetrics(</highlight><highlight class="stringliteral">&quot;LeastSquareDecon&quot;</highlight><highlight class="normal">,<sp/>!result.empty()));</highlight></codeline>
+<codeline lineno="196"><highlight class="normal"><sp/><sp/>md.put(</highlight><highlight class="stringliteral">&quot;decon_operator_nfft&quot;</highlight><highlight class="normal">,<sp/>nfft);</highlight></codeline>
+<codeline lineno="197"><highlight class="normal"><sp/><sp/>md.put(</highlight><highlight class="stringliteral">&quot;decon_operator_sample_shift&quot;</highlight><highlight class="normal">,<sp/>sample_shift);</highlight></codeline>
+<codeline lineno="198"><highlight class="normal"><sp/><sp/>md.put(</highlight><highlight class="stringliteral">&quot;damping_factor&quot;</highlight><highlight class="normal">,<sp/>damp);</highlight></codeline>
+<codeline lineno="199"><highlight class="normal"><sp/><sp/>md.put(</highlight><highlight class="stringliteral">&quot;least_square_damping_factor&quot;</highlight><highlight class="normal">,<sp/>damp);</highlight></codeline>
 <codeline lineno="200"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>md;</highlight></codeline>
 <codeline lineno="201"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="202"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>mspass::algorithms::deconvolution</highlight><highlight class="normal"></highlight></codeline>

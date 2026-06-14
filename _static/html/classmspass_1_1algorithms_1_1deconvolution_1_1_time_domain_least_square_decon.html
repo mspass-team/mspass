@@ -165,6 +165,9 @@ Public Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
+<tr class="inherit_header pro_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html">mspass::algorithms::deconvolution::ScalarDecon</a></td></tr>
+<tr class="memitem:a83e9fd9e0f13b1a0a650fdb0bb805543 inherit pro_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon" id="r_a83e9fd9e0f13b1a0a650fdb0bb805543"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmspass_1_1utility_1_1_metadata.html">mspass::utility::Metadata</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#a83e9fd9e0f13b1a0a650fdb0bb805543">BasicQCMetrics</a> (const std::string &amp;operator_name, const bool processed)</td></tr>
+<tr class="separator:a83e9fd9e0f13b1a0a650fdb0bb805543 inherit pro_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_attribs_classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html">mspass::algorithms::deconvolution::ScalarDecon</a></td></tr>
 <tr class="memitem:a3352f80170606ad4b543493a9168bc9d inherit pro_attribs_classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon" id="r_a3352f80170606ad4b543493a9168bc9d"><td class="memItemLeft" align="right" valign="top">
 std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>data</b></td></tr>
@@ -482,7 +485,7 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
 <div class="line"><span class="lineno">  249</span>  result.s = ws;</div>
 <div class="line"><span class="lineno">  250</span>  <span class="keywordflow">return</span> result;</div>
 <div class="line"><span class="lineno">  251</span>}</div>
-<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_html_afdf74a0ef7db252ae472d5c21b6a4cc7"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#afdf74a0ef7db252ae472d5c21b6a4cc7">mspass::algorithms::deconvolution::ScalarDecon::output_shaping_wavelet</a></div><div class="ttdeci">virtual mspass::seismic::CoreTimeSeries output_shaping_wavelet()</div><div class="ttdoc">Return the output shaping wavelet.</div><div class="ttdef"><b>Definition</b> ScalarDecon.h:71</div></div>
+<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_html_afdf74a0ef7db252ae472d5c21b6a4cc7"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#afdf74a0ef7db252ae472d5c21b6a4cc7">mspass::algorithms::deconvolution::ScalarDecon::output_shaping_wavelet</a></div><div class="ttdeci">virtual mspass::seismic::CoreTimeSeries output_shaping_wavelet()</div><div class="ttdoc">Return the output shaping wavelet.</div><div class="ttdef"><b>Definition</b> ScalarDecon.h:72</div></div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_core_time_series.html#ab044edb3fe5fe734cb577a4434f390a2">mspass::seismic::CoreTimeSeries::s</a>, <a class="el" href="classmspass_1_1seismic_1_1_core_time_series.html#a97ff6732aa816b0c327c5bf667ffe841">mspass::seismic::CoreTimeSeries::set_dt()</a>, <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#a1ca7ba8bcd8337bd49d438664e74966d">mspass::seismic::BasicTimeSeries::set_live()</a>, <a class="el" href="classmspass_1_1seismic_1_1_core_time_series.html#ae90b28cff0bc1997aa65a1693d8562d0">mspass::seismic::CoreTimeSeries::set_t0()</a>, and <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#ac3f8c8200710fe0d3ef211c7c758e864">mspass::seismic::BasicTimeSeries::set_tref()</a>.</p>
 
@@ -560,16 +563,19 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
 
 <p>Implements <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#af683c2f25e91155c2bc1f81f9b62bbb1">mspass::algorithms::deconvolution::ScalarDecon</a>.</p>
 <div class="fragment"><div class="line"><span class="lineno">  333</span>                                               {</div>
-<div class="line"><span class="lineno">  334</span>  Metadata md;</div>
-<div class="line"><span class="lineno">  335</span>  md.put(<span class="stringliteral">&quot;damping_factor&quot;</span>, damp);</div>
-<div class="line"><span class="lineno">  336</span>  md.put(<span class="stringliteral">&quot;sample_shift&quot;</span>, sample_shift);</div>
-<div class="line"><span class="lineno">  337</span>  md.put(<span class="stringliteral">&quot;regularization_parameter&quot;</span>, regularization_parameter);</div>
-<div class="line"><span class="lineno">  338</span>  md.put(<span class="stringliteral">&quot;residual_norm&quot;</span>, residual_norm);</div>
-<div class="line"><span class="lineno">  339</span>  md.put(<span class="stringliteral">&quot;data_norm&quot;</span>, data_norm);</div>
-<div class="line"><span class="lineno">  340</span>  <span class="keywordflow">if</span> (data_norm &gt; 0.0)</div>
-<div class="line"><span class="lineno">  341</span>    md.put(<span class="stringliteral">&quot;relative_residual_norm&quot;</span>, residual_norm / data_norm);</div>
-<div class="line"><span class="lineno">  342</span>  <span class="keywordflow">return</span> md;</div>
-<div class="line"><span class="lineno">  343</span>}</div>
+<div class="line"><span class="lineno">  334</span>  Metadata md(this-&gt;BasicQCMetrics(<span class="stringliteral">&quot;TimeDomainLeastSquareDecon&quot;</span>,</div>
+<div class="line"><span class="lineno">  335</span>                                   !result.empty()));</div>
+<div class="line"><span class="lineno">  336</span>  md.put(<span class="stringliteral">&quot;damping_factor&quot;</span>, damp);</div>
+<div class="line"><span class="lineno">  337</span>  md.put(<span class="stringliteral">&quot;sample_shift&quot;</span>, sample_shift);</div>
+<div class="line"><span class="lineno">  338</span>  md.put(<span class="stringliteral">&quot;decon_operator_sample_shift&quot;</span>, sample_shift);</div>
+<div class="line"><span class="lineno">  339</span>  md.put(<span class="stringliteral">&quot;time_domain_least_square_output_length&quot;</span>, output_length);</div>
+<div class="line"><span class="lineno">  340</span>  md.put(<span class="stringliteral">&quot;regularization_parameter&quot;</span>, regularization_parameter);</div>
+<div class="line"><span class="lineno">  341</span>  md.put(<span class="stringliteral">&quot;residual_norm&quot;</span>, residual_norm);</div>
+<div class="line"><span class="lineno">  342</span>  md.put(<span class="stringliteral">&quot;data_norm&quot;</span>, data_norm);</div>
+<div class="line"><span class="lineno">  343</span>  <span class="keywordflow">if</span> (data_norm &gt; 0.0)</div>
+<div class="line"><span class="lineno">  344</span>    md.put(<span class="stringliteral">&quot;relative_residual_norm&quot;</span>, residual_norm / data_norm);</div>
+<div class="line"><span class="lineno">  345</span>  <span class="keywordflow">return</span> md;</div>
+<div class="line"><span class="lineno">  346</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>

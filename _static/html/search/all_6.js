@@ -2,7 +2,7 @@ var searchData=
 [
   ['gaps_0',['gaps',['../classmspass_1_1seismic_1_1_data_gap.html#a7cb06f3ead8475c9527c2248968a2c83',1,'mspass::seismic::DataGap']]],
   ['gary_20l_20pavlis_1',['\author Gary L. Pavlis',['../classmspass_1_1utility_1_1dmatrix__index__error.html#autotoc_md0',1,'']]],
-  ['get_2',['get',['../classmspass_1_1utility_1_1_metadata.html#a5d6876ed25c3f5d93052239ec828a3c5',1,'mspass::utility::Metadata::get(const char *key) const'],['../classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539',1,'mspass::utility::Metadata::get(const std::string key) const']]],
+  ['get_2',['get',['../classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539',1,'mspass::utility::Metadata::get(const std::string key) const'],['../classmspass_1_1utility_1_1_metadata.html#a5d6876ed25c3f5d93052239ec828a3c5',1,'mspass::utility::Metadata::get(const char *key) const']]],
   ['get_5fany_3',['get_any',['../classmspass_1_1utility_1_1_metadata.html#a991516933477580b6b59dd578819df06',1,'mspass::utility::Metadata']]],
   ['get_5fbool_4',['get_bool',['../classmspass_1_1utility_1_1_metadata.html#a2631da9d437572ee0781ed9bd96a3ed3',1,'mspass::utility::Metadata']]],
   ['get_5fbranch_5',['get_branch',['../classmspass_1_1utility_1_1_antelope_pf.html#a7853329ba52cc91460a435057e6a8e85',1,'mspass::utility::AntelopePf']]],
@@ -20,5 +20,6 @@ var searchData=
   ['get_5ft1_17',['get_t1',['../classmspass_1_1algorithms_1_1_top_mute.html#aba2e555b9a97ff006033d39d7b31267b',1,'mspass::algorithms::TopMute']]],
   ['get_5ftbl_18',['get_tbl',['../classmspass_1_1utility_1_1_antelope_pf.html#a64065097fb1ebc22192ce455cbeca3fb',1,'mspass::utility::AntelopePf']]],
   ['get_5ftransformation_5fmatrix_19',['get_transformation_matrix',['../classmspass_1_1seismic_1_1_core_seismogram.html#aae2950b408052bda849ba07c4ea9b018',1,'mspass::seismic::CoreSeismogram']]],
-  ['greater_5fseedorder_20',['greater_seedorder',['../structmspass_1_1algorithms_1_1greater__seedorder.html',1,'mspass::algorithms']]]
+  ['gidadaptivepenaltymetrics_20',['GIDAdaptivePenaltyMetrics',['../structmspass_1_1algorithms_1_1deconvolution_1_1_g_i_d_adaptive_penalty_metrics.html',1,'mspass::algorithms::deconvolution']]],
+  ['greater_5fseedorder_21',['greater_seedorder',['../structmspass_1_1algorithms_1_1greater__seedorder.html',1,'mspass::algorithms']]]
 ];

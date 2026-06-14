@@ -217,6 +217,9 @@ Public Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
+<tr class="inherit_header pro_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html">mspass::algorithms::deconvolution::ScalarDecon</a></td></tr>
+<tr class="memitem:a83e9fd9e0f13b1a0a650fdb0bb805543 inherit pro_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon" id="r_a83e9fd9e0f13b1a0a650fdb0bb805543"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmspass_1_1utility_1_1_metadata.html">mspass::utility::Metadata</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#a83e9fd9e0f13b1a0a650fdb0bb805543">BasicQCMetrics</a> (const std::string &amp;operator_name, const bool processed)</td></tr>
+<tr class="separator:a83e9fd9e0f13b1a0a650fdb0bb805543 inherit pro_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_attribs_classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html">mspass::algorithms::deconvolution::FFTDeconOperator</a></td></tr>
 <tr class="memitem:aa8619effc38e9e0f3927c73eb9b838f0 inherit pro_attribs_classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator" id="r_aa8619effc38e9e0f3927c73eb9b838f0"><td class="memItemLeft" align="right" valign="top">
 int&#160;</td><td class="memItemRight" valign="bottom"><b>nfft</b></td></tr>
@@ -1146,17 +1149,20 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
 
 <p>Implements <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#af683c2f25e91155c2bc1f81f9b62bbb1">mspass::algorithms::deconvolution::ScalarDecon</a>.</p>
 <div class="fragment"><div class="line"><span class="lineno">  536</span>                                           {</div>
-<div class="line"><span class="lineno">  537</span>  Metadata md;</div>
-<div class="line"><span class="lineno">  538</span>  md.put(<span class="stringliteral">&quot;multitaper_operator_type&quot;</span>, <span class="keywordtype">string</span>(<span class="stringliteral">&quot;specdiv_power_stabilized&quot;</span>));</div>
-<div class="line"><span class="lineno">  539</span>  md.put(<span class="stringliteral">&quot;multitaper_operator_nfft&quot;</span>, nfft);</div>
-<div class="line"><span class="lineno">  540</span>  md.put(<span class="stringliteral">&quot;multitaper_taper_length&quot;</span>, <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(taperlen));</div>
-<div class="line"><span class="lineno">  541</span>  md.put(<span class="stringliteral">&quot;multitaper_number_tapers&quot;</span>, nseq);</div>
-<div class="line"><span class="lineno">  542</span>  md.put(<span class="stringliteral">&quot;multitaper_time_bandwidth_product&quot;</span>, nw);</div>
-<div class="line"><span class="lineno">  543</span>  md.put(<span class="stringliteral">&quot;multitaper_damping_factor&quot;</span>, damp);</div>
-<div class="line"><span class="lineno">  544</span>  md.put(<span class="stringliteral">&quot;multitaper_processed&quot;</span>, !winv_taper.empty());</div>
-<div class="line"><span class="lineno">  545</span>  md.put(<span class="stringliteral">&quot;multitaper_number_outputs&quot;</span>, <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(winv_taper.size()));</div>
-<div class="line"><span class="lineno">  546</span>  <span class="keywordflow">return</span> md;</div>
-<div class="line"><span class="lineno">  547</span>}</div>
+<div class="line"><span class="lineno">  537</span>  <span class="keyword">const</span> <span class="keywordtype">bool</span> did_process(!winv_taper.empty());</div>
+<div class="line"><span class="lineno">  538</span>  Metadata md(this-&gt;BasicQCMetrics(<span class="stringliteral">&quot;MultiTaperSpecDivDecon&quot;</span>, did_process));</div>
+<div class="line"><span class="lineno">  539</span>  md.put(<span class="stringliteral">&quot;multitaper_operator_type&quot;</span>, <span class="keywordtype">string</span>(<span class="stringliteral">&quot;specdiv_power_stabilized&quot;</span>));</div>
+<div class="line"><span class="lineno">  540</span>  md.put(<span class="stringliteral">&quot;multitaper_operator_nfft&quot;</span>, nfft);</div>
+<div class="line"><span class="lineno">  541</span>  md.put(<span class="stringliteral">&quot;decon_operator_nfft&quot;</span>, nfft);</div>
+<div class="line"><span class="lineno">  542</span>  md.put(<span class="stringliteral">&quot;decon_operator_sample_shift&quot;</span>, sample_shift);</div>
+<div class="line"><span class="lineno">  543</span>  md.put(<span class="stringliteral">&quot;multitaper_taper_length&quot;</span>, <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(taperlen));</div>
+<div class="line"><span class="lineno">  544</span>  md.put(<span class="stringliteral">&quot;multitaper_number_tapers&quot;</span>, nseq);</div>
+<div class="line"><span class="lineno">  545</span>  md.put(<span class="stringliteral">&quot;multitaper_time_bandwidth_product&quot;</span>, nw);</div>
+<div class="line"><span class="lineno">  546</span>  md.put(<span class="stringliteral">&quot;multitaper_damping_factor&quot;</span>, damp);</div>
+<div class="line"><span class="lineno">  547</span>  md.put(<span class="stringliteral">&quot;multitaper_processed&quot;</span>, did_process);</div>
+<div class="line"><span class="lineno">  548</span>  md.put(<span class="stringliteral">&quot;multitaper_number_outputs&quot;</span>, <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(winv_taper.size()));</div>
+<div class="line"><span class="lineno">  549</span>  <span class="keywordflow">return</span> md;</div>
+<div class="line"><span class="lineno">  550</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>

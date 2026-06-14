@@ -97,7 +97,14 @@
 <li class="toctree-l2"><a class="reference internal" href="#wrapper-data-handling">Wrapper Data Handling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#noise-semantics">Noise Semantics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#scalar-inverse-operators">Scalar inverse operators</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#three-component-and-iterative-operators">Three-component and iterative operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#three-component-and-iterative-operators">Three-component and iterative operators</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#lag-weight-penalty-framework">Lag-weight penalty framework</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#current-lag-weight-penalty-methods">Current lag-weight penalty methods</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#full-adaptive-anti-cycling-penalty-framework">Full adaptive anti-cycling penalty framework</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#validation-plots">Validation plots</a></li>
 </ul>
 </li>
@@ -407,6 +414,47 @@ returns the underlying inverse operator’s full resolution kernel.  QC fields
 Optional joint refitting of accepted spike amplitudes solves a small dense
 system with LAPACK Cholesky and LU fallback.  The sparse impulse response is
 exposed by <code class="docutils literal notranslate"><span class="pre">sparse_output</span></code>.</p>
+<p>Candidate spike selection can be biased by a lag-weight penalty function.
+The penalty is configured with <code class="docutils literal notranslate"><span class="pre">lag_weight_penalty_function</span></code> (<code class="docutils literal notranslate"><span class="pre">none</span></code>,
+<code class="docutils literal notranslate"><span class="pre">boxcar</span></code>, <code class="docutils literal notranslate"><span class="pre">cosine_taper</span></code>, <code class="docutils literal notranslate"><span class="pre">shaping_wavelet</span></code>,
+<code class="docutils literal notranslate"><span class="pre">resolution_kernel</span></code>, or <code class="docutils literal notranslate"><span class="pre">adaptive_memory</span></code>),
+<code class="docutils literal notranslate"><span class="pre">lag_weight_penalty_scale_factor</span></code>, and <code class="docutils literal notranslate"><span class="pre">lag_weight_function_width</span></code>.
+After a spike is accepted, the selected lag
+neighborhood is multiplied by that penalty, which suppresses repeated picks
+of the same large arrival and encourages later iterations to search for
+weaker arrivals.  <code class="docutils literal notranslate"><span class="pre">boxcar</span></code> and <code class="docutils literal notranslate"><span class="pre">cosine_taper</span></code> use the configured fixed
+width.  <code class="docutils literal notranslate"><span class="pre">shaping_wavelet</span></code> and <code class="docutils literal notranslate"><span class="pre">resolution_kernel</span></code> derive their applied
+width from a kernel autocorrelation and preserve the configured width only
+as QC context.  <code class="docutils literal notranslate"><span class="pre">adaptive_memory</span></code> also derives its applied width from the
+resolution kernel, but uses a finite memory cost whose strength and
+retention depend on spike amplitude relative to noise and on the fraction
+of valid lags covered by the kernel footprint.  <code class="docutils literal notranslate"><span class="pre">QCMetrics</span></code> reports
+<code class="docutils literal notranslate"><span class="pre">lag_weight_Linf_final</span></code> and
+<code class="docutils literal notranslate"><span class="pre">lag_weight_L2_final</span></code> and both engines expose the full final weight curve
+with <code class="docutils literal notranslate"><span class="pre">lag_weight_vector()</span></code> for diagnostic plotting.  The metadata fields
+<code class="docutils literal notranslate"><span class="pre">gid_penalty_scale_factor</span></code> and <code class="docutils literal notranslate"><span class="pre">gid_penalty_width</span></code> preserve configured
+values, while <code class="docutils literal notranslate"><span class="pre">gid_penalty_effective_width</span></code> records the helper kernel
+length actually applied (for example, <code class="docutils literal notranslate"><span class="pre">none</span></code> is a one-sample no-op
+kernel).  Adaptive-memory QC also includes
+<code class="docutils literal notranslate"><span class="pre">gid_adaptive_penalty_enabled</span></code>, <code class="docutils literal notranslate"><span class="pre">gid_penalty_noise_amplitude</span></code>,
+<code class="docutils literal notranslate"><span class="pre">gid_penalty_last_confidence</span></code>,
+<code class="docutils literal notranslate"><span class="pre">gid_penalty_last_immediate_strength</span></code>,
+<code class="docutils literal notranslate"><span class="pre">gid_penalty_last_specificity</span></code>, <code class="docutils literal notranslate"><span class="pre">gid_penalty_last_decay_factor</span></code>,
+<code class="docutils literal notranslate"><span class="pre">gid_penalty_memory_Linf_final</span></code>, <code class="docutils literal notranslate"><span class="pre">gid_penalty_memory_L2_final</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">gid_penalty_valid_lags</span></code>.  The Python wrappers store scalar QC fields
+in their QC metadata subdocuments, so they are saved with normal database
+records.</p>
+<p>The six helper modes map directly to the final lag-weight plots produced
+by the validation tests.  The theoretical interpretation and recommended
+default are summarized in <a class="reference internal" href="#lag-weight-penalty-framework">Lag-weight penalty framework</a>.</p>
+<p>The time- and frequency-domain GID engines now use the same iteration-cap
+behavior.  Reaching <code class="docutils literal notranslate"><span class="pre">maximum_iterations</span></code> stops the iteration, returns the
+best accepted sparse model after the final amplitude refit, and records
+<code class="docutils literal notranslate"><span class="pre">gid_stop_reason=&quot;max_iterations&quot;</span></code> with <code class="docutils literal notranslate"><span class="pre">gid_converged=false</span></code>.  Other
+common QC fields include <code class="docutils literal notranslate"><span class="pre">decon_operator</span></code>, <code class="docutils literal notranslate"><span class="pre">decon_processed</span></code>,
+<code class="docutils literal notranslate"><span class="pre">gid_iterations</span></code>, <code class="docutils literal notranslate"><span class="pre">gid_number_spikes</span></code>, <code class="docutils literal notranslate"><span class="pre">gid_penalty_function</span></code>,
+<code class="docutils literal notranslate"><span class="pre">gid_penalty_scale_factor</span></code>, <code class="docutils literal notranslate"><span class="pre">gid_penalty_width</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">gid_penalty_effective_width</span></code>.</p>
 <p>Both GID Python wrappers use the same window convention.  If
 <code class="docutils literal notranslate"><span class="pre">signal_window</span></code> is omitted, the input datum’s full time range is used as
 the analysis/output window.  If <code class="docutils literal notranslate"><span class="pre">noise_window</span></code> is omitted, the engine’s
@@ -454,6 +502,399 @@ residual-energy threshold is a noise-level stopping rule: increasing it
 suppresses noise-generated spikes, while decreasing it can recover weak
 arrivals at the risk of fitting noise.</p>
 </dd>
+</dl>
+<section id="lag-weight-penalty-framework">
+<h3>Lag-weight penalty framework<a class="headerlink" href="#lag-weight-penalty-framework" title="Link to this heading"></a></h3>
+<section id="current-lag-weight-penalty-methods">
+<h4>Current lag-weight penalty methods<a class="headerlink" href="#current-lag-weight-penalty-methods" title="Link to this heading"></a></h4>
+<p>In practice, <code class="docutils literal notranslate"><span class="pre">none</span></code> is the baseline, <code class="docutils literal notranslate"><span class="pre">adaptive_memory</span></code> is the shipped
+lag-penalty default, and the fixed or kernel-derived penalties are diagnostic
+alternatives.  Pair <code class="docutils literal notranslate"><span class="pre">adaptive_memory</span></code> with <code class="docutils literal notranslate"><span class="pre">deconvolution_type</span> <span class="pre">ns_gid</span></code> for
+noisy production workflows where repeated picks around one strong arrival are
+the problem.  Use <code class="docutils literal notranslate"><span class="pre">none</span></code> when closely spaced true arrivals are the scientific
+target.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Situation</p></th>
+<th class="head"><p>Suggested penalty</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Noisy receiver functions</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">adaptive_memory</span></code> with <code class="docutils literal notranslate"><span class="pre">deconvolution_type</span> <span class="pre">ns_gid</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Closely spaced true arrivals</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">none</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Visual diagnostics</p></td>
+<td><p>compare <code class="docutils literal notranslate"><span class="pre">none</span></code> and <code class="docutils literal notranslate"><span class="pre">adaptive_memory</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Fixed-width testing</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">cosine_taper</span></code> or <code class="docutils literal notranslate"><span class="pre">boxcar</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Resolution studies</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">resolution_kernel</span></code> or <code class="docutils literal notranslate"><span class="pre">shaping_wavelet</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p>The GID penalty is best viewed as an adaptive prior on future spike locations,
+not as a shrinkage applied to amplitudes that have already been accepted.  At
+iteration <span class="math notranslate nohighlight">\(k\)</span>, let <span class="math notranslate nohighlight">\(\mathbf{a}^{(k)}_j\)</span> be the three-component
+detection-function vector at candidate lag sample <span class="math notranslate nohighlight">\(j\)</span>, and let
+<span class="math notranslate nohighlight">\(\ell^{(k)}_j \in [0, 1]\)</span> be the accumulated lag weight.  Ignoring
+candidate lags where the residual-update kernel cannot fit inside the working
+window, the implemented selection statistic is</p>
+<div class="math notranslate nohighlight">
+\[q^{(k)}_j = \left(\ell^{(k)}_j\right)^2
+           \left\|\mathbf{a}^{(k)}_j\right\|_2^2,
+\qquad
+j_* = \operatorname*{arg\,max}_j q^{(k)}_j .\]</div>
+<p>The candidate spike amplitude is then rescaled against the compact resolution
+kernel and accepted only if the data-domain residual <span class="math notranslate nohighlight">\(L_2\)</span> norm
+decreases.  Consequently, the penalty influences which lag is tried next, but
+the residual test still protects the physical data-domain fit.</p>
+<p>After accepting a spike at <span class="math notranslate nohighlight">\(j_*\)</span>, the engine multiplies the lag weights
+near <span class="math notranslate nohighlight">\(j_*\)</span> by a compact penalty kernel <span class="math notranslate nohighlight">\(p_m\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[\ell^{(k+1)}_j =
+    \operatorname{clip}\left(\ell^{(k)}_j p_{j-j_*}, 0, 1\right).\]</div>
+<p>Outside the penalty support, <span class="math notranslate nohighlight">\(p_m=1\)</span>.  Repeated hits near the same
+arrival therefore multiply down the same neighborhood, making the penalty a
+soft exclusion process.  Equivalently, the spike picker maximizes the
+unweighted detection energy with an adaptive location cost
+<span class="math notranslate nohighlight">\(-2\log \ell^{(k)}_j\)</span>; already explained neighborhoods become more
+expensive while untouched lags retain cost zero.</p>
+<p>Let <span class="math notranslate nohighlight">\(\alpha\)</span> be <code class="docutils literal notranslate"><span class="pre">lag_weight_penalty_scale_factor</span></code> and let
+<span class="math notranslate nohighlight">\(W=2h+1\)</span> be the odd fixed penalty width in samples.  If an even width is
+configured, the implementation increases it by one so the kernel has a center
+sample.  The fixed-width helper kernels are:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}p_m =
+\begin{cases}
+1, &amp; \text{``none''}, \\
+1-\alpha, &amp; \text{``boxcar'' and } |m|\le h, \\
+1-\frac{\alpha}{2}\left[1+\cos\left(\frac{\pi m}{h+1}\right)\right],
+   &amp; \text{``cosine_taper'' and } |m|\le h, \\
+1, &amp; |m| &gt; h .
+\end{cases}\end{split}\]</div>
+<p><code class="docutils literal notranslate"><span class="pre">none</span></code> leaves the greedy selector unchanged.  It is useful as a diagnostic
+baseline and can be appropriate for very clean data, but it provides no
+mechanism to discourage repeated picks of a strong arrival.  <code class="docutils literal notranslate"><span class="pre">boxcar</span></code> is a
+hard local suppression.  It is easy to interpret, but its discontinuous edges
+can move false picks to the first unpenalized samples outside the window.
+<code class="docutils literal notranslate"><span class="pre">cosine_taper</span></code> is a smooth compact suppression: the accepted sample receives
+the strongest penalty and nearby samples are downweighted gradually.  For
+example, with <span class="math notranslate nohighlight">\(\alpha=0.5\)</span> and <span class="math notranslate nohighlight">\(W=5\)</span>, the center sample is
+multiplied by <code class="docutils literal notranslate"><span class="pre">0.5</span></code>, adjacent samples by <code class="docutils literal notranslate"><span class="pre">0.625</span></code>, and edge samples by
+<code class="docutils literal notranslate"><span class="pre">0.875</span></code>.</p>
+<p>The kernel-derived modes replace the user-selected width with a resolution
+measure.  Let <span class="math notranslate nohighlight">\(h_i\)</span> be either the requested output shaping wavelet
+(<code class="docutils literal notranslate"><span class="pre">shaping_wavelet</span></code>) or the compact actual residual-update kernel
+(<code class="docutils literal notranslate"><span class="pre">resolution_kernel</span></code>).  The engines compute the normalized absolute kernel
+coherence</p>
+<div class="math notranslate nohighlight">
+\[c_m =
+  \frac{\left|\sum_i h_i h_{i+m}\right|}
+       {\sum_i h_i^2},
+\qquad c_0 = 1,\]</div>
+<p>and keep the contiguous full-width-at-half-maximum support around zero lag,
+where <span class="math notranslate nohighlight">\(c_m \ge 0.5\)</span>.  Because the GID picker ranks squared
+three-component amplitudes, the applied penalty uses coherence energy:</p>
+<div class="math notranslate nohighlight">
+\[p_m = 1-\alpha c_m^2,\]</div>
+<p>with <span class="math notranslate nohighlight">\(p_m=1\)</span> outside the support.  This gives the accepted spike the same
+center suppression as the fixed helpers, but sets both the width and the
+shoulder shape from the resolving power of the wavelet/operator while keeping
+the shoulders gentler for close arrivals than a raw-coherence penalty.  The
+<code class="docutils literal notranslate"><span class="pre">shaping_wavelet</span></code> mode is useful for controlled comparisons and for cases
+where the requested output pulse is the desired resolution reference.
+<code class="docutils literal notranslate"><span class="pre">resolution_kernel</span></code> is more adaptive because it uses the actual kernel after
+the inverse operator, trimming, and peak normalization.  For <code class="docutils literal notranslate"><span class="pre">ns_gid</span></code> that
+kernel also reflects noise-dependent regularization.</p>
+<p>The optional validation figures demonstrate this framework directly.  The
+<code class="docutils literal notranslate"><span class="pre">*_least_square_penalty_lag_weights.png</span></code> plots show the final
+<span class="math notranslate nohighlight">\(\ell^{(K)}_j\)</span> curve above an aligned true sparse impulse response.  A
+dip in that curve is the accumulated adaptive cost for selecting another
+candidate near an already accepted spike.  The companion shaped and sparse
+penalty plots show the resulting receiver functions and raw spike support.
+The stress validation intentionally uses the less stable <code class="docutils literal notranslate"><span class="pre">least_square</span></code>
+inverse mode in those figures so the penalty behavior is visible; with
+<code class="docutils literal notranslate"><span class="pre">ns_gid</span></code> the inverse operator is often stable enough that all penalty helpers
+select nearly the same support.</p>
+<p>The distributed default penalty is <code class="docutils literal notranslate"><span class="pre">adaptive_memory</span></code> with
+<code class="docutils literal notranslate"><span class="pre">lag_weight_penalty_scale_factor=0.35</span></code>.  A high-confidence, high-specificity
+accepted spike can reduce the center-lag selection power to about
+<span class="math notranslate nohighlight">\((1-0.35)^2 \approx 0.42\)</span> in one iteration, while broad or noisy
+footprints receive lower retention and are forgotten faster after subsequent
+accepted spikes.  This value was selected as a conservative noisy-data default
+because the combined validation sweeps showed that the half-power lower bound
+<span class="math notranslate nohighlight">\(1-1/\sqrt{2}\)</span> under-penalized multi-taper stress cases, while the earlier
+<code class="docutils literal notranslate"><span class="pre">0.5</span></code> adaptive scale could miss or mis-sign close arrivals.  It is not a
+universal optimum.  Dense, physically close arrivals can be harmed by any lag
+tabu memory because the next true spike may lie inside the ambiguity footprint;
+for that regime, <code class="docutils literal notranslate"><span class="pre">lag_weight_penalty_function</span> <span class="pre">none</span></code> is the safest support
+recovery choice and the optional validation tests include this case explicitly.</p>
+<p>The benchmark evidence should be read as support for a guarded anti-cycling
+prior, not as a proof that <code class="docutils literal notranslate"><span class="pre">adaptive_memory</span></code> must dominate <code class="docutils literal notranslate"><span class="pre">none</span></code> in every
+sparse-recovery metric.  In the moderate-noise default sweep, <code class="docutils literal notranslate"><span class="pre">adaptive_0.35</span></code>
+had the lowest support-weighted loss among the adaptive scales, meaning the
+validation metric penalized fewer missed or extra sparse-support picks.  It
+also produced fewer false positives than <code class="docutils literal notranslate"><span class="pre">none</span></code> (397 versus 422), while
+<code class="docutils literal notranslate"><span class="pre">none</span></code> had a slightly higher mean F1 score (0.956 versus 0.955) and more
+individual cell wins.  In the high-noise validation sweep, search-adjusted
+confidence made <code class="docutils literal notranslate"><span class="pre">adaptive_memory</span></code> collapse toward <code class="docutils literal notranslate"><span class="pre">none</span></code> once selected
+peaks were no longer strong relative to the full lag search.  In the table,
+FP/FN means false positives and false negatives in the sparse support check:</p>
+<table class="docutils align-default" id="id1">
+<caption><span class="caption-number">Table 6 </span><span class="caption-text">Final high-noise validation sweep</span><a class="headerlink" href="#id1" title="Link to this table"></a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p><code class="docutils literal notranslate"><span class="pre">noise_scale</span></code></p></th>
+<th class="head"><p><code class="docutils literal notranslate"><span class="pre">none</span></code> mean F1, FP/FN</p></th>
+<th class="head"><p><code class="docutils literal notranslate"><span class="pre">adaptive_memory</span></code> mean F1, FP/FN</p></th>
+<th class="head"><p>Interpretation</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>3</p></td>
+<td><p>0.806, 128/1</p></td>
+<td><p>0.797, 148/0</p></td>
+<td><p>dense close-arrival cases can still favor <code class="docutils literal notranslate"><span class="pre">none</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>10</p></td>
+<td><p>0.602, 365/10</p></td>
+<td><p>0.601, 364/10</p></td>
+<td><p>effectively tied</p></td>
+</tr>
+<tr class="row-even"><td><p>30</p></td>
+<td><p>0.451, 584/12</p></td>
+<td><p>0.451, 584/12</p></td>
+<td><p>collapsed to <code class="docutils literal notranslate"><span class="pre">none</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>100</p></td>
+<td><p>0.382, 672/28</p></td>
+<td><p>0.382, 672/28</p></td>
+<td><p>collapsed to <code class="docutils literal notranslate"><span class="pre">none</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p><code class="docutils literal notranslate"><span class="pre">cosine_taper</span></code> remains the backward-compatible fixed-width option when users
+want the historical compact penalty shape, and <code class="docutils literal notranslate"><span class="pre">resolution_kernel</span></code> remains
+useful for seeing the global resolution footprint without event-by-event
+memory.  Multi-taper benchmarks can favor <code class="docutils literal notranslate"><span class="pre">shaping_wavelet</span></code> or
+<code class="docutils literal notranslate"><span class="pre">resolution_kernel</span></code> on residual or target error, so those fixed kernel-derived
+penalties are worth checking when final support recovery is inspected manually.
+<code class="docutils literal notranslate"><span class="pre">boxcar</span></code> should be reserved for tests or cases where a deliberate hard
+exclusion is desired.  In noisy production workflows, this lag penalty should be
+combined with the <code class="docutils literal notranslate"><span class="pre">ns_gid</span></code> inverse mode; the least-square validation plots use
+<code class="docutils literal notranslate"><span class="pre">least_square</span></code> only because its weaker noise stability makes the differences
+among penalty kernels easier to see.  For backward compatibility, the
+distributed parameter files still default to <code class="docutils literal notranslate"><span class="pre">deconvolution_type</span>
+<span class="pre">least_square</span></code>.  Users should switch the selected GID branch to
+<code class="docutils literal notranslate"><span class="pre">deconvolution_type</span> <span class="pre">ns_gid</span></code> for noisy production deconvolution, and should
+disable the lag penalty when the scientific target is a tightly clustered
+arrival sequence.</p>
+</section>
+<section id="full-adaptive-anti-cycling-penalty-framework">
+<h4>Full adaptive anti-cycling penalty framework<a class="headerlink" href="#full-adaptive-anti-cycling-penalty-framework" title="Link to this heading"></a></h4>
+<p>The fixed and kernel-derived penalty methods above are deliberately simple.
+They are best understood as a first anti-cycling rule for a greedy sparse
+pursuit, but they are not a complete theory for avoiding oscillation between
+two or more stable GID states.  The <code class="docutils literal notranslate"><span class="pre">adaptive_memory</span></code> helper implements the
+first finite-memory version of the framework below: it uses the compact
+resolution kernel for support, converts the accepted candidate amplitude to a
+noise-normalized statistic, adjusts that statistic by the expected maximum from
+the current valid-lag search, and stores per-lag retention so old memory decays
+according to the evidence and specificity that created it.</p>
+<p>In plain language, the adaptive penalty asks three questions after each
+accepted spike: was the spike strong relative to noise, how wide is the
+ambiguity zone around it, and how quickly should that memory be forgotten?
+The answer can improve cycling behavior, but it cannot guarantee a better
+support estimate than <code class="docutils literal notranslate"><span class="pre">none</span></code> when the true receiver function contains
+physically close arrivals.</p>
+<p>The relevant analogies come from several domains with similar failure modes.
+Tabu search keeps a finite memory of recently explored states so a discrete
+optimizer does not cycle.  Matching pursuit and orthogonal matching pursuit
+avoid repeatedly choosing highly coherent dictionary atoms.  Non-maximum
+suppression suppresses detections in an uncertainty footprint around an
+accepted detection.  Refractory-period models temporarily inhibit repeat
+events after a spike, while active-set and trust-region methods relax
+constraints as the local model changes.  In GID language, these all point to
+the same principle: the penalty should be a finite-memory cost over coherent
+lag states, not a permanent declaration that a lag can never be revisited.
+It should preserve the current invariant that the penalty changes which
+candidate lag is tried next, while the data-domain residual decrease test
+remains the final acceptance rule.</p>
+<p>Let <span class="math notranslate nohighlight">\(M^{(k)}_j \ge 0\)</span> be a lag-memory field, or anti-cycling cost, at
+lag sample <span class="math notranslate nohighlight">\(j\)</span>.  The current lag-weight picker can be written
+equivalently as</p>
+<div class="math notranslate nohighlight">
+\[q^{(k)}_j =
+   \exp\left[-2M^{(k)}_j\right]
+   \left\|\mathbf{a}^{(k)}_j\right\|_2^2 ,
+\qquad
+M^{(k)}_j = -\log \ell^{(k)}_j .\]</div>
+<p>The basic implemented update adds a local cost to <span class="math notranslate nohighlight">\(M_j\)</span> after each
+accepted spike.  The current helpers are special cases of a broader
+event-conditioned penalty: they use either a fixed support or a
+kernel-derived support, a constant penalty strength, and a purely
+multiplicative accumulated lag weight.  A fuller anti-cycling model separates
+three questions that are combined in the fixed-width helpers:</p>
+<ol class="arabic simple">
+<li><p>Which lags are in the same ambiguous state as the accepted spike?</p></li>
+<li><p>How reliable is the accepted spike as an explanation of the residual?</p></li>
+<li><p>How long should that anti-cycling memory persist?</p></li>
+</ol>
+<p>For an accepted spike at sample <span class="math notranslate nohighlight">\(s\)</span>, define a variable-width,
+event-conditioned support or ambiguity footprint <span class="math notranslate nohighlight">\(A_s(j)\)</span> from the
+coherence of the actual GID resolution-kernel atoms:</p>
+<div class="math notranslate nohighlight">
+\[A_s(j) =
+   \left(
+   \frac{\left|\langle r_s, r_j\rangle\right|}
+        {\|r_s\|_2\|r_j\|_2}
+   \right)^q ,\]</div>
+<p>where <span class="math notranslate nohighlight">\(r_s\)</span> is the compact residual-update kernel shifted to sample
+<span class="math notranslate nohighlight">\(s\)</span>.  The exponent <span class="math notranslate nohighlight">\(q\)</span> is shown only to describe possible shoulder
+shapes; a production implementation should tie that shape to the same
+resolution and noise model used elsewhere rather than expose it as an
+independent tuning knob.  This definition makes the penalty width an observed
+property of indistinguishability in the inverse operator and data window.  A
+broad resolution kernel creates a broad ambiguity footprint; a sharp kernel
+creates a narrow footprint; edge effects or asymmetric usable windows can
+produce asymmetric footprints.  The <code class="docutils literal notranslate"><span class="pre">resolution_kernel</span></code> penalty is a
+simplified global version of this idea.  <code class="docutils literal notranslate"><span class="pre">adaptive_memory</span></code> derives the
+footprint from the resolution-kernel autocorrelation and lets the
+search-adjusted confidence move the coherence energy floor between 0.25 and
+0.5:</p>
+<div class="math notranslate nohighlight">
+\[c_{sj}^2 \ge
+   \min\left[
+       \frac{1}{2},
+       \max\left(\frac{1}{4}, B_s\right)
+   \right] .\]</div>
+<p>The implementation uses the contiguous central radius whose coherence remains
+above that floor and applies <span class="math notranslate nohighlight">\(c_{sj}^2\)</span> as the per-lag memory weight
+inside the footprint.  Here <span class="math notranslate nohighlight">\(B_s\)</span> is the bounded spike confidence defined
+below.  High amplitude relative to the full search-noise bound therefore gives
+better localization and a sharper footprint, but the support is not allowed to
+collapse to an exact-lag only rule.  Low amplitude relative to high noise
+implies broader ambiguity but weaker, short-lived memory.</p>
+<p>The strength of the new memory should be tied to spike evidence, not a raw
+hand-tuned constant.  A natural evidence variable is a noise-normalized
+three-component detection statistic, for example</p>
+<div class="math notranslate nohighlight">
+\[Z_s^2 =
+   \mathbf{a}_s^T \Sigma_s^{-1}\mathbf{a}_s ,\]</div>
+<p>where <span class="math notranslate nohighlight">\(\Sigma_s\)</span> is a local noise covariance for the detection-function
+components.  With diagonal or scalar noise estimates this reduces to the
+usual squared amplitude divided by noise power.  Because the GID picker takes
+the maximum over all currently valid lags, that single-lag statistic is not
+enough: pure noise also produces a large selected maximum.  The implementation
+therefore compares the accepted candidate to a full-search noise bound.  With
+<span class="math notranslate nohighlight">\(N_\mathrm{valid}\)</span> valid lag samples, define</p>
+<div class="math notranslate nohighlight">
+\[E_\mathrm{search} =
+   1 + 2\sqrt{\frac{2\log N_\mathrm{valid}}{3}}
+     + \frac{4\log N_\mathrm{valid}}{3},\]</div>
+<p>using <span class="math notranslate nohighlight">\(E_\mathrm{search}=1\)</span> when there is only one valid lag.  This is
+the Laurent-Massart upper-tail bound for a three-component vector, normalized
+by the vector RMS noise estimate, with the extra <span class="math notranslate nohighlight">\(\log N_\mathrm{valid}\)</span>
+factor controlling false memory over repeated lag searches without adding a
+user-tuned threshold.  The selection-adjusted statistic is</p>
+<div class="math notranslate nohighlight">
+\[Z_{*,s}^2 = \frac{Z_s^2}{E_\mathrm{search}} .\]</div>
+<p>A bounded confidence <span class="math notranslate nohighlight">\(B_s\)</span> then uses the noise-subtracted fraction of the
+search-adjusted candidate energy:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}B_s =
+   \begin{cases}
+     0, &amp; Z_{*,s} \le 1, \\
+     1 - Z_{*,s}^{-2}, &amp; Z_{*,s} &gt; 1 .
+   \end{cases}\end{split}\]</div>
+<p>This ties the confidence directly to spike amplitude and noise power without a
+separate tuning threshold.  It also prevents a noise maximum created by a long
+lag search from becoming an effectively certain tabu event.</p>
+<p>The confidence threshold is data-derived; <code class="docutils literal notranslate"><span class="pre">lag_weight_penalty_scale_factor</span></code>
+still controls the maximum strength of the penalty once confidence has been
+estimated.</p>
+<p>The scale in <span class="math notranslate nohighlight">\(Z_s\)</span> should come from the same residual noise model used for
+stopping or NS-GID significance tests, not from a separate ad hoc tuning
+constant.  In the implemented helper, both engines use a residual-domain
+three-component noise RMS estimate for adaptive confidence.  Time-domain GID
+uses the same inverse-filtered noise window used for residual stopping.
+Frequency-domain GID maps the residual noise window through the active inverse
+wavelet before computing the RMS; for CNR it applies the CNR operator to that
+residual noise window and trims operator transients before measuring the RMS.
+An explicitly supplied CNR noise trace still controls inverse regularization,
+but it does not replace the residual noise window used for adaptive penalty QC.
+NS-GID records this filtered RMS separately from its larger spike-significance
+threshold.  Strong, high-SNR accepted spikes then create durable anti-cycling
+evidence; marginal noisy spikes create only weak memory and can be revised by
+later iterations if the residual evidence changes.</p>
+<p>Finally, the memory should be finite.  A decay rule should preserve the
+original anti-cycling purpose without freezing the search.  The key is that
+decay should be faster when the ambiguity footprint is broad and less
+specific, and slower when the footprint is narrow and local.  Decay should
+also be interpreted as evidence invalidation in the broader theory: later
+accepted spikes or a changed local residual can make old tabu evidence stale.
+In the current implementation, existing memory is relaxed only when a later
+accepted spike triggers the next penalty update.  If
+<span class="math notranslate nohighlight">\(N_\mathrm{valid}\)</span> is the number of valid lag samples and
+<span class="math notranslate nohighlight">\(N_{\mathrm{eff},s}\)</span> is the participation-ratio width of the actually
+applied footprint,</p>
+<div class="math notranslate nohighlight">
+\[N_{\mathrm{eff},s} =
+   \frac{\left(\sum_j A_s(j)\right)^2}{\sum_j A_s(j)^2},\]</div>
+<p>then the implemented specificity is the information concentration</p>
+<div class="math notranslate nohighlight">
+\[S_s =
+   1 - \frac{\log N_{\mathrm{eff},s}}
+            {\log N_\mathrm{valid}} .\]</div>
+<p>The limiting cases are important.  If a penalty footprint covers nearly the
+whole deconvolution window, it contains little information about where the
+cycle occurs and should be forgotten almost immediately.  If the footprint is
+sharp and local, it is specific anti-cycling evidence and can persist longer.
+Combining spike confidence and footprint specificity gives an event retention
+strength</p>
+<div class="math notranslate nohighlight">
+\[\gamma_s = B_s S_s ,\]</div>
+<p>with <span class="math notranslate nohighlight">\(0 \le \gamma_s &lt; 1\)</span>.  The conceptual update can be written as</p>
+<div class="math notranslate nohighlight">
+\[M^{(k+1)}_j =
+   R^{(k)}_j M^{(k)}_j
+   - \log\left[1-\alpha B_s A_s(j)\right],\]</div>
+<p>where <span class="math notranslate nohighlight">\(R^{(k)}_j\)</span> is the retention carried by the memory already stored
+at lag <span class="math notranslate nohighlight">\(j\)</span>.  When new memory is added, the implementation blends the old
+retention and the new event retention strength <span class="math notranslate nohighlight">\(\gamma_s\)</span> in proportion
+to their memory-cost contributions.  Stored adaptive memory is decayed on
+subsequent accepted penalty updates before new memory is added.  This gives
+the newest event enough immediate anti-cycling force to affect the next
+candidate selection, while broad or noisy evidence receives low retention and
+is forgotten faster as the iteration continues.  The model gives the desired
+behavior in the practical extremes:</p>
+<ul class="simple">
+<li><p>high-SNR, sharp accepted spike: strong, specific memory that lasts;</p></li>
+<li><p>high-SNR, broad ambiguity: strong immediate anti-cycling, but fast recovery;</p></li>
+<li><p>low-SNR, sharp spike: cautious local memory;</p></li>
+<li><p>low-SNR, broad ambiguity: little durable memory, avoiding global lockout.</p></li>
+</ul>
+<p>It also gives a rule for revisiting a penalized lag: the lag should become
+competitive again when its new noise-normalized residual evidence is larger
+than the accumulated anti-cycling memory cost.  That is the connection to
+tabu search and active-set methods.  The memory discourages immediate cycling
+among coherent states, but it does not prove global convergence or replace the
+existing residual-decrease acceptance criterion.</p>
+<p>The original motivation is therefore expressed more precisely as follows:
+GID penalty should be a noise-normalized, resolution-coherence-shaped,
+finite-memory tabu cost over lag states.  Variable width identifies the
+ambiguous state; spike amplitude relative to noise measures the evidence for
+remembering it; and adaptive decay controls how quickly nonspecific or weak
+evidence is forgotten.  The existing fixed and kernel-derived helper penalties
+are useful approximations to the spatial-memory part of this framework.
+<code class="docutils literal notranslate"><span class="pre">adaptive_memory</span></code> adds the first event-specific noise-normalized evidence and
+adaptive decay model while preserving the same residual-decrease acceptance
+criterion as the other GID modes.</p>
+<dl>
 <dt><code class="docutils literal notranslate"><span class="pre">NS-GID</span></code> inverse mode</dt><dd><p>Noise-aware stable generalized iterative deconvolution is selected with
 <code class="docutils literal notranslate"><span class="pre">deconvolution_type</span> <span class="pre">ns_gid</span></code> in either GID engine.  It is a stable
 inverse-operator variant of GID, not a separate receiver-function
@@ -505,6 +946,8 @@ for the configured output lag window.</p>
 </dd>
 </dl>
 </section>
+</section>
+</section>
 <section id="validation-plots">
 <h2>Validation plots<a class="headerlink" href="#validation-plots" title="Link to this heading"></a></h2>
 <p>The deconvolution validation tests can optionally write diagnostic plots for
@@ -519,11 +962,20 @@ set of scalar, GID, sparse-output, and external-wavelet validation plots, run:</
 </div>
 <p>The output directory contains overlays for scalar/CNR methods, shaped GID
 receiver functions, raw GID sparse impulse responses, external-wavelet runs,
-and the source wavelets used in the synthetic cases.  The sparse GID plots are
-the most direct visual comparison against the known sparse truth; shaped GID
-and CNR plots intentionally have more limited bandwidth.  The external-wavelet
-overlay uses raw scalar inverse results and raw GID sparse outputs so spike
-support can be checked visually.  The same plot run also writes a
+and the source-wavelet validation setups used in the synthetic cases.  The
+setup figures include the notched source wavelet, noisy convolved data, true
+three-component impulse response, and the requested manual plot noise scale.
+<code class="docutils literal notranslate"><span class="pre">--decon-validation-noise-scale</span></code> is passed directly as the Gaussian noise
+amplitude before the synthetic bandpass coloring filter; it is not a target
+SNR or percent-noise value.  The setup figure normalizes the displayed data
+panel, so large changes in absolute noise amplitude are easiest to judge by
+the waveform shape and the noise-scale label.  Adaptive-memory plot labels
+report the last selected-spike confidence as <code class="docutils literal notranslate"><span class="pre">conf</span></code> and the last memory
+retention factor as <code class="docutils literal notranslate"><span class="pre">decay</span></code>.  The sparse GID plots are the most direct visual
+comparison against the known sparse truth; shaped GID and CNR plots
+intentionally have more limited bandwidth.  The external-wavelet overlay uses
+raw scalar inverse results and raw GID sparse outputs so spike support can be
+checked visually.  The same plot run also writes a
 <code class="docutils literal notranslate"><span class="pre">external_wavelet_all_methods_display_filtered.png</span></code> overlay with a common
 plotting-only Ricker filter so different methods can be compared at a similar
 visual bandwidth.  That display filter is not part of the scalar algorithms

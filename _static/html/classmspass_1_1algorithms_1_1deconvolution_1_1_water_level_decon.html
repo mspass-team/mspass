@@ -188,6 +188,9 @@ Public Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
+<tr class="inherit_header pro_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html">mspass::algorithms::deconvolution::ScalarDecon</a></td></tr>
+<tr class="memitem:a83e9fd9e0f13b1a0a650fdb0bb805543 inherit pro_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon" id="r_a83e9fd9e0f13b1a0a650fdb0bb805543"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmspass_1_1utility_1_1_metadata.html">mspass::utility::Metadata</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#a83e9fd9e0f13b1a0a650fdb0bb805543">BasicQCMetrics</a> (const std::string &amp;operator_name, const bool processed)</td></tr>
+<tr class="separator:a83e9fd9e0f13b1a0a650fdb0bb805543 inherit pro_methods_classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_attribs_classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator.html">mspass::algorithms::deconvolution::FFTDeconOperator</a></td></tr>
 <tr class="memitem:aa8619effc38e9e0f3927c73eb9b838f0 inherit pro_attribs_classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator" id="r_aa8619effc38e9e0f3927c73eb9b838f0"><td class="memItemLeft" align="right" valign="top">
 int&#160;</td><td class="memItemRight" valign="bottom"><b>nfft</b></td></tr>
@@ -624,11 +627,11 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
 
 <p>Implements <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#af683c2f25e91155c2bc1f81f9b62bbb1">mspass::algorithms::deconvolution::ScalarDecon</a>.</p>
 <div class="fragment"><div class="line"><span class="lineno">  201</span>                                    {</div>
-<div class="line"><span class="lineno">  202</span>  <span class="comment">/* Return only an empty Metadata container.  Done as it is</span></div>
-<div class="line"><span class="lineno">  203</span><span class="comment">  easier to maintain the code letting python do this work.</span></div>
-<div class="line"><span class="lineno">  204</span><span class="comment">  This also anticipates new metrics being added which would be</span></div>
-<div class="line"><span class="lineno">  205</span><span class="comment">  easier in python.*/</span></div>
-<div class="line"><span class="lineno">  206</span>  Metadata md;</div>
+<div class="line"><span class="lineno">  202</span>  Metadata md(this-&gt;BasicQCMetrics(<span class="stringliteral">&quot;WaterLevelDecon&quot;</span>, !result.empty()));</div>
+<div class="line"><span class="lineno">  203</span>  md.put(<span class="stringliteral">&quot;decon_operator_nfft&quot;</span>, nfft);</div>
+<div class="line"><span class="lineno">  204</span>  md.put(<span class="stringliteral">&quot;decon_operator_sample_shift&quot;</span>, sample_shift);</div>
+<div class="line"><span class="lineno">  205</span>  md.put(<span class="stringliteral">&quot;water_level&quot;</span>, wlv);</div>
+<div class="line"><span class="lineno">  206</span>  md.put(<span class="stringliteral">&quot;water_level_regularization_fraction&quot;</span>, regularization_fraction);</div>
 <div class="line"><span class="lineno">  207</span>  <span class="keywordflow">return</span> md;</div>
 <div class="line"><span class="lineno">  208</span>}</div>
 </div><!-- fragment -->
