@@ -1013,6 +1013,7 @@ Metadata FrequencyDomainGIDDecon::QCMetrics() {
   Metadata md;
   PutPrefixedMetadata(md, changed_leaf_metadata, "gid_leaf_");
   md.put("decon_operator", string("FrequencyDomainGIDDecon"));
+  md.put("deconvolution_type", GIDDeconTypeName(decon_type));
   md.put("decon_processed", processed);
   md.put("decon_sample_interval", target_dt);
   md.put("decon_window_start", dwin.start);

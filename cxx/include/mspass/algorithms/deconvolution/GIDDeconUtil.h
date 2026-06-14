@@ -32,6 +32,7 @@ struct GroupSparseDeconResult {
 
 IterDeconType ParseGIDDeconType(const mspass::utility::Metadata &md,
                                 const std::string &caller);
+std::string GIDDeconTypeName(const IterDeconType type);
 double GetDoubleDefault(const mspass::utility::Metadata &md,
                         const std::string &key, const double default_value);
 int GetIntDefault(const mspass::utility::Metadata &md, const std::string &key,

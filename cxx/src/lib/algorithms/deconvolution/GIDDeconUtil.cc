@@ -36,6 +36,24 @@ IterDeconType ParseGIDDeconType(const Metadata &md, const string &caller) {
                     ErrorSeverity::Fatal);
 }
 
+string GIDDeconTypeName(const IterDeconType type) {
+  switch (type) {
+  case WATER_LEVEL:
+    return "water_level";
+  case LEAST_SQ:
+    return "least_square";
+  case MULTI_TAPER:
+    return "multi_taper";
+  case CNR:
+    return "cnr";
+  case NS_GID:
+    return "ns_gid";
+  case GROUP_SPARSE:
+    return "group_sparse";
+  }
+  return "unknown";
+}
+
 double GetDoubleDefault(const Metadata &md, const string &key,
                         const double default_value) {
   if (md.is_defined(key))

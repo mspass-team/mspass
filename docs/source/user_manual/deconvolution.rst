@@ -240,10 +240,12 @@ with the failure mode you need to control:
    * - Want shared sparse support across components
      - ``deconvolution_type group_sparse``
 
-The distributed GID parameter files currently keep
-``deconvolution_type least_square`` for backward compatibility.  For noisy
-production GID, use ``deconvolution_type ns_gid`` unless validation on your data
-supports another inverse mode.
+The distributed GID parameter files use ``deconvolution_type ns_gid`` with the
+``adaptive_memory`` lag penalty.  Validation sweeps selected that combination
+because it is more resistant to noise-driven false picks than the legacy
+``least_square`` inverse.  Use ``group_sparse`` when a shared-support sparse
+prior matches the problem, and reserve ``least_square`` for explicit legacy
+comparisons or diagnostics.
 
 Scalar inverse operators
 ------------------------
@@ -466,10 +468,12 @@ The easiest way to choose a penalty is by failure mode:
    * - Resolution-footprint studies
      - ``resolution_kernel`` or ``shaping_wavelet``
 
-The shipped GID parameter files set ``lag_weight_penalty_function
-adaptive_memory`` and ``lag_weight_penalty_scale_factor=0.35``.  The default
-``deconvolution_type`` remains ``least_square`` for backward compatibility.
-Treat this as a conservative noisy-data setting, not a universal optimum.
+The shipped GID parameter files set ``deconvolution_type ns_gid``,
+``lag_weight_penalty_function adaptive_memory``, and
+``lag_weight_penalty_scale_factor=0.35``.  Validation sweeps across moderate and
+large noise levels selected this as the default because the legacy
+``least_square`` inverse can generate noise-driven false picks even with the
+same lag penalty.  Treat it as a robust starting point, not a universal optimum.
 
 How the greedy penalty enters GID
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

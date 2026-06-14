@@ -26,6 +26,7 @@ from test_TimeDomainGIDDecon import (
     _ns_gid_pf,
     _pf_with_short_decon_window,
     _pf_with_mode,
+    _replace_gid_deconvolution_type,
 )
 
 
@@ -111,8 +112,13 @@ def test_FrequencyDomainGIDDecon_penalty_reduces_multispike_residual(tmp_path):
     signal_window = TimeWindow(-8.0, 20.0)
     noise_window = TimeWindow(-25.0, -8.0)
 
+    penalty_pf = tmp_path / "FrequencyDomainGIDDecon_penalty.pf"
     no_penalty_pf = tmp_path / "FrequencyDomainGIDDecon_no_penalty.pf"
     text = Path("./data/pf/FrequencyDomainGIDDecon.pf").read_text()
+    text = _replace_gid_deconvolution_type(
+        text, "frequency_domain_gid_deconvolution", "least_square"
+    )
+    penalty_pf.write_text(text)
     no_penalty_pf.write_text(
         text.replace(
             "lag_weight_penalty_function adaptive_memory",
@@ -122,7 +128,7 @@ def test_FrequencyDomainGIDDecon_penalty_reduces_multispike_residual(tmp_path):
 
     penalty_rf = FrequencyDomainGIDRFDecon(
         data,
-        FrequencyDomainGIDDecon(pfread("./data/pf/FrequencyDomainGIDDecon.pf")),
+        FrequencyDomainGIDDecon(pfread(str(penalty_pf))),
         signal_window=signal_window,
         noise_window=noise_window,
     )
@@ -158,6 +164,9 @@ def test_FrequencyDomainGIDDecon_kernel_penalty_modes_are_adaptive(
 
     pf = tmp_path / f"FrequencyDomainGIDDecon_{penalty_function}.pf"
     text = Path("./data/pf/FrequencyDomainGIDDecon.pf").read_text()
+    text = _replace_gid_deconvolution_type(
+        text, "frequency_domain_gid_deconvolution", "least_square"
+    )
     text = text.replace(
         "lag_weight_penalty_function adaptive_memory",
         f"lag_weight_penalty_function {penalty_function}",
@@ -497,6 +506,9 @@ def test_FrequencyDomainGIDDecon_validates_single_spike_recovery():
 
 def test_FrequencyDomainGIDDecon_rejects_leaf_window_drift(tmp_path):
     text = open("data/pf/FrequencyDomainGIDDecon.pf", encoding="utf-8").read()
+    text = _replace_gid_deconvolution_type(
+        text, "frequency_domain_gid_deconvolution", "least_square"
+    )
     text = text.replace(
         "least_square &Arr{\n        target_sample_interval 0.05\n        operator_nfft 512\n        deconvolution_data_window_start -5.0",
         "least_square &Arr{\n        target_sample_interval 0.05\n        operator_nfft 512\n        deconvolution_data_window_start -4.0",
@@ -775,7 +787,12 @@ def test_FrequencyDomainGIDDecon_cnr_penalty_qc_tracks_residual_noise(
 
 def test_FrequencyDomainGIDDecon_short_kernel_crop_is_bounded(tmp_path):
     data = _make_single_spike_convolution_data()
-    pf = _pf_with_short_decon_window(tmp_path, "FrequencyDomainGIDDecon.pf")
+    pf = _pf_with_short_decon_window(
+        tmp_path,
+        "FrequencyDomainGIDDecon.pf",
+        "frequency_domain_gid_deconvolution",
+        "least_square",
+    )
 
     rf, actual_output, output_shaping_wavelet = _run_frequency_gid(data, pf)
 
@@ -854,9 +871,16 @@ def test_FrequencyDomainGIDDecon_changeparameter_invalidates_outer_state():
         engine.actual_output()
 
 
-def test_FrequencyDomainGIDDecon_failed_changeparameter_invalidates_without_poisoning_leaf():
+def test_FrequencyDomainGIDDecon_failed_changeparameter_invalidates_without_poisoning_leaf(
+    tmp_path,
+):
     data = _make_single_spike_convolution_data()
-    pf = pfread("./data/pf/FrequencyDomainGIDDecon.pf")
+    pf = _pf_with_mode(
+        tmp_path,
+        "FrequencyDomainGIDDecon.pf",
+        "frequency_domain_gid_deconvolution",
+        "least_square",
+    )
     engine = FrequencyDomainGIDDecon(pf)
     FrequencyDomainGIDRFDecon(
         data,

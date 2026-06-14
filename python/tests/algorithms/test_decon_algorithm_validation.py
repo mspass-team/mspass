@@ -40,6 +40,7 @@ EXPECTED_TRANSVERSE_RATIOS = {
     7.5: (-20.0 / 150.0, -3.0 / 150.0),
     9.0: (15.0 / 150.0, 2.0 / 150.0),
 }
+DEFAULT_GID_DECONVOLUTION_TYPE = "ns_gid"
 STRESS_SPIKES = {
     0.0: (-15.0, 10.0, 150.0),
     1.2: (12.0, 18.0, 0.0),
@@ -374,7 +375,10 @@ def _pf_with_gid_mode(tmp_path, pfname, branch_name, mode):
     text = open(pfname, encoding="utf-8").read()
     text = _replace_once(
         text,
-        f"{branch_name} &Arr{{\n        deconvolution_type least_square",
+        (
+            f"{branch_name} &Arr{{\n        "
+            f"deconvolution_type {DEFAULT_GID_DECONVOLUTION_TYPE}"
+        ),
         f"{branch_name} &Arr{{\n        deconvolution_type {mode}",
         pfname,
     )
@@ -403,7 +407,10 @@ def _pf_with_gid_mode_and_replacements(
     text = open(pfname, encoding="utf-8").read()
     text = _replace_once(
         text,
-        f"{branch_name} &Arr{{\n        deconvolution_type least_square",
+        (
+            f"{branch_name} &Arr{{\n        "
+            f"deconvolution_type {DEFAULT_GID_DECONVOLUTION_TYPE}"
+        ),
         f"{branch_name} &Arr{{\n        deconvolution_type {mode}",
         pfname,
     )
@@ -2015,7 +2022,7 @@ def test_group_sparse_recovers_weak_arrivals_like_adaptive_memory(
         )
         results = {}
         for label, mode in [
-            ("adaptive_memory_default", "least_square"),
+            ("adaptive_memory_least_square", "least_square"),
             ("adaptive_memory_ns_gid", "ns_gid"),
             ("group_sparse", "group_sparse"),
         ]:
@@ -2038,15 +2045,18 @@ def test_group_sparse_recovers_weak_arrivals_like_adaptive_memory(
             )
             results[label] = (metrics, qc)
 
-        default_metrics, default_qc = results["adaptive_memory_default"]
-        assert default_qc["gid_penalty_function"] == "adaptive_memory"
-        assert default_metrics["recall"] >= 0.95, noise_scale
-        assert default_metrics["precision"] >= 0.75, noise_scale
+        legacy_metrics, legacy_qc = results["adaptive_memory_least_square"]
+        assert legacy_qc["gid_penalty_function"] == "adaptive_memory"
+        assert legacy_metrics["recall"] >= 0.95, noise_scale
+        assert legacy_metrics["precision"] >= 0.75, noise_scale
 
         stable_metrics, stable_qc = results["adaptive_memory_ns_gid"]
         assert stable_qc["gid_penalty_function"] == "adaptive_memory"
+        assert stable_qc["deconvolution_type"] == DEFAULT_GID_DECONVOLUTION_TYPE
         assert stable_metrics["recall"] >= 0.95, noise_scale
         assert stable_metrics["precision"] >= 0.95, noise_scale
+        assert stable_metrics["f1"] >= legacy_metrics["f1"] - 1.0e-12
+        assert stable_metrics["false_positive"] <= legacy_metrics["false_positive"]
 
         group_metrics, group_qc = results["group_sparse"]
         assert group_qc["group_sparse_enabled"]
@@ -2058,7 +2068,7 @@ def test_group_sparse_recovers_weak_arrivals_like_adaptive_memory(
         )
         assert group_metrics["recall"] >= stable_metrics["recall"] - 1.0e-12
         assert group_metrics["precision"] >= stable_metrics["precision"] - 1.0e-12
-        assert group_metrics["f1"] >= default_metrics["f1"] - 1.0e-12
+        assert group_metrics["f1"] >= legacy_metrics["f1"] - 1.0e-12
         assert group_metrics["false_positive"] <= stable_metrics["false_positive"]
 
 

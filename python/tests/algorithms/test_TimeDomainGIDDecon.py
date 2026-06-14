@@ -23,6 +23,19 @@ from decon_data_generators import (
 )
 
 
+DEFAULT_GID_DECONVOLUTION_TYPE = "ns_gid"
+
+
+def _replace_gid_deconvolution_type(text, branch_name, mode):
+    old = (
+        f"{branch_name} &Arr{{\n        "
+        f"deconvolution_type {DEFAULT_GID_DECONVOLUTION_TYPE}"
+    )
+    new = f"{branch_name} &Arr{{\n        deconvolution_type {mode}"
+    assert text.count(old) == 1
+    return text.replace(old, new, 1)
+
+
 def _distributed_roundtrip(obj):
     distributed_protocol = pytest.importorskip("distributed.protocol")
     header, frames = distributed_protocol.serialize(obj)
@@ -159,18 +172,17 @@ def _make_single_spike_convolution_data():
 def _pf_with_mode(tmp_path, pf_name, branch_name, mode):
     src = Path("./data/pf") / pf_name
     text = src.read_text()
-    text = text.replace(
-        f"{branch_name} &Arr{{\n        deconvolution_type least_square",
-        f"{branch_name} &Arr{{\n        deconvolution_type {mode}",
-    )
+    text = _replace_gid_deconvolution_type(text, branch_name, mode)
     dst = tmp_path / pf_name
     dst.write_text(text)
     return pfread(str(dst))
 
 
-def _pf_with_short_decon_window(tmp_path, pf_name):
+def _pf_with_short_decon_window(tmp_path, pf_name, branch_name=None, mode=None):
     src = Path("./data/pf") / pf_name
     text = src.read_text()
+    if mode is not None:
+        text = _replace_gid_deconvolution_type(text, branch_name, mode)
     text = text.replace(
         "deconvolution_data_window_start -5.0",
         "deconvolution_data_window_start -0.5",
@@ -222,10 +234,7 @@ def _make_external_wavelet_3c_data(noise_level=1.0e-4):
 def _ns_gid_pf(tmp_path, pf_name, branch_name, gain_max=30.0, peak_sigma=3.0):
     src = Path("./data/pf") / pf_name
     text = src.read_text()
-    text = text.replace(
-        f"{branch_name} &Arr{{\n        deconvolution_type least_square",
-        f"{branch_name} &Arr{{\n        deconvolution_type ns_gid",
-    )
+    text = _replace_gid_deconvolution_type(text, branch_name, "ns_gid")
     text = text.replace("ns_gid_gain_max 1.0e3", f"ns_gid_gain_max {gain_max}")
     text = text.replace(
         "ns_gid_peak_sigma_threshold 4.0",
@@ -525,8 +534,13 @@ def test_TimeDomainGIDDecon_penalty_reduces_multispike_residual(tmp_path):
     signal_window = TimeWindow(-8.0, 20.0)
     noise_window = TimeWindow(-25.0, -8.0)
 
+    penalty_pf = tmp_path / "TimeDomainGIDDecon_penalty.pf"
     no_penalty_pf = tmp_path / "TimeDomainGIDDecon_no_penalty.pf"
     text = Path("./data/pf/TimeDomainGIDDecon.pf").read_text()
+    text = _replace_gid_deconvolution_type(
+        text, "time_domain_gid_deconvolution", "least_square"
+    )
+    penalty_pf.write_text(text)
     no_penalty_pf.write_text(
         text.replace(
             "lag_weight_penalty_function adaptive_memory",
@@ -536,7 +550,7 @@ def test_TimeDomainGIDDecon_penalty_reduces_multispike_residual(tmp_path):
 
     penalty_rf = TimeDomainGIDRFDecon(
         data,
-        TimeDomainGIDDecon(pfread("./data/pf/TimeDomainGIDDecon.pf")),
+        TimeDomainGIDDecon(pfread(str(penalty_pf))),
         signal_window=signal_window,
         noise_window=noise_window,
     )
@@ -571,6 +585,9 @@ def test_TimeDomainGIDDecon_kernel_penalty_modes_are_adaptive(
 
     pf = tmp_path / f"TimeDomainGIDDecon_{penalty_function}.pf"
     text = Path("./data/pf/TimeDomainGIDDecon.pf").read_text()
+    text = _replace_gid_deconvolution_type(
+        text, "time_domain_gid_deconvolution", "least_square"
+    )
     text = text.replace(
         "lag_weight_penalty_function adaptive_memory",
         f"lag_weight_penalty_function {penalty_function}",
@@ -1010,7 +1027,12 @@ def test_TimeDomainGIDDecon_cnr_honors_external_noise(tmp_path):
 
 def test_TimeDomainGIDDecon_short_kernel_crop_is_bounded(tmp_path):
     data = _make_single_spike_convolution_data()
-    pf = _pf_with_short_decon_window(tmp_path, "TimeDomainGIDDecon.pf")
+    pf = _pf_with_short_decon_window(
+        tmp_path,
+        "TimeDomainGIDDecon.pf",
+        "time_domain_gid_deconvolution",
+        "least_square",
+    )
     engine = TimeDomainGIDDecon(pf)
 
     rf = TimeDomainGIDRFDecon(
@@ -1078,9 +1100,16 @@ def test_TimeDomainGIDDecon_changeparameter_invalidates_outer_state():
         engine.actual_output()
 
 
-def test_TimeDomainGIDDecon_failed_changeparameter_invalidates_without_poisoning_leaf():
+def test_TimeDomainGIDDecon_failed_changeparameter_invalidates_without_poisoning_leaf(
+    tmp_path,
+):
     data = _make_single_spike_convolution_data()
-    pf = pfread("./data/pf/TimeDomainGIDDecon.pf")
+    pf = _pf_with_mode(
+        tmp_path,
+        "TimeDomainGIDDecon.pf",
+        "time_domain_gid_deconvolution",
+        "least_square",
+    )
     engine = TimeDomainGIDDecon(pf)
     TimeDomainGIDRFDecon(
         data,

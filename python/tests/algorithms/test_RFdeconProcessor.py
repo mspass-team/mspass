@@ -32,10 +32,27 @@ from mspasspy.algorithms.basic import ExtractComponent
 from mspasspy.util.seismic import print_metadata
 
 
+DEFAULT_GID_DECONVOLUTION_TYPE = "ns_gid"
+
+
 def _distributed_roundtrip(obj):
     distributed_protocol = pytest.importorskip("distributed.protocol")
     header, frames = distributed_protocol.serialize(obj)
     return distributed_protocol.deserialize(header, frames)
+
+
+def _gid_pf_with_mode(tmp_path, mode, pf_name="TimeDomainGIDDecon.pf"):
+    text = open(f"data/pf/{pf_name}", encoding="utf-8").read()
+    old = (
+        "time_domain_gid_deconvolution &Arr{\n        "
+        f"deconvolution_type {DEFAULT_GID_DECONVOLUTION_TYPE}"
+    )
+    new = f"time_domain_gid_deconvolution &Arr{{\n        deconvolution_type {mode}"
+    assert text.count(old) == 1
+    text = text.replace(old, new, 1)
+    pf = tmp_path / pf_name
+    pf.write_text(text)
+    return pf
 
 
 def prediction_error_norm(ao, io):
@@ -475,8 +492,9 @@ def test_RFdecon_enables_generalized_iterative():
         qc = rf["RFdecon_properties"]
         assert qc["algorithm"] == "GeneralizedIterative"
         assert qc["iteration_count"] > 0
-        assert qc["gid_leaf_damping_factor"] == pytest.approx(1.0)
-        assert not qc["gid_leaf_parameters_changed"]
+        assert qc["deconvolution_type"] == DEFAULT_GID_DECONVOLUTION_TYPE
+        assert qc["ns_gid_enabled"]
+        assert qc["ns_gid_peak_sigma_threshold"] == pytest.approx(4.0)
     finally:
         if old_pfpath is None:
             os.environ.pop("PFPATH", None)
@@ -485,13 +503,7 @@ def test_RFdecon_enables_generalized_iterative():
 
 
 def test_RFdecon_gid_qc_namespaces_leaf_metadata(tmp_path):
-    text = open("data/pf/TimeDomainGIDDecon.pf", encoding="utf-8").read()
-    text = text.replace(
-        "time_domain_gid_deconvolution &Arr{\n        deconvolution_type least_square",
-        "time_domain_gid_deconvolution &Arr{\n        deconvolution_type cnr",
-    )
-    pf = tmp_path / "TimeDomainGIDDecon.pf"
-    pf.write_text(text)
+    pf = _gid_pf_with_mode(tmp_path, "cnr")
 
     wavelet = make_simulation_wavelet()
     truth = make_impulse_data()
@@ -544,7 +556,7 @@ def test_RFdecon_generalized_iterative_accepts_external_wavelet():
         qc = rf["RFdecon_properties"]
         assert qc["iteration_count"] > 0
         assert "prediction_error" not in qc
-        assert qc["deconvolution_type"] == "least_square"
+        assert qc["deconvolution_type"] == DEFAULT_GID_DECONVOLUTION_TYPE
         assert "deconvolution_data_window_start" in qc
         assert "target_sample_interval" in qc
     finally:
@@ -595,13 +607,7 @@ def test_RFdecon_gid_accepts_raw_vector_wavelet_and_noise(alg, pf):
 def test_RFdecon_preserves_preconfigured_gid_external_wavelet_when_omitted(tmp_path):
     os.environ["PFPATH"] = "./data/pf"
     try:
-        text = open("data/pf/TimeDomainGIDDecon.pf", encoding="utf-8").read()
-        text = text.replace(
-            "time_domain_gid_deconvolution &Arr{\n        deconvolution_type least_square",
-            "time_domain_gid_deconvolution &Arr{\n        deconvolution_type ns_gid",
-        )
-        pf = tmp_path / "TimeDomainGIDDecon.pf"
-        pf.write_text(text)
+        pf = _gid_pf_with_mode(tmp_path, "ns_gid")
         wavelet = make_simulation_wavelet()
         impulses = make_impulse_data()
         seis0 = addnoise(convolve_wavelet(impulses, wavelet), nscale=0.0, padlength=800)
@@ -856,13 +862,7 @@ def test_RFdecon_invalid_configured_windows_return_dead_without_qc(alg, pf):
 
 
 def test_RFdeconProcessor_apply_3c_uses_loaded_external_wavelet(tmp_path):
-    text = open("data/pf/TimeDomainGIDDecon.pf", encoding="utf-8").read()
-    text = text.replace(
-        "time_domain_gid_deconvolution &Arr{\n        deconvolution_type least_square",
-        "time_domain_gid_deconvolution &Arr{\n        deconvolution_type ns_gid",
-    )
-    pf = tmp_path / "TimeDomainGIDDecon.pf"
-    pf.write_text(text)
+    pf = _gid_pf_with_mode(tmp_path, "ns_gid")
 
     wavelet = make_simulation_wavelet()
     truth = make_impulse_data()
@@ -902,13 +902,7 @@ def test_RFdeconProcessor_apply_3c_uses_loaded_external_wavelet(tmp_path):
 
 
 def test_RFdeconProcessor_apply_3c_external_wavelet_is_dask_serializable(tmp_path):
-    text = open("data/pf/TimeDomainGIDDecon.pf", encoding="utf-8").read()
-    text = text.replace(
-        "time_domain_gid_deconvolution &Arr{\n        deconvolution_type least_square",
-        "time_domain_gid_deconvolution &Arr{\n        deconvolution_type ns_gid",
-    )
-    pf = tmp_path / "TimeDomainGIDDecon.pf"
-    pf.write_text(text)
+    pf = _gid_pf_with_mode(tmp_path, "ns_gid")
 
     wavelet = make_simulation_wavelet()
     truth = make_impulse_data()
@@ -936,13 +930,7 @@ def test_RFdeconProcessor_apply_3c_external_wavelet_is_dask_serializable(tmp_pat
 
 
 def test_RFdeconProcessor_clear_external_state_drops_pickle_payload(tmp_path):
-    text = open("data/pf/TimeDomainGIDDecon.pf", encoding="utf-8").read()
-    text = text.replace(
-        "time_domain_gid_deconvolution &Arr{\n        deconvolution_type least_square",
-        "time_domain_gid_deconvolution &Arr{\n        deconvolution_type ns_gid",
-    )
-    pf = tmp_path / "TimeDomainGIDDecon.pf"
-    pf.write_text(text)
+    pf = _gid_pf_with_mode(tmp_path, "ns_gid")
 
     processor = RFdeconProcessor(alg="GeneralizedIterative", pf=str(pf))
     baseline_size = len(pickle.dumps(processor))
@@ -993,13 +981,7 @@ def test_RFdeconProcessor_clear_external_methods_are_gid_only():
 
 
 def test_RFdeconProcessor_gid_loadwavelet_is_transactional(tmp_path):
-    text = open("data/pf/TimeDomainGIDDecon.pf", encoding="utf-8").read()
-    text = text.replace(
-        "time_domain_gid_deconvolution &Arr{\n        deconvolution_type least_square",
-        "time_domain_gid_deconvolution &Arr{\n        deconvolution_type ns_gid",
-    )
-    pf = tmp_path / "TimeDomainGIDDecon.pf"
-    pf.write_text(text)
+    pf = _gid_pf_with_mode(tmp_path, "ns_gid")
 
     wavelet = make_simulation_wavelet()
     truth = make_impulse_data()
@@ -1030,13 +1012,7 @@ def test_RFdeconProcessor_gid_loadwavelet_is_transactional(tmp_path):
 
 
 def test_RFdeconProcessor_gid_loadnoise_timeseries_and_clear(tmp_path):
-    text = open("data/pf/TimeDomainGIDDecon.pf", encoding="utf-8").read()
-    text = text.replace(
-        "time_domain_gid_deconvolution &Arr{\n        deconvolution_type least_square",
-        "time_domain_gid_deconvolution &Arr{\n        deconvolution_type ns_gid",
-    )
-    pf = tmp_path / "TimeDomainGIDDecon.pf"
-    pf.write_text(text)
+    pf = _gid_pf_with_mode(tmp_path, "ns_gid")
 
     wavelet = make_simulation_wavelet()
     truth = make_impulse_data()
@@ -1067,13 +1043,7 @@ def test_RFdeconProcessor_gid_loadnoise_timeseries_and_clear(tmp_path):
 
 
 def test_RFdeconProcessor_gid_getstate_does_not_invalidate_processed_state(tmp_path):
-    text = open("data/pf/TimeDomainGIDDecon.pf", encoding="utf-8").read()
-    text = text.replace(
-        "time_domain_gid_deconvolution &Arr{\n        deconvolution_type least_square",
-        "time_domain_gid_deconvolution &Arr{\n        deconvolution_type ns_gid",
-    )
-    pf = tmp_path / "TimeDomainGIDDecon.pf"
-    pf.write_text(text)
+    pf = _gid_pf_with_mode(tmp_path, "ns_gid")
 
     wavelet = make_simulation_wavelet()
     truth = make_impulse_data()
@@ -1095,13 +1065,7 @@ def test_RFdeconProcessor_gid_getstate_does_not_invalidate_processed_state(tmp_p
 
 
 def test_RFdeconProcessor_gid_dask_roundtrip_does_not_invalidate_state(tmp_path):
-    text = open("data/pf/TimeDomainGIDDecon.pf", encoding="utf-8").read()
-    text = text.replace(
-        "time_domain_gid_deconvolution &Arr{\n        deconvolution_type least_square",
-        "time_domain_gid_deconvolution &Arr{\n        deconvolution_type ns_gid",
-    )
-    pf = tmp_path / "TimeDomainGIDDecon.pf"
-    pf.write_text(text)
+    pf = _gid_pf_with_mode(tmp_path, "ns_gid")
 
     wavelet = make_simulation_wavelet()
     truth = make_impulse_data()
