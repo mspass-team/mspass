@@ -2,13 +2,10 @@ import copy
 import io
 import os
 import pickle
-import warnings
 
 import gridfs
 import numpy as np
 import obspy
-import obspy.clients.fdsn.client
-from obspy.core.util.deprecation_helpers import ObsPyDeprecationWarning
 import pytest
 import sys
 import re
@@ -3377,22 +3374,30 @@ class TestDatabase:
         assert ts.data is not None
         assert ts.data == DoubleVector(mseed_st[0].data.astype("float64"))
 
+    @staticmethod
     def mock_fdsn_get_waveform(*args, **kwargs):
         with open("python/tests/data/index_and_read_fdsn.pickle", "rb") as handle:
             return pickle.load(handle)
 
+    class MockFDSNClient:
+        providers = []
+
+        def __init__(self, provider, *args, **kwargs):
+            self.provider = provider
+            type(self).providers.append(provider)
+
+        def get_waveforms(self, *args, **kwargs):
+            return TestDatabase.mock_fdsn_get_waveform(*args, **kwargs)
+
     def test_index_and_read_fdsn(self):
+        earthscope_url = "https://service.earthscope.org"
+        self.MockFDSNClient.providers = []
         with patch(
-            "obspy.clients.fdsn.client.Client.get_waveforms",
-            new=self.mock_fdsn_get_waveform,
-        ), warnings.catch_warnings():
-            warnings.filterwarnings(
-                "ignore",
-                message="IRIS is now EarthScope.*",
-                category=ObsPyDeprecationWarning,
-            )
+            "mspasspy.db.database.Client",
+            new=self.MockFDSNClient,
+        ):
             self.db.index_mseed_FDSN(
-                "IRIS",
+                earthscope_url,
                 2010,
                 58,
                 "IU",
@@ -3403,7 +3408,7 @@ class TestDatabase:
             )
             assert self.db["test_s3_fdsn"].count_documents({}) == 1
             fdsn_doc = self.db.test_s3_fdsn.find_one()
-            assert fdsn_doc["provider"] == "IRIS"
+            assert fdsn_doc["provider"] == earthscope_url
             assert fdsn_doc["year"] == "2010"
             assert fdsn_doc["day_of_year"] == "058"
 
@@ -3412,6 +3417,7 @@ class TestDatabase:
             self.db._read_data_from_fdsn(tmp_ts)
             tmp_st = self.mock_fdsn_get_waveform()
             assert all(a == b for a, b in zip(tmp_ts.data, tmp_st[0].data))
+            assert self.MockFDSNClient.providers == [earthscope_url, earthscope_url]
 
     def test_save_dataframe(self):
         dir = "python/tests/data/"
