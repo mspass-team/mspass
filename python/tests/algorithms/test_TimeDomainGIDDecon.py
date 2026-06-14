@@ -106,9 +106,9 @@ def _assert_group_sparse_qc(qc):
     assert qc["group_sparse_active_threshold_scale"] == pytest.approx(1.0)
     assert qc["group_sparse_active_threshold_quantile"] == pytest.approx(0.90)
     assert qc["group_sparse_active_threshold_quantile_value"] >= 0.0
-    assert qc["group_sparse_active_threshold_used"] >= qc[
-        "group_sparse_active_threshold"
-    ]
+    assert (
+        qc["group_sparse_active_threshold_used"] >= qc["group_sparse_active_threshold"]
+    )
     assert qc["group_sparse_iterations"] == qc["iteration_count"]
     assert qc["group_sparse_active_groups"] == qc["gid_number_spikes"]
     assert qc["group_sparse_objective_final"] <= qc["group_sparse_objective_initial"]
