@@ -55,6 +55,9 @@ void PutPrefixedMetadata(mspass::utility::Metadata &target,
 std::string AntelopePfToText(const mspass::utility::AntelopePf &pf,
                              const int indent = 0);
 std::vector<double> ThreeCAmplitudes(const mspass::utility::dmatrix &d);
+double GroupSparseObjective(const mspass::seismic::CoreSeismogram &residual,
+                            const std::list<ThreeCSpike> &spikes,
+                            const double lambda);
 void ValidateGIDLeafWindow(const mspass::utility::AntelopePf &mdleaf,
                            const mspass::algorithms::TimeWindow &fftwin,
                            const std::string &leaf_name,

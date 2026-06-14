@@ -219,6 +219,25 @@ vector<double> ThreeCAmplitudes(const dmatrix &d) {
   return result;
 }
 
+double GroupSparseObjective(const CoreSeismogram &residual,
+                            const list<ThreeCSpike> &spikes,
+                            const double lambda) {
+  double rss(0.0), penalty(0.0);
+  const int nrows = static_cast<int>(residual.u.rows());
+  const int ncols = static_cast<int>(residual.u.columns());
+  for (int k = 0; k < nrows; ++k) {
+    for (int j = 0; j < ncols; ++j) {
+      const double e = residual.u(k, j);
+      rss += e * e;
+    }
+  }
+  for (const auto &spk : spikes) {
+    penalty += sqrt(spk.u[0] * spk.u[0] + spk.u[1] * spk.u[1] +
+                    spk.u[2] * spk.u[2]);
+  }
+  return 0.5 * rss + lambda * penalty;
+}
+
 void ValidateGIDLeafWindow(const AntelopePf &mdleaf,
                            const TimeWindow &fftwin,
                            const string &leaf_name,
@@ -911,6 +930,7 @@ GroupSparseDeconResult SolveGroupSparseDecon(
   };
 
   auto objective = [&](const vector<double> &coef) {
+    build_model(coef);
     double rss(0.0), penalty(0.0);
     for (auto e : residual)
       rss += e * e;
@@ -928,7 +948,6 @@ GroupSparseDeconResult SolveGroupSparseDecon(
   result.active_threshold_floor = active_threshold;
   result.active_threshold_scale = active_threshold_scale;
   result.active_threshold_quantile = active_threshold_quantile;
-  build_model(x);
   result.objective_initial = objective(x);
   double prev_objective = result.objective_initial;
   for (int iter = 1; iter <= max_iterations; ++iter) {
@@ -964,7 +983,6 @@ GroupSparseDeconResult SolveGroupSparseDecon(
         xnew[index(k, j)] = scale * z[k];
     }
 
-    build_model(xnew);
     const double current_objective = objective(xnew);
     result.iterations = iter;
     result.fractional_improvement_final =
@@ -979,13 +997,6 @@ GroupSparseDeconResult SolveGroupSparseDecon(
     prev_objective = current_objective;
   }
 
-  build_model(x);
-  result.objective_final = objective(x);
-  result.residual = CoreSeismogram(target);
-  for (int k = 0; k < 3; ++k) {
-    for (int j = 0; j < npts; ++j)
-      result.residual.u(k, j) = target_vec[index(k, j)] - model[index(k, j)];
-  }
   vector<double> group_norms;
   group_norms.reserve(npts);
   for (int j = 0; j < npts; ++j) {
@@ -1000,6 +1011,7 @@ GroupSparseDeconResult SolveGroupSparseDecon(
   result.active_threshold_used =
       max(active_threshold,
           active_threshold_scale * result.active_threshold_quantile_value);
+  vector<double> xactive(ncoef, 0.0);
   for (int j = 0; j < npts; ++j) {
     const double nrm = sqrt(x[index(0, j)] * x[index(0, j)] +
                             x[index(1, j)] * x[index(1, j)] +
@@ -1007,8 +1019,19 @@ GroupSparseDeconResult SolveGroupSparseDecon(
     if (valid[j] && nrm > result.active_threshold_used) {
       result.spikes.emplace_back(j, x[index(0, j)], x[index(1, j)],
                                  x[index(2, j)]);
+      for (int k = 0; k < 3; ++k)
+        xactive[index(k, j)] = x[index(k, j)];
       ++result.active_groups;
     }
+  }
+  result.objective_final = objective(xactive);
+  result.fractional_improvement_final =
+      (result.objective_initial - result.objective_final) /
+      max(1.0, result.objective_initial);
+  result.residual = CoreSeismogram(target);
+  for (int k = 0; k < 3; ++k) {
+    for (int j = 0; j < npts; ++j)
+      result.residual.u(k, j) = target_vec[index(k, j)] - model[index(k, j)];
   }
   return result;
 }

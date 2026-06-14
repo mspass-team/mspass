@@ -411,6 +411,36 @@ def test_FrequencyDomainGIDDecon_pickle_preserves_external_wavelet_and_noise(tmp
     assert qc_spectrum["ns_gid_external_noise_spectrum_used"]
 
 
+def test_FrequencyDomainGIDDecon_group_sparse_honors_external_noise_spectrum(tmp_path):
+    data, wavelet, _ = _make_external_wavelet_3c_data(noise_level=2.0e-4)
+    pf = _pf_with_mode(
+        tmp_path,
+        "FrequencyDomainGIDDecon.pf",
+        "frequency_domain_gid_deconvolution",
+        "group_sparse",
+    )
+    engine = FrequencyDomainGIDDecon(pf)
+    engine.loadwavelet(wavelet)
+    engine.loadnoise(
+        PowerSpectrum(
+            Metadata(), DoubleVector([1.0, 1.0, 1.0]), 1.0, "valid", -1.0, 1.0, 3
+        )
+    )
+
+    rf = FrequencyDomainGIDRFDecon(
+        data,
+        engine,
+        signal_window=TimeWindow(-8.0, 22.0),
+        noise_window=TimeWindow(-35.0, -8.0),
+    )
+
+    assert rf.live
+    qc = rf["FrequencyDomainGIDDecon_properties"]
+    assert qc["group_sparse_inverse_external_wavelet_used"]
+    assert qc["group_sparse_inverse_external_noise_spectrum_used"]
+    assert qc["group_sparse_noise_threshold"] > 0.0
+
+
 def test_FrequencyDomainGIDDecon_clear_external_state_drops_pickle_payload(
     tmp_path,
 ):
@@ -1040,6 +1070,39 @@ def test_FrequencyDomainGIDDecon_replacing_external_noise_refreshes_threshold(
     high_threshold = dict(engine.QCMetrics())["ns_gid_peak_threshold"]
 
     assert high_threshold > 10.0 * low_threshold
+
+
+def test_FrequencyDomainGIDDecon_group_sparse_external_noise_sets_lambda(tmp_path):
+    data = _make_single_spike_convolution_data()
+    pf = _pf_with_mode(
+        tmp_path,
+        "FrequencyDomainGIDDecon.pf",
+        "frequency_domain_gid_deconvolution",
+        "group_sparse",
+    )
+    dwin = TimeWindow(-10.0, 20.0)
+    low_noise = _make_external_noise(scale=1.0)
+    high_noise = _make_external_noise(scale=1000.0)
+
+    engine = FrequencyDomainGIDDecon(pf)
+    engine.loadnoise(low_noise)
+    assert engine.load(data, dwin) == 0
+    engine.process()
+    low_qc = dict(engine.QCMetrics())
+
+    engine.loadnoise(high_noise)
+    assert engine.load(data, dwin) == 0
+    engine.process()
+    high_qc = dict(engine.QCMetrics())
+
+    assert low_qc["group_sparse_inverse_external_noise_used"]
+    assert high_qc["group_sparse_inverse_external_noise_used"]
+    assert high_qc["group_sparse_noise_threshold"] > (
+        10.0 * low_qc["group_sparse_noise_threshold"]
+    )
+    assert high_qc["group_sparse_lambda_used"] > (
+        10.0 * low_qc["group_sparse_lambda_used"]
+    )
 
 
 def test_FrequencyDomainGIDDecon_failed_external_noise_replacement_preserves_state(

@@ -412,9 +412,12 @@ def test_RFdecon_gid_keywords_switch_modes_without_pf_edits(alg, mode):
     assert rf.live
     qc = rf["RFdecon_properties"]
     _assert_public_gid_mode_qc(qc, mode)
-    assert qc["gid_penalty_function"] == "none"
     if mode == "group_sparse":
         assert qc["group_sparse_lambda_scale"] == pytest.approx(0.5)
+        assert "gid_penalty_function" not in qc
+        assert "lag_weight_penalty_function" not in qc
+    else:
+        assert qc["gid_penalty_function"] == "none"
 
 
 @pytest.mark.parametrize(

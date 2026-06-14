@@ -114,6 +114,10 @@ def _assert_group_sparse_qc(qc):
     assert qc["group_sparse_lambda_requested"] == pytest.approx(0.0)
     assert qc["group_sparse_lambda_scale"] == pytest.approx(1.0)
     assert qc["group_sparse_lambda_used"] >= 0.0
+    assert qc["group_sparse_noise_threshold"] > 0.0
+    assert qc["group_sparse_lambda_used"] == pytest.approx(
+        qc["group_sparse_lambda_scale"] * qc["group_sparse_noise_threshold"]
+    )
     assert qc["group_sparse_active_threshold"] == pytest.approx(0.02)
     assert qc["group_sparse_active_threshold_scale"] == pytest.approx(1.0)
     assert qc["group_sparse_active_threshold_quantile"] == pytest.approx(0.90)
@@ -134,6 +138,8 @@ def _assert_group_sparse_qc(qc):
     assert not qc["group_sparse_inverse_external_wavelet_used"]
     assert not qc["group_sparse_inverse_external_noise_used"]
     assert not qc["group_sparse_inverse_external_noise_spectrum_used"]
+    assert not any(key.startswith("gid_penalty") for key in dict(qc))
+    assert not any(key.startswith("lag_weight_penalty") for key in dict(qc))
     assert qc["gid_stop_reason"] in {
         "group_sparse_converged",
         "group_sparse_max_iterations",
@@ -831,6 +837,36 @@ def test_TimeDomainGIDDecon_pickle_preserves_external_wavelet_and_noise(tmp_path
     assert qc_spectrum["ns_gid_external_noise_spectrum_used"]
 
 
+def test_TimeDomainGIDDecon_group_sparse_honors_external_noise_spectrum(tmp_path):
+    data, wavelet, _ = _make_external_wavelet_3c_data(noise_level=2.0e-4)
+    pf = _pf_with_mode(
+        tmp_path,
+        "TimeDomainGIDDecon.pf",
+        "time_domain_gid_deconvolution",
+        "group_sparse",
+    )
+    engine = TimeDomainGIDDecon(pf)
+    engine.loadwavelet(wavelet)
+    engine.loadnoise(
+        PowerSpectrum(
+            Metadata(), DoubleVector([1.0, 1.0, 1.0]), 1.0, "valid", -1.0, 1.0, 3
+        )
+    )
+
+    rf = TimeDomainGIDRFDecon(
+        data,
+        engine,
+        signal_window=TimeWindow(-8.0, 22.0),
+        noise_window=TimeWindow(-35.0, -8.0),
+    )
+
+    assert rf.live
+    qc = rf["TimeDomainGIDDecon_properties"]
+    assert qc["group_sparse_inverse_external_wavelet_used"]
+    assert qc["group_sparse_inverse_external_noise_spectrum_used"]
+    assert qc["group_sparse_noise_threshold"] > 0.0
+
+
 def test_TimeDomainGIDDecon_clear_external_state_drops_pickle_payload(tmp_path):
     pf = _ns_gid_pf(tmp_path, "TimeDomainGIDDecon.pf", "time_domain_gid_deconvolution")
     engine = TimeDomainGIDDecon(pf)
@@ -1270,6 +1306,39 @@ def test_TimeDomainGIDDecon_replacing_external_noise_refreshes_threshold(tmp_pat
     high_threshold = dict(engine.QCMetrics())["ns_gid_peak_threshold"]
 
     assert high_threshold > 10.0 * low_threshold
+
+
+def test_TimeDomainGIDDecon_group_sparse_external_noise_sets_lambda(tmp_path):
+    data = _make_single_spike_convolution_data()
+    pf = _pf_with_mode(
+        tmp_path,
+        "TimeDomainGIDDecon.pf",
+        "time_domain_gid_deconvolution",
+        "group_sparse",
+    )
+    dwin = TimeWindow(-10.0, 20.0)
+    low_noise = _make_external_noise(scale=1.0)
+    high_noise = _make_external_noise(scale=1000.0)
+
+    engine = TimeDomainGIDDecon(pf)
+    engine.loadnoise(low_noise)
+    assert engine.load(data, dwin) == 0
+    engine.process()
+    low_qc = dict(engine.QCMetrics())
+
+    engine.loadnoise(high_noise)
+    assert engine.load(data, dwin) == 0
+    engine.process()
+    high_qc = dict(engine.QCMetrics())
+
+    assert low_qc["group_sparse_inverse_external_noise_used"]
+    assert high_qc["group_sparse_inverse_external_noise_used"]
+    assert high_qc["group_sparse_noise_threshold"] > (
+        10.0 * low_qc["group_sparse_noise_threshold"]
+    )
+    assert high_qc["group_sparse_lambda_used"] > (
+        10.0 * low_qc["group_sparse_lambda_used"]
+    )
 
 
 def test_TimeDomainGIDDecon_failed_external_noise_replacement_preserves_state(

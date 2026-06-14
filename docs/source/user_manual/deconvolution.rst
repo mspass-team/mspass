@@ -1073,14 +1073,18 @@ Useful first-pass fields are:
 
 ``gid_penalty_function``, ``gid_penalty_effective_width``,
 ``lag_weight_L2_final``, and the ``gid_penalty_*`` adaptive-memory fields
-    Explain how the lag-weight penalty affected candidate selection.
+    Explain how the lag-weight penalty affected candidate selection.  These
+    fields are present for greedy GID modes, not for
+    ``deconvolution_type group_sparse``.
 
 ``group_sparse_enabled``, ``group_sparse_converged``,
 ``group_sparse_iterations``, ``group_sparse_lambda_used``,
 ``group_sparse_active_threshold_used``, ``group_sparse_active_groups``,
 ``group_sparse_objective_initial``, and ``group_sparse_objective_final``
     Summarize the regularized group-sparse solve and the exported sparse
-    support decision.  These fields are present only for
+    support decision.  ``group_sparse_objective_final`` is recomputed after
+    thresholding and amplitude refit, so it describes the exported sparse
+    receiver function.  These fields are present only for
     ``deconvolution_type group_sparse``.
 
 ``ns_gid_gain_max_actual``, ``ns_gid_noise_amplification``, and

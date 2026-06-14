@@ -1020,6 +1020,13 @@ class RFdeconProcessor:
                 for key, value in qcmd.items()
                 if not key.startswith("group_sparse")
             }
+        else:
+            qcmd = {
+                key: value
+                for key, value in qcmd.items()
+                if not key.startswith("gid_penalty")
+                and not key.startswith("lag_weight")
+            }
         if decon_type != "ns_gid":
             qcmd = {
                 key: value

@@ -1609,8 +1609,27 @@ def test_external_wavelet_validation_across_deconvolution_methods(
     )
 
 
+@pytest.mark.parametrize(
+    "engine_class, wrapper, pfname, branch_name, qc_key",
+    [
+        (
+            TimeDomainGIDDecon,
+            TimeDomainGIDRFDecon,
+            "data/pf/TimeDomainGIDDecon.pf",
+            "time_domain_gid_deconvolution",
+            "TimeDomainGIDDecon_properties",
+        ),
+        (
+            FrequencyDomainGIDDecon,
+            FrequencyDomainGIDRFDecon,
+            "data/pf/FrequencyDomainGIDDecon.pf",
+            "frequency_domain_gid_deconvolution",
+            "FrequencyDomainGIDDecon_properties",
+        ),
+    ],
+)
 def test_group_sparse_adaptive_support_threshold_controls_clustered_coefficients(
-    tmp_path,
+    tmp_path, engine_class, wrapper, pfname, branch_name, qc_key
 ):
     data, truth, wavelet = _make_stress_colored_validation_data(
         noise_scale=0.01,
@@ -1624,17 +1643,17 @@ def test_group_sparse_adaptive_support_threshold_controls_clustered_coefficients
         + external_wavelet_shift
     )
 
-    def run_time_domain_group_sparse(replacements=None):
+    def run_group_sparse(replacements=None):
         replacements = replacements or {}
         pf = _pf_with_gid_mode_and_replacements(
             tmp_path,
-            "data/pf/TimeDomainGIDDecon.pf",
-            "time_domain_gid_deconvolution",
+            pfname,
+            branch_name,
             "group_sparse",
             replacements,
         )
-        engine = TimeDomainGIDDecon(pf)
-        rf = TimeDomainGIDRFDecon(
+        engine = engine_class(pf)
+        rf = wrapper(
             data,
             engine,
             signal_window=TimeWindow(-8.0, 20.0),
@@ -1649,10 +1668,10 @@ def test_group_sparse_adaptive_support_threshold_controls_clustered_coefficients
             sparse.dt,
             shifted_truth_times,
         )
-        return metrics, dict(rf["TimeDomainGIDDecon_properties"])
+        return metrics, dict(rf[qc_key])
 
-    default_metrics, default_qc = run_time_domain_group_sparse()
-    fixed_floor_metrics, fixed_floor_qc = run_time_domain_group_sparse(
+    default_metrics, default_qc = run_group_sparse()
+    fixed_floor_metrics, fixed_floor_qc = run_group_sparse(
         {
             "group_sparse_active_threshold 0.02": (
                 "group_sparse_active_threshold 0.000000001"
