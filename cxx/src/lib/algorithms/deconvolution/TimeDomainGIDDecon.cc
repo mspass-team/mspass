@@ -1417,7 +1417,8 @@ Metadata TimeDomainGIDDecon::QCMetrics() {
   md.put("gid_actual_o_fir_peak_normalized",
          processed && !actual_o_fir.empty());
   md.put("group_sparse_enabled", decon_type == GROUP_SPARSE);
-  md.put("group_sparse_inverse_operator", string("ns_gid"));
+  md.put("group_sparse_inverse_operator",
+         string(decon_type == GROUP_SPARSE ? "ns_gid" : "not_enabled"));
   md.put("group_sparse_lambda_requested", group_sparse_lambda);
   md.put("group_sparse_lambda_scale", group_sparse_lambda_scale);
   md.put("group_sparse_lambda_used", group_sparse_lambda_used);

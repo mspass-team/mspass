@@ -996,7 +996,7 @@ GroupSparseDeconResult SolveGroupSparseDecon(
       group_norms.push_back(nrm);
   }
   result.active_threshold_quantile_value =
-      VectorQuantile(group_norms, active_threshold_quantile);
+      VectorQuantile(std::move(group_norms), active_threshold_quantile);
   result.active_threshold_used =
       max(active_threshold,
           active_threshold_scale * result.active_threshold_quantile_value);

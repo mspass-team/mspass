@@ -15,6 +15,7 @@ from mspasspy.algorithms.FrequencyDomainGIDDecon import FrequencyDomainGIDRFDeco
 
 from test_TimeDomainGIDDecon import (
     _assert_actual_and_output_shaping_are_distinct,
+    _assert_group_sparse_disabled_qc,
     _assert_group_sparse_qc,
     _assert_single_spike_recovery,
     _assert_single_penalty_footprint,
@@ -727,7 +728,7 @@ def test_FrequencyDomainGIDDecon_inverse_modes_are_valid(tmp_path, mode):
     if mode == "group_sparse":
         _assert_group_sparse_qc(qc)
     else:
-        assert not qc["group_sparse_enabled"]
+        _assert_group_sparse_disabled_qc(qc)
     _assert_single_spike_recovery(rf, ratio_tolerance=5.0e-2)
 
 

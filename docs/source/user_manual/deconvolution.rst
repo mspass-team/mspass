@@ -247,6 +247,100 @@ because it is more resistant to noise-driven false picks than the legacy
 prior matches the problem, and reserve ``least_square`` for explicit legacy
 comparisons or diagnostics.
 
+Switching GID methods safely
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The shipped GID defaults changed from ``deconvolution_type least_square`` to
+``deconvolution_type ns_gid`` with ``lag_weight_penalty_function
+adaptive_memory``.  New code should switch GID modes through the public Python
+API instead of editing the installed parameter files.  The examples below assume
+normal parameter-file lookup, meaning ``PFPATH`` includes the shipped MsPASS
+``pf`` directory.
+
+For one-off receiver-function calls, pass the GID options directly to
+``RFdecon``:
+
+.. code-block:: python
+
+   from mspasspy.algorithms.RFdeconProcessor import RFdecon
+
+   # Current shipped default: noise-stable GID plus adaptive-memory lag weights.
+   rf_default = RFdecon(seis, alg="TimeDomainGID")
+
+   # Explicit legacy comparison.  Keep this as a diagnostic, not the default.
+   rf_legacy = RFdecon(
+       seis,
+       alg="TimeDomainGID",
+       deconvolution_type="least_square",
+   )
+
+   # Group-sparse GID: one regularized solve with shared lag support.
+   rf_group_sparse = RFdecon(
+       seis,
+       alg="TimeDomainGID",
+       deconvolution_type="group_sparse",
+   )
+
+   # Make the greedy lag-weight penalty stronger or weaker.
+   rf_weaker_penalty = RFdecon(
+       seis,
+       alg="TimeDomainGID",
+       deconvolution_type="ns_gid",
+       lag_weight_penalty_function="adaptive_memory",
+       gid_parameters={"lag_weight_penalty_scale_factor": 0.2},
+   )
+
+For repeated processing, build a configured processor once and reuse it:
+
+.. code-block:: python
+
+   from mspasspy.algorithms.RFdeconProcessor import RFdecon, RFdeconProcessor
+
+   processor = RFdeconProcessor(
+       alg="TimeDomainGID",
+       deconvolution_type="group_sparse",
+       gid_parameters={"group_sparse_active_threshold": 0.03},
+   )
+
+   rf = RFdecon(seis, alg="TimeDomainGID", engine=processor)
+
+For lower-level workflows that use the GID engines directly, use
+``make_gid_engine`` or the corresponding parameter helpers:
+
+.. code-block:: python
+
+   from mspasspy.algorithms.RFdeconProcessor import (
+       make_gid_engine,
+       make_gid_pf,
+       make_gid_pf_text,
+   )
+
+   engine = make_gid_engine(
+       alg="FrequencyDomainGID",
+       gid_mode="ns_gid",
+       gid_penalty_function="adaptive_memory",
+   )
+
+   pf = make_gid_pf(
+       alg="TimeDomainGID",
+       deconvolution_type="group_sparse",
+       gid_parameters={"group_sparse_active_threshold": 0.03},
+   )
+   pf_text = make_gid_pf_text(
+       alg="TimeDomainGID",
+       deconvolution_type="least_square",
+   )
+
+These settings are separate layers.  The ``deconvolution_type`` method layer and
+its alias ``gid_mode`` choose the GID inverse or solver mode, such as ``ns_gid``,
+``least_square``, or ``group_sparse``.  ``lag_weight_penalty_function`` and its
+alias ``gid_penalty_function`` change only the greedy GID lag-selection penalty;
+they do not enable grouped sparsity.  The group-sparse support threshold keys,
+such as ``group_sparse_active_threshold``,
+``group_sparse_active_threshold_scale``, and
+``group_sparse_active_threshold_quantile``, are applied after the group-sparse
+solve to decide which lag groups remain in the sparse output.
+
 Scalar inverse operators
 ------------------------
 
