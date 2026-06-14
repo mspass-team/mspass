@@ -1,6 +1,7 @@
 #include "mspass/algorithms/deconvolution/CNRDeconEngine.h"
 #include "mspass/algorithms/algorithms.h"
 #include "mspass/algorithms/amplitudes.h"
+#include "mspass/algorithms/deconvolution/GIDDeconUtil.h"
 #include "mspass/utility/MsPASSError.h"
 #include <sstream>
 #include <string>
@@ -42,7 +43,7 @@ CNRDeconEngine::CNRDeconEngine(const AntelopePf &pf)
                             stmp,
                         ErrorSeverity::Fatal);
     }
-    this->damp = pf.get_double("damping_factor");
+    this->damp = GetDoubleRequired(pf, "damping_factor");
     if (this->damp <= 0.0) {
       throw MsPASSError("CNRDeconEngine(constructor): damping_factor must be "
                         "positive for stable regularized deconvolution",
@@ -50,10 +51,11 @@ CNRDeconEngine::CNRDeconEngine(const AntelopePf &pf)
     }
     /* Note this paramter is used for both the damping method and the
     generalized_water_level */
-    this->noise_floor = pf.get_double("noise_floor");
-    this->snr_regularization_floor = pf.get_double("snr_regularization_floor");
-    this->band_snr_floor = pf.get_double("snr_data_bandwidth_floor");
-    this->operator_dt = pf.get_double("target_sample_interval");
+    this->noise_floor = GetDoubleRequired(pf, "noise_floor");
+    this->snr_regularization_floor =
+        GetDoubleRequired(pf, "snr_regularization_floor");
+    this->band_snr_floor = GetDoubleRequired(pf, "snr_data_bandwidth_floor");
+    this->operator_dt = GetDoubleRequired(pf, "target_sample_interval");
     if (this->operator_dt <= 0.0)
       throw MsPASSError("CNRDeconEngine(constructor): "
                         "target_sample_interval must be positive",
@@ -63,8 +65,8 @@ CNRDeconEngine::CNRDeconEngine(const AntelopePf &pf)
     instead of number of samples as it is less error prone to a user than
     requiring them to compute the number from the sample interval. */
     double ts, te;
-    ts = pf.get_double("deconvolution_data_window_start");
-    te = pf.get_double("deconvolution_data_window_end");
+    ts = GetDoubleRequired(pf, "deconvolution_data_window_start");
+    te = GetDoubleRequired(pf, "deconvolution_data_window_end");
     ValidateWindowDuration(TimeWindow(ts, te), "deconvolution_data_window",
                            "CNRDeconEngine(constructor)");
     this->winlength = round((te - ts) / this->operator_dt) + 1;
@@ -104,8 +106,8 @@ CNRDeconEngine::CNRDeconEngine(const AntelopePf &pf)
       /* These MUST be consistent with FFTDeconOperator pf constructor
       names.   */
       int npoles_lo, npoles_hi;
-      npoles_lo = pf.get_int("npoles_lo");
-      npoles_hi = pf.get_int("npoles_hi");
+      npoles_lo = GetIntRequired(pf, "npoles_lo");
+      npoles_hi = GetIntRequired(pf, "npoles_hi");
       if (npoles_hi != npoles_lo) {
         stringstream ss;
         ss << "CNRDeconEngine(Metadata constructor):  "
@@ -122,13 +124,13 @@ CNRDeconEngine::CNRDeconEngine(const AntelopePf &pf)
     }
     /* As with signal we use this for initializing the noise engine
     rather than the number of points, which is all the engine cares about. */
-    ts = pf.get_double("noise_window_start");
-    te = pf.get_double("noise_window_end");
+    ts = GetDoubleRequired(pf, "noise_window_start");
+    te = GetDoubleRequired(pf, "noise_window_end");
     ValidateWindowDuration(TimeWindow(ts, te), "noise_window",
                            "CNRDeconEngine(constructor)");
     int noise_winlength = round((te - ts) / operator_dt) + 1;
-    double tbp = pf.get_double("time_bandwidth_product");
-    long ntapers = pf.get_long("number_tapers");
+    double tbp = GetDoubleRequired(pf, "time_bandwidth_product");
+    long ntapers = GetLongRequired(pf, "number_tapers");
     this->noise_engine = MTPowerSpectrumEngine(
         noise_winlength, tbp, ntapers, noise_winlength, this->operator_dt);
     this->signal_engine = MTPowerSpectrumEngine(
@@ -172,23 +174,23 @@ void CNRDeconEngine::changeparameter(const Metadata &md) {
                             stmp,
                         ErrorSeverity::Fatal);
     }
-    this->damp = md.get_double("damping_factor");
+    this->damp = GetDoubleRequired(md, "damping_factor");
     if (this->damp <= 0.0)
       throw MsPASSError("CNRDeconEngine::changeparameter: damping_factor must "
                         "be positive for stable regularized deconvolution",
                         ErrorSeverity::Fatal);
-    this->noise_floor = md.get_double("noise_floor");
+    this->noise_floor = GetDoubleRequired(md, "noise_floor");
     this->snr_regularization_floor =
-        md.get_double("snr_regularization_floor");
-    this->band_snr_floor = md.get_double("snr_data_bandwidth_floor");
-    this->operator_dt = md.get_double("target_sample_interval");
+        GetDoubleRequired(md, "snr_regularization_floor");
+    this->band_snr_floor = GetDoubleRequired(md, "snr_data_bandwidth_floor");
+    this->operator_dt = GetDoubleRequired(md, "target_sample_interval");
     if (this->operator_dt <= 0.0)
       throw MsPASSError("CNRDeconEngine::changeparameter: "
                         "target_sample_interval must be positive",
                         ErrorSeverity::Fatal);
 
-    double ts(md.get_double("deconvolution_data_window_start"));
-    double te(md.get_double("deconvolution_data_window_end"));
+    double ts(GetDoubleRequired(md, "deconvolution_data_window_start"));
+    double te(GetDoubleRequired(md, "deconvolution_data_window_end"));
     ValidateWindowDuration(TimeWindow(ts, te), "deconvolution_data_window",
                            "CNRDeconEngine::changeparameter");
     this->winlength = round((te - ts) / this->operator_dt) + 1;
@@ -213,8 +215,8 @@ void CNRDeconEngine::changeparameter(const Metadata &md) {
           ErrorSeverity::Fatal);
     }
     if (swname == "butterworth") {
-      int npoles_lo(md.get_int("npoles_lo"));
-      int npoles_hi(md.get_int("npoles_hi"));
+      int npoles_lo(GetIntRequired(md, "npoles_lo"));
+      int npoles_hi(GetIntRequired(md, "npoles_hi"));
       if (npoles_hi != npoles_lo) {
         stringstream ss;
         ss << "CNRDeconEngine::changeparameter: Butterworth filter high and "
@@ -227,13 +229,13 @@ void CNRDeconEngine::changeparameter(const Metadata &md) {
       this->shaping_wavelet_number_poles = npoles_lo;
     }
 
-    ts = md.get_double("noise_window_start");
-    te = md.get_double("noise_window_end");
+    ts = GetDoubleRequired(md, "noise_window_start");
+    te = GetDoubleRequired(md, "noise_window_end");
     ValidateWindowDuration(TimeWindow(ts, te), "noise_window",
                            "CNRDeconEngine::changeparameter");
     int noise_winlength = round((te - ts) / operator_dt) + 1;
-    double tbp = md.get_double("time_bandwidth_product");
-    long ntapers = md.get_long("number_tapers");
+    double tbp = GetDoubleRequired(md, "time_bandwidth_product");
+    long ntapers = GetLongRequired(md, "number_tapers");
     this->noise_engine = MTPowerSpectrumEngine(
         noise_winlength, tbp, ntapers, noise_winlength, this->operator_dt);
     this->signal_engine = MTPowerSpectrumEngine(

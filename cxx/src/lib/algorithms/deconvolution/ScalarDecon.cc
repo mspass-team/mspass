@@ -1,4 +1,5 @@
 #include "mspass/algorithms/deconvolution/ScalarDecon.h"
+#include "mspass/algorithms/deconvolution/GIDDeconUtil.h"
 namespace mspass::algorithms::deconvolution {
 using namespace std;
 using namespace mspass::utility;
@@ -7,7 +8,7 @@ ScalarDecon::ScalarDecon(const Metadata &md) : shapingwavelet(md) {
   try {
     /* This has to be defined or the shapingwavlet constructor will
      * fail in the current implementation */
-    int nfft = md.get_int("operator_nfft");
+    int nfft = GetIntRequired(md, "operator_nfft");
     wavelet.reserve(nfft);
     data.reserve(nfft);
     result.reserve(nfft);

@@ -166,6 +166,37 @@ def _format_pf_value(value):
     )
 
 
+def _normalize_metadata_scalar_value(value, key, context):
+    if isinstance(value, np.generic):
+        return value.item()
+    if isinstance(value, np.ndarray):
+        if value.ndim == 0:
+            return value.item()
+        raise TypeError(f"{context}: metadata parameter {key!r} must be scalar")
+    if isinstance(value, (list, tuple, dict, Metadata)):
+        raise TypeError(f"{context}: metadata parameter {key!r} must be scalar")
+    return value
+
+
+def _normalize_metadata_scalars(md, context):
+    result = Metadata()
+    for key in md.keys():
+        result[key] = _normalize_metadata_scalar_value(md[key], key, context)
+    return result
+
+
+def _validate_component_index(value, name, context):
+    if isinstance(value, (bool, np.bool_)):
+        raise ValueError(f"{context}: {name} must be integer 0, 1, or 2")
+    if isinstance(value, np.integer):
+        value = int(value)
+    elif not isinstance(value, int):
+        raise ValueError(f"{context}: {name} must be integer 0, 1, or 2")
+    if value not in (0, 1, 2):
+        raise ValueError(f"{context}: {name} must be integer 0, 1, or 2")
+    return value
+
+
 def _find_pf_branch_line_range(lines, branch_name, context):
     branch_pattern = re.compile(r"^\s*" + re.escape(branch_name) + r"\s+&Arr\{\s*$")
     starts = [i for i, line in enumerate(lines) if branch_pattern.match(line)]
@@ -191,11 +222,14 @@ def _replace_pf_scalar_in_branch(text, branch_name, key, value, context):
     lines = text.splitlines()
     start, end = _find_pf_branch_line_range(lines, branch_name, context)
     key_pattern = re.compile(r"^(\s*)" + re.escape(key) + r"\s+\S+(\s*(#.*)?)$")
-    matches = [
-        (i, key_pattern.match(lines[i]))
-        for i in range(start + 1, end)
-        if key_pattern.match(lines[i])
-    ]
+    matches = []
+    depth = 1
+    for i in range(start + 1, end):
+        match = key_pattern.match(lines[i])
+        if depth == 1 and match:
+            matches.append((i, match))
+        depth += lines[i].count("{")
+        depth -= lines[i].count("}")
     if len(matches) != 1:
         raise MsPASSError(
             f"{context}: expected one scalar key {key!r} in {branch_name!r}, "
@@ -1054,7 +1088,9 @@ class RFdeconProcessor:
         :param md: is a mspass.Metadata object containing required parameters
             for the alternative algorithm.
         """
-        parameter_md = Metadata(md)
+        parameter_md = _normalize_metadata_scalars(
+            md, "RFdeconProcessor.change_parameters"
+        )
         if hasattr(self.processor, "changeparameter"):
             self.processor.changeparameter(parameter_md)
         elif hasattr(self.processor, "change_parameter"):
@@ -1295,6 +1331,8 @@ def RFdecon(
         raise TypeError(message)
     if d.dead():
         return d
+    wcomp = _validate_component_index(wcomp, "wcomp", "RFdecon")
+    ncomp = _validate_component_index(ncomp, "ncomp", "RFdecon")
     if engine:
         if _gid_overrides_requested(
             deconvolution_type=deconvolution_type,

@@ -3,6 +3,7 @@
 #include "mspass/algorithms/Butterworth.h"
 #include "mspass/algorithms/amplitudes.h"
 #include "mspass/algorithms/deconvolution/FFTDeconOperator.h"
+#include "mspass/algorithms/deconvolution/GIDDeconUtil.h"
 #include "mspass/algorithms/deconvolution/wavelet.h"
 #include "mspass/seismic/CoreTimeSeries.h"
 #include "mspass/utility/MsPASSError.h"
@@ -26,7 +27,7 @@ ShapingWavelet::ShapingWavelet(const Metadata &md, int nfftin) {
       this->nfft = nfftin;
     else {
       try {
-        nfft = md.get_int("operator_nfft");
+        nfft = GetIntRequired(md, "operator_nfft");
       } catch (MetadataGetError &mderr) {
         throw MsPASSError(base_error +
                               "Called constructor with nfft=0 but parameter "
@@ -43,10 +44,10 @@ ShapingWavelet::ShapingWavelet(const Metadata &md, int nfftin) {
     workspace = gsl_fft_complex_workspace_alloc(nfft);
     string wavelettype = md.get_string("shaping_wavelet_type");
     wavelet_name = wavelettype;
-    dt = md.get_double("shaping_wavelet_dt");
+    dt = GetDoubleRequired(md, "shaping_wavelet_dt");
     double *r;
     if (wavelettype == "gaussian") {
-      float fpeak = md.get_double("shaping_wavelet_frequency");
+      float fpeak = GetDoubleRequired(md, "shaping_wavelet_frequency");
       // construct wavelet and fft
       r = gaussian(fpeak, (float)dt, nfft);
       w = ComplexArray(nfft, r);
@@ -58,7 +59,8 @@ ShapingWavelet::ShapingWavelet(const Metadata &md, int nfftin) {
     them in this class because these forms are needed by the family of
     scalar deconvolution algorithms */
     else if (wavelettype == "ricker") {
-      float fpeak = (float)md.get_double("shaping_wavelet_frequency");
+      float fpeak =
+          static_cast<float>(GetDoubleRequired(md, "shaping_wavelet_frequency"));
       // construct wavelet and fft
       r = rickerwavelet(fpeak, (float)dt, nfft);
       // DEBUG
@@ -69,11 +71,11 @@ ShapingWavelet::ShapingWavelet(const Metadata &md, int nfftin) {
       delete[] r;
     } else if (wavelettype == "butterworth") {
       double f3db_lo, f3db_hi;
-      f3db_lo = md.get_double("f3db_lo");
-      f3db_hi = md.get_double("f3db_hi");
+      f3db_lo = GetDoubleRequired(md, "f3db_lo");
+      f3db_hi = GetDoubleRequired(md, "f3db_hi");
       int npoles_lo, npoles_hi;
-      npoles_lo = md.get_int("npoles_lo");
-      npoles_hi = md.get_int("npoles_hi");
+      npoles_lo = GetIntRequired(md, "npoles_lo");
+      npoles_hi = GetIntRequired(md, "npoles_hi");
       Butterworth bwf(true, true, true, npoles_lo, f3db_lo, npoles_hi, f3db_hi,
                       this->dt);
       w = bwf.transfer_function(this->nfft);
@@ -106,8 +108,9 @@ ShapingWavelet::ShapingWavelet(const Metadata &md, int nfftin) {
     }
     */
     else if ((wavelettype == "slepian") || (wavelettype == "Slepian")) {
-      double tbp = md.get_double("time_bandwidth_product");
-      double target_pulse_width = md.get_double("target_pulse_width");
+      double tbp = GetDoubleRequired(md, "time_bandwidth_product");
+      double target_pulse_width =
+          GetDoubleRequired(md, "target_pulse_width");
       /* Sanity check on pulse width */
       if (target_pulse_width > (nfft / 4) || (target_pulse_width < tbp)) {
         stringstream ss;

@@ -61,14 +61,14 @@ TimeDomainGIDDecon::TimeDomainGIDDecon(const AntelopePf &mdtoplevel)
     IterDeconType dct = ParseGIDDeconType(mdgiter, "TimeDomainGIDDecon");
     this->decon_type = dct;
     double ts, te;
-    ts = mdgiter.get<double>("full_data_window_start");
-    te = mdgiter.get<double>("full_data_window_end");
+    ts = GetDoubleRequired(mdgiter, "full_data_window_start");
+    te = GetDoubleRequired(mdgiter, "full_data_window_end");
     dwin = TimeWindow(ts, te);
-    ts = mdgiter.get<double>("deconvolution_data_window_start");
-    te = mdgiter.get<double>("deconvolution_data_window_end");
+    ts = GetDoubleRequired(mdgiter, "deconvolution_data_window_start");
+    te = GetDoubleRequired(mdgiter, "deconvolution_data_window_end");
     fftwin = TimeWindow(ts, te);
-    ts = mdgiter.get<double>("noise_window_start");
-    te = mdgiter.get<double>("noise_window_end");
+    ts = GetDoubleRequired(mdgiter, "noise_window_start");
+    te = GetDoubleRequired(mdgiter, "noise_window_end");
     nwin = TimeWindow(ts, te);
     ValidateWindowDuration(dwin, "full_data_window", base_error);
     ValidateWindowDuration(fftwin, "deconvolution_data_window", base_error);
@@ -85,9 +85,9 @@ TimeDomainGIDDecon::TimeDomainGIDDecon(const AntelopePf &mdtoplevel)
          << fftwin.end << endl;
       throw MsPASSError(ss.str(), ErrorSeverity::Invalid);
     }
-    noise_component = mdgiter.get<int>("noise_component");
+    noise_component = GetIntRequired(mdgiter, "noise_component");
     ValidateThreeComponentIndex(noise_component, "noise_component", base_error);
-    target_dt = mdgiter.get<double>("target_sample_interval");
+    target_dt = GetDoubleRequired(mdgiter, "target_sample_interval");
     ValidatePositive(target_dt, "target_sample_interval", base_error);
     int maxns = static_cast<int>((fftwin.end - fftwin.start) / target_dt);
     ++maxns; // Add one - points not intervals
@@ -166,17 +166,18 @@ TimeDomainGIDDecon::TimeDomainGIDDecon(const AntelopePf &mdtoplevel)
     make changes easier to implement. */
     this->construct_weight_penalty_function(mdgiter);
     /* Set convergence parameters from md keys */
-    iter_max = mdgiter.get<int>("maximum_iterations");
+    iter_max = GetIntRequired(mdgiter, "maximum_iterations");
     ValidatePositiveInteger(iter_max, "maximum_iterations", base_error);
-    lw_linf_floor = mdgiter.get<double>("lag_weight_Linf_floor");
+    lw_linf_floor = GetDoubleRequired(mdgiter, "lag_weight_Linf_floor");
     ValidateNonnegative(lw_linf_floor, "lag_weight_Linf_floor", base_error);
-    lw_l2_floor = mdgiter.get<double>("lag_weight_rms_floor");
+    lw_l2_floor = GetDoubleRequired(mdgiter, "lag_weight_rms_floor");
     ValidateNonnegative(lw_l2_floor, "lag_weight_rms_floor", base_error);
     resid_linf_prob =
-        mdgiter.get<double>("residual_noise_rms_probability_floor");
+        GetDoubleRequired(mdgiter, "residual_noise_rms_probability_floor");
     ValidateProbability(resid_linf_prob, "residual_noise_rms_probability_floor",
                         base_error);
-    resid_l2_tol = mdgiter.get<double>("residual_fractional_improvement_floor");
+    resid_l2_tol =
+        GetDoubleRequired(mdgiter, "residual_fractional_improvement_floor");
     ValidateNonnegative(resid_l2_tol,
                         "residual_fractional_improvement_floor", base_error);
     ns_peak_sigma_threshold =
@@ -334,7 +335,7 @@ void TimeDomainGIDDecon::construct_weight_penalty_function(const Metadata &md) {
             : "none";
     lag_weight_penalty_scale_factor =
         md.is_defined("lag_weight_penalty_scale_factor")
-            ? md.get<double>("lag_weight_penalty_scale_factor")
+            ? GetDoubleRequired(md, "lag_weight_penalty_scale_factor")
             : 1.0;
     if (!isfinite(lag_weight_penalty_scale_factor) ||
         lag_weight_penalty_scale_factor <= 0.0 ||
@@ -344,7 +345,7 @@ void TimeDomainGIDDecon::construct_weight_penalty_function(const Metadata &md) {
                         ErrorSeverity::Fatal);
     lag_weight_function_width =
         md.is_defined("lag_weight_function_width")
-            ? md.get<int>("lag_weight_function_width")
+            ? GetIntRequired(md, "lag_weight_function_width")
             : 0;
     if (md.is_defined("lag_weight_function_width"))
       ValidatePositiveInteger(

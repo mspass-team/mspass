@@ -291,6 +291,26 @@ def test_make_gid_pf_text_accepts_numpy_scalar_gid_parameters(alg):
 
 
 @pytest.mark.parametrize("alg", GID_SWITCHING_ALGORITHMS)
+def test_make_gid_pf_text_overrides_top_level_keys_that_exist_in_leaf_branches(alg):
+    with _test_pfpath():
+        pf = make_gid_pf(
+            alg=alg,
+            gid_parameters={
+                "target_sample_interval": 1,
+                "deconvolution_data_window_start": -4,
+            },
+        )
+
+    operator_branch = pf.get_branch("deconvolution_operator_type")
+    gid_md = Metadata(operator_branch.get_branch(_gid_branch_name_for_test(alg)))
+    least_square_md = Metadata(operator_branch.get_branch("least_square"))
+    assert gid_md["target_sample_interval"] == 1
+    assert gid_md["deconvolution_data_window_start"] == -4
+    assert least_square_md["target_sample_interval"] == pytest.approx(0.05)
+    assert least_square_md["deconvolution_data_window_start"] == pytest.approx(-5.0)
+
+
+@pytest.mark.parametrize("alg", GID_SWITCHING_ALGORITHMS)
 def test_make_gid_pf_applies_public_aliases_without_pf_edits(alg):
     with _test_pfpath():
         pf = make_gid_pf(
@@ -436,6 +456,25 @@ def test_RFdecon_gid_accepts_integral_values_for_double_parameters(alg):
     assert qc["group_sparse_lambda_scale"] == pytest.approx(2.0)
 
 
+@pytest.mark.parametrize("alg", GID_SWITCHING_ALGORITHMS)
+def test_RFdecon_gid_accepts_integral_lag_penalty_double_parameters(alg):
+    with _test_pfpath():
+        rf = RFdecon(
+            Seismogram(_make_gid_switching_data()),
+            alg=alg,
+            gid_mode="least_square",
+            gid_penalty_function="cosine_taper",
+            gid_parameters={"lag_weight_penalty_scale_factor": 1},
+        )
+
+    assert rf.live
+    qc = rf["RFdecon_properties"]
+    _assert_public_gid_mode_qc(qc, "least_square")
+    assert qc["gid_penalty_function"] == "cosine_taper"
+    assert qc["gid_penalty_scale_factor"] == pytest.approx(1.0)
+    assert not any(key.startswith("group_sparse") for key in dict(qc))
+
+
 @pytest.mark.parametrize(
     "alg,pf",
     [
@@ -564,6 +603,56 @@ def test_RFdeconProcessor_change_parameters_uses_public_engine_api():
             assert np.allclose(
                 np.asarray(rf_changed.data), np.asarray(rf_restored.data)
             )
+    finally:
+        if old_pfpath is None:
+            os.environ.pop("PFPATH", None)
+        else:
+            os.environ["PFPATH"] = old_pfpath
+
+
+def test_RFdeconProcessor_change_parameters_normalizes_numpy_scalars():
+    old_pfpath = os.environ.get("PFPATH")
+    os.environ["PFPATH"] = "./data/pf"
+    try:
+        processor = RFdeconProcessor(alg="MultiTaperPowerXcor")
+        md = Metadata(processor.md)
+        md["damping_factor"] = np.float32(0.25)
+        md["number_tapers"] = np.int64(4)
+        processor.change_parameters(md)
+        assert processor.md["damping_factor"] == pytest.approx(0.25)
+        assert processor.md["number_tapers"] == 4
+
+        with pytest.raises(TypeError, match="must be scalar"):
+            processor.change_parameters({"damping_factor": np.array([0.25])})
+    finally:
+        if old_pfpath is None:
+            os.environ.pop("PFPATH", None)
+        else:
+            os.environ["PFPATH"] = old_pfpath
+
+
+@pytest.mark.parametrize("wcomp", [True, np.bool_(True), 2.0, "2"])
+def test_RFdecon_rejects_non_integer_component_indexes(wcomp):
+    data = _make_gid_switching_data()
+    rf = RFdecon(Seismogram(data), alg="LeastSquares", wcomp=wcomp)
+    assert rf.dead()
+    assert rf.elog.size() > 0
+    assert "wcomp" in rf.elog.get_error_log()[-1].message
+
+
+def test_RFdecon_accepts_numpy_integer_component_indexes():
+    old_pfpath = os.environ.get("PFPATH")
+    os.environ["PFPATH"] = "./data/pf"
+    try:
+        seis0 = get_live_seismogram(3000, 20.0)
+        seis0.t0 = -35.0
+        rf = RFdecon(
+            Seismogram(seis0),
+            alg="LeastSquares",
+            wcomp=np.int64(2),
+            ncomp=np.int64(2),
+        )
+        assert rf.live
     finally:
         if old_pfpath is None:
             os.environ.pop("PFPATH", None)

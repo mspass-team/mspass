@@ -1,5 +1,6 @@
 #include "mspass/algorithms/deconvolution/NoiseStableDecon.h"
 #include "mspass/algorithms/amplitudes.h"
+#include "mspass/algorithms/deconvolution/GIDDeconUtil.h"
 #include "mspass/utility/MsPASSError.h"
 #include <algorithm>
 #include <cmath>
@@ -14,13 +15,13 @@ namespace {
 double get_double_default(const Metadata &md, const string &key,
                           const double default_value) {
   if (md.is_defined(key))
-    return md.get_double(key);
+    return GetDoubleRequired(md, key);
   return default_value;
 }
 bool get_bool_default(const Metadata &md, const string &key,
                       const bool default_value) {
   if (md.is_defined(key))
-    return md.get_bool(key);
+    return GetBoolDefault(md, key, default_value);
   return default_value;
 }
 double folded_frequency(const int k, const int nfft, const double dt) {

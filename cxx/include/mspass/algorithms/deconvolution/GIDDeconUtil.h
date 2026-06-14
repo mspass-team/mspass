@@ -35,8 +35,14 @@ IterDeconType ParseGIDDeconType(const mspass::utility::Metadata &md,
 std::string GIDDeconTypeName(const IterDeconType type);
 double GetDoubleDefault(const mspass::utility::Metadata &md,
                         const std::string &key, const double default_value);
+double GetDoubleRequired(const mspass::utility::Metadata &md,
+                         const std::string &key);
 int GetIntDefault(const mspass::utility::Metadata &md, const std::string &key,
                   const int default_value);
+int GetIntRequired(const mspass::utility::Metadata &md,
+                   const std::string &key);
+long GetLongRequired(const mspass::utility::Metadata &md,
+                     const std::string &key);
 bool GetBoolDefault(const mspass::utility::Metadata &md,
                     const std::string &key, const bool default_value);
 void ValidateProbability(const double p, const std::string &key,

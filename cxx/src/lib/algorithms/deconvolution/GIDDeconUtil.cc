@@ -4,6 +4,7 @@
 #include "misc/blas.h"
 #include <algorithm>
 #include <boost/any.hpp>
+#include <cctype>
 #include <cmath>
 #include <limits>
 #include <sstream>
@@ -15,6 +16,106 @@ using namespace std;
 using namespace mspass::algorithms;
 using namespace mspass::seismic;
 using namespace mspass::utility;
+
+namespace {
+string metadata_type_name(const boost::any &val) { return val.type().name(); }
+
+MsPASSError metadata_type_error(const string &function_name, const string &key,
+                                const string &expected,
+                                const boost::any &val) {
+  return MsPASSError(function_name + ": Metadata key=" + key + " must be " +
+                        expected + "; actual type=" + metadata_type_name(val),
+                    ErrorSeverity::Invalid);
+}
+
+bool any_to_double(const boost::any &val, double &result) {
+  if (val.type() == typeid(double)) {
+    result = boost::any_cast<double>(val);
+    return true;
+  }
+  if (val.type() == typeid(float)) {
+    result = static_cast<double>(boost::any_cast<float>(val));
+    return true;
+  }
+  if (val.type() == typeid(int)) {
+    result = static_cast<double>(boost::any_cast<int>(val));
+    return true;
+  }
+  if (val.type() == typeid(long)) {
+    result = static_cast<double>(boost::any_cast<long>(val));
+    return true;
+  }
+  if (val.type() == typeid(long long)) {
+    result = static_cast<double>(boost::any_cast<long long>(val));
+    return true;
+  }
+  return false;
+}
+
+bool double_is_integer_valued(const double value) {
+  return isfinite(value) && floor(value) == value;
+}
+
+bool any_to_long(const boost::any &val, long &result) {
+  if (val.type() == typeid(int)) {
+    result = static_cast<long>(boost::any_cast<int>(val));
+    return true;
+  }
+  if (val.type() == typeid(long)) {
+    result = boost::any_cast<long>(val);
+    return true;
+  }
+  if (val.type() == typeid(long long)) {
+    const long long value = boost::any_cast<long long>(val);
+    if (value < static_cast<long long>(numeric_limits<long>::min()) ||
+        value > static_cast<long long>(numeric_limits<long>::max()))
+      return false;
+    result = static_cast<long>(value);
+    return true;
+  }
+  double numeric_value(0.0);
+  if (any_to_double(val, numeric_value) &&
+      double_is_integer_valued(numeric_value) &&
+      numeric_value >= static_cast<double>(numeric_limits<long>::min()) &&
+      numeric_value <= static_cast<double>(numeric_limits<long>::max())) {
+    result = static_cast<long>(numeric_value);
+    return true;
+  }
+  return false;
+}
+
+string lower_ascii(string value) {
+  transform(value.begin(), value.end(), value.begin(), [](unsigned char c) {
+    return static_cast<char>(tolower(c));
+  });
+  return value;
+}
+
+bool any_to_bool(const boost::any &val, bool &result) {
+  if (val.type() == typeid(bool)) {
+    result = boost::any_cast<bool>(val);
+    return true;
+  }
+  long integer_value(0);
+  if (any_to_long(val, integer_value) &&
+      (integer_value == 0 || integer_value == 1)) {
+    result = (integer_value == 1);
+    return true;
+  }
+  if (val.type() == typeid(string)) {
+    const string value = lower_ascii(boost::any_cast<string>(val));
+    if (value == "true" || value == "yes" || value == "1") {
+      result = true;
+      return true;
+    }
+    if (value == "false" || value == "no" || value == "0") {
+      result = false;
+      return true;
+    }
+  }
+  return false;
+}
+} // namespace
 
 IterDeconType ParseGIDDeconType(const Metadata &md, const string &caller) {
   string sval = md.get_string("deconvolution_type");
@@ -56,34 +157,53 @@ string GIDDeconTypeName(const IterDeconType type) {
 
 double GetDoubleDefault(const Metadata &md, const string &key,
                         const double default_value) {
-  if (md.is_defined(key)) {
-    boost::any val(md.get_any(key));
-    if (val.type() == typeid(double))
-      return boost::any_cast<double>(val);
-    if (val.type() == typeid(float))
-      return static_cast<double>(boost::any_cast<float>(val));
-    if (val.type() == typeid(int))
-      return static_cast<double>(boost::any_cast<int>(val));
-    if (val.type() == typeid(long))
-      return static_cast<double>(boost::any_cast<long>(val));
-    throw MsPASSError("GetDoubleDefault: Metadata key=" + key +
-                          " must be numeric",
-                      ErrorSeverity::Invalid);
-  }
+  if (md.is_defined(key))
+    return GetDoubleRequired(md, key);
   return default_value;
+}
+
+double GetDoubleRequired(const Metadata &md, const string &key) {
+  boost::any val(md.get_any(key));
+  double result(0.0);
+  if (any_to_double(val, result))
+    return result;
+  throw metadata_type_error("GetDoubleRequired", key, "numeric", val);
 }
 
 int GetIntDefault(const Metadata &md, const string &key,
                   const int default_value) {
   if (md.is_defined(key))
-    return md.get_int(key);
+    return GetIntRequired(md, key);
   return default_value;
+}
+
+int GetIntRequired(const Metadata &md, const string &key) {
+  boost::any val(md.get_any(key));
+  long result(0);
+  if (any_to_long(val, result) &&
+      result >= static_cast<long>(numeric_limits<int>::min()) &&
+      result <= static_cast<long>(numeric_limits<int>::max()))
+    return static_cast<int>(result);
+  throw metadata_type_error("GetIntRequired", key, "integer-valued", val);
+}
+
+long GetLongRequired(const Metadata &md, const string &key) {
+  boost::any val(md.get_any(key));
+  long result(0);
+  if (any_to_long(val, result))
+    return result;
+  throw metadata_type_error("GetLongRequired", key, "integer-valued", val);
 }
 
 bool GetBoolDefault(const Metadata &md, const string &key,
                     const bool default_value) {
-  if (md.is_defined(key))
-    return md.get_bool(key);
+  if (md.is_defined(key)) {
+    boost::any val(md.get_any(key));
+    bool result(false);
+    if (any_to_bool(val, result))
+      return result;
+    throw metadata_type_error("GetBoolDefault", key, "boolean", val);
+  }
   return default_value;
 }
 
@@ -139,10 +259,7 @@ void PutPrefixedMetadata(Metadata &target, const Metadata &source,
     else if (val.type() == typeid(string))
       target.put(prefixed_key, boost::any_cast<string>(val));
     else
-      throw MsPASSError("PutPrefixedMetadata: unsupported Metadata type for "
-                            "key=" +
-                            key,
-                        ErrorSeverity::Invalid);
+      continue;
   }
 }
 
@@ -254,8 +371,8 @@ void ValidateGIDLeafWindow(const AntelopePf &mdleaf,
                            const TimeWindow &fftwin,
                            const string &leaf_name,
                            const string &base_error) {
-  const double ts = mdleaf.get<double>("deconvolution_data_window_start");
-  const double te = mdleaf.get<double>("deconvolution_data_window_end");
+  const double ts = GetDoubleRequired(mdleaf, "deconvolution_data_window_start");
+  const double te = GetDoubleRequired(mdleaf, "deconvolution_data_window_end");
   if ((ts != fftwin.start) || (te != fftwin.end)) {
     stringstream ss;
     ss << base_error << leaf_name
@@ -325,21 +442,21 @@ void ValidateGIDLeafOperatorMetadata(const Metadata &md,
     }
   }
   if (md.is_defined("deconvolution_data_window_start")) {
-    const double ts = md.get_double("deconvolution_data_window_start");
+    const double ts = GetDoubleRequired(md, "deconvolution_data_window_start");
     if (fabs(ts - fftwin.start) > 1.0e-10)
       throw MsPASSError(caller + ": leaf deconvolution_data_window_start does "
                                  "not match the GID deconvolution window",
                         ErrorSeverity::Fatal);
   }
   if (md.is_defined("deconvolution_data_window_end")) {
-    const double te = md.get_double("deconvolution_data_window_end");
+    const double te = GetDoubleRequired(md, "deconvolution_data_window_end");
     if (fabs(te - fftwin.end) > 1.0e-10)
       throw MsPASSError(caller + ": leaf deconvolution_data_window_end does "
                                  "not match the GID deconvolution window",
                         ErrorSeverity::Fatal);
   }
   if (md.is_defined("target_sample_interval")) {
-    const double dt = md.get_double("target_sample_interval");
+    const double dt = GetDoubleRequired(md, "target_sample_interval");
     if (fabs(dt - target_dt) >
         1.0e-6 * max(1.0, max(fabs(dt), fabs(target_dt))))
       throw MsPASSError(caller + ": leaf target_sample_interval does not "
@@ -347,7 +464,7 @@ void ValidateGIDLeafOperatorMetadata(const Metadata &md,
                         ErrorSeverity::Fatal);
   }
   if (md.is_defined("shaping_wavelet_dt")) {
-    const double dt = md.get_double("shaping_wavelet_dt");
+    const double dt = GetDoubleRequired(md, "shaping_wavelet_dt");
     if (fabs(dt - target_dt) >
         1.0e-6 * max(1.0, max(fabs(dt), fabs(target_dt))))
       throw MsPASSError(caller + ": leaf shaping_wavelet_dt does not match "
@@ -655,7 +772,7 @@ vector<double> BuildGIDLagWeightPenaltyFunction(const Metadata &md,
 
   const double penalty_scale =
       md.is_defined("lag_weight_penalty_scale_factor")
-          ? md.get<double>("lag_weight_penalty_scale_factor")
+          ? GetDoubleRequired(md, "lag_weight_penalty_scale_factor")
           : 1.0;
   if (!std::isfinite(penalty_scale) || penalty_scale <= 0.0 ||
       penalty_scale > 1.0)
@@ -668,7 +785,7 @@ vector<double> BuildGIDLagWeightPenaltyFunction(const Metadata &md,
                           "missing required parameter "
                           "lag_weight_function_width",
                       ErrorSeverity::Fatal);
-  int npenalty = md.get<int>("lag_weight_function_width");
+  int npenalty = GetIntRequired(md, "lag_weight_function_width");
   if (npenalty <= 0)
     throw MsPASSError(base_error + "lag_weight_function_width must be positive",
                       ErrorSeverity::Fatal);

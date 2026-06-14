@@ -1,4 +1,5 @@
 #include "mspass/algorithms/deconvolution/FFTDeconOperator.h"
+#include "mspass/algorithms/deconvolution/GIDDeconUtil.h"
 #include "mspass/seismic/CoreTimeSeries.h"
 #include "mspass/utility/MsPASSError.h"
 #include <algorithm>
@@ -18,16 +19,17 @@ FFTDeconOperator::FFTDeconOperator() {
 FFTDeconOperator::FFTDeconOperator(const Metadata &md) {
   try {
     const string base_error("FFTDeconOperator Metadata constructor:  ");
-    const double ts = md.get_double("deconvolution_data_window_start");
-    const double te = md.get_double("deconvolution_data_window_end");
-    const double dt = md.get_double("target_sample_interval");
+    const double ts =
+        GetDoubleRequired(md, "deconvolution_data_window_start");
+    const double te = GetDoubleRequired(md, "deconvolution_data_window_end");
+    const double dt = GetDoubleRequired(md, "target_sample_interval");
     ValidateWindowDuration(TimeWindow(ts, te), "deconvolution_data_window",
                            base_error);
     if (!std::isfinite(dt) || dt <= 0.0)
       throw MsPASSError(base_error +
                             "target_sample_interval must be positive",
                         ErrorSeverity::Fatal);
-    int nfftpf = md.get_int("operator_nfft");
+    int nfftpf = GetIntRequired(md, "operator_nfft");
     /* We force a power of 2 algorithm for efficiency and always round up*/
     this->nfft = nextPowerOf2(nfftpf);
     /* We compute the sample shift from the window start time and dt.  This
@@ -77,16 +79,17 @@ FFTDeconOperator &FFTDeconOperator::operator=(const FFTDeconOperator &parent) {
 void FFTDeconOperator::changeparameter(const Metadata &md) {
   try {
     const string base_error("FFTDeconOperator::changeparameter:  ");
-    const double ts = md.get_double("deconvolution_data_window_start");
-    const double te = md.get_double("deconvolution_data_window_end");
-    const double dt = md.get_double("target_sample_interval");
+    const double ts =
+        GetDoubleRequired(md, "deconvolution_data_window_start");
+    const double te = GetDoubleRequired(md, "deconvolution_data_window_end");
+    const double dt = GetDoubleRequired(md, "target_sample_interval");
     ValidateWindowDuration(TimeWindow(ts, te), "deconvolution_data_window",
                            base_error);
     if (!std::isfinite(dt) || dt <= 0.0)
       throw MsPASSError(base_error +
                             "target_sample_interval must be positive",
                         ErrorSeverity::Fatal);
-    const int nfft_test = nextPowerOf2(md.get_int("operator_nfft"));
+    const int nfft_test = nextPowerOf2(GetIntRequired(md, "operator_nfft"));
     const int sample_shift_test = ComputeDeconSampleShift(md);
     if (sample_shift_test < 0)
       throw MsPASSError(base_error +
@@ -222,10 +225,10 @@ overloading in C++ */
 int ComputeFFTLength(const Metadata &md) {
   try {
     double ts, te, dt;
-    ts = md.get<double>("deconvolution_data_window_start");
-    te = md.get<double>("deconvolution_data_window_end");
+    ts = GetDoubleRequired(md, "deconvolution_data_window_start");
+    te = GetDoubleRequired(md, "deconvolution_data_window_end");
     TimeWindow w(ts, te);
-    dt = md.get<double>("target_sample_interval");
+    dt = GetDoubleRequired(md, "target_sample_interval");
     int nfft;
     nfft = ComputeFFTLength(w, dt);
     if (nfft < 2)
@@ -239,8 +242,8 @@ int ComputeFFTLength(const Metadata &md) {
   };
 }
 int ComputeDeconSampleShift(const Metadata &md) {
-  double dt_to_use = md.get_double("target_sample_interval");
-  double dwinstart = md.get_double("deconvolution_data_window_start");
+  double dt_to_use = GetDoubleRequired(md, "target_sample_interval");
+  double dwinstart = GetDoubleRequired(md, "deconvolution_data_window_start");
   if (!std::isfinite(dt_to_use) || dt_to_use <= 0.0)
     throw MsPASSError(
         "ComputeDeconSampleShift: target_sample_interval must be positive",

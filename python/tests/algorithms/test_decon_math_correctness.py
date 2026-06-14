@@ -132,9 +132,78 @@ def _run_scalar_engine(engine_class, pf, wavelet, data):
     return np.asarray(engine.getresult(), dtype=np.float64)
 
 
+def _base_numeric_metadata():
+    md = Metadata()
+    md["target_sample_interval"] = 1
+    md["operator_nfft"] = 64
+    md["deconvolution_data_window_start"] = 0
+    md["deconvolution_data_window_end"] = 63
+    md["shaping_wavelet_dt"] = 1
+    md["shaping_wavelet_type"] = "none"
+    return md
+
+
 def test_multitaper_power_stabilized_aliases_are_exported():
     assert MultiTaperPowerXcorDecon is MultiTaperXcorDecon
     assert MultiTaperPowerSpecDivDecon is MultiTaperSpecDivDecon
+
+
+@pytest.mark.parametrize(
+    "engine_class,extra",
+    [
+        (LeastSquareDecon, {"damping_factor": 1}),
+        (WaterLevelDecon, {"water_level": 1}),
+        (TimeDomainLeastSquareDecon, {"damping_factor": 1, "model_length": 64}),
+        (
+            MultiTaperXcorDecon,
+            {
+                "damping_factor": 1,
+                "time_bandwidth_product": 2,
+                "number_tapers": 4.0,
+            },
+        ),
+        (
+            MultiTaperSpecDivDecon,
+            {
+                "damping_factor": 1,
+                "time_bandwidth_product": 2,
+                "number_tapers": 4.0,
+            },
+        ),
+        (
+            NoiseStableDecon,
+            {
+                "ns_gid_mu_min": 1,
+                "ns_gid_alpha": 1,
+                "ns_gid_noise_floor": 1,
+                "ns_gid_gain_max": 1000,
+                "ns_gid_use_reliability_taper": "false",
+                "ns_gid_snr_taper_low": 1,
+                "ns_gid_snr_taper_high": 3,
+            },
+        ),
+    ],
+)
+def test_decon_operators_accept_integral_metadata_for_numeric_fields(
+    engine_class, extra
+):
+    md = _base_numeric_metadata()
+    for key, value in extra.items():
+        md[key] = value
+
+    engine = engine_class(md)
+
+    assert engine is not None
+
+
+def test_decon_operators_reject_non_integral_metadata_for_integer_fields():
+    md = _base_numeric_metadata()
+    md["damping_factor"] = 1
+    md["time_bandwidth_product"] = 2
+    md["number_tapers"] = 4.5
+
+    with pytest.raises(MsPASSError, match="integer-valued"):
+        MultiTaperXcorDecon(md)
 
 
 def test_deconvolution_binding_imports_diagnostic_return_types():

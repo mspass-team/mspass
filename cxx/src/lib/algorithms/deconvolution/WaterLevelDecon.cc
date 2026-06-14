@@ -1,5 +1,6 @@
 #include "mspass/algorithms/deconvolution/WaterLevelDecon.h"
 #include "mspass/algorithms/amplitudes.h"
+#include "mspass/algorithms/deconvolution/GIDDeconUtil.h"
 #include <cfloat> // Needed for DBL_EPSILON
 namespace mspass::algorithms::deconvolution {
 using namespace std;
@@ -16,7 +17,7 @@ int WaterLevelDecon::read_metadata(const Metadata &md) {
     const string base_error("WaterLevelDecon::read_metadata method: ");
     const int nfft_from_win = ComputeFFTLength(md);
     const int new_sample_shift = ComputeDeconSampleShift(md);
-    const double new_wlv = md.get_double("water_level");
+    const double new_wlv = GetDoubleRequired(md, "water_level");
     if (new_wlv <= 0.0) {
       throw MsPASSError(base_error +
                             "water_level must be positive.  A zero value is "

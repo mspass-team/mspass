@@ -74,12 +74,13 @@ FrequencyDomainGIDDecon::FrequencyDomainGIDDecon(const AntelopePf &mdtoplevel)
     AntelopePf md = mdtoplevel.get_branch("deconvolution_operator_type");
     AntelopePf mdgid = md.get_branch("frequency_domain_gid_deconvolution");
     decon_type = ParseGIDDeconType(mdgid, "FrequencyDomainGIDDecon");
-    dwin = TimeWindow(mdgid.get<double>("full_data_window_start"),
-                      mdgid.get<double>("full_data_window_end"));
-    fftwin = TimeWindow(mdgid.get<double>("deconvolution_data_window_start"),
-                        mdgid.get<double>("deconvolution_data_window_end"));
-    nwin = TimeWindow(mdgid.get<double>("noise_window_start"),
-                      mdgid.get<double>("noise_window_end"));
+    dwin = TimeWindow(GetDoubleRequired(mdgid, "full_data_window_start"),
+                      GetDoubleRequired(mdgid, "full_data_window_end"));
+    fftwin =
+        TimeWindow(GetDoubleRequired(mdgid, "deconvolution_data_window_start"),
+                   GetDoubleRequired(mdgid, "deconvolution_data_window_end"));
+    nwin = TimeWindow(GetDoubleRequired(mdgid, "noise_window_start"),
+                      GetDoubleRequired(mdgid, "noise_window_end"));
     ValidateWindowDuration(dwin, "full_data_window", base_error);
     ValidateWindowDuration(fftwin, "deconvolution_data_window", base_error);
     ValidateWindowDuration(nwin, "noise_window", base_error);
@@ -87,22 +88,22 @@ FrequencyDomainGIDDecon::FrequencyDomainGIDDecon(const AntelopePf &mdtoplevel)
       throw MsPASSError(base_error +
                             "deconvolution window must be inside full window",
                         ErrorSeverity::Invalid);
-    noise_component = mdgid.get<int>("noise_component");
+    noise_component = GetIntRequired(mdgid, "noise_component");
     ValidateThreeComponentIndex(noise_component, "noise_component", base_error);
-    target_dt = mdgid.get<double>("target_sample_interval");
+    target_dt = GetDoubleRequired(mdgid, "target_sample_interval");
     ValidatePositive(target_dt, "target_sample_interval", base_error);
     int maxns = static_cast<int>((fftwin.end - fftwin.start) / target_dt) + 1;
     int nfft = nextPowerOf2(maxns);
     mdgid.put("operator_nfft", nfft);
     this->ScalarDecon::changeparameter(mdgid);
     this->shapingwavelet = ShapingWavelet(mdgid, nfft);
-    iter_max = mdgid.get<int>("maximum_iterations");
+    iter_max = GetIntRequired(mdgid, "maximum_iterations");
     ValidatePositiveInteger(iter_max, "maximum_iterations", base_error);
-    residual_ratio_floor = mdgid.get<double>("residual_ratio_floor");
+    residual_ratio_floor = GetDoubleRequired(mdgid, "residual_ratio_floor");
     ValidateNonnegative(residual_ratio_floor, "residual_ratio_floor",
                         base_error);
     residual_improvement_floor =
-        mdgid.get<double>("residual_fractional_improvement_floor");
+        GetDoubleRequired(mdgid, "residual_fractional_improvement_floor");
     ValidateNonnegative(residual_improvement_floor,
                         "residual_fractional_improvement_floor", base_error);
     lag_weight_penalty_function =
@@ -111,7 +112,7 @@ FrequencyDomainGIDDecon::FrequencyDomainGIDDecon(const AntelopePf &mdtoplevel)
             : "none";
     lag_weight_penalty_scale_factor =
         mdgid.is_defined("lag_weight_penalty_scale_factor")
-            ? mdgid.get<double>("lag_weight_penalty_scale_factor")
+            ? GetDoubleRequired(mdgid, "lag_weight_penalty_scale_factor")
             : 1.0;
     if (!isfinite(lag_weight_penalty_scale_factor) ||
         lag_weight_penalty_scale_factor <= 0.0 ||
@@ -121,7 +122,7 @@ FrequencyDomainGIDDecon::FrequencyDomainGIDDecon(const AntelopePf &mdtoplevel)
                         ErrorSeverity::Fatal);
     lag_weight_function_width =
         mdgid.is_defined("lag_weight_function_width")
-            ? mdgid.get<int>("lag_weight_function_width")
+            ? GetIntRequired(mdgid, "lag_weight_function_width")
             : 0;
     if (mdgid.is_defined("lag_weight_function_width"))
       ValidatePositiveInteger(lag_weight_function_width,

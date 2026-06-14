@@ -24,6 +24,29 @@ from mspasspy.algorithms.window import WindowData
 from mspasspy.algorithms.basic import ExtractComponent
 
 
+def _validate_component_index(value, name, context):
+    if isinstance(value, (bool, np.bool_)):
+        raise ValueError(f"{context}: {name} must be integer 0, 1, or 2")
+    if isinstance(value, np.integer):
+        value = int(value)
+    elif not isinstance(value, int):
+        raise ValueError(f"{context}: {name} must be integer 0, 1, or 2")
+    if value not in (0, 1, 2):
+        raise ValueError(f"{context}: {name} must be integer 0, 1, or 2")
+    return value
+
+
+def _coerce_bandwidth_value(value):
+    if isinstance(value, np.generic):
+        value = value.item()
+    if isinstance(value, (bool, np.bool_)):
+        return -1.0
+    if not isinstance(value, (int, float, np.integer, np.floating)):
+        return -1.0
+    value = float(value)
+    return value if np.isfinite(value) else -1.0
+
+
 def fetch_bandwidth_data(md, keys) -> tuple:
     """
     Small convenience function extracts high and low frequency
@@ -46,12 +69,12 @@ def fetch_bandwidth_data(md, keys) -> tuple:
     """
     k = keys[0]
     if k in md:
-        flow = md[k]
+        flow = _coerce_bandwidth_value(md[k])
     else:
         flow = -1.0
     k = keys[1]
     if k in md:
-        fhigh = md[k]
+        fhigh = _coerce_bandwidth_value(md[k])
     else:
         fhigh = -1.0
     return tuple([flow, fhigh])
@@ -402,13 +425,7 @@ def CNRRFDecon(
         )
         message += "Must be an instance of a CNRDeconEngine"
         raise TypeError(message)
-    if component not in [0, 1, 2]:
-        message = (
-            "Illegal value received with component={}.  must be 0, 1, or 2".format(
-                component
-            )
-        )
-        raise ValueError(message)
+    component = _validate_component_index(component, "component", alg)
 
     if signal_window:
         # using the C++ bound function for efficiency here
@@ -721,6 +738,9 @@ def CNRArrayDecon(
             message += "Using windowed scalar beam data to compute noise spectrum"
             ensemble.elog.log_error(prog, message, ErrorSeverity.Complaint)
         if isinstance(beam, Seismogram):
+            beam_component = _validate_component_index(
+                beam_component, "beam_component", prog
+            )
             if not use_3C_noise:
                 n2use = ExtractComponent(n2use, beam_component)
             # noise is extracted, now we need to extract the beam component

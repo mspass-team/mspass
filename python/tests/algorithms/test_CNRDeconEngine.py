@@ -32,7 +32,11 @@ from mspasspy.ccore.seismic import (
 )
 from mspasspy.ccore.algorithms.basic import TimeWindow
 from mspasspy.ccore.algorithms.deconvolution import CNRDeconEngine
-from mspasspy.algorithms.CNRDecon import CNRRFDecon, CNRArrayDecon
+from mspasspy.algorithms.CNRDecon import (
+    CNRRFDecon,
+    CNRArrayDecon,
+    fetch_bandwidth_data,
+)
 from mspasspy.algorithms.basic import ExtractComponent
 from mspasspy.algorithms.window import WindowData
 from mspasspy.util.seismic import print_metadata
@@ -409,7 +413,29 @@ def test_CNRRFDecon_error_handlers():
         noise_window=nw,
     )
     assert d.elog.size() >= 1
-    assert "illegal value" in d.elog.get_error_log()[-1].message.lower()
+    assert "component" in d.elog.get_error_log()[-1].message.lower()
+    for bad_component in (True, np.bool_(True), 2.0, "2"):
+        d = Seismogram(d0wn)
+        d_decon = CNRRFDecon(
+            d,
+            engine,
+            component=bad_component,
+            signal_window=sw,
+            noise_window=nw,
+        )
+        assert d_decon.dead()
+        assert d_decon.elog.size() >= 1
+        assert "component" in d_decon.elog.get_error_log()[-1].message.lower()
+
+    d = Seismogram(d0wn)
+    d_decon = CNRRFDecon(
+        d,
+        engine,
+        component=np.int64(2),
+        signal_window=sw,
+        noise_window=nw,
+    )
+    assert d_decon.live
     # verify handling of dead datum
     d = Seismogram(d0wn)
     d.kill()
@@ -452,6 +478,25 @@ def test_CNRRFDecon_error_handlers():
 
     # partial test of how this could go wrong - may need
     # additional variations
+    d = Seismogram(d0wn)
+    nw = TimeWindow(-45.0, -5.0)
+    for bad_bandwidth in ("2.0", None, [2.0], np.nan):
+        d = Seismogram(d0wn)
+        d["low_f_band_edge"] = bad_bandwidth
+        d["high_f_band_edge"] = 8.0
+        assert fetch_bandwidth_data(
+            d, ["low_f_band_edge", "high_f_band_edge"]
+        ) == (-1.0, 8.0)
+        d_decon = CNRRFDecon(
+            d,
+            engine,
+            signal_window=sw,
+            noise_window=nw,
+        )
+        assert d_decon.dead()
+        assert d_decon.elog.size() > 0
+        assert "low frequency corner" in d_decon.elog.get_error_log()[-1].message
+
     d = Seismogram(d0wn)
     d_decon = CNRRFDecon(
         d,
@@ -606,6 +651,26 @@ def test_CNRArrayDecon_error_handlers():
     errs = e.member[0].elog.get_error_log()
     assert len(errs) >= 1
     assert "illegal argument combination" in errs[-1].message.lower()
+
+    e = SeismogramEnsemble(e0)
+    w = Seismogram(d0)
+    w["low_f_band_edge"] = 2.0
+    w["high_f_band_edge"] = 8.0
+    e_d = CNRArrayDecon(
+        e,
+        w,
+        engine,
+        beam_component=True,
+        noise_window=nw,
+        signal_window=sw,
+    )
+    assert e_d.dead()
+    nerrs = e_d.elog.size() + sum(member.elog.size() for member in e_d.member)
+    assert nerrs > 0
+    messages = [err.message for err in e_d.elog.get_error_log()]
+    for member in e_d.member:
+        messages.extend(err.message for err in member.elog.get_error_log())
+    assert any("beam_component" in message for message in messages)
 
     # verify handlling of dead input
     e = SeismogramEnsemble(e0)

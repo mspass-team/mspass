@@ -1,5 +1,6 @@
 #include "mspass/algorithms/deconvolution/LeastSquareDecon.h"
 #include "mspass/algorithms/amplitudes.h"
+#include "mspass/algorithms/deconvolution/GIDDeconUtil.h"
 #include "mspass/algorithms/deconvolution/MultiTaperXcorDecon.h"
 #include "mspass/utility/MsPASSError.h"
 namespace mspass::algorithms::deconvolution {
@@ -17,7 +18,7 @@ int LeastSquareDecon::read_metadata(const Metadata &md) {
     const string base_error("LeastSquareDecon::read_metadata method: ");
     const int nfft_from_win = ComputeFFTLength(md);
     const int new_sample_shift = ComputeDeconSampleShift(md);
-    const double new_damp = md.get_double("damping_factor");
+    const double new_damp = GetDoubleRequired(md, "damping_factor");
     if (new_damp <= 0.0) {
       throw MsPASSError(base_error +
                             "damping_factor must be positive.  A zero value "
