@@ -912,6 +912,15 @@ and ``group_sparse_converged`` for the proximal solve.  These fields let
 downstream QC distinguish the regularized solve from the support-reporting
 layer.
 
+These are not optional display fields.  They are part of the QC subdocument
+that should be saved with the deconvolved datum and used by downstream
+screening jobs to reject unstable or poorly constrained receiver functions.
+When ``deconvolution_type group_sparse`` is active, the group-sparse fields
+describe the solve that produced the output.  When another GID method is
+active, the ``group_sparse_*`` fields are absent.  The QC document is not a
+fixed table; method-specific keys are recorded only when that method or
+internal method component actually ran.
+
 ``group_sparse_active_groups`` is a count of retained coefficient groups, not a
 resolved geologic arrival count.  Validation plots and tests use separate
 detection metrics for arrival-level comparisons.
@@ -1071,7 +1080,8 @@ Useful first-pass fields are:
 ``group_sparse_active_threshold_used``, ``group_sparse_active_groups``,
 ``group_sparse_objective_initial``, and ``group_sparse_objective_final``
     Summarize the regularized group-sparse solve and the exported sparse
-    support decision.
+    support decision.  These fields are present only for
+    ``deconvolution_type group_sparse``.
 
 ``ns_gid_gain_max_actual``, ``ns_gid_noise_amplification``, and
 ``ns_gid_effective_bandwidth_fraction``
@@ -1081,7 +1091,8 @@ Useful first-pass fields are:
 ``group_sparse_inverse_noise_amplification``, and
 ``group_sparse_inverse_effective_bandwidth_fraction``
     Help audit the NS-GID inverse branch used internally by
-    ``deconvolution_type group_sparse``.
+    ``deconvolution_type group_sparse``.  These fields are absent for other
+    GID modes.
 
 Implementation and compatibility notes
 --------------------------------------

@@ -1008,6 +1008,21 @@ class RFdeconProcessor:
         # merge in an output of the implementations QCMetrics method
         qcmeth_output = dict(self.processor.QCMetrics())
         qcmd.update(qcmeth_output)
+        decon_type = qcmeth_output.get(
+            "deconvolution_type", qcmd.get("deconvolution_type")
+        )
+        if decon_type != "group_sparse":
+            qcmd = {
+                key: value
+                for key, value in qcmd.items()
+                if not key.startswith("group_sparse")
+            }
+        if decon_type != "ns_gid":
+            qcmd = {
+                key: value
+                for key, value in qcmd.items()
+                if not key.startswith("ns_gid")
+            }
         if self.__is_3c_engine:
             return dict(qcmd)
         # always compute the prediction error

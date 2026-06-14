@@ -1068,32 +1068,31 @@ Metadata FrequencyDomainGIDDecon::QCMetrics() {
   md.put("gid_actual_o_fir_zero_lag_index", actual_o_0);
   md.put("gid_actual_o_fir_peak_normalized",
          processed && !actual_o_fir.empty());
-  md.put("group_sparse_enabled", decon_type == GROUP_SPARSE);
-  md.put("group_sparse_inverse_operator",
-         string(decon_type == GROUP_SPARSE ? "ns_gid" : "not_enabled"));
-  md.put("group_sparse_lambda_requested", group_sparse_lambda);
-  md.put("group_sparse_lambda_scale", group_sparse_lambda_scale);
-  md.put("group_sparse_lambda_used", group_sparse_lambda_used);
-  md.put("group_sparse_tolerance", group_sparse_tolerance);
-  md.put("group_sparse_max_iterations", group_sparse_max_iterations);
-  md.put("group_sparse_iterations", group_sparse_iterations);
-  md.put("group_sparse_converged", group_sparse_converged);
-  md.put("group_sparse_active_threshold", group_sparse_active_threshold);
-  md.put("group_sparse_active_threshold_scale",
-         group_sparse_active_threshold_scale);
-  md.put("group_sparse_active_threshold_quantile",
-         group_sparse_active_threshold_quantile);
-  md.put("group_sparse_active_threshold_quantile_value",
-         group_sparse_active_threshold_quantile_value);
-  md.put("group_sparse_active_threshold_used",
-         group_sparse_active_threshold_used);
-  md.put("group_sparse_active_groups", group_sparse_active_groups);
-  md.put("group_sparse_objective_initial", group_sparse_objective_initial);
-  md.put("group_sparse_objective_final", group_sparse_objective_final);
-  md.put("group_sparse_fractional_improvement_final",
-         group_sparse_fractional_improvement_final);
-  md.put("group_sparse_noise_threshold", ns_peak_threshold);
   if (decon_type == GROUP_SPARSE) {
+    md.put("group_sparse_enabled", true);
+    md.put("group_sparse_inverse_operator", string("ns_gid"));
+    md.put("group_sparse_lambda_requested", group_sparse_lambda);
+    md.put("group_sparse_lambda_scale", group_sparse_lambda_scale);
+    md.put("group_sparse_lambda_used", group_sparse_lambda_used);
+    md.put("group_sparse_tolerance", group_sparse_tolerance);
+    md.put("group_sparse_max_iterations", group_sparse_max_iterations);
+    md.put("group_sparse_iterations", group_sparse_iterations);
+    md.put("group_sparse_converged", group_sparse_converged);
+    md.put("group_sparse_active_threshold", group_sparse_active_threshold);
+    md.put("group_sparse_active_threshold_scale",
+           group_sparse_active_threshold_scale);
+    md.put("group_sparse_active_threshold_quantile",
+           group_sparse_active_threshold_quantile);
+    md.put("group_sparse_active_threshold_quantile_value",
+           group_sparse_active_threshold_quantile_value);
+    md.put("group_sparse_active_threshold_used",
+           group_sparse_active_threshold_used);
+    md.put("group_sparse_active_groups", group_sparse_active_groups);
+    md.put("group_sparse_objective_initial", group_sparse_objective_initial);
+    md.put("group_sparse_objective_final", group_sparse_objective_final);
+    md.put("group_sparse_fractional_improvement_final",
+           group_sparse_fractional_improvement_final);
+    md.put("group_sparse_noise_threshold", ns_peak_threshold);
     NoiseStableDecon *nsop =
         dynamic_cast<NoiseStableDecon *>(preprocessor.get());
     if (nsop != nullptr) {
@@ -1120,8 +1119,8 @@ Metadata FrequencyDomainGIDDecon::QCMetrics() {
              external_noise_spectrum_loaded);
     }
   }
-  md.put("ns_gid_enabled", decon_type == NS_GID);
   if (decon_type == NS_GID) {
+    md.put("ns_gid_enabled", true);
     md.put("ns_gid_stop_reason", ns_stop_reason);
     md.put("ns_gid_converged", ns_converged);
     md.put("ns_gid_iterations", iter_count);

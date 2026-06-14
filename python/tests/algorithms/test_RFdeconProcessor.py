@@ -98,8 +98,7 @@ def _assert_public_gid_mode_qc(qc, mode):
         assert qc["group_sparse_enabled"]
         assert qc["group_sparse_inverse_operator"] == "ns_gid"
     else:
-        assert not qc["group_sparse_enabled"]
-        assert qc["group_sparse_inverse_operator"] == "not_enabled"
+        assert not any(key.startswith("group_sparse") for key in dict(qc))
 
 
 def _run_public_gid_engine(alg, **kwargs):

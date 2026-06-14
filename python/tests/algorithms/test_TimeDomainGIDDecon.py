@@ -109,7 +109,7 @@ def _assert_single_spike_recovery(rf, ratio_tolerance):
 
 def _assert_group_sparse_qc(qc):
     assert qc["group_sparse_enabled"]
-    assert not qc["ns_gid_enabled"]
+    assert "ns_gid_enabled" not in dict(qc)
     assert qc["group_sparse_inverse_operator"] == "ns_gid"
     assert qc["group_sparse_lambda_requested"] == pytest.approx(0.0)
     assert qc["group_sparse_lambda_scale"] == pytest.approx(1.0)
@@ -141,8 +141,8 @@ def _assert_group_sparse_qc(qc):
 
 
 def _assert_group_sparse_disabled_qc(qc):
-    assert not qc["group_sparse_enabled"]
-    assert qc["group_sparse_inverse_operator"] == "not_enabled"
+    keys = set(dict(qc).keys())
+    assert not any(key.startswith("group_sparse") for key in keys)
 
 
 def _make_single_spike_convolution_data():

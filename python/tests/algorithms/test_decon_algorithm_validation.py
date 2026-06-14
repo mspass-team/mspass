@@ -1013,7 +1013,8 @@ def _plot_gid_sparse_results(
 
 
 def _gid_plot_label(core_method, qc):
-    if qc["group_sparse_enabled"]:
+    qc = dict(qc)
+    if qc.get("group_sparse_enabled", False):
         return (
             f"group_sparse/{qc['group_sparse_inverse_operator']}"
             f" lam={qc['group_sparse_lambda_used']:.3g}"
