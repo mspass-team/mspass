@@ -136,7 +136,22 @@ public:
   TimeSeries &operator+=(const TimeSeries &d) {
     dynamic_cast<CoreTimeSeries &>(*this) +=
         dynamic_cast<const CoreTimeSeries &>(d);
+    this->elog += d.elog;
     return (*this);
+  };
+  TimeSeries &operator+=(const CoreTimeSeries &d) {
+    dynamic_cast<CoreTimeSeries &>(*this) += d;
+    return (*this);
+  };
+  const TimeSeries operator+(const TimeSeries &other) const {
+    TimeSeries result(*this);
+    result += other;
+    return result;
+  };
+  const CoreTimeSeries operator+(const CoreTimeSeries &other) const {
+    CoreTimeSeries result(dynamic_cast<const CoreTimeSeries &>(*this));
+    result += other;
+    return result;
   };
   TimeSeries &operator*=(const double scale) {
     dynamic_cast<CoreTimeSeries &>(*this) *= scale;
@@ -145,7 +160,22 @@ public:
   TimeSeries &operator-=(const TimeSeries &d) {
     dynamic_cast<CoreTimeSeries &>(*this) -=
         dynamic_cast<const CoreTimeSeries &>(d);
+    this->elog += d.elog;
     return (*this);
+  };
+  TimeSeries &operator-=(const CoreTimeSeries &d) {
+    dynamic_cast<CoreTimeSeries &>(*this) -= d;
+    return (*this);
+  };
+  const TimeSeries operator-(const TimeSeries &other) const {
+    TimeSeries result(*this);
+    result -= other;
+    return result;
+  };
+  const CoreTimeSeries operator-(const CoreTimeSeries &other) const {
+    CoreTimeSeries result(dynamic_cast<const CoreTimeSeries &>(*this));
+    result -= other;
+    return result;
   };
   void load_history(const mspass::utility::ProcessingHistory &h);
   /*! Return an estimate of the memmory use by the data in this object.
