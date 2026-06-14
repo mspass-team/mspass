@@ -3375,7 +3375,7 @@ def bulk_normalize(
       and the collections defined by the matcher_list list.
     :param wf_col: The collection that need to be normalized, default is
       wf_miniseed
-    :param blockssize:   To speed up updates this function uses the
+    :param blocksize:   To speed up updates this function uses the
       bulk writer/updater methods of MongoDB that can be orders of
       magnitude faster than one-at-a-time updates. A user should not normally
       need to alter this parameter.
@@ -3509,6 +3509,7 @@ def normalize_mseed(
     blocksize=1000,
     normalize_channel=True,
     normalize_site=True,
+    wf_col="wf_miniseed",
 ):
     """
     In MsPASS the standard support for station information is stored in
@@ -3518,7 +3519,9 @@ def normalize_mseed(
     with MsPASS database methods.   The default behavior tries to associate
     each wf_miniseed document with an entry in "site".  In MsPASS site is a
     smaller collection intended for use only with data already assembled
-    into three component bundles we call Seismogram objects.
+    into three component bundles we call Seismogram objects.  Normal use
+    of this function is to add normalization cross referencing ids to the
+    wf_miniseed collection.  Change wf_col to run on a different collection.
 
 
     For both channel and site the association algorithm used assumes
@@ -3532,17 +3535,21 @@ def normalize_mseed(
     data refer to common attributes of one seismic observatory (commonly
     also called a "station").
 
-    :param db: should be a MsPASS database handle containing at least
-      wf_miniseed and the collections defined by the norm_collection list.
-    :param blockssize:   To speed up updates this function uses the
+    :param db: should be a MsPASS database handle containing the waveform
+      collection defined by wf_col, "channel", and "site".  Note that
+      the booleans normalize_channel and normalize_site define if
+      channel or site respectively are actually required.
+    :param wf_col: waveform collection that is to be updated with normalization
+      ObjectId cross-referencing keys.  Default is "wf_miniseed".
+    :param wfquery: is an optional query to apply to wf_col.  The output of this
+      query defines the list of documents that the algorithm will attempt
+      to normalize as described above.  The default (None) will process the entire
+      wf_col collection.
+    :param blocksize:   To speed up updates this function uses the
       bulk writer/updater methods of MongoDB that can be orders of
       magnitude faster than one-at-a-time updates for setting
       channel_id and site_id.  A user should not normally need to alter this
-      parameter.
-    :param wfquery: is a query to apply to wf_miniseed.  The output of this
-      query defines the list of documents that the algorithm will attempt
-      to normalize as described above.  The default will process the entire
-      wf_miniseed collection (query set to an emtpy dict).
+      parameter.  It is the number of records written per write operation.
     :param normalize_channel:  boolean for handling channel collection.
       When True (default) matches will be attempted with the channel collection
       and when matches are found the associated channel document id will be
@@ -3556,7 +3563,7 @@ def normalize_mseed(
 
 
     :return: list with three integers.  0 is the number of documents processed in
-      wf_miniseed (output of query), 1 is the number with channel ids set,
+      wf_col (output of query), 1 is the number with channel ids set,
       and 2 contains the number of site documents set.  1 or 2 should
       contain 0 if normalization for that collection was set false.
     """
@@ -3594,7 +3601,7 @@ def normalize_mseed(
     bulk_ret = bulk_normalize(
         db,
         wfquery=wfquery,
-        wf_col="wf_miniseed",
+        wf_col=wf_col,
         blocksize=blocksize,
         matcher_list=matcher_function_list,
     )
