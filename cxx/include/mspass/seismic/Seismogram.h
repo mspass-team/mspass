@@ -176,6 +176,50 @@ with serialization.
   virtual ~Seismogram() {};
   /*! Standard assignment operator. */
   Seismogram &operator=(const Seismogram &parent);
+  Seismogram &operator+=(const Seismogram &d) {
+    dynamic_cast<CoreSeismogram &>(*this) +=
+        dynamic_cast<const CoreSeismogram &>(d);
+    this->elog += d.elog;
+    return (*this);
+  };
+  Seismogram &operator+=(const CoreSeismogram &d) {
+    dynamic_cast<CoreSeismogram &>(*this) += d;
+    return (*this);
+  };
+  const Seismogram operator+(const Seismogram &other) const {
+    Seismogram result(*this);
+    result += other;
+    return result;
+  };
+  const CoreSeismogram operator+(const CoreSeismogram &other) const {
+    CoreSeismogram result(dynamic_cast<const CoreSeismogram &>(*this));
+    result += other;
+    return result;
+  };
+  Seismogram &operator*=(const double scale) {
+    dynamic_cast<CoreSeismogram &>(*this) *= scale;
+    return *this;
+  };
+  Seismogram &operator-=(const Seismogram &d) {
+    dynamic_cast<CoreSeismogram &>(*this) -=
+        dynamic_cast<const CoreSeismogram &>(d);
+    this->elog += d.elog;
+    return (*this);
+  };
+  Seismogram &operator-=(const CoreSeismogram &d) {
+    dynamic_cast<CoreSeismogram &>(*this) -= d;
+    return (*this);
+  };
+  const Seismogram operator-(const Seismogram &other) const {
+    Seismogram result(*this);
+    result -= other;
+    return result;
+  };
+  const CoreSeismogram operator-(const CoreSeismogram &other) const {
+    CoreSeismogram result(dynamic_cast<const CoreSeismogram &>(*this));
+    result -= other;
+    return result;
+  };
   /*! \brief Load just the ProcessingHistory data from another data source.
 
   Some algorithms don't handle processing history.   In those situations it

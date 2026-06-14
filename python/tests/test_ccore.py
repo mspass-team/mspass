@@ -1166,10 +1166,12 @@ def test_operators():
     assert np.allclose(d3.data, [3, 3, 3, 3, 1, 1, 1, 1, 1, 1])
     d3 = TimeSeries(dsave)
     d = d3 + d4
+    assert type(d) is TimeSeries
     assert np.allclose(d.data, [3, 3, 3, 3, 1, 1, 1, 1, 1, 1])
     d1 = _CoreTimeSeries(dsave)
     d3 = TimeSeries(dsave)
     d3 *= 2.5
+    assert type(d3) is TimeSeries
     assert np.allclose(d3.data, [2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5])
     x = np.linspace(-0.7, 1.2, 20)
     for t in x:
@@ -1263,6 +1265,7 @@ def test_operators():
     )
     d3 = Seismogram(dsave)
     d = d3 + d4
+    assert type(d) is Seismogram
     assert np.allclose(
         d.data,
         np.array(
@@ -1275,8 +1278,9 @@ def test_operators():
     )
     d3 = Seismogram(dsave)
     d3 *= 2.5
+    assert type(d3) is Seismogram
     assert np.allclose(
-        d1.data,
+        d3.data,
         np.array(
             [
                 [2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5],
@@ -1384,6 +1388,7 @@ def test_operators():
     assert np.allclose(d3.data, [-1, -1, -1, -1, 1, 1, 1, 1, 1, 1])
     d3 = TimeSeries(dsave)
     d = d3 - d4
+    assert type(d) is TimeSeries
     assert np.allclose(d.data, [-1, -1, -1, -1, 1, 1, 1, 1, 1, 1])
     x = np.linspace(-0.7, 1.2, 20)
     for t in x:
@@ -1466,8 +1471,145 @@ def test_operators():
     )
     d3 = Seismogram(dsave)
     d = d3 - d4
+    assert type(d) is Seismogram
     assert np.allclose(
         d.data,
+        np.array(
+            [
+                [-1.0, -1.0, -1.0, -1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+                [-1.0, -1.0, -1.0, -1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+                [-1.0, -1.0, -1.0, -1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+            ]
+        ),
+    )
+
+    d3 = make_constant_data_ts(TimeSeries(10), nsamp=10)
+    d4 = make_constant_data_ts(TimeSeries(6), t0=-0.2, nsamp=6, val=2.0)
+    d3.elog.log_error("lhs", "left message", ErrorSeverity.Complaint)
+    d4.elog.log_error("rhs", "right message", ErrorSeverity.Invalid)
+    d = d3 + d4
+    assert type(d) is TimeSeries
+    assert d.elog.size() == 2
+    assert d.elog[0].algorithm == "lhs"
+    assert d.elog[1].algorithm == "rhs"
+    d3 += d4
+    assert type(d3) is TimeSeries
+    assert d3.elog.size() == 2
+    assert d3.elog[0].algorithm == "lhs"
+    assert d3.elog[1].algorithm == "rhs"
+    assert d3.elog[1].badness == ErrorSeverity.Invalid
+
+    d3 = make_constant_data_ts(TimeSeries(10), nsamp=10)
+    d4 = make_constant_data_ts(TimeSeries(6), t0=-0.2, nsamp=6, val=2.0)
+    d3.elog.log_error("lhs", "left message", ErrorSeverity.Complaint)
+    d4.elog.log_error("rhs", "right message", ErrorSeverity.Invalid)
+    d = d3 - d4
+    assert type(d) is TimeSeries
+    assert d.elog.size() == 2
+    assert d.elog[0].algorithm == "lhs"
+    assert d.elog[1].algorithm == "rhs"
+    d3 -= d4
+    assert type(d3) is TimeSeries
+    assert d3.elog.size() == 2
+    assert d3.elog[0].algorithm == "lhs"
+    assert d3.elog[1].algorithm == "rhs"
+    assert d3.elog[1].badness == ErrorSeverity.Invalid
+
+    d3 = make_constant_data_seis(Seismogram(10), nsamp=10)
+    d4 = make_constant_data_seis(Seismogram(6), t0=-0.2, nsamp=6, val=2.0)
+    d3.elog.log_error("lhs", "left message", ErrorSeverity.Complaint)
+    d4.elog.log_error("rhs", "right message", ErrorSeverity.Invalid)
+    d = d3 + d4
+    assert type(d) is Seismogram
+    assert d.elog.size() == 2
+    assert d.elog[0].algorithm == "lhs"
+    assert d.elog[1].algorithm == "rhs"
+    d3 += d4
+    assert type(d3) is Seismogram
+    assert d3.elog.size() == 2
+    assert d3.elog[0].algorithm == "lhs"
+    assert d3.elog[1].algorithm == "rhs"
+    assert d3.elog[1].badness == ErrorSeverity.Invalid
+
+    d3 = make_constant_data_seis(Seismogram(10), nsamp=10)
+    d4 = make_constant_data_seis(Seismogram(6), t0=-0.2, nsamp=6, val=2.0)
+    d3.elog.log_error("lhs", "left message", ErrorSeverity.Complaint)
+    d4.elog.log_error("rhs", "right message", ErrorSeverity.Invalid)
+    d = d3 - d4
+    assert type(d) is Seismogram
+    assert d.elog.size() == 2
+    assert d.elog[0].algorithm == "lhs"
+    assert d.elog[1].algorithm == "rhs"
+    d3 -= d4
+    assert type(d3) is Seismogram
+    assert d3.elog.size() == 2
+    assert d3.elog[0].algorithm == "lhs"
+    assert d3.elog[1].algorithm == "rhs"
+    assert d3.elog[1].badness == ErrorSeverity.Invalid
+
+    d3 = make_constant_data_ts(TimeSeries(10), nsamp=10)
+    d4 = make_constant_data_ts(_CoreTimeSeries(6), t0=-0.2, nsamp=6, val=2.0)
+    d = d3 + d4
+    assert type(d) is _CoreTimeSeries
+    assert np.allclose(d.data, [3, 3, 3, 3, 1, 1, 1, 1, 1, 1])
+    d3 += d4
+    assert type(d3) is TimeSeries
+    assert np.allclose(d3.data, [3, 3, 3, 3, 1, 1, 1, 1, 1, 1])
+
+    d3 = make_constant_data_ts(TimeSeries(10), nsamp=10)
+    d4 = make_constant_data_ts(_CoreTimeSeries(6), t0=-0.2, nsamp=6, val=2.0)
+    d = d3 - d4
+    assert type(d) is _CoreTimeSeries
+    assert np.allclose(d.data, [-1, -1, -1, -1, 1, 1, 1, 1, 1, 1])
+    d3 -= d4
+    assert type(d3) is TimeSeries
+    assert np.allclose(d3.data, [-1, -1, -1, -1, 1, 1, 1, 1, 1, 1])
+
+    d3 = make_constant_data_seis(Seismogram(10), nsamp=10)
+    d4 = make_constant_data_seis(_CoreSeismogram(6), t0=-0.2, nsamp=6, val=2.0)
+    d = d3 + d4
+    assert type(d) is _CoreSeismogram
+    assert np.allclose(
+        d.data,
+        np.array(
+            [
+                [3.0, 3.0, 3.0, 3.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+                [3.0, 3.0, 3.0, 3.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+                [3.0, 3.0, 3.0, 3.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+            ]
+        ),
+    )
+    d3 += d4
+    assert type(d3) is Seismogram
+    assert np.allclose(
+        d3.data,
+        np.array(
+            [
+                [3.0, 3.0, 3.0, 3.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+                [3.0, 3.0, 3.0, 3.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+                [3.0, 3.0, 3.0, 3.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+            ]
+        ),
+    )
+
+    d3 = make_constant_data_seis(Seismogram(10), nsamp=10)
+    d4 = make_constant_data_seis(_CoreSeismogram(6), t0=-0.2, nsamp=6, val=2.0)
+    d = d3 - d4
+    assert type(d) is _CoreSeismogram
+    assert np.allclose(
+        d.data,
+        np.array(
+            [
+                [-1.0, -1.0, -1.0, -1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+                [-1.0, -1.0, -1.0, -1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+                [-1.0, -1.0, -1.0, -1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+            ]
+        ),
+    )
+    d3 -= d4
+    assert type(d3) is Seismogram
+    assert np.allclose(
+        d3.data,
         np.array(
             [
                 [-1.0, -1.0, -1.0, -1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],

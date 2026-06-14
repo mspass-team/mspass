@@ -407,6 +407,15 @@ PYBIND11_MODULE(seismic, m) {
     .def("load_history",&Seismogram::load_history,
        "Load ProcessingHistory from another data object that contains relevant history")
     .def("__sizeof__",[](const Seismogram& self){return self.memory_use();})
+    .def(py::self += py::self)
+    .def(py::self -= py::self)
+    .def(py::self + py::self)
+    .def(py::self - py::self)
+    .def(py::self *= double())
+    .def(py::self += CoreSeismogram())
+    .def(py::self -= CoreSeismogram())
+    .def(py::self + CoreSeismogram())
+    .def(py::self - CoreSeismogram())
     .def(py::pickle(
       [](const Seismogram &self) {
         pybind11::object sbuf;
@@ -519,6 +528,15 @@ PYBIND11_MODULE(seismic, m) {
       .def("load_history",&TimeSeries::load_history,
          "Load ProcessingHistory from another data object that contains relevant history")
       .def("__sizeof__",[](const TimeSeries& self){return self.memory_use();})
+      .def(py::self += py::self)
+      .def(py::self -= py::self)
+      .def(py::self + py::self)
+      .def(py::self - py::self)
+      .def(py::self *= double())
+      .def(py::self += CoreTimeSeries())
+      .def(py::self -= CoreTimeSeries())
+      .def(py::self + CoreTimeSeries())
+      .def(py::self - CoreTimeSeries())
       // Not sure this constructor needs to be exposed to python
       /*
       .def(py::init<const BasicTimeSeries&,const Metadata&,
