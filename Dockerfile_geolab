@@ -226,9 +226,14 @@ RUN pip install dask-labextension && docker-clean
 
 ENV PATH="${SPARK_HOME}/bin:${SPARK_HOME}/sbin:${PATH}"
 
-# Grant mspass user write access to directories it needs at runtime
-RUN chown -R ${NB_USER}:100 /home/jovyan && \
-    chmod g+w /etc/passwd
+RUN chown -R ${NB_USER}:100 \
+        /home/jovyan \
+        /opt/conda \
+        /usr/local/spark \
+        /mspass && \
+    python3 -c "import site; print('\n'.join(site.getsitepackages()))" \
+        | xargs -I{} chown -R ${NB_USER}:100 {} && \
+    chmod 0666 /etc/passwd
 
 # Set the default behavior of this container
 ENV SPARK_MASTER_PORT 7077

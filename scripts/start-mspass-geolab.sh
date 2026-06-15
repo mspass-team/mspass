@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if ! whoami &>/dev/null; then
+if ! grep -q "^[^:]*:[^:]*:$(id -u):" /etc/passwd; then
     if [ -w /etc/passwd ]; then
         echo "jovyan:x:$(id -u):$(id -g):,,,:/home/jovyan:/bin/bash" >> /etc/passwd
     fi
