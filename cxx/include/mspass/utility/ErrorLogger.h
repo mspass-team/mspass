@@ -63,9 +63,19 @@ enabled by something like a verbose option to a program.  */
 class ErrorLogger {
 public:
   ErrorLogger() { job_id = 0; };
+  /*! Construct an empty log tied to a processing job id.
+  \param job processing job identifier to store in future log records.
+  */
   ErrorLogger(int job) { job_id = job; };
+  /*! Standard copy constructor.
+  \param parent logger whose job id and messages are copied.
+  */
   ErrorLogger(const ErrorLogger &parent);
+  /*! Set the job id stored with subsequently posted messages.
+  \param jid processing job identifier.
+  */
   void set_job_id(int jid) { job_id = jid; };
+  /*! Return the processing job id associated with this logger. */
   int get_job_id() { return job_id; };
   /*! Logs one error message.
 
@@ -99,10 +109,16 @@ public:
   the size of the log after insertion.
   */
   int log_verbose(const std::string alg, const std::string mess);
+  /*! Return a copy of all log records stored by this logger. */
   std::list<LogData> get_error_log() const { return allmessages; };
+  /*! Return the number of log records currently stored. */
   int size() const { return allmessages.size(); };
   /*!  Reset error log container to make it empty. */
   void clear() { allmessages.clear(); };
+  /*! Standard assignment operator.
+  \param parent logger whose job id and messages are copied.
+  \return reference to this logger after assignment.
+  */
   ErrorLogger &operator=(const ErrorLogger &parent);
   /*! For this object + of += means add the log data from the rhs to
   the lhs.   lhs defines the job_id. */

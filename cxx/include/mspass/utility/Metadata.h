@@ -469,8 +469,9 @@ other attributes.
                                         const mspass::utility::Metadata &);
 
 protected:
+  /*! Map from metadata key to value stored in a boost::any container. */
   std::map<std::string, boost::any> md;
-  /* The keys of any entry changed will be contained here.   */
+  /*! Keys that have been created or changed since the last clear_modified. */
   std::set<std::string> changed_or_set;
 };
 template <typename T> T Metadata::get(const std::string key) const {

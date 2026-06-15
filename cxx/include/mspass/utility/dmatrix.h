@@ -126,6 +126,13 @@ public:
   \exception dmatrix_index_error is thrown if request is out of range
   */
   double operator()(const size_t rowindex, const size_t colindex) const;
+  /*! Mutable indexing operator to fetch or modify an array element.
+
+  \param r row index to fetch.
+  \param c column index to fetch.
+  \returns reference to matrix element at position (r,c).
+  \exception dmatrix_index_error is thrown if request is out of range.
+  */
   double &operator()(size_t r, size_t c);
   /*! Standard assignment operator */
   dmatrix &operator=(const dmatrix &other);
@@ -201,6 +208,12 @@ public:
   \return s*A
   */
   friend dmatrix operator*(const double &s, const dmatrix &A) noexcept;
+  /*! Scale this matrix by a constant.
+
+  Multiplies every element in this matrix by s and returns the scaled copy.
+  \param s scaling factor.
+  \return this matrix multiplied by s.
+  */
   dmatrix operator*(double s) const noexcept;
   /*! \brief Transpose a matrix
    *
@@ -211,7 +224,7 @@ public:
    \return A transposed
    */
   friend dmatrix tr(const dmatrix &A) noexcept;
-  /* \brief Get a pointer to the location of a matrix component.
+  /*! \brief Get a pointer to the location of a matrix component.
 
   Although a sharp knife it is useful at times to get a raw pointer to
   the data in a dmatrix.   A common one is using the BLAS to do vector
@@ -250,9 +263,14 @@ public:
   void zero();
 
 protected:
+  /*! Contiguous Fortran-order storage for all matrix elements. */
   std::vector<double> ary; // initial size of container 0
+  /*! Number of scalar values in ary that represent this matrix. */
   size_t length;
-  size_t nrr, ncc;
+  /*! Number of rows in this matrix. */
+  size_t nrr;
+  /*! Number of columns in this matrix. */
+  size_t ncc;
 
 private:
   friend class boost::serialization::access;

@@ -66,13 +66,13 @@ public:
   double baz() const noexcept;
   /*! \brief Standard assignment operator. */
   SlownessVector &operator=(const SlownessVector &parent);
-  /* \brief Standard accumulation operator. */
+  /*! \brief Add another slowness vector to this one component-wise. */
   SlownessVector &operator+=(const SlownessVector &other);
-  /* \brief Standard subtract from  operator. */
+  /*! \brief Subtract another slowness vector from this one component-wise. */
   SlownessVector &operator-=(const SlownessVector &other);
-  /* \brief Standard addition  operator. */
+  /*! \brief Return the component-wise sum of two slowness vectors. */
   const SlownessVector operator+(const SlownessVector &other) const;
-  /* \brief Standard subraction  operator. */
+  /*! \brief Return the component-wise difference of two slowness vectors. */
   const SlownessVector operator-(const SlownessVector &other) const;
 
 private:

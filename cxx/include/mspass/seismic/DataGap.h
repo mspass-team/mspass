@@ -15,6 +15,7 @@ namespace mspass::seismic {
 **/
 class TimeWindowCmp {
 public:
+  /*! Return true when the first window ends before the second window starts. */
   bool operator()(const mspass::algorithms::TimeWindow ti1,
                   const mspass::algorithms::TimeWindow ti2) const {
     return (ti1.end < ti2.start);

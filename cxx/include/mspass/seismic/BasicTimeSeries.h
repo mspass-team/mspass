@@ -158,12 +158,14 @@ public:
     else
       return false;
   };
+  /*! Test if the time standard is relative. */
   bool time_is_relative() const {
     if (tref == TimeReferenceType::Relative)
       return true;
     else
       return false;
   };
+  /*! Return the current time reference type for these data. */
   TimeReferenceType timetype() const { return this->tref; }
   /*! Return sample rate. */
   double samprate() const { return 1.0 / mdt; }
@@ -263,11 +265,11 @@ protected:
   data where channels have a time relative to a shot time.
   **/
   TimeReferenceType tref;
-  /* We actually test for t0shift two ways.  If this is true we always accept
+  /*! We actually test for t0shift two ways.  If this is true we always accept
    * it. If false we check for nonzero t0shift and override if necessary.
    * */
   bool t0shift_is_valid;
-  /*When ator or rtoa are called this variable defines the conversion back
+  /*! When ator or rtoa are called this variable defines the conversion back
    * and forth.  The shift method should be used to change it. */
   double t0shift;
 

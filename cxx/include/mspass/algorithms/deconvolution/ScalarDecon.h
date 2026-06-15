@@ -29,9 +29,21 @@ one of the children of this base class.
 */
 class ScalarDecon : public BasicDeconOperator {
 public:
+  /*! \brief Construct an empty scalar deconvolution operator. */
   ScalarDecon() : shapingwavelet() {};
+  /*! \brief Construct from Metadata.
+   *
+   * Initializes the shaping wavelet from md and reserves the data, wavelet, and
+   * result vectors using the operator_nfft value in md.
+   */
   ScalarDecon(const mspass::utility::Metadata &md);
+  /*! \brief Construct with loaded data and source-wavelet vectors.
+   *
+   * \param d data vector to be deconvolved.
+   * \param w source-wavelet estimate used by concrete deconvolution methods.
+   */
   ScalarDecon(const std::vector<double> &d, const std::vector<double> &w);
+  /*! \brief Copy constructor preserving loaded vectors and shaping wavelet. */
   ScalarDecon(const ScalarDecon &parent);
   /*! \brief Load all data required for decon.
 
@@ -48,11 +60,18 @@ public:
   int loaddata(const std::vector<double> &data);
   /*! Load only the wavelet estimate.*/
   int loadwavelet(const std::vector<double> &wavelet);
+  /*! \brief Run the concrete scalar deconvolution algorithm.
+   *
+   * Derived classes implement this method and store their deconvolved output in
+   * the result vector.
+   */
   virtual void process() = 0;
   virtual ~ScalarDecon() {};
+  /*! \brief Assign loaded wavelet, data, and result vectors from parent. */
   ScalarDecon &operator=(const ScalarDecon &parent);
+  /*! \brief Return the current deconvolution result vector. */
   std::vector<double> getresult() { return result; };
-  /* This method does nothing, but needs to be defined to avoid
+  /*! This method does nothing, but needs to be defined to avoid
    * gcc compile errors in programs using children of this class.*/
   void changeparameter(const mspass::utility::Metadata &md);
   /*! Change the shaping wavelet that will be applied to output.
@@ -97,7 +116,11 @@ public:
   After any deconvolution is computed one can sometimes produce a finite
   impulse response (FIR) respresentation of the inverse filter.  */
   virtual mspass::seismic::CoreTimeSeries inverse_wavelet() = 0;
-  virtual mspass::seismic::CoreTimeSeries inverse_wavelet(double) = 0;
+  /*! \brief Return a FIR inverse filter with a specified parent time origin.
+   *
+   * \param t0parent time origin assigned to the returned CoreTimeSeries.
+   */
+  virtual mspass::seismic::CoreTimeSeries inverse_wavelet(double t0parent) = 0;
   /*! \brief Return appropriate quality measures.
 
   Each operator commonly has different was to measure the quality of the
@@ -105,11 +128,21 @@ public:
   virtual mspass::utility::Metadata QCMetrics() = 0;
 
 protected:
+  /*! \brief Build QC Metadata fields common to scalar deconvolution operators.
+   *
+   * The returned Metadata records the operator name, whether processing has run,
+   * whether input vectors are loaded, the input and output vector sizes, and the
+   * shaping-wavelet type, sample interval, and FFT length.
+   */
   mspass::utility::Metadata BasicQCMetrics(const std::string &operator_name,
                                            const bool processed);
+  /*! \brief Data vector to be deconvolved by concrete scalar methods. */
   std::vector<double> data;
+  /*! \brief Source-wavelet estimate used by concrete scalar methods. */
   std::vector<double> wavelet;
+  /*! \brief Deconvolved output vector produced by process. */
   std::vector<double> result;
+  /*! \brief Output shaping wavelet applied by scalar deconvolution methods. */
   ShapingWavelet shapingwavelet;
 
 private:

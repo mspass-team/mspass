@@ -24,11 +24,26 @@ class MultiTaperSpecDivDecon : public FFTDeconOperator, public ScalarDecon {
 public:
   /*! Default constructor.   Do not use - only for declarations */
   MultiTaperSpecDivDecon() : FFTDeconOperator(), ScalarDecon() {};
+  /*! \brief Construct and load all multitaper inputs.
+
+  \param md metadata defining FFT, shaping-wavelet, and DPSS taper parameters.
+  \param noise pre-event noise samples used for denominator stabilization.
+  \param wavelet source wavelet samples.
+  \param data data samples to deconvolve with the source wavelet.
+  */
   MultiTaperSpecDivDecon(const mspass::utility::Metadata &md,
                          const std::vector<double> &noise,
                          const std::vector<double> &wavelet,
                          const std::vector<double> &data);
+  /*! \brief Construct from metadata and reserve internal buffers.
+
+  \param md metadata defining FFT, shaping-wavelet, and DPSS taper parameters.
+  */
   MultiTaperSpecDivDecon(const mspass::utility::Metadata &md);
+  /*! \brief Copy constructor.
+
+  Copies the configured taper set, loaded noise, and cached processed products.
+  */
   MultiTaperSpecDivDecon(const MultiTaperSpecDivDecon &parent);
   ~MultiTaperSpecDivDecon() {};
   void changeparameter(const mspass::utility::Metadata &md) {
@@ -52,6 +67,11 @@ public:
   \param n noise vector used for regularization */
   int load(const std::vector<double> &w, const std::vector<double> &d,
            const std::vector<double> &n);
+  /*! \brief Compute the combined multitaper spectral-division result.
+
+  The method uses multitaper wavelet and noise power to stabilize the
+  denominator, then applies the inverse to the untapered data spectrum.
+  */
   void process();
   /*! \brief Return the actual output of the deconvolution operator.
 
@@ -112,6 +132,7 @@ public:
   Each operator commonly has different ways to measure the quality of the
   result.  This method should return these in a generic Metadata object. */
   mspass::utility::Metadata QCMetrics();
+  /*! Return the configured DPSS taper length in samples. */
   int get_taperlen() { return taperlen; };
   /*! Return the number of DPSS tapers used to build the combined denominator.
 
@@ -124,6 +145,7 @@ public:
   The value is normally 1 after a successful process call and 0 before
   process. */
   int get_number_outputs() { return winv_taper.size(); };
+  /*! Return the DPSS time-bandwidth product used to generate tapers. */
   double get_time_bandwidth_product() { return nw; };
 
 private:

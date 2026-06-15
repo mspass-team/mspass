@@ -35,10 +35,17 @@ public:
     start = ts;
     end = te;
   };
+  /*! Standard copy constructor.
+  \param parent source window to copy.
+  */
   TimeWindow(const TimeWindow &parent) {
     start = parent.start;
     end = parent.end;
   }
+  /*! Standard assignment operator.
+  \param parent source window to assign from.
+  \return reference to this window after assignment.
+  */
   TimeWindow &operator=(const TimeWindow &parent) {
     if (&parent != this) {
       start = parent.start;
@@ -80,6 +87,11 @@ public:
 **/
 class TimeWindowCmp {
 public:
+  /*! Return true when ti1 ends before ti2 starts.
+  \param ti1 first window in the comparison.
+  \param ti2 second window in the comparison.
+  \return true if ti1 is strictly before ti2 with no overlap.
+  */
   bool operator()(const TimeWindow ti1, const TimeWindow ti2) const {
     return (ti1.end < ti2.start);
   };

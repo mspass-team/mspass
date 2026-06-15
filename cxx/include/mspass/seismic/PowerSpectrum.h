@@ -46,7 +46,9 @@ public:
   PowerSpectrum(const mspass::utility::Metadata &md, const std::vector<T> &d,
                 const double dfin, const std::string nm, const double f0in,
                 const double dtin, const int npts_in);
+  /*! Standard copy constructor. */
   PowerSpectrum(const PowerSpectrum &parent);
+  /*! Standard assignment operator. */
   PowerSpectrum &operator=(const PowerSpectrum &parent);
   /*! \brief Standard accumulation operator.
 

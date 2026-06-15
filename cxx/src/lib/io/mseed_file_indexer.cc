@@ -31,16 +31,27 @@ public:
     loc = s;
   }
   MSEED_sid(const char *sid);
+  /*! Standard copy constructor.
+  \param parent source station id to copy.
+  */
   MSEED_sid(const MSEED_sid &parent) {
     net = parent.net;
     sta = parent.sta;
     chan = parent.chan;
     loc = parent.loc;
   };
+  /*! SEED network code. */
   string net;
+  /*! SEED station code. */
   string sta;
+  /*! SEED channel code. */
   string chan;
+  /*! SEED location code. */
   string loc;
+  /*! Standard assignment operator.
+  \param parent source station id to assign from.
+  \return reference to this station id after assignment.
+  */
   MSEED_sid &operator=(const MSEED_sid &parent) {
     if (this != &parent) {
       net = parent.net;
@@ -50,7 +61,16 @@ public:
     }
     return *this;
   };
+  /*! Test whether any network, station, channel, or location code differs.
+  \param other station id to compare with this object.
+  \return true when at least one sid component is different.
+  */
   bool operator!=(const MSEED_sid &other) const;
+  /*! Write this station id as net:sta:chan:loc.
+  \param os output stream to receive the station id.
+  \param self station id to write.
+  \return output stream after writing self.
+  */
   friend ostream &operator<<(ostream &os, MSEED_sid &self) {
     string sep(":");
     os << self.net << sep << self.sta << sep << self.chan << sep << self.loc;

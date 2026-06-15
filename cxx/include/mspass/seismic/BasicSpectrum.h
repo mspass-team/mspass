@@ -48,6 +48,7 @@ public:
     parent_dt = parent.parent_dt;
     parent_npts = parent.parent_npts;
   };
+  /*! Standard assignment operator. */
   BasicSpectrum &operator=(const BasicSpectrum &parent) {
     if (this != (&parent)) {
       is_live = parent.is_live;
@@ -162,10 +163,15 @@ public:
   virtual double Nyquist() const = 0;
 
 protected:
+  /*! Frequency bin spacing for the regular spectrum grid. */
   double dfval;
+  /*! Frequency of component zero in the stored spectrum vector. */
   double f0val;
+  /*! Sample interval of the time series used to compute this spectrum. */
   double parent_dt;
+  /*! Number of samples in the parent time series before any zero padding. */
   double parent_npts;
+  /*! True when the spectrum is marked as containing valid data. */
   bool is_live;
 };
 } // namespace mspass::seismic

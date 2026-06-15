@@ -23,11 +23,27 @@ class MultiTaperXcorDecon : public FFTDeconOperator, public ScalarDecon {
 public:
   /*! Default constructor.  Do not use except for declarations. */
   MultiTaperXcorDecon() : FFTDeconOperator(), ScalarDecon() {};
+  /*! \brief Construct and load all multitaper inputs.
+
+  \param md metadata defining FFT, shaping-wavelet, and DPSS taper parameters.
+  \param noise pre-event noise samples used for denominator stabilization.
+  \param wavelet source wavelet samples.
+  \param data data samples to deconvolve with the source wavelet.
+  */
   MultiTaperXcorDecon(const mspass::utility::Metadata &md,
                       const std::vector<double> &noise,
                       const std::vector<double> &wavelet,
                       const std::vector<double> &data);
+  /*! \brief Construct from metadata and reserve internal buffers.
+
+  \param md metadata defining FFT, shaping-wavelet, and DPSS taper parameters.
+  */
   MultiTaperXcorDecon(const mspass::utility::Metadata &md);
+  /*! \brief Copy constructor.
+
+  Copies the configured taper set, loaded noise, and cached actual-output
+  spectrum.
+  */
   MultiTaperXcorDecon(const MultiTaperXcorDecon &parent);
   ~MultiTaperXcorDecon() {};
   void changeparameter(const mspass::utility::Metadata &md) {
@@ -49,6 +65,11 @@ public:
   \param n noise vector used for regularization */
   int load(const std::vector<double> &w, const std::vector<double> &d,
            const std::vector<double> &n);
+  /*! \brief Compute the multitaper cross-correlation deconvolution result.
+
+  The method uses DPSS-stabilized source and noise powers for the denominator
+  and the untapered wavelet/data phase for the final inverse.
+  */
   void process();
   /*! \brief Return the actual output of the deconvolution operator.
 
@@ -94,8 +115,11 @@ public:
   Each operator commonly has different ways to measure the quality of the
   result.  This method should return these in a generic Metadata object. */
   mspass::utility::Metadata QCMetrics();
+  /*! Return the configured DPSS taper length in samples. */
   int get_taperlen() { return taperlen; };
+  /*! Return the number of DPSS tapers used by the operator. */
   int get_number_tapers() { return nseq; };
+  /*! Return the DPSS time-bandwidth product used to generate tapers. */
   double get_time_bandwidth_product() { return nw; };
 
 private:

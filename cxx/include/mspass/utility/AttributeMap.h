@@ -75,6 +75,11 @@ public:
   if the form table.attribute.
   */
   std::string fully_qualified_name() const;
+  /*! Write this attribute definition to an output stream.
+  \param ofs output stream to receive the formatted attribute definition.
+  \param d attribute definition to write.
+  \return output stream after writing d.
+  */
   friend std::ostream &operator<<(std::ostream &ofs,
                                   const AttributeProperties &d);
 };

@@ -313,7 +313,7 @@ public:
   double low_edge_snr;
   /*! Signal to noise ratio at upper band edge. */
   double high_edge_snr;
-  /* This is the frequency range of the original data */
+  /*! Total frequency range of the original data used to normalize bandwidth. */
   double f_range;
   BandwidthData() {
     low_edge_f = 0.0;

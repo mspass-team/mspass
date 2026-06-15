@@ -52,7 +52,7 @@ public:
     }
     return *this;
   };
-  /* \brief Indexing operator.
+  /*! \brief Indexing operator.
 
   This is the indexing operator used to extract an ensemble member
   with a (simpler) construct like x=e[i] as opposed to x=e.member[i].
@@ -232,6 +232,12 @@ public:
     }
     return *this;
   };
+  /*! \brief Estimate memory used by this ensemble.
+
+  The estimate includes the object itself, each member object's memory_use
+  estimate, ensemble Metadata storage, changed-or-set keys, and the ensemble
+  error log.
+  */
   size_t memory_use() const {
     size_t memuse;
     memuse = sizeof(*this);
