@@ -1,7 +1,11 @@
 #!/bin/bash
 
-# If running with docker use /home, else use pwd to store all data and logs
-if grep "docker/containers" /proc/self/mountinfo -qa; then
+# If enabled for Kubernetes deployments, use HOME as the PVC mount point.
+# Otherwise keep the historical Docker /home default.
+if [[ "${MSPASS_USE_HOME_WORKDIR:-false}" = "true" && -n "${KUBERNETES_SERVICE_HOST}" ]]; then
+  MSPASS_WORKDIR=${MSPASS_WORK_DIR:-${HOME}}
+  mkdir -p "${MSPASS_WORKDIR}" 2>/dev/null || true
+elif grep "docker/containers" /proc/self/mountinfo -qa; then
   MSPASS_WORKDIR=/home
 elif [[ -z ${MSPASS_WORK_DIR} ]]; then
   MSPASS_WORKDIR=`pwd`
@@ -36,7 +40,21 @@ export SPARK_LOG_DIR=${MSPASS_LOG_DIR}
 if [ $# -eq 0 ] || [ $1 = "--batch" ]; then
 
   function start_mspass_frontend {
-      NOTEBOOK_ARGS="--notebook-dir=${MSPASS_WORKDIR} --port=${JUPYTER_PORT} --no-browser --ip=0.0.0.0 --allow-root"
+      RUN_JUPYTER_AS_NB_USER=false
+      if [[ "${MSPASS_RUN_JUPYTER_AS_NB_USER:-false}" = "true" ]]; then
+          RUN_JUPYTER_AS_NB_USER=true
+      fi
+
+      NOTEBOOK_ARGS="--notebook-dir=${MSPASS_WORKDIR} --port=${JUPYTER_PORT} --no-browser --ip=0.0.0.0"
+      if [[ "${MSPASS_ALLOW_ROOT:-auto}" = "true" || ( "${MSPASS_ALLOW_ROOT:-auto}" = "auto" && "$RUN_JUPYTER_AS_NB_USER" != "true" ) ]]; then
+          NOTEBOOK_ARGS="${NOTEBOOK_ARGS} --allow-root"
+      fi
+
+      function run_frontend_as_nb_user {
+          NB_USER=${NB_USER:-mspass}
+          chown -R ${NB_USER}:100 "${MSPASS_WORKDIR}" 2>/dev/null || true
+          su --preserve-environment -c "$1" ${NB_USER}
+      }
 
       # Handle Jupyter password hashing if set
       if [[ ! -z ${MSPASS_JUPYTER_PWD+x} ]]; then
@@ -49,10 +67,15 @@ if [ $# -eq 0 ] || [ $1 = "--batch" ]; then
               # Interactive Jupyter Lab mode for Spark
               export PYSPARK_DRIVER_PYTHON=jupyter
               export PYSPARK_DRIVER_PYTHON_OPTS="lab ${NOTEBOOK_ARGS}"
-              pyspark \
-                  --conf "spark.mongodb.input.uri=mongodb://${MSPASS_DB_ADDRESS}:${MONGODB_PORT}/test.misc" \
-                  --conf "spark.mongodb.output.uri=mongodb://${MSPASS_DB_ADDRESS}:${MONGODB_PORT}/test.misc" \
-                  --conf "spark.master=spark://${MSPASS_SCHEDULER_ADDRESS}:${SPARK_MASTER_PORT}" \                  --packages org.mongodb.spark:mongo-spark-connector_2.12:3.0.0
+              if [[ "$RUN_JUPYTER_AS_NB_USER" = "true" ]]; then
+                  run_frontend_as_nb_user "pyspark --conf spark.mongodb.input.uri=mongodb://${MSPASS_DB_ADDRESS}:${MONGODB_PORT}/test.misc --conf spark.mongodb.output.uri=mongodb://${MSPASS_DB_ADDRESS}:${MONGODB_PORT}/test.misc --conf spark.master=spark://${MSPASS_SCHEDULER_ADDRESS}:${SPARK_MASTER_PORT} --packages org.mongodb.spark:mongo-spark-connector_2.12:3.0.0"
+              else
+                  pyspark \
+                      --conf "spark.mongodb.input.uri=mongodb://${MSPASS_DB_ADDRESS}:${MONGODB_PORT}/test.misc" \
+                      --conf "spark.mongodb.output.uri=mongodb://${MSPASS_DB_ADDRESS}:${MONGODB_PORT}/test.misc" \
+                      --conf "spark.master=spark://${MSPASS_SCHEDULER_ADDRESS}:${SPARK_MASTER_PORT}" \
+                      --packages org.mongodb.spark:mongo-spark-connector_2.12:3.0.0
+              fi
           else
               # Batch mode processing for Spark
               input_file="$1"
@@ -66,7 +89,8 @@ if [ $# -eq 0 ] || [ $1 = "--batch" ]; then
               spark-submit \
                   --conf "spark.mongodb.input.uri=mongodb://${MSPASS_DB_ADDRESS}:${MONGODB_PORT}/test.misc" \
                   --conf "spark.mongodb.output.uri=mongodb://${MSPASS_DB_ADDRESS}:${MONGODB_PORT}/test.misc" \
-                  --conf "spark.master=spark://${MSPASS_SCHEDULER_ADDRESS}:${SPARK_MASTER_PORT}" \                  --packages org.mongodb.spark:mongo-spark-connector_2.12:3.0.0 \
+                  --conf "spark.master=spark://${MSPASS_SCHEDULER_ADDRESS}:${SPARK_MASTER_PORT}" \
+                  --packages org.mongodb.spark:mongo-spark-connector_2.12:3.0.0 \
                   "$script_file"
           fi
       else
@@ -74,7 +98,11 @@ if [ $# -eq 0 ] || [ $1 = "--batch" ]; then
           export DASK_SCHEDULER_ADDRESS=${MSPASS_SCHEDULER_ADDRESS}:${DASK_SCHEDULER_PORT}
           if [ -z "$1" ]; then
               # Interactive Jupyter Lab mode for Dask
-              jupyter lab ${NOTEBOOK_ARGS}
+              if [[ "$RUN_JUPYTER_AS_NB_USER" = "true" ]]; then
+                  run_frontend_as_nb_user "jupyter lab ${NOTEBOOK_ARGS}"
+              else
+                  jupyter lab ${NOTEBOOK_ARGS}
+              fi
           else
               # Batch mode processing for Dask
               input_file="$1"

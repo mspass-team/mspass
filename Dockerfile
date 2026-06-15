@@ -6,7 +6,8 @@
 #   runtime - standard MsPASS image, also used by the default final stage
 #   dev     - debug build with development and documentation dependencies
 #   geolab  - GeoLab/Kubernetes image with non-root Jupyter runtime
-#   mpi     - standard image built from the MPI base image
+#   mpi     - standard image built with the MPI base image
+#             docker build --target mpi --build-arg MSPASS_BASE_IMAGE=ghcr.io/seisscoped/container-base:latest .
 #   tacc    - thin TACC startup overlay on the published weekly image
 
 ARG MSPASS_BASE_IMAGE=ghcr.io/seisscoped/container-base:ubuntu22.04_jupyterlab
@@ -286,7 +287,9 @@ ARG NB_USER=mspass
 ARG NB_UID=1000
 ENV NB_USER=${NB_USER} \
     NB_UID=${NB_UID} \
-    HOME=/home/mspass
+    HOME=/home/mspass \
+    MSPASS_USE_HOME_WORKDIR=true \
+    MSPASS_RUN_JUPYTER_AS_NB_USER=true
 
 RUN useradd --create-home --uid ${NB_UID} --gid 100 \
         --shell /bin/bash ${NB_USER} && \
@@ -296,7 +299,7 @@ RUN useradd --create-home --uid ${NB_UID} --gid 100 \
 RUN pip3 install dask-labextension==${DASK_LABEXTENSION_VERSION} && docker-clean
 
 # Add startup script
-ADD scripts/start-mspass-geolab.sh /usr/sbin/start-mspass.sh
+ADD scripts/start-mspass.sh /usr/sbin/start-mspass.sh
 RUN chmod +x /usr/sbin/start-mspass.sh
 
 # Grant mspass user write access to directories it needs at runtime

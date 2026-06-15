@@ -91,7 +91,8 @@ if [ $# -eq 0 ] || [ $1 = "--batch" ]; then
               pyspark \
                   --conf "spark.mongodb.input.uri=mongodb://${MSPASS_DB_ADDRESS}:${MONGODB_PORT}/test.misc" \
                   --conf "spark.mongodb.output.uri=mongodb://${MSPASS_DB_ADDRESS}:${MONGODB_PORT}/test.misc" \
-                  --conf "spark.master=spark://${MSPASS_SCHEDULER_ADDRESS}:${SPARK_MASTER_PORT}" \                  --packages org.mongodb.spark:mongo-spark-connector_2.12:3.0.0
+                  --conf "spark.master=spark://${MSPASS_SCHEDULER_ADDRESS}:${SPARK_MASTER_PORT}" \
+                  --packages org.mongodb.spark:mongo-spark-connector_2.12:3.0.0
           else
               # Batch mode processing for Spark
               input_file="$1"
@@ -105,7 +106,8 @@ if [ $# -eq 0 ] || [ $1 = "--batch" ]; then
               spark-submit \
                   --conf "spark.mongodb.input.uri=mongodb://${MSPASS_DB_ADDRESS}:${MONGODB_PORT}/test.misc" \
                   --conf "spark.mongodb.output.uri=mongodb://${MSPASS_DB_ADDRESS}:${MONGODB_PORT}/test.misc" \
-                  --conf "spark.master=spark://${MSPASS_SCHEDULER_ADDRESS}:${SPARK_MASTER_PORT}" \                  --packages org.mongodb.spark:mongo-spark-connector_2.12:3.0.0 \
+                  --conf "spark.master=spark://${MSPASS_SCHEDULER_ADDRESS}:${SPARK_MASTER_PORT}" \
+                  --packages org.mongodb.spark:mongo-spark-connector_2.12:3.0.0 \
                   "$script_file"
           fi
       else
