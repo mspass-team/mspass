@@ -254,11 +254,6 @@ public:
 
   \param d is data to be altered.  Normally a Seismogram of TimeSeries but
     can be a raw Metadata object.
-
-  \return ErrorLogger containing any problems encountered.  This function
-   always returns and treats any problems as nonfatal errors and posts
-   a log entry into this returned object. Caller should test the size of
-   the return and handle or ignore errors as appropriate.
    */
   void clear_aliases(mspass::utility::Metadata &d);
   /*! Standard assignment operator. */

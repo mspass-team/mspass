@@ -186,6 +186,10 @@ html_sidebars = {
     "**": ["sidebar-nav-full.html"],
 }
 
+# Sphinx validates html_static_path while loading this config, before our
+# builder-inited Doxygen hook creates generated output in a clean checkout.
+os.makedirs(os.path.join(conf_dir, "doxygen"), exist_ok=True)
+
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
